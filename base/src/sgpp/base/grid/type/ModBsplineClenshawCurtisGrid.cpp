@@ -34,8 +34,8 @@ namespace SGPP {
       }
     }
 
-    const char* ModBsplineClenshawCurtisGrid::getType() {
-      return "modBsplineClenshawCurtis";
+    SGPP::base::GridType ModBsplineClenshawCurtisGrid::getType() {
+      return SGPP::base::GridType::ModBsplineClenshawCurtis;
     }
 
     const SBasis& ModBsplineClenshawCurtisGrid::getBasis() {

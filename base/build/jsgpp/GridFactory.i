@@ -7,26 +7,27 @@
 
 %newobject SGPP::base::Grid::createLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createLinearStretchedGrid(size_t dim);
-%newobject SGPP::base::Grid::createLinearBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject SGPP::base::Grid::createLinearClenshawCurtisGrid(size_t dim);
-%newobject SGPP::base::Grid::createLinearTruncatedBoundaryGrid(size_t dim);
-%newobject SGPP::base::Grid::createLinearTruncatedBoundaryGrid(SGPP::base::BoudingBox& BB);
-%newobject SGPP::base::Grid::createLinearStretchedTruncatedBoundaryGrid(size_t dim);
-%newobject SGPP::base::Grid::createLinearStretchedTruncatedBoundaryGrid(SGPP::base::Stretching& BB);
+%newobject SGPP::base::Grid::createLinearBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearBoundaryGrid(SGPP::base::BoudingBox& BB);
+%newobject SGPP::base::Grid::createLinearStretchedBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearStretchedBoundaryGrid(SGPP::base::Stretching& BB);
 %newobject SGPP::base::Grid::createModLinearGrid(size_t dim);
 %newobject SGPP::base::Grid::createPolyGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createWaveletGrid(size_t dim);
-%newobject SGPP::base::Grid::createWaveletTruncatedBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createWaveletBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createModWaveletGrid(size_t dim);
 %newobject SGPP::base::Grid::createBsplineGrid(size_t dim, size_t degree);
-%newobject SGPP::base::Grid::createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+%newobject SGPP::base::Grid::createBsplineBoundaryGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createFundamentalSplineGrid(size_t dim, size_t degree);
 %newobject SGPP::base::Grid::createModFundamentalSlineGrid(size_t dim, size_t degree);
-%newobject SGPP::base::Grid::createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
+%newobject SGPP::base::Grid::createLinearTruncatedBoundaryGrid(size_t dim);
 %newobject SGPP::base::Grid::createSquareRootGrid(size_t dim);
 %newobject SGPP::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject SGPP::base::Grid::createPeriodicGrid(size_t dim);
@@ -48,30 +49,82 @@ namespace SGPP
 namespace base
 {
 
+struct RegularGridConfiguration {
+      /// Grid Type, see enum
+      SGPP::base::GridType type_;
+      /// number of dimensions
+      size_t dim_;
+      /// number of levels
+      int level_;
+    };
+
+struct AdpativityConfiguration {
+      /// number of refinements
+      size_t numRefinements_;
+      /// refinement threshold for surpluses
+      float_t threshold_;
+      /// refinement type: false: classic, true: maxLevel
+      bool maxLevelType_;
+      /// max. number of points to be refined
+      size_t noPoints_;
+      /// max. percent of points to be refined
+      float_t percent_;
+    };
+
+enum class GridType {
+  Linear,                       //  0
+  LinearStretched,              //  1
+  LinearL0Boundary,             //  2
+  LinearBoundary,               //  3
+  LinearStretchedBoundary,      //  4
+  LinearTruncatedBoundary,      //  5
+  ModLinear,                    //  6
+  Poly,                         //  7
+  PolyBoundary,                 //  8
+  ModPoly,                      //  9
+  ModWavelet,                   // 10
+  ModBspline,                   // 11
+  Prewavelet,                   // 12
+  SquareRoot,                   // 13
+  Periodic,                     // 14
+  LinearClenshawCurtis,         // 15
+  Bspline,                      // 16
+  BsplineBoundary,              // 17
+  BsplineClenshawCurtis,        // 18
+  Wavelet,                      // 19
+  WaveletBoundary,              // 20
+  FundamentalSpline,            // 21
+  ModFundamentalSpline,         // 22
+  ModBsplineClenshawCurtis,     // 23
+  LinearStencil,                // 24
+  ModLinearStencil              // 25
+};
+    
 class Grid
 {
 public:
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim);
+  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
-  static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
-  static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
+  static Grid* createLinearBoundaryGrid(size_t dim);
+  static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
-  static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
+  static Grid* createWaveletBoundaryGrid(size_t dim);
   static Grid* createModWaveletGrid(size_t dim);
   static Grid* createBsplineGrid(size_t dim, size_t degree);
-  static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
   static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
   static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
   static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
   static Grid* createSquareRootGrid(size_t dim);
-  static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
+  static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
   static Grid* createPrewaveletGrid(size_t dim);
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
@@ -92,7 +145,7 @@ public:
   virtual SGPP::base::BoundingBox* getBoundingBox();
   virtual SGPP::base::Stretching* getStretching();
 
-  virtual const char* getType() = 0;
+  virtual SGPP::base::GridType getType() = 0;
   virtual const SBasis& getBasis() = 0;
   virtual void serialize(std::string& ostr);
   void refine(SGPP::base::DataVector* vector, int num);

@@ -20,8 +20,8 @@ namespace SGPP {
     namespace optimizer {
 
       Newton::Newton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p) :
@@ -39,8 +39,8 @@ namespace SGPP {
       }
 
       Newton::Newton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p,
@@ -128,8 +128,8 @@ namespace SGPP {
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // line search
           if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
@@ -145,16 +145,12 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;
       }
 
-      ObjectiveHessian& Newton::getObjectiveHessian() const {
+      ScalarFunctionHessian& Newton::getObjectiveHessian() const {
         return fHessian;
       }
 

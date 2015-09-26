@@ -7,18 +7,13 @@
 #define LEARNER_HPP
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
-
+#include "sgpp/pde/application/RegularizationConfiguration.hpp"
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
 
   namespace datadriven {
-
-    enum LearnerRegularizationType {
-      Laplace,
-      Identity
-    };
 
     /**
      * This class implements standard sparse grid regression
@@ -27,7 +22,7 @@ namespace SGPP {
     class Learner : public LearnerBase {
       protected:
         /// regularization mode
-        SGPP::datadriven::LearnerRegularizationType CMode_;
+        SGPP::pde::RegularizationType CMode_;
         /// regularization operator
         SGPP::base::OperationMatrix* C_;
 
@@ -42,7 +37,7 @@ namespace SGPP {
          * @param isRegression flag for regression
          * @param isVerbose flag for verbose output
          */
-        Learner(SGPP::datadriven::LearnerRegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
+        Learner(SGPP::pde::RegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
 
         /**
          * Constructor
@@ -53,7 +48,7 @@ namespace SGPP {
          * @param isRegression set to true if a regression task should be executed
          * @param isVerbose set to true in order to allow console output
          */
-        Learner(const std::string tGridFilename, const std::string tAlphaFilename, SGPP::datadriven::LearnerRegularizationType& regularization,
+        Learner(const std::string tGridFilename, const std::string tAlphaFilename, SGPP::pde::RegularizationType& regularization,
                 const bool isRegression, const bool isVerbose = true);
 
         /**

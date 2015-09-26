@@ -4,24 +4,14 @@
 #include <vector>
 #include <random>
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include "BasisEval.hpp"
 
 using namespace SGPP;
 using namespace SGPP::base;
@@ -44,98 +34,6 @@ SGPP::float_t basisEval(SBasis& basis,
   }
 }
 
-SGPP::float_t basisEvalDx(SBasis& basis,
-                          GridIndex::level_type l,
-                          GridIndex::index_type i,
-                          SGPP::float_t x) {
-  SBsplineBase* bsplineBasis =
-    dynamic_cast<SBsplineBase*>(&basis);
-  SBsplineBoundaryBase* bsplineBoundaryBasis =
-    dynamic_cast<SBsplineBoundaryBase*>(&basis);
-  SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
-    dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
-  SBsplineModifiedBase* bsplineModifiedBasis =
-    dynamic_cast<SBsplineModifiedBase*>(&basis);
-  SFundamentalSplineBase* fundamentalSplineBasis =
-    dynamic_cast<SFundamentalSplineBase*>(&basis);
-  SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
-    dynamic_cast<SFundamentalSplineModifiedBase*>(&basis);
-  SWaveletBase* waveletBasis =
-    dynamic_cast<SWaveletBase*>(&basis);
-  SWaveletBoundaryBase* waveletBoundaryBasis =
-    dynamic_cast<SWaveletBoundaryBase*>(&basis);
-  SWaveletModifiedBase* waveletModifiedBasis =
-    dynamic_cast<SWaveletModifiedBase*>(&basis);
-
-  if (bsplineBasis != nullptr) {
-    return bsplineBasis->evalDx(l, i, x);
-  } else if (bsplineBoundaryBasis != nullptr) {
-    return bsplineBoundaryBasis->evalDx(l, i, x);
-  } else if (bsplineClenshawCurtisBasis != nullptr) {
-    return bsplineClenshawCurtisBasis->evalDx(l, i, x);
-  } else if (bsplineModifiedBasis != nullptr) {
-    return bsplineModifiedBasis->evalDx(l, i, x);
-  } else if (fundamentalSplineBasis != nullptr) {
-    return fundamentalSplineBasis->evalDx(l, i, x);
-  } else if (fundamentalSplineModifiedBasis != nullptr) {
-    return fundamentalSplineModifiedBasis->evalDx(l, i, x);
-  } else if (waveletBasis != nullptr) {
-    return waveletBasis->evalDx(l, i, x);
-  } else if (waveletBoundaryBasis != nullptr) {
-    return waveletBoundaryBasis->evalDx(l, i, x);
-  } else if (waveletModifiedBasis != nullptr) {
-    return waveletModifiedBasis->evalDx(l, i, x);
-  }
-
-  return NAN;
-}
-
-SGPP::float_t basisEvalDxDx(SBasis& basis,
-                            GridIndex::level_type l,
-                            GridIndex::index_type i,
-                            SGPP::float_t x) {
-  SBsplineBase* bsplineBasis =
-    dynamic_cast<SBsplineBase*>(&basis);
-  SBsplineBoundaryBase* bsplineBoundaryBasis =
-    dynamic_cast<SBsplineBoundaryBase*>(&basis);
-  SBsplineClenshawCurtisBase* bsplineClenshawCurtisBasis =
-    dynamic_cast<SBsplineClenshawCurtisBase*>(&basis);
-  SBsplineModifiedBase* bsplineModifiedBasis =
-    dynamic_cast<SBsplineModifiedBase*>(&basis);
-  SFundamentalSplineBase* fundamentalSplineBasis =
-    dynamic_cast<SFundamentalSplineBase*>(&basis);
-  SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
-    dynamic_cast<SFundamentalSplineModifiedBase*>(&basis);
-  SWaveletBase* waveletBasis =
-    dynamic_cast<SWaveletBase*>(&basis);
-  SWaveletBoundaryBase* waveletBoundaryBasis =
-    dynamic_cast<SWaveletBoundaryBase*>(&basis);
-  SWaveletModifiedBase* waveletModifiedBasis =
-    dynamic_cast<SWaveletModifiedBase*>(&basis);
-
-  if (bsplineBasis != nullptr) {
-    return bsplineBasis->evalDxDx(l, i, x);
-  } else if (bsplineBoundaryBasis != nullptr) {
-    return bsplineBoundaryBasis->evalDxDx(l, i, x);
-  } else if (bsplineClenshawCurtisBasis != nullptr) {
-    return bsplineClenshawCurtisBasis->evalDxDx(l, i, x);
-  } else if (bsplineModifiedBasis != nullptr) {
-    return bsplineModifiedBasis->evalDxDx(l, i, x);
-  } else if (fundamentalSplineBasis != nullptr) {
-    return fundamentalSplineBasis->evalDxDx(l, i, x);
-  } else if (fundamentalSplineModifiedBasis != nullptr) {
-    return fundamentalSplineModifiedBasis->evalDxDx(l, i, x);
-  } else if (waveletBasis != nullptr) {
-    return waveletBasis->evalDxDx(l, i, x);
-  } else if (waveletBoundaryBasis != nullptr) {
-    return waveletBoundaryBasis->evalDxDx(l, i, x);
-  } else if (waveletModifiedBasis != nullptr) {
-    return waveletModifiedBasis->evalDxDx(l, i, x);
-  }
-
-  return NAN;
-}
-
 BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   const size_t d = 2;
   const size_t l = 4;
@@ -151,11 +49,13 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createBsplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createBsplineTruncatedBoundaryGrid(d, p))));
+                              Grid::createBsplineBoundaryGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createBsplineClenshawCurtisGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createModBsplineGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<Grid>(
+                              Grid::createModBsplineClenshawCurtisGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createFundamentalSplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
@@ -163,7 +63,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createLinearGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createLinearTruncatedBoundaryGrid(d))));
+                              Grid::createLinearBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createLinearClenshawCurtisGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
@@ -171,13 +71,13 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createWaveletGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createWaveletTruncatedBoundaryGrid(d))));
+                              Grid::createWaveletBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createModWaveletGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createPolyGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createPolyTruncatedBoundaryGrid(d, p))));
+                              Grid::createPolyBoundaryGrid(d, p))));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::move(std::unique_ptr<SBasis>(
@@ -188,6 +88,8 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
                               new SBsplineClenshawCurtisBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
                               new SBsplineModifiedBase(p))));
+  bases.push_back(std::move(std::unique_ptr<SBasis>(
+                              new SBsplineModifiedClenshawCurtisBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
                               new SFundamentalSplineBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
@@ -217,8 +119,16 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
     // don't test gradients for linear function
     const bool hasGradients =
-      (std::string(grid.getType()).find("linear") == std::string::npos) &&
-      (std::string(grid.getType()).find("poly") == std::string::npos);
+      (grid.getType() == base::GridType::Bspline) ||
+      (grid.getType() == base::GridType::BsplineBoundary) ||
+      (grid.getType() == base::GridType::BsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::ModBspline) ||
+      (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::FundamentalSpline) ||
+      (grid.getType() == base::GridType::ModFundamentalSpline) ||
+      (grid.getType() == base::GridType::Wavelet) ||
+      (grid.getType() == base::GridType::WaveletBoundary) ||
+      (grid.getType() == base::GridType::ModWavelet);
 
     // create regular sparse grid
     std::unique_ptr<GridGenerator> gridGen(grid.createGridGenerator());
@@ -231,8 +141,9 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       // don't forget to set the point distribution to Clenshaw-Curtis
       // if necessary (currently not done automatically)
-      if ((std::string(grid.getType()) == "bsplineClenshawCurtis") ||
-          (std::string(grid.getType()) == "linearClenshawCurtis")) {
+      if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
+          (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
+          (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         gp.setPointDistribution(GridIndex::PointDistribution::ClenshawCurtis);
       }
 
@@ -316,14 +227,18 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
               }
             }
 
-            fxHessian.set(j, k, fxHessian.get(j, k) + val);
+            fxHessian(j, k) += val;
           }
         }
       }
 
       // test function evaluation
       SGPP::float_t fx2 = opEval->eval(alpha, x);
+#if USE_DOUBLE_PRECISION
       BOOST_CHECK_CLOSE(fx, fx2, 1e-10);
+#else
+      BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
+#endif
 
       if (!hasGradients) {
         continue;
@@ -333,15 +248,24 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       fx2 = opEvalGradient->evalGradient(alpha, x, fxGradient2);
 
       // test function evaluation
+#if USE_DOUBLE_PRECISION
       BOOST_CHECK_CLOSE(fx, fx2, 1e-10);
+#else
+      BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
+#endif
 
       for (size_t t = 0; t < d; t++) {
         // test gradient evaluation
         BOOST_CHECK_CLOSE(fxGradient[t], fxGradient2[t], 1e-10);
 
         // test partial derivative evaluation
+#if USE_DOUBLE_PRECISION
         BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(
                             alpha, x, t), fxGradient[t], 1e-10);
+#else
+        BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(
+                            alpha, x, t), fxGradient[t], 2e-3);
+#endif
       }
 
       fxGradient2.setAll(0.0);
@@ -349,7 +273,11 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       fx2 = opEvalHessian->evalHessian(alpha, x, fxGradient2, fxHessian2);
 
       // test function evaluation
+#if USE_DOUBLE_PRECISION
       BOOST_CHECK_CLOSE(fx, fx2, 1e-10);
+#else
+      BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
+#endif
 
       for (size_t t1 = 0; t1 < d; t1++) {
         // test gradient evaluation
@@ -357,8 +285,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
         for (size_t t2 = 0; t2 < d; t2++) {
           // test Hessian evaluation
-          BOOST_CHECK_CLOSE(fxHessian.get(t1, t2),
-                            fxHessian2.get(t1, t2), 1e-10);
+          BOOST_CHECK_CLOSE(fxHessian(t1, t2), fxHessian2(t1, t2), 1e-10);
         }
       }
     }

@@ -14,8 +14,8 @@ namespace SGPP {
     namespace optimizer {
 
       AdaptiveNewton::AdaptiveNewton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -36,8 +36,8 @@ namespace SGPP {
       }
 
       AdaptiveNewton::AdaptiveNewton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -103,7 +103,7 @@ namespace SGPP {
             // RHS of linear system to be solved
             b[t] = -gradFx[t];
             // add damping
-            hessianFx.set(t, t, hessianFx.get(t, t) + lambda);
+            hessianFx(t, t) += lambda;
           }
 
           // solve linear system with damped Hessian as system matrix
@@ -167,7 +167,7 @@ namespace SGPP {
 
               for (size_t t = 0; t < d; t++) {
                 // add damping
-                hessianFx.set(t, t, hessianFx.get(t, t) - oldLambda + lambda);
+                hessianFx(t, t) += lambda - oldLambda;
               }
 
               // solve linear system with damped Hessian as system matrix
@@ -202,15 +202,15 @@ namespace SGPP {
           fx = fxNew;
 
           // increase step size
-          alpha = std::min(rhoAlphaPlus * alpha, 1.0);
+          alpha = std::min(rhoAlphaPlus * alpha, float_t(1.0) );
 
           // decrease damping
           lambda *= rhoLambdaMinus;
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // stopping criterion:
           // stop if alpha * dir is smaller than tolerance theta
@@ -228,16 +228,12 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;
       }
 
-      ObjectiveHessian& AdaptiveNewton::getObjectiveHessian() const {
+      ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const {
         return fHessian;
       }
 

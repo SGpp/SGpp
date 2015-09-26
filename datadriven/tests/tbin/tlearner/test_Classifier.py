@@ -1,11 +1,11 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathlocal = os.path.abspath(pathname)
@@ -13,26 +13,26 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 from pysgpp import *
-from datadriven.learner.solver import CGSolver
-from datadriven.learner import Learner, LearnedKnowledge, TrainingSpecification, TrainingStopPolicy, Classifier
-from datadriven.learner.folding import SequentialFoldingPolicy, FoldingPolicy
-from datadriven.controller.InfoToScreen import InfoToScreen
+from pysgpp.extensions.datadriven.learner.solver import CGSolver
+from pysgpp.extensions.datadriven.learner import Learner, LearnedKnowledge, TrainingSpecification, TrainingStopPolicy, Classifier
+from pysgpp.extensions.datadriven.learner.folding import SequentialFoldingPolicy, FoldingPolicy
+from pysgpp.extensions.datadriven.controller.InfoToScreen import InfoToScreen
 
 
 ##
 # @package tests.tbin.test_Classifier
-# Contains class test_Classifier::TestClassifier with unittests for @link datadriven.learner.Classifier.Classifier Classifier @endlink
+# Contains class test_Classifier::TestClassifier with unittests for @link python.learner.Classifier.Classifier Classifier @endlink
 
 ##
-# Class with unittests for @link datadriven.learner.Classifier.Classifier Classifier @endlink
+# Class with unittests for @link python.learner.Classifier.Classifier Classifier @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.learner.Classifier.Classifier Classifier @endlink
+# @test Unittests for @link python.learner.Classifier.Classifier Classifier @endlink
 class TestClassifier(unittest.TestCase):
-    
+
     ## Set up the variables
     def setUp(self):
         level = 2
@@ -62,7 +62,7 @@ class TestClassifier(unittest.TestCase):
         self.classifier.setSolver(solver)
 
 #     ##
-#     # Tests the function @link datadriven.learner.Learner.Learner.learnDataWithTest() Classifier.learnDataWithTest() @endlink
+#     # Tests the function @link python.learner.Learner.Learner.learnDataWithTest() Classifier.learnDataWithTest() @endlink
 #     def testLearnDataWithTest(self,):
 #         correct = [-0.33360635579319858346,
 #                    0.67890792146517364714,
@@ -82,9 +82,9 @@ class TestClassifier(unittest.TestCase):
 #         self.assertEqual(len(alpha), len(correct))
 #         for i in xrange(len(correct)):
 #             self.assertAlmostEqual(alpha[i], correct[i], 3)
-    
+
     ##
-    # Tests the function @link datadriven.learner.Learner.Learner.applyData() Classifier.applyData() @endlink
+    # Tests the function @link python.learner.Learner.Learner.applyData() Classifier.applyData() @endlink
     def testApplyData(self,):
         correct = [0.253400605292, -0.25507958758, 0.0530555506998]
         points = [[0.5, 0.1], [0.3, 0.4], [0.9, 0.7]]
@@ -104,10 +104,10 @@ class TestClassifier(unittest.TestCase):
             self.assertAlmostEqual(val[i], correct[i], places=places)
 
     ##
-    # Tests the function @link datadriven.learner.Learner.Learner.learnData() Classifier.learnData() @endlink
+    # Tests the function @link python.learner.Learner.Learner.learnData() Classifier.learnData() @endlink
     def testLearnData(self):
-        correct = [-0.03105750236900508068, 
-                   -0.61865507797281660274, 
+        correct = [-0.03105750236900508068,
+                   -0.61865507797281660274,
                    0.64903026441541222802,
                    0.64903026441541267211,
                    -0.61865507797281593660]
@@ -118,7 +118,7 @@ class TestClassifier(unittest.TestCase):
             self.assertAlmostEqual(correct[i], alpha[i], places=places)
 
     ##
-    # Tests the function @link datadriven.learner.Learner.Learner.learnDataWithFolding() Classifier.learnDataWithFolding() @endlink
+    # Tests the function @link python.learner.Learner.Learner.learnDataWithFolding() Classifier.learnDataWithFolding() @endlink
     def testLearnDataWithFolding(self,):
         correct = [0.6612903226, 0.1428571429,
                    0.5741935484, 0.9142857143,
@@ -151,12 +151,12 @@ class TestClassifier(unittest.TestCase):
         stopPolicy.setAdaptiveIterationLimit(0)
         self.classifier.setStopPolicy(stopPolicy)
         self.classifier.setSolver(CGSolver())
-        
+
         self.classifier.learnDataWithFolding()
         for i in xrange(10):
             self.assertAlmostEqual(correct[2*i], self.classifier.trainAccuracy[i])
             self.assertAlmostEqual(correct[2*i+1], self.classifier.testAccuracy[i])
-        
-        
+
+
 if __name__=="__main__":
-    unittest.main(verbosity=9) 
+    unittest.main(verbosity=9)

@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   SGPP::float_t lSum;
 
   for (size_t i = 0; i < N; i++) {
-    lSum = gS->get(i)->getLevelSum();
+    lSum = static_cast<SGPP::float_t>(gS->get(i)->getLevelSum());
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   size_t level = 3;
   size_t deg = 4;
 
-  Grid* grid = Grid::createPolyTruncatedBoundaryGrid(dim, deg);
+  Grid* grid = Grid::createPolyBoundaryGrid(dim, deg);
   grid->createGridGenerator()->regular(level);
   GridStorage* gS = grid->getStorage();
   size_t N = gS->size();

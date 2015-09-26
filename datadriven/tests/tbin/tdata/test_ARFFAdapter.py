@@ -1,11 +1,11 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathlocal = os.path.abspath(pathname)
@@ -13,25 +13,25 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 from pysgpp import DataVector, DataMatrix, cvar
 
 
 ##
 # @package tests.tbin.test_ARFFAdapter
-# Contains class test_ARFFAdapter::TestARFFAdapter with unittests for @link datadriven.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+# Contains class test_ARFFAdapter::TestARFFAdapter with unittests for @link python.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
 
 ##
-# Class with unittests for @link datadriven.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+# Class with unittests for @link python.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
+# @test Unittests for @link python.data.ARFFAdapter.ARFFAdapter ARFFAdapter @endlink
 class TestARFFAdapter(unittest.TestCase):
-    
+
 
     ##
-    # Tests the function @link datadriven.data.ARFFAdapter.ARFFAdapter.save() ARFFAdapter.save() @endlink
+    # Tests the function @link python.data.ARFFAdapter.ARFFAdapter.save() ARFFAdapter.save() @endlink
     def testSave(self):
         filename = pathlocal + '/datasets/saving.arff.gz'
         testPoints = [[0.307143,0.130137,0.050000],
@@ -56,15 +56,15 @@ class TestARFFAdapter(unittest.TestCase):
         dim = len(testPoints[0])
         point = DataVector(dim)
         points = DataMatrix(size, dim)
-        
+
         for row in xrange(size):
             for col in xrange(dim):
                 point[col] = testPoints[row][col]
             points.setRow(row, point)
-            
+
         adapter = ARFFAdapter(filename)
         adapter.save(points, testValues, attributes)
-        
+
         (points, values) = adapter.loadData().getPointsValues()
         size = len(testPoints)
         dim = len(testPoints[0])
@@ -77,10 +77,10 @@ class TestARFFAdapter(unittest.TestCase):
                 else:
                     self.assertAlmostEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[rowIdx], testValues[rowIdx])
-        
-    
+
+
     ##
-    # Tests the function @link datadriven.data.ARFFAdapter.ARFFAdapter.loadData() ARFFAdapter.loadData() @endlink   
+    # Tests the function @link python.data.ARFFAdapter.ARFFAdapter.loadData() ARFFAdapter.loadData() @endlink
     def testLoadData(self):
         testPoints = [[0.307143,0.130137,0.050000],
                       [0.365584,0.105479,0.050000],
@@ -98,7 +98,7 @@ class TestARFFAdapter(unittest.TestCase):
         adapter = ARFFAdapter(filename)
         container = adapter.loadData()
         points = container.getPoints()
-        values = container.getValues() 
+        values = container.getValues()
         size = len(testPoints)
         dim = len(testPoints[0])
         testVector = DataVector(dim)
@@ -110,10 +110,10 @@ class TestARFFAdapter(unittest.TestCase):
                 else:
                     self.assertAlmostEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[rowIdx], testValues[rowIdx])
-        
+
 
     ##
-    # Tests the function @link datadriven.data.ARFFAdapter.ARFFAdapter.loadSpecification() ARFFAdapter.loadSpecification() @endlink
+    # Tests the function @link python.data.ARFFAdapter.ARFFAdapter.loadSpecification() ARFFAdapter.loadSpecification() @endlink
     def testLoadSpecification(self):
         attributes = {
                       "x0":"NUMERIC",
@@ -122,12 +122,12 @@ class TestARFFAdapter(unittest.TestCase):
                       "class":"NUMERIC",
                       }
         filename = pathlocal + '/datasets/liver-disorders_normalized.arff.gz'
-        adapter = ARFFAdapter(filename)        
+        adapter = ARFFAdapter(filename)
         spec = adapter.loadSpecification()
         testAttributes = spec.getAttributes()
         self.assertEqual(len(testAttributes), len(attributes))
         for key in testAttributes.keys():
             self.assertEqual(testAttributes[key],attributes[key])
-        
+
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main()

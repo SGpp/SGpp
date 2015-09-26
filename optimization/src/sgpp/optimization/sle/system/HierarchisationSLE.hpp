@@ -29,7 +29,7 @@
 
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
-#include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
@@ -74,77 +74,77 @@ namespace SGPP {
             gridStorage(gridStorage),
             basisType(INVALID) {
           // initialize the correct basis (according to the grid)
-          if (strcmp(grid.getType(), "bspline") == 0) {
+          if (grid.getType() == base::GridType::Bspline) {
             bsplineBasis = std::unique_ptr<base::SBsplineBase>(
                              new base::SBsplineBase(
                                dynamic_cast<base::BsplineGrid&>(grid).
                                getDegree()));
             basisType = BSPLINE;
-          } else if (strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+          } else if (grid.getType() == base::GridType::BsplineBoundary) {
             bsplineBoundaryBasis =
               std::unique_ptr<base::SBsplineBoundaryBase>(
                 new base::SBsplineBoundaryBase(
-                  dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid)
+                  dynamic_cast<base::BsplineBoundaryGrid&>(grid)
                   .getDegree()));
             basisType = BSPLINE_BOUNDARY;
-          } else if (strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
+          } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
             bsplineClenshawCurtisBasis =
               std::unique_ptr<base::SBsplineClenshawCurtisBase>(
                 new base::SBsplineClenshawCurtisBase(
                   dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).
                   getDegree()));
             basisType = BSPLINE_CLENSHAW_CURTIS;
-          } else if (strcmp(grid.getType(), "modBspline") == 0) {
+          } else if (grid.getType() == base::GridType::ModBspline) {
             modBsplineBasis = std::unique_ptr<base::SBsplineModifiedBase>(
                                 new base::SBsplineModifiedBase(
                                   dynamic_cast<base::ModBsplineGrid&>(grid).
                                   getDegree()));
             basisType = BSPLINE_MODIFIED;
-          } else if (strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) {
+          } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
             modBsplineClenshawCurtisBasis =
               std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase>(
                 new base::SBsplineModifiedClenshawCurtisBase(
                   dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).
                   getDegree()));
             basisType = BSPLINE_MODIFIED_CLENSHAW_CURTIS;
-          } else if (strcmp(grid.getType(), "fundamentalSpline") == 0) {
+          } else if (grid.getType() == base::GridType::FundamentalSpline) {
             fundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineBase>(
                                        new base::SFundamentalSplineBase(
                                          dynamic_cast<base::FundamentalSplineGrid&>(grid).
                                          getDegree()));
             basisType = FUNDAMENTAL_SPLINE;
-          } else if (strcmp(grid.getType(), "modFundamentalSpline") == 0) {
+          } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
             modFundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineModifiedBase>(
                                           new base::SFundamentalSplineModifiedBase(
                                             dynamic_cast<base::ModFundamentalSplineGrid&>(grid).
                                             getDegree()));
             basisType = FUNDAMENTAL_SPLINE_MODIFIED;
-          } else if (strcmp(grid.getType(), "linear") == 0) {
+          } else if (grid.getType() == base::GridType::Linear) {
             linearBasis = std::unique_ptr<base::SLinearBase>(
                             new base::SLinearBase());
             basisType = LINEAR;
-          } else if (strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
-            linearBoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
-                                    new base::SLinearBoundaryBase());
+          } else if (grid.getType() == base::GridType::LinearBoundary) {
+            linearL0BoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
+                                      new base::SLinearBoundaryBase());
             basisType = LINEAR_BOUNDARY;
-          } else if (strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
+          } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
             linearClenshawCurtisBasis =
               std::unique_ptr<base::SLinearClenshawCurtisBase>(
                 new base::SLinearClenshawCurtisBase());
             basisType = LINEAR_CLENSHAW_CURTIS;
-          } else if (strcmp(grid.getType(), "modlinear") == 0) {
+          } else if (grid.getType() == base::GridType::ModLinear) {
             modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(
                                new base::SLinearModifiedBase());
             basisType = LINEAR_MODIFIED;
-          } else if (strcmp(grid.getType(), "wavelet") == 0) {
+          } else if (grid.getType() == base::GridType::Wavelet) {
             waveletBasis = std::unique_ptr<base::SWaveletBase>(
                              new base::SWaveletBase());
             basisType = WAVELET;
-          } else if (strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+          } else if (grid.getType() == base::GridType::WaveletBoundary) {
             waveletBoundaryBasis = std::unique_ptr<base::SWaveletBoundaryBase>(
                                      new base::SWaveletBoundaryBase());
             basisType = WAVELET_BOUNDARY;
-          } else if (strcmp(grid.getType(), "modWavelet") == 0) {
+          } else if (grid.getType() == base::GridType::ModWavelet) {
             modWaveletBasis = std::unique_ptr<base::SWaveletModifiedBase>(
                                 new base::SWaveletModifiedBase());
             basisType = WAVELET_MODIFIED;
@@ -231,7 +231,7 @@ namespace SGPP {
         /// linear basis
         std::unique_ptr<base::SLinearBase> linearBasis;
         /// linear boundary basis
-        std::unique_ptr<base::SLinearBoundaryBase> linearBoundaryBasis;
+        std::unique_ptr<base::SLinearBoundaryBase> linearL0BoundaryBasis;
         /// linear Clenshaw-Curtis basis
         std::unique_ptr<base::SLinearClenshawCurtisBase>
         linearClenshawCurtisBasis;
@@ -315,8 +315,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -343,8 +343,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineBoundaryFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -371,8 +371,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineClenshawCurtisFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -399,8 +399,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineModifiedFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -427,8 +427,8 @@ namespace SGPP {
          */
         inline float_t evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -455,8 +455,8 @@ namespace SGPP {
          */
         inline float_t evalFundamentalSplineFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -491,8 +491,8 @@ namespace SGPP {
          */
         inline float_t evalFundamentalSplineModifiedFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -527,8 +527,8 @@ namespace SGPP {
          */
         inline float_t evalLinearFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -555,12 +555,12 @@ namespace SGPP {
          */
         inline float_t evalLinearBoundaryFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
-            const float_t result1d = linearBoundaryBasis->eval(
+            const float_t result1d = linearL0BoundaryBasis->eval(
                                        gpBasis.getLevel(t),
                                        gpBasis.getIndex(t),
                                        gpPoint.getCoord(t));
@@ -583,8 +583,8 @@ namespace SGPP {
          */
         inline float_t evalLinearClenshawCurtisFunctionAtGridPoint(
           size_t basisI, size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -611,8 +611,8 @@ namespace SGPP {
          */
         inline float_t evalLinearModifiedFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -639,8 +639,8 @@ namespace SGPP {
          */
         inline float_t evalWaveletFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -667,8 +667,8 @@ namespace SGPP {
          */
         inline float_t evalWaveletBoundaryFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {
@@ -695,8 +695,8 @@ namespace SGPP {
          */
         inline float_t evalWaveletModifiedFunctionAtGridPoint(size_t basisI,
             size_t pointJ) {
-          const base::GridIndex& gpBasis = *gridStorage.get(basisI);
-          const base::GridIndex& gpPoint = *gridStorage.get(pointJ);
+          const base::GridIndex& gpBasis = *gridStorage[basisI];
+          const base::GridIndex& gpPoint = *gridStorage[pointJ];
           float_t result = 1.0;
 
           for (size_t t = 0; t < gridStorage.dim(); t++) {

@@ -59,7 +59,7 @@ def prepareDoxyfile(modules):
     # create Doxyfile
     with open('Doxyfile_template', 'r') as doxyFileTemplate:
         with open('Doxyfile', 'w') as doxyFile:
-            inputPaths = 'INPUT = bin/ doc/'
+            inputPaths = 'INPUT ='
             examplePaths = 'EXAMPLE_PATH ='
             imagePaths = 'IMAGE_PATH ='
 
@@ -88,12 +88,21 @@ def prepareDoxyfile(modules):
 
     # create example menu page
     with open('base/doc/doxygen/examples.doxy', 'w') as examplesFile:
-        examplesFile.write('/**\n')
-        examplesFile.write('@page examples Examples\n\n')
-        examplesFile.write('This is a collection of examples from all modules.\n')
-        examplesFile.write('To add new examples, go to the respective folder module/doc/doxygen/\n')
-        examplesFile.write('and add a new example file code_examples_NAME.doxy with doxygen-internal\n')
-        examplesFile.write('name code_examples_NAME.\n\n')
+        examplesFile.write('''/**
+@page examples Examples
+
+This is a collection of examples from all modules.
+To add new examples to the documentation,
+go to the respective folder module/doc/doxygen/ and
+add a new example file code_examples_NAME.doxy with doxygen-internal
+name code_examples_NAME.
+
+Note that SCons automatically compiles (but not runs)
+all C++ examples on each run.
+For this to work, the examples must lie in the directories of the form
+\c /path/to/SGpp/trunk/MODULE_NAME/examples.
+
+''')
 
         for moduleName in modules:
             for subpage in glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy')):

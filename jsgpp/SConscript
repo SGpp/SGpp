@@ -37,6 +37,9 @@ j_env.AppendUnique(SWIGFLAGS=["-c++", "-java", "-package", "sgpp",
                               "-outdir", os.path.join(moduleName, "java")] +
                              swigIncludePaths + defines)
 
+if not j_env['USE_DOUBLE_PRECISION']:
+    j_env.AppendUnique(SWIGFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
+
 #j_env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 
 libJava = j_env.SharedLibrary(target="jsgpp",
@@ -44,7 +47,8 @@ libJava = j_env.SharedLibrary(target="jsgpp",
                               SHLIBPREFIX="lib",
                               LIBPATH=BUILD_DIR,
                               LIBS=["sgpp" + moduleFolder
-                                    for moduleFolder in moduleFolders])
+                                    for moduleFolder in moduleFolders
+                                    if env['SG_' + moduleFolder.upper()]])
 #TODO libs are set hacky!
 installLibJava = j_env.Install(JSGPP_BUILD_PATH, libJava)
 installTargetList.append(installLibJava)

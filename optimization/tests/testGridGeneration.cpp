@@ -1,14 +1,17 @@
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <vector>
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/optimization/function/test/Rosenbrock.hpp>
+#include <sgpp/optimization/function/scalar/test/Rosenbrock.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+
+#include "GridCreator.hpp"
 
 using namespace SGPP;
 using namespace SGPP::optimization;
@@ -27,42 +30,66 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
 
   // Test All The Grids!
   std::vector<std::unique_ptr<base::Grid>> grids;
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createBsplineTruncatedBoundaryGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createBsplineClenshawCurtisGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createModBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createModFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createLinearTruncatedBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createLinearClenshawCurtisGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createModLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createWaveletGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createWaveletTruncatedBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<base::Grid>(
-                              base::Grid::createModWaveletGrid(d))));
+  createSupportedGrids(d, p, grids);
+
+  // test getters/setters
+  {
+    IterativeGridGeneratorRitterNovak gridGen(f, *grids[0], N);
+
+    BOOST_CHECK_EQUAL(&gridGen.getGrid(), grids[0].get());
+
+    const SGPP::float_t adaptivity = 0.42;
+    gridGen.setAdaptivity(adaptivity);
+    BOOST_CHECK_EQUAL(gridGen.getAdaptivity(), adaptivity);
+
+    const base::level_t maxLevel = 13;
+    gridGen.setMaxLevel(maxLevel);
+    BOOST_CHECK_EQUAL(gridGen.getMaxLevel(), maxLevel);
+
+    const IterativeGridGeneratorRitterNovak::PowMethod powMethod =
+      IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW;
+    gridGen.setPowMethod(powMethod);
+    BOOST_CHECK_EQUAL(gridGen.getPowMethod(), powMethod);
+  }
+
+  {
+    IterativeGridGeneratorLinearSurplus gridGen(f, *grids[0], N);
+
+    BOOST_CHECK_EQUAL(&gridGen.getGrid(), grids[0].get());
+
+    const SGPP::float_t adaptivity = 0.42;
+    gridGen.setAdaptivity(adaptivity);
+    BOOST_CHECK_EQUAL(gridGen.getAdaptivity(), adaptivity);
+  }
+
+  {
+    IterativeGridGeneratorSOO gridGen(f, *grids[0], N);
+
+    BOOST_CHECK_EQUAL(&gridGen.getGrid(), grids[0].get());
+
+    const SGPP::float_t adaptivity = 0.42;
+    gridGen.setAdaptivity(adaptivity);
+
+    const IterativeGridGeneratorSOO::AdaptivityFunction adaptivityFunction =
+    [](size_t n) {
+      return n * n;
+    };
+    gridGen.setAdaptivity(adaptivityFunction);
+    BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42), 42 * 42);
+  }
 
   for (auto& grid : grids) {
-    // repeat for Ritter-Novak and linear surplus grid generation
-    std::vector<std::unique_ptr<IterativeGridGenerator>> gridGens;
-    gridGens.push_back(
-      std::move(std::unique_ptr<IterativeGridGenerator>(
-                  new IterativeGridGeneratorRitterNovak(f, *grid, N, 0.85))));
-    gridGens.push_back(
-      std::move(std::unique_ptr<IterativeGridGenerator>(
-                  new IterativeGridGeneratorLinearSurplus(f, *grid, N, 0.2))));
+    // repeat for grid generators
+    IterativeGridGeneratorRitterNovak gridGenRN(f, *grid, N, 0.85);
+    IterativeGridGeneratorRitterNovak gridGenRNFastPow(f, *grid, N, 0.85);
+    IterativeGridGeneratorLinearSurplus gridGenLS(f, *grid, N, 0.85);
+    IterativeGridGeneratorSOO gridGenSOO(f, *grid, N, 0.85);
+
+    gridGenRNFastPow.setPowMethod(IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW);
+
+    std::vector<IterativeGridGenerator*> gridGens = {
+      &gridGenRN, &gridGenRNFastPow, &gridGenLS, &gridGenSOO
+    };
 
     for (auto& gridGen : gridGens) {
       // empty grid
@@ -83,11 +110,11 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
         base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
-          x[t] = grid->getStorage()->get(i)->getCoord(t);
+          x[t] = (*grid->getStorage())[i]->getCoord(t);
         }
 
         // test function value
-        BOOST_CHECK_CLOSE(functionValues.get(i), f.eval(x), 1e-10);
+        BOOST_CHECK_CLOSE(functionValues[i], f.eval(x), 1e-10);
       }
     }
   }

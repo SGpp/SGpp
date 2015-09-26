@@ -33,7 +33,7 @@ namespace SGPP {
 
 
     LearnerOnlineSGD::LearnerOnlineSGD(
-      SGPP::datadriven::LearnerRegularizationType& regularization,
+      SGPP::pde::RegularizationType& regularization,
       const bool isRegression, const bool isVerbose) :
       Learner(regularization, isRegression, isVerbose),
       mainTrainDataset(NULL), mainClasses(NULL),
@@ -234,8 +234,8 @@ namespace SGPP {
          wfunctor->setTrainDataset(mainTrainDataset);
          wfunctor->setClasses(mainClasses);*/
 
-    	  throw new SGPP::base::application_exception(
-    	              "error: LearnerOnlineSGD::train(): support of the refinementType WEIGHTED_ERROR_ALL is not implemented yet.");
+        throw new SGPP::base::application_exception(
+          "error: LearnerOnlineSGD::train(): support of the refinementType WEIGHTED_ERROR_ALL is not implemented yet.");
       }
 
       else if (config.refinementType == "PERSISTENT_ERROR") {
@@ -431,7 +431,8 @@ namespace SGPP {
           grid_->serialize(grid_str);
           fgrid << grid_str << std::endl;
 
-          float_t percent = (float_t) totalIterations / ((int) numMainData * config.numRuns);
+          float_t percent = static_cast<float_t>(totalIterations) /
+                            static_cast<float_t>((int) numMainData * config.numRuns);
           percent *= 100;
 
           if (percent > 100) {

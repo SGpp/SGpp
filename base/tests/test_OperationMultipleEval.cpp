@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   DataVector alpha(N);
 
   for (int i = 0; i < static_cast<int>(N); ++i) {
-    alpha[i] = i + 1;
+    alpha[i] = static_cast<SGPP::float_t>(i + 1);
   }
 
   SGPP::float_t points[3][2] = { { 0.5, 1.0 }, { 0.3, 0.4 }, { 0.9, 0.7 } };
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   DataVector result(numberDataPoints);
 
   for (unsigned int i = 0; i < (numberDataPoints); ++i) {
-    result[i] = i;
+    result[i] = static_cast<SGPP::float_t>(i);
   }
 
   DataMatrix dataset(numberDataPoints, dim);
@@ -59,9 +59,15 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   result_ref[1] = 2.72;
   result_ref[2] = 1.64;
 
+#if USE_DOUBLE_PRECISION == 1
   BOOST_CHECK_CLOSE(result[0], result_ref[0], 1e-7);
   BOOST_CHECK_CLOSE(result[1], result_ref[1], 1e-7);
   BOOST_CHECK_CLOSE(result[2], result_ref[2], 1e-7);
+#else
+  BOOST_CHECK_CLOSE(result[0], result_ref[0], 1e-7);
+  BOOST_CHECK_CLOSE(result[1], result_ref[1], 1e-7);
+  BOOST_CHECK_CLOSE(result[2], result_ref[2], 1e-4);
+#endif
 
   delete grid;
   delete multiEvalOp;

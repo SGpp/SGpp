@@ -59,7 +59,7 @@ namespace SGPP {
 
       for (; l > 2; l--) {
         i = 0;
-        h = 1 << l;
+        h = static_cast<float_t>(1 << l);
         index.set(dim, l, i + 1);
         _seq = index.seq();
 
@@ -143,7 +143,7 @@ namespace SGPP {
       }
 
       if (l == 2) {
-        h = 1 << l;
+        h = static_cast<float_t>(1 << l);
 
         index.set(dim, 2, 1);
         _seql = index.seq();
@@ -177,7 +177,7 @@ namespace SGPP {
       }
 
       if (l == 1) {
-        h = 1 << l;
+        h = static_cast<float_t>(1 << l);
         index.set(dim, 1, 1);
         _seq = index.seq();
         result[_seq] = 2 * h * temp_current[0];

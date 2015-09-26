@@ -18,7 +18,7 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      DifferentialEvolution::DifferentialEvolution(ObjectiveFunction& f,
+      DifferentialEvolution::DifferentialEvolution(ScalarFunction& f,
           size_t maxFcnEvalCount, size_t populationSize,
           float_t crossoverProbability, float_t scalingFactor,
           size_t idleGenerationsCount, float_t avgImprovementThreshold,
@@ -124,9 +124,9 @@ namespace SGPP {
           xOld, fx, fOpt, xOptIndex, xNew) default(none)
           {
             base::DataVector y(d);
-            ObjectiveFunction* curFPtr = &f;
+            ScalarFunction* curFPtr = &f;
 #ifdef _OPENMP
-            std::unique_ptr<ObjectiveFunction> curF;
+            std::unique_ptr<ScalarFunction> curF;
 
             if (omp_get_max_threads() > 1) {
               f.clone(curF);
@@ -146,7 +146,7 @@ namespace SGPP {
 
               // for each dimension
               for (size_t t = 0; t < d; t++) {
-                const float_t& curProb = prob_ki.get(t);
+                const float_t& curProb = prob_ki[t];
 
                 if ((t == cur_j) || (curProb < crossoverProbability)) {
                   // mutate point in this dimension

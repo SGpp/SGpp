@@ -86,9 +86,9 @@ namespace SGPP {
          * Derived classes MUST overwrite this functions!
          *
          * @param trainDataset training dataset
-         * @param lambda lambda regularization parameter
+         * @param lambdaRegularization lambda regularization parameter
          */
-        virtual SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystem(SGPP::base::DataMatrixSP& trainDataset, float lambda) = 0;
+        virtual SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystem(SGPP::base::DataMatrixSP& trainDataset, float lambdaRegularization) = 0;
 
       public:
         /**
@@ -131,12 +131,12 @@ namespace SGPP {
          * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
          * @param AdaptConfig configuration of the adaptivity strategy
          * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
-         * @param lambda regularization parameter lambda
+         * @param lambdaRegularization regularization parameter lambda
          */
         virtual LearnerTiming train(SGPP::base::DataMatrixSP& testDataset, SGPP::base::DataVectorSP& classes,
                                     const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                     const SGPP::solver::SLESolverSPConfiguration& SolverConfigFinal, const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                                    bool testAccDuringAdapt, const float lambda);
+                                    bool testAccDuringAdapt, const float lambdaRegularization);
 
         /**
          * Learning a dataset with regular sparse grids
@@ -145,11 +145,11 @@ namespace SGPP {
          * @param classes classes corresponding to the training dataset
          * @param GridConfig configuration of the regular grid
          * @param SolverConfig configuration of the SLE solver
-         * @param lamda regularization parameter lambda
+         * @param lambdaRegularization regularization parameter lambda
          */
         LearnerTiming train(SGPP::base::DataMatrixSP& testDataset,  SGPP::base::DataVectorSP& classes,
                             const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverSPConfiguration& SolverConfig,
-                            const float lamda);
+                            const float lambdaRegularization);
 
         /**
          * executes a Regression test for a given dataset and returns the result

@@ -129,11 +129,11 @@ namespace SGPP {
         size_t appendRow();
 
         /**
-           * Appends a new row with data contained in DataVector vec
-           * and returns index of new row.
-           * If the new row does not fit into the reserved memory,
-           * reserves memory for getIncRows() additional rows.
-           *
+         * Appends a new row with data contained in DataVector vec
+         * and returns index of new row.
+         * If the new row does not fit into the reserved memory,
+         * reserves memory for getIncRows() additional rows.
+         *
          * @param vec DataVector (length has to match getNcols()) with data
          * @return Index of new row
          */
@@ -141,10 +141,10 @@ namespace SGPP {
 
 
         /**
-        * Sets all entries of DataMatrix to value.
-        *
-        * @param value New value for all entries
-        */
+         * Sets all entries of DataMatrix to value.
+         *
+         * @param value New value for all entries
+         */
         void setAll(float_t value);
 
         /**
@@ -174,15 +174,26 @@ namespace SGPP {
         DataMatrix& operator=(const DataMatrix& matr);
 
         /**
-         * Returns the i-th element.
-         * For the 5th element in the third row, i would be 2*getNcols()+4.
+         * Returns the value of the element at position [row,col]
          *
-         * @param i position of the element
-         * @return data[i]
+         * @param row Row
+         * @param col Column
+         * @return reference to the element
          */
-        inline float_t& operator[](size_t i) {
-          return data[i];
-        };
+        inline float_t& operator()(size_t row, size_t col) {
+          return data[row * ncols + col];
+        }
+
+        /**
+         * Returns the value of the element at position [row,col]
+         *
+         * @param row Row
+         * @param col Column
+         * @return constant reference to the element
+         */
+        inline const float_t& operator()(size_t row, size_t col) const {
+          return data[row * ncols + col];
+        }
 
         /**
          * Returns the value of the element at position [row,col]
@@ -193,7 +204,7 @@ namespace SGPP {
          */
         inline float_t get(size_t row, size_t col) const {
           return data[row * ncols + col];
-        };
+        }
 
         /**
          * Sets the element at position [row,col] to value.
@@ -204,7 +215,7 @@ namespace SGPP {
          */
         inline void set(size_t row, size_t col, float_t value) {
           data[row * ncols + col] = value;
-        };
+        }
 
         /**
          * Copies the values of a row to the DataVector vec.
@@ -256,8 +267,8 @@ namespace SGPP {
         void add(DataMatrix& matr);
 
         /**
-           * Subtracts the values from another DataMatrix of the current values.
-           * Modifies the current values.
+         * Subtracts the values from another DataMatrix of the current values.
+         * Modifies the current values.
          *
          * @param matr The DataMatrix which is subtracted from the current values
          */
@@ -356,35 +367,35 @@ namespace SGPP {
         float_t min(size_t col) const;
 
         /**
-        * Returns the minimum over all entries.
-        *
-        * @return Minimal value of all entries
-        */
+         * Returns the minimum over all entries.
+         *
+         * @return Minimal value of all entries
+         */
         float_t min() const;
 
         /**
-        * Returns the maximum value of column col.
-        *
-        * @param col Number of the column
-        *
-        * @return Maximum value
-        */
+         * Returns the maximum value of column col.
+         *
+         * @param col Number of the column
+         *
+         * @return Maximum value
+         */
         float_t max(size_t col) const;
 
         /**
-        * Returns the maximum over all entries.
-        *
-        * @return Maximal value of all entries
-        */
+         * Returns the maximum over all entries.
+         *
+         * @return Maximal value of all entries
+         */
         float_t max() const;
 
         /**
-        * Determines minimum and maximum of column col.
-        *
-        * @param col Number of the column
-        * @param min Reference variable for the minimum
-        * @param max Reference variable for the maximum
-        */
+         * Determines minimum and maximum of column col.
+         *
+         * @param col Number of the column
+         * @param min Reference variable for the minimum
+         * @param max Reference variable for the maximum
+         */
         void minmax(size_t col, float_t* min, float_t* max) const;
 
         /**
@@ -395,12 +406,11 @@ namespace SGPP {
          */
         void minmax(float_t* min, float_t* max) const;
 
-
         /**
-        * Returns pointer to float_t array containing underlying data.
-        *
-        * @return Pointer to data
-        */
+         * Returns pointer to float_t array containing underlying data.
+         *
+         * @return Pointer to data
+         */
         float_t* getPointer();
 
         /**
@@ -410,7 +420,7 @@ namespace SGPP {
          */
         inline size_t getSize() const {
           return ncols * nrows;
-        };
+        }
 
         /**
          * Returns the number of unused rows.
@@ -419,13 +429,13 @@ namespace SGPP {
          */
         inline size_t getUnused() const {
           return unused;
-        };
+        }
 
         /**
-        * Determines the number of non-zero elements in the vector.
-        *
-        * @return The number of non-zero elements
-        */
+         * Determines the number of non-zero elements in the vector.
+         *
+         * @return The number of non-zero elements
+         */
         size_t getNumberNonZero() const;
 
         /**
@@ -467,7 +477,6 @@ namespace SGPP {
           this->inc_rows = inc_rows;
         }
 
-
         /**
          * Normalizes the d-th dimension (entries in the d-th column) to @f$[0,1]@f$.
          * Considers contents of DataMatrix as a d-dimensional dataset, one
@@ -478,33 +487,32 @@ namespace SGPP {
         void normalizeDimension(size_t d);
 
         /**
-           * Normalizes the d-th dimension (entries in the d-th column) to @f$[border,1-border]@f$.
-           * Considers contents of DataMatrix as a d-dimensional dataset, one
-           * data point per row.
-           *
-           * @param d The dimension (column) that should be normalized (starting with 0)
+         * Normalizes the d-th dimension (entries in the d-th column) to @f$[border,1-border]@f$.
+         * Considers contents of DataMatrix as a d-dimensional dataset, one
+         * data point per row.
+         *
+         * @param d The dimension (column) that should be normalized (starting with 0)
          * @param border Width of the border
          */
         void normalizeDimension(size_t d, float_t border);
 
-
         /**
-        * Writes the data stored in the DataMatrix into a string
-        *
-        * @param text String to which the data is written
-        */
+         * Writes the data stored in the DataMatrix into a string
+         *
+         * @param text String to which the data is written
+         */
         void toString(std::string& text) const;
 
         /**
-        * Returns a description of the DataMatrix as a string.
-        *
-        * @returns string of the DataMatrix
-        */
+         * Returns a description of the DataMatrix as a string.
+         *
+         * @returns string of the DataMatrix
+         */
         std::string toString() const;
 
         /**
-        * Destructor
-        */
+         * Destructor
+         */
         virtual ~DataMatrix();
 
       private:

@@ -1,40 +1,40 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.data.DataEntry import DataEntry
+from pysgpp.extensions.datadriven.data.DataEntry import DataEntry
 from pysgpp import DataVector
-from datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 
 
 ##
 # @package tests.tbin.test_DataContainer
-# Contains class test_DataContainer::TestDataContainer with unittests for @link datadriven.data.DataContainer.DataContainer DataContainer @endlink
+# Contains class test_DataContainer::TestDataContainer with unittests for @link python.data.DataContainer.DataContainer DataContainer @endlink
 
 ##
-# Class with unittests for @link datadriven.data.DataContainer.DataContainer DataContainer @endlink
+# Class with unittests for @link python.data.DataContainer.DataContainer DataContainer @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.data.DataContainer.DataContainer DataContainer @endlink
+# @test Unittests for @link python.data.DataContainer.DataContainer DataContainer @endlink
 class TestDataContainer(unittest.TestCase):
-    
-    
+
+
     ##
     # Set up the variables
-    #    It makes following construct: 
-    #        [[1,1,1,1,1],  [1, 
-    #         [2,2,2,2,2],   2, 
-    #         ...            ... 
+    #    It makes following construct:
+    #        [[1,1,1,1,1],  [1,
+    #         [2,2,2,2,2],   2,
+    #         ...            ...
     #         [42,...,42]]   42]
     def setUp(self):
         self.size = 42
@@ -49,10 +49,10 @@ class TestDataContainer(unittest.TestCase):
             self.vectors.append(vector)
             points.setRow(row,vector)
             values[row] =row
-    
-    
+
+
     ##
-    # Tests the function @link datadriven.data.DataContainer.DataContainer.next() DataContainer.next() @endlink
+    # Tests the function @link python.data.DataContainer.DataContainer.next() DataContainer.next() @endlink
     def testNext(self):
         c = 0
         for entry in self.container:
@@ -65,7 +65,7 @@ class TestDataContainer(unittest.TestCase):
 
 
     ##
-    # Tests the function @link datadriven.data.DataContainer.DataContainer.getTrainDataset() DataContainer.getTrainDataset() @endlink
+    # Tests the function @link python.data.DataContainer.DataContainer.getTrainDataset() DataContainer.getTrainDataset() @endlink
     def testGetTrainDataset(self):
         c = 0
         trainContainer = self.container.getTrainDataset()
@@ -78,7 +78,7 @@ class TestDataContainer(unittest.TestCase):
 
 
     ##
-    # Tests the function @link datadriven.data.DataContainer.DataContainer.getTestDataset() DataContainer.getTestDataset() @endlink
+    # Tests the function @link python.data.DataContainer.DataContainer.getTestDataset() DataContainer.getTestDataset() @endlink
     def testGetTestDataset(self):
         container = DataContainer(points=self.container.getPoints(), values=self.container.getValues(), name=DataContainer.TEST_CATEGORY)
         c = 0
@@ -96,9 +96,9 @@ class TestDataContainer(unittest.TestCase):
 #    def testNormalize(self):
 #        self.fail("Not implemented")
 
-    
+
     ##
-    # Tests the function @link datadriven.data.DataContainer.DataContainer.combine() DataContainer.combine() @endlink
+    # Tests the function @link python.data.DataContainer.DataContainer.combine() DataContainer.combine() @endlink
     def testCombine(self):
         container = DataContainer(points=self.container.getPoints(), values=self.container.getValues(), name=DataContainer.TEST_CATEGORY)
         self.container = self.container.combine(container)
@@ -107,7 +107,7 @@ class TestDataContainer(unittest.TestCase):
 
 
     ##
-    # Tests the function @link datadriven.data.DataContainer.DataContainer.createNullVector() DataContainer.createNullVector() @endlink
+    # Tests the function @link python.data.DataContainer.DataContainer.createNullVector() DataContainer.createNullVector() @endlink
     def testCreateNullVector(self):
         vector = self.container.createNullVector(self.size, self.dim)
         entry = DataVector(self.dim)
@@ -115,8 +115,8 @@ class TestDataContainer(unittest.TestCase):
             vector.getRow(row, entry)
             for index in xrange(self.dim):
                 self.assertEqual(entry[index], 0)
-        
-        
-        
+
+
+
 if __name__=="__main__":
-    unittest.main()   
+    unittest.main()

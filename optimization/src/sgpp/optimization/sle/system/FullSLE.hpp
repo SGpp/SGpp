@@ -42,7 +42,7 @@ namespace SGPP {
          * @return      whether the (i,j)-th entry of the matrix is non-zero
          */
         inline bool isMatrixEntryNonZero(size_t i, size_t j) {
-          return (A.get(i, j) != 0.0);
+          return (A(i, j) != 0.0);
         }
 
         /**
@@ -51,7 +51,7 @@ namespace SGPP {
          * @return      (i,j)-th entry of the matrix
          */
         inline float_t getMatrixEntry(size_t i, size_t j) {
-          return A.get(i, j);
+          return A(i, j);
         }
 
         /**

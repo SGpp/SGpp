@@ -50,7 +50,7 @@ namespace SGPP {
 
       //Level 2
       l = 2;
-      h = 1 << l;
+      h = static_cast<float_t>(1 << l);
       index.set(dim, 2, 1);
 
       if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim)))

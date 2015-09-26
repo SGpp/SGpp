@@ -15,8 +15,8 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      NLCG::NLCG(ObjectiveFunction& f,
-                 ObjectiveGradient& fGradient,
+      NLCG::NLCG(ScalarFunction& f,
+                 ScalarFunctionGradient& fGradient,
                  size_t maxItCount, float_t beta, float_t gamma,
                  float_t tolerance, float_t epsilon,
                  float_t restartThreshold) :
@@ -100,29 +100,25 @@ namespace SGPP {
             s[t] = beta * s[t] - gradFy[t];
           }
 
-          // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
-
           x = y;
           fx = fy;
           gradFx = gradFy;
           gradFxNorm = gradFyNorm;
+
+          // status printing
+          printer.printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
         }
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;
       }
 
-      ObjectiveGradient& NLCG::getObjectiveGradient() const {
+      ScalarFunctionGradient& NLCG::getObjectiveGradient() const {
         return fGradient;
       }
 

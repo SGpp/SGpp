@@ -1,11 +1,11 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathlocal = os.path.abspath(pathname)
@@ -13,31 +13,31 @@ if pathlocal not in sys.path: sys.path.append(pathlocal)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.LearnerBuilder import LearnerBuilder
-from datadriven.controller import InfoToScreen
-from datadriven.controller import InfoToFile
+from pysgpp.extensions.datadriven.learner.LearnerBuilder import LearnerBuilder
+from pysgpp.extensions.datadriven.controller import InfoToScreen
+from pysgpp.extensions.datadriven.controller import InfoToFile
 
 
 ##
 # @package tests.tbin.test_LearnerBuilder
-# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Contains class test_LearnerBuilder::TestLearnerBuilder with unittests for @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 
 ##
-# Class with unittests for @link datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# Class with unittests for @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
+# @test Unittests for @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink
 class TestLearnerBuilder(unittest.TestCase):
-    
-    
+
+
     ## Set up the variables and
-    # test the functions @link datadriven.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
-    # @link datadriven.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
+    # test the functions @link python.learner.LearnerBuilder.LearnerBuilder.buildClassifier() LearnerBuilder.buildClassifier() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withTrainingDataFromARFFFile() LearnerBuilder.withTrainingDataFromARFFFile() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withStopPolicy() LearnerBuilder.withStopPolicy() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withCGSolver() LearnerBuilder.withCGSolver() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.withProgressPresenter() LearnerBuilder.withProgressPresenter() @endlink
+    # @link python.learner.LearnerBuilder.LearnerBuilder.andGetResult() LearnerBuilder.andGetResult() @endlink
     def setUp(self):
         self.builder = LearnerBuilder()
         self.classifier = self.builder.buildClassifier().withTrainingDataFromARFFFile(pathlocal + "/datasets/classifier.train.arff")\
@@ -66,11 +66,11 @@ class TestLearnerBuilder(unittest.TestCase):
 #        self.classifier.setStopPolicy(stopPolicy)
 #        self.classifier.setSolver(CGSolver())
 
-    
+
 #    def testScreenEventPresentor(self,):
 #        self.classifier.learnDataWithTest()
 
 
-        
+
 if __name__=="__main__":
-    unittest.main() 
+    unittest.main()

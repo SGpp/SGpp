@@ -3,6 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at 
 // sgpp.sparsegrids.org
 
+%{
+#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
+%}
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -21,6 +26,7 @@
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"
 %include "datadriven/src/sgpp/datadriven/application/GaussianKDE.hpp"
+%include "datadriven/src/sgpp/datadriven/application/LearnerSGDE.hpp"
 #endif
 
 %apply std::string *INPUT { std::string& istr };

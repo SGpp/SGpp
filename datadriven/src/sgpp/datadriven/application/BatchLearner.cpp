@@ -53,9 +53,9 @@ namespace SGPP {
 
 
       //cofigure solver
-      if (solverConf.type_ == SGPP::solver::CG)
+      if (solverConf.type_ == SGPP::solver::SLESolverType::CG)
         myCG = new SGPP::solver::ConjugateGradients(solverConf.maxIterations_, solverConf.eps_);
-      else if (solverConf.type_ == SGPP::solver::BiCGSTAB)
+      else if (solverConf.type_ == SGPP::solver::SLESolverType::BiCGSTAB)
         myCG = new SGPP::solver::BiCGStab(solverConf.maxIterations_, solverConf.eps_);
       else //not supported
         throw base::application_exception("BatchLearner: An unsupported SLE solver type was chosen!");
@@ -139,13 +139,13 @@ namespace SGPP {
 
         if (mapData) {
           if (dataInBatch.find(lineClass) == dataInBatch.end())//first data entry for this class in this batch
-            dataInBatch.insert(std::pair<int, DataMatrix*>(lineClass, new DataMatrix(0, dimensions, -1.0)));
+            dataInBatch.insert(std::pair<int, DataMatrix*>(lineClass, new DataMatrix(0, dimensions, float_t(-1.0) )));
 
           //add found data entry to correct DataMatrix in map
           dataInBatch.at(lineClass)->appendRow(lineData);
         } else {
           dataFound.appendRow(lineData);
-          classesFound.append(lineClass);
+          classesFound.append(static_cast<float_t>(lineClass));
         }
       }
     }
@@ -294,7 +294,7 @@ namespace SGPP {
           }
         }
 
-        result[i] = max_index;
+        result[i] = static_cast<float_t>(max_index);
       }
 
       return result;

@@ -32,8 +32,8 @@ namespace SGPP {
     ModWaveletGrid::~ModWaveletGrid() {
     }
 
-    const char* ModWaveletGrid::getType() {
-      return "modWavelet";
+    SGPP::base::GridType ModWaveletGrid::getType() {
+      return SGPP::base::GridType::ModWavelet;
     }
 
     const SBasis& ModWaveletGrid::getBasis() {

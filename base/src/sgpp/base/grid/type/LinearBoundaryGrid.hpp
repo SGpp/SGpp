@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LINEARBOUNDARYGRID_HPP
-#define LINEARBOUNDARYGRID_HPP
+#ifndef LINEARTRUNCATEDBOUNDARYGRID_HPP
+#define LINEARTRUNCATEDBOUNDARYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
 
@@ -17,7 +17,7 @@ namespace SGPP {
   namespace base {
 
     /**
-     * grid with linear base functions with boundaries
+     * grid with linear base functions with boundaries, pentagon cut
      */
     class LinearBoundaryGrid : public Grid {
       protected:
@@ -25,18 +25,25 @@ namespace SGPP {
 
       public:
         /**
-         * Constructor for the Linear Boundary Grid
+         * Constructor Linear Truncated Boundary Grid
          *
          * @param dim the dimension of the grid
          */
         LinearBoundaryGrid(size_t dim);
 
         /**
+         * Constructor Linear Truncated Boundary Grid
+         *
+         * @param BB the BoundingBox of the grid
+         */
+        LinearBoundaryGrid(BoundingBox& BB);
+
+        /**
          * Destructor
          */
         virtual ~LinearBoundaryGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 
@@ -48,4 +55,4 @@ namespace SGPP {
   }
 }
 
-#endif /* LINEARBOUNDARYGRID_HPP */
+#endif /* LINEARTRUNCATEDBOUNDARYGRID_HPP */

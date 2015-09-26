@@ -11,14 +11,14 @@
 namespace SGPP {
   namespace quadrature {
 
-    enum SamplerTypes {
+    enum class SamplerTypes {
       Naive,
       Stratified,
       LatinHypercube,
       Halton
     };
 
-  } /* namespace op_factory */
+  } /* namespace quadrature */
 } /* namespace SGPP */
 
 #endif /* SAMPLERTYPES_HPP_ */

@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef BOUNDARYGRIDGENERATOR_HPP
-#define BOUNDARYGRIDGENERATOR_HPP
+#ifndef TRUNCATEDBOUNDARYGRIDGENERATOR_HPP
+#define TRUNCATEDBOUNDARYGRIDGENERATOR_HPP
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
@@ -17,7 +17,7 @@ namespace SGPP {
 
     /**
      * This class provides the interface for the grid generation
-     * for grids with boundaries, diagonal cut through sub space scheme
+     * for grids with boundaries, pentagon cut through sub space scheme
      */
     class BoundaryGridGenerator : public GridGenerator {
       public:
@@ -54,4 +54,4 @@ namespace SGPP {
   }
 }
 
-#endif /* BOUNDARYGRIDGEMERATOR_HPP */
+#endif /* TRUNCATEDBOUNDARYGRIDGENERATOR_HPP */

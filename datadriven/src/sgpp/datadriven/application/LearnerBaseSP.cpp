@@ -22,7 +22,7 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../../../base/src/sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp"
+#include "../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
 
 
 namespace SGPP {
@@ -84,11 +84,11 @@ namespace SGPP {
     }
 
     void LearnerBaseSP::InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig) {
-      if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
-        grid_ = new SGPP::base::LinearTruncatedBoundaryGrid(GridConfig.dim_);
-      } else if (GridConfig.type_ == SGPP::base::ModLinear) {
+      if (GridConfig.type_ == SGPP::base::GridType::LinearBoundary) {
+        grid_ = new SGPP::base::LinearBoundaryGrid(GridConfig.dim_);
+      } else if (GridConfig.type_ == SGPP::base::GridType::ModLinear) {
         grid_ = new SGPP::base::ModLinearGrid(GridConfig.dim_);
-      } else if (GridConfig.type_ == SGPP::base::Linear) {
+      } else if (GridConfig.type_ == SGPP::base::GridType::Linear) {
         grid_ = new SGPP::base::LinearGrid(GridConfig.dim_);
       } else {
         grid_ = NULL;
@@ -121,7 +121,7 @@ namespace SGPP {
                                        const SGPP::base::RegularGridConfiguration& GridConfig,
                                        const SGPP::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                        const SGPP::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                                       const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float lambda) {
+                                       const SGPP::base::AdpativityConfiguration& AdaptConfig, const bool testAccDuringAdapt, const float lambdaRegularization) {
       LearnerTiming result;
 
       if (trainDataset.getNrows() != classes.getSize()) {
@@ -160,7 +160,7 @@ namespace SGPP {
         return result;
 
       // create DMSystem
-      SGPP::datadriven::DMSystemMatrixBaseSP* DMSystem = createDMSystem(trainDataset, lambda);
+      SGPP::datadriven::DMSystemMatrixBaseSP* DMSystem = createDMSystem(trainDataset, lambdaRegularization);
 
       // check if System was created
       if (DMSystem == NULL)
@@ -168,9 +168,9 @@ namespace SGPP {
 
       SGPP::solver::SLESolverSP* myCG;
 
-      if (SolverConfigRefine.type_ == SGPP::solver::CG) {
+      if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
         myCG = new SGPP::solver::ConjugateGradientsSP(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
-      } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
+      } else if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
         myCG = new SGPP::solver::BiCGStabSP(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
       } else {
         throw base::application_exception("LearnerBaseSP::train: An unsupported SLE solver type was chosen!");
@@ -294,7 +294,7 @@ namespace SGPP {
 
     LearnerTiming LearnerBaseSP::train(SGPP::base::DataMatrixSP& trainDataset, SGPP::base::DataVectorSP& classes,
                                        const SGPP::base::RegularGridConfiguration& GridConfig, const SGPP::solver::SLESolverSPConfiguration& SolverConfig,
-                                       const float lambda) {
+                                       const float lambdaRegularization) {
       SGPP::base::AdpativityConfiguration AdaptConfig;
 
       AdaptConfig.maxLevelType_ = false;
@@ -303,7 +303,7 @@ namespace SGPP {
       AdaptConfig.percent_ = 0.0;
       AdaptConfig.threshold_ = 0.0;
 
-      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambda);
+      return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false, lambdaRegularization);
     }
 
     SGPP::base::DataVectorSP LearnerBaseSP::predict(SGPP::base::DataMatrixSP& testDataset) {

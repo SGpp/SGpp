@@ -15,7 +15,7 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
@@ -27,49 +27,32 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ObjectiveFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
-      IterativeGridGenerator(f, grid, N),
-      gamma(adaptivity) {
-      if ((std::strcmp(grid.getType(),
-                       "bspline") == 0) ||
-          (std::strcmp(grid.getType(),
-                       "wavelet") == 0) ||
-          (std::strcmp(grid.getType(),
-                       "linear") == 0) ||
-          (std::strcmp(grid.getType(),
-                       "fundamentalSpline") == 0)) {
+      ScalarFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
+      IterativeGridGenerator(f, grid, N), gamma(adaptivity) {
+      if ((grid.getType() == base::GridType::Bspline)
+          || (grid.getType() == base::GridType::Wavelet)
+          || (grid.getType() == base::GridType::Linear)
+          || (grid.getType() == base::GridType::FundamentalSpline)) {
         linearGrid = std::unique_ptr<base::Grid>(
                        new base::LinearGrid(f.getDimension()));
-      } else if ((std::strcmp(grid.getType(),
-                              "bsplineTruncatedBoundary") == 0) ||
-                 (std::strcmp(grid.getType(),
-                              "waveletTruncatedBoundary") == 0) ||
-                 (std::strcmp(grid.getType(),
-                              "linearTruncatedBoundary") == 0)) {
+      } else if ((grid.getType() == base::GridType::BsplineBoundary)
+                 || (grid.getType() == base::GridType::WaveletBoundary)
+                 || (grid.getType() == base::GridType::LinearBoundary)) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::LinearTruncatedBoundaryGrid(
-                         f.getDimension()));
-      } else if ((std::strcmp(grid.getType(),
-                              "bsplineClenshawCurtis") == 0) ||
-                 (std::strcmp(grid.getType(),
-                              "linearClenshawCurtis") == 0)) {
+                       new base::LinearBoundaryGrid(f.getDimension()));
+      } else if ((grid.getType() == base::GridType::BsplineClenshawCurtis)
+                 || (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         linearGrid = std::unique_ptr<base::Grid>(
                        new base::LinearClenshawCurtisGrid(f.getDimension()));
-      } else if ((std::strcmp(grid.getType(),
-                              "modBspline") == 0) ||
-                 (std::strcmp(grid.getType(),
-                              "modWavelet") == 0) ||
-                 (std::strcmp(grid.getType(),
-                              "modlinear") == 0) ||
-                 (std::strcmp(grid.getType(),
-                              "modFundamentalSpline") == 0)) {
+      } else if ((grid.getType() == base::GridType::ModBspline)
+                 || (grid.getType() == base::GridType::ModWavelet)
+                 || (grid.getType() == base::GridType::ModLinear)
+                 || (grid.getType() == base::GridType::ModFundamentalSpline)) {
         linearGrid = std::unique_ptr<base::Grid>(
                        new base::ModLinearGrid(f.getDimension()));
-      } else if (std::strcmp(grid.getType(),
-                             "modBsplineClenshawCurtis") == 0) {
+      } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::ModBsplineClenshawCurtisGrid(
-                         f.getDimension(), 1));
+                       new base::ModBsplineClenshawCurtisGrid(f.getDimension(), 1));
       } else {
         throw std::invalid_argument("Grid type not supported.");
       }
@@ -86,22 +69,22 @@ namespace SGPP {
     bool IterativeGridGeneratorLinearSurplus::generate() {
       printer.printStatusBegin("Adaptive grid generation (linear surplus)...");
 
-      base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
+      base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
 
-      if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
+      if ((grid.getType() == base::GridType::BsplineClenshawCurtis)
+          || (grid.getType() == base::GridType::ModBsplineClenshawCurtis)
+          || (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         // Clenshaw-Curtis grid
-        distr = base::GridIndex::ClenshawCurtis;
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
       }
 
       std::unique_ptr<base::AbstractRefinement> abstractRefinement;
 
-      if ((std::strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) ||
-          (std::strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) ||
-          (std::strcmp(grid.getType(), "linearTruncatedBoundary") == 0) ||
-          (std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
+      if ((grid.getType() == base::GridType::BsplineBoundary)
+          || (grid.getType() == base::GridType::WaveletBoundary)
+          || (grid.getType() == base::GridType::LinearBoundary)
+          || (grid.getType() == base::GridType::BsplineClenshawCurtis)
+          || (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         // grid with boundaries
         abstractRefinement = std::unique_ptr<base::AbstractRefinement>(
                                new base::HashRefinementBoundaries());
@@ -125,8 +108,7 @@ namespace SGPP {
 
       // generate initial grid
       {
-        std::unique_ptr<base::GridGenerator> gridGen(
-          grid.createGridGenerator());
+        std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
         gridGen->regular(3);
       }
 
@@ -143,7 +125,7 @@ namespace SGPP {
 
       for (size_t i = 0; i < currentN; i++) {
         // set correct point distribution
-        gridStorage.get(i)->setPointDistribution(distr);
+        gridStorage[i]->setPointDistribution(distr);
       }
 
       // parallel evaluation of f in the initial grid points
@@ -184,22 +166,19 @@ namespace SGPP {
         {
           char str[10];
           snprintf(str, 10, "%.1f%%",
-                   static_cast<float_t>(currentN) /
-                   static_cast<float_t>(N) * 100.0);
-          printer.printStatusUpdate(std::string(str) +
-                                    " (N = " + std::to_string(currentN) + ")");
+                   static_cast<float_t>(currentN) / static_cast<float_t>(N) * 100.0);
+          printer.printStatusUpdate(
+            std::string(str) + " (N = " + std::to_string(currentN) + ")");
         }
 
         // calculate number of points to be refined
-        refinablePtsCount =
-          abstractRefinement->getNumberOfRefinablePoints(&gridStorage);
-        ptsToBeRefinedCount =
-          static_cast<int>(1.0 + refineFactor * gamma *
-                           static_cast<float_t>(refinablePtsCount));
+        refinablePtsCount = abstractRefinement->getNumberOfRefinablePoints(
+                              &gridStorage);
+        ptsToBeRefinedCount = static_cast<int>(1.0
+                                               + refineFactor * gamma * static_cast<float_t>(refinablePtsCount));
 
         // refine
-        base::SurplusRefinementFunctor refineFunc(&coeffs,
-            ptsToBeRefinedCount);
+        base::SurplusRefinementFunctor refineFunc(&coeffs, ptsToBeRefinedCount);
         abstractRefinement->free_refine(&gridStorage, &refineFunc);
 
         // new grid size
@@ -232,7 +211,7 @@ namespace SGPP {
         for (size_t i = currentN; i < newN; i++) {
           // set point distribution accordingly to
           // normal/Clenshaw-Curtis grids
-          gridStorage.get(i)->setPointDistribution(distr);
+          gridStorage[i]->setPointDistribution(distr);
         }
 
         // evaluation of f in the new grid points
@@ -257,8 +236,7 @@ namespace SGPP {
       fX.resize(currentN);
 
       if (result) {
-        printer.printStatusUpdate("100.0% (N = " +
-                                  std::to_string(currentN) + ")");
+        printer.printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ")");
         printer.printStatusEnd();
         return true;
       } else {

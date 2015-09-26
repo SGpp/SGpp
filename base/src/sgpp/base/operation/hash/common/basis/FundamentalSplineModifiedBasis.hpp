@@ -311,7 +311,8 @@ namespace SGPP {
           }
 
           const size_t p = bsplineBasis.getDegree();
-          const float_t t = x * hInv + static_cast<float_t>(p);
+          const float_t t = x * static_cast<float_t>(hInv) +
+                            static_cast<float_t>(p);
 
           /*float_t y = 0.0;
 
@@ -366,7 +367,7 @@ namespace SGPP {
           }
 
           const size_t p = bsplineBasis.getDegree();
-          const float_t t = x * hInv + static_cast<float_t>(p);
+          const float_t t = x * hInvDbl + static_cast<float_t>(p);
 
           /*float_t y = 0.0;
 
@@ -420,7 +421,7 @@ namespace SGPP {
           }
 
           const size_t p = bsplineBasis.getDegree();
-          const float_t t = x * hInv + static_cast<float_t>(p);
+          const float_t t = x * hInvDbl + static_cast<float_t>(p);
 
           /*float_t y = 0.0;
 

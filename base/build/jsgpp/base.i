@@ -16,8 +16,9 @@ const bool USING_DOUBLE_PRECISION;
 
 namespace std {
     %template(DoubleVector) vector<double>;
-    %template(IndexValPair) pair<size_t, double>;
-    %template(IndexValVector) vector<pair<size_t, double> >;
+    %template(FloatVector) vector<float>;
+    %template(IndexValPair) pair<size_t, SGPP::float_t>;
+    %template(IndexValVector) vector<pair<size_t, SGPP::float_t> >;
     %template(SizeTVector) vector<size_t>;
 }
 
@@ -31,10 +32,12 @@ namespace std {
 %rename(operatorAssignment) SGPP::base::DataVectorSP::operator=;
 %rename(operatorAssignment) SGPP::base::DataMatrix::operator=;
 %rename(operatorAssignment) SGPP::base::DataMatrixSP::operator=;
-%rename(operatorSquareBrackets) SGPP::base::DataVector::operator[];
-%rename(operatorSquareBrackets) SGPP::base::DataVectorSP::operator[];
-%rename(operatorSquareBrackets) SGPP::base::DataMatrix::operator[];
-%rename(operatorSquareBrackets) SGPP::base::DataMatrixSP::operator[];
+%ignore SGPP::base::DataVector::operator[];
+%ignore SGPP::base::DataVectorSP::operator[];
+%ignore SGPP::base::DataMatrix::operator[];
+%ignore SGPP::base::DataMatrixSP::operator[];
+%ignore SGPP::base::DataMatrix::operator();
+%ignore SGPP::base::DataMatrixSP::operator();
 %include "base/src/sgpp/base/datatypes/DataVectorDefinition.hpp"
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"
@@ -54,7 +57,7 @@ namespace std {
 %rename(operatorParentheses) SGPP::base::HashGridIndexHashFunctor::operator();
 %rename(operatorParentheses) SGPP::base::HashGridIndexEqualityFunctor::operator();
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIndex.hpp"
-%rename(operatorSquareBrackets) SGPP::base::HashGridStorage::operator[];
+%ignore SGPP::base::HashGridStorage::operator[];
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridStorage.hpp"
 %include "base/src/sgpp/base/grid/storage/hashmap/HashGridIterator.hpp"
 %include "base/src/sgpp/base/grid/GridStorage.hpp"
@@ -100,11 +103,11 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
 %include "base/src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
-%include "base/src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
+%include "base/src/sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
-%include "base/src/sgpp/base/grid/generation/StretchedTruncatedBoundaryGridGenerator.hpp"
-%include "base/src/sgpp/base/grid/generation/TruncatedBoundaryGridGenerator.hpp"
+%include "base/src/sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp"
+%include "base/src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"

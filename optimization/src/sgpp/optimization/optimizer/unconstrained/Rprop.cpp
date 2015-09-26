@@ -13,8 +13,8 @@ namespace SGPP {
     namespace optimizer {
 
       Rprop::Rprop(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t initialStepSize,
@@ -91,8 +91,8 @@ namespace SGPP {
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // take difference between old and new x
           xOld.sub(x);
@@ -114,16 +114,12 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fx = f.eval(x);
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
         printer.printStatusEnd();
 
         return fx;
       }
 
-      ObjectiveGradient& Rprop::getObjectiveGradient() const {
+      ScalarFunctionGradient& Rprop::getObjectiveGradient() const {
         return fGradient;
       }
 

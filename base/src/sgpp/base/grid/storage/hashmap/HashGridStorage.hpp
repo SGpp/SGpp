@@ -48,6 +48,8 @@ namespace SGPP {
         typedef HashGridIndex index_type;
         /// pointer to index_type
         typedef HashGridIndex* index_pointer;
+        /// pointer to constant index_type
+        typedef const HashGridIndex* index_const_pointer;
         /// unordered_map of index_pointers
         typedef std::unordered_map<index_pointer, size_t, HashGridIndexPointerHashFunctor, HashGridIndexPointerEqualityFunctor > grid_map;
         /// iterator of grid_map
@@ -187,24 +189,23 @@ namespace SGPP {
         size_t dim() const;
 
         /**
-         * gets the sequence number for given gridpoint by its index
+         * gets the index number for given gridpoint by its sequence number
          *
-         * @param index gridindex object
+         * @param seq the sequence number of the index
          *
-         * @return sequence number of the given index
+         * @return gridindex object (pointer)
          */
-        inline size_t& operator[](index_pointer index) {
-          return map[index];
+        inline index_pointer operator[](size_t seq) {
+          return list[seq];
         }
 
         /**
          * gets the index number for given gridpoint by its sequence number
          *
          * @param seq the sequence number of the index
-         *
-         * @return gridindex object (reference)
+         * @return gridindex object (constant pointer)
          */
-        inline index_pointer& operator[](size_t seq) {
+        inline index_const_pointer operator[](size_t seq) const {
           return list[seq];
         }
 
@@ -215,7 +216,7 @@ namespace SGPP {
          *
          * @return gridindex object (pointer)
          */
-        inline HashGridIndex* get(size_t seq) const {
+        inline index_pointer get(size_t seq) const {
           return list[seq];
         }
 
@@ -419,6 +420,16 @@ namespace SGPP {
 
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
+         * with modification to speed up iterative function evaluation. The Level
+         * array won't contain the levels, it contains the level to the power of two
+         *
+         * @param level DataMatrix to store the grid's level to the power of two
+         * @param index DataMatrix to store the grid's indices
+         */
+        void getLevelIndexArraysForEval(DataMatrixSP& level, DataMatrixSP& index);
+
+        /**
+         * Converts this storage from AOS (array of structures) to SOA (structure of array)
          * with modification to speed up iterative Laplace Calculations: the level
          * won't contain the levels, it contains 2 to the neagative power of the level.
          *
@@ -431,7 +442,6 @@ namespace SGPP {
          * returns the max. depth in all dimension of the grid
          */
         size_t getMaxLevel() const;
-
 
         /**
          * Converts this storage from AOS (array of structures) to SOA (structure of array)
@@ -447,6 +457,21 @@ namespace SGPP {
          */
         void getLevelIndexMaskArraysForModEval(DataMatrix& level, DataMatrix& index,
                                                DataMatrix& mask, DataMatrix& offset);
+
+        /**
+         * Converts this storage from AOS (array of structures) to SOA (structure of array)
+         * with modification to speed up iterative function evaluation. The Level
+         * array won't contain the levels, it contains the level to the power of two.
+         *
+         * The returned format is only useful for a multi-evaluation of modlinear grids
+         *
+         * @param level DataMatrixSP to store the grid's level to the power of two
+         * @param index DataMatrixSP to store the grid's indices
+         * @param mask DataMatrixSP to store masks of operations
+         * @param offset DataMatrixSP to store offset for operations
+         */
+        void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
+                                               DataMatrixSP& mask, DataMatrixSP& offset);
 
       protected:
         /**

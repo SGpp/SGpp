@@ -4,7 +4,7 @@ sgpp.LoadJSGPPLib.loadJSGPPLib();
 % (interferes with SWIG's director feature)
 sgpp.jsgpp.omp_set_num_threads(1);
 % increase output verbosity
-printer = sgpp.jsgpp.getOptPrinterInstance()
+printer = sgpp.jsgpp.getOptPrinterInstance();
 printer.setVerbosity(2);
 printLine = @() fprintf(['----------------------------------------' ...
                          '----------------------------------------\n']);
@@ -51,8 +51,8 @@ end
 
 printLine();
 fprintf('Optimizing smooth interpolant...\n\n');
-ft = sgpp.OptInterpolantFunction(grid, coeffs);
-ftGradient = sgpp.OptInterpolantGradient(grid, coeffs);
+ft = sgpp.OptInterpolantScalarFunction(grid, coeffs);
+ftGradient = sgpp.OptInterpolantScalarFunctionGradient(grid, coeffs);
 gradientMethod = sgpp.OptGradientDescent(ft, ftGradient);
 x0 = sgpp.DataVector(d);
 

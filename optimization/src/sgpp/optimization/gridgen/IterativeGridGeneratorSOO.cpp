@@ -17,10 +17,9 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(
-      ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t adaptivity, size_t maxLevel) :
-      IterativeGridGenerator(f, grid, N),
-      maxLevel(maxLevel) {
+      ScalarFunction& f, base::Grid& grid, size_t N,
+      float_t adaptivity) :
+      IterativeGridGenerator(f, grid, N) {
       setAdaptivity(adaptivity);
     }
 
@@ -40,29 +39,21 @@ namespace SGPP {
       hMax = adaptivity;
     }
 
-    size_t IterativeGridGeneratorSOO::getMaxLevel() const {
-      return maxLevel;
-    }
-
-    void IterativeGridGeneratorSOO::setMaxLevel(size_t maxLevel) {
-      this->maxLevel = maxLevel;
-    }
-
     bool IterativeGridGeneratorSOO::generate() {
       printer.printStatusBegin("Adaptive grid generation (SOO)...");
 
       bool result = true;
-      base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
+      base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
       base::GridStorage& gridStorage = *grid.getStorage();
       const size_t d = f.getDimension();
 
       HashRefinementMultiple refinement;
 
-      if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
+      if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
+          grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
+          grid.getType() == base::GridType::LinearClenshawCurtis) {
         // Clenshaw-Curtis grid
-        distr = base::GridIndex::ClenshawCurtis;
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
       }
 
       // generate initial grid
@@ -89,7 +80,7 @@ namespace SGPP {
       fX.resize(N);
 
       {
-        base::GridIndex& gp = *gridStorage.get(0);
+        base::GridIndex& gp = *gridStorage[0];
         base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
@@ -166,7 +157,7 @@ namespace SGPP {
             refinementAlpha[iBest] = 0.0;
 
             for (size_t i = currentN; i < newN; i++) {
-              base::GridIndex& gp = *gridStorage.get(i);
+              base::GridIndex& gp = *gridStorage[i];
               // set point distribution accordingly to
               // normal/Clenshaw-Curtis grids
               gp.setPointDistribution(distr);

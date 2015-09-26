@@ -118,7 +118,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModLinearWithBoundary) {
 
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createModLinearGrid(dim);
-    testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12);
+#if USE_DOUBLE_PRECISION
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12, true);
+#else
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4, true);
+#endif
   }
 }
 
@@ -126,8 +130,12 @@ BOOST_AUTO_TEST_CASE(testHierarchisationTruncatedBoundary) {
   int level = 5;
 
   for (int dim = 1; dim < 4; dim++) {
-    Grid* grid = Grid::createLinearTruncatedBoundaryGrid(dim);
-    testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12);
+    Grid* grid = Grid::createLinearBoundaryGrid(dim);
+#if USE_DOUBLE_PRECISION
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12, true);
+#else
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4, true);
+#endif
   }
 }
 
@@ -135,8 +143,12 @@ BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
   int level = 5;
 
   for (int dim = 1; dim < 4; dim++) {
-    Grid* grid = Grid::createLinearBoundaryGrid(dim);
-    testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12);
+    Grid* grid = Grid::createLinearBoundaryGrid(dim, 0);
+#if USE_DOUBLE_PRECISION
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
+#else
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4 );
+#endif
   }
 }
 
@@ -145,7 +157,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPrewavelet) {
 
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createPrewaveletGrid(dim);
-    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12);
+#if USE_DOUBLE_PRECISION
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
+#else
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-3 );
+#endif
   }
 }
 
@@ -155,7 +171,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSpline) {
   for (int dim = 1; dim < 4; dim++) {
     for (int degree = 1; degree < 6; degree += 2) {
       Grid* grid = Grid::createFundamentalSplineGrid(dim, degree);
+#if USE_DOUBLE_PRECISION
       testHierarchisationDehierarchisation(grid, level, &parabola, 1e-9, true);
+#else
+      testHierarchisationDehierarchisation(grid, level, &parabola, 0.01, true);
+#endif
     }
   }
 }
@@ -166,7 +186,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModFundamentalSpline) {
   for (int dim = 1; dim < 4; dim++) {
     for (int degree = 1; degree < 6; degree += 2) {
       Grid* grid = Grid::createModFundamentalSplineGrid(dim, degree);
+#if USE_DOUBLE_PRECISION
       testHierarchisationDehierarchisation(grid, level, &parabola, 1e-9, true);
+#else
+      testHierarchisationDehierarchisation(grid, level, &parabola, 0.01, true);
+#endif
     }
   }
 }
@@ -189,7 +213,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
 
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
-      Grid* grid = Grid::createPolyTruncatedBoundaryGrid(dim, degree[i]);
+      Grid* grid = Grid::createPolyBoundaryGrid(dim, degree[i]);
       testHierarchisationDehierarchisation(grid, level, &parabola, 0.0, true);
     }
   }
@@ -206,9 +230,13 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   dimBound->leftBoundary = 0.00001;
   dimBound->rightBoundary = 1.;
   Stretching stretch(dim, dimBound, str1d);
-  Grid* grid = Grid::createLinearStretchedTruncatedBoundaryGrid(dim);
+  Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
+#if USE_DOUBLE_PRECISION == 1
   testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-13, false, true);
+#else
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4, false, true);
+#endif
   delete str1d;
   delete dimBound;
 }
@@ -234,9 +262,13 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   dimBound_vec.push_back(dimBound);
 
   Stretching stretch(dim, dimBound_vec, stretch_vec);
-  Grid* grid = Grid::createLinearStretchedTruncatedBoundaryGrid(dim);
+  Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
+#if USE_DOUBLE_PRECISION == 1
   testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12, false, true);
+#else
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4, false, true);
+#endif
 }
 
 BOOST_AUTO_TEST_SUITE_END()

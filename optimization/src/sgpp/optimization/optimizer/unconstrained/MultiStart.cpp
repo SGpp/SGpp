@@ -17,7 +17,7 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      MultiStart::MultiStart(ObjectiveFunction& f,
+      MultiStart::MultiStart(ScalarFunction& f,
                              size_t maxFcnEvalCount,
                              size_t populationSize) :
         UnconstrainedOptimizer(f, maxFcnEvalCount),
@@ -91,7 +91,7 @@ namespace SGPP {
             curOptimizerPtr->setN(roundN[k]);
             curOptimizerPtr->optimize(curXOpt);
 
-            curFOpt = curOptimizerPtr->getObjectiveFunction().eval(curXOpt);
+            curFOpt = curOptimizerPtr->getScalarFunction().eval(curXOpt);
 
             #pragma omp critical
             {

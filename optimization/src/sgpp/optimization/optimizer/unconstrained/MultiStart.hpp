@@ -36,7 +36,7 @@ namespace SGPP {
            * @param populationSize  number of individual points
            *                        (default: \f$\min(10d, 100)\f$)
            */
-          MultiStart(ObjectiveFunction& f,
+          MultiStart(ScalarFunction& f,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      size_t populationSize = 0);
 

@@ -6,6 +6,7 @@ import os
 
 Import('env')
 Import('BUILD_DIR')
+Import('PYSGPP_PACKAGE_PATH')
 Import('PYSGPP_BUILD_PATH')
 Import('moduleFolders')
 Import('moduleName')
@@ -20,20 +21,70 @@ py_env = env.Clone()
 
 py_env.AppendUnique(CPPFLAGS=['-w'])
 if env['PLATFORM'] == 'cygwin':
-    py_env.Append(LIBS=['python2.7'])    
+    py_env.Append(LIBS=['python2.7'])
 elif env['PLATFORM'] == 'darwin':
     py_env['SHLIBSUFFIX'] = '.so'
 
 # build python module with swig
 py_env.AppendUnique(SWIGFLAGS=['-c++', '-python', '-fvirtual'] + ['-D' + c for c in py_env['CPPDEFINES']])
-libPython = py_env.SharedLibrary(target='pysgpp',
-                     source=["pysgpp.i"],
-                     SHLIBPREFIX='_',
-                     LIBPATH=[BUILD_DIR],
-                     LIBS=['sgpp' + moduleFolder for moduleFolder in moduleFolders])
+
+if not py_env['USE_DOUBLE_PRECISION']:
+    py_env.AppendUnique(SWIGFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
+
+libPython = py_env.SharedLibrary(target='pysgpp_swig',
+                                 source=["pysgpp.i"],
+                                 SHLIBPREFIX='_',
+                                 LIBPATH=[BUILD_DIR],
+                                 LIBS=['sgpp' + moduleFolder
+                                       for moduleFolder in moduleFolders
+                                       if env['SG_' + moduleFolder.upper()]])
 # TODO libs are set hacky!
 
+# install python libraries routine
+def setupPython(target, source, env):
+    # read all modules which have a python extension
+    pythonModuleFolders = [moduleFolder
+                           for moduleFolder in moduleFolders
+                           if os.path.exists(os.path.join(moduleFolder, "python"))]
+
+    # create folder for extensions if it doesn't already exist
+    extensionsPath = os.path.join(PYSGPP_BUILD_PATH.abspath, "extensions")
+    if not os.path.exists(extensionsPath):
+        os.makedirs(extensionsPath)
+
+    # create symlinks in extensions folder of pysgpp
+    for pythonModuleFolder in pythonModuleFolders:
+        src = Dir(os.path.join(env['OUTPUT_PATH'],
+                               pythonModuleFolder,
+                               "python")).abspath
+        dst = os.path.join(extensionsPath, pythonModuleFolder)
+        if not os.path.exists(dst):
+            if os.path.lexists(dst):
+                os.remove(dst)
+            os.symlink(src, dst)
+
+    # create __init__.py file which imports all the extensions
+    fd = open(os.path.join(extensionsPath, "__init__.py"), "w")
+    for pythonModuleFolder in pythonModuleFolders:
+        fd.write("import %s%s" % (pythonModuleFolder, os.linesep))
+    fd.close()
+
+    # create __init__.py file which imports the extension package and the
+    # pysgpp_swig module
+    fd = open(os.path.join(PYSGPP_BUILD_PATH.abspath, "__init__.py"), "w")
+    fd.write("from pysgpp_swig import *%s" % os.linesep)
+    fd.write("import extensions%s" % os.linesep)
+    fd.close()
+
+    # create__init__.py file which makes the lib folder a python package
+    # -> this is the root for the pysgpp package
+    fd = open(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "__init__.py"), "w")
+    fd.close()
+
+moduleSetupPython = env.Command('setupPython', [], setupPython)
+
 installLibPython = py_env.Install(PYSGPP_BUILD_PATH, libPython)
-installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp.py")
+installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")
 py_env.Depends(installLibPython, installLibWrapperPython)
+py_env.Depends(moduleSetupPython, installLibWrapperPython)
 installTargetList.append(installLibPython)

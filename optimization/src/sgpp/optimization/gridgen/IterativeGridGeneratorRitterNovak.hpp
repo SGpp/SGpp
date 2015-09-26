@@ -10,6 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
 namespace SGPP {
@@ -55,11 +56,11 @@ namespace SGPP {
          *                      but only approximative)
          */
         IterativeGridGeneratorRitterNovak(
-          ObjectiveFunction& f,
+          ScalarFunction& f,
           base::Grid& grid,
           size_t N,
           float_t adaptivity = DEFAULT_ADAPTIVITY,
-          size_t maxLevel = DEFAULT_MAX_LEVEL,
+          base::level_t maxLevel = DEFAULT_MAX_LEVEL,
           PowMethod powMethod = STD_POW);
 
         /**
@@ -82,18 +83,28 @@ namespace SGPP {
         /**
          * @return          maximal level of grid points
          */
-        size_t getMaxLevel() const;
+        base::level_t getMaxLevel() const;
 
         /**
          * @param maxLevel  maximal level of grid points
          */
-        void setMaxLevel(size_t maxLevel);
+        void setMaxLevel(base::level_t maxLevel);
+
+        /**
+         * @return          exponentiation method
+         */
+        PowMethod getPowMethod() const;
+
+        /**
+         * @param powMethod exponentiation method
+         */
+        void setPowMethod(PowMethod powMethod);
 
       protected:
         /// adaptivity
         float_t gamma;
         /// maximal level of grid points
-        size_t maxLevel;
+        base::level_t maxLevel;
         /// exponentiation method
         PowMethod powMethod;
     };

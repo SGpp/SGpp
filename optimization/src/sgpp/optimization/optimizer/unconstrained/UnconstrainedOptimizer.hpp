@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -35,7 +35,7 @@ namespace SGPP {
            * @param N     maximal number of iterations or function evaluations
            *              (depending on the implementation)
            */
-          UnconstrainedOptimizer(ObjectiveFunction& f, size_t N = DEFAULT_N) :
+          UnconstrainedOptimizer(ScalarFunction& f, size_t N = DEFAULT_N) :
             f(f), N(N), x0(f.getDimension(), 0.5) {
           }
 
@@ -56,7 +56,7 @@ namespace SGPP {
           /**
            * @return objective function
            */
-          ObjectiveFunction& getObjectiveFunction() const {
+          ScalarFunction& getObjectiveFunction() const {
             return f;
           }
 
@@ -90,7 +90,7 @@ namespace SGPP {
 
         protected:
           /// objective function
-          ObjectiveFunction& f;
+          ScalarFunction& f;
           /// maximal number of iterations or function evaluations
           size_t N;
           /// starting point

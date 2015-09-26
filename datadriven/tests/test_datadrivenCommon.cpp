@@ -83,8 +83,9 @@ DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
     float_t floatValue;
 
     for (size_t i = 0; i < storage->size(); i++) {
-      curFind = line.find(" ", curPos);
+      curFind = line.find_first_of(" \t", curPos);
       curValue = line.substr(curPos, curFind - curPos);
+
       floatValue = boost::lexical_cast<float_t>(curValue);
       m->set(currentRow, i, floatValue);
       curPos = curFind + 1;

@@ -46,7 +46,7 @@ namespace SGPP {
                   index_one.set(dim, 0, 1);
 
                   if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-                    result[(*storage)[&index_one]] += ((-1.0 * Qqout) * alpha[i]);
+                    result[storage->seq(&index_one)] += ((-1.0 * Qqout) * alpha[i]);
                   }
                 }
               }
@@ -83,7 +83,7 @@ namespace SGPP {
                   index_one.set(dim, 0, 1);
 
                   if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-                    result[(*storage)[&index_one]] += ((-1.0) * alpha[i]);
+                    result[storage->seq(&index_one)] += ((-1.0) * alpha[i]);
                   }
                 }
               }

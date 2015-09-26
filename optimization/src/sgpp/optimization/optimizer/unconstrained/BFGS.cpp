@@ -13,8 +13,8 @@ namespace SGPP {
     namespace optimizer {
 
       BFGS::BFGS(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -50,7 +50,7 @@ namespace SGPP {
 
         for (size_t i = 0; i < d; i++) {
           for (size_t j = 0; j < d; j++) {
-            inverseHessian.set(i, j, (i == j ? 1.0 : 0.0));
+            inverseHessian(i, j) = (i == j ? 1.0 : 0.0);
           }
         }
 
@@ -77,7 +77,7 @@ namespace SGPP {
             dir[i] = 0.0;
 
             for (size_t j = 0; j < d; j++) {
-              dir[i] -= inverseHessian.get(i, j) * gradFx[j];
+              dir[i] -= inverseHessian(i, j) * gradFx[j];
             }
           }
 
@@ -143,8 +143,7 @@ namespace SGPP {
           if (deltaTimesY != 0.0) {
             for (size_t i = 0; i < d; i++) {
               for (size_t j = 0; j < d; j++) {
-                M.set(i, j, (i == j ? 1.0 : 0.0) -
-                      y[i] * delta[j] / deltaTimesY);
+                M(i, j) = (i == j ? 1.0 : 0.0) - y[i] * delta[j] / deltaTimesY;
               }
             }
 
@@ -154,12 +153,11 @@ namespace SGPP {
 
                 for (size_t p = 0; p < d; p++) {
                   for (size_t q = 0; q < d; q++) {
-                    entry +=
-                      M.get(p, i) * inverseHessian.get(p, q) * M.get(q, j);
+                    entry += M(p, i) * inverseHessian(p, q) * M(q, j);
                   }
                 }
 
-                inverseHessianNew.set(i, j, entry);
+                inverseHessianNew(i, j) = entry;
               }
             }
 
@@ -168,8 +166,8 @@ namespace SGPP {
 
           // status printing
           printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // stopping criterion:
           // stop if delta is smaller than tolerance theta
@@ -187,16 +185,12 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));;
         printer.printStatusEnd();
 
         return fx;
       }
 
-      ObjectiveGradient& BFGS::getObjectiveGradient() const {
+      ScalarFunctionGradient& BFGS::getObjectiveGradient() const {
         return fGradient;
       }
 
