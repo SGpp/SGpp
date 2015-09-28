@@ -58,10 +58,16 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
-      float_t Newton::optimize(base::DataVector& xOpt) {
+      void Newton::optimize() {
         printer.printStatusBegin("Optimizing (Newton)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
         float_t fx = NAN;
 
@@ -81,6 +87,11 @@ namespace SGPP {
           // calculate gradient, Hessian and gradient norm
           fx = fHessian.eval(x, gradFx, hessianFx);
           k++;
+
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           const float_t gradFxNorm = gradFx.l2Norm();
 
@@ -141,13 +152,14 @@ namespace SGPP {
           }
 
           x = y;
+          xHist.appendRow(x);
+          fHist.append(fx);
         }
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionHessian& Newton::getObjectiveHessian() const {

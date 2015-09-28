@@ -342,8 +342,6 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
                                      new optimizer::CMAES(*curF, N))));
 
     for (auto& optimizer : optimizers) {
-      base::DataVector xOpt(0);
-
       // set starting point
       base::DataVector x0(2);
       x0[0] = 0.8;
@@ -351,7 +349,9 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
       optimizer->setStartingPoint(x0);
 
       // optimize
-      const SGPP::float_t fOpt = optimizer->optimize(xOpt);
+      optimizer->optimize();
+      const base::DataVector& xOpt = optimizer->getOptimalPoint();
+      const SGPP::float_t fOpt = optimizer->getOptimalValue();
 
       // test xOpt and fOpt
       BOOST_CHECK_EQUAL(xOpt.getSize(), 2);
@@ -522,13 +522,13 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
     }
 
     for (auto& optimizer : optimizers) {
-      base::DataVector xOpt(0);
-
       // set starting point
       optimizer->setStartingPoint(x0);
 
       // optimize
-      const SGPP::float_t fOpt = optimizer->optimize(xOpt);
+      optimizer->optimize();
+      const base::DataVector& xOpt = optimizer->getOptimalPoint();
+      const SGPP::float_t fOpt = optimizer->getOptimalValue();
 
       // test xOpt and fOpt
       BOOST_CHECK_EQUAL(xOpt.getSize(), d);

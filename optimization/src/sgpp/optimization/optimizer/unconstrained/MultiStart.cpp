@@ -41,10 +41,16 @@ namespace SGPP {
                                         static_cast<size_t>(100));
       }
 
-      float_t MultiStart::optimize(base::DataVector& xOpt) {
+      void MultiStart::optimize() {
         printer.printStatusBegin("Optimizing (multi-start)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         std::vector<base::DataVector> x0(populationSize, base::DataVector(d));
         std::vector<size_t> roundN(populationSize, 0);
         size_t remainingN = N;
@@ -61,8 +67,6 @@ namespace SGPP {
             x0[k][t] = randomNumberGenerator.getUniformRN();
           }
         }
-
-        float_t fOpt = INFINITY;
 
         /*printer.disableStatusPrinting();
 
@@ -121,10 +125,11 @@ namespace SGPP {
 
         printer.enableStatusPrinting();*/
 
-        base::DataVector curXOpt(d);
-        float_t curFOpt;
+        base::DataVector xLocalOpt(d);
+        float_t fLocalOpt;
 
-        xOpt.resize(d);
+        base::DataVector xCurrentOpt(d);
+        float_t fCurrentOpt = INFINITY;
 
         // temporarily save x0 and N (will be overwritten by the loop)
         const base::DataVector tmpX0(optimizer.getStartingPoint());
@@ -140,18 +145,19 @@ namespace SGPP {
             printer.disableStatusPrinting();
           }
 
-          optimizer.optimize(curXOpt);
+          optimizer.optimize();
 
           if (statusPrintingEnabled) {
             printer.enableStatusPrinting();
           }
 
-          curFOpt = f.eval(curXOpt);
+          xLocalOpt = optimizer.getOptimalPoint();
+          fLocalOpt = optimizer.getOptimalValue();
 
-          if (curFOpt < fOpt) {
+          if (fLocalOpt < fCurrentOpt) {
             // this point is the best so far
-            fOpt = curFOpt;
-            xOpt = curXOpt;
+            xCurrentOpt = xLocalOpt;
+            fCurrentOpt = fLocalOpt;
           }
 
           // status printing
@@ -161,18 +167,23 @@ namespace SGPP {
                      static_cast<float_t>(k) /
                      static_cast<float_t>(populationSize) * 100.0);
             printer.printStatusUpdate(std::string(str) +
-                                      ", f(x) = " + std::to_string(fOpt));
+                                      ", f(x) = " + std::to_string(fCurrentOpt));
           }
+
+          xHist.appendRow(xCurrentOpt);
+          fHist.append(fCurrentOpt);
         }
 
         // set x0 and N to initial values
         optimizer.setStartingPoint(tmpX0);
         optimizer.setN(tmpN);
 
+        xOpt.resize(d);
+        xOpt = xCurrentOpt;
+        fOpt = fCurrentOpt;
+
         printer.printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
         printer.printStatusEnd();
-
-        return fOpt;
       }
 
       size_t MultiStart::getPopulationSize() const {

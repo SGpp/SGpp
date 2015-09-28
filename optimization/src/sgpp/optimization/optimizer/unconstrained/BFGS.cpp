@@ -28,10 +28,15 @@ namespace SGPP {
         rhoLs(lineSearchAccuracy) {
       }
 
-      float_t BFGS::optimize(base::DataVector& xOpt) {
+      void BFGS::optimize() {
         printer.printStatusBegin("Optimizing (BFGS)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
 
         base::DataVector x(x0);
         float_t fx = NAN;
@@ -66,6 +71,11 @@ namespace SGPP {
           // calculate gradient
           fx = fGradient.eval(x, gradFx);
           k++;
+
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           const float_t gradFxNorm = gradFx.l2Norm();
 
@@ -134,6 +144,8 @@ namespace SGPP {
           x = xNew;
           fx = fxNew;
           gradFx = gradFxNew;
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // increase step size
           alpha *= rhoAlphaPlus;
@@ -185,9 +197,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionGradient& BFGS::getObjectiveGradient() const {

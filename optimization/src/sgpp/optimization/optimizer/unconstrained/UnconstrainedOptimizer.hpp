@@ -9,10 +9,11 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <cstddef>
-#include <memory>
+#include <cmath>
 
 namespace SGPP {
   namespace optimization {
@@ -36,7 +37,13 @@ namespace SGPP {
            *              (depending on the implementation)
            */
           UnconstrainedOptimizer(ScalarFunction& f, size_t N = DEFAULT_N) :
-            f(f), N(N), x0(f.getDimension(), 0.5) {
+            f(f),
+            N(N),
+            x0(f.getDimension(), 0.5),
+            xOpt(0),
+            fOpt(NAN),
+            xHist(0, 0),
+            fHist(0) {
           }
 
           /**
@@ -47,11 +54,10 @@ namespace SGPP {
 
           /**
            * Pure virtual method for optimization of the objective function.
-           *
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
+           * The result of the optimization process can be obtained by
+           * member functions, e.g., getOptimalPoint() and getOptimalValue().
            */
-          virtual float_t optimize(base::DataVector& xOpt) = 0;
+          virtual void optimize() = 0;
 
           /**
            * @return objective function
@@ -88,6 +94,40 @@ namespace SGPP {
             this->x0 = startingPoint;
           }
 
+          /**
+           * @return result of optimization (location of optimum),
+           *         empty vector on error
+           */
+          const base::DataVector& getOptimalPoint() const {
+            return xOpt;
+          }
+
+          /**
+           * @return result of optimization (optimal function value),
+           *         NAN on error
+           */
+          float_t getOptimalValue() const {
+            return fOpt;
+          }
+
+          /**
+           * @return tall matrix (d columns) in which the k-th row indicates
+           *         the best point after k iterations of the optimization,
+           *         empty matrix on error or if not supported
+           */
+          const base::DataMatrix& getHistoryOfOptimalPoints() const {
+            return xHist;
+          }
+
+          /**
+           * @return vector in which the k-th entry indicates the best
+           *         function value after k iterations of the optimization,
+           *         empty vector on error or if not supported
+           */
+          const base::DataVector& getHistoryOfOptimalValues() const {
+            return fHist;
+          }
+
         protected:
           /// objective function
           ScalarFunction& f;
@@ -95,6 +135,14 @@ namespace SGPP {
           size_t N;
           /// starting point
           base::DataVector x0;
+          /// result of optimization (location of optimum)
+          base::DataVector xOpt;
+          /// result of optimization (optimal function value)
+          float_t fOpt;
+          /// search history matrix (optimal points)
+          base::DataMatrix xHist;
+          /// search history vector (optimal values)
+          base::DataVector fHist;
       };
 
     }

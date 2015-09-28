@@ -60,10 +60,8 @@ const bool UMFPACK_ENABLED;
 %rename(OptVectorFunction)                      SGPP::optimization::VectorFunction;
 %rename(OptVectorFunctionGradient)              SGPP::optimization::VectorFunctionGradient;
 %rename(OptVectorFunctionHessian)               SGPP::optimization::VectorFunctionHessian;
-%rename(OptEmptyVectorFunction)                 SGPP::optimization::EmptyVectorFunction;
-%rename(OptEmptyVectorFunctionInstance)         SGPP::optimization::emptyVectorFunction;
-%rename(OptEmptyVectorFunctionGradient)         SGPP::optimization::EmptyVectorGradient;
-%rename(OptEmptyVectorFunctionGradientInstance) SGPP::optimization::emptyVectorGradient;
+%rename(OptEmptyVectorFunction)                 SGPP::optimization::emptyVectorFunction;
+%rename(OptEmptyVectorFunctionGradient)         SGPP::optimization::emptyVectorFunctionGradient;
 %rename(OptInterpolantVectorFunction)           SGPP::optimization::InterpolantVectorFunction;
 %rename(OptInterpolantVectorGradient)           SGPP::optimization::InterpolantVectorGradient;
 %rename(OptInterpolantVectorHessian)            SGPP::optimization::InterpolantVectorHessian;
@@ -201,8 +199,6 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp"
@@ -216,6 +212,8 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
 
 %include "optimization/src/sgpp/optimization/function/scalar/test/TestFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/test/Ackley.hpp"

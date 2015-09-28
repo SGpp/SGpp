@@ -21,10 +21,16 @@ namespace SGPP {
         UnconstrainedOptimizer(f, maxFcnEvalCount) {
       }
 
-      float_t CMAES::optimize(base::DataVector& xOpt) {
+      void CMAES::optimize() {
         printer.printStatusBegin("Optimizing (CMA-ES)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         const float_t dDbl = static_cast<float_t>(d);
 
         const float_t E =
@@ -183,16 +189,19 @@ namespace SGPP {
 
           printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
                                     std::to_string(fX[fXOrder[0]]));
+
+          X.getColumn(fXOrder[0], x);
+          xHist.appendRow(x);
+          fHist.append(fX[fXOrder[0]]);
         }
 
         xOpt.resize(d);
         X.getColumn(fXOrder[0], xOpt);
+        fOpt = fX[fXOrder[0]];
 
         printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
                                   std::to_string(fX[fXOrder[0]]));
         printer.printStatusEnd();
-
-        return fX[fXOrder[0]];
       }
 
     }

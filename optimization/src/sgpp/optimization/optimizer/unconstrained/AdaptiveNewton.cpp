@@ -58,10 +58,16 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
-      float_t AdaptiveNewton::optimize(base::DataVector& xOpt) {
+      void AdaptiveNewton::optimize() {
         printer.printStatusBegin("Optimizing (adaptive Newton)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
         float_t fx = NAN;
         base::DataVector gradFx(d);
@@ -92,6 +98,11 @@ namespace SGPP {
           // calculate gradient and Hessian
           fx = fHessian.eval(x, gradFx, hessianFx);
           k++;
+
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           const float_t gradFxNorm = gradFx.l2Norm();
 
@@ -200,6 +211,8 @@ namespace SGPP {
           // save new point
           x = xNew;
           fx = fxNew;
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // increase step size
           alpha = std::min(rhoAlphaPlus * alpha, float_t(1.0) );
@@ -228,9 +241,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const {

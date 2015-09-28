@@ -181,15 +181,24 @@ namespace SGPP {
         rhoMuPlus(penaltyIncreaseFactor) {
       }
 
-      float_t SquaredPenalty::optimize(base::DataVector& xOpt) {
+      void SquaredPenalty::optimize() {
         printer.printStatusBegin("Optimizing (Squared Penalty)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         const size_t mG = g.getNumberOfComponents();
         const size_t mH = h.getNumberOfComponents();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         base::DataVector xNew(d);
 
@@ -215,7 +224,8 @@ namespace SGPP {
           AdaptiveGradientDescent unconstrainedOptimizer(
             fPenalized, fPenalizedGradient, unconstrainedN, 10.0 * theta);
           unconstrainedOptimizer.setStartingPoint(x);
-          unconstrainedOptimizer.optimize(xNew);
+          unconstrainedOptimizer.optimize();
+          xNew = unconstrainedOptimizer.getOptimalPoint();
           k += unconstrainedN;
 
           x = xNew;
@@ -223,6 +233,9 @@ namespace SGPP {
           g.eval(x, gx);
           h.eval(x, hx);
           k++;
+
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // status printing
           printer.printStatusUpdate(
@@ -250,9 +263,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const {

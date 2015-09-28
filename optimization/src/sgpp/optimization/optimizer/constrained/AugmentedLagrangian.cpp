@@ -420,15 +420,24 @@ namespace SGPP {
         rhoMuPlus(penaltyIncreaseFactor) {
       }
 
-      float_t AugmentedLagrangian::optimize(base::DataVector& xOpt) {
+      void AugmentedLagrangian::optimize() {
         printer.printStatusBegin("Optimizing (Augmented Lagrangian)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         const size_t mG = g.getNumberOfComponents();
         const size_t mH = h.getNumberOfComponents();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         base::DataVector xNew(d);
 
@@ -455,7 +464,8 @@ namespace SGPP {
           AdaptiveGradientDescent unconstrainedOptimizer(
             fPenalized, fPenalizedGradient, unconstrainedN, 10.0 * theta);
           unconstrainedOptimizer.setStartingPoint(x);
-          unconstrainedOptimizer.optimize(xNew);
+          unconstrainedOptimizer.optimize();
+          xNew = unconstrainedOptimizer.getOptimalPoint();
           k += unconstrainedN;
 
           x = xNew;
@@ -463,6 +473,9 @@ namespace SGPP {
           g.eval(x, gx);
           h.eval(x, hx);
           k++;
+
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // status printing
           printer.printStatusUpdate(
@@ -498,9 +511,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
@@ -540,7 +552,8 @@ namespace SGPP {
           auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
           emptyVectorFunction, emptyVectorFunctionGradient);
         optimizer.setStartingPoint(auxX);
-        optimizer.optimize(auxX);
+        optimizer.optimize();
+        auxX = optimizer.getOptimalPoint();
 
         for (size_t t = 0; t < d; t++) {
           x[t] = auxX[t];
