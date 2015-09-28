@@ -157,12 +157,18 @@ namespace SGPP {
          * @return      i-th Clenshaw-Curtis grid point with level l
          */
         inline float_t clenshawCurtisPoint(LT l, IT i, IT hInv) const {
-          if (i == 0) {
-            return -clenshawCurtisTable.getPoint(l, 1, hInv);
+          if (l == 1) {
+            return static_cast<float_t>(i) / 2.0;
+          } else if (i == 0) {
+            // = x_{l,1} - (x_{l,2} - x_{l,1})
+            return 2.0 * clenshawCurtisTable.getPoint(l, 1, hInv) -
+                   clenshawCurtisTable.getPoint(l, 2, hInv);
           } else if (i >= hInv) {
-            const float_t offset = static_cast<float_t>((i - 1) / (hInv - 1));
-            i = (i - 1) % (hInv - 1) + 1;
-            return clenshawCurtisTable.getPoint(l, i, hInv) + offset;
+            const float_t x1 = clenshawCurtisTable.getPoint(l, 1, hInv);
+            const float_t x2 = clenshawCurtisTable.getPoint(l, 2, hInv);
+            const float_t hBoundary = x2 - x1;
+
+            return (1.0 - x1) + hBoundary * static_cast<float_t>(i - hInv + 1);
           } else {
             return clenshawCurtisTable.getPoint(l, i, hInv);
           }
@@ -170,14 +176,16 @@ namespace SGPP {
 
         /**
          * @param l     level of the grid point
-         * @param ni    neagtive index -i of the grid point
+         * @param ni    negative index -i of the grid point
          * @param hInv  2^l
          * @return      (-ni)-th Clenshaw-Curtis grid point with level l
          */
         inline float_t clenshawCurtisPointNegativeIndex(LT l, IT ni, IT hInv) const {
-          const float_t offset = -static_cast<float_t>(ni / (hInv - 1)) - 1.0;
-          const IT i = hInv - 1 - ni % (hInv - 1);
-          return clenshawCurtisTable.getPoint(l, i, hInv) + offset;
+          const float_t x1 = clenshawCurtisTable.getPoint(l, 1, hInv);
+          const float_t x2 = clenshawCurtisTable.getPoint(l, 2, hInv);
+          const float_t hBoundary = x2 - x1;
+
+          return x1 - hBoundary * static_cast<float_t>(ni + 1);
         }
 
         /**
@@ -193,10 +201,11 @@ namespace SGPP {
 
           for (IT k = 0; k < degree + 2; k++) {
             if (i + k >= degreePlusOneHalved) {
-              xi[k] = clenshawCurtisPoint(l, i + k - degreePlusOneHalved, hInv);
+              xi[k] = clenshawCurtisPoint(
+                        l, i + k - degreePlusOneHalved, hInv);
             } else {
-              xi[k] = clenshawCurtisPointNegativeIndex(l, degreePlusOneHalved - i - k,
-                      hInv);
+              xi[k] = clenshawCurtisPointNegativeIndex(
+                        l, degreePlusOneHalved - i - k, hInv);
             }
           }
         }

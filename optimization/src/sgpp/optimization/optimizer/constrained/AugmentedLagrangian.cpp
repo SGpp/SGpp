@@ -59,7 +59,7 @@ namespace SGPP {
               }
 
               for (size_t i = 0; i < mH; i++) {
-                value += (mu * hx[i] + lambda[i]) * hx[i];
+                value += (mu * hx[i] + lambda[mG + i]) * hx[i];
               }
 
               return value;
@@ -146,7 +146,7 @@ namespace SGPP {
 
               for (size_t i = 0; i < mH; i++) {
                 const float_t hxi = hx[i];
-                const float_t lambdai = lambda[i];
+                const float_t lambdai = lambda[mG + i];
 
                 value += (mu * hxi + lambdai) * hxi;
 

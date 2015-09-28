@@ -8,7 +8,7 @@ Monte Carlo integration.
 Again, we deal with the function
 @f[ f(x_0,x_1) := 16 * (x_0-1)*x_0 * (x_1-1)*x_1 @f]
 which we first interpolate. We then integrate the interpolant, then
-the function itself using 100000 Monte Carlo points, and we then 
+the function itself using 100000 Monte Carlo points, and we then
 compute the L2-error.
 @see @ref code_examples_quick_start
 
@@ -24,7 +24,7 @@ First, the example in Python. The function, which @link SGPP::base::OperationQua
 which can be executed by
 @code
 > python python_simple_quadrature.py
-@endcode 
+@endcode
 in the directory @c examples/.
 
 This results in an output similar to
@@ -39,9 +39,9 @@ The function, which @link SGPP::base::OperationQuadratureMC OperationQuadratureM
 @include c++_simple_quadrature.cpp
 which can be executed by
 @code
-> g++ -O3 -I../src/sgpp -L../lib/sgpp -o c++_simple_quadrature c++_simple_quadrature.cpp -lsgppbase
+> g++ -std=c++11 -O3 -I../src -L../../lib/sgpp -o c++_simple_quadrature c++_simple_quadrature.cpp -lsgppbase
 > ./c++_simple_quadrature
-@endcode 
+@endcode
 in the directory @c examples/.
 
 This results in an output similar to the Python example output from above.

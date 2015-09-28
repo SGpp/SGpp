@@ -1,17 +1,17 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 #!/usr/bin/python
 # @file grid_refinement.py
 # This is an example of how to resume the learning process from a checkpoint
-# without recalculating the last iteration 
+# without recalculating the last iteration
 
 # include all necessary classes
-from bin.learner.LearnerBuilder import LearnerBuilder
-from bin.controller import CheckpointController
-from bin.controller import InfoToScreenRegressor, InfoToFile
+from pysgpp.extensions.datadriven.learner.LearnerBuilder import LearnerBuilder
+from pysgpp.extensions.datadriven.controller import (CheckpointController,
+                                                     InfoToScreenRegressor, InfoToFile)
 
 if __name__=='__main__':
 	# code automatically generated using TerminalController
@@ -28,12 +28,12 @@ builder.withLambda(0.00010000000000000000)
 builder.withIdentityOperator()
 builder = builder.withStopPolicy()
 builder.withGridSizeLimit(50000)
-builder = builder.withCGSolver()  
+builder = builder.withCGSolver()
 builder.withAccuracy(0.000100)
 builder.withImax(500)
 builder.withProgressPresenter(InfoToScreenRegressor())
 builder.withProgressPresenter(InfoToFile('/path/to/stats_file.stats.gz'))
-checkpointController = CheckpointController('checkpoint_file.checkpoint.gz', 
+checkpointController = CheckpointController('checkpoint_file.checkpoint.gz',
 '/path/to')
 builder.withCheckpointController(checkpointController)"""
 	# create the Learner object

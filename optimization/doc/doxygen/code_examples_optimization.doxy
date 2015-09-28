@@ -86,10 +86,13 @@ interpolant and the gradient-free optimization of the objective function
 find reasonable approximations of the minimum, which lies at
 \f$(3\pi/16, 3\pi/14) \approx (0.58904862, 0.67319843)\f$.
 
-To compile and run the C++ example, you need to set some
-compiler/linker flags and you also have to adjust the environment
-variable \c LD_LIBRARY_PATH accordingly
-(see \ref code_examples_quick_start).
+The example can be compiled, linked, and executed by
+@code
+g++ -std=c++11 -O3 -I../../base/src -I../../optimization/src -L../../lib/sgpp -o c++_example c++_example.cpp -lsgppbase -lsgppoptimization
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp"
+../c++_example
+@endcode
+For details see \ref code_examples_quick_start.
 
 \section code_examples_optimization_python Python
 
