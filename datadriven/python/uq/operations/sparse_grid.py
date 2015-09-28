@@ -24,12 +24,11 @@ def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
 
     # print gridType, deg
     if deg > 1:
-        if gridType == LinearBoundary or \
-           gridType == PolyBoundary:
+        if gridType in [LinearBoundary, PolyBoundary]:
             return Grid.createPolyBoundaryGrid(dim, deg)
         elif gridType == LinearL0Boundary:
             raise NotImplementedError("there is no full boundary polynomial grid")
-        elif gridType == Linear or gridType == Poly:
+        elif gridType in [Linear, Poly]:
             return Grid.createPolyGrid(dim, deg)
         else:
             raise Exception('unknown grid type %s' % gridType)

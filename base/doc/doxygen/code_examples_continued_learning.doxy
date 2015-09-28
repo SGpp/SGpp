@@ -30,7 +30,7 @@ Make sure the SG++ project is in your $PYTHONPATH and add it, if it is not
 Let's suppose you learning setup was defined by the following command line
 arguments
 @code
-> python $SGPP_PATH/misc/python/pysgpp_misc/classifier.py-v --mode test --data \
+> python $SGPP_PATH/misc/python/classifier.py -v --mode test --data \
 /path/to/dataset_train.arff.gz --test /path/to/dataset_test.arff.gz --border \
 --level 2 -r 0.0001 -C identity --adapt_points 400 --grid_limit 50000 \
 --regression --checkpoint /path/to/checkpoint_file.checkpoint.gz --stats \
@@ -44,7 +44,7 @@ create the Learner object using LearnerBuilder. Just call the
 additional argument @c --generate
 
 @code
-> python $SGPP_PATH/datadriven/python/pysgpp_datadriven/controller/TerminalController.py --generate -v --mode \
+> python $SGPP_PATH/datadriven/python/controller/TerminalController.py --generate -v --mode \
 test --data /path/to/dataset_train.arff.gz --test /path/to/dataset_test.arff.gz \
 --border --level 2 -r 0.0001 -C identity --adapt_points 400 --grid_limit 50000 \
 --regression --checkpoint /path/to/checkpoint_file.checkpoint.gz --stats \

@@ -16,9 +16,7 @@
 from optparse import OptionParser
 import sys,os
 
-if os.environ.has_key("SGPP"):
-    sys.path.append(os.path.join(os.environ["SGPP"], "bin"))
-from tools import *
+from pysgpp.extensions.datadriven.tools import *
 from pysgpp import *
 from pysgpp.extensions.datadriven import *
 from painlesscg import cg,sd,cg_new
