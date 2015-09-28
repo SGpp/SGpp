@@ -30,12 +30,18 @@ namespace SGPP {
         eps(epsilon) {
       }
 
-      float_t GradientDescent::optimize(base::DataVector& xOpt) {
+      void GradientDescent::optimize() {
         printer.printStatusBegin("Optimizing (gradient descent)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
-        float_t fx = 0.0;
+        float_t fx = NAN;
 
         base::DataVector gradFx(d);
         base::DataVector s(d);
@@ -47,6 +53,11 @@ namespace SGPP {
           fx = fGradient.eval(x, gradFx);
           k++;
           float_t gradFxNorm = gradFx.l2Norm();
+
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           // exit if norm small enough
           if (gradFxNorm < tol) {
@@ -73,13 +84,14 @@ namespace SGPP {
           }
 
           x = y;
+          xHist.appendRow(x);
+          fHist.append(fx);
         }
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const {

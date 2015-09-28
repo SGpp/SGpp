@@ -61,11 +61,7 @@ namespace SGPP {
                          float_t penaltyIncreaseFactor =
                            DEFAULT_PENALTY_INCREASE_FACTOR);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient

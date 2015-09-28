@@ -34,11 +34,7 @@ namespace SGPP {
           CMAES(ScalarFunction& f,
                 size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
       };
 
     }

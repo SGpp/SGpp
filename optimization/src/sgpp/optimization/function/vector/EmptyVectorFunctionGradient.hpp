@@ -7,7 +7,7 @@
 #define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTIONGRADIENT_HPP
 
 #include <cstddef>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -17,39 +17,7 @@ namespace SGPP {
      * This is intended as a fill-in for ConstrainedOptimizer, if
      * only equality or inequality constraints are supported.
      */
-    class EmptyVectorFunctionGradient : public VectorFunctionGradient {
-      public:
-        /**
-         * Constructor.
-         */
-        EmptyVectorFunctionGradient() : VectorFunctionGradient(0, 0) {
-        }
-
-        virtual ~EmptyVectorFunctionGradient() {};
-
-        /**
-         * Does nothing.
-         *
-         * @param[in]  x          ignored
-         * @param[out] value      ignored
-         * @param[out] gradient   ignored
-         */
-        void eval(const base::DataVector& x,
-                  base::DataVector& value,
-                  base::DataMatrix& gradient) {}
-
-        /**
-         * @param[out] clone pointer to cloned object
-         */
-        virtual void clone(
-          std::unique_ptr<VectorFunctionGradient>& clone) const {
-          clone = std::unique_ptr<VectorFunctionGradient>(
-                    new EmptyVectorFunctionGradient());
-        }
-    };
-
-    /// instance of EmptyVectorFunctionGradient
-    extern EmptyVectorFunctionGradient emptyVectorFunctionGradient;
+    extern WrapperVectorFunctionGradient emptyVectorFunctionGradient;
 
   }
 }

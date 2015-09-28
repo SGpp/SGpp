@@ -52,11 +52,7 @@ namespace SGPP {
                           float_t tolerance = DEFAULT_TOLERANCE,
                           float_t epsilon = DEFAULT_EPSILON);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient

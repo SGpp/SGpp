@@ -51,11 +51,7 @@ namespace SGPP {
                  DEFAULT_STEP_SIZE_DECREASE_FACTOR,
                float_t lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient

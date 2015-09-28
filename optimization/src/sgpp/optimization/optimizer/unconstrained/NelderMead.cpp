@@ -25,10 +25,16 @@ namespace SGPP {
         delta(delta) {
       }
 
-      float_t NelderMead::optimize(base::DataVector& xOpt) {
+      void NelderMead::optimize() {
         printer.printStatusBegin("Optimizing (Nelder-Mead)...");
 
         const size_t d = f.getDimension();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         std::vector<base::DataVector> points(d + 1, x0);
         std::vector<base::DataVector> pointsNew(d + 1, x0);
         base::DataVector fPoints(d + 1);
@@ -196,16 +202,17 @@ namespace SGPP {
           }
 
           k++;
+          xHist.appendRow(points[0]);
+          fHist.append(fPoints[0]);
         }
 
         xOpt.resize(d);
         xOpt = points[0];
+        fOpt = fPoints[0];
 
         printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
                                   std::to_string(fPoints[0]));
         printer.printStatusEnd();
-
-        return fPoints[0];
       }
 
       float_t NelderMead::getAlpha() const {

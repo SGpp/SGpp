@@ -51,11 +51,7 @@ namespace SGPP {
                      float_t barrierDecreaseFactor =
                        DEFAULT_BARRIER_DECREASE_FACTOR);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient

@@ -102,11 +102,7 @@ namespace SGPP {
                  float_t p,
                  const sle_solver::SLESolver& sleSolver);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function Hessian

@@ -80,8 +80,9 @@ fprintf(['x0 = ' char(x0.toString()) '\n']);
 fprintf(['f(x0) = ' num2str(fX0, 6) ', ft(x0) = ' num2str(ftX0, 6) '\n\n']);
 
 gradientMethod.setStartingPoint(x0);
-xOpt = sgpp.DataVector(d);
-ftXOpt = gradientMethod.optimize(xOpt);
+gradientMethod.optimize();
+xOpt = gradientMethod.getOptimalPoint();
+ftXOpt = gradientMethod.getOptimalValue();
 fXOpt = f.eval(xOpt);
 
 fprintf(['\nxOpt = ' char(xOpt.toString()) '\n']);
@@ -95,8 +96,9 @@ printLine();
 fprintf('Optimizing objective function (for comparison)...\n\n');
 
 nelderMead = sgpp.OptNelderMead(f, 1000);
-xOptNM = sgpp.DataVector(d);
-fXOptNM = nelderMead.optimize(xOptNM);
+nelderMead.optimize();
+xOptNM = nelderMead.getOptimalPoint();
+fXOptNM = nelderMead.getOptimalValue();
 ftXOptNM = ft.eval(xOptNM);
 
 fprintf(['\nxOptNM = ' char(xOptNM.toString()) '\n']);

@@ -52,11 +52,7 @@ namespace SGPP {
                      float_t gamma = DEFAULT_GAMMA,
                      float_t delta = DEFAULT_DELTA);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return          reflection coefficient
