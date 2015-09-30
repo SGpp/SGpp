@@ -178,7 +178,8 @@ namespace SGPP {
         theta(xTolerance),
         epsilon(constraintTolerance),
         mu0(penaltyStartValue),
-        rhoMuPlus(penaltyIncreaseFactor) {
+        rhoMuPlus(penaltyIncreaseFactor),
+        kHist() {
       }
 
       void SquaredPenalty::optimize() {
@@ -190,6 +191,7 @@ namespace SGPP {
         fOpt = NAN;
         xHist.resize(0, d);
         fHist.resize(0);
+        kHist.clear();
 
         const size_t mG = g.getNumberOfComponents();
         const size_t mH = h.getNumberOfComponents();
@@ -226,7 +228,10 @@ namespace SGPP {
           unconstrainedOptimizer.setStartingPoint(x);
           unconstrainedOptimizer.optimize();
           xNew = unconstrainedOptimizer.getOptimalPoint();
-          k += unconstrainedN;
+
+          const size_t numberInnerEvaluations =
+            unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
+          k += numberInnerEvaluations;
 
           x = xNew;
           fx = f.eval(x);
@@ -236,6 +241,7 @@ namespace SGPP {
 
           xHist.appendRow(x);
           fHist.append(fx);
+          kHist.push_back(numberInnerEvaluations);
 
           // status printing
           printer.printStatusUpdate(
@@ -311,6 +317,11 @@ namespace SGPP {
       void SquaredPenalty::setPenaltyIncreaseFactor(
         float_t penaltyIncreaseFactor) {
         rhoMuPlus = penaltyIncreaseFactor;
+      }
+
+      const std::vector<size_t>&
+      SquaredPenalty::getHistoryOfInnerIterations() const {
+        return kHist;
       }
 
     }

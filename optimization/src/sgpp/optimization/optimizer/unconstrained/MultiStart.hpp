@@ -67,6 +67,13 @@ namespace SGPP {
            */
           void setPopulationSize(size_t populationSize);
 
+          /**
+           * @return vector in which the k-th entry indicates the number of
+           *         inner iterations in the k-th (outer) iteration,
+           *         empty vector on error
+           */
+          const std::vector<size_t>& getHistoryOfInnerIterations() const;
+
         protected:
           /// default optimization algorithm
           NelderMead defaultOptimizer;
@@ -74,6 +81,8 @@ namespace SGPP {
           UnconstrainedOptimizer& optimizer;
           /// number of individual points
           size_t populationSize;
+          /// search history (inner iterations)
+          std::vector<size_t> kHist;
 
           /**
            * Initializes populationSize.

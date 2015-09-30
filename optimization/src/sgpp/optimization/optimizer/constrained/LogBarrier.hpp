@@ -93,6 +93,13 @@ namespace SGPP {
            */
           void setBarrierDecreaseFactor(float_t barrierDecreaseFactor);
 
+          /**
+           * @return vector in which the k-th entry indicates the number of
+           *         inner iterations in the k-th (outer) iteration,
+           *         empty vector on error
+           */
+          const std::vector<size_t>& getHistoryOfInnerIterations() const;
+
         protected:
           /// objective function gradient
           ScalarFunctionGradient& fGradient;
@@ -104,6 +111,8 @@ namespace SGPP {
           float_t mu0;
           /// barrier decrease factor
           float_t rhoMuMinus;
+          /// search history (inner iterations)
+          std::vector<size_t> kHist;
       };
 
     }
