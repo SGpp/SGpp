@@ -50,6 +50,7 @@ namespace SGPP {
         fOpt = NAN;
         xHist.resize(0, d);
         fHist.resize(0);
+        kHist.clear();
 
         std::vector<base::DataVector> x0(populationSize, base::DataVector(d));
         std::vector<size_t> roundN(populationSize, 0);
@@ -172,6 +173,7 @@ namespace SGPP {
 
           xHist.appendRow(xCurrentOpt);
           fHist.append(fCurrentOpt);
+          kHist.push_back(optimizer.getHistoryOfOptimalPoints().getNrows());
         }
 
         // set x0 and N to initial values
@@ -192,6 +194,11 @@ namespace SGPP {
 
       void MultiStart::setPopulationSize(size_t populationSize) {
         this->populationSize = populationSize;
+      }
+
+      const std::vector<size_t>&
+      MultiStart::getHistoryOfInnerIterations() const {
+        return kHist;
       }
 
     }

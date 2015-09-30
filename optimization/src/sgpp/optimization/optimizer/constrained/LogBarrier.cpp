@@ -146,7 +146,8 @@ namespace SGPP {
         gGradient(gGradient),
         theta(tolerance),
         mu0(barrierStartValue),
-        rhoMuMinus(barrierDecreaseFactor) {
+        rhoMuMinus(barrierDecreaseFactor),
+        kHist() {
       }
 
       void LogBarrier::optimize() {
@@ -158,6 +159,7 @@ namespace SGPP {
         fOpt = NAN;
         xHist.resize(0, d);
         fHist.resize(0);
+        kHist.clear();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
@@ -190,7 +192,10 @@ namespace SGPP {
           unconstrainedOptimizer.setStartingPoint(x);
           unconstrainedOptimizer.optimize();
           xNew = unconstrainedOptimizer.getOptimalPoint();
-          k += unconstrainedN;
+
+          const size_t numberInnerEvaluations =
+            unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
+          k += numberInnerEvaluations;
 
           x = xNew;
           fx = f.eval(x);
@@ -199,6 +204,7 @@ namespace SGPP {
 
           xHist.appendRow(x);
           fHist.append(fx);
+          kHist.push_back(numberInnerEvaluations);
 
           // status printing
           printer.printStatusUpdate(
@@ -258,6 +264,11 @@ namespace SGPP {
       void LogBarrier::setBarrierDecreaseFactor(
         float_t barrierDecreaseFactor) {
         rhoMuMinus = barrierDecreaseFactor;
+      }
+
+      const std::vector<size_t>&
+      LogBarrier::getHistoryOfInnerIterations() const {
+        return kHist;
       }
 
     }
