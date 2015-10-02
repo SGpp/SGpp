@@ -250,7 +250,7 @@ public:
       stream_program_src << "    int numIndices = (int)ptrLevel[l*" << dims+1 << "];" << std::endl;
       stream_program_src << "    //calc relevant index" << std::endl;
       stream_program_src << "    int floored = 0;" << std::endl;
-      stream_program_src << "    " << strType << " index[10];" << std::endl;
+      stream_program_src << "    " << strType << " index["<< dims <<"];" << std::endl;
       stream_program_src << "    for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
       stream_program_src << "      floored = (int)(data[d]*pow(2,level[d]));" << std::endl;
       stream_program_src << "      index[d] = (" << strType << ")(floored | 0x1);" << std::endl;
