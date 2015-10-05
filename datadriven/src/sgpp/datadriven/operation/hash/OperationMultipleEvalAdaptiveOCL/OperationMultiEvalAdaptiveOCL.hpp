@@ -32,10 +32,9 @@ protected:
 
     T* levels = nullptr;
     T* indices = nullptr;
-    size_t* linIndexToGridIndexMap = nullptr;
+    size_t linIndexMapSize;
+    size_t* linIndexToGridIndexMap = nullptr; //this is needed to correctly identify a gridPoints position in the result/alpha vector solely based on a level/index pair
     T* alphas = nullptr;
-    /// Member to store the sparse grid's indices for better vectorization
-    T* index = nullptr;
     size_t gridSize = 0;
     size_t numSubspaces = 0;
     /// Timer object to handle time measurements
@@ -80,9 +79,6 @@ public:
 
     ~OperationMultiEvalAdaptiveOCL() {
 
-        if (this->index != nullptr) {
-            delete this->index;
-        }
 
         if (this->indices != nullptr) {
             delete this->indices;
@@ -111,7 +107,8 @@ public:
         size_t datasetTo = this->datasetSize;
 
 
-        T *alphaArray = new T[this->gridSize];
+        T* alphaArray = new T[this->gridSize];
+
         for (size_t i = 0; i < alpha.getSize(); i++) {
             alphaArray[i] = (T) alpha[i];
             //printf("i: %i alpha: %f \n", i, alpha[i]);
@@ -121,13 +118,13 @@ public:
         }
         this->alphas = alphaArray;
 
-        T *resultArray = new T[this->datasetSize];
+        T* resultArray = new T[this->datasetSize];
         for (size_t i = 0; i < this->datasetSize; i++) {
             resultArray[i] = 0.0;
         }
 
         this->kernel->mult(this->levels, this->indices, this->gridSize, this->kernelDataset, this->datasetSize,
-                this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces, this->linIndexToGridIndexMap);
+                this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces, this->linIndexToGridIndexMap, this->linIndexMapSize);
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -167,7 +164,7 @@ public:
 
         this->kernel->multTranspose(this->levels, this->indices, this->gridSize, this->kernelDataset,
                 this->preparedDataset.getNcols(), this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo,
-                this->numSubspaces, this->linIndexToGridIndexMap);
+                this->numSubspaces, this->linIndexToGridIndexMap, this->linIndexMapSize);
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -247,10 +244,69 @@ private:
         return indexFlat;
     }
 
-    void recalculateLevelAndIndex() {
+    //TODO: look up how this is supposed to be done
+    uint32_t getSubspaceSize ( size_t dim, uint32_t* level) {
 
-        if (this->index != nullptr)
-            delete this->index;
+        uint32_t sum = 0;
+        //somOf(2^level[d]/2)
+        for (size_t d = 0; d < dim; d++) {
+            if ( level[d] < 1 )
+              throw("Negative level value.");
+
+            //size += static_cast<uint32_t>(powf(2.0f,(float)level[d])/2.0f);
+            sum += level[d] - 1;
+        }
+
+        return static_cast<uint32_t>(pow(2.0, sum));
+    }
+
+    //TODO: check int/float conversions happening below
+    uint32_t calcLinearIndex ( size_t dim, uint32_t* level, uint32_t* index)
+    {
+      //calc linear index of gridpoint (relative to subspace)
+      uint32_t result = 0;
+      uint32_t index_half = 0;
+      uint32_t level_calc = 0;
+
+      for (size_t d = 0; d < dim - 1; d++) {
+          index_half = index[d] >> 1;
+          level_calc = static_cast<uint32_t>(pow(2.0, level[d+1]-1.0));
+          result += index_half;
+          result *= level_calc;
+      }
+
+      result += index[dim-1] >> 1;
+
+      return result;
+    }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////                                                                                                                          //
+//// CURRENT DATASTRUCTURE                                                                                                    //
+////                                                                                                                          //
+//// this->levels                                                                                                             //
+////+----------+-------------------------+----------+-------------------------+---+                                           //
+////|numIndices|(level_0_0,...,level_0_d)|numIndices|(level_1_0,...,level_1_d)|...|                                           //
+////+----------+-------------------------+----------+-------------------------+---+                                           //
+////                                                                                                                          //
+//// this->indices                                                                                                            //
+////+---------+-------------------------+---------+-------------------------+---+                                             //
+////|gridIndex|(index_0_0,...,index_0_d)|gridIndex|(index_1_0,...,index_1_d)|...|                                             //
+////+---------+-------------------------+---------+-------------------------+---+                                             //
+////                                                                                                                          //
+//// this->linIndexToGridIndexMap                                                                                             //
+////+-----------+-----------------------+---+                                                                                 //
+////|gridIndex_1|gridIndex_2|gridIndex_3|...|                                                                                 //
+////+-----------+-----------------------+---+                                                                                 //
+////      ^           ^                                                                                                       //
+////      |           |                                                                                                       //
+//// linIndex_0   linIndex_1                                                                                                  //
+////                                                                                                                          //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void recalculateLevelAndIndex() {
 
         size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
         size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
@@ -269,17 +325,22 @@ private:
 
         this->gridSize = this->storage->size() + padding;
 
+
         uint32_t maxLevel = (uint32_t) (this->storage->getMaxLevel());
+        size_t maxLinIndex = 0; //highest possible linear index (should equal highest subspace size)
         uint32_t curLevel = 1;
         uint32_t curIndex = 1;
+        uint32_t regularGridSize = 0;
 
         std::map<uint32_t, std::vector<uint32_t> > flatLevelList;
         flatLevelList.clear();
 
         this->numSubspaces = 0;
 
+        //vector used to preserve subspace order as std::map silently re-arranges items
         std::vector<uint32_t> flatLevelOrder;
 
+        //iterate through the grid to read out levels and indices
         for (size_t gridIndex = 0; gridIndex < this->gridSize; gridIndex++) {
             uint32_t* level = new uint32_t[this->dims];
             uint32_t* index = new uint32_t[this->dims];
@@ -292,7 +353,7 @@ private:
                     index[d] = curIndex;
                 }
             }
-            //add points for padding that dont affect evaluation
+            //add points for padding that don't affect evaluation
             else {
                 for (size_t d = 0; d < this->dims; d++) {
                     level[d] = 1.0f;
@@ -300,12 +361,22 @@ private:
                 }
             }
 
+            size_t linIndex = calcLinearIndex(this->dims, level, index);
+            if ( linIndex > maxLinIndex )
+            {
+                maxLinIndex = linIndex;
+            }
+
+            //calculate flatLevel to uniquely identify each subspace
             uint32_t flatLevel = flattenLevel(this->dims, level, maxLevel);
             std::map<uint32_t, std::vector<uint32_t> >::iterator flatLevelEntry = flatLevelList.find(flatLevel);
 
+            //flatLevel doesn't exist, add a new subspace
             if (flatLevelEntry == flatLevelList.end()) {
                 std::vector<uint32_t> indexList;
                 flatLevelOrder.push_back(flatLevel);
+
+                regularGridSize += getSubspaceSize(this->dims, level);
 
                 for (size_t d = 0; d < this->dims; d++) {
                     indexList.push_back(level[d]);
@@ -340,71 +411,88 @@ private:
 
 //    flatLevelList.clear();
 
-        printf("GridPoints: %i Subspaces: %i \n", this->gridSize,numSubspaces);
+        printf("GridPoints: %lu Subspaces: %lu \n", this->gridSize,numSubspaces);
         printf("Subspace Utilization: %f \n", ((double)(this->gridSize))/((double)numSubspaces));
 
-        this->levels = new T[(this->dims + 1) * numSubspaces];
+
+        this->levels = new T[(this->dims + 2) * numSubspaces];
         this->indices = new T[(this->dims + 1) * this->gridSize];
-        this->linIndexToGridIndexMap = new size_t[this->gridSize];
+        //since a linear index always assumes a regular grid we have to make this array the size of such
+        this->linIndexMapSize = maxLinIndex + regularGridSize + padding;
+        this->linIndexToGridIndexMap = new size_t[this->linIndexMapSize];
 
-        size_t indexCounter = 0;
+        size_t indexCounter = 0; //always contains the start index of this->indices for the current subspace
         size_t levelCounter = 0;
+        size_t regularIndexCounter = 0; //always points to the start of linIndixToGridIndexMap for the current subspace
 
+
+        //iterate our previously constructed contains and fill our arrays
         typedef std::map<uint32_t, std::vector<uint32_t> >::iterator it_type;
         for (auto &flatLevel : flatLevelOrder) {
 
+            //as mentioned above this preserves the initial order of appearance
             it_type kv = flatLevelList.find(flatLevel);
 
             size_t numIndices = (kv->second.size() - this->dims) / (this->dims + 1);
 
-            //store the number of corresponding indices in front of the level-vector
-            this->levels[(levelCounter * (this->dims + 1))] = (T) (indexCounter + numIndices);
+            //read the level
+            uint32_t* level = new uint32_t[this->dims];
+            for (int d = 0; d < this->dims; d++) {
+                level[d] = kv->second[d];
+            }
 
-            //read and store level
+            uint32_t subspaceSize = getSubspaceSize(this->dims, level);
+
+            size_t levelStepSize = (this->dims + 2); //levelvector + numIndicies + regularSize
+
+            //store the number of gridPoints of this subspace
+            this->levels[(levelCounter * levelStepSize)] = (T) (indexCounter + numIndices);
+
+            //store the regular subspace Size
+            this->levels[(levelCounter * levelStepSize) + 1] = (T)(regularIndexCounter + subspaceSize);
+
+            //store level
             for (int d = 0; d < this->dims; d++) {
 
-                this->levels[(levelCounter * (this->dims + 1)) + d + 1] = (T) (kv->second[d]);
+                this->levels[(levelCounter * levelStepSize) + d + 2] = (T) (level[d]);
             }
 
             //printf("flat_level: %i \n", kv->first);
-            //printf("level_stored: %i \t %i \t %i \t %i \n", kv->second[0], kv->second[1], kv->second[2], kv->second[3]);
+            //printf("level_stored: %i \t %i \t %i \t %i \n", level[0], level[1], level[2], level[3]);
 
             //read and store indices
             for (int i = 0; i < numIndices; i++) {
 
-                //store alpha index
-                T alpha_idx = (T) (kv->second[(this->dims) + (i * (this->dims + 1))]);
-                this->indices[(indexCounter + i) * (this->dims + 1)] = alpha_idx;
+                size_t indexStepSize = (this->dims + 1); //indexVector + gridIndex
 
+                //store alpha index
+                T gridIndex = (T) (kv->second[(this->dims) + (i * (this->dims + 1))]);
+                this->indices[(indexCounter + i) * indexStepSize] = gridIndex;
+
+                uint32_t* index = new uint32_t[this->dims];
+
+                //store index
                 for (int d = 0; d < this->dims; d++) {
                     T tmpVal = (T) (kv->second[(this->dims) + (i * (this->dims + 1)) + d + 1]);
-                    this->indices[(indexCounter + i) * (this->dims + 1) + d + 1] = tmpVal;
+                    this->indices[(indexCounter + i) * indexStepSize + d + 1] = tmpVal;
+                    index[d] = static_cast<uint32_t>(tmpVal);
                 }
 
-                //calc linear index of gridpoint (relative to subspace)
-                double result = 0.0f;
-                double index_half = 0.0f;
-                double level_calc = 0.0f;
+                size_t linIndex = calcLinearIndex(this->dims, level, index);
 
-                for (size_t d = 0; d < this->dims - 1; d++) {
-                    //...............................offset...............stepsize.........index.skipalpha
-                    index_half = (int)this->indices[(indexCounter + i) * (this->dims + 1) + d + 1] >> 1;
-                    //..................................offset..........stepsize.........index.skipnumindices
-                    level_calc = pow(2.0, this->levels[(levelCounter * (this->dims + 1)) + d+1 + 1]-1);
-                    result += index_half;
-                    result *= level_calc;
-                }
-
-                //............................offset...............stepsize...........index.........skipalpha
-                result += (int)this->indices[(indexCounter + i) * (this->dims + 1) + (this->dims-1) + 1] >> 1;
-                size_t linIndex = (size_t)result;
-
-                this->linIndexToGridIndexMap[indexCounter + linIndex] = static_cast<size_t>(alpha_idx);
+                //store calculated linearIndex
+                this->linIndexToGridIndexMap[regularIndexCounter + linIndex] = static_cast<size_t>(gridIndex);
+                //printf("lin_idx: %i \t index_start: %i \t sum: %i  \n", linIndex, indexCounter, indexCounter + linIndex);
+                //printf("gridIndex: %i \n", static_cast<size_t>(gridIndex));
             }
 
+            //increment counters
             indexCounter += numIndices;
+            regularIndexCounter += subspaceSize;
             levelCounter += 1;
         }
+
+        printf("indexCounter: %lu", indexCounter);
 
     }
 
