@@ -148,7 +148,7 @@ public:
 
     double mult(real_type* levels, real_type* indices, size_t gridSize, real_type* dataset, size_t datasetSize,
             real_type* alpha, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, size_t* linIndexToGridIndexMap) {
+            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, size_t* linIndexToGridIndexMap, size_t linIndexMapSize) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -162,7 +162,7 @@ public:
                     kernel_mult);
         }
 
-        initOCLBuffers(levels, indices, gridSize, dataset, datasetSize, numSubspaces, linIndexToGridIndexMap);
+        initOCLBuffers(levels, indices, gridSize, dataset, datasetSize, numSubspaces, linIndexMapSize, linIndexToGridIndexMap);
         initParams(alpha, gridSize, result, datasetSize);
 
         // determine best fit
@@ -296,7 +296,7 @@ public:
 
     double multTranspose(real_type* levels, real_type* indices, size_t gridSize, real_type* dataset, size_t datasetSize,
             real_type *source, real_type *result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, size_t* linIndexToGridIndexMap) {
+            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, size_t* linIndexToGridIndexMap, size_t linIndexMapSize) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -310,7 +310,7 @@ public:
                     kernel_multTrans);
         }
 
-        initOCLBuffers(levels, indices, gridSize, dataset, datasetSize, numSubspaces, linIndexToGridIndexMap);
+        initOCLBuffers(levels, indices, gridSize, dataset, datasetSize, numSubspaces, linIndexMapSize, linIndexToGridIndexMap);
         initParams(result, gridSize, source, datasetSize);
 
         // determine best fit
@@ -481,10 +481,10 @@ private:
     }
 
     void initOCLBuffers(real_type* levels, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            size_t numSubspaces, size_t* linIndexToGridIndexMap = nullptr) {
+            size_t numSubspaces, size_t linIndexMapSize, size_t* linIndexToGridIndexMap = nullptr) {
 
         if (levels != nullptr && !this->deviceLevels.isInitialized()) {
-            this->deviceLevels.initializeBuffer(levels, sizeof(real_type), numSubspaces * (this->dims + 1));
+            this->deviceLevels.initializeBuffer(levels, sizeof(real_type), numSubspaces * (this->dims + 2));
         }
 
         if (index != nullptr && !this->deviceIndex.isInitialized()) {
@@ -496,7 +496,7 @@ private:
         }
 
         if (linIndexToGridIndexMap != nullptr && !this->deviceLinIndexToGridIndexMap.isInitialized()) {
-            this->deviceLinIndexToGridIndexMap.initializeBuffer(linIndexToGridIndexMap, sizeof(size_t), gridSize);
+            this->deviceLinIndexToGridIndexMap.initializeBuffer(linIndexToGridIndexMap, sizeof(size_t), linIndexMapSize);
         }
 
     }
