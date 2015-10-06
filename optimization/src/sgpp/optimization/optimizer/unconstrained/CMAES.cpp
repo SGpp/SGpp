@@ -204,6 +204,11 @@ namespace SGPP {
         printer.printStatusEnd();
       }
 
+      void CMAES::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new CMAES(*this));
+      }
     }
   }
 }

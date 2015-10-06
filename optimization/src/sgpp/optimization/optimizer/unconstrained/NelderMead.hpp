@@ -94,6 +94,11 @@ namespace SGPP {
            */
           void setDelta(float_t delta);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// reflection coefficient
           float_t alpha;

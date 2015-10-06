@@ -90,7 +90,7 @@ The example can be compiled, linked, and executed by
 @code
 g++ -std=c++11 -O3 -I../../base/src -I../../optimization/src -L../../lib/sgpp -o c++_example c++_example.cpp -lsgppbase -lsgppoptimization
 export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp"
-../c++_example
+./c++_example
 @endcode
 For details see \ref code_examples_quick_start.
 
@@ -99,7 +99,7 @@ For details see \ref code_examples_quick_start.
 The C++ code can be translated into the following Python code:
 \include python_example.py
 
-To compile run the Python example, you need to adjust the environment
+To run the Python example, you need to adjust the environment
 variables \c LD_LIBRARY_PATH and \c PYTHONPATH accordingly
 (see \ref code_examples_quick_start).
 When run, the example gives (nearly) the same output as the C++ example.

@@ -128,7 +128,7 @@ public class java_example {
     gradientMethod.setStartingPoint(x0);
     gradientMethod.optimize();
     sgpp.DataVector xOpt = gradientMethod.getOptimalPoint();
-    final double ftXOpt = gradientMethod.getOptimalValue()
+    final double ftXOpt = gradientMethod.getOptimalValue();
     final double fXOpt = f.eval(xOpt);
 
     System.out.println("\nxOpt = " + xOpt);

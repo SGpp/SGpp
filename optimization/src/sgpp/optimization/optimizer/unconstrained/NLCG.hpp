@@ -114,6 +114,11 @@ namespace SGPP {
            */
           void setRestartThreshold(float_t restartThreshold);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
           ScalarFunctionGradient& fGradient;

@@ -72,6 +72,11 @@ namespace SGPP {
            */
           void setPopulationSize(size_t populationSize);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// number of individuals
           size_t populationSize;
