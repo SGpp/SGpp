@@ -130,6 +130,11 @@ namespace SGPP {
         eps = epsilon;
       }
 
+      void GradientDescent::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new GradientDescent(*this));
+      }
     }
   }
 }

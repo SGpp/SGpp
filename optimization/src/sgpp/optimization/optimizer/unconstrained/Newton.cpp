@@ -222,6 +222,11 @@ namespace SGPP {
         this->p = p;
       }
 
+      void Newton::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new Newton(*this));
+      }
     }
   }
 }

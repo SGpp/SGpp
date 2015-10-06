@@ -168,6 +168,11 @@ namespace SGPP {
         rhoAlphaMinus = stepSizeDecreaseFactor;
       }
 
+      void Rprop::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new Rprop(*this));
+      }
     }
   }
 }

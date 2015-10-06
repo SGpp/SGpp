@@ -128,6 +128,16 @@ namespace SGPP {
             return fHist;
           }
 
+          /**
+           * Pure virtual method for cloning the optimizer.
+           * It should generate a pointer to the cloned object and it's used
+           * for parallel computations.
+           *
+           * @param[out] clone pointer to cloned object
+           */
+          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>&
+                             clone) const = 0;
+
         protected:
           /// objective function
           ScalarFunction& f;

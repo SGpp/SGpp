@@ -35,6 +35,11 @@ namespace SGPP {
                 size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
 
           void optimize();
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
       };
 
     }

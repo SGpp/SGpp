@@ -180,6 +180,11 @@ namespace SGPP {
         rhoLs = lineSearchAccuracy;
       }
 
+      void AdaptiveGradientDescent::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new AdaptiveGradientDescent(*this));
+      }
     }
   }
 }

@@ -136,6 +136,11 @@ namespace SGPP {
            */
           const std::vector<size_t>& getHistoryOfInnerIterations() const;
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
           ScalarFunctionGradient& fGradient;

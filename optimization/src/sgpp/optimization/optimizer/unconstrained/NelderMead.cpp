@@ -247,6 +247,11 @@ namespace SGPP {
         this->delta = delta;
       }
 
+      void NelderMead::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new NelderMead(*this));
+      }
     }
   }
 }

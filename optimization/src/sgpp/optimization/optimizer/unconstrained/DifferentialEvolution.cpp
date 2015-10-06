@@ -271,6 +271,11 @@ namespace SGPP {
         this->populationSize = populationSize;
       }
 
+      void DifferentialEvolution::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new DifferentialEvolution(*this));
+      }
     }
   }
 }

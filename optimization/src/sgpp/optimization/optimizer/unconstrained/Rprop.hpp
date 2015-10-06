@@ -98,6 +98,11 @@ namespace SGPP {
            */
           void setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
           ScalarFunctionGradient& fGradient;

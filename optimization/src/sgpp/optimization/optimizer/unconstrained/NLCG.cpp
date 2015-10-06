@@ -172,6 +172,11 @@ namespace SGPP {
         alpha = restartThreshold;
       }
 
+      void NLCG::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new NLCG(*this));
+      }
     }
   }
 }

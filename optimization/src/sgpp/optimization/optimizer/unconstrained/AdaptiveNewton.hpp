@@ -160,6 +160,11 @@ namespace SGPP {
            */
           void setLineSearchAccuracy(float_t lineSearchAccuracy);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function Hessian
           ScalarFunctionHessian& fHessian;

@@ -179,6 +179,11 @@ namespace SGPP {
            */
           void setP(float_t p);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function Hessian
           ScalarFunctionHessian& fHessian;

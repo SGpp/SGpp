@@ -622,6 +622,11 @@ namespace SGPP {
         return kHist;
       }
 
+      void AugmentedLagrangian::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new AugmentedLagrangian(*this));
+      }
     }
   }
 }
