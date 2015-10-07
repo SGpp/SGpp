@@ -40,9 +40,9 @@ private:
 //    cl_command_queue* command_queue;
 
     base::OCLClonedBuffer deviceData;
-    base::OCLClonedBuffer deviceLevels;
-    base::OCLClonedBuffer deviceIndex;
-    base::OCLClonedBuffer deviceLinIndexToGridIndexMap;
+    base::OCLClonedBuffer deviceStreamArray;
+    base::OCLClonedBuffer deviceSubspaceArray;
+    base::OCLClonedBuffer deviceMetaInfo;
 
     // use pinned memory (on host and device) to speed up data transfers from/to GPU
     base::OCLStretchedBuffer deviceAlpha;
@@ -67,7 +67,7 @@ public:
 
     AdaptiveOCLKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager,
             std::shared_ptr<base::OCLConfigurationParameters> parameters) :
-            deviceData(manager), deviceLevels(manager), deviceIndex(manager),deviceLinIndexToGridIndexMap(manager), deviceAlpha(manager), deviceTemp(manager), kernelSourceBuilder(
+            deviceData(manager), deviceStreamArray(manager), deviceSubspaceArray(manager),deviceMetaInfo(manager), deviceAlpha(manager), deviceTemp(manager), kernelSourceBuilder(
                     parameters), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
                     manager, this->parameters) {
 
@@ -128,9 +128,9 @@ public:
 //        delete[] this->command_queue;
 
         this->deviceData.freeBuffer();
-        this->deviceLevels.freeBuffer();
-        this->deviceIndex.freeBuffer();
-        this->deviceLinIndexToGridIndexMap.freeBuffer();
+        this->deviceStreamArray.freeBuffer();
+        this->deviceSubspaceArray.freeBuffer();
+        this->deviceMetaInfo.freeBuffer();
 
         delete[] this->kernel_mult;
         delete[] this->kernel_multTrans;
@@ -146,9 +146,9 @@ public:
         releaseGridBuffers();
     }
 
-    double mult(real_type* levels, real_type* indices, size_t gridSize, real_type* dataset, size_t datasetSize,
+    double mult(real_type* streamingArray, real_type* subspaceArray, uint32_t* metaInfo, size_t gridSize, real_type* dataset, size_t datasetSize,
             real_type* alpha, real_type* result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, size_t* linIndexToGridIndexMap, size_t linIndexMapSize) {
+            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, uint32_t numStreamingSubs, uint32_t numSubSubs) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -162,7 +162,7 @@ public:
                     kernel_mult);
         }
 
-        initOCLBuffers(levels, indices, gridSize, dataset, datasetSize, numSubspaces, linIndexMapSize, linIndexToGridIndexMap);
+        initOCLBuffers(streamingArray, subspaceArray, metaInfo, gridSize, dataset, datasetSize, numSubspaces, numStreamingSubs, numSubSubs);
         initParams(alpha, gridSize, result, datasetSize);
 
         // determine best fit
@@ -175,8 +175,6 @@ public:
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
-        cl_uint gpu_start_grid = (cl_uint) start_index_grid;
-        cl_uint gpu_end_grid = (cl_uint) numSubspaces;
 //        cl_uint numDims = (cl_uint) this->dims;
         cl_uint clNumSubspaces = (cl_uint) numSubspaces;
 //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
@@ -187,16 +185,14 @@ public:
 //      std::cout << "device: " << i << " start data: " << gpu_start_data << " end data: " << gpu_end_data << std::endl;
 
             if (gpu_end_data > gpu_start_data) {
-                if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceLevels.getBuffer(i)) ||
-                    clSetKernelArg(kernel_mult[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
-                    clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
-                    clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), this->deviceAlpha.getBuffer(i)) ||
-                    clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
-                    clSetKernelArg(kernel_mult[i], 5, sizeof(cl_uint), &clResultSize) || // resultsize == number of entries in dataset
-                    clSetKernelArg(kernel_mult[i], 6, sizeof(cl_uint), &gpu_start_grid) ||
-                    clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &gpu_end_grid) ||
-                    clSetKernelArg(kernel_mult[i], 8, sizeof(cl_uint), &clNumSubspaces) ||
-                    clSetKernelArg(kernel_mult[i], 9, sizeof(cl_mem), this->deviceLinIndexToGridIndexMap.getBuffer(i)) != CL_SUCCESS) {
+                if (clSetKernelArg(kernel_mult[i], 0, sizeof(cl_mem), this->deviceStreamArray.getBuffer(i)) ||
+                    clSetKernelArg(kernel_mult[i], 1, sizeof(cl_mem), this->deviceSubspaceArray.getBuffer(i)) ||
+                    clSetKernelArg(kernel_mult[i], 2, sizeof(cl_mem), this->deviceMetaInfo.getBuffer(i)) ||
+                    clSetKernelArg(kernel_mult[i], 3, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
+                    clSetKernelArg(kernel_mult[i], 4, sizeof(cl_mem), this->deviceAlpha.getBuffer(i)) ||
+                    clSetKernelArg(kernel_mult[i], 5, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
+                    clSetKernelArg(kernel_mult[i], 6, sizeof(cl_uint), &clResultSize) || // resultsize == number of entries in dataset
+                    clSetKernelArg(kernel_mult[i], 7, sizeof(cl_uint), &clNumSubspaces) != CL_SUCCESS) {
 
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
@@ -294,9 +290,9 @@ public:
         return time;
     }
 
-    double multTranspose(real_type* levels, real_type* indices, size_t gridSize, real_type* dataset, size_t datasetSize,
+    double multTranspose(real_type* streamingArray, real_type* subspaceArray, uint32_t* metaInfo, size_t gridSize, real_type* dataset, size_t datasetSize,
             real_type *source, real_type *result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, size_t* linIndexToGridIndexMap, size_t linIndexMapSize) {
+            const size_t start_index_data, const size_t end_index_data, size_t numSubspaces, uint32_t numStreamingSubs, uint32_t numSubSubs) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -310,7 +306,7 @@ public:
                     kernel_multTrans);
         }
 
-        initOCLBuffers(levels, indices, gridSize, dataset, datasetSize, numSubspaces, linIndexMapSize, linIndexToGridIndexMap);
+        initOCLBuffers(streamingArray, subspaceArray, metaInfo, gridSize, dataset, datasetSize, numSubspaces, numStreamingSubs, numSubSubs);
         initParams(result, gridSize, source, datasetSize);
 
         // determine best fit
@@ -345,16 +341,14 @@ public:
 //      std::cout << "device: " << i << " start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
             if (gpu_end_data > gpu_start_data) {
-                if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceLevels.getBuffer(i)) ||
-                    clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), this->deviceIndex.getBuffer(i)) ||
-                    clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
-                    clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
-                    clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), this->deviceAlpha.getBuffer(i)) ||
-                    clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_uint), &clSourceSize) || // sourceSize == number of entries in dataset
-                    clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_uint), &gpu_start_data) ||
-                    clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &gpu_end_data) ||
-                    clSetKernelArg(kernel_multTrans[i], 8, sizeof(cl_uint), &numSubspaces) ||
-                    clSetKernelArg(kernel_multTrans[i], 9, sizeof(cl_mem), this->deviceLinIndexToGridIndexMap.getBuffer(i)) != CL_SUCCESS) {
+                if (clSetKernelArg(kernel_multTrans[i], 0, sizeof(cl_mem), this->deviceStreamArray.getBuffer(i)) ||
+                    clSetKernelArg(kernel_multTrans[i], 1, sizeof(cl_mem), this->deviceSubspaceArray.getBuffer(i)) ||
+                    clSetKernelArg(kernel_multTrans[i], 2, sizeof(cl_mem), this->deviceMetaInfo.getBuffer(i)) ||
+                    clSetKernelArg(kernel_multTrans[i], 3, sizeof(cl_mem), this->deviceData.getBuffer(i)) ||
+                    clSetKernelArg(kernel_multTrans[i], 4, sizeof(cl_mem), this->deviceTemp.getBuffer(i)) ||
+                    clSetKernelArg(kernel_multTrans[i], 5, sizeof(cl_mem), this->deviceAlpha.getBuffer(i)) ||
+                    clSetKernelArg(kernel_multTrans[i], 6, sizeof(cl_uint), &clSourceSize) || // sourceSize == number of entries in dataset
+                    clSetKernelArg(kernel_multTrans[i], 7, sizeof(cl_uint), &numSubspaces) != CL_SUCCESS) {
 
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for kernel " << i << std::endl;
@@ -469,10 +463,10 @@ private:
     }
 
     void releaseGridBuffers() {
-        this->deviceLevels.freeBuffer();
-        this->deviceIndex.freeBuffer();
+        this->deviceStreamArray.freeBuffer();
+        this->deviceSubspaceArray.freeBuffer();
         this->deviceAlpha.freeBuffer();
-        this->deviceLinIndexToGridIndexMap.freeBuffer();
+        this->deviceMetaInfo.freeBuffer();
     }
 
     void releaseDataBuffers() {
@@ -480,24 +474,41 @@ private:
         this->deviceTemp.freeBuffer();
     }
 
-    void initOCLBuffers(real_type* levels, real_type* index, size_t gridSize, real_type* dataset, size_t datasetSize,
-            size_t numSubspaces, size_t linIndexMapSize, size_t* linIndexToGridIndexMap = nullptr) {
+    void initOCLBuffers(real_type* streamingArray, real_type* subspaceArray, uint32_t* metaInfo, size_t gridSize, real_type* dataset, size_t datasetSize,
+            size_t numSubspaces, uint32_t numStreamSubs, uint32_t numSubSubs) {
 
-        if (levels != nullptr && !this->deviceLevels.isInitialized()) {
-            this->deviceLevels.initializeBuffer(levels, sizeof(real_type), numSubspaces * (this->dims + 2));
+        //Hack to prevent oclmanager to initialize a zero-length array
+        //TODO: replace hack with proper logic
+        if (numStreamSubs == 0 && streamingArray != nullptr && !this->deviceStreamArray.isInitialized())
+        {
+            printf("WARNING! No subspaces evaluated using streaming layout \n");
+            real_type dummyArray[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+            this->deviceStreamArray.initializeBuffer(dummyArray, sizeof(real_type), 5);
+        }
+        //Initialize device memory
+        else if (streamingArray != nullptr && !this->deviceStreamArray.isInitialized()) {
+            this->deviceStreamArray.initializeBuffer(streamingArray, sizeof(real_type), numStreamSubs * (this->dims + 1));
         }
 
-        if (index != nullptr && !this->deviceIndex.isInitialized()) {
-            this->deviceIndex.initializeBuffer(index, sizeof(real_type), gridSize * (this->dims + 1));
+        if ( numSubSubs == 0 && subspaceArray != nullptr && !this->deviceSubspaceArray.isInitialized())
+        {
+            printf("WARNING! No subspaces evaluated using subspace layout \n");
+            real_type dummyArray[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+            this->deviceSubspaceArray.initializeBuffer(dummyArray, sizeof(real_type), 5);
+        }
+        else if (subspaceArray != nullptr && !this->deviceSubspaceArray.isInitialized()) {
+            this->deviceSubspaceArray.initializeBuffer(subspaceArray, sizeof(real_type), numSubSubs * (this->dims + 1));
+        }
+
+        if (metaInfo != nullptr && !this->deviceMetaInfo.isInitialized()) {
+            this->deviceMetaInfo.initializeBuffer(metaInfo, sizeof(uint32_t), numSubspaces*(this->dims + 3));
         }
 
         if (!this->deviceData.isInitialized()) {
             this->deviceData.initializeBuffer(dataset, sizeof(real_type), datasetSize * this->dims);
         }
 
-        if (linIndexToGridIndexMap != nullptr && !this->deviceLinIndexToGridIndexMap.isInitialized()) {
-            this->deviceLinIndexToGridIndexMap.initializeBuffer(linIndexToGridIndexMap, sizeof(size_t), linIndexMapSize);
-        }
+
 
     }
 

@@ -22,7 +22,8 @@ namespace datadriven {
 template<typename T>
 class OperationMultiEvalAdaptiveOCL: public base::OperationMultipleEval {
 protected:
-    size_t dims;SGPP::base::DataMatrix preparedDataset;
+    size_t m_dims;
+    SGPP::base::DataMatrix preparedDataset;
     base::OCLConfigurationParameters parameters;
     T *kernelDataset = nullptr;
     size_t datasetSize = 0;
@@ -37,6 +38,16 @@ protected:
     T* alphas = nullptr;
     size_t gridSize = 0;
     size_t numSubspaces = 0;
+
+    uint32_t* m_metaInfo;
+    T* m_streamingArray;
+    T* m_subspaceArray;
+    size_t m_streamingCounter;
+    size_t m_subspaceCounter;
+    size_t m_metaCounter = 0;
+    uint32_t m_streamElementCount = 0;
+    uint32_t m_subElementCount = 0;
+
     /// Timer object to handle time measurements
     SGPP::base::SGppStopwatch myTimer;
 
@@ -54,8 +65,8 @@ public:
             SGPP::base::SGppStopwatch()), duration(-1.0) {
         this->manager = std::make_shared<base::OCLManager>(parameters);
 
-        this->dims = dataset.getNcols(); //be aware of transpose!
-        this->kernel = std::unique_ptr<AdaptiveOCLKernelImpl<T>>(new AdaptiveOCLKernelImpl<T>(dims, this->manager, parameters));
+        this->m_dims = dataset.getNcols(); //be aware of transpose!
+        this->kernel = std::unique_ptr<AdaptiveOCLKernelImpl<T>>(new AdaptiveOCLKernelImpl<T>(m_dims, this->manager, parameters));
 
         this->storage = grid.getStorage();
         this->gridSize = grid.getSize();
@@ -123,8 +134,8 @@ public:
             resultArray[i] = 0.0;
         }
 
-        this->kernel->mult(this->levels, this->indices, this->gridSize, this->kernelDataset, this->datasetSize,
-                this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces, this->linIndexToGridIndexMap, this->linIndexMapSize);
+        this->kernel->mult(m_streamingArray, m_subspaceArray, m_metaInfo, this->gridSize, this->kernelDataset, this->datasetSize,
+                this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo, this->numSubspaces, m_streamElementCount, m_subElementCount);
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -162,9 +173,9 @@ public:
             resultArray[i] = 0.0;
         }
 
-        this->kernel->multTranspose(this->levels, this->indices, this->gridSize, this->kernelDataset,
+        this->kernel->multTranspose(m_streamingArray, m_subspaceArray, m_metaInfo, this->gridSize, this->kernelDataset,
                 this->preparedDataset.getNcols(), this->alphas, resultArray, gridFrom, gridTo, datasetFrom, datasetTo,
-                this->numSubspaces, this->linIndexToGridIndexMap, this->linIndexMapSize);
+                this->numSubspaces, m_streamElementCount, m_subElementCount);
 
         for (size_t i = 0; i < result.getSize(); i++) {
             result[i] = resultArray[i];
@@ -180,7 +191,7 @@ public:
     }
 
     void prepare() override {
-        this->recalculateLevelAndIndex();
+        this->buildDatastructure();
 
         this->kernel->resetKernel();
 
@@ -245,13 +256,13 @@ private:
     }
 
     //TODO: look up how this is supposed to be done
-    uint32_t getSubspaceSize ( size_t dim, uint32_t* level) {
+    uint32_t getSubspaceSize ( uint32_t* level) {
 
         uint32_t sum = 0;
         //somOf(2^level[d]/2)
-        for (size_t d = 0; d < dim; d++) {
+        for (size_t d = 0; d < m_dims; d++) {
             if ( level[d] < 1 )
-              throw("Negative level value.");
+                throw std::runtime_error("Negative level value.");
 
             //size += static_cast<uint32_t>(powf(2.0f,(float)level[d])/2.0f);
             sum += level[d] - 1;
@@ -260,54 +271,127 @@ private:
         return static_cast<uint32_t>(pow(2.0, sum));
     }
 
-    //TODO: check int/float conversions happening below
-    uint32_t calcLinearIndex ( size_t dim, uint32_t* level, uint32_t* index)
+    uint32_t calcLinearIndex ( uint32_t* level, uint32_t* index)
     {
       //calc linear index of gridpoint (relative to subspace)
       uint32_t result = 0;
       uint32_t index_half = 0;
       uint32_t level_calc = 0;
 
-      for (size_t d = 0; d < dim - 1; d++) {
+      for (size_t d = 0; d < m_dims - 1; d++) {
           index_half = index[d] >> 1;
           level_calc = static_cast<uint32_t>(pow(2.0, level[d+1]-1.0));
           result += index_half;
           result *= level_calc;
       }
 
-      result += index[dim-1] >> 1;
+      result += index[m_dims-1] >> 1;
 
       return result;
     }
 
+    bool isEvalTypeStreaming (uint32_t* level, uint32_t numIndices)
+    {
+      float subspaceDensity = ((float)numIndices)/((float)getSubspaceSize(level));
+      if (subspaceDensity < 0.5)
+      {
+          return true;
+      }
+      else
+      {
+          return false;
+      }
+    }
 
+    void addMetaEntry(uint32_t* level, uint32_t startIndex, uint32_t numIndices, bool isStreaming)
+    {
+        size_t metaInfoStepSize = m_dims + 3;
+        m_metaInfo[metaInfoStepSize*m_metaCounter] = isStreaming ? 1 : 0;
+        m_metaInfo[metaInfoStepSize*m_metaCounter + 1] = startIndex;
+        m_metaInfo[metaInfoStepSize*m_metaCounter + 2] = numIndices;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////                                                                                                                          //
-//// CURRENT DATASTRUCTURE                                                                                                    //
-////                                                                                                                          //
-//// this->levels                                                                                                             //
-////+----------+-------------------------+----------+-------------------------+---+                                           //
-////|numIndices|(level_0_0,...,level_0_d)|numIndices|(level_1_0,...,level_1_d)|...|                                           //
-////+----------+-------------------------+----------+-------------------------+---+                                           //
-////                                                                                                                          //
-//// this->indices                                                                                                            //
-////+---------+-------------------------+---------+-------------------------+---+                                             //
-////|gridIndex|(index_0_0,...,index_0_d)|gridIndex|(index_1_0,...,index_1_d)|...|                                             //
-////+---------+-------------------------+---------+-------------------------+---+                                             //
-////                                                                                                                          //
-//// this->linIndexToGridIndexMap                                                                                             //
-////+-----------+-----------------------+---+                                                                                 //
-////|gridIndex_1|gridIndex_2|gridIndex_3|...|                                                                                 //
-////+-----------+-----------------------+---+                                                                                 //
-////      ^           ^                                                                                                       //
-////      |           |                                                                                                       //
-//// linIndex_0   linIndex_1                                                                                                  //
-////                                                                                                                          //
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        for ( int d = 0; d < m_dims; d++)
+        {
+            m_metaInfo[metaInfoStepSize*m_metaCounter + 3 + d] = level[d];
+        }
 
-    void recalculateLevelAndIndex() {
+        m_metaCounter++;
+    }
 
+    void addToStreamingArray(uint32_t* level, std::vector<uint32_t> indexList, uint32_t numIndices)
+    {
+        //read and store indices
+        for (int i = 0; i < numIndices; i++) {
+
+            size_t indexStepSize = (m_dims + 1); //indexVector + gridIndex
+
+            //store index
+            for (int d = 0; d < m_dims; d++) {
+                T tmpVal = (T) (indexList[(m_dims) + (i * (m_dims + 1)) + d + 1]);
+                m_streamingArray[(m_streamingCounter + i)*indexStepSize + d] = tmpVal;
+            }
+
+            //store gridIndex
+            T gridIndex = (T) (indexList[(this->m_dims) + (i * (this->m_dims + 1))]);
+            m_streamingArray[(m_streamingCounter + i)*indexStepSize + m_dims] = gridIndex;
+        }
+
+        addMetaEntry(level, static_cast<uint32_t>(m_streamingCounter), numIndices, true);
+        m_streamingCounter += numIndices;
+    }
+
+    void addToSubspaceArray(uint32_t* level, std::vector<uint32_t> indexList, uint32_t numIndices)
+    {
+        uint32_t subSize = getSubspaceSize(level);
+        uint32_t indexStepSize = static_cast<uint32_t>(m_dims + 1);
+
+        for (int i = 0; i < subSize; i++)
+        {
+            for (int d = 0; d < m_dims; d++)
+            {
+                m_subspaceArray[(m_subspaceCounter+i)*indexStepSize + d] = static_cast<T>(0);
+            }
+            m_subspaceArray[(m_subspaceCounter+i)*indexStepSize + m_dims] = static_cast<T>(NAN);
+        }
+
+        //read and store indices
+        for (int i = 0; i < numIndices; i++) {
+
+            uint32_t* index = new uint32_t[m_dims];
+
+            //store index
+            int levelIndexSum = 0;
+            for (int d = 0; d < m_dims; d++) {
+                T tmpVal = (T) (indexList[(m_dims) + (i * (m_dims + 1)) + d + 1]);
+                index[d] = static_cast<uint32_t>(tmpVal);
+                levelIndexSum += index[d] + level[d];
+            }
+
+            size_t linIndex = calcLinearIndex(level, index);
+
+            for (int d = 0; d < m_dims; d++) {
+                m_subspaceArray[(m_subspaceCounter + linIndex)*indexStepSize + d] = static_cast<T>(index[d]);
+            }
+            //alternative
+            //memcpy(&m_subspaceArray[(m_subspaceCounter + linIndex)*indexStepSize], index, sizeof(uint32_t)*m_dims);
+
+            //store gridIndex
+            T gridIndex = (T) (indexList[(this->m_dims) + (i * (this->m_dims + 1))]);
+            //ugly hack to fix padding points messing up the calculation
+            //TODO: REMOVE!!
+            if ( levelIndexSum == m_dims*2)
+            {
+                gridIndex = 0;
+            }
+            m_subspaceArray[(m_subspaceCounter + linIndex)*indexStepSize + m_dims] = gridIndex;
+        }
+
+        addMetaEntry(level, static_cast<uint32_t>(m_subspaceCounter), subSize, false);
+        m_subspaceCounter += subSize;
+    }
+
+    void buildDatastructure()
+    {
         size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
         size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
 
@@ -325,12 +409,13 @@ private:
 
         this->gridSize = this->storage->size() + padding;
 
+        m_streamingCounter = 0;
+        m_subspaceCounter = 0;
+        m_metaCounter = 0;
+        m_streamElementCount = 0;
+        m_subElementCount = 0;
 
         uint32_t maxLevel = (uint32_t) (this->storage->getMaxLevel());
-        size_t maxLinIndex = 0; //highest possible linear index (should equal highest subspace size)
-        uint32_t curLevel = 1;
-        uint32_t curIndex = 1;
-        uint32_t regularGridSize = 0;
 
         std::map<uint32_t, std::vector<uint32_t> > flatLevelList;
         flatLevelList.clear();
@@ -340,14 +425,18 @@ private:
         //vector used to preserve subspace order as std::map silently re-arranges items
         std::vector<uint32_t> flatLevelOrder;
 
+        uint32_t curLevel = 1;
+        uint32_t curIndex = 1;
+
         //iterate through the grid to read out levels and indices
         for (size_t gridIndex = 0; gridIndex < this->gridSize; gridIndex++) {
-            uint32_t* level = new uint32_t[this->dims];
-            uint32_t* index = new uint32_t[this->dims];
+            uint32_t* level = new uint32_t[this->m_dims];
+            uint32_t* index = new uint32_t[this->m_dims];
 
             if (gridIndex < this->storage->size()) {
                 SGPP::base::GridIndex* point = this->storage->get(gridIndex);
-                for (size_t d = 0; d < this->dims; d++) {
+
+                for (size_t d = 0; d < this->m_dims; d++) {
                     point->get(d, curLevel, curIndex);
                     level[d] = curLevel;
                     index[d] = curIndex;
@@ -355,20 +444,15 @@ private:
             }
             //add points for padding that don't affect evaluation
             else {
-                for (size_t d = 0; d < this->dims; d++) {
-                    level[d] = 1.0f;
-                    index[d] = 1.0f;
+                for (size_t d = 0; d < this->m_dims; d++) {
+                    level[d] = 1;
+                    index[d] = 1;
                 }
             }
 
-            size_t linIndex = calcLinearIndex(this->dims, level, index);
-            if ( linIndex > maxLinIndex )
-            {
-                maxLinIndex = linIndex;
-            }
 
             //calculate flatLevel to uniquely identify each subspace
-            uint32_t flatLevel = flattenLevel(this->dims, level, maxLevel);
+            uint32_t flatLevel = flattenLevel(this->m_dims, level, maxLevel);
             std::map<uint32_t, std::vector<uint32_t> >::iterator flatLevelEntry = flatLevelList.find(flatLevel);
 
             //flatLevel doesn't exist, add a new subspace
@@ -376,9 +460,7 @@ private:
                 std::vector<uint32_t> indexList;
                 flatLevelOrder.push_back(flatLevel);
 
-                regularGridSize += getSubspaceSize(this->dims, level);
-
-                for (size_t d = 0; d < this->dims; d++) {
+                for (size_t d = 0; d < m_dims; d++) {
                     indexList.push_back(level[d]);
                 }
                 /*printf("new subspace added! flatLevel: %i \n", flatLevel);
@@ -389,7 +471,7 @@ private:
                 //store gridIndex to map to alphaArray
                 indexList.push_back((uint32_t) gridIndex);
                 //store index
-                for (size_t d = 0; d < this->dims; d++) {
+                for (size_t d = 0; d < this->m_dims; d++) {
                     indexList.push_back(index[d]);
                 }
 
@@ -399,7 +481,7 @@ private:
                 //store gridIndex to map to alphaArray
                 flatLevelEntry->second.push_back((uint32_t) gridIndex);
                 //store index
-                for (size_t d = 0; d < this->dims; d++) {
+                for (size_t d = 0; d < this->m_dims; d++) {
                     flatLevelEntry->second.push_back(index[d]);
                 }
 
@@ -409,94 +491,74 @@ private:
             }
         }
 
+
+
 //    flatLevelList.clear();
 
         printf("GridPoints: %lu Subspaces: %lu \n", this->gridSize,numSubspaces);
         printf("Subspace Utilization: %f \n", ((double)(this->gridSize))/((double)numSubspaces));
 
 
-        this->levels = new T[(this->dims + 2) * numSubspaces];
-        this->indices = new T[(this->dims + 1) * this->gridSize];
-        //since a linear index always assumes a regular grid we have to make this array the size of such
-        this->linIndexMapSize = maxLinIndex + regularGridSize + padding;
-        this->linIndexToGridIndexMap = new size_t[this->linIndexMapSize];
-
-        size_t indexCounter = 0; //always contains the start index of this->indices for the current subspace
-        size_t levelCounter = 0;
-        size_t regularIndexCounter = 0; //always points to the start of linIndixToGridIndexMap for the current subspace
-
-
+        //TODO: dont repeat the loop
         //iterate our previously constructed contains and fill our arrays
         typedef std::map<uint32_t, std::vector<uint32_t> >::iterator it_type;
         for (auto &flatLevel : flatLevelOrder) {
-
             //as mentioned above this preserves the initial order of appearance
             it_type kv = flatLevelList.find(flatLevel);
 
-            size_t numIndices = (kv->second.size() - this->dims) / (this->dims + 1);
+            uint32_t numIndices = static_cast<uint32_t>((static_cast<size_t>(kv->second.size()) - this->m_dims) / (this->m_dims + 1));
 
             //read the level
-            uint32_t* level = new uint32_t[this->dims];
-            for (int d = 0; d < this->dims; d++) {
+            uint32_t* level = new uint32_t[this->m_dims];
+            for (int d = 0; d < this->m_dims; d++) {
                 level[d] = kv->second[d];
             }
 
-            uint32_t subspaceSize = getSubspaceSize(this->dims, level);
+            if ( isEvalTypeStreaming(level, numIndices) ) {
 
-            size_t levelStepSize = (this->dims + 2); //levelvector + numIndicies + regularSize
-
-            //store the number of gridPoints of this subspace
-            this->levels[(levelCounter * levelStepSize)] = (T) (indexCounter + numIndices);
-
-            //store the regular subspace Size
-            this->levels[(levelCounter * levelStepSize) + 1] = (T)(regularIndexCounter + subspaceSize);
-
-            //store level
-            for (int d = 0; d < this->dims; d++) {
-
-                this->levels[(levelCounter * levelStepSize) + d + 2] = (T) (level[d]);
+                m_streamElementCount += numIndices;
+            }
+            else
+            {
+                m_subElementCount += getSubspaceSize(level);
             }
 
-            //printf("flat_level: %i \n", kv->first);
-            //printf("level_stored: %i \t %i \t %i \t %i \n", level[0], level[1], level[2], level[3]);
-
-            //read and store indices
-            for (int i = 0; i < numIndices; i++) {
-
-                size_t indexStepSize = (this->dims + 1); //indexVector + gridIndex
-
-                //store alpha index
-                T gridIndex = (T) (kv->second[(this->dims) + (i * (this->dims + 1))]);
-                this->indices[(indexCounter + i) * indexStepSize] = gridIndex;
-
-                uint32_t* index = new uint32_t[this->dims];
-
-                //store index
-                for (int d = 0; d < this->dims; d++) {
-                    T tmpVal = (T) (kv->second[(this->dims) + (i * (this->dims + 1)) + d + 1]);
-                    this->indices[(indexCounter + i) * indexStepSize + d + 1] = tmpVal;
-                    index[d] = static_cast<uint32_t>(tmpVal);
-                }
-
-                size_t linIndex = calcLinearIndex(this->dims, level, index);
-
-                //store calculated linearIndex
-                this->linIndexToGridIndexMap[regularIndexCounter + linIndex] = static_cast<size_t>(gridIndex);
-                //printf("lin_idx: %i \t index_start: %i \t sum: %i  \n", linIndex, indexCounter, indexCounter + linIndex);
-                //printf("gridIndex: %i \n", static_cast<size_t>(gridIndex));
-            }
-
-            //increment counters
-            indexCounter += numIndices;
-            regularIndexCounter += subspaceSize;
-            levelCounter += 1;
         }
 
-        printf("indexCounter: %lu", indexCounter);
+        uint32_t metaInfoSize = static_cast<uint32_t>(m_dims) + 3; //level vector + start, size and type
+        uint32_t subElementSize = static_cast<uint32_t>(m_dims) + 1;
+        uint32_t streamElementSize = static_cast<uint32_t>(m_dims) + 1;
+
+        this->m_metaInfo = new uint32_t[this->numSubspaces*metaInfoSize];
+        this->m_subspaceArray = new T[m_subElementCount*subElementSize];
+        this->m_streamingArray = new T[m_streamElementCount*streamElementSize];
+
+        for (auto &flatLevel : flatLevelOrder) {
+            //as mentioned above this preserves the initial order of appearance
+            it_type kv = flatLevelList.find(flatLevel);
+
+            uint32_t numIndices = static_cast<uint32_t>((kv->second.size() - this->m_dims) / (this->m_dims + 1));
+
+            //read the level
+            uint32_t* level = new uint32_t[this->m_dims];
+            for (int d = 0; d < this->m_dims; d++) {
+                level[d] = kv->second[d];
+            }
+
+            if ( isEvalTypeStreaming(level, numIndices) ) {
+
+                addToStreamingArray(level, kv->second, numIndices);
+            }
+            else
+            {
+                addToSubspaceArray(level, kv->second, numIndices);
+            }
+
+        }
+        printf("subElementCount: %i, streamElementCount: %i \n", m_subElementCount, m_streamElementCount);
+
 
     }
-
 };
-
 }
 }
