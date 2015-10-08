@@ -28,8 +28,8 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(base::Grid& grid, base:
         parameters->set("KERNEL_DATA_BLOCKING_SIZE", "1");
         parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
         parameters->set("KERNEL_TRANS_DATA_BLOCK_SIZE", "1");
-        parameters->set("ADAPTIVE_STREAMING_HARD_LIMIT", "10");
-        parameters->set("ADAPTIVE_STREAMING_DENSITY", "0.1");
+        parameters->set("ADAPTIVE_STREAMING_HARD_LIMIT", "10"); //absolute value
+        parameters->set("ADAPTIVE_STREAMING_DENSITY", "5"); //In percent
 
         parameters->readFromFile("AdaptiveOCL.cfg");
     }
