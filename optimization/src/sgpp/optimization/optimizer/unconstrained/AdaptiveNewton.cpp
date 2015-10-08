@@ -61,7 +61,7 @@ namespace SGPP {
       void AdaptiveNewton::optimize() {
         printer.printStatusBegin("Optimizing (adaptive Newton)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;
@@ -118,8 +118,6 @@ namespace SGPP {
           }
 
           // solve linear system with damped Hessian as system matrix
-          system.setA(hessianFx);
-
           if (statusPrintingEnabled) {
             printer.disableStatusPrinting();
           }
@@ -182,7 +180,6 @@ namespace SGPP {
               }
 
               // solve linear system with damped Hessian as system matrix
-              system.setA(hessianFx);
               printer.disableStatusPrinting();
               lsSolved = sleSolver.solve(system, b, dir);
               printer.enableStatusPrinting();

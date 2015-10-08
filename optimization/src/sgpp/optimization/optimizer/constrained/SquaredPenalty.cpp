@@ -20,7 +20,7 @@ namespace SGPP {
                                        VectorFunction& g,
                                        VectorFunction& h,
                                        float_t mu) :
-              ScalarFunction(f.getDimension()),
+              ScalarFunction(f.getNumberOfParameters()),
               f(f),
               g(g),
               h(h),
@@ -83,7 +83,7 @@ namespace SGPP {
                                        VectorFunctionGradient& gGradient,
                                        VectorFunctionGradient& hGradient,
                                        float_t mu) :
-              ScalarFunctionGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getNumberOfParameters()),
               fGradient(fGradient),
               gGradient(gGradient),
               hGradient(hGradient),
@@ -185,7 +185,7 @@ namespace SGPP {
       void SquaredPenalty::optimize() {
         printer.printStatusBegin("Optimizing (Squared Penalty)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

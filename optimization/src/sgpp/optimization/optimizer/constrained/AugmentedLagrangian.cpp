@@ -23,7 +23,7 @@ namespace SGPP {
                                        VectorFunction& h,
                                        float_t mu,
                                        base::DataVector& lambda) :
-              ScalarFunction(f.getDimension()),
+              ScalarFunction(f.getNumberOfParameters()),
               f(f),
               g(g),
               h(h),
@@ -91,7 +91,7 @@ namespace SGPP {
                                        VectorFunctionGradient& hGradient,
                                        float_t mu,
                                        base::DataVector& lambda) :
-              ScalarFunctionGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getNumberOfParameters()),
               fGradient(fGradient),
               gGradient(gGradient),
               hGradient(hGradient),
@@ -424,7 +424,7 @@ namespace SGPP {
       void AugmentedLagrangian::optimize() {
         printer.printStatusBegin("Optimizing (Augmented Lagrangian)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;
@@ -522,7 +522,7 @@ namespace SGPP {
       }
 
       base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
         const size_t mG = g.getNumberOfComponents();
         const size_t mH = h.getNumberOfComponents();
         base::DataVector x(d, 0.5);

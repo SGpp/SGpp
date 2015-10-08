@@ -34,10 +34,14 @@ namespace std {
 %rename(operatorAssignment) SGPP::base::DataMatrixSP::operator=;
 %ignore SGPP::base::DataVector::operator[];
 %ignore SGPP::base::DataVectorSP::operator[];
+%ignore SGPP::base::DataVector::getPointer const;
+%ignore SGPP::base::DataVectorSP::getPointer const;
 %ignore SGPP::base::DataMatrix::operator[];
 %ignore SGPP::base::DataMatrixSP::operator[];
 %ignore SGPP::base::DataMatrix::operator();
 %ignore SGPP::base::DataMatrixSP::operator();
+%ignore SGPP::base::DataMatrix::getPointer const;
+%ignore SGPP::base::DataMatrixSP::getPointer const;
 %include "base/src/sgpp/base/datatypes/DataVectorDefinition.hpp"
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
 %include "base/src/sgpp/base/datatypes/DataMatrixSP.hpp"

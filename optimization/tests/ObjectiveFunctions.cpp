@@ -121,6 +121,68 @@ void SphereHessian::clone(std::unique_ptr<ScalarFunctionHessian>& clone) const {
 
 
 
+DeformedLinearPhiFunction::DeformedLinearPhiFunction(size_t d) :
+  VectorFunction(d, d),
+  eigenvalues(d) {
+  for (size_t t = 0; t < d; t++) {
+    eigenvalues[t] = std::pow(10.0, t);
+  }
+}
+
+void DeformedLinearPhiFunction::eval(const SGPP::base::DataVector& x,
+                                     SGPP::base::DataVector& value) {
+  for (size_t t = 0; t < d; t++) {
+    if ((x[t] < 0.0) || (x[t] > 1.0)) {
+      value.setAll(INFINITY);
+      return;
+    }
+
+    value[t] = eigenvalues[t] * (x[t] - 0.1);
+  }
+}
+
+void DeformedLinearPhiFunction::clone(
+  std::unique_ptr<VectorFunction>& clone) const {
+  clone = std::unique_ptr<VectorFunction>(
+            new DeformedLinearPhiFunction(*this));
+}
+
+
+
+DeformedLinearPhiGradient::DeformedLinearPhiGradient(size_t d) :
+  VectorFunctionGradient(d, d),
+  eigenvalues(d) {
+  for (size_t t = 0; t < d; t++) {
+    eigenvalues[t] = std::pow(10.0, t);
+  }
+}
+
+void DeformedLinearPhiGradient::eval(const SGPP::base::DataVector& x,
+                                     SGPP::base::DataVector& value,
+                                     SGPP::base::DataMatrix& gradient) {
+  for (size_t t = 0; t < d; t++) {
+    if ((x[t] < 0.0) || (x[t] > 1.0)) {
+      value.setAll(INFINITY);
+      gradient.setAll(NAN);
+      return;
+    }
+
+    value[t] = eigenvalues[t] * (x[t] - 0.1);
+
+    for (size_t t2 = 0; t2 < d; t2++) {
+      gradient(t, t2) = ((t == t2) ? eigenvalues[t] : 0.0);
+    }
+  }
+}
+
+void DeformedLinearPhiGradient::clone(
+  std::unique_ptr<VectorFunctionGradient>& clone) const {
+  clone = std::unique_ptr<VectorFunctionGradient>(
+            new DeformedLinearPhiGradient(*this));
+}
+
+
+
 G3ObjectiveFunction::G3ObjectiveFunction(size_t d) : ScalarFunction(d) {
 }
 

@@ -34,25 +34,25 @@ namespace SGPP {
           || (grid.getType() == base::GridType::Linear)
           || (grid.getType() == base::GridType::FundamentalSpline)) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::LinearGrid(f.getDimension()));
+                       new base::LinearGrid(f.getNumberOfParameters()));
       } else if ((grid.getType() == base::GridType::BsplineBoundary)
                  || (grid.getType() == base::GridType::WaveletBoundary)
                  || (grid.getType() == base::GridType::LinearBoundary)) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::LinearBoundaryGrid(f.getDimension()));
+                       new base::LinearBoundaryGrid(f.getNumberOfParameters()));
       } else if ((grid.getType() == base::GridType::BsplineClenshawCurtis)
                  || (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::LinearClenshawCurtisGrid(f.getDimension()));
+                       new base::LinearClenshawCurtisGrid(f.getNumberOfParameters()));
       } else if ((grid.getType() == base::GridType::ModBspline)
                  || (grid.getType() == base::GridType::ModWavelet)
                  || (grid.getType() == base::GridType::ModLinear)
                  || (grid.getType() == base::GridType::ModFundamentalSpline)) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::ModLinearGrid(f.getDimension()));
+                       new base::ModLinearGrid(f.getNumberOfParameters()));
       } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
         linearGrid = std::unique_ptr<base::Grid>(
-                       new base::ModBsplineClenshawCurtisGrid(f.getDimension(), 1));
+                       new base::ModBsplineClenshawCurtisGrid(f.getNumberOfParameters(), 1));
       } else {
         throw std::invalid_argument("Grid type not supported.");
       }

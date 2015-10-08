@@ -65,7 +65,7 @@ int main(int argc, const char* argv[]) {
   // objective function
   ExampleFunction f;
   // dimension of domain
-  const size_t d = f.getDimension();
+  const size_t d = f.getNumberOfParameters();
   // B-spline degree
   const size_t p = 3;
   // maximal number of grid points

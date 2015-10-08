@@ -33,7 +33,7 @@ namespace SGPP {
       void GradientDescent::optimize() {
         printer.printStatusBegin("Optimizing (gradient descent)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

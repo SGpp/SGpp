@@ -33,7 +33,7 @@ print "SGPP::optimization example program started.\n"
 # objective function
 f = ExampleFunction()
 # dimension of domain
-d = f.getDimension()
+d = f.getNumberOfParameters()
 # B-spline degree
 p = 3
 # maximal number of grid points

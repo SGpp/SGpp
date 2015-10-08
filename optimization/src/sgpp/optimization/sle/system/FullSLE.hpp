@@ -61,13 +61,6 @@ namespace SGPP {
           return A;
         }
 
-        /**
-         * @param A coefficient matrix (do not destruct before this object!)
-         */
-        void setA(base::DataMatrix& A) {
-          this->A = A;
-        }
-
         size_t getDimension() const {
           return A.getNrows();
         }

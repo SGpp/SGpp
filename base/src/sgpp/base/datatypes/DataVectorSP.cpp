@@ -423,6 +423,10 @@ namespace SGPP {
       return data;
     }
 
+    const float* DataVectorSP::getPointer() const {
+      return data;
+    }
+
     DataVectorSP::~DataVectorSP() {
       delete[] data;
     }

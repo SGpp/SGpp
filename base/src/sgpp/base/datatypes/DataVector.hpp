@@ -379,6 +379,13 @@ namespace SGPP {
         float_t* getPointer();
 
         /**
+         * gets a const pointer to the data array
+         *
+         * @return const pointer to the data array
+         */
+        const float_t* getPointer() const;
+
+        /**
          * gets the elements stored in the vector
          *
          * @return elements stored in the vector

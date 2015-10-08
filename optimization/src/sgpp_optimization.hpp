@@ -91,6 +91,9 @@
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
+#include <sgpp/optimization/optimizer/least_squares/LeastSquaresOptimizer.hpp>
+#include <sgpp/optimization/optimizer/least_squares/LevenbergMarquardt.hpp>
+
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>

@@ -141,7 +141,7 @@ namespace SGPP {
          * @param vec DataVectorSP (length has to match getNcols()) with data
          * @return Index of new row
          */
-        size_t appendRow(DataVectorSP& vec);
+        size_t appendRow(const DataVectorSP& vec);
 
 
         /**
@@ -425,6 +425,13 @@ namespace SGPP {
          * @return Pointer to data
          */
         float* getPointer();
+
+        /**
+         * Returns const pointer to float array containing underlying data.
+         *
+         * @return Const pointer to data
+         */
+        const float* getPointer() const;
 
         /**
          * Returns the total number of (used) elements, i.e., getNrows()*getNCols()

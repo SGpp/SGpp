@@ -123,6 +123,9 @@ const bool UMFPACK_ENABLED;
 %rename(OptNLCG)                    SGPP::optimization::optimizer::NLCG;
 %rename(OptRprop)                   SGPP::optimization::optimizer::Rprop;
 
+%rename(OptLeastSquaresOptimizer)   SGPP::optimization::optimizer::LeastSquaresOptimizer;
+%rename(OptLevenbergMarquardt)      SGPP::optimization::optimizer::LevenbergMarquardt;
+
 %rename(OptConstrainedOptimizer)    SGPP::optimization::optimizer::ConstrainedOptimizer;
 %rename(OptAugmentedLagrangian)     SGPP::optimization::optimizer::AugmentedLagrangian;
 %rename(OptLogBarrier)              SGPP::optimization::optimizer::LogBarrier;
@@ -314,6 +317,9 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/Newton.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/NLCG.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/Rprop.hpp"
+
+%include "optimization/src/sgpp/optimization/optimizer/least_squares/LeastSquaresOptimizer.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/least_squares/LevenbergMarquardt.hpp"
 
 %include "optimization/src/sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp"

@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP
+#ifndef SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEASTSQUARESOPTIMIZER_HPP
+#define SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEASTSQUARESOPTIMIZER_HPP
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/optimization/function/vector/VectorFunction.hpp>
 
 #include <cstddef>
 #include <cmath>
@@ -20,9 +20,9 @@ namespace SGPP {
     namespace optimizer {
 
       /**
-       * Abstract class for optimizing objective functions.
+       * Abstract class for solving non-linear least squares problems.
        */
-      class UnconstrainedOptimizer {
+      class LeastSquaresOptimizer {
         public:
           /// default maximal number of iterations or function evaluations
           static const size_t DEFAULT_N = 1000;
@@ -32,14 +32,14 @@ namespace SGPP {
            * The starting point is set to
            * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
            *
-           * @param f     function to optimize
+           * @param phi   phi function
            * @param N     maximal number of iterations or function evaluations
            *              (depending on the implementation)
            */
-          UnconstrainedOptimizer(ScalarFunction& f, size_t N = DEFAULT_N) :
-            f(f),
+          LeastSquaresOptimizer(VectorFunction& phi, size_t N = DEFAULT_N) :
+            phi(phi),
             N(N),
-            x0(f.getNumberOfParameters(), 0.5),
+            x0(phi.getNumberOfParameters(), 0.5),
             xOpt(0),
             fOpt(NAN),
             xHist(0, 0),
@@ -49,7 +49,7 @@ namespace SGPP {
           /**
            * Virtual destructor.
            */
-          virtual ~UnconstrainedOptimizer() {
+          virtual ~LeastSquaresOptimizer() {
           }
 
           /**
@@ -60,10 +60,10 @@ namespace SGPP {
           virtual void optimize() = 0;
 
           /**
-           * @return objective function
+           * @return phi
            */
-          ScalarFunction& getObjectiveFunction() const {
-            return f;
+          VectorFunction& getPhiFunction() const {
+            return phi;
           }
 
           /**
@@ -135,12 +135,12 @@ namespace SGPP {
            *
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>&
+          virtual void clone(std::unique_ptr<LeastSquaresOptimizer>&
                              clone) const = 0;
 
         protected:
-          /// objective function
-          ScalarFunction& f;
+          /// phi function
+          VectorFunction& phi;
           /// maximal number of iterations or function evaluations
           size_t N;
           /// starting point
@@ -159,4 +159,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP */
+#endif /* SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEASTSQUARESOPTIMIZER_HPP */

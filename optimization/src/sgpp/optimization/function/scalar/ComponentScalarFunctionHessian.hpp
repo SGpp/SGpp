@@ -54,10 +54,10 @@ namespace SGPP {
           ScalarFunctionHessian((defaultValues.size() > 0) ?
                                 std::count(defaultValues.begin(),
                                            defaultValues.end(), NAN) :
-                                fHessian.getDimension()),
+                                fHessian.getNumberOfParameters()),
           fHessianScalar(&fHessian),
           fHessianVector(nullptr),
-          dF(fHessian.getDimension()),
+          dF(fHessian.getNumberOfParameters()),
           k(0),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),
@@ -92,10 +92,10 @@ namespace SGPP {
           ScalarFunctionHessian((defaultValues.size() > 0) ?
                                 std::count(defaultValues.begin(),
                                            defaultValues.end(), NAN) :
-                                fHessian.getDimension()),
+                                fHessian.getNumberOfParameters()),
           fHessianScalar(nullptr),
           fHessianVector(&fHessian),
-          dF(fHessian.getDimension()),
+          dF(fHessian.getNumberOfParameters()),
           k(k),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),

@@ -42,7 +42,7 @@ public class java_example {
     // objective function
     ExampleFunction f = new ExampleFunction();
     // dimension of domain
-    final long d = f.getDimension();
+    final long d = f.getNumberOfParameters();
     // B-spline degree
     final long p = 3;
     // maximal number of grid points
@@ -50,7 +50,7 @@ public class java_example {
     // adaptivity of grid generation
     final double gamma = 0.95;
 
-    sgpp.Grid grid = sgpp.Grid.createModBsplineGrid(f.getDimension(), p);
+    sgpp.Grid grid = sgpp.Grid.createModBsplineGrid(d, p);
     sgpp.OptIterativeGridGeneratorRitterNovak gridGen =
         new sgpp.OptIterativeGridGeneratorRitterNovak(f, grid, N, gamma);
 

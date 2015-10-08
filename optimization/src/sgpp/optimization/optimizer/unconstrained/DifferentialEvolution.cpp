@@ -25,7 +25,7 @@ namespace SGPP {
           float_t maxDistanceThreshold) :
         UnconstrainedOptimizer(f, maxFcnEvalCount),
         populationSize((populationSize > 0) ? populationSize :
-                       10 * f.getDimension()),
+                       10 * f.getNumberOfParameters()),
         crossoverProbability(crossoverProbability),
         scalingFactor(scalingFactor),
         idleGenerationsCount(idleGenerationsCount),
@@ -36,7 +36,7 @@ namespace SGPP {
       void DifferentialEvolution::optimize() {
         printer.printStatusBegin("Optimizing (differential evolution)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

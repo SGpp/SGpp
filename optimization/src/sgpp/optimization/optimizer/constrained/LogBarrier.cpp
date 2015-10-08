@@ -20,7 +20,7 @@ namespace SGPP {
             PenalizedObjectiveFunction(ScalarFunction& f,
                                        VectorFunction& g,
                                        float_t mu) :
-              ScalarFunction(f.getDimension()),
+              ScalarFunction(f.getNumberOfParameters()),
               f(f),
               g(g),
               mu(mu),
@@ -72,7 +72,7 @@ namespace SGPP {
             PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient,
                                        VectorFunctionGradient& gGradient,
                                        float_t mu) :
-              ScalarFunctionGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getNumberOfParameters()),
               fGradient(fGradient),
               gGradient(gGradient),
               mu(mu),
@@ -153,7 +153,7 @@ namespace SGPP {
       void LogBarrier::optimize() {
         printer.printStatusBegin("Optimizing (Log Barrier)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

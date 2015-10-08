@@ -58,6 +58,31 @@ class SphereHessian : public ScalarFunctionHessian {
 
 
 
+class DeformedLinearPhiFunction : public VectorFunction {
+  public:
+    DeformedLinearPhiFunction(size_t d);
+    void eval(const SGPP::base::DataVector& x,
+              SGPP::base::DataVector& value);
+    virtual void clone(std::unique_ptr<VectorFunction>& clone) const;
+
+  protected:
+    SGPP::base::DataVector eigenvalues;
+};
+
+class DeformedLinearPhiGradient : public VectorFunctionGradient {
+  public:
+    DeformedLinearPhiGradient(size_t d);
+    void eval(const SGPP::base::DataVector& x,
+              SGPP::base::DataVector& value,
+              SGPP::base::DataMatrix& gradient);
+    virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const;
+
+  protected:
+    SGPP::base::DataVector eigenvalues;
+};
+
+
+
 class G3ObjectiveFunction : public ScalarFunction {
   public:
     G3ObjectiveFunction(size_t d);
