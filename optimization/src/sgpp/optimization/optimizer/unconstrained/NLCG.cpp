@@ -32,7 +32,7 @@ namespace SGPP {
       void NLCG::optimize() {
         printer.printStatusBegin("Optimizing (NLCG)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

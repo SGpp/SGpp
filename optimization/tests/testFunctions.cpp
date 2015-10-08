@@ -633,7 +633,7 @@ BOOST_AUTO_TEST_CASE(TestTestFunctions) {
                 new test_functions::Sphere(d))));
 
   for (const auto& fcn : testFunctions) {
-    const size_t d = fcn->getDimension();
+    const size_t d = fcn->getNumberOfParameters();
 
     // test cloning
     std::unique_ptr<ScalarFunction> fcn2(nullptr);

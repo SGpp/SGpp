@@ -42,7 +42,7 @@ namespace SGPP {
     }
 
     void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
-      const size_t d = f.getDimension();
+      const size_t d = f.getNumberOfParameters();
       base::GridStorage& gridStorage = *grid.getStorage();
       const size_t curGridSize = gridStorage.size();
       base::DataVector& fX = functionValues;

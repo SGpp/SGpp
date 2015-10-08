@@ -44,7 +44,7 @@ namespace SGPP {
         /**
          * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] value    \f$g(\vec{x})\f$
-         * @param[out] gradient gradient \f$\nabla g(\vec{x}) \in
+         * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
          *                      \mathbb{R}^{m \times d}\f$
          * @param[out] hessian  \f$m\f$-vector of Hessians
          *                      \f$\nabla^2 g_i(\vec{x}) \in

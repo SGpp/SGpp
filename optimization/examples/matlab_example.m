@@ -13,12 +13,12 @@ fprintf('SGPP::optimization example program started.\n\n');
 
 % objective function
 f = ExampleFunction();
-d = f.getDimension();
+d = f.getNumberOfParameters();
 p = 3;
 N = 30;
 gamma = 0.95;
 
-grid = sgpp.Grid.createModBsplineGrid(f.getDimension(), p);
+grid = sgpp.Grid.createModBsplineGrid(d, p);
 gridGen = sgpp.OptIterativeGridGeneratorRitterNovak(f, grid, N, gamma);
 
 %% GRID GENERATION

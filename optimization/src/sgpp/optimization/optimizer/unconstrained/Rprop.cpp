@@ -31,7 +31,7 @@ namespace SGPP {
       void Rprop::optimize() {
         printer.printStatusBegin("Optimizing (Rprop)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

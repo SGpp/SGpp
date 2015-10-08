@@ -28,7 +28,7 @@ namespace SGPP {
       void NelderMead::optimize() {
         printer.printStatusBegin("Optimizing (Nelder-Mead)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

@@ -183,7 +183,7 @@ namespace SGPP {
       unused = 0;
     }
 
-    size_t DataMatrixSP::appendRow(DataVectorSP& vec) {
+    size_t DataMatrixSP::appendRow(const DataVectorSP& vec) {
       if (vec.getSize() != this->ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrixSP::appendRow : Dimensions do not match");
@@ -620,6 +620,10 @@ namespace SGPP {
     }
 
     float* DataMatrixSP::getPointer() {
+      return data;
+    }
+
+    const float* DataMatrixSP::getPointer() const {
       return data;
     }
 

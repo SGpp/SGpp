@@ -24,7 +24,7 @@ namespace SGPP {
       void CMAES::optimize() {
         printer.printStatusBegin("Optimizing (CMA-ES)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

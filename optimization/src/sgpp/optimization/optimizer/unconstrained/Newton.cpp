@@ -61,7 +61,7 @@ namespace SGPP {
       void Newton::optimize() {
         printer.printStatusBegin("Optimizing (Newton)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;
@@ -71,11 +71,9 @@ namespace SGPP {
         base::DataVector x(x0);
         float_t fx = NAN;
 
-        bool lsSolved;
-        base::DataVector dk(d);
-
         base::DataVector gradFx(d);
         base::DataMatrix hessianFx(d, d);
+        base::DataVector dk(d);
         base::DataVector s(d);
         base::DataVector y(d);
 
@@ -106,13 +104,11 @@ namespace SGPP {
           }
 
           // solve linear system with Hessian as system matrix
-          system.setA(hessianFx);
-
           if (statusPrintingEnabled) {
             printer.disableStatusPrinting();
           }
 
-          lsSolved = sleSolver.solve(system, s, dk);
+          bool lsSolved = sleSolver.solve(system, s, dk);
 
           if (statusPrintingEnabled) {
             printer.enableStatusPrinting();

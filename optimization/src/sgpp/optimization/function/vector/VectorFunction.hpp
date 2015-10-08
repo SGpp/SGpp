@@ -51,7 +51,7 @@ namespace SGPP {
         /**
          * @return dimension \f$d\f$ of the domain
          */
-        size_t getDimension() const {
+        size_t getNumberOfParameters() const {
           return d;
         }
 

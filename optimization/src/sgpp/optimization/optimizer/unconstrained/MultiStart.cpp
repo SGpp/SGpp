@@ -37,14 +37,14 @@ namespace SGPP {
 
       void MultiStart::initialize(size_t populationSize) {
         this->populationSize = (populationSize > 0) ? populationSize :
-                               std::min(10 * f.getDimension(),
+                               std::min(10 * f.getNumberOfParameters(),
                                         static_cast<size_t>(100));
       }
 
       void MultiStart::optimize() {
         printer.printStatusBegin("Optimizing (multi-start)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
 
         xOpt.resize(0);
         fOpt = NAN;

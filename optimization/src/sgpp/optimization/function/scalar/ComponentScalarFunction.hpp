@@ -61,10 +61,10 @@ namespace SGPP {
           ScalarFunction((defaultValues.size() > 0) ?
                          std::count(defaultValues.begin(),
                                     defaultValues.end(), NAN) :
-                         f.getDimension()),
+                         f.getNumberOfParameters()),
           fScalar(&f),
           fVector(nullptr),
-          dF(f.getDimension()),
+          dF(f.getNumberOfParameters()),
           k(0),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),
@@ -97,10 +97,10 @@ namespace SGPP {
           ScalarFunction((defaultValues.size() > 0) ?
                          std::count(defaultValues.begin(),
                                     defaultValues.end(), NAN) :
-                         f.getDimension()),
+                         f.getNumberOfParameters()),
           fScalar(nullptr),
           fVector(&f),
-          dF(f.getDimension()),
+          dF(f.getNumberOfParameters()),
           k(k),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),

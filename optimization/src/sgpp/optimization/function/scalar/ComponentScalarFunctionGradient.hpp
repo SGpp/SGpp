@@ -54,10 +54,10 @@ namespace SGPP {
           ScalarFunctionGradient((defaultValues.size() > 0) ?
                                  std::count(defaultValues.begin(),
                                             defaultValues.end(), NAN) :
-                                 fGradient.getDimension()),
+                                 fGradient.getNumberOfParameters()),
           fGradientScalar(&fGradient),
           fGradientVector(nullptr),
-          dF(fGradient.getDimension()),
+          dF(fGradient.getNumberOfParameters()),
           k(0),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),
@@ -91,10 +91,10 @@ namespace SGPP {
           ScalarFunctionGradient((defaultValues.size() > 0) ?
                                  std::count(defaultValues.begin(),
                                             defaultValues.end(), NAN) :
-                                 fGradient.getDimension()),
+                                 fGradient.getNumberOfParameters()),
           fGradientScalar(nullptr),
           fGradientVector(&fGradient),
-          dF(fGradient.getDimension()),
+          dF(fGradient.getNumberOfParameters()),
           k(k),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),
