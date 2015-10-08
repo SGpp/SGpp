@@ -48,6 +48,9 @@ protected:
     uint32_t m_streamElementCount = 0;
     uint32_t m_subElementCount = 0;
 
+    float m_softAdaptivityLimit = 1;
+    uint32_t m_hardAdaptivityLimit = 1;
+
     /// Timer object to handle time measurements
     SGPP::base::SGppStopwatch myTimer;
 
@@ -83,6 +86,9 @@ public:
         for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
             this->kernelDataset[i] = (T) this->preparedDataset[i];
         }
+
+        m_softAdaptivityLimit = (float)(this->parameters.getAsUnsigned("ADAPTIVE_STREAMING_DENSITY"))/100.f;
+        m_hardAdaptivityLimit = static_cast<uint32_t>(this->parameters.getAsUnsigned("ADAPTIVE_STREAMING_HARD_LIMIT"));
 
         //create the kernel specific data structures
         this->prepare();
@@ -255,7 +261,6 @@ private:
         return indexFlat;
     }
 
-    //TODO: look up how this is supposed to be done
     uint32_t getSubspaceSize ( uint32_t* level) {
 
         uint32_t sum = 0;
@@ -292,14 +297,23 @@ private:
 
     bool isEvalTypeStreaming (uint32_t* level, uint32_t numIndices)
     {
-      float subspaceDensity = ((float)numIndices)/((float)getSubspaceSize(level));
-      if (subspaceDensity < 0.5)
+      uint32_t subSize = getSubspaceSize(level);
+      if ( subSize < m_hardAdaptivityLimit )
       {
           return true;
       }
       else
       {
-          return false;
+          float subspaceDensity = ((float)numIndices)/((float)subSize);
+
+          if (subspaceDensity < m_softAdaptivityLimit)
+          {
+              return true;
+          }
+          else
+          {
+              return false;
+          }
       }
     }
 

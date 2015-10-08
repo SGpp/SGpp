@@ -28,6 +28,8 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(base::Grid& grid, base:
         parameters->set("KERNEL_DATA_BLOCKING_SIZE", "1");
         parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
         parameters->set("KERNEL_TRANS_DATA_BLOCK_SIZE", "1");
+        parameters->set("ADAPTIVE_STREAMING_HARD_LIMIT", "10");
+        parameters->set("ADAPTIVE_STREAMING_DENSITY", "0.1");
 
         parameters->readFromFile("AdaptiveOCL.cfg");
     }
@@ -39,6 +41,8 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(base::Grid& grid, base:
         std::cout << "internal precision: " << parameters->get("INTERNAL_PRECISION") << std::endl;
         std::cout << "platform is: " << parameters->get("PLATFORM") << std::endl;
         std::cout << "device type is: " << parameters->get("DEVICE_TYPE") << std::endl;
+        std::cout << "hard limit: " << parameters->get("ADAPTIVE_STREAMING_HARD_LIMIT") << std::endl;
+        std::cout << "soft limit: " << parameters->get("ADAPTIVE_STREAMING_DENSITY") << std::endl;
     }
 
     if (parameters->get("INTERNAL_PRECISION") == "float") {
