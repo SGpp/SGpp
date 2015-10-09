@@ -20,7 +20,7 @@ namespace SGPP {
             PenalizedObjectiveFunction(ScalarFunction& f,
                                        VectorFunction& g,
                                        float_t mu) :
-              ScalarFunction(f.getDimension()),
+              ScalarFunction(f.getNumberOfParameters()),
               f(f),
               g(g),
               mu(mu),
@@ -72,7 +72,7 @@ namespace SGPP {
             PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient,
                                        VectorFunctionGradient& gGradient,
                                        float_t mu) :
-              ScalarFunctionGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getNumberOfParameters()),
               fGradient(fGradient),
               gGradient(gGradient),
               mu(mu),
@@ -146,16 +146,26 @@ namespace SGPP {
         gGradient(gGradient),
         theta(tolerance),
         mu0(barrierStartValue),
-        rhoMuMinus(barrierDecreaseFactor) {
+        rhoMuMinus(barrierDecreaseFactor),
+        kHist() {
       }
 
-      float_t LogBarrier::optimize(base::DataVector& xOpt) {
+      void LogBarrier::optimize() {
         printer.printStatusBegin("Optimizing (Log Barrier)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+        kHist.clear();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         base::DataVector xNew(d);
 
@@ -180,13 +190,21 @@ namespace SGPP {
           AdaptiveGradientDescent unconstrainedOptimizer(
             fPenalized, fPenalizedGradient, unconstrainedN, 10.0 * theta);
           unconstrainedOptimizer.setStartingPoint(x);
-          unconstrainedOptimizer.optimize(xNew);
-          k += unconstrainedN;
+          unconstrainedOptimizer.optimize();
+          xNew = unconstrainedOptimizer.getOptimalPoint();
+
+          const size_t numberInnerEvaluations =
+            unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
+          k += numberInnerEvaluations;
 
           x = xNew;
           fx = f.eval(x);
           g.eval(x, gx);
           k++;
+
+          xHist.appendRow(x);
+          fHist.append(fx);
+          kHist.push_back(numberInnerEvaluations);
 
           // status printing
           printer.printStatusUpdate(
@@ -211,9 +229,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const {
@@ -249,6 +266,16 @@ namespace SGPP {
         rhoMuMinus = barrierDecreaseFactor;
       }
 
+      const std::vector<size_t>&
+      LogBarrier::getHistoryOfInnerIterations() const {
+        return kHist;
+      }
+
+      void LogBarrier::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new LogBarrier(*this));
+      }
     }
   }
 }

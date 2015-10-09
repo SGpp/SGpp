@@ -61,11 +61,7 @@ namespace SGPP {
                          float_t penaltyIncreaseFactor =
                            DEFAULT_PENALTY_INCREASE_FACTOR);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
@@ -122,6 +118,18 @@ namespace SGPP {
            */
           void setPenaltyIncreaseFactor(float_t penaltyIncreaseFactor);
 
+          /**
+           * @return vector in which the k-th entry indicates the number of
+           *         inner iterations in the k-th (outer) iteration,
+           *         empty vector on error
+           */
+          const std::vector<size_t>& getHistoryOfInnerIterations() const;
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
           ScalarFunctionGradient& fGradient;
@@ -137,6 +145,8 @@ namespace SGPP {
           float_t mu0;
           /// penalty increase factor
           float_t rhoMuPlus;
+          /// search history (inner iterations)
+          std::vector<size_t> kHist;
       };
 
     }

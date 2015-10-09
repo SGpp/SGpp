@@ -51,11 +51,7 @@ namespace SGPP {
                      float_t barrierDecreaseFactor =
                        DEFAULT_BARRIER_DECREASE_FACTOR);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
@@ -97,6 +93,18 @@ namespace SGPP {
            */
           void setBarrierDecreaseFactor(float_t barrierDecreaseFactor);
 
+          /**
+           * @return vector in which the k-th entry indicates the number of
+           *         inner iterations in the k-th (outer) iteration,
+           *         empty vector on error
+           */
+          const std::vector<size_t>& getHistoryOfInnerIterations() const;
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
           ScalarFunctionGradient& fGradient;
@@ -108,6 +116,8 @@ namespace SGPP {
           float_t mu0;
           /// barrier decrease factor
           float_t rhoMuMinus;
+          /// search history (inner iterations)
+          std::vector<size_t> kHist;
       };
 
     }

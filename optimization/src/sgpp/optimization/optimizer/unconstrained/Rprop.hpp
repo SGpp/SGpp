@@ -51,11 +51,7 @@ namespace SGPP {
                 float_t stepSizeDecreaseFactor =
                   DEFAULT_STEP_SIZE_DECREASE_FACTOR);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
@@ -101,6 +97,11 @@ namespace SGPP {
            * @param stepSizeDecreaseFactor step size decrease factor
            */
           void setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor);
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function gradient

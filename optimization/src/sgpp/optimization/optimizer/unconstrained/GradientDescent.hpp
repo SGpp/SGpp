@@ -52,11 +52,7 @@ namespace SGPP {
                           float_t tolerance = DEFAULT_TOLERANCE,
                           float_t epsilon = DEFAULT_EPSILON);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
@@ -102,6 +98,11 @@ namespace SGPP {
            * @param epsilon       epsilon (parameter for Armijo's rule)
            */
           void setEpsilon(float_t epsilon);
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function gradient

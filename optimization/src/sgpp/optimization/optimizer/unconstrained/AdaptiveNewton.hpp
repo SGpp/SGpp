@@ -93,11 +93,7 @@ namespace SGPP {
                          float_t lineSearchAccuracy,
                          const sle_solver::SLESolver& sleSolver);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function Hessian
@@ -163,6 +159,11 @@ namespace SGPP {
            * @param lineSearchAccuracy line search accuracy
            */
           void setLineSearchAccuracy(float_t lineSearchAccuracy);
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function Hessian

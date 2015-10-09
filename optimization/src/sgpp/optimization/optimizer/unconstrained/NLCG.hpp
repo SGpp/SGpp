@@ -57,11 +57,7 @@ namespace SGPP {
                float_t epsilon = DEFAULT_EPSILON,
                float_t restartThreshold = DEFAULT_RESTART_THRESHOLD);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
@@ -117,6 +113,11 @@ namespace SGPP {
            * @param restartThreshold  restart threshold
            */
           void setRestartThreshold(float_t restartThreshold);
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function gradient
