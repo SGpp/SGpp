@@ -25,7 +25,7 @@ namespace SGPP {
           float_t maxDistanceThreshold) :
         UnconstrainedOptimizer(f, maxFcnEvalCount),
         populationSize((populationSize > 0) ? populationSize :
-                       10 * f.getDimension()),
+                       10 * f.getNumberOfParameters()),
         crossoverProbability(crossoverProbability),
         scalingFactor(scalingFactor),
         idleGenerationsCount(idleGenerationsCount),
@@ -33,10 +33,15 @@ namespace SGPP {
         maxDistanceThreshold(maxDistanceThreshold) {
       }
 
-      float_t DifferentialEvolution::optimize(base::DataVector& xOpt) {
+      void DifferentialEvolution::optimize() {
         printer.printStatusBegin("Optimizing (differential evolution)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
 
         // vector of individuals
         std::vector<base::DataVector> x1(populationSize,
@@ -62,7 +67,7 @@ namespace SGPP {
         }
 
         // smallest function value in the population
-        float_t fOpt = INFINITY;
+        float_t fCurrentOpt = INFINITY;
         // index of the point with value fOpt
         size_t xOptIndex = 0;
         // iteration number of the last iteration with significant improvement
@@ -121,7 +126,7 @@ namespace SGPP {
           const std::vector<base::DataVector>& prob_k = prob[k];
 
           #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, \
-          xOld, fx, fOpt, xOptIndex, xNew) default(none)
+          xOld, fx, fCurrentOpt, xOptIndex, xNew) default(none)
           {
             base::DataVector y(d);
             ScalarFunction* curFPtr = &f;
@@ -174,9 +179,9 @@ namespace SGPP {
                 {
                   fx[i] = fy;
 
-                  if (fy < fOpt) {
+                  if (fy < fCurrentOpt) {
                     xOptIndex = i;
-                    fOpt = fy;
+                    fCurrentOpt = fy;
                   }
                 }
 
@@ -241,19 +246,21 @@ namespace SGPP {
           // status message
           if (k % 10 == 0) {
           printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fOpt));
+                                    std::to_string(fCurrentOpt));
           }
+
+          xHist.appendRow((*xOld)[xOptIndex]);
+          fHist.append(fCurrentOpt);
         }
 
         // optimal point
         xOpt.resize(d);
         xOpt = (*xOld)[xOptIndex];
+        fOpt = fCurrentOpt;
 
         printer.printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
-                                  std::to_string(fOpt));
+                                  std::to_string(fCurrentOpt));
         printer.printStatusEnd();
-
-        return fOpt;
       }
 
       size_t DifferentialEvolution::getPopulationSize() const {
@@ -264,6 +271,11 @@ namespace SGPP {
         this->populationSize = populationSize;
       }
 
+      void DifferentialEvolution::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new DifferentialEvolution(*this));
+      }
     }
   }
 }

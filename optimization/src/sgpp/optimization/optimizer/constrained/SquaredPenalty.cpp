@@ -20,7 +20,7 @@ namespace SGPP {
                                        VectorFunction& g,
                                        VectorFunction& h,
                                        float_t mu) :
-              ScalarFunction(f.getDimension()),
+              ScalarFunction(f.getNumberOfParameters()),
               f(f),
               g(g),
               h(h),
@@ -83,7 +83,7 @@ namespace SGPP {
                                        VectorFunctionGradient& gGradient,
                                        VectorFunctionGradient& hGradient,
                                        float_t mu) :
-              ScalarFunctionGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getNumberOfParameters()),
               fGradient(fGradient),
               gGradient(gGradient),
               hGradient(hGradient),
@@ -178,18 +178,29 @@ namespace SGPP {
         theta(xTolerance),
         epsilon(constraintTolerance),
         mu0(penaltyStartValue),
-        rhoMuPlus(penaltyIncreaseFactor) {
+        rhoMuPlus(penaltyIncreaseFactor),
+        kHist() {
       }
 
-      float_t SquaredPenalty::optimize(base::DataVector& xOpt) {
+      void SquaredPenalty::optimize() {
         printer.printStatusBegin("Optimizing (Squared Penalty)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+        kHist.clear();
+
         const size_t mG = g.getNumberOfComponents();
         const size_t mH = h.getNumberOfComponents();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         base::DataVector xNew(d);
 
@@ -215,14 +226,22 @@ namespace SGPP {
           AdaptiveGradientDescent unconstrainedOptimizer(
             fPenalized, fPenalizedGradient, unconstrainedN, 10.0 * theta);
           unconstrainedOptimizer.setStartingPoint(x);
-          unconstrainedOptimizer.optimize(xNew);
-          k += unconstrainedN;
+          unconstrainedOptimizer.optimize();
+          xNew = unconstrainedOptimizer.getOptimalPoint();
+
+          const size_t numberInnerEvaluations =
+            unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
+          k += numberInnerEvaluations;
 
           x = xNew;
           fx = f.eval(x);
           g.eval(x, gx);
           h.eval(x, hx);
           k++;
+
+          xHist.appendRow(x);
+          fHist.append(fx);
+          kHist.push_back(numberInnerEvaluations);
 
           // status printing
           printer.printStatusUpdate(
@@ -250,9 +269,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const {
@@ -301,6 +319,16 @@ namespace SGPP {
         rhoMuPlus = penaltyIncreaseFactor;
       }
 
+      const std::vector<size_t>&
+      SquaredPenalty::getHistoryOfInnerIterations() const {
+        return kHist;
+      }
+
+      void SquaredPenalty::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new SquaredPenalty(*this));
+      }
     }
   }
 }

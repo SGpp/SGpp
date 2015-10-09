@@ -60,11 +60,7 @@ namespace SGPP {
                                 float_t maxDistanceThreshold =
                                   DEFAULT_MAX_DISTANCE_THRESHOLD);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return                  number of individuals
@@ -75,6 +71,11 @@ namespace SGPP {
            * @param populationSize    number of individuals
            */
           void setPopulationSize(size_t populationSize);
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// number of individuals

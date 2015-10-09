@@ -102,11 +102,7 @@ namespace SGPP {
                  float_t p,
                  const sle_solver::SLESolver& sleSolver);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function Hessian
@@ -182,6 +178,11 @@ namespace SGPP {
            * @param p         steepest descent restart exponent
            */
           void setP(float_t p);
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function Hessian

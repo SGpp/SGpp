@@ -23,7 +23,7 @@ namespace SGPP {
                                        VectorFunction& h,
                                        float_t mu,
                                        base::DataVector& lambda) :
-              ScalarFunction(f.getDimension()),
+              ScalarFunction(f.getNumberOfParameters()),
               f(f),
               g(g),
               h(h),
@@ -91,7 +91,7 @@ namespace SGPP {
                                        VectorFunctionGradient& hGradient,
                                        float_t mu,
                                        base::DataVector& lambda) :
-              ScalarFunctionGradient(fGradient.getDimension()),
+              ScalarFunctionGradient(fGradient.getNumberOfParameters()),
               fGradient(fGradient),
               gGradient(gGradient),
               hGradient(hGradient),
@@ -417,18 +417,29 @@ namespace SGPP {
         theta(xTolerance),
         epsilon(constraintTolerance),
         mu0(penaltyStartValue),
-        rhoMuPlus(penaltyIncreaseFactor) {
+        rhoMuPlus(penaltyIncreaseFactor),
+        kHist() {
       }
 
-      float_t AugmentedLagrangian::optimize(base::DataVector& xOpt) {
+      void AugmentedLagrangian::optimize() {
         printer.printStatusBegin("Optimizing (Augmented Lagrangian)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+        kHist.clear();
+
         const size_t mG = g.getNumberOfComponents();
         const size_t mH = h.getNumberOfComponents();
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         base::DataVector xNew(d);
 
@@ -455,14 +466,22 @@ namespace SGPP {
           AdaptiveGradientDescent unconstrainedOptimizer(
             fPenalized, fPenalizedGradient, unconstrainedN, 10.0 * theta);
           unconstrainedOptimizer.setStartingPoint(x);
-          unconstrainedOptimizer.optimize(xNew);
-          k += unconstrainedN;
+          unconstrainedOptimizer.optimize();
+          xNew = unconstrainedOptimizer.getOptimalPoint();
+
+          const size_t numberInnerEvaluations =
+            unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
+          k += numberInnerEvaluations;
 
           x = xNew;
           fx = f.eval(x);
           g.eval(x, gx);
           h.eval(x, hx);
           k++;
+
+          xHist.appendRow(x);
+          fHist.append(fx);
+          kHist.push_back(numberInnerEvaluations);
 
           // status printing
           printer.printStatusUpdate(
@@ -498,13 +517,12 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
         const size_t mG = g.getNumberOfComponents();
         const size_t mH = h.getNumberOfComponents();
         base::DataVector x(d, 0.5);
@@ -540,7 +558,8 @@ namespace SGPP {
           auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
           emptyVectorFunction, emptyVectorFunctionGradient);
         optimizer.setStartingPoint(auxX);
-        optimizer.optimize(auxX);
+        optimizer.optimize();
+        auxX = optimizer.getOptimalPoint();
 
         for (size_t t = 0; t < d; t++) {
           x[t] = auxX[t];
@@ -598,6 +617,16 @@ namespace SGPP {
         rhoMuPlus = penaltyIncreaseFactor;
       }
 
+      const std::vector<size_t>&
+      AugmentedLagrangian::getHistoryOfInnerIterations() const {
+        return kHist;
+      }
+
+      void AugmentedLagrangian::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new AugmentedLagrangian(*this));
+      }
     }
   }
 }

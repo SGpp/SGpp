@@ -37,14 +37,21 @@ namespace SGPP {
 
       void MultiStart::initialize(size_t populationSize) {
         this->populationSize = (populationSize > 0) ? populationSize :
-                               std::min(10 * f.getDimension(),
+                               std::min(10 * f.getNumberOfParameters(),
                                         static_cast<size_t>(100));
       }
 
-      float_t MultiStart::optimize(base::DataVector& xOpt) {
+      void MultiStart::optimize() {
         printer.printStatusBegin("Optimizing (multi-start)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+        kHist.clear();
+
         std::vector<base::DataVector> x0(populationSize, base::DataVector(d));
         std::vector<size_t> roundN(populationSize, 0);
         size_t remainingN = N;
@@ -61,8 +68,6 @@ namespace SGPP {
             x0[k][t] = randomNumberGenerator.getUniformRN();
           }
         }
-
-        float_t fOpt = INFINITY;
 
         /*printer.disableStatusPrinting();
 
@@ -121,47 +126,74 @@ namespace SGPP {
 
         printer.enableStatusPrinting();*/
 
-        base::DataVector curXOpt(d);
-        float_t curFOpt;
-
-        xOpt.resize(d);
+        base::DataVector xCurrentOpt(d);
+        float_t fCurrentOpt = INFINITY;
 
         // temporarily save x0 and N (will be overwritten by the loop)
         const base::DataVector tmpX0(optimizer.getStartingPoint());
         const size_t tmpN = optimizer.getN();
         const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
 
-        for (size_t k = 0; k < populationSize; k++) {
-          // optimize with k-th starting point
-          optimizer.setStartingPoint(x0[k]);
-          optimizer.setN(roundN[k]);
+        if (statusPrintingEnabled) {
+          printer.disableStatusPrinting();
+        }
 
-          if (statusPrintingEnabled) {
-            printer.disableStatusPrinting();
+        #pragma omp parallel shared(x0, roundN, xCurrentOpt, \
+        fCurrentOpt, printer) \
+        default(none)
+        {
+          UnconstrainedOptimizer* curOptimizerPtr = &optimizer;
+#ifdef _OPENMP
+          std::unique_ptr<UnconstrainedOptimizer> curOptimizer;
+
+          if (omp_get_max_threads() > 1) {
+            optimizer.clone(curOptimizer);
+            curOptimizerPtr = curOptimizer.get();
           }
 
-          optimizer.optimize(curXOpt);
+#endif /* _OPENMP */
 
-          if (statusPrintingEnabled) {
-            printer.enableStatusPrinting();
-          }
+          base::DataVector xLocalOpt(d);
+          float_t fLocalOpt;
 
-          curFOpt = f.eval(curXOpt);
+          #pragma omp for ordered schedule(dynamic)
 
-          if (curFOpt < fOpt) {
-            // this point is the best so far
-            fOpt = curFOpt;
-            xOpt = curXOpt;
-          }
+          for (size_t k = 0; k < populationSize; k++) {
+            // optimize with k-th starting point
+            curOptimizerPtr->setStartingPoint(x0[k]);
+            curOptimizerPtr->setN(roundN[k]);
+            curOptimizerPtr->optimize();
 
-          // status printing
-          {
-            char str[10];
-            snprintf(str, 10, "%.1f%%",
-                     static_cast<float_t>(k) /
-                     static_cast<float_t>(populationSize) * 100.0);
-            printer.printStatusUpdate(std::string(str) +
-                                      ", f(x) = " + std::to_string(fOpt));
+            xLocalOpt = curOptimizerPtr->getOptimalPoint();
+            fLocalOpt = curOptimizerPtr->getOptimalValue();
+
+            #pragma omp critical
+            {
+              if (fLocalOpt < fCurrentOpt) {
+                // this point is the best so far
+                xCurrentOpt = xLocalOpt;
+                fCurrentOpt = fLocalOpt;
+              }
+            }
+
+            // status printing
+            #pragma omp ordered
+            {
+              char str[10];
+              snprintf(str, 10, "%.1f%%",
+                       static_cast<float_t>(k) /
+                       static_cast<float_t>(populationSize) * 100.0);
+              printer.getMutex().lock();
+              printer.enableStatusPrinting();
+              printer.printStatusUpdate(std::string(str) +
+                                        ", f(x) = " + std::to_string(fCurrentOpt));
+              printer.disableStatusPrinting();
+              printer.getMutex().unlock();
+            }
+
+            xHist.appendRow(xCurrentOpt);
+            fHist.append(fCurrentOpt);
+            kHist.push_back(curOptimizerPtr->getHistoryOfOptimalPoints().getNrows());
           }
         }
 
@@ -169,10 +201,16 @@ namespace SGPP {
         optimizer.setStartingPoint(tmpX0);
         optimizer.setN(tmpN);
 
+        xOpt.resize(d);
+        xOpt = xCurrentOpt;
+        fOpt = fCurrentOpt;
+
+        if (statusPrintingEnabled) {
+        printer.enableStatusPrinting();
+        }
+
         printer.printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
         printer.printStatusEnd();
-
-        return fOpt;
       }
 
       size_t MultiStart::getPopulationSize() const {
@@ -183,6 +221,16 @@ namespace SGPP {
         this->populationSize = populationSize;
       }
 
+      const std::vector<size_t>&
+      MultiStart::getHistoryOfInnerIterations() const {
+        return kHist;
+      }
+
+      void MultiStart::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new MultiStart(*this));
+      }
     }
   }
 }

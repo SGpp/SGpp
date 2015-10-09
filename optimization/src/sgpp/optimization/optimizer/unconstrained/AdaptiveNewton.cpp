@@ -58,10 +58,16 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
-      float_t AdaptiveNewton::optimize(base::DataVector& xOpt) {
+      void AdaptiveNewton::optimize() {
         printer.printStatusBegin("Optimizing (adaptive Newton)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
         float_t fx = NAN;
         base::DataVector gradFx(d);
@@ -93,6 +99,11 @@ namespace SGPP {
           fx = fHessian.eval(x, gradFx, hessianFx);
           k++;
 
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
+
           const float_t gradFxNorm = gradFx.l2Norm();
 
           if (gradFxNorm == 0.0) {
@@ -107,8 +118,6 @@ namespace SGPP {
           }
 
           // solve linear system with damped Hessian as system matrix
-          system.setA(hessianFx);
-
           if (statusPrintingEnabled) {
             printer.disableStatusPrinting();
           }
@@ -171,7 +180,6 @@ namespace SGPP {
               }
 
               // solve linear system with damped Hessian as system matrix
-              system.setA(hessianFx);
               printer.disableStatusPrinting();
               lsSolved = sleSolver.solve(system, b, dir);
               printer.enableStatusPrinting();
@@ -200,6 +208,8 @@ namespace SGPP {
           // save new point
           x = xNew;
           fx = fxNew;
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // increase step size
           alpha = std::min(rhoAlphaPlus * alpha, float_t(1.0) );
@@ -228,9 +238,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const {
@@ -290,6 +299,11 @@ namespace SGPP {
         rhoLs = lineSearchAccuracy;
       }
 
+      void AdaptiveNewton::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new AdaptiveNewton(*this));
+      }
     }
   }
 }

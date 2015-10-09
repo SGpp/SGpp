@@ -58,18 +58,22 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
-      float_t Newton::optimize(base::DataVector& xOpt) {
+      void Newton::optimize() {
         printer.printStatusBegin("Optimizing (Newton)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
         float_t fx = NAN;
 
-        bool lsSolved;
-        base::DataVector dk(d);
-
         base::DataVector gradFx(d);
         base::DataMatrix hessianFx(d, d);
+        base::DataVector dk(d);
         base::DataVector s(d);
         base::DataVector y(d);
 
@@ -81,6 +85,11 @@ namespace SGPP {
           // calculate gradient, Hessian and gradient norm
           fx = fHessian.eval(x, gradFx, hessianFx);
           k++;
+
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           const float_t gradFxNorm = gradFx.l2Norm();
 
@@ -95,13 +104,11 @@ namespace SGPP {
           }
 
           // solve linear system with Hessian as system matrix
-          system.setA(hessianFx);
-
           if (statusPrintingEnabled) {
             printer.disableStatusPrinting();
           }
 
-          lsSolved = sleSolver.solve(system, s, dk);
+          bool lsSolved = sleSolver.solve(system, s, dk);
 
           if (statusPrintingEnabled) {
             printer.enableStatusPrinting();
@@ -141,13 +148,14 @@ namespace SGPP {
           }
 
           x = y;
+          xHist.appendRow(x);
+          fHist.append(fx);
         }
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionHessian& Newton::getObjectiveHessian() const {
@@ -210,6 +218,11 @@ namespace SGPP {
         this->p = p;
       }
 
+      void Newton::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new Newton(*this));
+      }
     }
   }
 }

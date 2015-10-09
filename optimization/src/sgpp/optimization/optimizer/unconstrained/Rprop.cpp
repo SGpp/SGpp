@@ -28,10 +28,15 @@ namespace SGPP {
         rhoAlphaMinus(stepSizeDecreaseFactor) {
       }
 
-      float_t Rprop::optimize(base::DataVector& xOpt) {
+      void Rprop::optimize() {
         printer.printStatusBegin("Optimizing (Rprop)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
 
         base::DataVector x(x0);
         float_t fx;
@@ -50,6 +55,11 @@ namespace SGPP {
           // calculate gradient and norm
           fx = fGradient.eval(x, gradFx);
           xOld = x;
+
+          if (k == 0) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           for (size_t t = 0; t < d; t++) {
             const float_t dir = gradFx[t];
@@ -94,6 +104,9 @@ namespace SGPP {
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx));
 
+          xHist.appendRow(x);
+          fHist.append(fx);
+
           // take difference between old and new x
           xOld.sub(x);
 
@@ -113,10 +126,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-        fx = f.eval(x);
+        fOpt = f.eval(x);
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionGradient& Rprop::getObjectiveGradient() const {
@@ -157,6 +168,11 @@ namespace SGPP {
         rhoAlphaMinus = stepSizeDecreaseFactor;
       }
 
+      void Rprop::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new Rprop(*this));
+      }
     }
   }
 }

@@ -28,14 +28,22 @@ namespace SGPP {
         rhoLs(lineSearchAccuracy) {
       }
 
-      float_t AdaptiveGradientDescent::optimize(base::DataVector& xOpt) {
+      void AdaptiveGradientDescent::optimize() {
         printer.printStatusBegin("Optimizing (adaptive gradient descent)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
         base::DataVector gradFx(d);
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         base::DataVector xNew(d);
         float_t fxNew;
@@ -102,6 +110,8 @@ namespace SGPP {
           // save new point
           x = xNew;
           fx = fxNew;
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // increase step size
           alpha *= rhoAlphaPlus;
@@ -127,9 +137,8 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
+        fOpt = fx;
         printer.printStatusEnd();
-
-        return fx;
       }
 
       ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const {
@@ -171,6 +180,11 @@ namespace SGPP {
         rhoLs = lineSearchAccuracy;
       }
 
+      void AdaptiveGradientDescent::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new AdaptiveGradientDescent(*this));
+      }
     }
   }
 }
