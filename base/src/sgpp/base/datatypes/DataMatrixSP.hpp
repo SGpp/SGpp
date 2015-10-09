@@ -24,7 +24,7 @@ namespace SGPP {
      * or normalizing all data points to the unit interval for a certain dimension are
      * provided.
      *
-     * This is an re-implementation of the standard DataMatrixSP
+     * This is an re-implementation of the standard DataMatrix
      * for single precision floating point numbers in order to
      * increase support for GPUs.
      */
@@ -141,7 +141,7 @@ namespace SGPP {
          * @param vec DataVectorSP (length has to match getNcols()) with data
          * @return Index of new row
          */
-        size_t appendRow(DataVectorSP& vec);
+        size_t appendRow(const DataVectorSP& vec);
 
 
         /**
@@ -279,15 +279,15 @@ namespace SGPP {
         void sub(const DataMatrixSP& matr);
 
         /**
-         * Reduce the DataMatrix along the
+         * Reduce the DataMatrixSP along the
          * columns by adding all entries in one row.
          *
-         * @param reduction DataVector into which the reduce columns are stored
+         * @param reduction DataVectorSP into which the reduce columns are stored
          */
         void addReduce(DataVectorSP& reduction);
 
         /**
-         * Reduce the DataMatrix along the
+         * Reduce the DataMatrixSP along the
          * columns by adding all entries in one row.
          *
          * @param reduction DataVectorSP to which the reduce columns are added
@@ -297,10 +297,10 @@ namespace SGPP {
         void addReduce(DataVectorSP& reduction, DataVectorSP& beta, size_t start_beta);
 
         /**
-         * expands a given DataVector into a
-         * DataMatrix.
+         * expands a given DataVectorSP into a
+         * DataMatrixSP.
          *
-         * @param expand DataVector that should be expanded
+         * @param expand DataVectorSP that should be expanded
          */
         void expand(const DataVectorSP& expand);
 
@@ -330,6 +330,15 @@ namespace SGPP {
          * @param matr the DataMatrixSP which the current DataMatrixSP is divided by
          */
         void componentwise_div(DataMatrixSP& matr);
+
+        /**
+         * Multiplies the matrix with a vector x and stores the result
+         * in another vector y.
+         *
+         * @param[in] x vector to be multiplied
+         * @param[out] y vector in which the result should be stored
+         */
+        void mult(const DataVectorSP& x, DataVectorSP& y);
 
         /**
          * Multiplies all elements by a constant factor
@@ -416,6 +425,13 @@ namespace SGPP {
          * @return Pointer to data
          */
         float* getPointer();
+
+        /**
+         * Returns const pointer to float array containing underlying data.
+         *
+         * @return Const pointer to data
+         */
+        const float* getPointer() const;
 
         /**
          * Returns the total number of (used) elements, i.e., getNrows()*getNCols()

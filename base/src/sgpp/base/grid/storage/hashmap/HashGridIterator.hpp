@@ -152,7 +152,9 @@ namespace SGPP {
          * @param l the ansatz function's level
          * @param i the ansatz function's index
          */
-        void get(size_t d, index_type::level_type& l, index_type::index_type& i) const;
+        inline void get(size_t d, index_type::level_type& l, index_type::index_type& i) const {
+          index.get(d, l, i);
+        }
 
         /**
          * Sets level @c l and index @c i in dimension @c d of the current grid point.
@@ -162,8 +164,11 @@ namespace SGPP {
          * @param l the ansatz function's level
          * @param i the ansatz function's index
          */
-        void set(size_t d, index_type::level_type l,
-                 index_type::index_type i);
+        inline void set(size_t d, index_type::level_type l,
+                        index_type::index_type i) {
+          index.set(d, l, i);
+          this->seq_ = storage->seq(&index);
+        }
 
         /**
          * Sets the iterator to a grid point.
@@ -171,7 +176,10 @@ namespace SGPP {
          *
          * @param point new grid point
          */
-        void set(const index_type& point);
+        inline void set(const index_type& point) {
+          index = point;
+          this->seq_ = storage->seq(&index);
+        }
 
         /**
          * Sets level @c l and index @c i in dimension @c d of the current grid point.
@@ -181,7 +189,9 @@ namespace SGPP {
          * @param l the ansatz function's level
          * @param i the ansatz function's index
          */
-        void push(size_t d, index_type::level_type l, index_type::index_type i);
+        inline void push(size_t d, index_type::level_type l, index_type::index_type i) {
+          index.push(d, l, i);
+        }
 
         /**
          * returns the current sequence number

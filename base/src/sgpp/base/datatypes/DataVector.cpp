@@ -467,6 +467,10 @@ namespace SGPP {
       return data;
     }
 
+    const float_t* DataVector::getPointer() const {
+      return data;
+    }
+
     DataVector::~DataVector() {
       delete[] data;
     }

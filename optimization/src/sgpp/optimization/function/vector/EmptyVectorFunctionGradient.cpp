@@ -9,7 +9,10 @@
 namespace SGPP {
   namespace optimization {
 
-    EmptyVectorFunctionGradient emptyVectorFunctionGradient;
+    WrapperVectorFunctionGradient emptyVectorFunctionGradient(
+      0, 0, [](const base::DataVector& x,
+               base::DataVector& value,
+    base::DataMatrix& gradient) {});
 
   }
 }

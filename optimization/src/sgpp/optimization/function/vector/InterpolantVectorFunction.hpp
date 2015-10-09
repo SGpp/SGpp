@@ -61,14 +61,21 @@ namespace SGPP {
          */
         inline void eval(const base::DataVector& x,
                          base::DataVector& value) {
-          // copy x, necessary due to non-existing const correctness
-          // in SGPP::base
-          base::DataVector y(x);
+          for (size_t t = 0; t < d; t++) {
+            if ((x[t] < 0.0) || (x[t] > 1.0)) {
+              for (size_t j = 0; j < m; j++) {
+                value[j] = INFINITY;
+              }
+
+              return;
+            }
+          }
+
           base::DataVector curAlpha(alpha.getNrows());
 
           for (size_t j = 0; j < m; j++) {
             alpha.getColumn(j, curAlpha);
-            value[j] = opEval->eval(curAlpha, y);
+            value[j] = opEval->eval(curAlpha, x);
           }
         }
 

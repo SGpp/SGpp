@@ -20,7 +20,7 @@ namespace SGPP {
     /**
      * Abstract base class for vector-valued functions
      * \f$g\colon [0, 1]^d \to \mathbb{R}^m\f$
-     * together with their gradients
+     * together with their Jacobians
      * \f$\nabla g\colon [0, 1]^d \to \mathbb{R}^{m \times d}\f$,
      * i.e. \f$(\nabla g)_{i,t} = \frac{\partial}{\partial x_t} g_i\f$
      * with \f$g = (g_i)_{i=1}^m\f$,
@@ -55,7 +55,7 @@ namespace SGPP {
          *
          * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] value    \f$g(\vec{x})\f$
-         * @param[out] gradient gradient \f$\nabla g(\vec{x}) \in
+         * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
          *                      \mathbb{R}^{m \times d}\f$
          * @param[out] hessian  \f$m\f$-vector of Hessians
          *                      \f$\nabla^2 g_i(\vec{x}) \in
@@ -69,7 +69,7 @@ namespace SGPP {
         /**
          * @return dimension \f$d\f$ of the domain
          */
-        size_t getDimension() const {
+        size_t getNumberOfParameters() const {
           return d;
         }
 

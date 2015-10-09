@@ -42,7 +42,7 @@ public class java_example {
     // objective function
     ExampleFunction f = new ExampleFunction();
     // dimension of domain
-    final long d = f.getDimension();
+    final long d = f.getNumberOfParameters();
     // B-spline degree
     final long p = 3;
     // maximal number of grid points
@@ -50,7 +50,7 @@ public class java_example {
     // adaptivity of grid generation
     final double gamma = 0.95;
 
-    sgpp.Grid grid = sgpp.Grid.createModBsplineGrid(f.getDimension(), p);
+    sgpp.Grid grid = sgpp.Grid.createModBsplineGrid(d, p);
     sgpp.OptIterativeGridGeneratorRitterNovak gridGen =
         new sgpp.OptIterativeGridGeneratorRitterNovak(f, grid, N, gamma);
 
@@ -126,8 +126,9 @@ public class java_example {
                        ", ft(x0) = " + numToStr(ftX0) + "\n");
 
     gradientMethod.setStartingPoint(x0);
-    sgpp.DataVector xOpt = new sgpp.DataVector(d);
-    final double ftXOpt = gradientMethod.optimize(xOpt);
+    gradientMethod.optimize();
+    sgpp.DataVector xOpt = gradientMethod.getOptimalPoint();
+    final double ftXOpt = gradientMethod.getOptimalValue();
     final double fXOpt = f.eval(xOpt);
 
     System.out.println("\nxOpt = " + xOpt);
@@ -142,8 +143,9 @@ public class java_example {
     System.out.println("Optimizing objective function (for comparison)...\n");
 
     sgpp.OptNelderMead nelderMead = new sgpp.OptNelderMead(f, 1000);
-    sgpp.DataVector xOptNM = new sgpp.DataVector(d);
-    final double fXOptNM = nelderMead.optimize(xOptNM);
+    nelderMead.optimize();
+    sgpp.DataVector xOptNM = nelderMead.getOptimalPoint();
+    final double fXOptNM = nelderMead.getOptimalValue();
     final double ftXOptNM = ft.eval(xOptNM);
 
     System.out.println("\nxOptNM = " + xOptNM);

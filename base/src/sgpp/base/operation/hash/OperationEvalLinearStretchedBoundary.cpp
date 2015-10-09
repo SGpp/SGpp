@@ -15,7 +15,8 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationEvalLinearStretchedBoundary::eval(DataVector& alpha, DataVector& point) {
+    float_t OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
+        const DataVector& point) {
       typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
       IndexValVector vec;

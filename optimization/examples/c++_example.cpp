@@ -65,7 +65,7 @@ int main(int argc, const char* argv[]) {
   // objective function
   ExampleFunction f;
   // dimension of domain
-  const size_t d = f.getDimension();
+  const size_t d = f.getNumberOfParameters();
   // B-spline degree
   const size_t p = 3;
   // maximal number of grid points
@@ -142,8 +142,9 @@ int main(int argc, const char* argv[]) {
   std::cout << "f(x0) = " << fX0 << ", ft(x0) = " << ftX0 << "\n\n";
 
   gradientMethod.setStartingPoint(x0);
-  SGPP::base::DataVector xOpt(d);
-  const SGPP::float_t ftXOpt = gradientMethod.optimize(xOpt);
+  gradientMethod.optimize();
+  const SGPP::base::DataVector& xOpt = gradientMethod.getOptimalPoint();
+  const SGPP::float_t ftXOpt = gradientMethod.getOptimalValue();
   const SGPP::float_t fXOpt = f.eval(xOpt);
 
   std::cout << "\nxOpt = " << xOpt.toString() << "\n";
@@ -157,8 +158,9 @@ int main(int argc, const char* argv[]) {
   std::cout << "Optimizing objective function (for comparison)...\n\n";
 
   SGPP::optimization::optimizer::NelderMead nelderMead(f, 1000);
-  SGPP::base::DataVector xOptNM(d);
-  const SGPP::float_t fXOptNM = nelderMead.optimize(xOptNM);
+  nelderMead.optimize();
+  SGPP::base::DataVector xOptNM = nelderMead.getOptimalPoint();
+  const SGPP::float_t fXOptNM = nelderMead.getOptimalValue();
   const SGPP::float_t ftXOptNM = ft.eval(xOptNM);
 
   std::cout << "\nnxOptNM = " << xOptNM.toString() << "\n";
