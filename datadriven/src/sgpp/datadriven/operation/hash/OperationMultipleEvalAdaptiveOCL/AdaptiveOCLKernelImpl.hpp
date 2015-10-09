@@ -18,6 +18,7 @@
 #include "../../../opencl/OCLConfigurationParameters.hpp"
 #include "../../../opencl/OCLManager.hpp"
 #include "../../../opencl/OCLStretchedBuffer.hpp"
+#include "../../../opencl/OCLReadOnlyBuffer.hpp"
 #include "AdaptiveOCLKernelSourceBuilder.hpp"
 
 namespace SGPP {
@@ -39,10 +40,10 @@ private:
 //    cl_context context;
 //    cl_command_queue* command_queue;
 
-    base::OCLClonedBuffer deviceData;
-    base::OCLClonedBuffer deviceStreamArray;
-    base::OCLClonedBuffer deviceSubspaceArray;
-    base::OCLClonedBuffer deviceMetaInfo;
+    base::OCLReadOnlyBuffer deviceData;
+    base::OCLReadOnlyBuffer deviceStreamArray;
+    base::OCLReadOnlyBuffer deviceSubspaceArray;
+    base::OCLReadOnlyBuffer deviceMetaInfo;
 
     // use pinned memory (on host and device) to speed up data transfers from/to GPU
     base::OCLStretchedBuffer deviceAlpha;

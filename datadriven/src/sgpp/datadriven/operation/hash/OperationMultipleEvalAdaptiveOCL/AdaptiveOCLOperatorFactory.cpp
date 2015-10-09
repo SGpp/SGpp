@@ -24,7 +24,7 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(base::Grid& grid, base:
         parameters = std::static_pointer_cast<base::OCLConfigurationParameters>(configuration.getParameters()->clone());
     } else {
         parameters->set("KERNEL_USE_LOCAL_MEMORY", "false");
-        parameters->set("LOCAL_SIZE", "1");
+        parameters->set("LOCAL_SIZE", "128");
         parameters->set("KERNEL_DATA_BLOCKING_SIZE", "1");
         parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
         parameters->set("KERNEL_TRANS_DATA_BLOCK_SIZE", "1");
