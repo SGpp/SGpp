@@ -73,7 +73,7 @@ namespace SGPP {
          *
          * @result result result of the function evaluation
          */
-        float_t operator()(BASIS& basis, DataVector& point, DataVector& alpha) {
+        float_t operator()(BASIS& basis, const DataVector& point, const DataVector& alpha) {
           GridStorage::grid_iterator working(storage);
 
           //typedef GridStorage::index_type::level_type level_type;
@@ -85,6 +85,7 @@ namespace SGPP {
 
           // Check for bounding box
           BoundingBox* bb = storage->getBoundingBox();
+          DataVector newPoint(point);
 
           if ( bb != NULL ) {
             for (size_t d = 0; d < dim; ++d) {
@@ -95,13 +96,13 @@ namespace SGPP {
                 continue;
               }
 
-              if ( ! (dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary) ) {
+              if ( ! (dimbb.leftBoundary <= newPoint[d] && newPoint[d] <= dimbb.rightBoundary) ) {
                 //std::cout << "Out of bounds: " << point[d] << std::endl;
                 return 0.0;
               }
 
               //std::cout << "Old: " << point[d] << std::endl;
-              point[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
+              newPoint[d] = (newPoint[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
               //std::cout << "New: " << point[d] << std::endl;
             }
           }
@@ -110,10 +111,10 @@ namespace SGPP {
 
           for (size_t d = 0; d < dim; ++d) {
             // This does not really work on grids with borders.
-            float_t temp = floor(point[d] *
+            float_t temp = floor(newPoint[d] *
                                  static_cast<float_t>(1 << (bits - 2))) * 2;
 
-            if (point[d] == 1.0) {
+            if (newPoint[d] == 1.0) {
               source[d] = static_cast<index_type> (temp - 1);
             } else {
               source[d] = static_cast<index_type> (temp + 1);
@@ -147,9 +148,9 @@ namespace SGPP {
          * @param alpha the spars grid's ansatzfunctions coefficients
          * @param result reference to a float_t into which the result should be stored
          */
-        void rec(BASIS& basis, DataVector& point, size_t current_dim,
+        void rec(BASIS& basis, const DataVector& point, size_t current_dim,
                  float_t value, GridStorage::grid_iterator& working,
-                 GridStorage::index_type::index_type* source, DataVector& alpha, float_t& result) {
+                 GridStorage::index_type::index_type* source, const DataVector& alpha, float_t& result) {
           typedef GridStorage::index_type::level_type level_type;
           typedef GridStorage::index_type::index_type index_type;
 

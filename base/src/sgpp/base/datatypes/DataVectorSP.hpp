@@ -17,7 +17,7 @@ namespace SGPP {
 
     /**
      * A class to store one-dimensional data.
-     * Typically, an object of type DataVector will contain an array
+     * Typically, an object of type DataVectorSP will contain an array
      * of (hierarchical) coefficients (or surplusses), or the coordinates
      * of a data point at which a sparse grid function should be
      * evaluated.
@@ -29,14 +29,14 @@ namespace SGPP {
     class DataVectorSP {
       public:
         /**
-         * Create a DataVector with @em size elements (uninitialized values).
+         * Create a DataVectorSP with @em size elements (uninitialized values).
          *
          * @param size Number of elements
          */
         DataVectorSP(size_t size);
 
         /**
-         * Create a DataVector with @em size elements and initializes
+         * Create a DataVectorSP with @em size elements and initializes
          * all elements with the same value.
          *
          * @param size Number of elements
@@ -45,14 +45,14 @@ namespace SGPP {
         DataVectorSP(size_t size, float value);
 
         /**
-         * Create a new DataVector that is a copy of vec.
+         * Create a new DataVectorSP that is a copy of vec.
          *
-         * @param vec Reference to another instance of DataMatrix
+         * @param vec Reference to another instance of DataVectorSP
          */
         DataVectorSP(const DataVectorSP& vec);
 
         /**
-         * Create a new DataVector from a float array with size elements.
+         * Create a new DataVectorSP from a float array with size elements.
          *
          * @param input float array that contains the data
          * @param size number of elements
@@ -74,35 +74,35 @@ namespace SGPP {
         DataVectorSP(std::vector<int> input);
 
         /**
-         * Resizes the DataVector to size elements.
+         * Resizes the DataVectorSP to size elements.
          * All new additional entries are uninitialized.
          * If nrows is smaller than the current number of rows,
          * all superfluous entries are removed.
          *
-         * @param size New number of elements of the DataVector
+         * @param size New number of elements of the DataVectorSP
          */
         void resize(size_t size);
 
         /**
-         * Resizes the DataVector to size elements.
+         * Resizes the DataVectorSP to size elements.
          * All new additional entries are set to zero.
          * If nrows is smaller than the current number of rows,
          * all superfluous entries are removed.
          *
-         * @param nrows New number of rows of the DataMatrix
+         * @param nrows New number of rows of the DataVectorSP
          */
         void resizeZero(size_t nrows);
 
         /**
-         * Resizes the DataVector by removing entries. Throws an exception
+         * Resizes the DataVectorSP by removing entries. Throws an exception
          * if boundaries a violated.
          *
-         * @param remainingIndex vector that contains the remaining indices of the DataVector
+         * @param remainingIndex vector that contains the remaining indices of the DataVectorSP
          */
         void restructure(std::vector<size_t>& remainingIndex);
 
         /**
-         * Add add potentially new elements to the DataVector. The size remains unchanged
+         * Add add potentially new elements to the DataVectorSP. The size remains unchanged
          * Reserves memory for potentially inc_elems new elements;
          * the actual number of elements remains unchanged.
          * Corresponds to a resize to size+inc_elems new elements while leaving
@@ -142,29 +142,29 @@ namespace SGPP {
         void insert(size_t index, float value);
 
         /**
-         * Sets all values of DataVector to value
+         * Sets all values of DataVectorSP to value
          *
          * @param value New value for all entries
          */
         void setAll(float value);
 
         /**
-         * Copies the data from another DataVector vec.
+         * Copies the data from another DataVectorSP vec.
          * Disregards the number of entries set for the two vectors,
          * i.e., just copies the data entry by entry.
-         * If the size matches, the current DataVector is an
+         * If the size matches, the current DataVectorSP is an
          * exact copy of vec. If not, as many elements as possible are
          * copied, and everything else is left untouched.
          *
-         * @param vec The source DataVector containing the data
+         * @param vec The source DataVectorSP containing the data
          */
         void copyFrom(const DataVectorSP& vec);
 
         /**
-         * Copies the data from another DataVector.
+         * Copies the data from another DataVectorSP.
          * Dimensions have to match.
          *
-         * @param vec the DataVector containing the data
+         * @param vec the DataVectorSP containing the data
          * @return *this
          */
         DataVectorSP& operator=(const DataVectorSP& vec);
@@ -353,6 +353,13 @@ namespace SGPP {
         float* getPointer();
 
         /**
+         * gets a const pointer to the data array
+         *
+         * @return const pointer to the data array
+         */
+        const float* getPointer() const;
+
+        /**
          * gets the elements stored in the vector
          *
          * @return elements stored in the vector
@@ -378,7 +385,7 @@ namespace SGPP {
         size_t getNumberNonZero() const;
 
         /**
-         * Get the current number of elements by which the DataVector is extended,
+         * Get the current number of elements by which the DataVectorSP is extended,
          * if append() or insert() is called and no unused rows are left
          *
          * @return Increment
@@ -388,7 +395,7 @@ namespace SGPP {
         }
 
         /**
-         * Sets the current number of elements by which the DataVector is extended,
+         * Sets the current number of elements by which the DataVectorSP is extended,
          * if append() or insert() is called and no unused elements are left.
          * Defaults to 100.
          *

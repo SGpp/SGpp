@@ -10,7 +10,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationNaiveEvalGradientWavelet::evalGradient(
-      DataVector& alpha, DataVector& point, DataVector& gradient) {
+      const DataVector& alpha, const DataVector& point, DataVector& gradient) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
       float_t result = 0.0;

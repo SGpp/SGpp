@@ -12,7 +12,7 @@
 namespace SGPP {
   namespace base {
 
-    float_t OperationFirstMomentLinear::doQuadrature(DataVector& alpha) {
+    float_t OperationFirstMomentLinear::doQuadrature(const DataVector& alpha) {
       float_t res = 0;
       float_t tmpres = 1;
       GridStorage::index_type index;

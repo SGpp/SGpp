@@ -55,10 +55,13 @@ namespace SGPP {
         inline float_t eval(const base::DataVector& x,
                             base::DataVector& gradient,
                             base::DataMatrix& hessian) {
-          // copy x, necessary due to non-existing const correctness
-          // in SGPP::base
-          base::DataVector y(x);
-          return opEvalHessian->evalHessian(alpha, y, gradient, hessian);
+          for (size_t t = 0; t < d; t++) {
+            if ((x[t] < 0.0) || (x[t] > 1.0)) {
+              return INFINITY;
+            }
+          }
+
+          return opEvalHessian->evalHessian(alpha, x, gradient, hessian);
         }
 
         /**

@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENT_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENT_HPP
+#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTION_HPP
+#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTION_HPP
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
@@ -31,13 +31,13 @@ namespace SGPP {
      * The resulting function \f$g\f$ is similar to a "slice plot" of
      * the component \f$f_k\f$ of \f$f\f$.
      */
-    class ScalarComponent : public ScalarFunction {
+    class ComponentScalarFunction : public ScalarFunction {
       public:
         /**
          * Constructor.
          *
          * Use it like this:
-         * ScalarComponent g(f, {NAN, NAN, 0.42});
+         * ComponentScalarFunction g(f, {NAN, NAN, 0.42});
          * where f is a scalar-valued function with 3 parameters.
          * This selects the first two parameters of f, while constantly
          * using 0.42 for the third parameter.
@@ -54,17 +54,17 @@ namespace SGPP {
          *                      while the finite entries denote the constant
          *                      values for the corresponding parameter.
          */
-        ScalarComponent(
+        ComponentScalarFunction(
           ScalarFunction& f,
           std::vector<float_t> defaultValues = std::vector<float_t>()) :
 
           ScalarFunction((defaultValues.size() > 0) ?
                          std::count(defaultValues.begin(),
                                     defaultValues.end(), NAN) :
-                         f.getDimension()),
+                         f.getNumberOfParameters()),
           fScalar(&f),
           fVector(nullptr),
-          dF(f.getDimension()),
+          dF(f.getNumberOfParameters()),
           k(0),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),
@@ -78,7 +78,7 @@ namespace SGPP {
          * Constructor.
          *
          * Use it like this:
-         * ScalarComponent g(f, 3, {NAN, NAN, 0.42});
+         * ComponentScalarFunction g(f, 3, {NAN, NAN, 0.42});
          * where f is a vector-valued function with 5 components and
          * 3 parameters.
          * This selects the first two parameters and the fourth component
@@ -89,7 +89,7 @@ namespace SGPP {
          *                      (between 0 and m - 1)
          * @param defaultValues see other constructor
          */
-        ScalarComponent(
+        ComponentScalarFunction(
           VectorFunction& f,
           size_t k,
           std::vector<float_t> defaultValues = std::vector<float_t>()) :
@@ -97,10 +97,10 @@ namespace SGPP {
           ScalarFunction((defaultValues.size() > 0) ?
                          std::count(defaultValues.begin(),
                                     defaultValues.end(), NAN) :
-                         f.getDimension()),
+                         f.getNumberOfParameters()),
           fScalar(nullptr),
           fVector(&f),
-          dF(f.getDimension()),
+          dF(f.getNumberOfParameters()),
           k(k),
           defaultValues((defaultValues.size() > 0) ?
                         defaultValues : std::vector<float_t>(dF, NAN)),
@@ -143,7 +143,7 @@ namespace SGPP {
          */
         virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
           clone = std::unique_ptr<ScalarFunction>(
-                    new ScalarComponent(*this));
+                    new ComponentScalarFunction(*this));
         }
 
       protected:
@@ -166,7 +166,7 @@ namespace SGPP {
           // make sure defaultValues has the correct size
           if (defaultValues.size() != dF) {
             throw std::runtime_error(
-              "ScalarComponent::initialize(): Invalid defaultValues.");
+              "ComponentScalarFunction::initialize(): Invalid defaultValues.");
           }
 
           // initialize constant non-NAN entries
@@ -181,4 +181,4 @@ namespace SGPP {
   }
 }
 
-#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARCOMPONENT_HPP */
+#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTION_HPP */

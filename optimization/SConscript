@@ -86,6 +86,13 @@ env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + e
 
 libInstall = env.Install(BUILD_DIR, lib)
 
+libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
+                              source=objs,
+                              LIBPATH=BUILD_DIR,
+                              LIBS=libs)
+env.Depends(libStatic, "#/" + BUILD_DIR.path + "/libsgppbasestatic.a")
+libStaticInstall = env.Install(BUILD_DIR, libStatic)
+
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
@@ -113,3 +120,6 @@ if env['COMPILE_BOOST_TESTS']:
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
+
+libraryTargetList.append(libStatic)
+installTargetList.append(libStaticInstall)

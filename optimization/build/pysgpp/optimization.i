@@ -53,20 +53,24 @@ const bool UMFPACK_ENABLED;
 %rename(OptInterpolantScalarFunction)           SGPP::optimization::InterpolantScalarFunction;
 %rename(OptInterpolantScalarFunctionGradient)   SGPP::optimization::InterpolantScalarFunctionGradient;
 %rename(OptInterpolantScalarFunctionHessian)    SGPP::optimization::InterpolantScalarFunctionHessian;
-%rename(OptScalarComponent)                     SGPP::optimization::ScalarComponent;
-%rename(OptScalarComponentGradient)             SGPP::optimization::ScalarComponentGradient;
-%rename(OptScalarComponentHessian)              SGPP::optimization::ScalarComponentHessian;
+%rename(OptComponentScalarFunction)             SGPP::optimization::ComponentScalarFunction;
+%rename(OptComponentScalarFunctionGradient)     SGPP::optimization::ComponentScalarFunctionGradient;
+%rename(OptComponentScalarFunctionHessian)      SGPP::optimization::ComponentScalarFunctionHessian;
+%rename(OptWrapperScalarFunction)               SGPP::optimization::WrapperScalarFunction;
+%rename(OptWrapperScalarFunctionGradient)       SGPP::optimization::WrapperScalarFunctionGradient;
+%rename(OptWrapperScalarFunctionHessian)        SGPP::optimization::WrapperScalarFunctionHessian;
 
 %rename(OptVectorFunction)                      SGPP::optimization::VectorFunction;
 %rename(OptVectorFunctionGradient)              SGPP::optimization::VectorFunctionGradient;
 %rename(OptVectorFunctionHessian)               SGPP::optimization::VectorFunctionHessian;
-%rename(OptEmptyVectorFunction)                 SGPP::optimization::EmptyVectorFunction;
-%rename(OptEmptyVectorFunctionInstance)         SGPP::optimization::emptyVectorFunction;
-%rename(OptEmptyVectorFunctionGradient)         SGPP::optimization::EmptyVectorGradient;
-%rename(OptEmptyVectorFunctionGradientInstance) SGPP::optimization::emptyVectorGradient;
+%rename(OptEmptyVectorFunction)                 SGPP::optimization::emptyVectorFunction;
+%rename(OptEmptyVectorFunctionGradient)         SGPP::optimization::emptyVectorFunctionGradient;
 %rename(OptInterpolantVectorFunction)           SGPP::optimization::InterpolantVectorFunction;
 %rename(OptInterpolantVectorGradient)           SGPP::optimization::InterpolantVectorGradient;
 %rename(OptInterpolantVectorHessian)            SGPP::optimization::InterpolantVectorHessian;
+%rename(OptWrapperVectorFunction)               SGPP::optimization::WrapperVectorFunction;
+%rename(OptWrapperVectorFunctionGradient)       SGPP::optimization::WrapperVectorFunctionGradient;
+%rename(OptWrapperVectorFunctionHessian)        SGPP::optimization::WrapperVectorFunctionHessian;
 
 %rename(OptTestFunction)    SGPP::optimization::test_functions::TestFunction;
 %rename(OptAckley)          SGPP::optimization::test_functions::Ackley;
@@ -110,6 +114,7 @@ const bool UMFPACK_ENABLED;
 %rename(OptAdaptiveGradientDescent) SGPP::optimization::optimizer::AdaptiveGradientDescent;
 %rename(OptAdaptiveNewton)          SGPP::optimization::optimizer::AdaptiveNewton;
 %rename(OptBFGS)                    SGPP::optimization::optimizer::BFGS;
+%rename(OptCMAES)                   SGPP::optimization::optimizer::CMAES;
 %rename(OptDifferentialEvolution)   SGPP::optimization::optimizer::DifferentialEvolution;
 %rename(OptGradientDescent)         SGPP::optimization::optimizer::GradientDescent;
 %rename(OptMultiStart)              SGPP::optimization::optimizer::MultiStart;
@@ -117,6 +122,9 @@ const bool UMFPACK_ENABLED;
 %rename(OptNewton)                  SGPP::optimization::optimizer::Newton;
 %rename(OptNLCG)                    SGPP::optimization::optimizer::NLCG;
 %rename(OptRprop)                   SGPP::optimization::optimizer::Rprop;
+
+%rename(OptLeastSquaresOptimizer)   SGPP::optimization::optimizer::LeastSquaresOptimizer;
+%rename(OptLevenbergMarquardt)      SGPP::optimization::optimizer::LevenbergMarquardt;
 
 %rename(OptConstrainedOptimizer)    SGPP::optimization::optimizer::ConstrainedOptimizer;
 %rename(OptAugmentedLagrangian)     SGPP::optimization::optimizer::AugmentedLagrangian;
@@ -238,15 +246,21 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp"
 
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarComponent.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarComponentGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarComponentHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
 
 %include "optimization/src/sgpp/optimization/function/scalar/test/TestFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/test/Ackley.hpp"
@@ -295,6 +309,7 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/BFGS.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/unconstrained/CMAES.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/MultiStart.hpp"
@@ -302,6 +317,9 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/Newton.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/NLCG.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/Rprop.hpp"
+
+%include "optimization/src/sgpp/optimization/optimizer/least_squares/LeastSquaresOptimizer.hpp"
+%include "optimization/src/sgpp/optimization/optimizer/least_squares/LevenbergMarquardt.hpp"
 
 %include "optimization/src/sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp"

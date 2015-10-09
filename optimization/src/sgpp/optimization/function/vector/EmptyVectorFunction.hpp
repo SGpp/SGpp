@@ -7,7 +7,7 @@
 #define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP
 
 #include <cstddef>
-#include <sgpp/optimization/function/vector/VectorFunction.hpp>
+#include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -17,36 +17,7 @@ namespace SGPP {
      * This is intended as a fill-in for ConstrainedOptimizer, if
      * only equality or inequality constraints are supported.
      */
-    class EmptyVectorFunction : public VectorFunction {
-      public:
-        /**
-         * Constructor.
-         */
-        EmptyVectorFunction() : VectorFunction(0, 0) {
-        }
-
-        virtual ~EmptyVectorFunction() {};
-
-        /**
-         * Does nothing.
-         *
-         * @param[in]  x      ignored
-         * @param[out] value  ignored
-         */
-        void eval(const base::DataVector& x, base::DataVector& value) {}
-
-        /**
-         * @param[out] clone pointer to cloned object
-         */
-        virtual void clone(
-          std::unique_ptr<VectorFunction>& clone) const {
-          clone = std::unique_ptr<VectorFunction>(
-                    new EmptyVectorFunction());
-        }
-    };
-
-    /// instance of EmptyVectorFunction
-    extern EmptyVectorFunction emptyVectorFunction;
+    extern WrapperVectorFunction emptyVectorFunction;
 
   }
 }

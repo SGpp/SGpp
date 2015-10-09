@@ -44,7 +44,7 @@ namespace SGPP {
         /**
          * Create a new DataVector that is a copy of vec.
          *
-         * @param vec Reference to another instance of DataMatrix
+         * @param vec Reference to another instance of DataVector
          */
         DataVector(const DataVector& vec);
 
@@ -106,7 +106,7 @@ namespace SGPP {
          * If nrows is smaller than the current number of rows,
          * all superfluous entries are removed.
          *
-         * @param nrows New number of rows of the DataMatrix
+         * @param nrows New number of rows of the DataVector
          */
         void resizeZero(size_t nrows);
 
@@ -377,6 +377,13 @@ namespace SGPP {
          * @return pointer to the data array
          */
         float_t* getPointer();
+
+        /**
+         * gets a const pointer to the data array
+         *
+         * @return const pointer to the data array
+         */
+        const float_t* getPointer() const;
 
         /**
          * gets the elements stored in the vector

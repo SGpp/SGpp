@@ -31,6 +31,12 @@ namespace SGPP {
 
           // do QR iteration
           for (size_t it = 0; it < 100; it++) {
+            // break loop if lowest subdiagonal entry is small enough
+            // ==> convergence
+            if (std::abs(A(m - 1, m - 2)) < 1e-8) {
+              break;
+            }
+
             // calculate shift: lambda is the eigenvalue of A(m-1:m,m-1:m)
             // which is closest to A(m,m)
             const float_t dPlus = A(m - 1, m - 1) + A(m - 2, m - 2);
@@ -116,12 +122,6 @@ namespace SGPP {
             }
 
             V = VNew;
-
-            // break loop if lowest subdiagonal entry is small enough
-            // ==> convergence
-            if (std::abs(A(m - 1, m - 2)) < 1e-8) {
-              break;
-            }
           }
 
           // set lower entries explicitly to zero

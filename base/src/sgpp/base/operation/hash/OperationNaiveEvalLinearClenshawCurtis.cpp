@@ -10,7 +10,7 @@ namespace SGPP {
   namespace base {
 
     float_t OperationNaiveEvalLinearClenshawCurtis::eval(
-      DataVector& alpha, DataVector& point) {
+      const DataVector& alpha, const DataVector& point) {
       const size_t n = storage->size();
       const size_t d = storage->dim();
       float_t result = 0.0;

@@ -9,7 +9,9 @@
 namespace SGPP {
   namespace optimization {
 
-    EmptyVectorFunction emptyVectorFunction;
+    WrapperVectorFunction emptyVectorFunction(
+      0, 0, [](const base::DataVector& x,
+    base::DataVector& value) {});
 
   }
 }

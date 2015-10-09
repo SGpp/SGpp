@@ -37,12 +37,11 @@ void createSupportedGrids(size_t d, size_t p,
 void createSampleGrid(base::Grid& grid, size_t l, ScalarFunction& f,
                       base::DataVector& functionValues) {
   base::GridStorage& gridStorage = *grid.getStorage();
-  const size_t d = gridStorage.dim();
+  const size_t d = f.getNumberOfParameters();
 
   // generate regular sparse grid
   gridStorage.emptyStorage();
-  std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
-  gridGen->regular(l);
+  std::unique_ptr<base::GridGenerator>(grid.createGridGenerator())->regular(l);
   const size_t n = gridStorage.size();
   base::DataVector x(d);
 
@@ -65,5 +64,41 @@ void createSampleGrid(base::Grid& grid, size_t l, ScalarFunction& f,
     }
 
     functionValues[i] = f.eval(x);
+  }
+}
+
+void createSampleGrid(base::Grid& grid, size_t l, VectorFunction& f,
+                      base::DataMatrix& functionValues) {
+  base::GridStorage& gridStorage = *grid.getStorage();
+  const size_t d = f.getNumberOfParameters();
+  const size_t m = f.getNumberOfComponents();
+
+  // generate regular sparse grid
+  gridStorage.emptyStorage();
+  std::unique_ptr<base::GridGenerator>(grid.createGridGenerator())->regular(l);
+  const size_t n = gridStorage.size();
+  base::DataVector x(d);
+  base::DataVector fx(m);
+
+  functionValues.resize(n, m);
+
+  for (size_t i = 0; i < n; i++) {
+    base::GridIndex& gp = *gridStorage[i];
+
+    // don't forget to set the point distribution to Clenshaw-Curtis
+    // if necessary (currently not done automatically)
+    if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
+        grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
+        grid.getType() == base::GridType::LinearClenshawCurtis) {
+      gp.setPointDistribution(
+        base::GridIndex::PointDistribution::ClenshawCurtis);
+    }
+
+    for (size_t t = 0; t < d; t++) {
+      x[t] = gp.getCoord(t);
+    }
+
+    f.eval(x, fx);
+    functionValues.setRow(i, fx);
   }
 }

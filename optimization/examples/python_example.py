@@ -33,7 +33,7 @@ print "SGPP::optimization example program started.\n"
 # objective function
 f = ExampleFunction()
 # dimension of domain
-d = f.getDimension()
+d = f.getNumberOfParameters()
 # B-spline degree
 p = 3
 # maximal number of grid points
@@ -102,8 +102,9 @@ print "x0 = {}".format(x0)
 print "f(x0) = {:.6g}, ft(x0) = {:.6g}\n".format(fX0, ftX0)
 
 gradientMethod.setStartingPoint(x0)
-xOpt = pysgpp.DataVector(d)
-ftXOpt = gradientMethod.optimize(xOpt)
+gradientMethod.optimize()
+xOpt = gradientMethod.getOptimalPoint()
+ftXOpt = gradientMethod.getOptimalValue()
 fXOpt = f.eval(xOpt)
 
 print "\nxOpt = {}".format(xOpt)
@@ -116,8 +117,9 @@ print "f(xOpt) = {:.6g}, ft(xOpt) = {:.6g}\n".format(fXOpt, ftXOpt)
 printLine()
 print "Optimizing objective function (for comparison)...\n"
 nelderMead = pysgpp.OptNelderMead(f, 1000)
-xOptNM = pysgpp.DataVector(d)
-fXOptNM = nelderMead.optimize(xOptNM)
+nelderMead.optimize()
+xOptNM = nelderMead.getOptimalPoint()
+fXOptNM = nelderMead.getOptimalValue()
 ftXOptNM = ft.eval(xOptNM)
 
 print "\nxOptNM = {}".format(xOptNM)

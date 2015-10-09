@@ -200,7 +200,7 @@ namespace SGPP {
       unused = 0;
     }
 
-    size_t DataMatrix::appendRow(DataVector& vec) {
+    size_t DataMatrix::appendRow(const DataVector& vec) {
       if (vec.getSize() != this->ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrix::appendRow : Dimensions do not match");
@@ -474,6 +474,28 @@ namespace SGPP {
       }
     }
 
+    void DataMatrix::mult(const DataVector& x, DataVector& y) {
+      if (ncols != x.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrix::mult : Dimensions do not match (x)");
+      }
+
+      if (nrows != y.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrix::mult : Dimensions do not match (y)");
+      }
+
+      for (size_t i = 0; i < nrows; i++) {
+        float_t entry = 0.0;
+
+        for (size_t j = 0; j < ncols; j++) {
+          entry += data[(i * ncols) + j] * x[j];
+        }
+
+        y[i] = entry;
+      }
+    }
+
     void DataMatrix::sqr() {
       size_t n = nrows * ncols;
 
@@ -702,6 +724,10 @@ namespace SGPP {
     }
 
     float_t* DataMatrix::getPointer() {
+      return data;
+    }
+
+    const float_t* DataMatrix::getPointer() const {
       return data;
     }
 
