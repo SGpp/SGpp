@@ -28,15 +28,15 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
     return sin(x0 * M_PI);
 }
 
-DataVector& calculateError(const DataMatrix& dataSet, SGPP::float_t (&f)(SGPP::float_t,SGPP::float_t), Grid& grid, const DataVector& alpha, DataVector& error) {
+DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVector& alpha, DataVector& error) {
     cout << "calculating error" << endl;
 
     //traverse dataSet
-    DataVector vec = DataVector(2);
+    DataVector vec(2);
     OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
     for (uint i = 0; i < dataSet.getNrows(); i++) {
-        dataSet.getRow(i,vec);
-        error[i] = pow(f(dataSet.get(i,0),dataSet.get(i,1))-opEval->eval(alpha,vec),2);
+        dataSet.getRow(i, vec);
+        error[i] = pow(f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha, vec), 2);
     }
     return error;
 }
@@ -62,46 +62,31 @@ int main() {
     int rows = 100;
     int cols = 100;
 
-    DataMatrix dataSet = DataMatrix(rows * cols, dim);
-    DataVector vals = DataVector(rows * cols);
+    DataMatrix dataSet(rows * cols, dim);
+    DataVector vals(rows * cols);
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             //xcoord
-            dataSet.set(i*cols+j,0,i*1.0/rows);
+            dataSet.set(i * cols + j, 0, i * 1.0 / rows);
             //ycoord
-            dataSet.set(i*cols+j,1,j*1.0/cols);
-            vals[i*cols+j] = f(i*1.0/rows,j*1.0/cols);
+            dataSet.set(i * cols + j, 1, j * 1.0 / cols);
+            vals[i * cols + j] = f(i * 1.0 / rows, j * 1.0 / cols);
         }
     }
 
-    DataVector* xCoordsOld = new DataVector(0);
-    DataVector* yCoordsOld = new DataVector(0);
-
-    for (size_t i = 0; i < hashGridStorage->size(); i++) {
-        DataVector gridPointCoordinates = DataVector(dim);
-        hashGridStorage->get(i)->getCoords(gridPointCoordinates);
-        xCoordsOld->append(gridPointCoordinates[0]);
-        yCoordsOld->append(gridPointCoordinates[1]);
-    }
-
-    //refine adaptively 5 times
-    for (int step = 0; step < 5; step++) {
+    //refine adaptively 10 times
+    for (int step = 0; step < 10; step++) {
         // set function values in alpha
-        DataVector gridPointCoordinates = DataVector(dim);
+        DataVector gridPointCoordinates(dim);
 
         for (size_t i = 0; i < hashGridStorage->size(); i++) {
             hashGridStorage->get(i)->getCoords(gridPointCoordinates);
-            xCoordsOld->append(gridPointCoordinates[0]);
-            yCoordsOld->append(gridPointCoordinates[1]);
             alpha[i] = f(gridPointCoordinates[0], gridPointCoordinates[1]);
         }
 
         // hierarchize
         SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
-
-        // initialize plotter
-        // plotter.hold(True) TODO
 
         DataVector* xCoordinates = new DataVector(0);
         DataVector* yCoordinates = new DataVector(0);
@@ -115,29 +100,19 @@ int main() {
             yCoordinates->append(gridPointCoordinates[1]);
             opEval->eval(alpha, gridPointCoordinates);
         }
-        // plotter.scatter(xCoordinates, yCoordinates, c='b') TODO
-        // plotter.scatter(xCoordsOld, yCoordsOld, c='r') TODO
-        xCoordsOld = xCoordinates;
-        yCoordsOld = yCoordinates;
-
-
-        // show plot
-
-        // plotter.hold(False) TODO
-        // plotter.show() TODO
 
         // calculate squared offset
-        DataVector errorVector = DataVector(dataSet.getNrows());
-        calculateError(dataSet, f, *grid, alpha, errorVector);
+        DataVector errorVector(dataSet.getNrows());
+        calculateError(dataSet, *grid, alpha, errorVector);
 
         // refinement  stuff
-        HashRefinement* refinement = new HashRefinement();
-        PredictiveRefinement* decorator = new PredictiveRefinement(refinement);
+        HashRefinement refinement;
+        PredictiveRefinement decorator(&refinement);
 
         // refine a single grid point each time
-        cout << "ErrorVector = (" << errorVector[0] << ", " << errorVector[1] <<  ")" << endl;
-        PredictiveRefinementIndicator* indicator = new PredictiveRefinementIndicator(grid, &dataSet, &errorVector, 1);
-        decorator->free_refine(hashGridStorage, indicator);
+        cout << "Error over all = "  << errorVector.sum() << endl;
+        PredictiveRefinementIndicator indicator(grid, &dataSet, &errorVector, 1);
+        decorator.free_refine(hashGridStorage, &indicator);
 
         cout << "Refinement step " << step + 1 << ", new grid size: " << hashGridStorage->size() << endl;
 
