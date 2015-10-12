@@ -69,8 +69,8 @@ for i in xrange(HashGridStorage.size()):
         xCoordsOld.append(gridPointCoordinates[0])
         yCoordsOld.append(gridPointCoordinates[1])
  
-# now refine adaptively 5 times
-for refnum in range(20):
+# now refine adaptively 10 times
+for refnum in range(10):
     # set function values in alpha
     for i in xrange(HashGridStorage.size()):
         gp = HashGridStorage.get(i)
@@ -116,7 +116,7 @@ for refnum in range(20):
     refinement = HashRefinement()
     decorator = PredictiveRefinement(refinement)
     # refine a single grid point each time
-    print "ErrorVector = %s" % errorVector
+    print "ErrorVector = %s" % errorVector.sum()
     indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,1)
     decorator.free_refine(HashGridStorage,indicator)
     
