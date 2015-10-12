@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
 
     //  int maxLevel = 9;
-    int maxLevel = 1;
+    int maxLevel = 12;
 
     //std::string fileName = "debugging.arff";
     std::string fileName = "friedman_4d.arff";
@@ -33,13 +33,13 @@ int main(int argc, char** argv) {
 
     // Set solver during refinement
     SLESolverConfigRefine.eps_ = 0;
-    SLESolverConfigRefine.maxIterations_ = 0;
+    SLESolverConfigRefine.maxIterations_ = 5;
     SLESolverConfigRefine.threshold_ = -1.0;
     SLESolverConfigRefine.type_ = sg::solver::CG;
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = 0;
-    SLESolverConfigFinal.maxIterations_ = 1;
+    SLESolverConfigFinal.maxIterations_ = 5;
     SLESolverConfigFinal.threshold_ = -1.0;
     SLESolverConfigFinal.type_ = sg::solver::CG;
 
@@ -64,27 +64,29 @@ int main(int argc, char** argv) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL);
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLMP);
 
     if (argc == 2) {
-        if (strcmp(argv[1], "streaming") == 0) {
+        if (strcmp(argv[1], "streamingCPU") == 0) {
             configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,
             SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
-            std::cout << "EvalType::STREAMING" << std::endl;
-        } else if (strcmp(argv[1], "subspace") == 0) {
+            std::cout << "EvalType::STREAMING (CPU)" << std::endl;
+        } else if (strcmp(argv[1], "subspaceCPU") == 0) {
             configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
             SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
             SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
-            std::cout << "EvalType::SUBSPACE" << std::endl;
+            std::cout << "EvalType::SUBSPACE (CPU)" << std::endl;
         }
+    } else {
+        std::cout << "EvalType::STREAMING::OCLMP" << std::endl;
     }
 
-    //  learner.learn(configuration, fileName);
+    learner.learn(configuration, fileName);
     //learner.learnReference(fileName);
 
     //learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-    learner.learnAndCompare(configuration, fileName, 2, 1.0);
+//    learner.learnAndCompare(configuration, fileName, 4);
 
     //learner.writeStatisticsFile("statistics.csv", "test");
 

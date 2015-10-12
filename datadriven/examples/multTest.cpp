@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = 0;
+    adaptConfig.numRefinements_ = 8;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 

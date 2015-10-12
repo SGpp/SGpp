@@ -90,11 +90,11 @@ namespace SGPP {
 
         //learn and test against the streaming implementation
         float_t learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                std::string datasetFileName, size_t gridGranularity, float_t tolerance);
+                                std::string datasetFileName, size_t gridGranularity);
 
         //learn and test against the streaming implementation
         float_t learnAndCompareString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                std::string content, size_t gridGranularity, float_t tolerance);
+                                std::string content, size_t gridGranularity);
 
         void refinementAndOverallPerformance(
           std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
