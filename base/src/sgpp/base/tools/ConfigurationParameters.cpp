@@ -106,5 +106,15 @@ void ConfigurationParameters::readFromFile(std::string fileName) {
     file.close();
 }
 
+std::vector<std::string> ConfigurationParameters::getAsList(const std::string &key) {
+
+    std::string &listAttribute = this->get(key);
+
+    auto splitted = this->split(listAttribute, ',');
+
+    return splitted;
+}
+
+
 }
 }

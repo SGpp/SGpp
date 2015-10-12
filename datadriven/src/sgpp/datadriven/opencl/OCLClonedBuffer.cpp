@@ -42,7 +42,6 @@ void OCLClonedBuffer::writeToBuffer(void* hostData, size_t* offsets) {
     cl_int err;
     cl_event* actionDone = new cl_event[this->manager->num_devices];
 
-    //TODO: fix bug, not waiting for event
     for (size_t i = 0; i < this->manager->num_devices; i++) {
         if (offsets == nullptr) {
             err = clEnqueueWriteBuffer(this->manager->command_queue[i], this->bufferList[i],

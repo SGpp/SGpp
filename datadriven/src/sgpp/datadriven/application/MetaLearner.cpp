@@ -40,6 +40,9 @@ SGPP::solver::SLESolverConfiguration solverFinalStep, SGPP::base::AdpativityConf
 void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
         std::string datasetFileName) {
     std::ifstream t(datasetFileName);
+    if (!t.is_open()) {
+        throw;
+    }
     std::stringstream buffer;
     buffer << t.rdbuf();
     this->learnString(operationConfiguration, buffer.str());
@@ -85,6 +88,9 @@ Grid &MetaLearner::getLearnedGrid() {
 
 void MetaLearner::learnReference(std::string datasetFileName) {
     std::ifstream t(datasetFileName);
+    if (!t.is_open()) {
+        throw;
+    }
     std::stringstream buffer;
     buffer << t.rdbuf();
     this->learnReferenceString(buffer.str());
@@ -202,19 +208,22 @@ void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConf
 
 //learn and test against the streaming implemenation
 float_t MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string datasetFileName, size_t gridGranularity, float_t tolerance) {
+        std::string datasetFileName, size_t gridGranularity) {
     std::ifstream t(datasetFileName);
+    if (!t.is_open()) {
+        throw;
+    }
     std::stringstream buffer;
     buffer << t.rdbuf();
-    this->learnAndCompareString(operationConfiguration, buffer.str(), gridGranularity, tolerance);
+    this->learnAndCompareString(operationConfiguration, buffer.str(), gridGranularity);
 }
 
 //learn and test against the streaming implemenation
 float_t MetaLearner::learnAndCompareString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string content, size_t gridGranularity, float_t tolerance) {
+        std::string content, size_t gridGranularity) {
     //always do this first
-    this->learn(operationConfiguration, content);
-    this->learnReference(content);
+    this->learnString(operationConfiguration, content);
+    this->learnReferenceString(content);
 
     DataMatrix testTrainingData(0, this->gridConfig.dim_);
 
@@ -279,21 +288,27 @@ float_t MetaLearner::learnAndCompareString(SGPP::datadriven::OperationMultipleEv
     // }
     // std::cout << std::endl;
 
+    double maxDiff = -1.0;
+    double firstValue = -1.0;
+    double secondValue = -1.0;
     for (size_t i = 0; i < computedClasses.getSize(); i++) {
-        float_t temp = fabs(computedClasses.get(i) - referenceClasses.get(i));
-        temp *= temp;
-        squareSum += temp;
+        float_t diff = fabs(computedClasses.get(i) - referenceClasses.get(i));
 
-        if (verbose && fabs(computedClasses.get(i) - referenceClasses.get(i)) > tolerance) {
-            std::cout << "computed: " << computedClasses.get(i) << " but reference is: " << referenceClasses.get(i)
-                    << std::endl;
+        if (diff > maxDiff) {
+            maxDiff = diff;
+            firstValue = computedClasses.get(i);
+            secondValue = referenceClasses.get(i);
         }
+
+        diff *= diff;
+        squareSum += diff;
     }
 
     squareSum = sqrt(squareSum);
 
     if (verbose) {
         std::cout << "sqrt: " << squareSum << std::endl;
+        std::cout << "maxDiff: " << maxDiff << " value: " << firstValue << " second: " << secondValue << std::endl;
     }
 
     return squareSum;

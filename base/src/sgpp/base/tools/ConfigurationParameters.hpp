@@ -37,6 +37,8 @@ public:
 
     uint64_t getAsUnsigned(const std::string &key);
 
+    std::vector<std::string> getAsList(const std::string &key);
+
     void readFromMap(std::map<std::string, std::string> &parametersMap);
 
     void readFromFile(std::string fileName);

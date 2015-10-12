@@ -39,7 +39,18 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
         std::cout << "OCL Info: " << overallDeviceCount << " OpenCL devices have been found!" << std::endl;
     }
 
-    if (parameters->get("SELECT_SPECIFIC_DEVICE").compare("DISABLED") != 0) {
+    std::cout << "SELECT_SPECIFIC_DEVICE: " << parameters->get("SELECT_SPECIFIC_DEVICE") << std::endl;
+    std::cout << "MAX_DEVICES: " << parameters->get("MAX_DEVICES") << std::endl;
+    bool isSelectSpecificDeviceEnabled = parameters->get("SELECT_SPECIFIC_DEVICE").compare("DISABLED") != 0;
+    bool isMaxDevicesEnabled = parameters->get("MAX_DEVICES").compare("DISABLED") != 0;
+
+    if (isSelectSpecificDeviceEnabled && isMaxDevicesEnabled) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Can specify \"MAX_DEVICES\" and \"SELECT_SPECIFIC_DEVICE\" at the same time" << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+    }
+
+    if (isSelectSpecificDeviceEnabled) {
         if (this->platforms.size() > 1) {
             std::stringstream errorString;
             errorString << "OCL Error: Can only select a specific device if only one platform is used" << std::endl;
@@ -64,11 +75,23 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
             std::cout << "OCL Info: select device number " << selectedDevice << std::endl;
         }
 
-    }
+    } else if (isMaxDevicesEnabled) {
+        if (this->platforms.size() > 1) {
+            std::stringstream errorString;
+            errorString << "OCL Error: Can only select devices if only one platform is used" << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+        }
 
-//    if (maxDevices != 0 && maxDevices < overallDeviceCount) {
-//        overallDeviceCount = maxDevices;
-//    }
+        size_t maxDevices = parameters->getAsUnsigned("MAX_DEVICES");
+
+        //always for the first platform
+        platforms[0].deviceCount = maxDevices;
+        overallDeviceCount = maxDevices;
+
+        if (verbose) {
+            std::cout << "OCL Info: select number of devices: " << maxDevices << std::endl;
+        }
+    }
 
     if (verbose) {
         std::cout << "OCL Info: using " << overallDeviceCount << " device/s" << std::endl;
