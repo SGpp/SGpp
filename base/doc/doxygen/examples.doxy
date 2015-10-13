@@ -1,0 +1,20 @@
+/**
+@page examples Examples
+
+This is a collection of examples from all modules.
+To add new examples to the documentation,
+go to the respective folder module/doc/doxygen/ and
+add a new example file code_examples_NAME.doxy with doxygen-internal
+name code_examples_NAME.
+
+Note that SCons automatically compiles (but not runs)
+all C++ examples on each run.
+For this to work, the examples must lie in the directories of the form
+\c /path/to/SGpp/trunk/MODULE_NAME/examples.
+
+- @subpage code_examples_continued_learning
+- @subpage code_examples_quick_start
+- @subpage code_examples_refinement
+- @subpage code_examples_quadrature
+- @subpage code_examples_optimization
+**/
