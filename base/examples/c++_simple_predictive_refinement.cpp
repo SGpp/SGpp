@@ -88,19 +88,6 @@ int main() {
         // hierarchize
         SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
 
-        DataVector* xCoordinates = new DataVector(0);
-        DataVector* yCoordinates = new DataVector(0);
-
-        //print all points
-        OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
-
-        for (size_t i = 0; i < hashGridStorage->size(); i++) {
-            hashGridStorage->get(i)->getCoords(gridPointCoordinates);
-            xCoordinates->append(gridPointCoordinates[0]);
-            yCoordinates->append(gridPointCoordinates[1]);
-            opEval->eval(alpha, gridPointCoordinates);
-        }
-
         // calculate squared offset
         DataVector errorVector(dataSet.getNrows());
         calculateError(dataSet, *grid, alpha, errorVector);
