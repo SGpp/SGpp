@@ -27,14 +27,7 @@ protected:
     base::OCLConfigurationParameters parameters;
     T *kernelDataset = nullptr;
     size_t datasetSize = 0;
-    /// Member to store the sparse grid's subspaces
-    //SubspaceInfo* subSpaces = nullptr;
-    std::map<uint32_t, std::vector<uint32_t>> subspaceMap;
 
-    T* levels = nullptr;
-    T* indices = nullptr;
-    size_t linIndexMapSize;
-    size_t* linIndexToGridIndexMap = nullptr; //this is needed to correctly identify a gridPoints position in the result/alpha vector solely based on a level/index pair
     T* alphas = nullptr;
     size_t gridSize = 0;
     size_t numSubspaces = 0;
@@ -97,16 +90,16 @@ public:
     ~OperationMultiEvalAdaptiveOCL() {
 
 
-        if (this->indices != nullptr) {
-            delete this->indices;
+        if (m_streamingArray != nullptr) {
+            delete m_streamingArray;
         }
 
-        if (this->levels != nullptr) {
-            delete this->levels;
+        if (m_subspaceArray != nullptr) {
+            delete m_subspaceArray;
         }
-
-        if (this->linIndexToGridIndexMap != nullptr) {
-            delete this->linIndexToGridIndexMap;
+        if (m_metaInfo != nullptr)
+        {
+            delete m_metaInfo;
         }
 
         if (this->kernelDataset != nullptr) {

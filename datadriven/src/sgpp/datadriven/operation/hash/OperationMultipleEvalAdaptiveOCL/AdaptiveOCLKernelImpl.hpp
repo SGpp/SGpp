@@ -18,7 +18,7 @@
 #include "../../../opencl/OCLConfigurationParameters.hpp"
 #include "../../../opencl/OCLManager.hpp"
 #include "../../../opencl/OCLStretchedBuffer.hpp"
-#include "../../../opencl/OCLReadOnlyBuffer.hpp"
+#include "../../../opencl/OCLZeroCopyBuffer.hpp"
 #include "AdaptiveOCLKernelSourceBuilder.hpp"
 
 namespace SGPP {
@@ -40,10 +40,10 @@ private:
 //    cl_context context;
 //    cl_command_queue* command_queue;
 
-    base::OCLReadOnlyBuffer deviceData;
-    base::OCLReadOnlyBuffer deviceStreamArray;
-    base::OCLReadOnlyBuffer deviceSubspaceArray;
-    base::OCLReadOnlyBuffer deviceMetaInfo;
+    base::OCLZeroCopyBuffer deviceData;
+    base::OCLZeroCopyBuffer deviceStreamArray;
+    base::OCLZeroCopyBuffer deviceSubspaceArray;
+    base::OCLZeroCopyBuffer deviceMetaInfo;
 
     // use pinned memory (on host and device) to speed up data transfers from/to GPU
     base::OCLStretchedBuffer deviceAlpha;
@@ -127,11 +127,6 @@ public:
 //        clReleaseContext(context);
 
 //        delete[] this->command_queue;
-
-        this->deviceData.freeBuffer();
-        this->deviceStreamArray.freeBuffer();
-        this->deviceSubspaceArray.freeBuffer();
-        this->deviceMetaInfo.freeBuffer();
 
         delete[] this->kernel_mult;
         delete[] this->kernel_multTrans;
@@ -484,29 +479,29 @@ private:
         {
             printf("WARNING! No subspaces evaluated using streaming layout \n");
             real_type dummyArray[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-            this->deviceStreamArray.initializeBuffer(dummyArray, sizeof(real_type), 5);
+            this->deviceStreamArray.initializeBuffer(dummyArray, sizeof(real_type), 5, true);
         }
         //Initialize device memory
         else if (streamingArray != nullptr && !this->deviceStreamArray.isInitialized()) {
-            this->deviceStreamArray.initializeBuffer(streamingArray, sizeof(real_type), numStreamSubs * (this->dims + 1));
+            this->deviceStreamArray.initializeBuffer(streamingArray, sizeof(real_type), numStreamSubs * (this->dims + 1), true);
         }
 
         if ( numSubSubs == 0 && subspaceArray != nullptr && !this->deviceSubspaceArray.isInitialized())
         {
             printf("WARNING! No subspaces evaluated using subspace layout \n");
             real_type dummyArray[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-            this->deviceSubspaceArray.initializeBuffer(dummyArray, sizeof(real_type), 5);
+            this->deviceSubspaceArray.initializeBuffer(dummyArray, sizeof(real_type), 5, true);
         }
         else if (subspaceArray != nullptr && !this->deviceSubspaceArray.isInitialized()) {
-            this->deviceSubspaceArray.initializeBuffer(subspaceArray, sizeof(real_type), numSubSubs * (this->dims + 1));
+            this->deviceSubspaceArray.initializeBuffer(subspaceArray, sizeof(real_type), numSubSubs * (this->dims + 1), true);
         }
 
         if (metaInfo != nullptr && !this->deviceMetaInfo.isInitialized()) {
-            this->deviceMetaInfo.initializeBuffer(metaInfo, sizeof(uint32_t), numSubspaces*(this->dims + 3));
+            this->deviceMetaInfo.initializeBuffer(metaInfo, sizeof(uint32_t), numSubspaces*(this->dims + 3), true);
         }
 
         if (!this->deviceData.isInitialized()) {
-            this->deviceData.initializeBuffer(dataset, sizeof(real_type), datasetSize * this->dims);
+            this->deviceData.initializeBuffer(dataset, sizeof(real_type), datasetSize * this->dims, true);
         }
 
 
