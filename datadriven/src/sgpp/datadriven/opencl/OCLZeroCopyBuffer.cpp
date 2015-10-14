@@ -5,7 +5,7 @@
  *      Author: leiterrl
  */
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLReadOnlyBuffer.hpp"
+#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLZeroCopyBuffer.hpp"
 
 #include <sstream>
 
@@ -19,7 +19,7 @@ namespace SGPP
     namespace base
     {
 
-        OCLReadOnlyBuffer::OCLReadOnlyBuffer(std::shared_ptr<OCLManager> manager) : m_manager(manager)
+        OCLZeroCopyBuffer::OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager) : m_manager(manager)
         {
 
             m_initialized = false;
@@ -27,27 +27,26 @@ namespace SGPP
             m_mappedHostBuffer = nullptr;
             m_sizeofType = 0;
             m_elements = 0;
-
         }
 
-        OCLReadOnlyBuffer::~OCLReadOnlyBuffer()
+        OCLZeroCopyBuffer::~OCLZeroCopyBuffer()
         {
             this->freeBuffer();
         }
 
-        bool OCLReadOnlyBuffer::isInitialized()
+        bool OCLZeroCopyBuffer::isInitialized()
         {
             return this->m_initialized;
         }
 
-        cl_mem* OCLReadOnlyBuffer::getBuffer(size_t deviceNumber)
+        cl_mem* OCLZeroCopyBuffer::getBuffer(size_t deviceNumber)
         {
             return &(m_hostBuffer);
         }
 
         //TODO: current multidevice strategy: allocate everything everywere, use only range specified for device
 
-        void OCLReadOnlyBuffer::writeToBuffer(void* hostData)
+        void OCLZeroCopyBuffer::writeToBuffer(void* hostData)
         {
             cl_int err;
 
@@ -60,9 +59,21 @@ namespace SGPP
                 throw SGPP::base::operation_exception(errorString.str());
             }
 
+            if ( m_mappedHostBuffer == nullptr )
+                throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
+
+            /*for ( int i = 0; i < m_elements; i++)
+            {
+                printf("hostData[%i]: %i \n", i, *((uint32_t*)hostData + 0x4*i));
+            }*/
+
+            //uint32_t* testArray = new uint32_t[m_elements];
+            //memcpy(m_mappedHostBuffer, testArray, m_sizeofType*m_elements);
+
             memcpy(m_mappedHostBuffer, hostData, m_sizeofType*m_elements);
 
             err = clEnqueueUnmapMemObject(m_manager->command_queue[0], m_hostBuffer, m_mappedHostBuffer, 0, nullptr, nullptr);
+            m_mappedHostBuffer == nullptr;
 
             if (err != CL_SUCCESS) {
                 std::stringstream errorString;
@@ -72,7 +83,7 @@ namespace SGPP
 
         }
 
-        void OCLReadOnlyBuffer::readFromBuffer(void* hostData)
+        void OCLZeroCopyBuffer::readFromBuffer(void* hostData)
         {
             cl_int err;
 
@@ -85,9 +96,13 @@ namespace SGPP
                 throw SGPP::base::operation_exception(errorString.str());
             }
 
+            if ( m_mappedHostBuffer == nullptr )
+                            throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
+
             memcpy(hostData, m_mappedHostBuffer, m_sizeofType*m_elements);
 
             err = clEnqueueUnmapMemObject(m_manager->command_queue[0], m_hostBuffer, m_mappedHostBuffer, 0, nullptr, nullptr);
+            m_mappedHostBuffer == nullptr;
 
             if (err != CL_SUCCESS) {
                 std::stringstream errorString;
@@ -97,13 +112,22 @@ namespace SGPP
         }
 
         //read/write-flags are missing
-        void OCLReadOnlyBuffer::initializeBuffer(void* initialValues, size_t sizeofType, size_t elements)
+        void OCLZeroCopyBuffer::initializeBuffer(void* initialValues, size_t sizeofType, size_t elements, bool readOnly)
         {
             cl_int err;
             cl_mem* bufferList = new cl_mem[m_manager->num_devices];
 
-            m_hostBuffer = clCreateBuffer(m_manager->context,
-                CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeofType * elements, nullptr, &err);
+            unsigned long int flags = CL_MEM_ALLOC_HOST_PTR;
+            if (readOnly)
+            {
+                flags |= CL_MEM_READ_ONLY;
+            }
+            else
+            {
+                flags |= CL_MEM_READ_WRITE;
+            }
+
+            m_hostBuffer = clCreateBuffer(m_manager->context, flags, sizeofType * elements, nullptr, &err);
 
             if (err != CL_SUCCESS) {
                 std::stringstream errorString;
@@ -115,6 +139,7 @@ namespace SGPP
             this->m_sizeofType = sizeofType;
             this->m_elements = elements;
             this->m_initialized = true;
+            this->m_readOnly = readOnly;
 
             if (initialValues != nullptr)
             {
@@ -122,7 +147,7 @@ namespace SGPP
             }
         }
 
-        void OCLReadOnlyBuffer::freeBuffer()
+        void OCLZeroCopyBuffer::freeBuffer()
         {
             if (!this->m_initialized) {
                 return;
@@ -130,7 +155,7 @@ namespace SGPP
 
             if (this->m_bufferList == nullptr) {
                 std::stringstream errorString;
-                errorString << "OCL Error: OCLClonedBuffer in partially m_initialized state: buffer list is null" << std::endl;
+                errorString << "OCL Error: OCLZeroCopyBuffer in partially m_initialized state: buffer list is null" << std::endl;
                 throw SGPP::base::operation_exception(errorString.str());
             }
 
@@ -140,10 +165,16 @@ namespace SGPP
                     this->m_bufferList[i] = nullptr;
                 } else {
                     std::stringstream errorString;
-                    errorString << "OCL Error: OCLClonedBuffer in partially m_initialized state: device buffer is null"
+                    errorString << "OCL Error: OCLZeroCopyBuffer in partially m_initialized state: device buffer is null"
                             << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
+            }
+
+            if ( m_hostBuffer != nullptr)
+            {
+                clReleaseMemObject(m_hostBuffer);
+                m_hostBuffer = nullptr;
             }
 
             delete[] this->m_bufferList;

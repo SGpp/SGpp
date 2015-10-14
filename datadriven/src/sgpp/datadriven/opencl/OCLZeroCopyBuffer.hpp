@@ -18,7 +18,7 @@ namespace SGPP
     namespace base
     {
 
-        class OCLReadOnlyBuffer
+        class OCLZeroCopyBuffer
         {
         private:
             std::shared_ptr<OCLManager> m_manager;
@@ -28,10 +28,11 @@ namespace SGPP
             size_t m_elements;
             cl_mem m_hostBuffer;
             void* m_mappedHostBuffer;
+            bool m_readOnly;
 
         public:
-            OCLReadOnlyBuffer(std::shared_ptr<OCLManager> manager);
-            ~OCLReadOnlyBuffer();
+            OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager);
+            ~OCLZeroCopyBuffer();
 
             bool isInitialized();
 
@@ -43,7 +44,7 @@ namespace SGPP
 
             void readFromBuffer(void* hostData);
 
-            void initializeBuffer(void* initialValues, size_t sizeofType, size_t elements);
+            void initializeBuffer(void* initialValues, size_t sizeofType, size_t elements, bool readOnly);
 
             void freeBuffer();
         };
