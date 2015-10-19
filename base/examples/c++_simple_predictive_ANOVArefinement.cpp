@@ -16,7 +16,7 @@
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
@@ -25,7 +25,7 @@ using namespace SGPP::base;
 
 // function to interpolate
 SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
-    return sin(x0 * M_PI);
+    return sin(x0 * 10) + x1;
 }
 
 DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVector& alpha, DataVector& error) {
@@ -49,7 +49,7 @@ int main() {
     cout << "dimensionality:         " << hashGridStorage->dim() << endl;
 
     // create regular grid, level 3
-    size_t level = 1;
+    size_t level = 3;
     GridGenerator* gridGen = grid->createGridGenerator();
     gridGen->regular(level);
     cout << "number of grid points:  " << hashGridStorage->size() << endl;
@@ -96,7 +96,7 @@ int main() {
 
         // refinement  stuff
         HashRefinement refinement;
-        PredictiveRefinement decorator(&refinement);
+        PredictiveANOVARefinement decorator(&refinement);
 
         // refine a single grid point each time
         cout << "Error over all = "  << errorVector.sum() << endl;
