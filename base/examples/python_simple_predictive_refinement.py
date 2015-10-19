@@ -8,7 +8,7 @@
 # import modules
 import sys
 import math
-# append trunk/bin to search path for modules
+
 from pysgpp import *
 import matplotlib.pyplot as plotter
 from mpl_toolkits.mplot3d import Axes3D
