@@ -2,17 +2,6 @@
 @page installation Installation and Compilation
 Compilation, installation and dependecies.
 
-<!---
-things to mention:
-~/sgpp/trunk$ echo $LD_LIBRARY_PATH
-/home/baurms/sgpp/trunk/lib/sgpp
-:~/sgpp/trunk$ echo $PYTHONPATH
-/home/baurms/sgpp/trunk/bin:/home/baurms/sgpp/trunk/lib/pysgpp:
-has to be set
-swig >= 3.0.0
-WORKING build command scons -j 4 SG_JAVA=0 SSE3_FALLBACK=1
--->
-
 @section overview Overview
 - \ref requirements
 - \ref compilation_scons
