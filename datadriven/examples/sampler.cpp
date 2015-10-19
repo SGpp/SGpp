@@ -7,10 +7,10 @@
 int main(int argc, char** argv) {
 
     //  int maxLevel = 9;
-    int maxLevel = 12;
+    int maxLevel = 7;
 
     //std::string fileName = "debugging.arff";
-    std::string fileName = "friedman_4d.arff";
+    std::string fileName = "DR5_train.arff";
     //  std::string fileName = "friedman2_90000.arff";
     //  std::string fileName = "bigger.arff";
 
@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCLMP);
+    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
 
     if (argc == 2) {
         if (strcmp(argv[1], "streamingCPU") == 0) {

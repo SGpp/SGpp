@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace datadriven {
 
-OperationMultiEvalStreaming::OperationMultiEvalStreaming(base::Grid& grid, base::DataMatrix& dataset) :
+OperationMultiEvalModMaskStreaming::OperationMultiEvalModMaskStreaming(base::Grid& grid, base::DataMatrix& dataset) :
         OperationMultipleEval(grid, dataset), preparedDataset(dataset), myTimer_(
         SGPP::base::SGppStopwatch()), duration(-1.0) {
     this->storage = grid.getStorage();
@@ -21,7 +21,7 @@ OperationMultiEvalStreaming::OperationMultiEvalStreaming(base::Grid& grid, base:
     this->prepare();
 }
 
-OperationMultiEvalStreaming::~OperationMultiEvalStreaming() {
+OperationMultiEvalModMaskStreaming::~OperationMultiEvalModMaskStreaming() {
     if (this->level_ != nullptr)
         delete this->level_;
 
@@ -29,7 +29,7 @@ OperationMultiEvalStreaming::~OperationMultiEvalStreaming() {
         delete this->index_;
 }
 
-void OperationMultiEvalStreaming::getPartitionSegment(size_t start, size_t end, size_t segmentCount,
+void OperationMultiEvalModMaskStreaming::getPartitionSegment(size_t start, size_t end, size_t segmentCount,
         size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd, size_t blockSize) {
     size_t totalSize = end - start;
 
@@ -62,21 +62,21 @@ void OperationMultiEvalStreaming::getPartitionSegment(size_t start, size_t end, 
     *segmentEnd = *segmentStart + blockSegmentSize * blockSize;
 }
 
-void OperationMultiEvalStreaming::getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart,
+void OperationMultiEvalModMaskStreaming::getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart,
         size_t* segmentEnd, size_t blocksize) {
     size_t threadCount = omp_get_num_threads();
     size_t myThreadNum = omp_get_thread_num();
     getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart, segmentEnd, blocksize);
 }
 
-size_t OperationMultiEvalStreaming::getChunkGridPoints() {
+size_t OperationMultiEvalModMaskStreaming::getChunkGridPoints() {
     return 12;
 }
-size_t OperationMultiEvalStreaming::getChunkDataPoints() {
+size_t OperationMultiEvalModMaskStreaming::getChunkDataPoints() {
     return 24; // must be divisible by 24
 }
 
-void OperationMultiEvalStreaming::mult(SGPP::base::DataVector& alpha,
+void OperationMultiEvalModMaskStreaming::mult(SGPP::base::DataVector& alpha,
 SGPP::base::DataVector& result) {
     this->myTimer_.start();
 
@@ -98,7 +98,7 @@ SGPP::base::DataVector& result) {
     this->duration = this->myTimer_.stop();
 }
 
-void OperationMultiEvalStreaming::multTranspose(SGPP::base::DataVector& source,
+void OperationMultiEvalModMaskStreaming::multTranspose(SGPP::base::DataVector& source,
 SGPP::base::DataVector& result) {
     this->myTimer_.start();
 
@@ -127,7 +127,7 @@ SGPP::base::DataVector& result) {
     this->duration = this->myTimer_.stop();
 }
 
-void OperationMultiEvalStreaming::recalculateLevelAndIndex() {
+void OperationMultiEvalModMaskStreaming::recalculateLevelAndIndex() {
     if (this->level_ != nullptr)
         delete this->level_;
 
@@ -140,7 +140,7 @@ void OperationMultiEvalStreaming::recalculateLevelAndIndex() {
     this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
-size_t OperationMultiEvalStreaming::padDataset(
+size_t OperationMultiEvalModMaskStreaming::padDataset(
 SGPP::base::DataMatrix& dataset) {
 
     size_t vecWidth = 24;
@@ -163,11 +163,11 @@ SGPP::base::DataMatrix& dataset) {
     return dataset.getNrows();
 }
 
-float_t OperationMultiEvalStreaming::getDuration() {
+float_t OperationMultiEvalModMaskStreaming::getDuration() {
     return this->duration;
 }
 
-void OperationMultiEvalStreaming::prepare() {
+void OperationMultiEvalModMaskStreaming::prepare() {
     std::cout << "in prepare" << std::endl;
     this->recalculateLevelAndIndex();
 }
