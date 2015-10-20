@@ -58,17 +58,8 @@ int main(int argc, char** argv) {
     adaptConfig.threshold_ = 0.0;
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-    SGPP::datadriven::OperationMultipleEvalType::ADAPTIVE,
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
-
-    if (argc == 2) {
-        if (strcmp(argv[1], "streaming") == 0) {
-            configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
-            SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCL);
-            std::cout << "EvalType::STREAMING" << std::endl;
-        }
-    }
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -76,6 +67,7 @@ int main(int argc, char** argv) {
     SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
 
     size_t dim = dataset.getDimension();
+//    SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
     SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
     SGPP::base::GridStorage* gridStorage = grid->getStorage();
     std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
@@ -116,25 +108,25 @@ int main(int argc, char** argv) {
 
     std::cout << "duration: " << eval->getDuration() << std::endl;
 
-//    std::cout << "calculating comparison values..." << std::endl;
-//
-//    SGPP::base::OperationMultipleEval* evalCompare =
-//    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
-//
-//    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-//    dataSizeVectorResultCompare.setAll(0.0);
-//
-//    evalCompare->mult(alpha, dataSizeVectorResultCompare);
-//
-//    double mse = 0.0;
-//
-//    for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-//        mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
-//                * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-//    }
-//
-//    mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-//    std::cout << "mse: " << mse << std::endl;
+    std::cout << "calculating comparison values..." << std::endl;
+
+    SGPP::base::OperationMultipleEval* evalCompare =
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
+
+    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
+    dataSizeVectorResultCompare.setAll(0.0);
+
+    evalCompare->mult(alpha, dataSizeVectorResultCompare);
+
+    double mse = 0.0;
+
+    for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
+        mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
+                * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    }
+
+    mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
+    std::cout << "mse: " << mse << std::endl;
 
 }
 

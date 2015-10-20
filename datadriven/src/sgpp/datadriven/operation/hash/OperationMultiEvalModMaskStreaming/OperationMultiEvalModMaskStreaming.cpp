@@ -22,11 +22,6 @@ OperationMultiEvalModMaskStreaming::OperationMultiEvalModMaskStreaming(base::Gri
 }
 
 OperationMultiEvalModMaskStreaming::~OperationMultiEvalModMaskStreaming() {
-    if (this->level_ != nullptr)
-        delete this->level_;
-
-    if (this->index_ != nullptr)
-        delete this->index_;
 }
 
 void OperationMultiEvalModMaskStreaming::getPartitionSegment(size_t start, size_t end, size_t segmentCount,
@@ -92,7 +87,8 @@ SGPP::base::DataVector& result) {
         size_t end;
         getOpenMPPartitionSegment(0, this->preparedDataset.getNcols(), &start, &end, getChunkDataPoints());
 
-        this->multImpl(level_, index_, &this->preparedDataset, alpha, result, 0, alpha.getSize(), start, end);
+        this->multImpl(this->level, this->index, this->mask, this->offset, &this->preparedDataset, alpha, result, 0,
+                alpha.getSize(), start, end);
     }
     result.resize(originalSize);
     this->duration = this->myTimer_.stop();
@@ -120,24 +116,11 @@ SGPP::base::DataVector& result) {
 
         getOpenMPPartitionSegment(0, this->storage->size(), &start, &end, 1);
 
-        this->multTransposeImpl(this->level_, this->index_, &this->preparedDataset, source, result, start, end, 0,
-                this->preparedDataset.getNcols());
+        this->multTransposeImpl(this->level, this->index, this->mask, this->offset, &this->preparedDataset, source,
+                result, start, end, 0, this->preparedDataset.getNcols());
     }
     source.resize(originalSize);
     this->duration = this->myTimer_.stop();
-}
-
-void OperationMultiEvalModMaskStreaming::recalculateLevelAndIndex() {
-    if (this->level_ != nullptr)
-        delete this->level_;
-
-    if (this->index_ != nullptr)
-        delete this->index_;
-
-    this->level_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
-    this->index_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
-
-    this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }
 
 size_t OperationMultiEvalModMaskStreaming::padDataset(
@@ -168,8 +151,97 @@ float_t OperationMultiEvalModMaskStreaming::getDuration() {
 }
 
 void OperationMultiEvalModMaskStreaming::prepare() {
-    std::cout << "in prepare" << std::endl;
-    this->recalculateLevelAndIndex();
+    this->recalculateLevelIndexMask();
+}
+
+/**
+ * Converts this storage from AOS (array of structures) to SOA (structure of array)
+ * with modification to speed up iterative function evaluation. The Level
+ * array won't contain the levels, it contains the level to the power of two.
+ *
+ * The returned format is only useful for a multi-evaluation of modlinear grids
+ *
+ * @param level DataMatrix to store the grid's level to the power of two
+ * @param index DataMatrix to store the grid's indices
+ * @param mask DataMatrix to store masks of operations
+ * @param offset DataMatrix to store offset for operations
+ */
+void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
+
+    //TODO: does the padding work? test
+    uint32_t localWorkSize = 24;
+
+    size_t remainder = this->storage->size() % localWorkSize;
+    size_t padding = 0;
+
+    if (remainder != 0) {
+        padding = localWorkSize - remainder;
+    }
+
+    size_t gridSize = this->storage->size() + padding;
+    size_t dims = this->storage->dim();
+
+    SGPP::base::HashGridIndex::level_type curLevel;
+    SGPP::base::HashGridIndex::index_type curIndex;
+
+    //TODO: update the other kernels with this style
+
+    this->level = std::vector<double>(gridSize * dims);
+    this->index = std::vector<double>(gridSize * dims);
+    this->mask = std::vector<double>(gridSize * dims);
+    this->offset = std::vector<double>(gridSize * dims);
+
+    for (size_t i = 0; i < this->storage->size(); i++) {
+        for (size_t dim = 0; dim < dims; dim++) {
+            storage->get(i)->get(dim, curLevel, curIndex);
+
+            if (curLevel == 1) {
+                this->level[i * dims + dim] = 0.0;
+                this->index[i * dims + dim] = 0.0;
+
+                uint64_t intmask = 0x0000000000000000;
+                this->mask[i * dims + dim] = *reinterpret_cast<double *>(&intmask);
+
+                this->offset[i * dims + dim] = 1.0;
+            } else if (curIndex == 1) {
+                this->level[i * dims + dim] = static_cast<double>(-1.0) * static_cast<double>(1 << curLevel);
+                this->index[i * dims + dim] = 0.0;
+
+                uint64_t intmask = 0x0000000000000000;
+                this->mask[i * dims + dim] = *reinterpret_cast<double *>(&intmask);
+
+                this->offset[i * dims + dim] = 2.0;
+            } else if (curIndex == static_cast<SGPP::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
+                this->level[i * dims + dim] = static_cast<double>(1 << curLevel);
+                this->index[i * dims + dim] = static_cast<double>(curIndex);
+
+                uint64_t intmask = 0x0000000000000000;
+                this->mask[i * dims + dim] = *reinterpret_cast<double *>(&intmask);
+
+                this->offset[i * dims + dim] = 1.0;
+            } else {
+                this->level[i * dims + dim] = static_cast<double>(1 << curLevel);
+                this->index[i * dims + dim] = static_cast<double>(curIndex);
+
+                uint64_t intmask = 0x8000000000000000;
+                this->mask[i * dims + dim] = *reinterpret_cast<double *>(&intmask);
+
+                this->offset[i * dims + dim] = 1.0;
+            }
+        }
+    }
+
+    for (size_t i = this->storage->size(); i < gridSize; i++) {
+        for (size_t dim = 0; dim < dims; dim++) {
+            this->level[i * dims + dim] = 0;
+            this->index[i * dims + dim] = 0;
+
+            uint64_t intmask = 0x0000000000000000;
+            this->mask[i * dims + dim] = *reinterpret_cast<double *>(&intmask);
+
+            this->offset[i * dims + dim] = 1.0;
+        }
+    }
 }
 
 }
