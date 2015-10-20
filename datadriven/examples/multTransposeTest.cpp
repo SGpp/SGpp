@@ -43,8 +43,8 @@ int main(int argc, char** argv) {
 
     //  std::string fileName = "friedman2_90000.arff";
 //  std::string fileName = "debugging.arff";
-//  std::string fileName = "friedman_4d.arff";
-    std::string fileName = "friedman_10d.arff";
+    std::string fileName = "friedman_4d.arff";
+//    std::string fileName = "friedman_10d.arff";
 //  std::string fileName = "DR5_train.arff";
     //std::string fileName = "debugging_small.arff";
 
@@ -58,17 +58,8 @@ int main(int argc, char** argv) {
     adaptConfig.threshold_ = 0.0;
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-    SGPP::datadriven::OperationMultipleEvalType::ADAPTIVE,
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
-
-    if (argc == 2) {
-        if (strcmp(argv[1], "streaming") == 0) {
-            configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
-            SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCLMP);
-            std::cout << "EvalType::STREAMING" << std::endl;
-        }
-    }
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

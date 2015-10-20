@@ -168,7 +168,6 @@ float_t OperationMultiEvalStreaming::getDuration() {
 }
 
 void OperationMultiEvalStreaming::prepare() {
-    std::cout << "in prepare" << std::endl;
     this->recalculateLevelAndIndex();
 }
 
