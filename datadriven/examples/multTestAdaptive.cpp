@@ -49,7 +49,21 @@ int main(int argc, char** argv) {
 
     std::cout << "Dataset: " << fileName << std::endl;
 
+    SGPP::base::OCLConfigurationParameters parameters;
+	parameters.set("OCL_MANAGER_VERBOSE", "true");
+	parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
+	parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
+	parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
+	parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
+	parameters.set("PLATFORM", "first");
+	parameters.set("SELECT_SPECIFIC_DEVICE", "1");
+	parameters.set("MAX_DEVICES", "1");
+	parameters.set("LOCAL_SIZE", "128");
+	parameters.set("ADAPTIVE_STREAMING_HARD_LIMIT", "10"); //absolute value
+	parameters.set("ADAPTIVE_STREAMING_DENSITY", "5"); //In percent
+
     bool bCompare = true;
+    bool bBoth = false;
 
     uint32_t level = 1;
 
@@ -63,6 +77,8 @@ int main(int argc, char** argv) {
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::ADAPTIVE,
     SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configurationTwo;
 
     if (argc >= 2) {
         if (strcmp(argv[1], "streaming") == 0) {
@@ -78,6 +94,14 @@ int main(int argc, char** argv) {
             SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
             std::cout << "EvalType::SUBSPACECOMBINED" << std::endl;
         }
+        else if ( strcmp(argv[1], "both") == 0 )
+        {
+        	configurationTwo = SGPP::datadriven::OperationMultipleEvalConfiguration(
+			SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+			SGPP::datadriven::OperationMultipleEvalSubType::OCL);
+        	std::cout << "EvalType::ADAPTIVE_AND_STREAMING" << std::endl;
+        	bBoth = true;
+        }
     }
     if ( argc >= 4 )
     {
@@ -86,9 +110,9 @@ int main(int argc, char** argv) {
 
         std::cout << "level: " << level << " numRef: " << adaptConfig.numRefinements_ << std::endl;
     }
-    if ( argc == 5)
+    if ( argc >= 5)
     {
-        bCompare = false;
+        bCompare = static_cast<bool>(atoi(argv[4]));
     }
 
     SGPP::datadriven::ARFFTools arffTools;
@@ -121,6 +145,13 @@ int main(int argc, char** argv) {
     SGPP::base::OperationMultipleEval* eval =
     SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
+    SGPP::base::OperationMultipleEval* evalTwo;
+    if (bBoth)
+    {
+    	std::cout << "creating second operation with unrefined grid" << std::endl;
+    	evalTwo = SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configurationTwo);
+    }
+
     doAllRefinements(adaptConfig, *grid, *gridGen, alpha, mt, dist);
 
     std::cout << "number of grid points after refinement: " << gridStorage->size() << std::endl;
@@ -135,7 +166,22 @@ int main(int argc, char** argv) {
     std::cout << "calculating result" << std::endl;
     eval->mult(alpha, dataSizeVectorResult);
 
-    std::cout << "duration: " << eval->getDuration() << std::endl;
+    if ( bBoth )
+    {
+    	std::cout << "preparing second operation for refined grid" << std::endl;
+    	evalTwo->prepare();
+    	std::cout << "calculating second result" << std::endl;
+    	evalTwo->mult(alpha, dataSizeVectorResult);
+    }
+
+    std::cout << "durationSub: " << eval->getDuration() << std::endl;
+
+    if ( bBoth )
+    {
+    	std::cout << "durationStreaming: " << evalTwo->getDuration() << std::endl;
+    	std::cout << "diff: " << eval->getDuration() - evalTwo->getDuration() << std::endl;
+    	std::cout << "speedUp: " << evalTwo->getDuration()/eval->getDuration() << std::endl;
+    }
 
     if ( bCompare)
     {
