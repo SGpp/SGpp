@@ -27,7 +27,7 @@ SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen);
 double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector &resultsCompare);
 
 double compareToReference(SGPP::base::GridType gridType, std::string fileName, size_t level,
-SGPP::datadriven::OperationMultipleEvalConfiguration configuration);
+SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRefinements = 1);
 
 double compareToReferenceTranspose(SGPP::base::GridType gridType, std::string fileName, size_t level,
 SGPP::datadriven::OperationMultipleEvalConfiguration configuration);

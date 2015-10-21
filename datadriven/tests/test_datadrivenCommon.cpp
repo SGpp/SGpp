@@ -183,12 +183,12 @@ double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector &r
 }
 
 double compareToReference(SGPP::base::GridType gridType, std::string fileName, size_t level,
-SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRefinements) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = 1;
+    adaptConfig.numRefinements_ = numRefinements;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
