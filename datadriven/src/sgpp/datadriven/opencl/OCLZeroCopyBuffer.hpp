@@ -23,7 +23,6 @@ namespace SGPP
         private:
             std::shared_ptr<OCLManager> m_manager;
             bool m_initialized;
-            cl_mem* m_bufferList;
             size_t m_sizeofType;
             size_t m_elements;
             cl_mem m_hostBuffer;

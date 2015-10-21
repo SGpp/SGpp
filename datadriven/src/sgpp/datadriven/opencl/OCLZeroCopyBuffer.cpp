@@ -23,7 +23,6 @@ namespace SGPP
         {
 
             m_initialized = false;
-            m_bufferList = nullptr;
             m_mappedHostBuffer = nullptr;
             m_sizeofType = 0;
             m_elements = 0;
@@ -73,7 +72,7 @@ namespace SGPP
             memcpy(m_mappedHostBuffer, hostData, m_sizeofType*m_elements);
 
             err = clEnqueueUnmapMemObject(m_manager->command_queue[0], m_hostBuffer, m_mappedHostBuffer, 0, nullptr, nullptr);
-            m_mappedHostBuffer == nullptr;
+            m_mappedHostBuffer = nullptr;
 
             if (err != CL_SUCCESS) {
                 std::stringstream errorString;
@@ -102,7 +101,7 @@ namespace SGPP
             memcpy(hostData, m_mappedHostBuffer, m_sizeofType*m_elements);
 
             err = clEnqueueUnmapMemObject(m_manager->command_queue[0], m_hostBuffer, m_mappedHostBuffer, 0, nullptr, nullptr);
-            m_mappedHostBuffer == nullptr;
+            m_mappedHostBuffer = nullptr;
 
             if (err != CL_SUCCESS) {
                 std::stringstream errorString;
@@ -115,7 +114,6 @@ namespace SGPP
         void OCLZeroCopyBuffer::initializeBuffer(void* initialValues, size_t sizeofType, size_t elements, bool readOnly)
         {
             cl_int err;
-            cl_mem* bufferList = new cl_mem[m_manager->num_devices];
 
             unsigned long int flags = CL_MEM_ALLOC_HOST_PTR;
             if (readOnly)
@@ -129,13 +127,13 @@ namespace SGPP
 
             m_hostBuffer = clCreateBuffer(m_manager->context, flags, sizeofType * elements, nullptr, &err);
 
+
             if (err != CL_SUCCESS) {
                 std::stringstream errorString;
                 errorString << "OCL Error: Could not allocate buffer! Error code: " << err << std::endl;
                 throw SGPP::base::operation_exception(errorString.str());
             }
 
-            this->m_bufferList = bufferList;
             this->m_sizeofType = sizeofType;
             this->m_elements = elements;
             this->m_initialized = true;
@@ -153,32 +151,12 @@ namespace SGPP
                 return;
             }
 
-            if (this->m_bufferList == nullptr) {
-                std::stringstream errorString;
-                errorString << "OCL Error: OCLZeroCopyBuffer in partially m_initialized state: buffer list is null" << std::endl;
-                throw SGPP::base::operation_exception(errorString.str());
-            }
-
-            for (size_t i = 0; i < this->m_manager->num_devices; i++) {
-                if (this->m_bufferList[i] != nullptr) {
-                    clReleaseMemObject(this->m_bufferList[i]);
-                    this->m_bufferList[i] = nullptr;
-                } else {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: OCLZeroCopyBuffer in partially m_initialized state: device buffer is null"
-                            << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
-                }
-            }
-
             if ( m_hostBuffer != nullptr)
             {
                 clReleaseMemObject(m_hostBuffer);
                 m_hostBuffer = nullptr;
             }
 
-            delete[] this->m_bufferList;
-            this->m_bufferList = nullptr;
             this->m_initialized = false;
         }
 
