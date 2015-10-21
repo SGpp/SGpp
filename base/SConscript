@@ -47,20 +47,16 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         LIBS=libs)
 libInstall = env.Install(BUILD_DIR, lib)
 
-libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
-                              source=objs,
-                              LIBS=libs)
-libStaticInstall = env.Install(BUILD_DIR, libStatic)
-
-for fileName in os.listdir("examples"):
-    if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
-                              LIBS=libs + ["sgpp%s" % moduleName])
-        env.Requires(example, libInstall)
-        exampleTargetList.append(example)
+if env["TARGETCPU"] != "MIC":
+    for fileName in os.listdir("examples"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            example = env.Program(source=os.path.join("examples", fileName),
+                                  LIBS=libs + ["sgpp%s" % moduleName])
+            env.Requires(example, libInstall)
+            exampleTargetList.append(example)
 
 # build unit tests
-if env['COMPILE_BOOST_TESTS']:
+if env['COMPILE_BOOST_TESTS'] == "1":
     Import('boostTestTargetList')
     test_env = env.Clone()
     test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework"])
@@ -80,6 +76,3 @@ if env['COMPILE_BOOST_TESTS']:
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
-
-libraryTargetList.append(libStatic)
-installTargetList.append(libStaticInstall)

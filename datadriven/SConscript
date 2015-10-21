@@ -7,6 +7,7 @@ import os
 import fnmatch
 
 Import('env')
+
 Import('BUILD_DIR')
 Import('EXAMPLE_DIR')
 Import('PYSGPP_BUILD_PATH')
@@ -63,20 +64,35 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   testTargetList.append(moduleTest)
 
 # build examples
-example_env = env.Clone()
-example_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
-example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName])
-for fileName in os.listdir("examples"):
-    if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = example_env.Program(source=os.path.join("examples", fileName),
-                              # LIBPATH=[BUILD_DIR, "#/lib/alglib"],
-                              # LIBS=libs + ["sgpp%s" % moduleName]
-                              )
-        example_env.Requires(example, libInstall)
-        exampleTargetList.append(example)
+if env["TARGETCPU"] != "MIC":
+    example_env = env.Clone()
+    example_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
+    example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName])
+    for fileName in os.listdir("examples"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            example = example_env.Program(source=os.path.join("examples", fileName),
+                                  # LIBPATH=[BUILD_DIR, "#/lib/alglib"],
+                                  # LIBS=libs + ["sgpp%s" % moduleName]
+                                  )
+            example_env.Requires(example, libInstall)
+            exampleTargetList.append(example)
+            
+# build examples for mic
+if env["TARGETCPU"] == "MIC":
+    example_env = env.Clone()
+    example_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
+    example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName])
+    for fileName in os.listdir("examplesMIC"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            example = example_env.Program(source=os.path.join("examplesMIC", fileName),
+                                  # LIBPATH=[BUILD_DIR, "#/lib/alglib"],
+                                  # LIBS=libs + ["sgpp%s" % moduleName]
+                                  )
+            example_env.Requires(example, libInstall)
+            exampleTargetList.append(example)
 
 # build unit tests
-if env['COMPILE_BOOST_TESTS']:
+if env['COMPILE_BOOST_TESTS'] == "1":
     Import('boostTestTargetList')
     test_env = env.Clone()
     test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework", "z"])

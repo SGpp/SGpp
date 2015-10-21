@@ -5,6 +5,8 @@
  *      Author: pfandedd
  */
 
+#if USE_OCL == 1
+
 #include <random>
 #include <thread>
 #include <chrono>
@@ -64,4 +66,8 @@ int main(int argc, char** argv) {
     }
 
 }
-
+#else
+int main(int argc, char** argv) {
+	return 0;
+}
+#endif

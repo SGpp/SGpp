@@ -143,7 +143,7 @@ void OperationMultiEvalStreaming::recalculateLevelAndIndex() {
 size_t OperationMultiEvalStreaming::padDataset(
 SGPP::base::DataMatrix& dataset) {
 
-    size_t vecWidth = 24;
+    size_t vecWidth = this->getChunkDataPoints();
 
     // Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;

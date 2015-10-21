@@ -5,6 +5,8 @@
  *      Author: pfandedd
  */
 
+#if USE_OCL==1
+
 #include <iostream>
 #include <random>
 
@@ -15,7 +17,7 @@
 
 int main(int argc, char** argv) {
 
-#if USE_OCL==1
+
 
     std::map<std::string, std::string> defaultParameter;
     defaultParameter["KERNEL_USE_LOCAL_MEMORY"] = "true";
@@ -84,7 +86,11 @@ int main(int argc, char** argv) {
 
     std::cout << "all done" << std::endl;
 
-#endif
+
 
 }
-
+#else
+int main(int argc, char** argv) {
+	return 0;
+}
+#endif

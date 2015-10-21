@@ -36,9 +36,11 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 
-#ifdef __AVX__
+//this use require either SSE3 or AVX
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
+
+#ifdef __AVX__
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #endif
@@ -198,11 +200,11 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT
                 || configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
             if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
-#ifdef __AVX__
+//#ifdef __AVX__
                 return new datadriven::OperationMultiEvalStreaming(grid, dataset);
-#else
-                throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
-#endif
+//#else
+//                throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
+//#endif
             } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
                 return datadriven::createStreamingOCLConfigured(grid, dataset, configuration);
@@ -243,11 +245,11 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
     } else if (strcmp(grid.getType(), "modlinear") == 0) {
         if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
             if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
-#ifdef __AVX__
+//#ifdef __AVX__
                 return new datadriven::OperationMultiEvalModMaskStreaming(grid, dataset);
-#else
-                throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
-#endif
+//#else
+//                throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
+//#endif
             } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
                 return datadriven::createStreamingModOCLConfigured(grid, dataset, configuration);

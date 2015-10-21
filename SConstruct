@@ -149,7 +149,7 @@ Export('EXAMPLE_DIR')
 if not env.GetOption('clean'):
     SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
     
-env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])    
+env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])   
 
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)

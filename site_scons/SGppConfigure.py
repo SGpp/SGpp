@@ -19,13 +19,16 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })    
 
+    # compile for intel mic
+    #     config.env.AppendUnique(CPPFLAGS="-mmic")
+
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
         sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
         sys.exit(1) #TODO: exist undefined, fix
     config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
-    if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS']:
+    if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS'] or env['TARGETCPU'] == "MIC":
       print "architecture set from outside"
     else:
       if not env['SSE3_FALLBACK']:
@@ -86,8 +89,8 @@ Please install the corresponding package, e.g. using command on Ubuntu
 > sudo apt-get install libboost-test-dev
 ****************************************************
 """
-        
-        if not config.CheckLib('boost_unit_test_framework'):
+
+        if not config.CheckLib('boost_unit_test_framework', autoadd=0):
             env['COMPILE_BOOST_TESTS'] = False
             print """****************************************************
 No Boost Unit Test library found. Omitting Boost unit tests. 
@@ -213,6 +216,23 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp'])
         env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+    elif env['TARGETCPU'] == 'MIC':
+        print "Using MIC/icc"
+        env.Append(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
+                               '-fno-strict-aliasing',
+                               '-ip', '-ipo', '-funroll-loops',
+                               '-ansi-alias', '-fp-speculation=safe',
+                               '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
+
+        env['CC'] = ('icc')
+        env['LINK'] = ('icpc')
+        env['CXX'] = ('icpc')
+        env.Append(CPPFLAGS=['-openmp'])
+        env.Append(LINKFLAGS=['-openmp'])
+        # and the most important switch
+        env.Append(CPPFLAGS=['-mmic'])
+        env.Append(LINKFLAGS=['-mmic'])
+        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])        
     else:
         print "You must specify a valid value for TARGETCPU."
         print "Available configurations are: ICC"
