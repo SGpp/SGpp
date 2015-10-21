@@ -291,7 +291,7 @@ private:
     bool isEvalTypeStreaming (uint32_t* level, uint32_t numIndices)
     {
       uint32_t subSize = getSubspaceSize(level);
-      if ( subSize < m_hardAdaptivityLimit )
+      if ( subSize <= m_hardAdaptivityLimit )
       {
           return true;
       }
@@ -299,7 +299,7 @@ private:
       {
           float subspaceDensity = ((float)numIndices)/((float)subSize);
 
-          if (subspaceDensity < m_softAdaptivityLimit)
+          if (subspaceDensity <= m_softAdaptivityLimit)
           {
               return true;
           }
