@@ -93,7 +93,7 @@ def prepareDoxyfile(modules):
 
 This is a collection of examples from all modules.
 To add new examples to the documentation,
-go to the respective folder module/doc/doxygen/ and
+go to the respective folder MODULE_NAME/doc/doxygen/ and
 add a new example file code_examples_NAME.doxy with doxygen-internal
 name code_examples_NAME.
 
@@ -104,8 +104,12 @@ For this to work, the examples must lie in the directories of the form
 
 ''')
 
+        modules.sort()
         for moduleName in modules:
-            for subpage in glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy')):
+            examplesFile.write('<h2>Module '+moduleName+'</h2>\n')
+            subpages = glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy'))
+            subpages.sort()
+            for subpage in subpages:
                 examplesFile.write('- @subpage ' + (os.path.split(subpage)[-1])[:-5] + '\n')
 
         examplesFile.write('**/\n')
