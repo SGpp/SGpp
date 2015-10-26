@@ -29,18 +29,18 @@ int main() {
     size_t dim = 2;
     Grid* grid = Grid::createLinearGrid(dim);
     GridStorage* gridStorage = grid->getStorage();
-    cout << "dimensionality:         " << gridStorage->dim() << endl;
+    cout << "dimensionality:                   " << gridStorage->dim() << endl;
 
     // create regular grid, level 3
     size_t level = 3;
     GridGenerator* gridGen = grid->createGridGenerator();
     gridGen->regular(level);
-    cout << "number of grid points:  " << gridStorage->size() << endl;
+    cout << "number of initial grid points:    " << gridStorage->size() << endl;
 
     // create coefficient vector
     DataVector alpha(gridStorage->size());
     alpha.setAll(0.0);
-    cout << "length of alpha vector: " << alpha.getSize() << endl;
+    cout << "length of alpha vector:           " << alpha.getSize() << endl;
 
     GridIndex* gp;
 

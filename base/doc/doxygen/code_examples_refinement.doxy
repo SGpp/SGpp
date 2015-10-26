@@ -16,7 +16,7 @@ points, i.e., the alpha-Vector has to be extended.
 which can be executed by
 @code
 > python python_simple_refinement.py
-@endcode 
+@endcode
 in the directory @c examples/.
 
 This results in the output

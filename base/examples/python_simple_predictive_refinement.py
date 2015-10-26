@@ -27,7 +27,7 @@ print "Start: number of grid points:  %d" % (HashGridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
 #f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
-f = lambda x0, x1: math.sin(x0*math.pi) *math.sin(x1*math.pi)
+f = lambda x0, x1: math.sin(x0*math.pi)
 # create coefficient vectors
 alpha = DataVector(HashGridStorage.size())
 
