@@ -46,18 +46,18 @@ int main() {
     size_t dim = 2;
     Grid* grid = Grid::createModLinearGrid(dim);
     GridStorage* hashGridStorage = grid->getStorage();
-    cout << "dimensionality:         " << hashGridStorage->dim() << endl;
+    cout << "dimensionality:                   " << hashGridStorage->dim() << endl;
 
     // create regular grid, level 3
     size_t level = 1;
     GridGenerator* gridGen = grid->createGridGenerator();
     gridGen->regular(level);
-    cout << "number of grid points:  " << hashGridStorage->size() << endl;
+    cout << "number of initial grid points:    " << hashGridStorage->size() << endl;
 
     // create coefficient vector
     DataVector alpha(hashGridStorage->size());
     alpha.setAll(0.0);
-    cout << "length of alpha vector: " << alpha.getSize() << endl;
+    cout << "length of alpha vector:           " << alpha.getSize() << endl;
 
     int rows = 100;
     int cols = 100;
