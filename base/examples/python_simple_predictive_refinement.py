@@ -17,19 +17,21 @@ from mpl_toolkits.mplot3d import Axes3D
 dim = 2
 grid = Grid.createModLinearGrid(dim)
 HashGridStorage = grid.getStorage()
-print "dimensionality:         %d" % (dim)
+print "dimensionality:                   {}".format(dim)
 
 # create regular grid, level 3
 level = 1
 gridGen = grid.createGridGenerator()
 gridGen.regular(level)
-print "Start: number of grid points:  %d" % (HashGridStorage.size())
+print "number of initial grid points:    {}".format(HashGridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
 #f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
 f = lambda x0, x1: math.sin(x0*math.pi)
+
 # create coefficient vectors
 alpha = DataVector(HashGridStorage.size())
+print "length of alpha vector:           {}".format(alpha.getSize())
 
 #dataPoints
 
