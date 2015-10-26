@@ -20,7 +20,7 @@ which can be executed by
 in the directory @c examples/.
 
 This results in the output
-@include python_simple_refinement.output.txt
+@include all_simple_refinement.output.txt
 
 There are clearly more efficient approaches than to set the function
 values for all grid points and to hierarchize the whole grid each
