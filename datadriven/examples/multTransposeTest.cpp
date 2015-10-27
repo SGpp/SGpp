@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 //  std::string fileName = "DR5_train.arff";
     //std::string fileName = "debugging_small.arff";
 
-    uint32_t level = 5;
+    uint32_t level = 10;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLMP);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

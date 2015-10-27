@@ -68,6 +68,7 @@ int main(int argc, char** argv) {
 }
 #else
 int main(int argc, char** argv) {
+    std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
 	return 0;
 }
 #endif

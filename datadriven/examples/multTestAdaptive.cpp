@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
     SGPP::base::OperationMultipleEval* eval =
     SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-    SGPP::base::OperationMultipleEval* evalTwo;
+    SGPP::base::OperationMultipleEval* evalTwo = nullptr;
     if (bBoth)
     {
     	std::cout << "creating second operation with unrefined grid" << std::endl;
@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
       for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
         std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
         double error = (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-        if (abs(error) > abs(biggestError))
+        if (fabs(error) > fabs(biggestError))
         {
             biggestError = error;
             biggestErrorIndex = i;
