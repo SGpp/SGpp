@@ -14,9 +14,21 @@
 #include "../src/sgpp/datadriven/opencl/OCLClonedBufferMultiPlatform.hpp"
 #include "../src/sgpp/datadriven/opencl/OCLManagerMultiPlatform.hpp"
 #include "../src/sgpp/datadriven/opencl/OCLStretchedBufferMultiPlatform.hpp"
+#include "../src/sgpp/datadriven/tools/Dataset.hpp"
+#include "../src/sgpp/datadriven/tools/ARFFTools.hpp"
+
+SGPP::datadriven::Dataset *f() {
+    SGPP::datadriven::ARFFTools arffTools;
+    SGPP::datadriven::Dataset dataset = arffTools.readARFF("friedman_4d.arff");
+    return new SGPP::datadriven::Dataset(dataset);
+}
 
 int main(int argc, char** argv) {
-
+    SGPP::datadriven::Dataset *datasetPtr = f();
+    std::cout << "dim:" << datasetPtr->getDimension() << std::endl;
+    std::cout << "dim:" << datasetPtr->getTrainingData().get(5, 5)<< std::endl;
+    delete datasetPtr;
+/*
 
 
     std::map<std::string, std::string> defaultParameter;
@@ -86,11 +98,12 @@ int main(int argc, char** argv) {
 
     std::cout << "all done" << std::endl;
 
-
+*/
 
 }
 #else
 int main(int argc, char** argv) {
+    std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
 	return 0;
 }
 #endif

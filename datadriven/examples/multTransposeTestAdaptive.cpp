@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
 
       double mse = 0.0;
       double biggestError = 0.0f;
-      int biggestErrorIndex = 0;
+      size_t biggestErrorIndex = 0;
 
       for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
       std::cout << "mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i] << std::endl;
