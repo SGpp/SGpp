@@ -72,29 +72,29 @@ namespace SGPP {
           }
         }
 
-        void learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string datasetFileName);
+        void learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &datasetFileName);
 
-        void learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string content);
+        void learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &content);
 
-        void learnReference(std::string fileName);
+        void learnReference(std::string &fileName);
 
-        void learnReferenceString(std::string content);
+        void learnReferenceString(std::string &content);
 
         //learn and test against test dataset and measure hits/mse
         void learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                          std::string datasetFileName, std::string testFileName, bool isBinaryClassification);
+                          std::string &datasetFileName, std::string &testFileName, bool isBinaryClassification);
 
         //learn and test against test dataset and measure hits/mse
         void learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                          std::string dataContent, std::string testContent, bool isBinaryClassification);
+                          std::string &dataContent, std::string &testContent, bool isBinaryClassification);
 
         //learn and test against the streaming implementation
         float_t learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                std::string datasetFileName, size_t gridGranularity);
+                                std::string &datasetFileName, size_t gridGranularity);
 
         //learn and test against the streaming implementation
         float_t learnAndCompareString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                std::string content, size_t gridGranularity);
+                                std::string &content, size_t gridGranularity);
 
         void refinementAndOverallPerformance(
           std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,

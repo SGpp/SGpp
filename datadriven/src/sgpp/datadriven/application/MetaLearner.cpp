@@ -38,18 +38,19 @@ SGPP::solver::SLESolverConfiguration solverFinalStep, SGPP::base::AdpativityConf
 }
 
 void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string datasetFileName) {
+        std::string &datasetFileName) {
     std::ifstream t(datasetFileName);
     if (!t.is_open()) {
         throw;
     }
     std::stringstream buffer;
     buffer << t.rdbuf();
-    this->learnString(operationConfiguration, buffer.str());
+    std::string bufferString = buffer.str();
+    this->learnString(operationConfiguration, bufferString);
 }
 
 void MetaLearner::learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string content) {
+        std::string &content) {
 
     Dataset dataset = ARFFTools::readARFFFromString(content);
 
@@ -86,17 +87,18 @@ Grid &MetaLearner::getLearnedGrid() {
     return this->myLearner->getGrid();
 }
 
-void MetaLearner::learnReference(std::string datasetFileName) {
+void MetaLearner::learnReference(std::string &datasetFileName) {
     std::ifstream t(datasetFileName);
     if (!t.is_open()) {
         throw;
     }
     std::stringstream buffer;
     buffer << t.rdbuf();
-    this->learnReferenceString(buffer.str());
+    std::string bufferString = buffer.str();
+    this->learnReferenceString(bufferString);
 }
 
-void MetaLearner::learnReferenceString(std::string content) {
+void MetaLearner::learnReferenceString(std::string &content) {
 
     Dataset dataset = ARFFTools::readARFFFromString(content);
     this->gridConfig.dim_ = dataset.getDimension();
@@ -130,20 +132,21 @@ void MetaLearner::learnReferenceString(std::string content) {
 }
 
 void MetaLearner::learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string datasetFileName, std::string testFileName, bool isBinaryClassification) {
+        std::string &datasetFileName, std::string &testFileName, bool isBinaryClassification) {
     std::ifstream dataFile(datasetFileName);
     std::stringstream bufferData;
     bufferData << dataFile.rdbuf();
     std::ifstream testFile(datasetFileName);
     std::stringstream bufferTest;
     bufferTest << testFile.rdbuf();
-    this->learnAndTestString(operationConfiguration, bufferData.str(), bufferTest.str(), isBinaryClassification);
+    std::string bufferDataString = bufferData.str();
+    std::string bufferTestString = bufferTest.str();
+    this->learnAndTestString(operationConfiguration, bufferDataString, bufferTestString, isBinaryClassification);
 }
-
 
 //learn and test against test dataset and measure hits/mse
 void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string dataContent, std::string testContent, bool isBinaryClassification) {
+        std::string &dataContent, std::string &testContent, bool isBinaryClassification) {
 
     //always to this first
     this->learnString(operationConfiguration, dataContent);
@@ -208,19 +211,20 @@ void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConf
 
 //learn and test against the streaming implemenation
 float_t MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string datasetFileName, size_t gridGranularity) {
+        std::string &datasetFileName, size_t gridGranularity) {
     std::ifstream t(datasetFileName);
     if (!t.is_open()) {
         throw;
     }
     std::stringstream buffer;
     buffer << t.rdbuf();
-    this->learnAndCompareString(operationConfiguration, buffer.str(), gridGranularity);
+    std::string bufferString = buffer.str();
+    this->learnAndCompareString(operationConfiguration, bufferString, gridGranularity);
 }
 
 //learn and test against the streaming implemenation
 float_t MetaLearner::learnAndCompareString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string content, size_t gridGranularity) {
+        std::string &content, size_t gridGranularity) {
     //always do this first
     this->learnString(operationConfiguration, content);
     this->learnReferenceString(content);
