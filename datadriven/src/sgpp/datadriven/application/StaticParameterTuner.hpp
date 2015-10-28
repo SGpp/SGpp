@@ -14,6 +14,8 @@
 
 #pragma once
 
+#if USE_OCL == 1
+
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
@@ -48,3 +50,4 @@ public:
 }
 }
 
+#endif

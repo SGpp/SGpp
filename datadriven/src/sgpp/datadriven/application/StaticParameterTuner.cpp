@@ -1,3 +1,5 @@
+#if USE_OCL == 1
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/datadriven/application/StaticParameterTuner.hpp>
@@ -80,3 +82,5 @@ SGPP::base::OCLConfigurationParameters currentParameters) {
 
 }
 }
+
+#endif

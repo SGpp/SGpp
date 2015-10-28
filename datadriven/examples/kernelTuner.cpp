@@ -4,7 +4,9 @@
  *  Created on: Oct 27, 2015
  *      Author: pfandedd
  */
+#include <iostream>
 
+#if USE_OCL == 1
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
@@ -76,5 +78,9 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
+#else
+int main(int argc, char **argv) {
+  std::cout << "no OpenCL support" << std::endl;
+}
+#endif
 
