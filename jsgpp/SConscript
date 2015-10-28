@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ project
+﻿# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
@@ -13,6 +13,7 @@ Import("moduleFolders")
 Import("moduleName")
 Import("libraryTargetList")
 Import("installTargetList")
+Import('flattenedDependencyGraph')
 
 # as the dependency tracking for swig is buggy in scons,
 # always trigger a "reswig" by removing the swig wrapper
@@ -42,13 +43,15 @@ if not j_env['USE_DOUBLE_PRECISION']:
 
 #j_env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 
+shlibprefix = "lib"
+if j_env['PLATFORM'] == 'win32':
+    shlibprefix = ""
+
 libJava = j_env.SharedLibrary(target="jsgpp",
                               source=["jsgpp.i"],
-                              SHLIBPREFIX="lib",
+                              SHLIBPREFIX=shlibprefix,
                               LIBPATH=BUILD_DIR,
-                              LIBS=["sgpp" + moduleFolder
-                                    for moduleFolder in moduleFolders
-                                    if env['SG_' + moduleFolder.upper()]])
+                              LIBS=flattenedDependencyGraph)
 #TODO libs are set hacky!
 installLibJava = j_env.Install(JSGPP_BUILD_PATH, libJava)
 installTargetList.append(installLibJava)

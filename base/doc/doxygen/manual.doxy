@@ -5,7 +5,8 @@
 
 <!-- ############################################################# -->
 @section manual__overview Overview
-- @subpage installation
+- @subpage installationLinux
+- @subpage installationWindows
 - @subpage modules
 - @subpage examples
 **/

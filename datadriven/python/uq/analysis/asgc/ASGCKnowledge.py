@@ -36,6 +36,8 @@ class ASGCKnowledge(object):
         get available time steps
         @return: sorted list of floats
         """
+        if len(self.__alphas) == 0:
+            raise Exception('No knowledge available')
         iteration = self.__alphas.iterkeys().next()
         qoi = self.__alphas[iteration].iterkeys().next()
         dtype = self.__alphas[iteration][qoi].iterkeys().next()

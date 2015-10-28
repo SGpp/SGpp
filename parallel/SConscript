@@ -93,13 +93,25 @@ MICOnlyFiles = [
     "SPMICKernelImpl.cpp"       
 ]
 
-libs = ['sgppbase', 'sgpppde', 'sgppdatadriven', 'sgppsolver']
+moduleDependencies = ['sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase']
+Export('moduleDependencies')
+
+if env['PLATFORM'] == 'win32':
+    sys.stderr.write("Error: the parallel package is not supported on windows platforms.\n")
+    sys.exit(1)
+
+libname = "sgpp%s" % moduleName
+if env['USE_STATICLIB']:
+    libname += "static"
+    for i, _ in enumerate(moduleDependencies):
+        moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
+Export('libname')
 
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src/sgpp/parallel/exampleApplication"):
+    if currentFolder.startswith(os.path.join(".", "src", "sgpp", "parallel", "exampleApplication")):
         continue
-    if currentFolder.startswith("./src"):
+    if currentFolder.startswith(os.path.join(".", "src")):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
             if fileName in MPIOnlyFiles:
                 continue
@@ -113,14 +125,21 @@ objs = []
 for sourceFile in srcs:
     objs.append(env_parallel.SharedObject(sourceFile))
 
-lib = env_parallel.SharedLibrary(target="sgpp" + moduleName,
-                                 source=objs,
-                                 LIBPATH=BUILD_DIR,
-                                 LIBS=libs)
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])                        
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgpppde" + env["SHLIBSUFFIX"])
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppdatadriven" + env["SHLIBSUFFIX"])
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppsolver" + env["SHLIBSUFFIX"])
+if env['USE_STATICLIB']:
+    libsuffix = env['LIBSUFFIX']
+    lib = env.StaticLibrary(target=libname,
+                            source=objs,
+                            LIBS=moduleDependencies)
+else:
+    libsuffix = env['SHLIBSUFFIX']
+    lib = env.SharedLibrary(target=libname,
+                            source=objs,
+                            LIBPATH=BUILD_DIR,
+                            LIBS=moduleDependencies)
+for lib_str in moduleDependencies:
+    env.Depends(lib, os.path.join("#", BUILD_DIR.path, "%s%s%s" % (env["LIBPREFIX"],
+                                                                   lib_str,
+                                                                   libsuffix)))
 libInstall = env_parallel.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
@@ -134,7 +153,7 @@ for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
                               LIBPATH=BUILD_DIR,
-                              LIBS=libs + ["sgpp%s" % moduleName])
+                              LIBS=[libname] + moduleDependencies)
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
 

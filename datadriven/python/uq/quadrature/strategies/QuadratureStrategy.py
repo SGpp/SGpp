@@ -12,7 +12,7 @@ class QuadratureStrategy(object):
         self._n = n
         self._gaussPoints = [None] * n
 
-    def quad(self, f, a, b, deg, tol=1e-14):
+    def quad(self, f, a, b, deg, tol=1e-12):
         # compute the piecewise continuous parts separately
         s = [0, 0]
         width = b - a
@@ -32,5 +32,5 @@ class QuadratureStrategy(object):
             # increase degree
             deg += 1
         if err > tol:
-            warnings.warn("error tolerance %g not reached with degree %i. Current error is %g" % (tol, deg - 1, err), UserWarning)
+            warnings.warn("error tolerance %g not reached with degree %i. Current error is %g = |%g - %g|" % (tol, deg - 1, err, s[0], s[1]), UserWarning)
         return s[0], err

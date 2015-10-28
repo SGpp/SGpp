@@ -6,7 +6,7 @@
 #ifndef CLENSHAWCURTISTABLE_HPP
 #define CLENSHAWCURTISTABLE_HPP
 
-#include <cmath>
+#include <math.h>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
@@ -88,8 +88,11 @@ namespace SGPP {
         }
     };
 
-    extern ClenshawCurtisTable clenshawCurtisTable;
-
+#if defined _WIN32 && !defined _USE_STATICLIB
+    extern __declspec(dllimport) ClenshawCurtisTable clenshawCurtisTable;
+#else
+    extern ClenshawCurtisTable clenshawCurtisTable; 
+#endif
   }
 }
 

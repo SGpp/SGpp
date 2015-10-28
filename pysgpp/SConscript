@@ -1,8 +1,9 @@
-# Copyright (C) 2008-today The SG++ project
+﻿# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 import os
+import sys
 
 Import('env')
 Import('BUILD_DIR')
@@ -12,6 +13,7 @@ Import('moduleFolders')
 Import('moduleName')
 Import('libraryTargetList')
 Import('installTargetList')
+Import('flattenedDependencyGraph')
 
 # as the dependency tracking for swig is buggy in scons, always trigger a "reswig" by removing the swig wrapper
 if os.path.exists("pysgpp_wrap.cc"):
@@ -26,18 +28,31 @@ elif env['PLATFORM'] == 'darwin':
     py_env['SHLIBSUFFIX'] = '.so'
 
 # build python module with swig
-py_env.AppendUnique(SWIGFLAGS=['-c++', '-python', '-fvirtual'] + ['-D' + c for c in py_env['CPPDEFINES']])
+swigflags = ['-c++', '-python', '-fvirtual'] + ['-D' + c for c in py_env['CPPDEFINES']]
+if env['PLATFORM'] == 'win32':
+    # scons/swig does not seem to set this flag automatically
+    swigflags.append('-DSWIGWIN')
+
+py_env.AppendUnique(SWIGFLAGS=swigflags)
 
 if not py_env['USE_DOUBLE_PRECISION']:
     py_env.AppendUnique(SWIGFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
+pythonLibPaths = [BUILD_DIR]
+if env['PLATFORM'] == 'win32':
+    # guess python lib path
+    pythonLibPath = os.path.join(os.path.split(sys.executable)[0], 'libs')
+    if os.path.exists(pythonLibPath):
+        pythonLibPaths.append(pythonLibPath)
+    else:
+        sys.stderr.write("Error: I can't find the python lib path; the guessed location was %s\n" % pythonLibPath)
+        sys.exit(1)
+
 libPython = py_env.SharedLibrary(target='pysgpp_swig',
                                  source=["pysgpp.i"],
                                  SHLIBPREFIX='_',
-                                 LIBPATH=[BUILD_DIR],
-                                 LIBS=['sgpp' + moduleFolder
-                                       for moduleFolder in moduleFolders
-                                       if env['SG_' + moduleFolder.upper()]])
+                                 LIBPATH=pythonLibPaths,
+                                 LIBS=flattenedDependencyGraph)
 # TODO libs are set hacky!
 
 # install python libraries routine
@@ -81,10 +96,12 @@ def setupPython(target, source, env):
     fd = open(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "__init__.py"), "w")
     fd.close()
 
-moduleSetupPython = env.Command('setupPython', [], setupPython)
-
 installLibPython = py_env.Install(PYSGPP_BUILD_PATH, libPython)
 installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")
 py_env.Depends(installLibPython, installLibWrapperPython)
-py_env.Depends(moduleSetupPython, installLibWrapperPython)
+if env['PLATFORM'] != 'win32':
+    # windows does not support symbolic links out of the box
+    # so we disable this feature
+    moduleSetupPython = env.Command('setupPython', [], setupPython)
+    py_env.Depends(moduleSetupPython, installLibWrapperPython)
 installTargetList.append(installLibPython)

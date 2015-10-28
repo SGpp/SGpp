@@ -5,41 +5,85 @@
 
 import os
 import fnmatch
+import subprocess
 
 Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
+Import('libraryTargetList')
+Import('installTargetList')
+Import('exampleTargetList')
 
-libs = ['sgppbase', 'sgpppde', 'sgppfinance','sgppsolver', 'sgppdatadriven']
+moduleDependencies = ['sgppfinance', 'sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase']
+Export('moduleDependencies')
+
+libname = "sgpp%s" % moduleName
+if env['USE_STATICLIB']:
+    libname += "static"
+    for i, _ in enumerate(moduleDependencies):
+        moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
+Export('libname')
 
 srcs = []
-for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src"):
-        for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            srcs.append(os.path.join(currentFolder, fileName))
+for currentFolder, subdirNames, fileNames in os.walk("src"):
+    for fileName in fnmatch.filter(fileNames, '*.cpp'):
+        srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
 
-lib = env.SharedLibrary(target="sgpp" + moduleName,
-                        source=objs,
-                        LIBPATH=BUILD_DIR,
-                        LIBS=libs)
-                        
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])                        
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgpppde" + env["SHLIBSUFFIX"])
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppdatadriven" + env["SHLIBSUFFIX"])
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppfinance" + env["SHLIBSUFFIX"])
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppsolver" + env["SHLIBSUFFIX"])
+if env['USE_STATICLIB']:
+    # building static libraries is the same for unix and windows platforms
+    libsuffix = env['LIBSUFFIX']
+    lib = env.StaticLibrary(target=libname,
+                            source=objs,
+                            LIBS=moduleDependencies)
+else:
+    # building shared libraries differ
+    libsuffix = env['SHLIBSUFFIX']
+    if env['PLATFORM'] in ['cygwin', 'win32']:
+        # remove old moduleDependencies if they exist already
+        for ext in ['lib', 'exp', 'dll', 'def']:
+            newlibFilename = "%s.%s" % (libname, ext)
+            if os.path.exists(newlibFilename):
+                os.remove(newlibFilename)
+
+        def buildDefFile(target, source, env):
+            # load all object files
+            win32objs = []
+            for currentFolder, subdirNames, fileNames in os.walk(os.path.join(moduleName, "src")):
+                for fileName in fnmatch.filter(fileNames, '*.obj'):
+                    win32objs.append(os.path.join(currentFolder, fileName))
+            # build windows module definition file (def-file)
+            subprocess.call(['bindexplib.exe', '-o', os.path.join(moduleName, '%s.def' % libname), os.path.join(moduleName, '%s.dll' % libname)] + win32objs)
+
+        cmd = env.Command('buildDefFile', [], buildDefFile)
+        lib = env.SharedLibrary(target=libname,
+                                source=objs,
+                                LIBPATH=BUILD_DIR,
+                                LIBS=moduleDependencies,
+                                LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
+        env.Depends(cmd, objs)
+        env.Depends(lib, cmd)
+    else:    
+        lib = env.SharedLibrary(target=libname,
+                                source=objs,
+                                LIBPATH=BUILD_DIR,
+                                LIBS=moduleDependencies)
+
+for lib_str in moduleDependencies:
+    env.Depends(lib, os.path.join("#", BUILD_DIR.path, "%s%s%s" % (env["LIBPREFIX"],
+                                                                   lib_str,
+                                                                   libsuffix)))
+
 libInstall = env.Install(BUILD_DIR, lib)
 
-Import('exampleTargetList')
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
                               LIBPATH=BUILD_DIR,
-                              LIBS=libs + ["sgpp%s" % moduleName])
+                              LIBS=[libname] + moduleDependencies)
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
 
@@ -48,7 +92,7 @@ if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
     test_env.AppendUnique(LIBPATH=[BUILD_DIR])
-    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework", "z"])
+    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework", "z"])
     testObjects = []
     for fileName in os.listdir("tests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
@@ -60,8 +104,7 @@ if env['COMPILE_BOOST_TESTS']:
         if env['RUN_BOOST_TESTS']:
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
-            
-Import('libraryTargetList')
-Import('installTargetList')
+
+
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

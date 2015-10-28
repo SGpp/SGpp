@@ -39,8 +39,8 @@ namespace SGPP {
         virtual void doTransformation(base::DataMatrix& pointsUniform,
                                       base::DataMatrix& pointsCdf);
 
-        //    virtual void doShuffeledTransformation(base::DataMatrix* pointsUniform,
-        //            base::DataMatrix* pointsCdf);
+        virtual void doShuffledTransformation(base::DataMatrix& pointsUniform,
+                                              base::DataMatrix& pointsCdf);
 
         /**
          * do the inverse Rosenblatt transformation for one data point for given samples

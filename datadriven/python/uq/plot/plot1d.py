@@ -8,15 +8,16 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
 
 def plotDensity1d(U, n=1000, *args, **kws):
     bounds = U.getBounds()
-
+    if len(bounds) == 1:
+        bounds = bounds[0]
     x = np.linspace(bounds[0], bounds[1], n)
     y = [U.pdf([xi]) for xi in x]
 
     plt.plot(x, y, *args, **kws)
 
 
-def plotSGDE1d(U):
-    x = np.linspace(0, 1, 11, endpoint=True)
+def plotSGDE1d(U, n=1000):
+    x = np.linspace(0, 1, n, endpoint=True)
     y = [U.pdf(xi) for xi in x]
     plt.plot(x, y)
 
@@ -32,9 +33,9 @@ def plotNodal1d(grid, alpha):
     plt.plot(x, nodalValues, " ", marker="o")
 
 
-def plotSG1d(grid, alpha, n=1000, **kws):
+def plotSG1d(grid, alpha, n=1000, f=lambda x: x, **kws):
     x = np.linspace(0, 1, n)
-    y = [evalSGFunction(grid, alpha, DataVector([xi]))
+    y = [f(evalSGFunction(grid, alpha, DataVector([xi])))
          for xi in x]
 
     plt.plot(x, y, **kws)
