@@ -9,6 +9,7 @@
 #include <vector>
 #include <utility>
 #include <cmath>
+#include <iterator>
 
 #include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>

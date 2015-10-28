@@ -148,7 +148,6 @@ $1 = PySequence_Check($input) ? 1 : 0;
         def array(self):   
           return self.__array(self)
 
-        # forwarding of common python methods to corresponding DataVector methods 
         def __len__(self):
             return self.getSize()
 
