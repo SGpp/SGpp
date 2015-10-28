@@ -5,6 +5,9 @@
  *      Author: pfandedd
  */
 
+#include <iostream>
+
+#if USE_OCL == 1
 #include <random>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
@@ -217,4 +220,8 @@ int main(int argc, char** argv) {
     }
 
 }
-
+#else
+int main(int argc, char** argv) {
+  std::cout << "need OCL support" << std::endl;
+}
+#endif
