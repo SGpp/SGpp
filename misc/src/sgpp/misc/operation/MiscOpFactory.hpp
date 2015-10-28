@@ -18,28 +18,7 @@
 namespace SGPP {
 
   namespace op_factory {
-    /**
-     * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
-     * Note: object has to be freed after use.
-     *
-     * This Laplacian is implemented by a multi-dimensional sweep operation
-     *
-     * @param grid Grid which is to be used
-     * @return Pointer to the new OperationMatrix object for the Grid grid
-     */
-    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid);
 
-    /**
-     * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
-     * Note: object has to be freed after use.
-     *
-     * This Laplacian is implemented by a multi-dimensional sweep operation
-     *
-     * @param grid Grid which is to be used
-     * @param coef Coefficient vector for OperationLaplace
-     * @return Pointer to the new OperationMatrix object for the Grid grid
-     */
-    base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid, SGPP::base::DataVector& coef);
   }
 
 }

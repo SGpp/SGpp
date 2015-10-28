@@ -10,8 +10,9 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
-#include <cmath>
+#include <math.h>
 #include <random>
+#include <algorithm>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
@@ -148,41 +149,50 @@ namespace SGPP {
       return;
     }
 
-    //void OperationInverseRosenblattTransformationKDE::doShuffeledTransformation(
-    //        base::DataMatrix* pointsUniform, base::DataMatrix* pointsCdf) {
-    //    size_t ndim = this->trainingData->getNcols();
-    //    size_t nsamples = this->trainingData->getNrows();
-    //
-    //    // Work arrays
-    //    DataVector unif(ndim);
-    //    DataVector kern(nsamples);
-    //    float_t uniform1d = 0.0;
-    //    float_t cdf1d = 0.0;
-    //    size_t dim = 0;
-    //
-    //    // generate sample generator
-    //    std::random_device rd;
-    //    std::mt19937 generator(rd());
-    //    std::uniform_int_distribution<int> uniform_dist(0, ndim - 1);
-    //
-    //    // run over all samples
-    //    for (size_t i = 0; i < nsamples; i++) {
-    //        kern.setAll(1.0);
-    //        pointsUniform->getRow(i, unif);
-    //        // start in some random dimension
-    //        dim = uniform_dist(generator);
-    //        for (size_t j = 0; j < ndim; j++) {
-    //            // transform the point in the current dimension
-    //            std::cout << dim << " ";
-    //            unif[dim] = doTransformation1D(unif[dim], kern, dim);
-    //            dim = (dim + 1) % ndim;
-    //        }
-    //        // write them to the outpu
-    //        pointsCdf->setRow(i, unif);
-    //        std::cout << std::endl;
-    //    }
-    //    return;
-    //}
+    void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
+      DataMatrix& pointsUniform, DataMatrix& pointsCdf) {
+      // Work arrays
+      DataVector unif(ndim);
+      DataVector cdf(ndim);
+      DataVector kern(nsamples);
+      DataVector* samples1d = nullptr;
+
+      float_t xi = 0;
+
+      std::vector<size_t> dims(ndim);
+      for (size_t i = 0; i < ndim; i++) {
+        dims[i] = i;
+      }
+
+      for (size_t idata = 0; idata < pointsUniform.getNrows(); idata++) {
+        kern.setAll(1.0);
+        pointsUniform.getRow(idata, unif);
+
+        std::next_permutation(dims.begin(), dims.end());
+        for (size_t i = 0; i < ndim; i++) {
+          size_t idim = dims[i];
+          // get samples in current dimension
+          samples1d = kde->getSamples(idim);
+
+          // transform the point in the current dimension
+          cdf[idim] = doTransformation1D(unif[idim], *samples1d,
+                                         bandwidths[idim], xlimits.get(0, idim),
+                                         xlimits.get(1, idim), ylimits.get(0, idim),
+                                         ylimits.get(1, idim), kern);
+
+          // Update the kernel for the next dimension
+          for (size_t isamples = 0; isamples < nsamples; isamples++) {
+            xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
+            kern[isamples] *= exp(-(xi * xi) / 2.); // (bw*sqrt(2*PI)) cancels;
+          }
+        }
+
+        // write them to the output
+        pointsCdf.setRow(idata, cdf);
+      }
+
+      return;
+    }
 
     //void OperationInverseRosenblattTransformationKDE::doTransformation_start_dimX(
     //        Grid* g_in, DataVector* a_in, size_t dim_start,

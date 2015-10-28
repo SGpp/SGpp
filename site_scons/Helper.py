@@ -125,3 +125,10 @@ For this to work, the examples must lie in the directories of the form
 
         with open('base/doc/doxygen/modules.stub1', 'r') as stubFile:
             modulesFile.write(stubFile.read())
+
+
+def flatDependencyGraph(dependencies, acc):
+    for dependency in dependencies[::-1]:
+        if dependency not in acc:
+            acc = [dependency] + acc
+    return acc

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 // The Good, i.e. without any modifications
-%include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp"
+%include "solver/src/sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"
 
 %include "pde/src/sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp"

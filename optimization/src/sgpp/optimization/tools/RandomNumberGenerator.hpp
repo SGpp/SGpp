@@ -78,8 +78,11 @@ namespace SGPP {
     };
 
     /// singleton random number generator instance
+#if defined _WIN32 && !defined _USE_STATICLIB
+    extern __declspec(dllimport) RandomNumberGenerator randomNumberGenerator;
+#else      
     extern RandomNumberGenerator randomNumberGenerator;
-
+#endif
   }
 }
 

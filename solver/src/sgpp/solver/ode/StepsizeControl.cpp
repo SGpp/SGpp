@@ -31,17 +31,17 @@ namespace SGPP {
     StepsizeControl::~StepsizeControl() {
     }
 
-    float_t StepsizeControl::norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+    float_t StepsizeControl::norm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       return twoNorm(System, dv1, dv2);
     }
 
-    float_t StepsizeControl::twoNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+    float_t StepsizeControl::twoNorm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       dv1.sub(dv2);
 
       return sqrt(dv1.dotProduct(dv1));
     }
 
-    float_t StepsizeControl::maxNorm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& YkImEul, SGPP::base::DataVector& YkImEulOld) {
+    float_t StepsizeControl::maxNorm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& YkImEul, SGPP::base::DataVector& YkImEulOld) {
       float_t max = 0.0;
       float_t sc = this->mySC;
 
@@ -90,7 +90,7 @@ namespace SGPP {
       return max;
 
     }
-    void StepsizeControl::solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
+    void StepsizeControl::solve(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
       size_t allIter = 0;
       SGPP::base::DataVector* rhs;
       SGPP::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());

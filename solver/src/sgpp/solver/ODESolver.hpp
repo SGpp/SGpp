@@ -8,7 +8,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
 
 #include <sgpp/solver/SGSolver.hpp>
 #include <sgpp/solver/SLESolver.hpp>
@@ -43,7 +43,7 @@ namespace SGPP {
          * @param bIdentifyLastStep set this to true to tell System the last step
          * @param verbose prints information during execution of the solver
          */
-        virtual void solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
+        virtual void solve(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false) = 0;
     };
 
   }

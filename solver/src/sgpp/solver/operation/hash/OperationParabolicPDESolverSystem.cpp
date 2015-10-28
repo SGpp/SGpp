@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -11,7 +11,7 @@
 
 
 namespace SGPP {
-  namespace pde {
+  namespace solver {
 
     OperationParabolicPDESolverSystem::OperationParabolicPDESolverSystem() {
       this->numSumGridpointsInner = 0;

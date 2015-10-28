@@ -153,7 +153,7 @@ class J(Dist):
                 discretizeFunction(f, self.getBounds(),
                                    level=level, *args, **kws)
             # generate a SGDE function
-            self.sgdeDist = SGDEdist.fromSGFunction(grid, alpha)
+            self.sgdeDist = SGDEdist(grid, alpha)
 
         return self.sgdeDist, self.error
 

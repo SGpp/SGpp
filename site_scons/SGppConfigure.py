@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ project
+﻿# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -6,7 +6,7 @@
 import distutils.sysconfig
 import os
 import sys
-import commands
+import subprocess
 import re
 
 import SGppConfigureExtend
@@ -20,34 +20,36 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
 
     # check C++11 support
-    if not config.CheckFlag("-std=c++11"):
-        sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-        sys.exit(1)  # TODO: exist undefined, fix
-    config.env.AppendUnique(CPPFLAGS="-std=c++11")
-
-    if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS']:
-      print "architecture set from outside"
-    else:
-      if not env['SSE3_FALLBACK']:
-          # check avx support
-          if not config.CheckFlag("-mavx"):
-              sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
-              sys.exit(1)
-          config.env.AppendUnique(CPPFLAGS="-mavx")
-      else:
-          config.env.AppendUnique(CPPFLAGS="-msse3")
+    # if not config.CheckFlag("-std=c++11"):
+    #     sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
+    #     sys.exit(1)  # TODO: exist undefined, fix
+    # C++11 support is enabled by default on win32; no avx support for win32
+    if env['PLATFORM'] not in ['cygwin', 'win32']:
+        config.env.AppendUnique(CPPFLAGS="-std=c++11")
+        if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS']:
+          print "architecture set from outside"
+        else:
+          if not env['SSE3_FALLBACK']:
+              # check avx support
+              if not config.CheckFlag("-mavx"):
+                  sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
+                  sys.exit(1)
+              config.env.AppendUnique(CPPFLAGS="-mavx")
+          else:
+              config.env.AppendUnique(CPPFLAGS="-msse3")
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
         sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
     else:
-        print "Using doxygen " + commands.getoutput('doxygen --version')
+        print "Using doxygen " + re.findall(r"[0-9.]*[0-9]+",
+                                            subprocess.check_output(['doxygen', '--version']))[0]
 
     # check whether dot installed
     if not config.CheckExec('dot'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
     else:
-        print "Using " + commands.getoutput('dot -V').splitlines()[0]
+        print subprocess.check_output(['dot', '-V'])
 
     if config.env['USE_OCL']:
       if 'OCL_INCLUDE_PATH' in config.env['ENV']:
@@ -64,7 +66,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
 
-      if not config.CheckLib('OpenCL'):
+      if not config.CheckLib('OpenCL', language="c++"):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
 
@@ -74,7 +76,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
     # Check the availability of the boost unit test dependencies
     if env['COMPILE_BOOST_TESTS']:
-        if not config.CheckHeader("boost/test/unit_test.hpp", language="c++"):
+        if not config.CheckHeader(os.path.join("boost", "test", "unit_test.hpp"), language="c++"):
             env['COMPILE_BOOST_TESTS'] = False
             print """****************************************************
 No Boost Unit Test Headers found. Omitting Boost unit tests.
@@ -83,7 +85,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
 ****************************************************
 """
 
-        if not config.CheckLib('boost_unit_test_framework'):
+        if not config.CheckLib('boost_unit_test_framework', autoadd=0, language="c++"):
             env['COMPILE_BOOST_TESTS'] = False
             print """****************************************************
 No Boost Unit Test library found. Omitting Boost unit tests.
@@ -102,12 +104,14 @@ Please install the corresponding package, e.g. using command on Ubuntu
         from SCons.Script.SConscript import SConsEnvironment
         import warnings
         sconsenv = SConsEnvironment()
-        swig_ver = sconsenv._get_major_minor_revision(re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0])
+        swig_ver = sconsenv._get_major_minor_revision(re.findall(r"[0-9.]*[0-9]+",
+                                                      subprocess.check_output(['swig', '-version']))[0])
         if swig_ver < (3, 0, 0):
           sys.stderr.write("Error: swig version too old! Use swig >= 3.0.0\n")
           sys.exit(1)
 
-        print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0]
+        print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+",
+                                         subprocess.check_output(['swig', '-version']))[0]
         config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
         print "pythonpath: ", distutils.sysconfig.get_python_inc()
 
@@ -168,16 +172,17 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # e.g. by setting "-Werror"
 
     # TODO check
-    if env['OPT'] == True:
-       env.Append(CPPFLAGS=['-O3'])
-    else:
-       env.Append(CPPFLAGS=['-g', '-O0'])
+    if env['PLATFORM'] not in ['cygwin', 'win32']:
+        if env['OPT'] == True:
+           env.Append(CPPFLAGS=['-O3'])
+        else:
+           env.Append(CPPFLAGS=['-g', '-O0'])
 
     if not env['USE_DOUBLE_PRECISION']:
        env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
     if env['TARGETCPU'] == 'default':
-        gcc_ver_str = commands.getoutput(env['CXX'] + ' -dumpversion')
+        gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
         gcc_ver = env._get_major_minor_revision(gcc_ver_str)
         print "Using default gcc " + gcc_ver_str
 
@@ -205,6 +210,8 @@ Please install the corresponding package, e.g. using command on Ubuntu
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
+        if env['USE_STATICLIB']:
+            env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
 
         if not env['USE_DOUBLE_PRECISION']:
             if gcc_ver >= (4, 9, 0):
@@ -232,9 +239,18 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp'])
         env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+    elif env['TARGETCPU'] == 'VCC':
+        print "Using vcc"
+        env.Append(CPPFLAGS=['/EHsc'])
+        env.Append(CPPFLAGS=['/DNOMINMAX'])
+        env.Append(CPPFLAGS=['/D_USE_MATH_DEFINES'])
+        if env['USE_STATICLIB']:
+            env.Append(CPPFLAGS=['/D_USE_STATICLIB'])
+        # env.Append(CPPFLAGS=['/openmp']) -> does not work due to missing openMP3 support
+        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for TARGETCPU."
-        print "Available configurations are: ICC"
+        print "Available configurations are: ICC (Intel), VCC (Visual Studio)"
         sys.exit(1)
 
     # special treatment for different platforms
@@ -257,7 +273,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
     # will lead to a warning on cygwin (and we have -Werror enabled)
     # is enabled by default on cygwin
-    if env['PLATFORM'] != 'cygwin':
+    if env['PLATFORM'] not in ['cygwin', 'win32']:
         env.Append(CPPFLAGS=['-fPIC'])
 
     # setup the include base folder
