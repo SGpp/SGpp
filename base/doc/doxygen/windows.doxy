@@ -50,7 +50,7 @@ work with it
 - install Visual Studio (11GB): make sure that Visual C++ and the
   python tools are installed
 - install Python2.7 (32 Bit) to a folder to which
-  you have full access (C:\local for example). Add python.exe to the
+  you have full access (C:\\local for example). Add python.exe to the
   system path variable (=PATH)
 - the next step consists in installing SCons. Note that with the
   current version of SCons (2.4.0) a 32 Bit installation of is
