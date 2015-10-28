@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(testSerialize) {
 
   std::string str = s->serialize();
 
-  BOOST_MESSAGE(str);
+  BOOST_TEST_MESSAGE(str);
   BOOST_CHECK_NE(str.length(), 0);
 
   HashGridStorage* s2 = new HashGridStorage(str);

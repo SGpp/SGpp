@@ -30,7 +30,7 @@ namespace SGPP {
 
     void IterativeGridGeneratorSOO::setAdaptivity(float_t adaptivity) {
       hMax = [adaptivity](size_t n) {
-        return std::pow(n, adaptivity);
+        return static_cast<size_t>(std::pow(n, adaptivity));
       };
     }
 
