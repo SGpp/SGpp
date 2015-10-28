@@ -5,9 +5,9 @@
  *      Author: pfandedd
  */
 
+#include <iostream>
 #if USE_OCL==1
 
-#include <iostream>
 #include <random>
 
 #include <sgpp/globaldef.hpp>

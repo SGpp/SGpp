@@ -7,6 +7,7 @@
 
 #include <random>
 #include <chrono>
+#include <iostream>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>

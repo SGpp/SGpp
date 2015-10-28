@@ -5,6 +5,7 @@
  *      Author: pfandedd
  */
 
+#include <iostream>
 #if USE_OCL == 1
 
 #include <random>
