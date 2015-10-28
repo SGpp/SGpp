@@ -34,7 +34,7 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVect
     //traverse dataSet
     DataVector vec(2);
     OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
-    for (uint i = 0; i < dataSet.getNrows(); i++) {
+    for (unsigned int i = 0; i < dataSet.getNrows(); i++) {
         dataSet.getRow(i, vec);
         error[i] = pow(f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha, vec), 2);
     }

@@ -11,8 +11,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <iostream>
+#ifndef _WIN32
 #include <sys/ioctl.h>
 #include <unistd.h>
+#endif
 
 namespace SGPP {
   namespace optimization {
@@ -31,11 +33,13 @@ namespace SGPP {
       indentation(INDENTATION_LENGTH, INDENTATION_CHAR),
       stream(&std::cout) {
 
+#ifndef _WIN32
       struct winsize w;
 
       if ((ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1) && (w.ws_col > 0)) {
         lineLengthLimit = w.ws_col - 1;
       }
+#endif
     }
 
     void Printer::printStatusBegin(const std::string& msg) {
