@@ -145,7 +145,7 @@ namespace SGPP {
         /**
          * Compute the residual for a given test data set on a learned grid
          *
-         * $|(A - lambda C) \alpha - \frac{1}{n}B|$
+         * $|(A - lambda C) alpha - 1/n B|$
          *
          * This is used as quality criterion for the estimated density.
          *
