@@ -200,6 +200,14 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 						eval_4 = _mm256_msub_pd(eval_4, level, index);
 						eval_5 = _mm256_msub_pd(eval_5, level, index);
 #else
+#ifdef __AVX2__
+                                                eval_0 = _mm256_fmsub_pd(eval_0, level, index);
+                                                eval_1 = _mm256_fmsub_pd(eval_1, level, index);
+                                                eval_2 = _mm256_fmsub_pd(eval_2, level, index);
+                                                eval_3 = _mm256_fmsub_pd(eval_3, level, index);
+                                                eval_4 = _mm256_fmsub_pd(eval_4, level, index);
+                                                eval_5 = _mm256_fmsub_pd(eval_5, level, index);
+#else
 						eval_0 = _mm256_sub_pd(_mm256_mul_pd(eval_0, level),
 								index);
 						eval_1 = _mm256_sub_pd(_mm256_mul_pd(eval_1, level),
@@ -212,6 +220,7 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 								index);
 						eval_5 = _mm256_sub_pd(_mm256_mul_pd(eval_5, level),
 								index);
+#endif
 #endif
 						eval_0 = _mm256_and_pd(mask, eval_0);
 						eval_1 = _mm256_and_pd(mask, eval_1);
@@ -276,9 +285,6 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 
 //			for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
 //				for (size_t j = start_index_grid; j < end_index_grid; j++) {
-					_mm_prefetch((const char*) & (ptrAlpha[j + 1]), _MM_HINT_T0);
-					_mm_prefetch((const char*) & (ptrLevel[((j + 1)*dims)]), _MM_HINT_T0);
-					_mm_prefetch((const char*) & (ptrIndex[((j + 1)*dims)]), _MM_HINT_T0);
 
 					__m512d support_0 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 					__m512d support_1 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
