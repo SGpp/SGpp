@@ -178,12 +178,21 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 					eval_4 = _mm256_msub_pd(eval_4, level, index);
 					eval_5 = _mm256_msub_pd(eval_5, level, index);
 #else
+#ifdef __AVX2__
+                                        eval_0 = _mm256_fmsub_pd(eval_0, level, index);
+                                        eval_1 = _mm256_fmsub_pd(eval_1, level, index);
+                                        eval_2 = _mm256_fmsub_pd(eval_2, level, index);
+                                        eval_3 = _mm256_fmsub_pd(eval_3, level, index);
+                                        eval_4 = _mm256_fmsub_pd(eval_4, level, index);
+                                        eval_5 = _mm256_fmsub_pd(eval_5, level, index);
+#else
 					eval_0 = _mm256_sub_pd(_mm256_mul_pd(eval_0, level), index);
 					eval_1 = _mm256_sub_pd(_mm256_mul_pd(eval_1, level), index);
 					eval_2 = _mm256_sub_pd(_mm256_mul_pd(eval_2, level), index);
 					eval_3 = _mm256_sub_pd(_mm256_mul_pd(eval_3, level), index);
 					eval_4 = _mm256_sub_pd(_mm256_mul_pd(eval_4, level), index);
 					eval_5 = _mm256_sub_pd(_mm256_mul_pd(eval_5, level), index);
+#endif
 #endif
 					__m256d mask = _mm256_broadcast_sd(
 							&(ptrMask[(j * dims) + d]));
