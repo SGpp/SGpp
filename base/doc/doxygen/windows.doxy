@@ -99,7 +99,7 @@ working on. To prepare the environment (path variables, etc.) you need
 to specify the correct script, which is also provided by Visual
 Studio. On a standard Windows 7 installation this is usually
 
-<tt>"C:\path\to\Visual Studio\VC\bin\amd64_x86\vcvarsamd64_x86.bat"</tt>
+<tt>"C:\path\to\Visual Studio\VC\bin\vcvars32.bat"</tt>
 
 for building x86 code on a amd64 machine. Moreover, to tell scons that
 you want to use the Visual Studio compiler set
@@ -108,7 +108,7 @@ you want to use the Visual Studio compiler set
 
 If you want to build a static library you can now proceed by executing
 @code{bash}
-  scons SG_PARALLEL=0 SG_COMBIGRID=0 USE_STATIC=1 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\path\to\Visual Studio\VC\bin\amd64_x86\vcvarsamd64_x86.bat"
+  scons SG_PARALLEL=0 SG_COMBIGRID=0 USE_STATIC=1 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\path\to\Visual Studio\VC\bin\vcvars32.bat"
 @endcode
 
 The library is installed to
@@ -144,11 +144,20 @@ PATH
 
 Please execute
 @code{bash}
-  scons SG_PARALLEL=0 SG_COMBIGRID=0 USE_STATICLIB=0 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\path\to\Visual Studio\VC\bin\amd64_x86\vcvarsamd64_x86.bat"
+  scons SG_PARALLEL=0 SG_COMBIGRID=0 USE_STATICLIB=0 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\path\to\Visual Studio\VC\bin\vcvars32.bat"
 @endcode
 to obtain the dynamic library. The library is installed to
 
 <tt>lib/sgpp/sgpp<package name\>.{lib|dll}</tt>
+
+@subsection Cleaning the project
+
+Please execute
+@code{bash}
+  scons SG_PARALLEL=0 SG_COMBIGRID=0 MSVC_USE_SCRIPT="C:\path\to\Visual Studio\VC\bin\vcvars32.bat" -c
+@endcode
+
+@subsection Available modules
 
 You are able to compile different SG++ modules independently. However, you should take into account the dependencies between the modules to
 avoid "undefined symbol" errors: When using them, depending on the dependencies, other modules might have to be included, too. The currently available modules are (see the @ref modules page):
@@ -172,7 +181,7 @@ Then there are two switches for supported high-level back-ends:
 
 For example, the command
 @code{bash}
-  scons SG_MISC=0 SG_QUADRATURE=0 SG_DATADRIVEN=0 SG_SOLVER=0 SG_FINANCE=0 SG_PDE=0 SG_OPTIMIZATION=0 SG_PARALLEL=0 SG_COMBIGRID=0 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64_x86\vcvarsamd64_x86.bat"
+  scons SG_MISC=0 SG_QUADRATURE=0 SG_DATADRIVEN=0 SG_SOLVER=0 SG_FINANCE=0 SG_PDE=0 SG_OPTIMIZATION=0 SG_PARALLEL=0 SG_COMBIGRID=0 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 @endcode
 will create the shared library sgppbase.dll and the corresponding
 import library sgppbase.lib.
@@ -215,7 +224,7 @@ to use the uncertainty quantification python package.
 
 For the use of SGpp with Java, you have to generate the <tt>jsgpp</tt>. It can be generated with
 @code{bash}
-  scons SG_JAVA=1 SG_PYTHON=1 SG_PARALLEL=0 SG_COMBIGRID=0 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\amd64_x86\vcvarsamd64_x86.bat"
+  scons SG_JAVA=1 SG_PYTHON=1 SG_PARALLEL=0 SG_COMBIGRID=0 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 @endcode
 
 @subsection sconsVisualStudio Configuration for use of Scons within Visual Studio
