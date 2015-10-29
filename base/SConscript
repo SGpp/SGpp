@@ -104,11 +104,10 @@ if env['COMPILE_BOOST_TESTS']:
     test_env = env.Clone()
     boostlib = "boost_unit_test_framework"
     if env['PLATFORM'] == 'win32':
-        boostlib = boostlib + "-vc140-mt-gd-1_59"
-        test_env.Append(CPPFLAGS=['/DBOOST_ALL_DYN_LINK',
-                                  '/DEBUG',
-                                  '/MDd'])
-    test_env.AppendUnique(LIBS=moduleDependencies + [libname, boostlib])
+        test_env.Append(CPPFLAGS=['/DBOOST_ALL_DYN_LINK', '/MD', '/D _WIN32'])
+        test_env.AppendUnique(LIBS=moduleDependencies + [libname])
+    else:
+        test_env.AppendUnique(LIBS=moduleDependencies + [libname, boostlib])
     
     testObjects = []
     for currentFolder, subdirNames, fileNames in os.walk("tests", topdown=True):
