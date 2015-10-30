@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM);
+            SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
     learner.learn(configuration, fileName);
     //learner.learnReference(fileName);
 
