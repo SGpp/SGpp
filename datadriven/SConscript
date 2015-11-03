@@ -67,7 +67,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
 if env["TARGETCPU"] != "MIC":
     example_env = env.Clone()
     example_env.AppendUnique(LIBPATH=[BUILD_DIR, "#/lib/alglib"])
-    example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName])
+    example_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName] + ["boost_program_options"])
     for fileName in os.listdir("examples"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
             example = example_env.Program(source=os.path.join("examples", fileName),

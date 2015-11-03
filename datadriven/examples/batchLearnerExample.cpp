@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#if USE_OCL==1
+
 #include <iostream>
 #include <string>
 #include <stdio.h>
@@ -85,3 +87,11 @@ int main (int argc, char** args) {
 
   return EXIT_SUCCESS;
 }
+
+#else
+#include <iostream>
+int main(int argc, char** argv) {
+    std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
+    return 0;
+}
+#endif
