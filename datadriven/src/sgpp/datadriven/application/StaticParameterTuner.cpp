@@ -3,6 +3,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/datadriven/application/StaticParameterTuner.hpp>
+#include "sgpp/datadriven/application/MetaLearner.hpp"
 #include <limits>
 
 namespace SGPP {
@@ -57,7 +58,7 @@ SGPP::datadriven::LearnerScenario scenario) {
             for (size_t i = 0; i < parameterIndex; i++) {
                 valueIndices[i] = 0;
                 TunableParameter &parameterForReset = tunableParameters[i];
-                currentParameters.set(parameterForReset.getName(), parameterForReset.getValues()[i]);
+                currentParameters.set(parameterForReset.getName(), parameterForReset.getValues()[0]);
             }
             parameterIndex = 0;
 
@@ -77,7 +78,41 @@ SGPP::datadriven::LearnerScenario scenario) {
 
 double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario scenario,
 SGPP::base::OCLConfigurationParameters currentParameters) {
-    return 0.0;
+//    std::cout << "-----------------------" << std::endl;
+//    std::vector<std::string> keys = currentParameters.getKeys();
+//    for (std::string key : keys) {
+//        if (key.compare(0, 7, "KERNEL_", 0, 7) == 0) {
+//            std::cout << "key: " << key << " value: " << currentParameters.get(key) << std::endl;
+//        }
+//    }
+//    static uint64_t reachedCounter = 0;
+//    reachedCounter += 1;
+//    std::cout << "reached: " << reachedCounter << std::endl;
+
+    bool verbose = false;
+    SGPP::datadriven::MetaLearner learner(scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
+            scenario.getSolverConfigurationFinal(), scenario.getAdaptivityConfiguration(), scenario.getLambda(),
+            verbose);
+
+    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, currentParameters);
+
+    std::string fileName = scenario.getDatasetFileName();
+
+    double duration = std::numeric_limits<double>::max();
+    try {
+        learner.learn(configuration, fileName);
+
+        LearnerTiming timing = learner.getLearnerTiming();
+
+        duration = timing.timeComplete_;
+    } catch (SGPP::base::operation_exception &exception) {
+        std::cout << "invalid combination detected" << std::endl;
+    }
+
+    std::cout << "duration: " << duration << std::endl;
+    return duration;
 }
 
 }

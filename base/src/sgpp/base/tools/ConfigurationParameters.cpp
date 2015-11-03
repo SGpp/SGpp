@@ -115,6 +115,14 @@ std::vector<std::string> ConfigurationParameters::getAsList(const std::string &k
     return splitted;
 }
 
+std::vector<std::string> ConfigurationParameters::getKeys() {
+    std::vector<std::string> keys;
+    for (auto &tuple: this->parameters) {
+        keys.push_back(tuple.first);
+    }
+    return keys;
+}
+
 
 }
 }

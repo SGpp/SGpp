@@ -39,8 +39,6 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
         std::cout << "OCL Info: " << overallDeviceCount << " OpenCL devices have been found!" << std::endl;
     }
 
-    std::cout << "SELECT_SPECIFIC_DEVICE: " << parameters->get("SELECT_SPECIFIC_DEVICE") << std::endl;
-    std::cout << "MAX_DEVICES: " << parameters->get("MAX_DEVICES") << std::endl;
     bool isSelectSpecificDeviceEnabled = parameters->get("SELECT_SPECIFIC_DEVICE").compare("DISABLED") != 0;
     bool isMaxDevicesEnabled = parameters->get("MAX_DEVICES").compare("DISABLED") != 0;
 
