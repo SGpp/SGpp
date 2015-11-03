@@ -10,6 +10,8 @@
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 #include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/datadriven/application/StaticParameterTuner.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
 
 int main(int argc, char **argv) {
 
@@ -19,7 +21,8 @@ int main(int argc, char **argv) {
     // Specify scenario for performance optimization
 
     int maxLevel = 9;
-    std::string fileName = "DR5_train.arff";
+//    std::string fileName = "friedman_4d_small.arff";
+    std::string fileName = "friedman_4d.arff";
     sg::base::RegularGridConfiguration gridConfig;
     sg::solver::SLESolverConfiguration SLESolverConfigRefine;
     sg::solver::SLESolverConfiguration SLESolverConfigFinal;
@@ -45,36 +48,39 @@ int main(int argc, char **argv) {
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = 0;
-    SLESolverConfigFinal.maxIterations_ = 5;
+    SLESolverConfigFinal.maxIterations_ = 20;
     SLESolverConfigFinal.threshold_ = -1.0;
     SLESolverConfigFinal.type_ = sg::solver::CG;
 
     double lambda = 0.000001;
 
-    bool verbose = true;
-    SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig, lambda,
-            verbose);
+    SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig);
 
-    SGPP::base::OCLConfigurationParameters parameters;
+    SGPP::datadriven::StaticParameterTuner staticParameterTuner;
 
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("VERBOSE", "false");
-    parameters.set("PLATFORM", "first");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
-    parameters.set("MAX_DEVICES", "1");
-    parameters.set("INTERNAL_PRECISION", "float");
+    staticParameterTuner.addFixedParameter("OCL_MANAGER_VERBOSE", "false");
+    staticParameterTuner.addFixedParameter("VERBOSE", "false");
+    staticParameterTuner.addFixedParameter("PLATFORM", "NVIDIA CUDA");
+    staticParameterTuner.addFixedParameter("SELECT_SPECIFIC_DEVICE", "DISABLED");
+    staticParameterTuner.addFixedParameter("MAX_DEVICES", "1");
+    staticParameterTuner.addFixedParameter("INTERNAL_PRECISION", "double");
 
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
+    staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
+    staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", {"1", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", {"1", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register"}); //"array",
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"}); //"8", "16"
 
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+    SGPP::base::OCLConfigurationParameters bestParameters = staticParameterTuner.tuneParameters(scenario);
 
-    learner.learn(configuration, fileName);
+    std::vector<std::string> keys = bestParameters.getKeys();
+    std::cout << "--------------------------------------" << std::endl;
+    std::cout << "best parameters:" << std::endl;
+    for (std::string key : keys) {
+        if (key.compare(0, 7, "KERNEL_", 0, 7) == 0) {
+            std::cout << "key: " << key << " value: " << bestParameters.get(key) << std::endl;
+        }
+    }
 
     return 0;
 }

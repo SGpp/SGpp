@@ -45,9 +45,7 @@ public:
 
     virtual std::shared_ptr<ConfigurationParameters> clone() = 0;
 
-    void debug() {
-        std::cout << "count: " << this->parameters.size() << std::endl;
-    }
+    std::vector<std::string> getKeys();
 
 private:
     std::vector<std::string> split(const std::string& s, char delim);

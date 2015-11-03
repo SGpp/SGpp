@@ -556,6 +556,14 @@ void MetaLearner::testRegular(SGPP::datadriven::OperationMultipleEvalConfigurati
     durationReference = learnerReference->testRegular(this->gridConfig, testTrainingData);
 }
 
+LearnerTiming MetaLearner::getLearnerTiming() {
+    return this->myTiming;
+}
+
+LearnerTiming MetaLearner::getLearnerReferenceTiming() {
+    return this->referenceTiming;
+}
+
 }
 }
 

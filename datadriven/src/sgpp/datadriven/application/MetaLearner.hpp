@@ -114,6 +114,11 @@ namespace SGPP {
                          size_t level, size_t instances, float_t& duration, float_t& durationReference);
 
         SGPP::base::Grid &getLearnedGrid();
+
+        LearnerTiming getLearnerTiming();
+
+        LearnerTiming getLearnerReferenceTiming();
+
     };
 
   }
