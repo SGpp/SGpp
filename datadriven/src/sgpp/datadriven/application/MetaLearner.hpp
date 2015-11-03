@@ -72,21 +72,21 @@ namespace SGPP {
           }
         }
 
-        void learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &datasetFileName);
+        void learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &datasetFileName, bool isRegression = true);
 
-        void learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &content);
+        void learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &content, bool isRegression = true);
 
-        void learnReference(std::string &fileName);
+        void learnReference(std::string &fileName, bool isRegression = true);
 
-        void learnReferenceString(std::string &content);
+        void learnReferenceString(std::string &content, bool isRegression = true);
 
         //learn and test against test dataset and measure hits/mse
         void learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                          std::string &datasetFileName, std::string &testFileName, bool isBinaryClassification);
+                          std::string &datasetFileName, std::string &testFileName, bool isRegression = true);
 
         //learn and test against test dataset and measure hits/mse
         void learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                          std::string &dataContent, std::string &testContent, bool isBinaryClassification);
+                          std::string &dataContent, std::string &testContent, bool isRegression = true);
 
         //learn and test against the streaming implementation
         float_t learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,

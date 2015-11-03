@@ -38,7 +38,7 @@ SGPP::solver::SLESolverConfiguration solverFinalStep, SGPP::base::AdpativityConf
 }
 
 void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string &datasetFileName) {
+        std::string &datasetFileName, bool isRegression) {
     std::ifstream t(datasetFileName);
     if (!t.is_open()) {
         throw;
@@ -50,7 +50,7 @@ void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration& op
 }
 
 void MetaLearner::learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string &content) {
+        std::string &content, bool isRegression) {
 
     Dataset dataset = ARFFTools::readARFFFromString(content);
 
@@ -64,7 +64,7 @@ void MetaLearner::learnString(SGPP::datadriven::OperationMultipleEvalConfigurati
     DataVector &classesVector = dataset.getClasses();
     DataMatrix &trainingData = dataset.getTrainingData();
 
-    bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
+//    bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
     LearnerLeastSquaresIdentity* myLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
     myLearner->setImplementation(operationConfiguration);
 
@@ -87,7 +87,7 @@ Grid &MetaLearner::getLearnedGrid() {
     return this->myLearner->getGrid();
 }
 
-void MetaLearner::learnReference(std::string &datasetFileName) {
+void MetaLearner::learnReference(std::string &datasetFileName, bool isRegression) {
     std::ifstream t(datasetFileName);
     if (!t.is_open()) {
         throw;
@@ -98,7 +98,7 @@ void MetaLearner::learnReference(std::string &datasetFileName) {
     this->learnReferenceString(bufferString);
 }
 
-void MetaLearner::learnReferenceString(std::string &content) {
+void MetaLearner::learnReferenceString(std::string &content, bool isRegression) {
 
     Dataset dataset = ARFFTools::readARFFFromString(content);
     this->gridConfig.dim_ = dataset.getDimension();
@@ -111,8 +111,8 @@ void MetaLearner::learnReferenceString(std::string &content) {
     DataVector &classesVector = dataset.getClasses();
     DataMatrix &trainingData = dataset.getTrainingData();
 
-    // treat everything as if it were a regression, as classification is not fully supported by Learner
-    bool isRegression = true;
+//    // treat everything as if it were a regression, as classification is not fully supported by Learner
+//    bool isRegression = true;
     LearnerLeastSquaresIdentity* referenceLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
     SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration(OperationMultipleEvalType::DEFAULT,
             OperationMultipleEvalSubType::DEFAULT, "STREAMING");
@@ -132,7 +132,7 @@ void MetaLearner::learnReferenceString(std::string &content) {
 }
 
 void MetaLearner::learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string &datasetFileName, std::string &testFileName, bool isBinaryClassification) {
+        std::string &datasetFileName, std::string &testFileName, bool isRegression) {
     std::ifstream dataFile(datasetFileName);
     std::stringstream bufferData;
     bufferData << dataFile.rdbuf();
@@ -141,12 +141,12 @@ void MetaLearner::learnAndTest(SGPP::datadriven::OperationMultipleEvalConfigurat
     bufferTest << testFile.rdbuf();
     std::string bufferDataString = bufferData.str();
     std::string bufferTestString = bufferTest.str();
-    this->learnAndTestString(operationConfiguration, bufferDataString, bufferTestString, isBinaryClassification);
+    this->learnAndTestString(operationConfiguration, bufferDataString, bufferTestString, isRegression);
 }
 
 //learn and test against test dataset and measure hits/mse
 void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-        std::string &dataContent, std::string &testContent, bool isBinaryClassification) {
+        std::string &dataContent, std::string &testContent, bool isRegression) {
 
     //always to this first
     this->learnString(operationConfiguration, dataContent);
@@ -173,7 +173,7 @@ void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConf
         std::cout << "classes computed" << std::endl;
     }
 
-    if (!isBinaryClassification) {
+    if (isRegression) {
         float_t mse = 0.0;
 
         for (size_t i = 0; i < computedClasses.getSize(); i++) {
@@ -219,7 +219,7 @@ float_t MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConf
     std::stringstream buffer;
     buffer << t.rdbuf();
     std::string bufferString = buffer.str();
-    this->learnAndCompareString(operationConfiguration, bufferString, gridGranularity);
+    return this->learnAndCompareString(operationConfiguration, bufferString, gridGranularity);
 }
 
 //learn and test against the streaming implemenation

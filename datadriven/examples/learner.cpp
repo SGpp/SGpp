@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
     SGPP::datadriven::LearnerMode learnerMode = SGPP::datadriven::LearnerMode::LEARN;
 
     //only relevant for LEARNTEST-mode
-    bool doBinaryClassification = false;
+    bool isRegression = true;
 
     double lambda = 0.000001;
 
@@ -199,8 +199,8 @@ int main(int argc, char *argv[]) {
             "training data set as an arff file")("testFileName",
             boost::program_options::value<std::string>(&testFileName),
             "test dataset as an arff file (only for LEARNTEST-mode)")
-            ("doBinaryClassification", boost::program_options::value<bool>(&doBinaryClassification),
-            "run as a binary classification problem, default is regression, only relevant for LEARNTEST-mode")("lambda",
+            ("isRegression", boost::program_options::value<bool>(&isRegression),
+            "true for regression, false for classification, default is regression, only relevant for LEARNTEST- and LEARN-mode")("lambda",
             boost::program_options::value<SGPP::float_t>(&lambda), "regularization parameter for learning")("verbose",
             boost::program_options::value<bool>(&verbose), "do verbose learning")("learnerMode",
             boost::program_options::value<SGPP::datadriven::LearnerMode>(&learnerMode),
@@ -280,14 +280,14 @@ int main(int argc, char *argv[]) {
 
     if (learnerMode == SGPP::datadriven::LearnerMode::LEARN) {
 // only execute learning (no comparisons or tests, for performance measurements)
-        learner.learn(configuration, trainingFileName);
+        learner.learn(configuration, trainingFileName, isRegression);
     } else if (learnerMode == SGPP::datadriven::LearnerMode::LEARNCOMPARE) {
 // execute learning with the specified configuration and use the implementation from base as comparison
 // result grids are compared by sampling the domain (again with a grid) and comparing the evaluated values
         learner.learnAndCompare(configuration, trainingFileName, 8);
     } else if (learnerMode == SGPP::datadriven::LearnerMode::LEARNTEST) {
 // test the learned function with a test dataset (no cross-validation yet)
-        learner.learnAndTest(configuration, trainingFileName, testFileName, false);
+        learner.learnAndTest(configuration, trainingFileName, testFileName, isRegression);
     }
 
     return 0;
