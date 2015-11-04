@@ -20,9 +20,12 @@ pythonModuleFolders = [(moduleFolder, os.path.join(moduleFolder, "python"))
 dataFiles = []
 for moduleFolder, srcdir in pythonModuleFolders:
     basepath = os.path.join("pysgpp", "extensions", moduleFolder)
-    dataFiles += [(root.replace(srcdir, basepath),
-                   [os.path.join(root, f) for f in files])
-                  for root, dirs, files in os.walk(srcdir)]
+    for root, dirs, files in os.walk(srcdir):
+        if '.svn' in dirs:
+            dirs.remove('.svn')
+
+        dataFiles += [(root.replace(srcdir, basepath),
+                       [os.path.join(root, f) for f in files])]
 
 # write init file for pysgpp
 initFile = os.path.join(libpath, "__init__.py")
