@@ -13,6 +13,11 @@
 
 #include <sgpp/globaldef.hpp>
 
+#ifndef STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH
+//#define STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH 24
+#define STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH 96
+#endif
+
 namespace SGPP {
 namespace datadriven {
 
