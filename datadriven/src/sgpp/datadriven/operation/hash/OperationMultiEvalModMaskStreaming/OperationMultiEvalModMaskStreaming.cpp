@@ -65,10 +65,15 @@ void OperationMultiEvalModMaskStreaming::getOpenMPPartitionSegment(size_t start,
 }
 
 size_t OperationMultiEvalModMaskStreaming::getChunkGridPoints() {
+	//not used by the MIC-implementation
     return 12;
 }
 size_t OperationMultiEvalModMaskStreaming::getChunkDataPoints() {
+#ifdef __MIC__
+	return STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH;
+# else
     return 24; // must be divisible by 24
+#endif
 }
 
 void OperationMultiEvalModMaskStreaming::mult(SGPP::base::DataVector& alpha,
@@ -126,7 +131,7 @@ SGPP::base::DataVector& result) {
 size_t OperationMultiEvalModMaskStreaming::padDataset(
 SGPP::base::DataMatrix& dataset) {
 
-    size_t vecWidth = 24;
+    size_t vecWidth = this->getChunkDataPoints();
 
     // Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;
@@ -169,7 +174,8 @@ void OperationMultiEvalModMaskStreaming::prepare() {
 void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
 
     //TODO: does the padding work? test
-    uint32_t localWorkSize = 24;
+//    uint32_t localWorkSize = 24;
+    uint32_t localWorkSize = this->getChunkGridPoints();
 
     size_t remainder = this->storage->size() % localWorkSize;
     size_t padding = 0;

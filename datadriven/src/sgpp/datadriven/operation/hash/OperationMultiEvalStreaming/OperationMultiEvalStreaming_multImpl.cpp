@@ -38,6 +38,8 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 	size_t result_size = result.getSize();
 	size_t dims = dataset->getNrows();
 
+#if defined(__SSE3__) && !defined(__AVX__)
+
 	for (size_t c = start_index_data; c < end_index_data;
 			c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
 		size_t data_end = std::min<size_t>((size_t) getChunkDataPoints() + c,
@@ -48,16 +50,10 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 #pragma vector aligned
 #endif
 
-		for (size_t i = c; i < data_end; i++) {
-			ptrResult[i] = 0.0;
-		}
-
 		for (size_t m = start_index_grid; m < end_index_grid;
 				m += std::min<size_t>((size_t) getChunkGridPoints(),
 						(end_index_grid - m))) {
 
-
-#if defined(__SSE3__) && !defined(__AVX__)
 			size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
 			long long imask = 0x7FFFFFFFFFFFFFFF;
@@ -152,9 +148,25 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 					_mm_store_pd(&(ptrResult[i + 10]), res_5);
 				}
 			}
-
+		}
+	}
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
+
+	for (size_t c = start_index_data; c < end_index_data;
+			c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
+		size_t data_end = std::min<size_t>((size_t) getChunkDataPoints() + c,
+				end_index_data);
+
+#ifdef __ICC
+#pragma ivdep
+#pragma vector aligned
+#endif
+
+		for (size_t m = start_index_grid; m < end_index_grid;
+				m += std::min<size_t>((size_t) getChunkGridPoints(),
+						(end_index_grid - m))) {
+
 			size_t grid_inc = std::min<size_t>((size_t) getChunkGridPoints(),
 					(end_index_grid - m));
 
@@ -201,12 +213,12 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 						eval_5 = _mm256_msub_pd(eval_5, level, index);
 #else
 #ifdef __AVX2__
-                                                eval_0 = _mm256_fmsub_pd(eval_0, level, index);
-                                                eval_1 = _mm256_fmsub_pd(eval_1, level, index);
-                                                eval_2 = _mm256_fmsub_pd(eval_2, level, index);
-                                                eval_3 = _mm256_fmsub_pd(eval_3, level, index);
-                                                eval_4 = _mm256_fmsub_pd(eval_4, level, index);
-                                                eval_5 = _mm256_fmsub_pd(eval_5, level, index);
+						eval_0 = _mm256_fmsub_pd(eval_0, level, index);
+						eval_1 = _mm256_fmsub_pd(eval_1, level, index);
+						eval_2 = _mm256_fmsub_pd(eval_2, level, index);
+						eval_3 = _mm256_fmsub_pd(eval_3, level, index);
+						eval_4 = _mm256_fmsub_pd(eval_4, level, index);
+						eval_5 = _mm256_fmsub_pd(eval_5, level, index);
 #else
 						eval_0 = _mm256_sub_pd(_mm256_mul_pd(eval_0, level),
 								index);
@@ -273,128 +285,425 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 					_mm256_store_pd(&(ptrResult[i + 20]), res_5);
 				}
 			}
-
+		}
+	}
 #endif
 
+	/*
+	 #ifdef __MIC__
+	 size_t grid_inc = std::min<size_t>((size_t) getChunkGridPoints(),
+	 (end_index_grid - m));
+
+	 for (size_t i = c; i < c + getChunkDataPoints(); i += 24) {
+	 for (size_t j = m; j < m + grid_inc; j++) {
+
+	 //			for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
+	 //				for (size_t j = start_index_grid; j < end_index_grid; j++) {
+
+	 __m512d support_0 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+	 __m512d support_1 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+	 __m512d support_2 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+
+	 for (size_t d = 0; d < dims - 1; d++) {
+	 __m512d eval_0 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 0]));
+	 __m512d eval_1 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 8]));
+	 __m512d eval_2 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 16]));
+
+	 __m512d level = _mm512_extload_pd(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+	 __m512d index = _mm512_extload_pd(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+
+	 eval_0 = _mm512_fmsub_pd(eval_0, level, index);
+	 eval_1 = _mm512_fmsub_pd(eval_1, level, index);
+	 eval_2 = _mm512_fmsub_pd(eval_2, level, index);
+
+	 __m512i abs2MaskLRBni = _mm512_set_1to8_epi64(0x7FFFFFFFFFFFFFFF);
+	 eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_0)));
+	 eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_1)));
+	 eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_2)));
+
+	 __m512d one = _mm512_set_1to8_pd(1.0);
+
+	 eval_0 = _mm512_sub_pd(one, eval_0);
+	 eval_1 = _mm512_sub_pd(one, eval_1);
+	 eval_2 = _mm512_sub_pd(one, eval_2);
+
+	 __m512d zero = _mm512_set_1to8_pd(0.0);
+
+	 eval_0 = _mm512_gmax_pd(zero, eval_0);
+	 eval_1 = _mm512_gmax_pd(zero, eval_1);
+	 eval_2 = _mm512_gmax_pd(zero, eval_2);
+
+	 support_0 = _mm512_mul_pd(support_0, eval_0);
+	 support_1 = _mm512_mul_pd(support_1, eval_1);
+	 support_2 = _mm512_mul_pd(support_2, eval_2);
+	 }
+
+	 size_t d = dims - 1;
+
+	 __m512d eval_0 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 0]));
+	 __m512d eval_1 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 8]));
+	 __m512d eval_2 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 16]));
+
+	 __m512d level = _mm512_extload_pd(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+	 __m512d index = _mm512_extload_pd(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+
+	 eval_0 = _mm512_fmsub_pd(eval_0, level, index);
+	 eval_1 = _mm512_fmsub_pd(eval_1, level, index);
+	 eval_2 = _mm512_fmsub_pd(eval_2, level, index);
+
+	 __m512i abs2MaskLRBni = _mm512_set_1to8_epi64(0x7FFFFFFFFFFFFFFF);
+	 eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_0)));
+	 eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_1)));
+	 eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_2)));
+
+	 __m512d one = _mm512_set_1to8_pd(1.0);
+
+	 eval_0 = _mm512_sub_pd(one, eval_0);
+	 eval_1 = _mm512_sub_pd(one, eval_1);
+	 eval_2 = _mm512_sub_pd(one, eval_2);
+
+	 __m512d zero = _mm512_set_1to8_pd(0.0);
+
+	 eval_0 = _mm512_gmax_pd(zero, eval_0);
+	 eval_1 = _mm512_gmax_pd(zero, eval_1);
+	 eval_2 = _mm512_gmax_pd(zero, eval_2);
+
+	 __m512d res_0 = _mm512_load_pd(&(ptrResult[i + 0]));
+	 __m512d res_1 = _mm512_load_pd(&(ptrResult[i + 8]));
+	 __m512d res_2 = _mm512_load_pd(&(ptrResult[i + 16]));
+
+	 res_0 = _mm512_add_pd(res_0, _mm512_mul_pd(support_0, eval_0));
+	 res_1 = _mm512_add_pd(res_1, _mm512_mul_pd(support_1, eval_1));
+	 res_2 = _mm512_add_pd(res_2, _mm512_mul_pd(support_2, eval_2));
+
+	 _mm512_store_pd(&(ptrResult[i + 0]), res_0);
+	 _mm512_store_pd(&(ptrResult[i + 8]), res_1);
+	 _mm512_store_pd(&(ptrResult[i + 16]), res_2);
+	 }
+	 }
+	 }
+	 }
+	 #endif
+	 */
+
 #ifdef __MIC__
-			size_t grid_inc = std::min<size_t>((size_t) getChunkGridPoints(),
-					(end_index_grid - m));
 
-			for (size_t i = c; i < c + getChunkDataPoints(); i += 24) {
-				for (size_t j = m; j < m + grid_inc; j++) {
+//#define STR_HELPER(x) #x
+//#define STR(x) STR_HELPER(x)
+//#pragma message "mult configured with unroll factor " STR(STREAMING_LINEAR_MIC_UNROLLING_WIDTH)
 
-//			for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
-//				for (size_t j = start_index_grid; j < end_index_grid; j++) {
+	for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
+            for (size_t j = start_index_grid; j < end_index_grid; j++) {
+			_mm_prefetch((const char*) & (ptrAlpha[j + 1]), _MM_HINT_T0);
+			_mm_prefetch((const char*) & (ptrLevel[((j + 1)*dims)]), _MM_HINT_T0);
+			_mm_prefetch((const char*) & (ptrIndex[((j + 1)*dims)]), _MM_HINT_T0);
 
-					__m512d support_0 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-					__m512d support_1 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-					__m512d support_2 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+			__m512d support_0 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+			__m512d support_1 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+			__m512d support_2 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+			__m512d support_3 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+			__m512d support_4 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+			__m512d support_5 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+			__m512d support_6 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+			__m512d support_7 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+			__m512d support_8 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+			__m512d support_9 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+			__m512d support_10 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+			__m512d support_11 = _mm512_extload_pd(&(ptrAlpha[j]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+#endif
 
-					for (size_t d = 0; d < dims - 1; d++) {
-						__m512d eval_0 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 0]));
-						__m512d eval_1 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 8]));
-						__m512d eval_2 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 16]));
+			for (size_t d = 0; d < dims; d++) {
+				__m512d eval_0 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 0]));
+				__m512d eval_1 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 8]));
+				__m512d eval_2 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 16]));
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+				__m512d eval_3 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 24]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+				__m512d eval_4 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 32]));
+				__m512d eval_5 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 40]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+				__m512d eval_6 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 48]));
+				__m512d eval_7 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 56]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+				__m512d eval_8 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 64]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+				__m512d eval_9 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 72]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+				__m512d eval_10 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 80]));
+				__m512d eval_11 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 88]));
+#endif
+				__m512d level = _mm512_extload_pd(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+				__m512d index = _mm512_extload_pd(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
 
-						__m512d level = _mm512_extload_pd(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-						__m512d index = _mm512_extload_pd(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+				eval_0 = _mm512_fmsub_pd(eval_0, level, index);
+				eval_1 = _mm512_fmsub_pd(eval_1, level, index);
+				eval_2 = _mm512_fmsub_pd(eval_2, level, index);
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+				eval_3 = _mm512_fmsub_pd(eval_3, level, index);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+				eval_4 = _mm512_fmsub_pd(eval_4, level, index);
+				eval_5 = _mm512_fmsub_pd(eval_5, level, index);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+				eval_6 = _mm512_fmsub_pd(eval_6, level, index);
+				eval_7 = _mm512_fmsub_pd(eval_7, level, index);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+				eval_8 = _mm512_fmsub_pd(eval_8, level, index);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+				eval_9 = _mm512_fmsub_pd(eval_9, level, index);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+				eval_10 = _mm512_fmsub_pd(eval_10, level, index);
+				eval_11 = _mm512_fmsub_pd(eval_11, level, index);
+#endif
+				__m512i abs2MaskLRBni = _mm512_set_1to8_epi64(0x7FFFFFFFFFFFFFFF);
+				eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_0)));
+				eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_1)));
+				eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_2)));
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+				eval_3 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_3)));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+				eval_4 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_4)));
+				eval_5 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_5)));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+				eval_6 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_6)));
+				eval_7 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_7)));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+				eval_8 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_8)));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+				eval_9 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_9)));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+				eval_10 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_10)));
+				eval_11 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_11)));
+#endif
 
-						eval_0 = _mm512_fmsub_pd(eval_0, level, index);
-						eval_1 = _mm512_fmsub_pd(eval_1, level, index);
-						eval_2 = _mm512_fmsub_pd(eval_2, level, index);
+				__m512d one = _mm512_set_1to8_pd(1.0);
 
-						__m512i abs2MaskLRBni = _mm512_set_1to8_epi64(0x7FFFFFFFFFFFFFFF);
-						eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_0)));
-						eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_1)));
-						eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_2)));
+				eval_0 = _mm512_sub_pd(one, eval_0);
+				eval_1 = _mm512_sub_pd(one, eval_1);
+				eval_2 = _mm512_sub_pd(one, eval_2);
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+				eval_3 = _mm512_sub_pd(one, eval_3);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+				eval_4 = _mm512_sub_pd(one, eval_4);
+				eval_5 = _mm512_sub_pd(one, eval_5);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+				eval_6 = _mm512_sub_pd(one, eval_6);
+				eval_7 = _mm512_sub_pd(one, eval_7);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+				eval_8 = _mm512_sub_pd(one, eval_8);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+				eval_9 = _mm512_sub_pd(one, eval_9);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+				eval_10 = _mm512_sub_pd(one, eval_10);
+				eval_11 = _mm512_sub_pd(one, eval_11);
+#endif
+				__m512d zero = _mm512_set_1to8_pd(0.0);
 
-						__m512d one = _mm512_set_1to8_pd(1.0);
+				eval_0 = _mm512_gmax_pd(zero, eval_0);
+				eval_1 = _mm512_gmax_pd(zero, eval_1);
+				eval_2 = _mm512_gmax_pd(zero, eval_2);
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+				eval_3 = _mm512_gmax_pd(zero, eval_3);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+				eval_4 = _mm512_gmax_pd(zero, eval_4);
+				eval_5 = _mm512_gmax_pd(zero, eval_5);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+				eval_6 = _mm512_gmax_pd(zero, eval_6);
+				eval_7 = _mm512_gmax_pd(zero, eval_7);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+				eval_8 = _mm512_gmax_pd(zero, eval_8);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+				eval_9 = _mm512_gmax_pd(zero, eval_9);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+				eval_10 = _mm512_gmax_pd(zero, eval_10);
+				eval_11 = _mm512_gmax_pd(zero, eval_11);
+#endif
 
-						eval_0 = _mm512_sub_pd(one, eval_0);
-						eval_1 = _mm512_sub_pd(one, eval_1);
-						eval_2 = _mm512_sub_pd(one, eval_2);
-
-						__m512d zero = _mm512_set_1to8_pd(0.0);
-
-						eval_0 = _mm512_gmax_pd(zero, eval_0);
-						eval_1 = _mm512_gmax_pd(zero, eval_1);
-						eval_2 = _mm512_gmax_pd(zero, eval_2);
-
-						support_0 = _mm512_mul_pd(support_0, eval_0);
-						support_1 = _mm512_mul_pd(support_1, eval_1);
-						support_2 = _mm512_mul_pd(support_2, eval_2);
-					}
-
-					size_t d = dims - 1;
-
-					__m512d eval_0 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 0]));
-					__m512d eval_1 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 8]));
-					__m512d eval_2 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 16]));
-
-					__m512d level = _mm512_extload_pd(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-					__m512d index = _mm512_extload_pd(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-
-					eval_0 = _mm512_fmsub_pd(eval_0, level, index);
-					eval_1 = _mm512_fmsub_pd(eval_1, level, index);
-					eval_2 = _mm512_fmsub_pd(eval_2, level, index);
-
-					__m512i abs2MaskLRBni = _mm512_set_1to8_epi64(0x7FFFFFFFFFFFFFFF);
-					eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_0)));
-					eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_1)));
-					eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_2)));
-
-					__m512d one = _mm512_set_1to8_pd(1.0);
-
-					eval_0 = _mm512_sub_pd(one, eval_0);
-					eval_1 = _mm512_sub_pd(one, eval_1);
-					eval_2 = _mm512_sub_pd(one, eval_2);
-
-					__m512d zero = _mm512_set_1to8_pd(0.0);
-
-					eval_0 = _mm512_gmax_pd(zero, eval_0);
-					eval_1 = _mm512_gmax_pd(zero, eval_1);
-					eval_2 = _mm512_gmax_pd(zero, eval_2);
-
-					__m512d res_0 = _mm512_load_pd(&(ptrResult[i + 0]));
-					__m512d res_1 = _mm512_load_pd(&(ptrResult[i + 8]));
-					__m512d res_2 = _mm512_load_pd(&(ptrResult[i + 16]));
-
-					res_0 = _mm512_add_pd(res_0, _mm512_mul_pd(support_0, eval_0));
-					res_1 = _mm512_add_pd(res_1, _mm512_mul_pd(support_1, eval_1));
-					res_2 = _mm512_add_pd(res_2, _mm512_mul_pd(support_2, eval_2));
-
-					_mm512_store_pd(&(ptrResult[i + 0]), res_0);
-					_mm512_store_pd(&(ptrResult[i + 8]), res_1);
-					_mm512_store_pd(&(ptrResult[i + 16]), res_2);
-				}
+				support_0 = _mm512_mul_pd(support_0, eval_0);
+				support_1 = _mm512_mul_pd(support_1, eval_1);
+				support_2 = _mm512_mul_pd(support_2, eval_2);
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+				support_3 = _mm512_mul_pd(support_3, eval_3);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+				support_4 = _mm512_mul_pd(support_4, eval_4);
+				support_5 = _mm512_mul_pd(support_5, eval_5);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+				support_6 = _mm512_mul_pd(support_6, eval_6);
+				support_7 = _mm512_mul_pd(support_7, eval_7);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+				support_8 = _mm512_mul_pd(support_8, eval_8);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+				support_9 = _mm512_mul_pd(support_9, eval_9);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+				support_10 = _mm512_mul_pd(support_10, eval_10);
+				support_11 = _mm512_mul_pd(support_11, eval_11);
+#endif
 			}
+
+			__m512d res_0 = _mm512_load_pd(&(ptrResult[i + 0]));
+			__m512d res_1 = _mm512_load_pd(&(ptrResult[i + 8]));
+			__m512d res_2 = _mm512_load_pd(&(ptrResult[i + 16]));
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+			__m512d res_3 = _mm512_load_pd(&(ptrResult[i + 24]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+			__m512d res_4 = _mm512_load_pd(&(ptrResult[i + 32]));
+			__m512d res_5 = _mm512_load_pd(&(ptrResult[i + 40]));
+#endif
+
+			res_0 = _mm512_add_pd(res_0, support_0);
+			res_1 = _mm512_add_pd(res_1, support_1);
+			res_2 = _mm512_add_pd(res_2, support_2);
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+			res_3 = _mm512_add_pd(res_3, support_3);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+			res_4 = _mm512_add_pd(res_4, support_4);
+			res_5 = _mm512_add_pd(res_5, support_5);
+#endif
+
+			_mm512_store_pd(&(ptrResult[i + 0]), res_0);
+			_mm512_store_pd(&(ptrResult[i + 8]), res_1);
+			_mm512_store_pd(&(ptrResult[i + 16]), res_2);
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+			_mm512_store_pd(&(ptrResult[i + 24]), res_3);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+			_mm512_store_pd(&(ptrResult[i + 32]), res_4);
+			_mm512_store_pd(&(ptrResult[i + 40]), res_5);
+#endif
+
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+			__m512d res_6 = _mm512_load_pd(&(ptrResult[i + 48]));
+			__m512d res_7 = _mm512_load_pd(&(ptrResult[i + 56]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+			__m512d res_8 = _mm512_load_pd(&(ptrResult[i + 64]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+			__m512d res_9 = _mm512_load_pd(&(ptrResult[i + 72]));
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+			__m512d res_10 = _mm512_load_pd(&(ptrResult[i + 80]));
+			__m512d res_11 = _mm512_load_pd(&(ptrResult[i + 88]));
+#endif
+
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+			res_6 = _mm512_add_pd(res_6, support_6);
+			res_7 = _mm512_add_pd(res_7, support_7);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+			res_8 = _mm512_add_pd(res_8, support_8);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+			res_9 = _mm512_add_pd(res_9, support_9);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+			res_10 = _mm512_add_pd(res_10, support_10);
+			res_11 = _mm512_add_pd(res_11, support_11);
+#endif
+
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+			_mm512_store_pd(&(ptrResult[i + 48]), res_6);
+			_mm512_store_pd(&(ptrResult[i + 56]), res_7);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+			_mm512_store_pd(&(ptrResult[i + 64]), res_8);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+			_mm512_store_pd(&(ptrResult[i + 72]), res_9);
+#endif
+#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+			_mm512_store_pd(&(ptrResult[i + 80]), res_10);
+			_mm512_store_pd(&(ptrResult[i + 88]), res_11);
+#endif
+		}
+	}
+//}
+//}
 #endif
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__)
 #warning "warning: using fallback implementation for OperationMultiEvalStreaming mult kernel"
-			size_t grid_end = std::min<size_t>(
-					(size_t) getChunkGridPoints() + m, end_index_grid);
 
-			for (size_t i = c; i < data_end; i++) {
-				for (size_t j = m; j < grid_end; j++) {
-					float_t curSupport = ptrAlpha[j];
+	for (size_t c = start_index_data; c < end_index_data;
+			c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
+		size_t data_end = std::min<size_t>((size_t) getChunkDataPoints() + c,
+				end_index_data);
 
-					for (size_t d = 0; d < dims; d++) {
-						float_t eval = ((ptrLevel[(j * dims) + d])
-								* (ptrData[(d * result_size) + i]));
-						float_t index_calc = eval - (ptrIndex[(j * dims) + d]);
-						float_t abs = std::fabs(index_calc);
-						float_t last = 1.0 - abs;
-						float_t localSupport = std::max<float_t>(last, 0.0);
-						curSupport *= localSupport;
-					}
+#ifdef __ICC
+#pragma ivdep
+#pragma vector aligned
+#endif
 
-					ptrResult[i] += curSupport;
-				}
+		for (size_t m = start_index_grid; m < end_index_grid;
+				m += std::min<size_t>((size_t) getChunkGridPoints(),
+						(end_index_grid - m))) {
+
+	size_t grid_end = std::min<size_t>(
+			(size_t) getChunkGridPoints() + m, end_index_grid);
+
+	for (size_t i = c; i < data_end; i++) {
+		for (size_t j = m; j < grid_end; j++) {
+			float_t curSupport = ptrAlpha[j];
+
+			for (size_t d = 0; d < dims; d++) {
+				float_t eval = ((ptrLevel[(j * dims) + d])
+						* (ptrData[(d * result_size) + i]));
+				float_t index_calc = eval - (ptrIndex[(j * dims) + d]);
+				float_t abs = std::fabs(index_calc);
+				float_t last = 1.0 - abs;
+				float_t localSupport = std::max<float_t>(last, 0.0);
+				curSupport *= localSupport;
 			}
 
-#endif
+			ptrResult[i] += curSupport;
 		}
 	}
+}
+}
+#endif
+
 }
 
 }
