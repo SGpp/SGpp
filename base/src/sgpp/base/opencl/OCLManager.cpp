@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLManager.hpp"
+#include <sgpp/base/opencl/OCLManager.hpp>
 
 #include <iostream>
 #include <sstream>

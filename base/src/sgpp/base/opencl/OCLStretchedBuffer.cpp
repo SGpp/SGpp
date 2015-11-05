@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLStretchedBuffer.hpp"
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 
 #include <sstream>
 

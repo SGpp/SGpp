@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLClonedBufferMultiPlatform.hpp"
+#include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
 
 #include <sstream>
 

@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 #include <fstream>
 #include <iostream>

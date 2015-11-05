@@ -11,11 +11,11 @@
 #include <limits>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../opencl/LinearLoadBalancer.hpp"
-#include "../../../opencl/OCLClonedBuffer.hpp"
-#include "../../../opencl/OCLConfigurationParameters.hpp"
-#include "../../../opencl/OCLManager.hpp"
-#include "../../../opencl/OCLStretchedBuffer.hpp"
+#include <sgpp/base/opencl/LinearLoadBalancer.hpp>
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 
 #include "StreamingOCLKernelSourceBuilder.hpp"
 

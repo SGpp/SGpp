@@ -11,11 +11,11 @@
 #include <thread>
 #include <chrono>
 
-#include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
-#include <sgpp/datadriven/opencl/OCLManager.hpp>
-#include <sgpp/datadriven/opencl/OCLClonedBuffer.hpp>
-#include <sgpp/datadriven/opencl/OCLStretchedBuffer.hpp>
-#include <sgpp/datadriven/opencl/OCLZeroCopyBuffer.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
+#include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
 
 using namespace SGPP::base;
 using namespace std::chrono;

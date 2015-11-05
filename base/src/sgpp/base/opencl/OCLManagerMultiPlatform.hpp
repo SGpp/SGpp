@@ -14,8 +14,8 @@
 #include <map>
 #include <vector>
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLPlatformWrapper.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 namespace SGPP {
 namespace base {

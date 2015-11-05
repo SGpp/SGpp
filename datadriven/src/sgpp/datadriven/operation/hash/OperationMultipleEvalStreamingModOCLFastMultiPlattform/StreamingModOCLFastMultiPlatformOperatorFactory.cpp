@@ -9,7 +9,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include "StreamingModOCLFastMultiPlatformOperatorFactory.hpp"
-#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 namespace SGPP {
 namespace datadriven {

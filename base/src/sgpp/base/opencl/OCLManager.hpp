@@ -13,7 +13,7 @@
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 namespace SGPP {
   namespace base {

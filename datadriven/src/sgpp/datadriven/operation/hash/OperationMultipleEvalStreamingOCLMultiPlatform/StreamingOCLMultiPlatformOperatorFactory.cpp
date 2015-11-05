@@ -10,7 +10,7 @@
 #include "OperationMultiEvalStreamingOCLMultiPlatform.hpp"
 
 #include <sgpp/globaldef.hpp>
-#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 
 namespace SGPP {

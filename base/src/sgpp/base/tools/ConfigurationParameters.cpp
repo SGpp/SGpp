@@ -95,12 +95,18 @@ void ConfigurationParameters::readFromFile(std::string fileName) {
         std::string line;
 
         while (std::getline(file, line)) {
+            if (line[0] == '#') {
+                continue;
+            }
+
             auto splitted = this->split(line, '=');
 
             if (splitted.size() == 2) {
                 this->parameters[splitted[0]] = splitted[1];
             }
         }
+    } else {
+        throw;
     }
 
     file.close();
@@ -117,12 +123,31 @@ std::vector<std::string> ConfigurationParameters::getAsList(const std::string &k
 
 std::vector<std::string> ConfigurationParameters::getKeys() {
     std::vector<std::string> keys;
-    for (auto &tuple: this->parameters) {
+    for (auto &tuple : this->parameters) {
         keys.push_back(tuple.first);
     }
     return keys;
 }
 
+void ConfigurationParameters::writeToFile(std::string fileName) {
+    std::ofstream file(fileName);
+
+    if (file.is_open()) {
+
+        for (std::pair<std::string, std::string> tuple : this->parameters) {
+            file << tuple.first << "=" << tuple.second << std::endl;
+        }
+
+    } else {
+        throw;
+    }
+
+    file.close();
+}
+
+void ConfigurationParameters::clear() {
+    this->parameters.clear();
+}
 
 }
 }

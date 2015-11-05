@@ -5,7 +5,7 @@
  *      Author: leiterrl
  */
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLZeroCopyBuffer.hpp"
+#include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
 
 #include <sstream>
 

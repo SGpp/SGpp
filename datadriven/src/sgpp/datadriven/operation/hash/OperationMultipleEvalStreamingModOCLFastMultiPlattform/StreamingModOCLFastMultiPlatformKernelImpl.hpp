@@ -12,10 +12,10 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include "../../../opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "../../../opencl/OCLClonedBufferMultiPlatform.hpp"
-#include "../../../opencl/OCLManagerMultiPlatform.hpp"
-#include "../../../opencl/OCLStretchedBufferMultiPlatform.hpp"
+#include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp>
 
 #include "StreamingModOCLFastMultiPlatformKernelSourceBuilder.hpp"
 

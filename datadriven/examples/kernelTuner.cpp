@@ -9,84 +9,66 @@
 #if USE_OCL == 1
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
-#include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/datadriven/application/StaticParameterTuner.hpp>
 #include <sgpp/datadriven/application/LearnerScenario.hpp>
 
 int main(int argc, char **argv) {
+/*
+    std::string scenarioFileName;
+    std::string parameterConfigurationFileName; // <- includes kernel type, subtype
+    std::vector<std::string> devices;
 
-//TODO: export parameter names and value ranges
-//TODO: export constraints (or constraint checkers -> function pointers)
+    boost::program_options::options_description description("Allowed options");
+    description.add_options()("help", "display help")("scenario",
+            boost::program_options::value<std::string>(&scenarioFileName),
+            "the scenario file to be used (serialized LearnerScenario)")("parameterConfiguration",
+            boost::program_options::value<std::string>(&parameterConfigurationFileName),
+            "the parameter configuration file to be used (serialized StaticParameterTuner)")("devices",
+            boost::program_options::value<std::vector<std::string> >(&devices)->multitoken(),
+            "specify comma-separated list of devices or \"all\" for all devices found");
 
-    // Specify scenario for performance optimization
+    boost::program_options::variables_map variables_map;
 
-    int maxLevel = 9;
-//    std::string fileName = "friedman_4d_small.arff";
-    std::string fileName = "friedman_4d.arff";
-    sg::base::RegularGridConfiguration gridConfig;
-    sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-    sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-    sg::base::AdpativityConfiguration adaptConfig;
+    boost::program_options::parsed_options options = parse_command_line(argc, argv, description);
+    boost::program_options::store(options, variables_map);
+    boost::program_options::notify(variables_map);
 
-    // setup grid
-    gridConfig.dim_ = 0; //dim is inferred from the data
-    gridConfig.level_ = maxLevel;
-    gridConfig.type_ = sg::base::Linear;
-
-    // Set Adaptivity
-    adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = 0;
-    adaptConfig.percent_ = 200.0;
-    adaptConfig.threshold_ = 0.0;
-
-    // Set solver during refinement
-    SLESolverConfigRefine.eps_ = 0;
-    SLESolverConfigRefine.maxIterations_ = 5;
-    SLESolverConfigRefine.threshold_ = -1.0;
-    SLESolverConfigRefine.type_ = sg::solver::CG;
-
-    // Set solver for final step
-    SLESolverConfigFinal.eps_ = 0;
-    SLESolverConfigFinal.maxIterations_ = 20;
-    SLESolverConfigFinal.threshold_ = -1.0;
-    SLESolverConfigFinal.type_ = sg::solver::CG;
-
-    double lambda = 0.000001;
-
-    SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig);
-
-    SGPP::datadriven::StaticParameterTuner staticParameterTuner;
-
-    staticParameterTuner.addFixedParameter("OCL_MANAGER_VERBOSE", "false");
-    staticParameterTuner.addFixedParameter("VERBOSE", "false");
-    staticParameterTuner.addFixedParameter("PLATFORM", "NVIDIA CUDA");
-    staticParameterTuner.addFixedParameter("SELECT_SPECIFIC_DEVICE", "DISABLED");
-    staticParameterTuner.addFixedParameter("MAX_DEVICES", "1");
-    staticParameterTuner.addFixedParameter("INTERNAL_PRECISION", "double");
-
-    staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
-    staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register"}); //"array",
-    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"}); //"8", "16"
-
-    SGPP::base::OCLConfigurationParameters bestParameters = staticParameterTuner.tuneParameters(scenario);
-
-    std::vector<std::string> keys = bestParameters.getKeys();
-    std::cout << "--------------------------------------" << std::endl;
-    std::cout << "best parameters:" << std::endl;
-    for (std::string key : keys) {
-        if (key.compare(0, 7, "KERNEL_", 0, 7) == 0) {
-            std::cout << "key: " << key << " value: " << bestParameters.get(key) << std::endl;
-        }
+    if (variables_map.count("help")) {
+        std::cout << description << std::endl;
+        return 0;
     }
 
+    //check whether all files exist
+    std::ifstream scenarioFile(scenarioFileName);
+    if (!scenarioFile.good()) {
+        std::cout << "scenario file not found" << std::endl;
+        return 1;
+    }
+    scenarioFile.close();
+    std::ifstream parameterConfigurationFile(parameterConfigurationFileName);
+    if (!parameterConfigurationFile.good()) {
+        std::cout << "scenario file not found" << std::endl;
+        return 1;
+    }
+    parameterConfigurationFile.close();
+
+    SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
+
+    SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameterConfigurationFileName, true, true);
+
+    for (std::string device : devices) {
+        SGPP::base::OCLConfigurationParameters bestParameters = staticParameterTuner.tuneParameters(device, scenario);
+        std::string uniqueName = staticParameterTuner.getUniqueName();
+        staticParameterTuner.writeStatisticsToFile(uniqueName + ".csv");
+        bestParameters.writeToFile("optimal_" + uniqueName + ".cfg");
+    }
+*/
     return 0;
 }
 #else
 int main(int argc, char **argv) {
-  std::cout << "no OpenCL support" << std::endl;
+    std::cout << "no OpenCL support" << std::endl;
 }
 #endif
 

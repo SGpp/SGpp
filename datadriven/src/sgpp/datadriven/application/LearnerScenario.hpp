@@ -19,7 +19,6 @@ private:
     bool isInitialized;
 
     //variables for the scenario
-//    size_t level;SGPP::base::GridType gridType;
     double lambda;
     std::string datasetFileName;
     sg::base::RegularGridConfiguration gridConfig;
@@ -28,54 +27,31 @@ private:
     sg::base::AdpativityConfiguration adaptConfig;
 public:
 
-    LearnerScenario() :
-            isInitialized(false),
-            lambda(0.0),
-//        level(0), gridType(SGPP::base::Linear),
-            datasetFileName("") {
-    }
+    LearnerScenario();
 
-    LearnerScenario(
-//            size_t level,
-//    SGPP::base::GridType gridType,
-    std::string datasetFileName, double lambda, SGPP::base::RegularGridConfiguration gridConfig,
+    LearnerScenario(std::string scenarioFileName);
+
+    LearnerScenario(std::string datasetFileName, double lambda, SGPP::base::RegularGridConfiguration gridConfig,
     SGPP::solver::SLESolverConfiguration SLESolverConfigRefine,
-    SGPP::solver::SLESolverConfiguration SLESolverConfigFinal, SGPP::base::AdpativityConfiguration adaptConfig) :
-            isInitialized(true), lambda(lambda),
-//            level(level), gridType(gridType),
-            datasetFileName(datasetFileName), gridConfig(
-                    gridConfig), solverConfigRefine(SLESolverConfigRefine), solverConfigFinal(
-                    SLESolverConfigFinal), adaptConfig(adaptConfig) {
+    SGPP::solver::SLESolverConfiguration SLESolverConfigFinal, SGPP::base::AdpativityConfiguration adaptConfig);
 
-    }
+    std::string getDatasetFileName();
 
-//    size_t getLevel() {
-//        return this->gridConfig.level_;
-//    }
+    double getLambda();
 
-    std::string getDatasetFileName() {
-        return this->datasetFileName;
-    }
+    sg::base::RegularGridConfiguration getGridConfig();
 
-    double getLambda() {
-        return this->lambda;
-    }
+    sg::solver::SLESolverConfiguration getSolverConfigurationRefine();
+    sg::solver::SLESolverConfiguration getSolverConfigurationFinal();
 
-    sg::base::RegularGridConfiguration getGridConfig() {
-        return gridConfig;
-    }
+    sg::base::AdpativityConfiguration getAdaptivityConfiguration();
 
-    sg::solver::SLESolverConfiguration getSolverConfigurationRefine() {
-        return solverConfigRefine;
-    }
+    void writeToFile(std::string fileName);
 
-    sg::solver::SLESolverConfiguration getSolverConfigurationFinal() {
-        return solverConfigFinal;
-    }
+    void readFromFile(std::string fileName);
 
-    sg::base::AdpativityConfiguration getAdaptivityConfiguration() {
-        return adaptConfig;
-    }
+private:
+    template<class T> T fromString(const std::string& s);
 
 };
 

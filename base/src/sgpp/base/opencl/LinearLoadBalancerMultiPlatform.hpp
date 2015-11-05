@@ -11,7 +11,7 @@
 
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLManagerMultiPlatform.hpp"
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 
 namespace SGPP {
 namespace base {
