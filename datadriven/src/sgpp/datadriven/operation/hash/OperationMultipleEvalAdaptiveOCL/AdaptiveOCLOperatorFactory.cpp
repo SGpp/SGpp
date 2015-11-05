@@ -8,7 +8,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include "OperationMultiEvalAdaptiveOCL.hpp"
 
 namespace SGPP {

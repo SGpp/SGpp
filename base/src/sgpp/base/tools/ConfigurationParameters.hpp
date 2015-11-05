@@ -47,6 +47,10 @@ public:
 
     std::vector<std::string> getKeys();
 
+    void writeToFile(std::string fileName);
+
+    void clear();
+
 private:
     std::vector<std::string> split(const std::string& s, char delim);
 };

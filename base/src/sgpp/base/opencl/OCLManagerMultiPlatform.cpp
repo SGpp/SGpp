@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLManagerMultiPlatform.hpp"
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 
 #include <iostream>
 #include <sstream>

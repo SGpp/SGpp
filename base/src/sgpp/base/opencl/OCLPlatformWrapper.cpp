@@ -1,4 +1,4 @@
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLPlatformWrapper.hpp"
+#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
 
 #include <sgpp/globaldef.hpp>
 

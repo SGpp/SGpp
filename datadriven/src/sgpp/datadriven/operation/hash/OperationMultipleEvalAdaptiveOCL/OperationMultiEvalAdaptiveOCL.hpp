@@ -12,8 +12,8 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
-#include "../../../opencl/OCLConfigurationParameters.hpp"
-#include "../../../opencl/OCLManager.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
 #include "AdaptiveOCLKernelImpl.hpp"
 
 namespace SGPP {

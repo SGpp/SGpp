@@ -10,7 +10,7 @@
 #include <fstream>
 
 #include <sgpp/base/exception/operation_exception.hpp>
-#include "../../../opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 namespace SGPP {
 namespace datadriven {

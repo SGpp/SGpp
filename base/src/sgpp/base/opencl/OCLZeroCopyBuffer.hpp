@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "../../../../../datadriven/src/sgpp/datadriven/opencl/OCLManager.hpp"
+#include <sgpp/base/opencl/OCLManager.hpp>
 
 namespace SGPP
 {

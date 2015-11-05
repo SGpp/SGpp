@@ -28,7 +28,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
-#include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 
 #define OUT_FILENAME "results.csv"

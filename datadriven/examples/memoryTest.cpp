@@ -12,14 +12,14 @@
 #include <thread>
 #include <chrono>
 
-#include <sgpp/datadriven/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/datadriven/opencl/OCLClonedBufferMultiPlatform.hpp>
-#include <sgpp/datadriven/opencl/OCLStretchedBufferMultiPlatform.hpp>
-#include <sgpp/datadriven/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
-#include <sgpp/datadriven/opencl/OCLManager.hpp>
-#include <sgpp/datadriven/opencl/OCLClonedBuffer.hpp>
-#include <sgpp/datadriven/opencl/OCLStretchedBuffer.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 
 using namespace SGPP::base;
 
