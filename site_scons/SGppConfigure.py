@@ -18,6 +18,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })    
+    
+    # workaround for intel compiler issues
+    config.env.AppendUnique(CPPPATH="/usr/include")
 
     # compile for intel mic
     #     config.env.AppendUnique(CPPFLAGS="-mmic")
