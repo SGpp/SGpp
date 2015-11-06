@@ -28,17 +28,17 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.exit(1) #TODO: exist undefined, fix
     config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
-    if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS'] or env['TARGETCPU'] == "MIC":
-      print "architecture set from outside"
-    else:
-      if not env['SSE3_FALLBACK']:
-          # check avx support
-          if not config.CheckFlag("-mavx"):
-              sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
-              sys.exit(1)
-          config.env.AppendUnique(CPPFLAGS="-mavx")
-      else:
-          config.env.AppendUnique(CPPFLAGS="-msse3")
+#    if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS'] or env['TARGETCPU'] == "MIC":
+#      print "architecture set from outside"
+#    else:
+#      if not env['SSE3_FALLBACK']:
+#          # check avx support
+#          if not config.CheckFlag("-mavx"):
+#              sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
+#              sys.exit(1)
+#          config.env.AppendUnique(CPPFLAGS="-mavx")
+#      else:
+#          config.env.AppendUnique(CPPFLAGS="-msse3")
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
@@ -167,11 +167,11 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
     # TODO check
     if env['OPT'] == True:
-       env.Append(CPPFLAGS=['-O3', "-g"])
+       env.Append(CPPFLAGS=['-O3'])
     else:
        env.Append(CPPFLAGS=['-g']) #, '-O0'
 
-    if env['TARGETCPU'] == 'default':
+    if env['COMPILER'].upper() == 'GNU':
         print "Using default gcc " + commands.getoutput(env['CXX'] + ' -dumpversion')
 
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
@@ -198,11 +198,28 @@ Please install the corresponding package, e.g. using command on Ubuntu
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
-
-        if env.has_key('MARCH'):
-            env.Append(CPPFLAGS=('-march=' + env['MARCH']))
-
-    elif env['TARGETCPU'] == 'ICC':
+        
+        if env['ARCH'].upper() == 'SSE3':
+            config.env.AppendUnique(CPPFLAGS="-msse3")
+        elif env['ARCH'].upper() == 'SSE42':
+            config.env.AppendUnique(CPPFLAGS="-msse4.2")
+        elif env['ARCH'].upper() == 'AVX':
+            config.env.AppendUnique(CPPFLAGS="-mavx")
+        elif env['ARCH'].upper() == 'FMA4':
+            config.env.AppendUnique(CPPFLAGS="-mavx")
+            config.env.AppendUnique(CPPFLAGS="-mfma4")
+        elif env['ARCH'].upper() == 'AVX2':
+            config.env.AppendUnique(CPPFLAGS="-mavx2")
+            config.env.AppendUnique(CPPFLAGS="-mfma")
+        elif env['ARCH'].upper() == 'AVX512':
+            config.env.AppendUnique(CPPFLAGS="-mavx512f")
+            config.env.AppendUnique(CPPFLAGS="-mavx512cd")
+            config.env.AppendUnique(CPPFLAGS="-mfma")
+        else:
+            print "You must specify a valid ARCH value for gnu."
+            print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
+            sys.exit(1)            
+    elif env['COMPILER'].upper() == 'INTEL':
         print "Using icc"
         env.Append(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
                                '-fno-strict-aliasing',
@@ -215,27 +232,30 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['CXX'] = ('icpc')
         env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp'])
-        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
-    elif env['TARGETCPU'] == 'MIC':
-        print "Using MIC/icc"
-        env.Append(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
-                               '-fno-strict-aliasing',
-                               '-ip', '-ipo', '-funroll-loops',
-                               '-ansi-alias', '-fp-speculation=safe',
-                               '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
 
-        env['CC'] = ('icc')
-        env['LINK'] = ('icpc')
-        env['CXX'] = ('icpc')
-        env.Append(CPPFLAGS=['-openmp'])
-        env.Append(LINKFLAGS=['-openmp'])
-        # and the most important switch
-        env.Append(CPPFLAGS=['-mmic'])
-        env.Append(LINKFLAGS=['-mmic'])
-        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])        
+        if env['ARCH'].upper() == 'SSE3':
+            config.env.AppendUnique(CPPFLAGS="-msse3")
+        elif env['ARCH'].upper() == 'SSE42':
+            config.env.AppendUnique(CPPFLAGS="-msse4.2")
+        elif env['ARCH'].upper() == 'AVX':
+            config.env.AppendUnique(CPPFLAGS="-mavx")
+        elif env['ARCH'].upper() == 'AVX2':
+            config.env.AppendUnique(CPPFLAGS="-xCORE-AVX2")
+            config.env.AppendUnique(CPPFLAGS="-fma")
+        elif env['ARCH'].upper() == 'AVX512':
+            config.env.AppendUnique(CPPFLAGS="-xCOMMON-AVX512")
+        elif env['ARCH'].upper() == 'MIC':
+            config.env.AppendUnique(CPPFLAGS="-mmic")
+            config.env.Append(LINKFLAGS=['-mmic'])
+        else:
+            print "You must specify a valid ARCH value for intel."
+            print "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic"
+            sys.exit(1)  
+
+        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])  
     else:
-        print "You must specify a valid value for TARGETCPU."
-        print "Available configurations are: ICC"
+        print "You must specify a valid value for Compiler."
+        print "Available configurations are: gnu and intel"
         sys.exit(1)
 
     # special treatment for different platforms
