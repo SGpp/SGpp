@@ -54,8 +54,8 @@ vars = Variables("custom.py")
 vars.Add('CPPFLAGS', 'Set additional Flags, they are compiler-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
 vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
 # define the target
-vars.Add('MARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', None)
-vars.Add('TARGETCPU', "Sets the processor you are compiling for. 'default' means using gcc with standard configuration. Also available are: 'ICC', here Intel Compiler in version 11 or higher must be used", 'default')
+vars.Add('ARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', 'avx')
+vars.Add('COMPILER', "Sets the processor you are compiling for. 'gnu' means using gcc with standard configuration. Also available are: 'intel', here Intel Compiler in version 11 or higher must be used", 'gnu')
 vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
@@ -65,7 +65,6 @@ vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languag
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
 
-vars.Add(BoolVariable('SSE3_FALLBACK', 'Tries to build as much as possible with SSE3 instead of AVX (intrinsics based functions won\'t work)', False))
 vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
