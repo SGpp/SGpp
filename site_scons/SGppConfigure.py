@@ -18,12 +18,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })    
-    
-    # workaround for intel compiler issues
-    config.env.AppendUnique(CPPPATH="/usr/include")
-
-    # compile for intel mic
-    #     config.env.AppendUnique(CPPFLAGS="-mmic")
+    # boost library
+    # TODO add check and error
+    config.env.AppendUnique(CPPPATH=config.env['BOOST_INCLUDE_PATH'])
 
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
