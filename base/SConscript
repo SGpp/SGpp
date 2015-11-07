@@ -47,6 +47,14 @@ lib = env.SharedLibrary(target="sgpp%s" % moduleName,
                         LIBS=libs)
 libInstall = env.Install(BUILD_DIR, lib)
 
+if env["ARCH"] != "MIC":
+    for fileName in os.listdir("examples"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            example = env.Program(source=os.path.join("examples", fileName),
+                                  LIBS=libs + ["sgpp%s" % moduleName])
+            env.Requires(example, libInstall)
+            exampleTargetList.append(example)
+
 # build unit tests
 if env['COMPILE_BOOST_TESTS'] == "1":
     Import('boostTestTargetList')
