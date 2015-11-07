@@ -37,7 +37,7 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 	size_t sourceSize = source.getSize();
 	size_t dims = dataset->getNrows();
 
-#if defined(__SSE3__) && !defined(__AVX__)
+#if defined(__SSE3__) && !defined(__AVX__) && !defined(__AVX512F__)
 
 	for (size_t k = start_index_grid; k < end_index_grid;
 			k += std::min<size_t>(getChunkGridPoints(), (end_index_grid - k))) {
@@ -139,7 +139,7 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 }
 #endif
 
-#if defined(__SSE3__) && defined(__AVX__)
+#if defined(__SSE3__) && defined(__AVX__) && !defined(__AVX512F__)
 
 	for (size_t k = start_index_grid; k < end_index_grid;
 			k += std::min<size_t>(getChunkGridPoints(), (end_index_grid - k))) {
@@ -342,7 +342,16 @@ for (size_t i = start_index_data; i < end_index_data; i +=
 #endif
 */
 
-#ifdef __MIC__
+#if defined(__MIC__) || defined(__AVX512F__)
+#if defined(__MIC__)
+#define _mm512_broadcast_sd(A) _mm512_extload_pd(A, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE)
+#define _mm512_max_pd(A, B) _mm512_gmax_pd(A, B)
+#define _mm512_set1_epi64(A) _mm512_set_1to8_epi64(A)
+#define _mm512_set1_pd(A) _mm512_set_1to8_pd(A)
+#endif
+#if defined(__AVX512F__)
+#define _mm512_broadcast_sd(A) _mm512_broadcast_f64x4(_mm256_broadcast_sd(A))
+#endif
 
 //#define STR_HELPER(x) #x
 //#define STR(x) STR_HELPER(x)
@@ -410,8 +419,8 @@ for (size_t i = start_index_data; i < end_index_data; i +=
                 __m512d eval_11 = _mm512_load_pd(&(ptrData[(d * sourceSize) + i + 88]));
 #endif
 
-                __m512d level = _mm512_extload_pd(&(ptrLevel[(j * dims) + d]),  _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-                __m512d index = _mm512_extload_pd(&(ptrIndex[(j * dims) + d]),  _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+                __m512d level = _mm512_broadcast_sd(&(ptrLevel[(j * dims) + d]));
+                __m512d index = _mm512_broadcast_sd(&(ptrIndex[(j * dims) + d]));
 
                 eval_0 = _mm512_fmsub_pd(eval_0, level, index);
                 eval_1 = _mm512_fmsub_pd(eval_1, level, index);
@@ -438,33 +447,33 @@ for (size_t i = start_index_data; i < end_index_data; i +=
                 eval_11 = _mm512_fmsub_pd(eval_11, level, index);
 #endif
 
-                __m512d one = _mm512_set_1to8_pd(1.0);
-                __m512d zero = _mm512_set_1to8_pd(0.0);
-                __m512i abs2MaskLRBni = _mm512_set_1to8_epi64(0x7FFFFFFFFFFFFFFF);
+                __m512d one = _mm512_set1_pd(1.0);
+                __m512d zero = _mm512_setzero_pd();
+                __m512i abs2Mask = _mm512_set1_epi64(0x7FFFFFFFFFFFFFFF);
 
-                eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_0)));
-                eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_1)));
-                eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_2)));
+                eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_0)));
+                eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_1)));
+                eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_2)));
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
-                eval_3 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_3)));
+                eval_3 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_3)));
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
-                eval_4 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_4)));
-                eval_5 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_5)));
+                eval_4 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_4)));
+                eval_5 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_5)));
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
-                eval_6 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_6)));
-                eval_7 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_7)));
+                eval_6 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_6)));
+                eval_7 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_7)));
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
-                eval_8 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_8)));
+                eval_8 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_8)));
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
-                eval_9 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_9)));
+                eval_9 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_9)));
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
-                eval_10 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_10)));
-                eval_11 = _mm512_castsi512_pd(_mm512_and_epi64( abs2MaskLRBni, _mm512_castpd_si512(eval_11)));
+                eval_10 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_10)));
+                eval_11 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_11)));
 #endif
 
                 eval_0 = _mm512_sub_pd(one, eval_0);
@@ -491,29 +500,29 @@ for (size_t i = start_index_data; i < end_index_data; i +=
                 eval_10 = _mm512_sub_pd(one, eval_10);
                 eval_11 = _mm512_sub_pd(one, eval_11);
 #endif
-                eval_0 = _mm512_gmax_pd(zero, eval_0);
-                eval_1 = _mm512_gmax_pd(zero, eval_1);
-                eval_2 = _mm512_gmax_pd(zero, eval_2);
+                eval_0 = _mm512_max_pd(zero, eval_0);
+                eval_1 = _mm512_max_pd(zero, eval_1);
+                eval_2 = _mm512_max_pd(zero, eval_2);
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
-                eval_3 = _mm512_gmax_pd(zero, eval_3);
+                eval_3 = _mm512_max_pd(zero, eval_3);
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
-                eval_4 = _mm512_gmax_pd(zero, eval_4);
-                eval_5 = _mm512_gmax_pd(zero, eval_5);
+                eval_4 = _mm512_max_pd(zero, eval_4);
+                eval_5 = _mm512_max_pd(zero, eval_5);
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
-                eval_6 = _mm512_gmax_pd(zero, eval_6);
-                eval_7 = _mm512_gmax_pd(zero, eval_7);
+                eval_6 = _mm512_max_pd(zero, eval_6);
+                eval_7 = _mm512_max_pd(zero, eval_7);
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
-                eval_8 = _mm512_gmax_pd(zero, eval_8);
+                eval_8 = _mm512_max_pd(zero, eval_8);
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
-                eval_9 = _mm512_gmax_pd(zero, eval_9);
+                eval_9 = _mm512_max_pd(zero, eval_9);
 #endif
 #if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
-                eval_10 = _mm512_gmax_pd(zero, eval_10);
-                eval_11 = _mm512_gmax_pd(zero, eval_11);
+                eval_10 = _mm512_max_pd(zero, eval_10);
+                eval_11 = _mm512_max_pd(zero, eval_11);
 #endif
                 support_0 = _mm512_mul_pd(support_0, eval_0);
                 support_1 = _mm512_mul_pd(support_1, eval_1);
@@ -578,7 +587,7 @@ for (size_t i = start_index_data; i < end_index_data; i +=
 	}
 #endif
 
-#if (!defined(__SSE3__) && !defined(__AVX__)) && !defined(__MIC__)
+#if (!defined(__SSE3__) && !defined(__AVX__)) && !defined(__MIC__) && !defined(__AVX512F__)
 #warning "warning: using fallback implementation for OperationMultiEvalStreaming multTranspose kernel"
 
 for (size_t k = start_index_grid; k < end_index_grid;

@@ -244,6 +244,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
             config.env.AppendUnique(CPPFLAGS="-fma")
         elif env['ARCH'].upper() == 'AVX512':
             config.env.AppendUnique(CPPFLAGS="-xCOMMON-AVX512")
+            config.env.AppendUnique(CPPFLAGS="-fma")
         elif env['ARCH'].upper() == 'MIC':
             config.env.AppendUnique(CPPFLAGS="-mmic")
             config.env.Append(LINKFLAGS=['-mmic'])
