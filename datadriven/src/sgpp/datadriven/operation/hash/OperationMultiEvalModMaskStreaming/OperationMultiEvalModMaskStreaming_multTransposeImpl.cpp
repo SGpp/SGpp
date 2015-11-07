@@ -40,7 +40,7 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 	size_t sourceSize = source.getSize();
 	size_t dims = dataset->getNrows();
 
-#if defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__)
+#if defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
 
 	for (size_t k = start_index_grid; k < end_index_grid;
 			k += std::min<size_t>((size_t) getChunkGridPoints(),
@@ -133,7 +133,7 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 		}
 	}
 #endif
-#if defined(__SSE3__) && defined(__AVX__) && !defined(__MIC__)
+#if defined(__SSE3__) && defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
 
 	for (size_t k = start_index_grid; k < end_index_grid;
 			k += std::min<size_t>((size_t) getChunkGridPoints(),
@@ -258,7 +258,16 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 	}
 #endif
 
-#ifdef __MIC__
+#if defined(__MIC__) || defined(__AVX512F__)
+#if defined(__MIC__)
+#define _mm512_broadcast_sd(A) _mm512_extload_pd(A, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE)
+#define _mm512_max_pd(A, B) _mm512_gmax_pd(A, B)
+#define _mm512_set1_epi64(A) _mm512_set_1to8_epi64(A)
+#define _mm512_set1_pd(A) _mm512_set_1to8_pd(A)
+#endif
+#if defined(__AVX512F__)
+#define _mm512_broadcast_sd(A) _mm512_broadcast_f64x4(_mm256_broadcast_sd(A))
+#endif
 
           for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
             for (size_t j = start_index_grid; j < end_index_grid; j++) {
@@ -313,8 +322,8 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
                 __m512d eval_11 = _mm512_load_pd(&(ptrData[(d * sourceSize) + i + 88]));
 #endif
 
-                __m512d level = _mm512_extload_pd(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-                __m512d index = _mm512_extload_pd(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+                __m512d level = _mm512_broadcast_sd(&(ptrLevel[(j * dims) + d]));
+                __m512d index = _mm512_broadcast_sd(&(ptrIndex[(j * dims) + d]));
 
                 eval_0 = _mm512_fmsub_pd(eval_0, level, index);
                 eval_1 = _mm512_fmsub_pd(eval_1, level, index);
@@ -341,8 +350,8 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
                 eval_11 = _mm512_fmsub_pd(eval_11, level, index);
 #endif
 
-                __m512d mask = _mm512_extload_pd(&(ptrMask[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
-                __m512d offset = _mm512_extload_pd(&(ptrOffset[(j * dims) + d]), _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
+                __m512d mask = _mm512_broadcast_sd(&(ptrMask[(j * dims) + d]));
+                __m512d offset = _mm512_broadcast_sd(&(ptrOffset[(j * dims) + d]));
 
                 eval_0 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask), _mm512_castpd_si512(eval_0)));
                 eval_1 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask), _mm512_castpd_si512(eval_1)));
@@ -369,7 +378,7 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
                 eval_11 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask), _mm512_castpd_si512(eval_11)));
 #endif
 
-                __m512d zero = _mm512_set_1to8_pd(0.0);
+                __m512d zero = _mm512_setzero_pd();
 
                 eval_0 = _mm512_add_pd(offset, eval_0);
                 eval_1 = _mm512_add_pd(offset, eval_1);
@@ -396,29 +405,29 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
                 eval_11 = _mm512_add_pd(offset, eval_11);
 #endif
 
-                eval_0 = _mm512_gmax_pd(zero, eval_0);
-                eval_1 = _mm512_gmax_pd(zero, eval_1);
-                eval_2 = _mm512_gmax_pd(zero, eval_2);
+                eval_0 = _mm512_max_pd(zero, eval_0);
+                eval_1 = _mm512_max_pd(zero, eval_1);
+                eval_2 = _mm512_max_pd(zero, eval_2);
 #if  ( STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH >  24 )
-                eval_3 = _mm512_gmax_pd(zero, eval_3);
+                eval_3 = _mm512_max_pd(zero, eval_3);
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH >  32 )
-                eval_4 = _mm512_gmax_pd(zero, eval_4);
-                eval_5 = _mm512_gmax_pd(zero, eval_5);
+                eval_4 = _mm512_max_pd(zero, eval_4);
+                eval_5 = _mm512_max_pd(zero, eval_5);
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH >  48 )
-                eval_6 = _mm512_gmax_pd(zero, eval_6);
-                eval_7 = _mm512_gmax_pd(zero, eval_7);
+                eval_6 = _mm512_max_pd(zero, eval_6);
+                eval_7 = _mm512_max_pd(zero, eval_7);
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH >  64 )
-                eval_8 = _mm512_gmax_pd(zero, eval_8);
+                eval_8 = _mm512_max_pd(zero, eval_8);
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH >  72 )
-                eval_9 = _mm512_gmax_pd(zero, eval_9);
+                eval_9 = _mm512_max_pd(zero, eval_9);
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH >  80 )
-                eval_10 = _mm512_gmax_pd(zero, eval_10);
-                eval_11 = _mm512_gmax_pd(zero, eval_11);
+                eval_10 = _mm512_max_pd(zero, eval_10);
+                eval_11 = _mm512_max_pd(zero, eval_11);
 #endif
 
                 support_0 = _mm512_mul_pd(support_0, eval_0);
@@ -485,7 +494,7 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 
 #endif
 
-#if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__)
+#if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
 #warning "warning: using fallback implementation for OperationMultiEvalModMaskStreaming multTranspose kernel"
 
 	for (size_t k = start_index_grid; k < end_index_grid;
