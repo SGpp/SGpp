@@ -266,9 +266,8 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 #define _mm512_set1_pd(A) _mm512_set_1to8_pd(A)
 #endif
 #if defined(__AVX512F__)
-#define _mm512_broadcast_sd(A) _mm512_broadcast_f64x4(_mm256_broadcast_sd(A))
+#define _mm512_broadcast_sd(A) _mm512_broadcastsd_pd(_mm_load_sd(A))
 #endif
-
           for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
             for (size_t j = start_index_grid; j < end_index_grid; j++) {
               __m512d support_0 = _mm512_load_pd(&(ptrSource[i + 0]));

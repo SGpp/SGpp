@@ -264,84 +264,6 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 }
 #endif
 
-/*
-#ifdef __MIC__
-
-#define STREAMING_LINEAR_MIC_UNROLLING_WIDTH 24
-
-for (size_t i = start_index_data; i < end_index_data; i +=
-		getChunkDataPoints()) {
-	for (size_t j = start_index_grid; j < end_index_grid; j++) {
-		__m512d support_0 = _mm512_load_pd(&(ptrSource[i + 0]));
-		__m512d support_1 = _mm512_load_pd(&(ptrSource[i + 8]));
-		__m512d support_2 = _mm512_load_pd(&(ptrSource[i + 16]));
-
-		_mm_prefetch((const char* ) &(ptrLevel[((j + 1) * dims)]),
-				_MM_HINT_T0);
-		_mm_prefetch((const char* ) &(ptrIndex[((j + 1) * dims)]),
-				_MM_HINT_T0);
-		// Prefetch exclusive -> non sync is needed
-		_mm_prefetch((const char* ) &(ptrResult[j]), _MM_HINT_ET0);
-
-		//basis function evaluation
-		for (size_t d = 0; d < dims; d++) {
-			__m512d eval_0 = _mm512_load_pd(
-					&(ptrData[(d * sourceSize) + i + 0]));
-			__m512d eval_1 = _mm512_load_pd(
-					&(ptrData[(d * sourceSize) + i + 8]));
-			__m512d eval_2 = _mm512_load_pd(
-					&(ptrData[(d * sourceSize) + i + 16]));
-
-			__m512d level = _mm512_extload_pd(
-					&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PD_NONE,
-					_MM_BROADCAST_1X8, _MM_HINT_NONE);
-			__m512d index = _mm512_extload_pd(
-					&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PD_NONE,
-					_MM_BROADCAST_1X8, _MM_HINT_NONE);
-
-			eval_0 = _mm512_fmsub_pd(eval_0, level, index);
-			eval_1 = _mm512_fmsub_pd(eval_1, level, index);
-			eval_2 = _mm512_fmsub_pd(eval_2, level, index);
-
-			__m512d one = _mm512_set_1to8_pd(1.0);
-			__m512d zero = _mm512_set_1to8_pd(0.0);
-			__m512i abs2MaskLRBni = _mm512_set_1to8_epi64(
-					0x7FFFFFFFFFFFFFFF);
-
-			eval_0 = _mm512_castsi512_pd(
-					_mm512_and_epi64(abs2MaskLRBni,
-							_mm512_castpd_si512(eval_0)));
-			eval_1 = _mm512_castsi512_pd(
-					_mm512_and_epi64(abs2MaskLRBni,
-							_mm512_castpd_si512(eval_1)));
-			eval_2 = _mm512_castsi512_pd(
-					_mm512_and_epi64(abs2MaskLRBni,
-							_mm512_castpd_si512(eval_2)));
-
-			eval_0 = _mm512_sub_pd(one, eval_0);
-			eval_1 = _mm512_sub_pd(one, eval_1);
-			eval_2 = _mm512_sub_pd(one, eval_2);
-
-			eval_0 = _mm512_gmax_pd(zero, eval_0);
-			eval_1 = _mm512_gmax_pd(zero, eval_1);
-			eval_2 = _mm512_gmax_pd(zero, eval_2);
-
-			support_0 = _mm512_mul_pd(support_0, eval_0);
-			support_1 = _mm512_mul_pd(support_1, eval_1);
-			support_2 = _mm512_mul_pd(support_2, eval_2);
-
-		}
-
-		support_0 = _mm512_add_pd(support_0, support_1);
-		support_0 = _mm512_add_pd(support_0, support_2);
-
-		ptrResult[j] += _mm512_reduce_add_pd(support_0);
-	}
-}
-}
-#endif
-*/
-
 #if defined(__MIC__) || defined(__AVX512F__)
 #if defined(__MIC__)
 #define _mm512_broadcast_sd(A) _mm512_extload_pd(A, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE)
@@ -350,19 +272,13 @@ for (size_t i = start_index_data; i < end_index_data; i +=
 #define _mm512_set1_pd(A) _mm512_set_1to8_pd(A)
 #endif
 #if defined(__AVX512F__)
-#define _mm512_broadcast_sd(A) _mm512_broadcast_f64x4(_mm256_broadcast_sd(A))
+#define _mm512_broadcast_sd(A) _mm512_broadcastsd_pd(_mm_load_sd(A))
 #endif
-
 //#define STR_HELPER(x) #x
 //#define STR(x) STR_HELPER(x)
 //#pragma message "mult transpose configured with unroll factor " STR(STREAMING_LINEAR_MIC_UNROLLING_WIDTH)
-
-for (size_t i = start_index_data; i < end_index_data; i +=
-		getChunkDataPoints()) {
-	for (size_t j = start_index_grid; j < end_index_grid; j++) {
-
-//          for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
-//            for (size_t j = start_index_grid; j < end_index_grid; j++) {
+          for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
+            for (size_t j = start_index_grid; j < end_index_grid; j++) {
               __m512d support_0 = _mm512_load_pd(&(ptrSource[i + 0]));
               __m512d support_1 = _mm512_load_pd(&(ptrSource[i + 8]));
               __m512d support_2 = _mm512_load_pd(&(ptrSource[i + 16]));
