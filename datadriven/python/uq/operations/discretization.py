@@ -135,12 +135,6 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
     # create grid
     dim = len(bounds)
 
-    # check border
-#     d = 0
-#     while not hasBorder and d < dim:
-#         hasBorder = abs(g(bounds[d][0])) > 1e-15 or \
-#            abs(g(bounds[d][0])) > 1e-15
-
     # create adequate grid
     if hasBorder:
         grid = Grid.createLinearBoundaryGrid(dim)

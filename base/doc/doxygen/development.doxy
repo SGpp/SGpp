@@ -11,6 +11,7 @@ for @e all other developers.</div>
 @section development__overview Overview
 - @ref development__unittests (this page)
 - @ref development__doxygen (this page)
+- @ref development__windows (this page)
 - @subpage styleguide
 
 
@@ -47,6 +48,28 @@ documentation with doxygen!
 @sa Documenting the code http://www.stack.nl/~dimitri/doxygen/docblocks.html
 @sa Special Commands http://www.stack.nl/~dimitri/doxygen/commands.html
 
+
+<!-- ############################################################# -->
+@section development__windows Windows compatibility issues
+
+- \b externals: external variables have been used to specify singletons
+  in some SG++ packages (base, optimization). To make the declaration
+  and platform independent one needs to add a preprocessor directive,
+  which distinguishes if one tries to build a static or a dynamic
+  library. In <tt>ClenshawCurtisTable.hpp</tt> this looks like
+  @verbatim
+#if defined _WIN32 && !defined _USE_STATICLIB
+    extern __declspec(dllimport) ClenshawCurtisTable clenshawCurtisTable;
+#else
+    extern ClenshawCurtisTable clenshawCurtisTable;
+#endif
+  @endverbatim
+
+-\b cmath: the cplusplus way to use constants like <tt>M_PI</tt> is to include
+  the <tt>cmath</tt> header. Well, this does not work on windows. To
+  access them you need to include the old <tt>math.h</tt> header and
+  define the additional symbol <tt>_D_MATH_DEFINES</tt>. The latter
+  part is done by scons automatically.
 
 <!-- ============================================================= -->
 @subsection development__doxygen__howto How to run, use and customize

@@ -125,7 +125,7 @@ printSurfaceFile = %s
         gnuplotConfig = os.path.join(pathResults,
                                      "sgde_%i_%i_l%i.gnuplot" % (iteration, n, level))
         # generate the grid
-        grid = Grid.createLinearGrid(dim)
+        grid = Grid.createLinearBoundaryGrid(dim)
         grid.createGridGenerator().regular(level)
 
         if grid.getSize() <= n:
@@ -190,11 +190,11 @@ printSurfaceFile = %s
             copy2(alphaFile, alphaFileNew)
             copy2(sampleFile, sampleFileNew)
             # -----------------------------------------------------------
-            # make it positive and do all over again
-            opPositive = OperationMakePositive(sgdeDist.grid)
-            alg = EstimateDensityAlgorithm(configFile)
-            opPositive.setInterpolationAlgorithm(alg)
-            grid, alpha = opPositive.makePositive(sgdeDist.alpha)
+#             # make it positive and do all over again
+#             opPositive = OperationMakePositive(sgdeDist.grid)
+#             alg = EstimateDensityAlgorithm(configFile)
+#             opPositive.setInterpolationAlgorithm(alg)
+#             grid, alpha = opPositive.makePositive(sgdeDist.alpha)
 
             # scale to unit integrand
             alpha.mult(1. / createOperationQuadrature(grid).doQuadrature(alpha))
@@ -273,6 +273,17 @@ printSurfaceFile = %s
                 copy2(gridFile, gridFileNew)
                 copy2(alphaFile, alphaFileNew)
                 copy2(sampleFile, sampleFileNew)
+
+                gridFileNew = os.path.join(pathResults,
+                                           "samples_%i_%i_positive.grid" % (iteration, n))
+                alphaFileNew = os.path.join(pathResults,
+                                            "samples_%i_%i_positive.alpha.arff" % (iteration, n))
+                fd = open(gridFileNew, "w")
+                fd.write(Grid.serialize(ans.grid))
+                fd.close()
+
+                writeAlphaARFF(alphaFileNew, ans.alpha)
+                # -----------------------------------------------------------
             print ": %s = %g <= %g" % (optimization, measure, bestMeasure)
     print
     # -----------------------------------------------------------

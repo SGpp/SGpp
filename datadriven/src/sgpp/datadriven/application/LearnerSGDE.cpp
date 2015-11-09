@@ -431,5 +431,13 @@ namespace SGPP {
       delete mydata;
     }
 
+    base::Grid* LearnerSGDE::getGrid() {
+      return grid;
+    }
+
+    base::DataVector* LearnerSGDE::getAlpha() {
+      return &alpha;
+    }
+
   } /* namespace datadriven */
 } /* namespace SGPP */

@@ -51,8 +51,8 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 
   multiEvalOp->mult(alpha, result);
 
-  BOOST_MESSAGE(alpha.toString() + "\n");
-  BOOST_MESSAGE(result.toString() + "\n");
+  BOOST_TEST_MESSAGE(alpha.toString() + "\n");
+  BOOST_TEST_MESSAGE(result.toString() + "\n");
 
   DataVector result_ref(numberDataPoints);
   result_ref[0] = 0.0;

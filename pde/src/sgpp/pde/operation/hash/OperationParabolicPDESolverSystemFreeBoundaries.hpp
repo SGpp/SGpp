@@ -6,7 +6,7 @@
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP
 
-#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -28,7 +28,7 @@ namespace SGPP {
      * using an iterative SLE solver, that solving step is integrated in the
      * ODE Solver.
      */
-    class OperationParabolicPDESolverSystemFreeBoundaries : public OperationParabolicPDESolverSystem {
+    class OperationParabolicPDESolverSystemFreeBoundaries : public SGPP::solver::OperationParabolicPDESolverSystem {
       protected:
         /**
          * applies the PDE's mass matrix, on complete grid - with boundaries

@@ -14,7 +14,7 @@
 
 
 namespace SGPP {
-  namespace pde {
+  namespace solver {
 
     /**
      * Abstract definition of a System that is used to solve parabolic partial

@@ -32,7 +32,7 @@ namespace SGPP {
     StepsizeControlH::~StepsizeControlH() {
     }
 
-    void StepsizeControlH::predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+    void StepsizeControlH::predictor(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
                                      float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
       System.setODESolver(_odesolver);
       System.setTimestepSize(tmp_timestepsize);
@@ -51,7 +51,7 @@ namespace SGPP {
       System.abortTimestep();
     }
 
-    void StepsizeControlH::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
+    void StepsizeControlH::corrector(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
       System.setODESolver(_odesolver);
       System.setTimestepSize(tmp_timestepsize / 2.0);
 

@@ -67,7 +67,7 @@ namespace SGPP {
     }
 
     bool IterativeGridGeneratorLinearSurplus::generate() {
-      printer.printStatusBegin("Adaptive grid generation (linear surplus)...");
+      Printer::getInstance().printStatusBegin("Adaptive grid generation (linear surplus)...");
 
       base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
 
@@ -141,9 +141,9 @@ namespace SGPP {
         sle_solver::BiCGStab sleSolver;
 
         // solve system
-        printer.disableStatusPrinting();
+        Printer::getInstance().disableStatusPrinting();
         sleSolver.solve(hierSLE, fXCutoff, coeffs);
-        printer.enableStatusPrinting();
+        Printer::getInstance().enableStatusPrinting();
       }
 
       // iteration counter
@@ -167,7 +167,7 @@ namespace SGPP {
           char str[10];
           snprintf(str, 10, "%.1f%%",
                    static_cast<float_t>(currentN) / static_cast<float_t>(N) * 100.0);
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::string(str) + " (N = " + std::to_string(currentN) + ")");
         }
 
@@ -186,7 +186,7 @@ namespace SGPP {
 
         if (newN == currentN) {
           // size unchanged ==> nothing refined (should not happen)
-          printer.printStatusEnd(
+          Printer::getInstance().printStatusEnd(
             "error: size unchanged in IterativeGridGeneratorLinearSurplus");
           result = false;
           break;
@@ -236,8 +236,8 @@ namespace SGPP {
       fX.resize(currentN);
 
       if (result) {
-        printer.printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ")");
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ")");
+        Printer::getInstance().printStatusEnd();
         return true;
       } else {
         return false;
