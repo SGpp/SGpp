@@ -128,7 +128,7 @@ namespace SGPP {
          * @param lambdaReg regularization parameter
          */
         virtual void train(SGPP::base::Grid& grid, SGPP::base::DataVector& alpha,
-            SGPP::base::DataMatrix& train, float_t lambdaReg);
+                           SGPP::base::DataMatrix& train, float_t lambdaReg);
 
         /**
          * generates a regular grid

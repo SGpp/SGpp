@@ -39,6 +39,7 @@ namespace SGPP {
       if ((ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1) && (w.ws_col > 0)) {
         lineLengthLimit = w.ws_col - 1;
       }
+
 #endif
     }
 

@@ -14,6 +14,7 @@ struct GlobalFixture {
     if (omp_get_max_threads() > MAX_NUM_THREADS) {
       omp_set_num_threads(MAX_NUM_THREADS);
     }
+
 #endif
   }
 };

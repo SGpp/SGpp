@@ -73,9 +73,11 @@ else:
                                 LIBS=moduleDependencies)
 
 for lib_str in moduleDependencies:
-    env.Depends(lib, os.path.join("#", BUILD_DIR.path, "%s%s%s" % (env["LIBPREFIX"],
-                                                                   lib_str,
-                                                                   libsuffix)))
+    if lib_str.startswith("sgpp"):
+        env.Depends(lib, os.path.join("#", BUILD_DIR.path,
+                                      "%s%s%s" % (env["LIBPREFIX"],
+                                                  lib_str,
+                                                  libsuffix)))
 
 libInstall = env.Install(BUILD_DIR, lib)
 

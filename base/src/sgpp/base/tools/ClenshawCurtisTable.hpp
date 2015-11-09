@@ -91,7 +91,7 @@ namespace SGPP {
 #if defined _WIN32 && !defined _USE_STATICLIB
     extern __declspec(dllimport) ClenshawCurtisTable clenshawCurtisTable;
 #else
-    extern ClenshawCurtisTable clenshawCurtisTable; 
+    extern ClenshawCurtisTable clenshawCurtisTable;
 #endif
   }
 }

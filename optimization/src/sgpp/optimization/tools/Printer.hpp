@@ -242,7 +242,7 @@ namespace SGPP {
     /// singleton printer instance
 #if defined _WIN32 && !defined _USE_STATICLIB
     extern __declspec(dllimport) Printer printer;
-#else    
+#else
     extern Printer printer;
 #endif
 
