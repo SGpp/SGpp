@@ -160,6 +160,7 @@ namespace SGPP {
       float_t xi = 0;
 
       std::vector<size_t> dims(ndim);
+
       for (size_t i = 0; i < ndim; i++) {
         dims[i] = i;
       }
@@ -169,6 +170,7 @@ namespace SGPP {
         pointsUniform.getRow(idata, unif);
 
         std::next_permutation(dims.begin(), dims.end());
+
         for (size_t i = 0; i < ndim; i++) {
           size_t idim = dims[i];
           // get samples in current dimension
