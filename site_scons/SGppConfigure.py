@@ -21,6 +21,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # boost library
     # TODO add check and error
     config.env.AppendUnique(CPPPATH=config.env['BOOST_INCLUDE_PATH'])
+    config.env.AppendUnique(LIBPATH=config.env['BOOST_LIBRARY_PATH'])
 
     # check C++11 support
     if not config.CheckFlag("-std=c++11"):
