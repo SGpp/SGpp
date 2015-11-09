@@ -70,12 +70,12 @@ void OperationMultiEvalStreaming::getOpenMPPartitionSegment(size_t start, size_t
 }
 
 size_t OperationMultiEvalStreaming::getChunkGridPoints() {
-	//not used by the MIC-implementation
+    //not used by the MIC-implementation
     return 12;
 }
 size_t OperationMultiEvalStreaming::getChunkDataPoints() {
-#ifdef __MIC__
-	return STREAMING_LINEAR_MIC_UNROLLING_WIDTH;
+#if defined(__MIC__) || defined(__AVX512F__)
+    return STREAMING_LINEAR_MIC_UNROLLING_WIDTH;
 # else
     return 24; // must be divisible by 24
 #endif
