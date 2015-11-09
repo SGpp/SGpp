@@ -300,7 +300,7 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 #endif
 //#define STR_HELPER(x) #x
 //#define STR(x) STR_HELPER(x)
-//#pragma message "mult configured with unroll factor " STR(STREAMING_LINEAR_MIC_UNROLLING_WIDTH)
+//#pragma message "mult configured with unroll factor " STR(STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH)
 	for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
             for (size_t j = start_index_grid; j < end_index_grid; j++) {
 			_mm_prefetch((const char*) & (ptrAlpha[j + 1]), _MM_HINT_T0);
@@ -310,24 +310,24 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 			__m512d support_0 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 			__m512d support_1 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 			__m512d support_2 = _mm512_broadcast_sd(&(ptrAlpha[j]));
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 			__m512d support_3 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 			__m512d support_4 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 			__m512d support_5 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 			__m512d support_6 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 			__m512d support_7 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 			__m512d support_8 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 			__m512d support_9 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 			__m512d support_10 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 			__m512d support_11 = _mm512_broadcast_sd(&(ptrAlpha[j]));
 #endif
@@ -336,24 +336,24 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 				__m512d eval_0 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 0]));
 				__m512d eval_1 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 8]));
 				__m512d eval_2 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 16]));
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 				__m512d eval_3 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 24]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 				__m512d eval_4 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 32]));
 				__m512d eval_5 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 40]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 				__m512d eval_6 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 48]));
 				__m512d eval_7 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 56]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 				__m512d eval_8 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 64]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 				__m512d eval_9 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 72]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 				__m512d eval_10 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 80]));
 				__m512d eval_11 = _mm512_load_pd(&(ptrData[(d * result_size) + i + 88]));
 #endif
@@ -363,24 +363,24 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 				eval_0 = _mm512_fmsub_pd(eval_0, level, index);
 				eval_1 = _mm512_fmsub_pd(eval_1, level, index);
 				eval_2 = _mm512_fmsub_pd(eval_2, level, index);
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 				eval_3 = _mm512_fmsub_pd(eval_3, level, index);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 				eval_4 = _mm512_fmsub_pd(eval_4, level, index);
 				eval_5 = _mm512_fmsub_pd(eval_5, level, index);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 				eval_6 = _mm512_fmsub_pd(eval_6, level, index);
 				eval_7 = _mm512_fmsub_pd(eval_7, level, index);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 				eval_8 = _mm512_fmsub_pd(eval_8, level, index);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 				eval_9 = _mm512_fmsub_pd(eval_9, level, index);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 				eval_10 = _mm512_fmsub_pd(eval_10, level, index);
 				eval_11 = _mm512_fmsub_pd(eval_11, level, index);
 #endif
@@ -388,24 +388,24 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 				eval_0 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_0)));
 				eval_1 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_1)));
 				eval_2 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_2)));
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 				eval_3 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_3)));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 				eval_4 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_4)));
 				eval_5 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_5)));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 				eval_6 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_6)));
 				eval_7 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_7)));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 				eval_8 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_8)));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 				eval_9 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_9)));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 				eval_10 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_10)));
 				eval_11 = _mm512_castsi512_pd(_mm512_and_epi64( abs2Mask, _mm512_castpd_si512(eval_11)));
 #endif
@@ -415,24 +415,24 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 				eval_0 = _mm512_sub_pd(one, eval_0);
 				eval_1 = _mm512_sub_pd(one, eval_1);
 				eval_2 = _mm512_sub_pd(one, eval_2);
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 				eval_3 = _mm512_sub_pd(one, eval_3);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 				eval_4 = _mm512_sub_pd(one, eval_4);
 				eval_5 = _mm512_sub_pd(one, eval_5);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 				eval_6 = _mm512_sub_pd(one, eval_6);
 				eval_7 = _mm512_sub_pd(one, eval_7);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 				eval_8 = _mm512_sub_pd(one, eval_8);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 				eval_9 = _mm512_sub_pd(one, eval_9);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 				eval_10 = _mm512_sub_pd(one, eval_10);
 				eval_11 = _mm512_sub_pd(one, eval_11);
 #endif
@@ -441,24 +441,24 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 				eval_0 = _mm512_max_pd(zero, eval_0);
 				eval_1 = _mm512_max_pd(zero, eval_1);
 				eval_2 = _mm512_max_pd(zero, eval_2);
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 				eval_3 = _mm512_max_pd(zero, eval_3);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 				eval_4 = _mm512_max_pd(zero, eval_4);
 				eval_5 = _mm512_max_pd(zero, eval_5);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 				eval_6 = _mm512_max_pd(zero, eval_6);
 				eval_7 = _mm512_max_pd(zero, eval_7);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 				eval_8 = _mm512_max_pd(zero, eval_8);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 				eval_9 = _mm512_max_pd(zero, eval_9);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 				eval_10 = _mm512_max_pd(zero, eval_10);
 				eval_11 = _mm512_max_pd(zero, eval_11);
 #endif
@@ -466,24 +466,24 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 				support_0 = _mm512_mul_pd(support_0, eval_0);
 				support_1 = _mm512_mul_pd(support_1, eval_1);
 				support_2 = _mm512_mul_pd(support_2, eval_2);
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 				support_3 = _mm512_mul_pd(support_3, eval_3);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 				support_4 = _mm512_mul_pd(support_4, eval_4);
 				support_5 = _mm512_mul_pd(support_5, eval_5);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 				support_6 = _mm512_mul_pd(support_6, eval_6);
 				support_7 = _mm512_mul_pd(support_7, eval_7);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 				support_8 = _mm512_mul_pd(support_8, eval_8);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 				support_9 = _mm512_mul_pd(support_9, eval_9);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 				support_10 = _mm512_mul_pd(support_10, eval_10);
 				support_11 = _mm512_mul_pd(support_11, eval_11);
 #endif
@@ -492,10 +492,10 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 			__m512d res_0 = _mm512_load_pd(&(ptrResult[i + 0]));
 			__m512d res_1 = _mm512_load_pd(&(ptrResult[i + 8]));
 			__m512d res_2 = _mm512_load_pd(&(ptrResult[i + 16]));
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 			__m512d res_3 = _mm512_load_pd(&(ptrResult[i + 24]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 			__m512d res_4 = _mm512_load_pd(&(ptrResult[i + 32]));
 			__m512d res_5 = _mm512_load_pd(&(ptrResult[i + 40]));
 #endif
@@ -503,10 +503,10 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 			res_0 = _mm512_add_pd(res_0, support_0);
 			res_1 = _mm512_add_pd(res_1, support_1);
 			res_2 = _mm512_add_pd(res_2, support_2);
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 			res_3 = _mm512_add_pd(res_3, support_3);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 			res_4 = _mm512_add_pd(res_4, support_4);
 			res_5 = _mm512_add_pd(res_5, support_5);
 #endif
@@ -514,55 +514,55 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 			_mm512_store_pd(&(ptrResult[i + 0]), res_0);
 			_mm512_store_pd(&(ptrResult[i + 8]), res_1);
 			_mm512_store_pd(&(ptrResult[i + 16]), res_2);
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  24 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
 			_mm512_store_pd(&(ptrResult[i + 24]), res_3);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  32 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
 			_mm512_store_pd(&(ptrResult[i + 32]), res_4);
 			_mm512_store_pd(&(ptrResult[i + 40]), res_5);
 #endif
 
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 			__m512d res_6 = _mm512_load_pd(&(ptrResult[i + 48]));
 			__m512d res_7 = _mm512_load_pd(&(ptrResult[i + 56]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 			__m512d res_8 = _mm512_load_pd(&(ptrResult[i + 64]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 			__m512d res_9 = _mm512_load_pd(&(ptrResult[i + 72]));
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 			__m512d res_10 = _mm512_load_pd(&(ptrResult[i + 80]));
 			__m512d res_11 = _mm512_load_pd(&(ptrResult[i + 88]));
 #endif
 
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 			res_6 = _mm512_add_pd(res_6, support_6);
 			res_7 = _mm512_add_pd(res_7, support_7);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 			res_8 = _mm512_add_pd(res_8, support_8);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 			res_9 = _mm512_add_pd(res_9, support_9);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 			res_10 = _mm512_add_pd(res_10, support_10);
 			res_11 = _mm512_add_pd(res_11, support_11);
 #endif
 
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  48 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
 			_mm512_store_pd(&(ptrResult[i + 48]), res_6);
 			_mm512_store_pd(&(ptrResult[i + 56]), res_7);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  64 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
 			_mm512_store_pd(&(ptrResult[i + 64]), res_8);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  72 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
 			_mm512_store_pd(&(ptrResult[i + 72]), res_9);
 #endif
-#if  ( STREAMING_LINEAR_MIC_UNROLLING_WIDTH >  80 )
+#if  ( STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
 			_mm512_store_pd(&(ptrResult[i + 80]), res_10);
 			_mm512_store_pd(&(ptrResult[i + 88]), res_11);
 #endif

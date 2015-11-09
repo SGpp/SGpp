@@ -70,7 +70,7 @@ size_t OperationMultiEvalModMaskStreaming::getChunkGridPoints() {
 }
 size_t OperationMultiEvalModMaskStreaming::getChunkDataPoints() {
 #if defined(__MIC__) || defined(__AVX512F__)
-    return STREAMING_MODLINEAR_MIC_UNROLLING_WIDTH;
+    return STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH;
 # else
     return 24; // must be divisible by 24
 #endif
