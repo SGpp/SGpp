@@ -16,7 +16,7 @@
 #include <immintrin.h>
 #endif
 
-#ifdef __MIC__
+#if defined(__MIC__)
 #include <immintrin.h>
 #endif
 
