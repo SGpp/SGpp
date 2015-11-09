@@ -75,7 +75,7 @@ size_t OperationMultiEvalStreaming::getChunkGridPoints() {
 }
 size_t OperationMultiEvalStreaming::getChunkDataPoints() {
 #if defined(__MIC__) || defined(__AVX512F__)
-    return STREAMING_LINEAR_MIC_UNROLLING_WIDTH;
+    return STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH;
 # else
     return 24; // must be divisible by 24
 #endif
