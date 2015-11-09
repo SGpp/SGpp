@@ -35,7 +35,7 @@ namespace SGPP {
     VarTimestep::~VarTimestep() {
     }
 
-    void VarTimestep::predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+    void VarTimestep::predictor(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
                                 float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
       System.setTimestepSize(tmp_timestepsize);
 
@@ -56,7 +56,7 @@ namespace SGPP {
       System.abortTimestep();
     }
 
-    void VarTimestep::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
+    void VarTimestep::corrector(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
       System.setODESolver("CrNic");
 
       // generate right hand side

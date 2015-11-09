@@ -6,7 +6,7 @@
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP
 
-#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/base/grid/common/DirichletGridConverter.hpp>
 
@@ -35,7 +35,7 @@ namespace SGPP {
      * on on the boundaries the iterative solver (CG or BiCGSTAB) has only to take
      * inner grid points into account.
      */
-    class OperationParabolicPDESolverSystemDirichlet : public OperationParabolicPDESolverSystem {
+    class OperationParabolicPDESolverSystemDirichlet : public SGPP::solver::OperationParabolicPDESolverSystem {
       protected:
         /// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
         SGPP::base::DataVector* alpha_inner;

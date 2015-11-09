@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
 
 BOOST_AUTO_TEST_CASE(TestWrapperScalarFunction) {
   // Test SGPP::optimization::TestWrapperScalarFunction.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 3;
   const size_t N = 100;
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunction) {
 
   for (size_t i = 0; i < N; i++) {
     for (size_t t = 0; t < d; t++) {
-      x[t] = randomNumberGenerator.getUniformRN();
+      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     BOOST_CHECK_EQUAL(f1.eval(x), f2Clone->eval(x));
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunction) {
 
 BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionGradient) {
   // Test SGPP::optimization::TestWrapperScalarFunctionGradient.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 3;
   const size_t N = 100;
@@ -364,7 +364,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionGradient) {
 
   for (size_t i = 0; i < N; i++) {
     for (size_t t = 0; t < d; t++) {
-      x[t] = randomNumberGenerator.getUniformRN();
+      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     BOOST_CHECK_EQUAL(f1.eval(x, gradient1), f2Clone->eval(x, gradient2));
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionGradient) {
 
 BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionHessian) {
   // Test SGPP::optimization::TestWrapperScalarFunctionHessian.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 3;
   const size_t N = 100;
@@ -405,7 +405,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionHessian) {
 
   for (size_t i = 0; i < N; i++) {
     for (size_t t = 0; t < d; t++) {
-      x[t] = randomNumberGenerator.getUniformRN();
+      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     BOOST_CHECK_EQUAL(f1.eval(x, gradient1, hessian1),
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionHessian) {
 
 BOOST_AUTO_TEST_CASE(TestWrapperVectorFunction) {
   // Test SGPP::optimization::TestWrapperVectorFunction.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 3;
   const size_t m = 4;
@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunction) {
 
   for (size_t i = 0; i < N; i++) {
     for (size_t t = 0; t < d; t++) {
-      x[t] = randomNumberGenerator.getUniformRN();
+      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     f1.eval(x, value1);
@@ -459,7 +459,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunction) {
 
 BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionGradient) {
   // Test SGPP::optimization::TestWrapperVectorFunctionGradient.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 3;
   const size_t m = 4;
@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionGradient) {
 
   for (size_t i = 0; i < N; i++) {
     for (size_t t = 0; t < d; t++) {
-      x[t] = randomNumberGenerator.getUniformRN();
+      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     f1.eval(x, value1, gradient1);
@@ -507,7 +507,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionGradient) {
 
 BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
   // Test SGPP::optimization::TestWrapperVectorFunctionHessian.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 3;
   const size_t m = 4;
@@ -542,7 +542,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
 
   for (size_t i = 0; i < N; i++) {
     for (size_t t = 0; t < d; t++) {
-      x[t] = randomNumberGenerator.getUniformRN();
+      x[t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
 
@@ -572,8 +572,8 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
 
 BOOST_AUTO_TEST_CASE(TestTestFunctions) {
   // Test SGPP::optimization::test_functions::TestFunction.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 10;
   std::vector<std::unique_ptr<test_functions::TestFunction>> testFunctions;
@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE(TestTestFunctions) {
     base::DataVector xl(d);
 
     for (size_t t = 0; t < d; t++) {
-      xl[t] = randomNumberGenerator.getUniformRN();
+      xl[t] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     base::DataVector x(xl);
@@ -691,7 +691,7 @@ BOOST_AUTO_TEST_CASE(TestTestFunctions) {
     // test if xopt is minimal point for a sample of random points
     for (size_t i = 0; i < 1000; i++) {
       for (size_t t = 0; t < d; t++) {
-        x[t] = randomNumberGenerator.getUniformRN();
+        x[t] = RandomNumberGenerator::getInstance().getUniformRN();
       }
 
       // use cloned function to test the cloning

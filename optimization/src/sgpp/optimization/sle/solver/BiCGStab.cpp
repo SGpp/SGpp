@@ -30,7 +30,7 @@ namespace SGPP {
 
       bool BiCGStab::solve(SLE& system, base::DataVector& b,
                            base::DataVector& x) const {
-        printer.printStatusBegin("Solving linear system (BiCGStab)...");
+        Printer::getInstance().printStatusBegin("Solving linear system (BiCGStab)...");
 
         const size_t n = b.getSize();
         base::DataVector r(n, 0.0);
@@ -41,10 +41,10 @@ namespace SGPP {
           if (A != 0.0) {
             x.resize(1);
             x[0] = b[0] / A;
-            printer.printStatusEnd();
+            Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            printer.printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
             return false;
           }
         }
@@ -94,7 +94,7 @@ namespace SGPP {
           omega = t.dotProduct(s) / t.dotProduct(t);
 
           if (std::isnan(omega)) {
-            printer.printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
             return false;
           }
 
@@ -105,19 +105,19 @@ namespace SGPP {
 
           rNormSquared = r.dotProduct(r);
 
-          printer.printStatusUpdate("k = " + std::to_string(k) +
-                                    ", residual norm = " +
-                                    std::to_string(sqrt(rNormSquared)));
+          Printer::getInstance().printStatusUpdate("k = " + std::to_string(k) +
+              ", residual norm = " +
+              std::to_string(sqrt(rNormSquared)));
 
           if (rNormSquared < tol * tol) {
             break;
           }
         }
 
-        printer.printStatusUpdate("k = " + std::to_string(k) +
-                                  ", residual norm = " +
-                                  std::to_string(sqrt(rNormSquared)));
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("k = " + std::to_string(k) +
+            ", residual norm = " +
+            std::to_string(sqrt(rNormSquared)));
+        Printer::getInstance().printStatusEnd();
         return true;
       }
 

@@ -114,7 +114,10 @@ namespace SGPP {
          */
         virtual size_t getNsamples();
 
-      private:
+        virtual SGPP::base::Grid* getGrid();
+        virtual SGPP::base::DataVector* getAlpha();
+
+      protected:
 
         /**
          * Does the learning step on a given grid, training set and regularization parameter lambda
@@ -124,8 +127,8 @@ namespace SGPP {
          * @param train sample set
          * @param lambdaReg regularization parameter
          */
-        void train(SGPP::base::Grid& grid, SGPP::base::DataVector& alpha,
-                   SGPP::base::DataMatrix& train, float_t lambdaReg);
+        virtual void train(SGPP::base::Grid& grid, SGPP::base::DataVector& alpha,
+                           SGPP::base::DataMatrix& train, float_t lambdaReg);
 
         /**
          * generates a regular grid
@@ -142,7 +145,7 @@ namespace SGPP {
         /**
          * Compute the residual for a given test data set on a learned grid
          *
-         * $|(A - lambda C) \alpha - \frac{1}{n}B|$
+         * $|(A - lambda C) alpha - 1/n B|$
          *
          * This is used as quality criterion for the estimated density.
          *

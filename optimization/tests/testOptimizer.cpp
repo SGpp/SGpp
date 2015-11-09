@@ -37,7 +37,7 @@ using namespace SGPP::optimization;
 
 BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   // Test unconstrained optimizers in SGPP::optimization::optimizer.
-  printer.setVerbosity(-1);
+  Printer::getInstance().setVerbosity(-1);
 
   ExampleFunction f;
   ExampleGradient fGradient;
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
 BOOST_AUTO_TEST_CASE(TestLeastSquaresOptimizers) {
   // Test least squares optimizers in SGPP::optimization::optimizer.
-  printer.setVerbosity(-1);
+  Printer::getInstance().setVerbosity(-1);
 
   const size_t d = 4;
   const size_t p = 3;
@@ -449,7 +449,7 @@ BOOST_AUTO_TEST_CASE(TestLeastSquaresOptimizers) {
 
 BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
   // Test constrained optimizers in SGPP::optimization::optimizer.
-  printer.setVerbosity(-1);
+  Printer::getInstance().setVerbosity(-1);
   const size_t N = 10000;
 
   for (size_t i = 0; i < 2; i++) {

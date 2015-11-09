@@ -4,7 +4,8 @@
 
 set PATH=%PATH%;$SGPP_BUILD_PATH
 
-# If you installed Python support execute the following in cmd
+# If you installed Python support execute the following in cmd from the root
+# directory of SG++ to install the python library
 
-set PYTHONPATH=%PYTHONPATH%;$PYSGPP_PACKAGE_PATH
+python setup.py install --user
 # ------------------------------------------------------------------------

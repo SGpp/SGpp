@@ -27,7 +27,7 @@ namespace SGPP {
     AdamsBashforth::~AdamsBashforth() {
     }
 
-    void AdamsBashforth::solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
+    void AdamsBashforth::solve(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep, bool verbose) {
       size_t allIter = 0;
       SGPP::base::DataVector* rhs;
 

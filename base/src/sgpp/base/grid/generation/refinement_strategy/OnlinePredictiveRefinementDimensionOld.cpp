@@ -8,6 +8,7 @@
 #include <list>
 #include <vector>
 #include <utility>
+#include <iterator>
 
 #include "OnlinePredictiveRefinementDimensionOld.hpp"
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>

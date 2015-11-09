@@ -73,7 +73,7 @@ namespace SGPP {
     }
 
     bool IterativeGridGeneratorRitterNovak::generate() {
-      printer.printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
+      Printer::getInstance().printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
 
       bool result = true;
       base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
@@ -166,9 +166,9 @@ namespace SGPP {
           snprintf(str, 10, "%.1f%%",
                    static_cast<float_t>(currentN) /
                    static_cast<float_t>(N) * 100.0);
-          printer.printStatusUpdate(std::string(str) +
-                                    " (N = " + std::to_string(currentN) +
-                                    ", k = " + std::to_string(k) + ")");
+          Printer::getInstance().printStatusUpdate(std::string(str) +
+              " (N = " + std::to_string(currentN) +
+              ", k = " + std::to_string(k) + ")");
         }
 
         // determine the best i (i.e. i_best = argmin_i g_i)
@@ -270,7 +270,7 @@ namespace SGPP {
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)
-          printer.printStatusEnd(
+          Printer::getInstance().printStatusEnd(
             "error: size unchanged in IterativeGridGeneratorRitterNovak");
           result = false;
           break;
@@ -339,9 +339,9 @@ namespace SGPP {
       fX.resize(currentN);
 
       if (result) {
-        printer.printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
-                                  ", k = " + std::to_string(k) + ")");
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
+            ", k = " + std::to_string(k) + ")");
+        Printer::getInstance().printStatusEnd();
         return true;
       } else {
         return false;

@@ -8,8 +8,7 @@
 # import modules
 import sys
 import math
-# append trunk/bin to search path for modules
-sys.path.append('../lib/pysgpp')
+
 from pysgpp import *
 import matplotlib.pyplot as plotter
 from mpl_toolkits.mplot3d import Axes3D
@@ -18,19 +17,22 @@ from mpl_toolkits.mplot3d import Axes3D
 dim = 2
 grid = Grid.createLinearGrid(dim)
 HashGridStorage = grid.getStorage()
-print "dimensionality:         %d" % (dim)
+print "dimensionality:                   {}".format(dim)
 
 # create regular grid, level 3
 level = 3
 gridGen = grid.createGridGenerator()
 gridGen.regular(level)
-print "Start: number of grid points:  %d" % (HashGridStorage.size())
+print "number of initial grid points:    {}".format(HashGridStorage.size())
 
 # definition of function to interpolate - nonsymmetric(!)
 #f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
 f = lambda x0, x1: math.sin(x0*10)+x1
+
 # create coefficient vectors
 alpha = DataVector(HashGridStorage.size())
+print "length of alpha vector:           {}".format(alpha.getSize())
+
 
 #dataPoints
 
@@ -40,16 +42,15 @@ cols = 100
 dataSet = DataMatrix(rows*cols,dim)
 vals = DataVector(rows*cols)
 
+# Create a "List" of points where the error should be calculated. 
+# This represents a regular 2d grid with a step size of 1 / rows and 1 / cols.
 for i in xrange(rows):
     for j in xrange(cols):
-            #xcoord
-            dataSet.set(i*cols+j,0,i*1.0/rows)
-            #ycoord
-            dataSet.set(i*cols+j,1,j*1.0/cols)
-            vals[i*cols+j] = f(i*1.0/rows,j*1.0/cols)
-            
-print(vals)
-
+        #xcoord
+        dataSet.set(i*cols+j,0,i*1.0/rows)
+        #ycoord
+        dataSet.set(i*cols+j,1,j*1.0/cols)
+        vals[i*cols+j] = f(i*1.0/rows,j*1.0/cols) 
 
 def calculateError(dataSet,f,grid,alpha,error):
     print "calculating error"
@@ -59,9 +60,6 @@ def calculateError(dataSet,f,grid,alpha,error):
     for i in xrange(dataSet.getNrows()):
         dataSet.getRow(i,vec)
         error[i] = pow(f(dataSet.get(i,0),dataSet.get(i,1))-opEval.eval(alpha,vec),2)
-        #print "Evaluating grid @ %4f;%4f - %f" % (vec[0],vec[1], error[i])
-        
-    
     return error
           
 #store old files
@@ -75,7 +73,7 @@ for i in xrange(HashGridStorage.size()):
         xCoordsOld.append(gridPointCoordinates[0])
         yCoordsOld.append(gridPointCoordinates[1])
  
-# now refine adaptively 5 times
+# now refine adaptively 20 times
 for refnum in range(20):
     # set function values in alpha
     for i in xrange(HashGridStorage.size()):
@@ -121,8 +119,8 @@ for refnum in range(20):
     refinement = HashRefinement()
     decorator = PredictiveANOVARefinement(refinement)
     # refine a single grid point each time
-    print(errorVector)
-    indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,10)
+    print "Error over all = %s" % errorVector.sum()
+    indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,1)
     decorator.free_refine(HashGridStorage,indicator)
     
     print "Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.size())

@@ -87,8 +87,8 @@ void testSLESolution(const base::DataMatrix& A,
 
 BOOST_AUTO_TEST_CASE(TestSLESolvers) {
   // Test SGPP::optimization::sle_solver with SGPP::optimization::FullSLE.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t m = 4;
 
@@ -154,14 +154,14 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
     base::DataMatrix B(n, m);
 
     for (size_t i = 0; i < n; i++) {
-      b[i] = randomNumberGenerator.getUniformRN(-1.0, 1.0);
+      b[i] = RandomNumberGenerator::getInstance().getUniformRN(-1.0, 1.0);
 
       for (size_t j = 0; j < m; j++) {
-        B(i, j) = randomNumberGenerator.getUniformRN(-1.0, 1.0);
+        B(i, j) = RandomNumberGenerator::getInstance().getUniformRN(-1.0, 1.0);
       }
 
       for (size_t j = 0; j < n; j++) {
-        A(i, j) = randomNumberGenerator.getUniformRN(-1.0, 1.0);
+        A(i, j) = RandomNumberGenerator::getInstance().getUniformRN(-1.0, 1.0);
       }
     }
 
@@ -228,8 +228,8 @@ BOOST_AUTO_TEST_CASE(TestFullSLE) {
 
 BOOST_AUTO_TEST_CASE(TestHierarchisationSLE) {
   // Test SGPP::optimization::HierarchisationSLE.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 2;
   const size_t p = 3;
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(TestHierarchisationSLE) {
     for (size_t i = 0; i < 100; i++) {
       for (size_t t = 0; t < d; t++) {
         // don't go near the boundary (should suffice)
-        x[t] = randomNumberGenerator.getUniformRN(0.2, 0.8);
+        x[t] = RandomNumberGenerator::getInstance().getUniformRN(0.2, 0.8);
       }
 
       // test infinity norm of difference roughly

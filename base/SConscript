@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ project
+﻿# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -6,6 +6,7 @@
 
 import os
 import fnmatch
+import subprocess
 
 Import('env')
 Import('BUILD_DIR')
@@ -15,10 +16,11 @@ Import('libraryTargetList')
 Import('installTargetList')
 Import('exampleTargetList')
 
-libs = []
+moduleDependencies = []
+Export('moduleDependencies')
 
 if env['USE_OCL']:
-    libs += ['OpenCL']
+    moduleDependencies += ['OpenCL']
 
 # srcs = []
 # for currentFolder, subdirNames, fileNames in os.walk("."):
@@ -42,22 +44,57 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
 
-lib = env.SharedLibrary(target="sgpp%s" % moduleName,
-                        source=objs,
-                        LIBPATH=BUILD_DIR,
-                        LIBS=libs)
-libInstall = env.Install(BUILD_DIR, lib)
+libname = "sgpp%s" % moduleName
+if env['USE_STATICLIB']:
+    libname += "static"
+    for i, _ in enumerate(moduleDependencies):
+        moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
+Export('libname')
 
-libStatic = env.StaticLibrary(target="sgpp%sstatic" % moduleName,
-                              source=objs,
-                              LIBS=libs)
-libStaticInstall = env.Install(BUILD_DIR, libStatic)
+if env['USE_STATICLIB']:
+    # building static libraries is the same for unix and windows platforms
+    lib = env.StaticLibrary(target=libname,
+                            source=objs,
+                            LIBS=moduleDependencies)
+else:
+    # building shared libraries differ
+    if env['PLATFORM'] in ['cygwin', 'win32']:
+        # remove old moduleDependencies if they exist already
+        for ext in ['lib', 'exp', 'dll', 'def']:
+            newlibFilename = "%s.%s" % (libname, ext)
+            if os.path.exists(newlibFilename):
+               os.remove(newlibFilename)
+    
+        def buildDefFile(target, source, env):
+            # load all object files
+            win32objs = []
+            for currentFolder, subdirNames, fileNames in os.walk(os.path.join(moduleName, "src")):
+                for fileName in fnmatch.filter(fileNames, '*.obj'):
+                    win32objs.append(os.path.join(currentFolder, fileName))
+            # build windows module definition file (def-file)
+            subprocess.call(['bindexplib.exe', '-o', os.path.join(moduleName, '%s.def' % libname), os.path.join(moduleName, '%s.dll' % libname)] + win32objs)
+
+        cmd = env.Command('buildDefFile', [], buildDefFile)
+        lib = env.SharedLibrary(target=libname,
+                                source=objs,
+                                LIBPATH=BUILD_DIR,
+                                LIBS=moduleDependencies,
+                                LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
+
+        env.Depends(cmd, objs)
+        env.Depends(lib, cmd)
+    else:
+        lib = env.SharedLibrary(target=libname,
+                                source=objs,
+                                LIBS=moduleDependencies)
+
+libInstall = env.Install(BUILD_DIR, lib)
 
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
                               LIBPATH=BUILD_DIR,
-                              LIBS=libs + ["sgpp%s" % moduleName])
+                              LIBS=[libname] + moduleDependencies)
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
 
@@ -65,23 +102,27 @@ for fileName in os.listdir("examples"):
 if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
-    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework"])
+    boostlib = "boost_unit_test_framework"
+    if env['PLATFORM'] == 'win32':
+        test_env.Append(CPPFLAGS=['/DBOOST_ALL_DYN_LINK', '/MD', '/D _WIN32'])
+        test_env.AppendUnique(LIBS=moduleDependencies + [libname])
+    else:
+        test_env.AppendUnique(LIBS=moduleDependencies + [libname, boostlib])
     
     testObjects = []
     for currentFolder, subdirNames, fileNames in os.walk("tests", topdown=True):
       for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        testObjects.append(env.SharedObject(os.path.join(currentFolder, fileName)))
-            
+        testObjects.append(test_env.SharedObject(os.path.join(currentFolder, fileName)))
     if len(testObjects) > 0:
         fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
-        test = test_env.Program(fileName, testObjects)
+        executable = fileName
+        test = test_env.Program(executable, testObjects)
         test_env.Requires(test, libInstall)
         if env['RUN_BOOST_TESTS']:
-            testRun = test_env.BoostTest(fileName + "_run", source=fileName)
+            executable = fileName + "_run"
+            testRun = test_env.BoostTest(executable, source=fileName)
             boostTestTargetList.append(testRun)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
 
-libraryTargetList.append(libStatic)
-installTargetList.append(libStaticInstall)

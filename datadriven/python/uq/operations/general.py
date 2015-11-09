@@ -1,10 +1,13 @@
-from pysgpp import Grid, HashGridIndex, SPolyBoundaryBase, SLinearBoundaryBase, \
-    SLinearBase, SPolyBase
+from pysgpp import (Grid, HashGridIndex, SPolyBoundaryBase,
+                    SLinearBoundaryBase, SLinearBase, SPolyBase)
 
 from sparse_grid import createGrid, isValid
 import numpy as np
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid, insertPoint, getBasis, \
-    hasBorder, getDegree
+from sparse_grid import(copyGrid,
+                        insertPoint,
+                        getBasis,
+                        hasBorder,
+                        getDegree)
 
 
 def isNumerical(x):

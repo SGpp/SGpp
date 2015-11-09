@@ -6,7 +6,7 @@
 #ifndef CLENSHAWCURTISTABLE_HPP
 #define CLENSHAWCURTISTABLE_HPP
 
-#include <cmath>
+#include <math.h>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>
@@ -29,12 +29,10 @@ namespace SGPP {
         /// default number of intervals
         static const level_type DEFAULT_MAX_LEVEL = 16;
 
-        /**
-         * Constructor creating the lookup table.
-         *
-         * @param maxLevel    level up to which grid points should be pre-computed
-         */
-        ClenshawCurtisTable(level_type maxLevel = DEFAULT_MAX_LEVEL);
+        inline static ClenshawCurtisTable& getInstance() {
+          static ClenshawCurtisTable clenshawCurtisTable;
+          return clenshawCurtisTable;
+        }
 
         /**
          * @param l       level of the grid point
@@ -86,9 +84,25 @@ namespace SGPP {
           return (std::cos(
                     M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
         }
-    };
 
-    extern ClenshawCurtisTable clenshawCurtisTable;
+      private:
+        /**
+         * Constructor creating the lookup table.
+         *
+         * @param maxLevel    level up to which grid points should be pre-computed
+         */
+        ClenshawCurtisTable(level_type maxLevel = DEFAULT_MAX_LEVEL);
+
+        /**
+         * Deleted copy constructor.
+         */
+        ClenshawCurtisTable(ClenshawCurtisTable const&) = delete;
+
+        /**
+         * Deleted assignment operator.
+         */
+        void operator=(ClenshawCurtisTable const&) = delete;
+    };
 
   }
 }

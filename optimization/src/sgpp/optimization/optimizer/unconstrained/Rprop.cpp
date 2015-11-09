@@ -29,7 +29,7 @@ namespace SGPP {
       }
 
       void Rprop::optimize() {
-        printer.printStatusBegin("Optimizing (Rprop)...");
+        Printer::getInstance().printStatusBegin("Optimizing (Rprop)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -100,7 +100,7 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx));
 
@@ -127,7 +127,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = f.eval(x);
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       ScalarFunctionGradient& Rprop::getObjectiveGradient() const {

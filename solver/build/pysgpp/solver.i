@@ -14,6 +14,8 @@
 %include "solver/src/sgpp/solver/ode/CrankNicolson.hpp"
 %include "solver/src/sgpp/solver/TypesSolver.hpp"
 
+%include "solver/src/sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp"
+
 %apply std::string *INPUT { std::string& istr };
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };

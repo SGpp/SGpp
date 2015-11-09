@@ -84,9 +84,12 @@ namespace SGPP {
         static const int DEFAULT_VERBOSITY = 0;
 
         /**
-         * Constructor.
+         * @return singleton instance
          */
-        Printer();
+        inline static Printer& getInstance() {
+          static Printer printer;
+          return printer;
+        }
 
         /**
          * Call at the beginning of a time-consuming operation.
@@ -237,10 +240,23 @@ namespace SGPP {
 
         /// stream used for printing (default std::cout)
         std::ostream* stream;
-    };
 
-    /// singleton printer instance
-    extern Printer printer;
+      private:
+        /**
+         * Constructor.
+         */
+        Printer();
+
+        /**
+         * Deleted copy constructor.
+         */
+        Printer(Printer const&) = delete;
+
+        /**
+         * Deleted assignment operator.
+         */
+        void operator=(Printer const&) = delete;
+    };
 
   }
 }

@@ -81,8 +81,6 @@ def plotFunction2d(f, addContour=True, n=101):
     for i in xrange(len(X)):
         for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
             Z[i, j] = f(xi, yi)
-            if yi == 0.6:
-                print xi, yi, f(xi, yi)
 
     plt.imshow(Z, interpolation='bilinear', extent=(0, 1, 0, 1))
 

@@ -23,6 +23,8 @@ print "number of initial grid points:    {}".format(gridStorage.size())
 f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1*x1
 # create coefficient vector
 alpha = DataVector(gridStorage.size())
+print "length of alpha vector:           {}".format(alpha.getSize())
+
 
 # now refine adaptively 5 times
 for refnum in range(5):

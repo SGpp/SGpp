@@ -33,7 +33,7 @@ namespace SGPP {
     StepsizeControlEJ::~StepsizeControlEJ() {
     }
 
-    void StepsizeControlEJ::predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+    void StepsizeControlEJ::predictor(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
                                       float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
       //pred()
       dv.resize(corr.getSize());
@@ -41,7 +41,7 @@ namespace SGPP {
       dv.add(corr);
     }
 
-    void StepsizeControlEJ::corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
+    void StepsizeControlEJ::corrector(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) {
       //corr()
 
       System.setODESolver(_odesolver);
@@ -61,7 +61,7 @@ namespace SGPP {
       // end corr()
     }
 
-    float_t StepsizeControlEJ::norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+    float_t StepsizeControlEJ::norm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
       return maxNorm(System, dv1, dv2);
     }
 

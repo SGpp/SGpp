@@ -17,7 +17,11 @@ namespace SGPP {
      * This is intended as a fill-in for ConstrainedOptimizer, if
      * only equality or inequality constraints are supported.
      */
+#if defined _WIN32 && !defined _USE_STATICLIB
+    extern __declspec(dllimport) WrapperVectorFunction emptyVectorFunction;
+#else
     extern WrapperVectorFunction emptyVectorFunction;
+#endif
 
   }
 }

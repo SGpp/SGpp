@@ -59,7 +59,7 @@ namespace SGPP {
       }
 
       void Newton::optimize() {
-        printer.printStatusBegin("Optimizing (Newton)...");
+        Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -79,7 +79,7 @@ namespace SGPP {
 
         FullSLE system(hessianFx);
         size_t k = 0;
-        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
+        const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
         while (k < N) {
           // calculate gradient, Hessian and gradient norm
@@ -105,13 +105,13 @@ namespace SGPP {
 
           // solve linear system with Hessian as system matrix
           if (statusPrintingEnabled) {
-            printer.disableStatusPrinting();
+            Printer::getInstance().disableStatusPrinting();
           }
 
           bool lsSolved = sleSolver.solve(system, s, dk);
 
           if (statusPrintingEnabled) {
-            printer.enableStatusPrinting();
+            Printer::getInstance().enableStatusPrinting();
           }
 
           // norm of solution
@@ -134,7 +134,7 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx));
 
@@ -155,7 +155,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = fx;
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       ScalarFunctionHessian& Newton::getObjectiveHessian() const {

@@ -22,9 +22,12 @@ namespace SGPP {
         typedef size_t SeedType;
 
         /**
-         * Constructor, initializes with time-dependent seed.
+         * @return singleton instance
          */
-        RandomNumberGenerator();
+        inline static RandomNumberGenerator& getInstance() {
+          static RandomNumberGenerator rng;
+          return rng;
+        }
 
         /**
          * Generate a uniform pseudo-random number.
@@ -75,11 +78,23 @@ namespace SGPP {
         std::mt19937 generator;
         /// seed
         SeedType seed;
+
+      private:
+        /**
+         * Constructor, initializes with time-dependent seed.
+         */
+        RandomNumberGenerator();
+
+        /**
+         * Deleted copy constructor.
+         */
+        RandomNumberGenerator(RandomNumberGenerator const&) = delete;
+
+        /**
+         * Deleted assignment operator.
+         */
+        void operator=(RandomNumberGenerator const&) = delete;
     };
-
-    /// singleton random number generator instance
-    extern RandomNumberGenerator randomNumberGenerator;
-
   }
 }
 

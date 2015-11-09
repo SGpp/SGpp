@@ -28,7 +28,5 @@ namespace SGPP {
       }
     }
 
-    ClenshawCurtisTable clenshawCurtisTable;
-
   }
 }

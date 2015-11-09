@@ -50,7 +50,7 @@ namespace SGPP {
          */
         virtual ~Euler();
 
-        virtual void solve(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
+        virtual void solve(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
     };
 
   }

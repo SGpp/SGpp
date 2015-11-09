@@ -27,14 +27,7 @@ namespace base
 %apply SGPP::float_t *OUTPUT { SGPP::float_t* min, SGPP::float_t* max };
 %apply std::string *OUTPUT { std::string& text };
 
-%rename(__str__) DataVector::toString const;
-
-%rename(__getitem__) DataVector::get(size_t i) const;
-%rename(__setitem__) DataVector::set(size_t i, SGPP::float_t value);
 %rename(assign) DataVector::operator=;
-%rename(__len__) DataVector::getSize const;
-
-
     
 class DataVector
 {
@@ -154,6 +147,18 @@ $1 = PySequence_Check($input) ? 1 : 0;
      {
         def array(self):   
           return self.__array(self)
+
+        def __len__(self):
+            return self.getSize()
+
+        def __getitem__(self, i):
+            return self.get(i)
+
+        def __setitem__(self, i, value):
+            self.set(i, value)
+
+        def __str__(self):
+            return self.toString()
      }
   }
   

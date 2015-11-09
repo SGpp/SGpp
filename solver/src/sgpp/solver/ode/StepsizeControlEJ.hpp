@@ -26,14 +26,14 @@ namespace SGPP {
      */
     class StepsizeControlEJ : public StepsizeControl {
       private:
-        virtual void predictor(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System,
+        virtual void predictor(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
                                float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs);
 
-        virtual void corrector(SLESolver& LinearSystemSolver, SGPP::pde::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs);
+        virtual void corrector(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs);
 
         virtual float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon);
 
-        virtual float_t norm(SGPP::pde::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+        virtual float_t norm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
         std::string _odesolver;
       public:
         /**

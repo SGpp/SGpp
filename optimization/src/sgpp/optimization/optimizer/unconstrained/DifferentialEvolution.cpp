@@ -34,7 +34,7 @@ namespace SGPP {
       }
 
       void DifferentialEvolution::optimize() {
-        printer.printStatusBegin("Optimizing (differential evolution)...");
+        Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -60,7 +60,7 @@ namespace SGPP {
         // initial pseudorandom points
         for (size_t i = 0; i < populationSize; i++) {
           for (size_t t = 0; t < d; t++) {
-            (*xOld)[i][t] = randomNumberGenerator.getUniformRN();
+            (*xOld)[i][t] = RandomNumberGenerator::getInstance().getUniformRN();
           }
 
           fx[i] = f.eval((*xOld)[i]);
@@ -93,26 +93,26 @@ namespace SGPP {
         for (size_t k = 0; k < maxK; k++) {
           for (size_t i = 0; i < populationSize; i++) {
             do {
-              a[k][i] = randomNumberGenerator.
+              a[k][i] = RandomNumberGenerator::getInstance().
                         getUniformIndexRN(populationSize);
             } while (a[k][i] == i);
 
             do {
-              b[k][i] = randomNumberGenerator.
+              b[k][i] = RandomNumberGenerator::getInstance().
                         getUniformIndexRN(populationSize);
             } while ((b[k][i] == i) || (b[k][i] == a[k][i]));
 
             do {
-              c[k][i] = randomNumberGenerator.
+              c[k][i] = RandomNumberGenerator::getInstance().
                         getUniformIndexRN(populationSize);
             } while ((c[k][i] == i) || (c[k][i] == a[k][i]) ||
                      (c[k][i] == b[k][i]));
 
-            j[k][i] = randomNumberGenerator.getUniformIndexRN(d);
+            j[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(d);
 
             for (size_t t = 0; t < d; t++) {
               if (t != j[k][i]) {
-                prob[k][i][t] = randomNumberGenerator.getUniformRN();
+                prob[k][i][t] = RandomNumberGenerator::getInstance().getUniformRN();
               }
             }
           }
@@ -245,8 +245,8 @@ namespace SGPP {
 
           // status message
           if (k % 10 == 0) {
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fCurrentOpt));
+          Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                std::to_string(fCurrentOpt));
           }
 
           xHist.appendRow((*xOld)[xOptIndex]);
@@ -258,9 +258,9 @@ namespace SGPP {
         xOpt = (*xOld)[xOptIndex];
         fOpt = fCurrentOpt;
 
-        printer.printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
-                                  std::to_string(fCurrentOpt));
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
+            std::to_string(fCurrentOpt));
+        Printer::getInstance().printStatusEnd();
       }
 
       size_t DifferentialEvolution::getPopulationSize() const {
