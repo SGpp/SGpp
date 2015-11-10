@@ -5,7 +5,7 @@
 
 %module(directors="1") pysgpp_swig
 // %feature("autodoc", "2");
-//%feature("docstring");
+// %feature("docstring");
 
 %include "base/src/sgpp/globaldef.hpp"
 
@@ -33,6 +33,19 @@
     SWIG_exception(SWIG_RuntimeError, e.what());
   }
 }
+
+%{
+#include <omp.h>
+%}
+
+// -----------------------------------------------------------
+// needed for windows wrapper since swig does not understand
+// that unsigned int is equal to size_t and generates
+// template specifications twice
+#ifdef SWIGWIN
+typedef unsigned int size_t;
+#endif
+// -----------------------------------------------------------
 
 %{
 #define SWIG_FILE_WITH_INIT
