@@ -7,27 +7,29 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
 #include "JSONNode.hpp"
 
-namespace SGPP {
-namespace base {
+namespace json {
 
-class JSONStringNode: public JSONNode {
+class JSONTextNode: public JSONNode {
 private:
+
   std::string value;
+
 public:
-  JSONStringNode();
+  JSONTextNode();
 
   virtual void parse(std::vector<JSONToken> &stream) override;
 
   virtual void serialize(std::ofstream &outFile, size_t indentWidth) override;
 
-  virtual std::string &getValue() override;
+  virtual std::string &get() override;
+
+  virtual void set(const std::string &value) override;
 
   virtual size_t size() override;
+
+  virtual JSONNode *clone() override;
 };
 
-}
 }

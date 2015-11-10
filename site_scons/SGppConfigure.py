@@ -170,7 +170,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
     if env['OPT'] == True:
        env.Append(CPPFLAGS=['-O3'])
     else:
-       env.Append(CPPFLAGS=['-g']) #, '-O0'
+       env.Append(CPPFLAGS=['-g', '-O0']) #, '-O0'
 
     if env['COMPILER'].upper() == 'GNU':
         print "Using default gcc " + commands.getoutput(env['CXX'] + ' -dumpversion')
