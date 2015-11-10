@@ -38,10 +38,16 @@ namespace SGPP {
     }
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
-      ScalarFunction& f, base::Grid& grid, size_t N,
-      float_t adaptivity, base::level_t maxLevel, PowMethod powMethod) :
+      ScalarFunction& f,
+      base::Grid& grid,
+      size_t N,
+      float_t adaptivity,
+      base::level_t initialLevel,
+      base::level_t maxLevel,
+      PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
       gamma(adaptivity),
+      initialLevel(initialLevel),
       maxLevel(maxLevel),
       powMethod(powMethod) {
     }
@@ -52,6 +58,14 @@ namespace SGPP {
 
     void IterativeGridGeneratorRitterNovak::setAdaptivity(float_t adaptivity) {
       this->gamma = adaptivity;
+    }
+
+    base::level_t IterativeGridGeneratorRitterNovak::getInitialLevel() const {
+      return initialLevel;
+    }
+
+    void IterativeGridGeneratorRitterNovak::setInitialLevel(base::level_t initialLevel) {
+      this->initialLevel = initialLevel;
     }
 
     base::level_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
@@ -93,7 +107,7 @@ namespace SGPP {
       {
         std::unique_ptr<base::GridGenerator> gridGen(
           grid.createGridGenerator());
-        gridGen->regular(3);
+        gridGen->regular(initialLevel);
       }
 
       size_t currentN = gridStorage.size();

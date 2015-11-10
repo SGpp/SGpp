@@ -43,7 +43,6 @@ const bool UMFPACK_ENABLED;
 
 // necessary tools
 %rename(OptRNG)         SGPP::optimization::RandomNumberGenerator;
-%rename(OptRNGInstance) SGPP::optimization::randomNumberGenerator;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
 
 // renames
@@ -143,7 +142,6 @@ const bool UMFPACK_ENABLED;
 %rename(OptMathHouseholderTransformation)   SGPP::optimization::math::householderTransformation;
 %rename(OptMutexType)                       SGPP::optimization::MutexType;
 %rename(OptPrinter)                         SGPP::optimization::Printer;
-%rename(OptPrinterInstance)                 SGPP::optimization::printer;
 
 // classes with director interface
 %feature("director") SGPP::optimization::ConstraintFunction;
