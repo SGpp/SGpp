@@ -13,27 +13,28 @@
 #include <memory>
 #include <iostream>
 
-#include <sgpp/globaldef.hpp>
-
+#include "JSONDictNode.hpp"
 #include "JSONToken.hpp"
-#include "JSONAttributeNode.hpp"
 
-namespace SGPP {
-namespace base {
+namespace json {
 
-class JSON: public JSONAttributeNode {
+class JSON: public JSONDictNode {
 private:
-//  JSONAttributeNode root;
+
+  std::string fileName;
+
   std::vector<JSONToken> tokenize(std::string &input);
 
 public:
+
   JSON(std::string fileName);
+
+  JSON();
 
   void serialize(std::string outFileName);
 
-  using JSONAttributeNode::serialize;
+  using JSONDictNode::serialize;
 
 };
 
-}
 }

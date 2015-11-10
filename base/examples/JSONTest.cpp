@@ -5,36 +5,42 @@
  *      Author: pfandedd
  */
 
-#include "../src/sgpp/base/tools/JSON.hpp"
+#include "../src/sgpp/base/tools/json/JSON.hpp"
+#include "../src/sgpp/base/tools/json/json_exception.hpp"
+
+#include "../src/sgpp/base/tools/json/JSONTextNode.hpp"
 
 int main(int argc, char **argv) {
 
-  SGPP::base::JSON configuration("test.json");
+  try {
+    json::JSON configuration;
 
-//  SGPP::base::JSONNode &node = configuration["Inhaber"];
-//  SGPP::base::JSONNode &subNode = node["Name"];
+    configuration.addDictAttr("parent").addTextAttr("t1", "v1").addTextAttr("t2", "v2").addListAttr("list1").addTextValue(
+        "tv1").addIdValue(96).addTextValue("tv2");
+    configuration.addTextAttr("textAttr1", "text1").addIDAttr("numVal1", 36.0);
 
-  std::cout << "Herausgeber -> " << configuration["Herausgeber"].getValue() << std::endl;
+    std::cout << "value: " << configuration["parent"]["list1"][1].get() << std::endl;
 
-  std::cout << "Inhaber/Name -> " << configuration["Inhaber"]["Name"].getValue() << std::endl;
+    configuration["parent"]["list1"][1].setNumeric(7);
 
-  SGPP::base::JSONNode &listNode = configuration["Inhaber"]["Hobbys"];
+    std::cout << "value: " << configuration["parent"]["list1"][1].get() << std::endl;
 
-  std::cout << "Inhaber/Hobbies -> ";
-  bool first = true;
-  for (size_t i = 0; i < listNode.size(); i++) {
-    SGPP::base::JSONNode &valueNode = listNode.getItem(i);
-    if (first) {
-      first = false;
-    } else {
-      std::cout << ", ";
-    }
-    std::cout << valueNode.getValue();
+    std::cout << "value: " << configuration["parent"]["list1"][1].getNumeric() << std::endl;
+
+    configuration["numVal1"].erase();
+
+    std::unique_ptr<json::JSONNode> parentNode = configuration["parent"].erase();
+
+    configuration.addDictAttr("parentparent").addAttribute("parent", std::move(parentNode));
+
+    configuration.serialize("write.json");
+
+    json::JSON reread("write.json");
+
+    reread.serialize("write2.json");
+  } catch (json::json_exception &e) {
+    std::cout << e.what() << std::endl;
   }
-
-  std::cout << std::endl;
-
-  configuration.serialize("write.json");
 
   return 0;
 }
