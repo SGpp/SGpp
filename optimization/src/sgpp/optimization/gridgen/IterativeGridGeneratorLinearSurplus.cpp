@@ -27,8 +27,14 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ScalarFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
-      IterativeGridGenerator(f, grid, N), gamma(adaptivity) {
+      ScalarFunction& f,
+      base::Grid& grid,
+      size_t N,
+      float_t adaptivity,
+      base::level_t initialLevel) :
+      IterativeGridGenerator(f, grid, N),
+      gamma(adaptivity),
+      initialLevel(initialLevel) {
       if ((grid.getType() == base::GridType::Bspline)
           || (grid.getType() == base::GridType::Wavelet)
           || (grid.getType() == base::GridType::Linear)
@@ -64,6 +70,14 @@ namespace SGPP {
 
     void IterativeGridGeneratorLinearSurplus::setAdaptivity(float_t adaptivity) {
       this->gamma = adaptivity;
+    }
+
+    base::level_t IterativeGridGeneratorLinearSurplus::getInitialLevel() const {
+      return initialLevel;
+    }
+
+    void IterativeGridGeneratorLinearSurplus::setInitialLevel(base::level_t initialLevel) {
+      this->initialLevel = initialLevel;
     }
 
     bool IterativeGridGeneratorLinearSurplus::generate() {
@@ -109,7 +123,7 @@ namespace SGPP {
       // generate initial grid
       {
         std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
-        gridGen->regular(3);
+        gridGen->regular(initialLevel);
       }
 
       size_t currentN = gridStorage.size();
