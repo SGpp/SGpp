@@ -556,7 +556,8 @@ namespace SGPP {
 
         AugmentedLagrangian optimizer(
           auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
-          emptyVectorFunction, emptyVectorFunctionGradient);
+          EmptyVectorFunction::getInstance(),
+          EmptyVectorFunctionGradient::getInstance());
         optimizer.setStartingPoint(auxX);
         optimizer.optimize();
         auxX = optimizer.getOptimalPoint();

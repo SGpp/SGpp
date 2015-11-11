@@ -478,8 +478,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
 
       f.reset(new G3ObjectiveFunction(d));
       fGradient.reset(new G3ObjectiveGradient(d));
-      emptyVectorFunction.clone(g);
-      emptyVectorFunctionGradient.clone(gGradient);
+      EmptyVectorFunction::getInstance().clone(g);
+      EmptyVectorFunctionGradient::getInstance().clone(gGradient);
       h.reset(new G3ConstraintFunction(d));
       hGradient.reset(new G3ConstraintGradient(d));
       optimizers.push_back(
@@ -503,8 +503,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       fGradient.reset(new G8ObjectiveGradient());
       g.reset(new G8ConstraintFunction());
       gGradient.reset(new G8ConstraintGradient());
-      emptyVectorFunction.clone(h);
-      emptyVectorFunctionGradient.clone(hGradient);
+      EmptyVectorFunction::getInstance().clone(h);
+      EmptyVectorFunctionGradient::getInstance().clone(hGradient);
       optimizers.push_back(
         std::move(std::unique_ptr<optimizer::ConstrainedOptimizer>(
                     new optimizer::SquaredPenalty(

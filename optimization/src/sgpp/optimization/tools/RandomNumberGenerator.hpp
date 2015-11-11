@@ -88,12 +88,12 @@ namespace SGPP {
         /**
          * Deleted copy constructor.
          */
-        RandomNumberGenerator(RandomNumberGenerator const&) = delete;
+        RandomNumberGenerator(const RandomNumberGenerator&) = delete;
 
         /**
          * Deleted assignment operator.
          */
-        void operator=(RandomNumberGenerator const&) = delete;
+        void operator=(const RandomNumberGenerator&) = delete;
     };
   }
 }
