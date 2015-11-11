@@ -141,7 +141,8 @@ namespace SGPP {
         float_t tolerance,
         float_t barrierStartValue,
         float_t barrierDecreaseFactor) :
-        ConstrainedOptimizer(f, g, emptyVectorFunction, maxItCount),
+        ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(),
+                             maxItCount),
         fGradient(fGradient),
         gGradient(gGradient),
         theta(tolerance),

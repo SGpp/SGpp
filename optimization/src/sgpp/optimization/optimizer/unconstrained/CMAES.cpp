@@ -108,18 +108,18 @@ namespace SGPP {
             }
           }
 
-          for (size_t k = 0; k < lambda; k++) {
+          for (size_t j = 0; j < lambda; j++) {
             for (size_t t = 0; t < d; t++) {
               tmp[t] = DDiag[t] * RandomNumberGenerator::getInstance().getGaussianRN();
             }
 
             B.mult(tmp, y);
-            Y.setColumn(k, y);
+            Y.setColumn(j, y);
 
             x = y;
             x.mult(sigma);
             x.add(m);
-            X.setColumn(k, x);
+            X.setColumn(j, x);
 
             {
               bool inDomain = true;
@@ -131,8 +131,8 @@ namespace SGPP {
                 }
               }
 
-              fX[k] = (inDomain ? f.eval(x) : INFINITY);
-              fXOrder[k] = k;
+              fX[j] = (inDomain ? f.eval(x) : INFINITY);
+              fXOrder[j] = j;
             }
           }
 

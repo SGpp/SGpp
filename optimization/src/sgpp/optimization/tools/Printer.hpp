@@ -250,12 +250,12 @@ namespace SGPP {
         /**
          * Deleted copy constructor.
          */
-        Printer(Printer const&) = delete;
+        Printer(const Printer&) = delete;
 
         /**
          * Deleted assignment operator.
          */
-        void operator=(Printer const&) = delete;
+        void operator=(const Printer&) = delete;
     };
 
   }

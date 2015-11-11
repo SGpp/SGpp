@@ -4,8 +4,7 @@ sgpp.LoadJSGPPLib.loadJSGPPLib();
 % (interferes with SWIG's director feature)
 sgpp.jsgpp.omp_set_num_threads(1);
 % increase output verbosity
-printer = sgpp.jsgpp.getOptPrinterInstance();
-printer.setVerbosity(2);
+sgpp.OptPrinter.getInstance().setVerbosity(2);
 printLine = @() fprintf(['----------------------------------------' ...
                          '----------------------------------------\n']);
 

@@ -96,12 +96,12 @@ namespace SGPP {
         /**
          * Deleted copy constructor.
          */
-        ClenshawCurtisTable(ClenshawCurtisTable const&) = delete;
+        ClenshawCurtisTable(const ClenshawCurtisTable&) = delete;
 
         /**
          * Deleted assignment operator.
          */
-        void operator=(ClenshawCurtisTable const&) = delete;
+        void operator=(const ClenshawCurtisTable&) = delete;
     };
 
   }
