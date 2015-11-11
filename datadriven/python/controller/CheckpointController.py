@@ -59,7 +59,7 @@ import gzip, copy
 # For example, to save the Grid object in file, controller requests its memento object with
 # states and then calls method GridFormatter().serializeToFile(<Grid memento object>, <file name>).
 #
-# @section Examples How to restore a checkpoint
+# @section CheckpointController_Examples How to restore a checkpoint
 # Supposed, you have already learned and stored checkpoints and now you have files
 # checkpoint.6.arff.gz, checkpoint.6.grid.gz and checkpoint.6.learner.gz from the 6th
 # iteration stored in your working directory. Now you can

@@ -17,8 +17,8 @@ using namespace SGPP::optimization;
 
 BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
   // Test SGPP::optimization iterative grid generators.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 2;
   const size_t p = 3;

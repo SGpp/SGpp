@@ -60,7 +60,7 @@ int main(int argc, const char* argv[]) {
   (void)argv;
 
   std::cout << "SGPP::optimization example program started.\n\n";
-  SGPP::optimization::printer.setVerbosity(2);
+  SGPP::optimization::Printer::getInstance().setVerbosity(2);
 
   // objective function
   ExampleFunction f;

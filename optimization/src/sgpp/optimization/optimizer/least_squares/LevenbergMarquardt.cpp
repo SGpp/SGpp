@@ -51,7 +51,7 @@ namespace SGPP {
       }
 
       void LevenbergMarquardt::optimize() {
-        printer.printStatusBegin("Optimizing (Levenberg-Marquardt)...");
+        Printer::getInstance().printStatusBegin("Optimizing (Levenberg-Marquardt)...");
 
         const size_t d = phi.getNumberOfParameters();
         const size_t m = phi.getNumberOfComponents();
@@ -79,7 +79,7 @@ namespace SGPP {
         base::DataMatrix gradPhixSquared(m, m);
 
         size_t k = 0;
-        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
+        const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
         while (k < N) {
           // calculate gradient of phi
@@ -131,13 +131,13 @@ namespace SGPP {
 
             // solve linear system
             if (statusPrintingEnabled) {
-              printer.disableStatusPrinting();
+              Printer::getInstance().disableStatusPrinting();
             }
 
             bool lsSolved = sleSolver.solve(system, b, s);
 
             if (statusPrintingEnabled) {
-              printer.enableStatusPrinting();
+              Printer::getInstance().enableStatusPrinting();
             }
 
             // fallback to mu * gradient of f, if linear system solving fails
@@ -188,7 +188,7 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx));
 
@@ -205,7 +205,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = fx;
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const {

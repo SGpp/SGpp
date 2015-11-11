@@ -141,7 +141,8 @@ namespace SGPP {
         float_t tolerance,
         float_t barrierStartValue,
         float_t barrierDecreaseFactor) :
-        ConstrainedOptimizer(f, g, emptyVectorFunction, maxItCount),
+        ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(),
+                             maxItCount),
         fGradient(fGradient),
         gGradient(gGradient),
         theta(tolerance),
@@ -151,7 +152,7 @@ namespace SGPP {
       }
 
       void LogBarrier::optimize() {
-        printer.printStatusBegin("Optimizing (Log Barrier)...");
+        Printer::getInstance().printStatusBegin("Optimizing (Log Barrier)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -207,7 +208,7 @@ namespace SGPP {
           kHist.push_back(numberInnerEvaluations);
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx) +
             ", g(x) = " + gx.toString());
@@ -230,7 +231,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = fx;
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const {

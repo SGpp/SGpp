@@ -21,32 +21,32 @@ namespace SGPP {
 
     bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
       base::DataVector& nodeValues) {
-      printer.printStatusBegin("Hierarchization (BFS)...");
+      Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
       op.doHierarchisation(nodeValues);
-      printer.printStatusEnd();
+      Printer::getInstance().printStatusEnd();
       return true;
     }
 
     void OperationMultipleHierarchisationModFundamentalSpline::doDehierarchisation(
       base::DataVector& alpha) {
-      printer.printStatusBegin("Dehierarchization (BFS)...");
+      Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
       op.doDehierarchisation(alpha);
-      printer.printStatusEnd();
+      Printer::getInstance().printStatusEnd();
     }
 
     bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
       base::DataMatrix& nodeValues) {
-      printer.printStatusBegin("Hierarchization (BFS)...");
+      Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
       op.doHierarchisation(nodeValues);
-      printer.printStatusEnd();
+      Printer::getInstance().printStatusEnd();
       return true;
     }
 
     void OperationMultipleHierarchisationModFundamentalSpline::doDehierarchisation(
       base::DataMatrix& alpha) {
-      printer.printStatusBegin("Dehierarchization (BFS)...");
+      Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
       op.doDehierarchisation(alpha);
-      printer.printStatusEnd();
+      Printer::getInstance().printStatusEnd();
     }
 
   }

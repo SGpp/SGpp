@@ -19,7 +19,7 @@ namespace SGPP {
       bool GaussianElimination::solve(SLE& system,
                                       base::DataVector& b,
                                       base::DataVector& x) const {
-        printer.printStatusBegin(
+        Printer::getInstance().printStatusBegin(
           "Solving linear system (Gaussian elimination)...");
 
         // size of the system
@@ -49,7 +49,7 @@ namespace SGPP {
         // |    l    (n-l)     1    column(s)        |
         // +-----------------------------------------+
         for (size_t l = 0; l < n; l++) {
-          printer.printStatusUpdate("k = " + std::to_string(l));
+          Printer::getInstance().printStatusUpdate("k = " + std::to_string(l));
 
           // search for pivot entry = maximum of the absolute values
           // of the entries w_{l,l}, ..., w_{n,l}
@@ -68,7 +68,7 @@ namespace SGPP {
 
           // all entries are zero ==> matrices W and A are rank deficient
           if (maxEntry == 0) {
-            printer.printStatusEnd(
+            Printer::getInstance().printStatusEnd(
               "error: could not solve linear system!");
             return false;
           }
@@ -105,8 +105,8 @@ namespace SGPP {
         x.resize(n);
         W.getColumn(n, x);
 
-        printer.printStatusUpdate("k = " + std::to_string(n));
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("k = " + std::to_string(n));
+        Printer::getInstance().printStatusEnd();
         return true;
       }
 

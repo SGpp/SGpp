@@ -27,7 +27,7 @@ namespace SGPP {
        * @param iter  iteration information
        */
       void callback(const gmm::iteration& iter) {
-        printer.printStatusUpdate(
+        Printer::getInstance().printStatusUpdate(
           "solving with Gmm++ (k = " +
           std::to_string(iter.get_iteration()) +
           ", residual norm = " + std::to_string(iter.get_res()) + ")");
@@ -49,11 +49,11 @@ namespace SGPP {
         std::vector<float_t> xVec(n, 0.0);
 
         // ILU preconditioning
-        printer.printStatusUpdate("constructing preconditioner");
+        Printer::getInstance().printStatusUpdate("constructing preconditioner");
         gmm::ilu_precond<gmm::csr_matrix<float_t>> P(A);
 
-        printer.printStatusNewLine();
-        printer.printStatusUpdate("solving with Gmm++");
+        Printer::getInstance().printStatusNewLine();
+        Printer::getInstance().printStatusUpdate("solving with Gmm++");
 
         gmm::iteration iter(1e-6, 0, 10000);
         iter.set_callback(&callback);
@@ -67,20 +67,20 @@ namespace SGPP {
           if (iter.converged() && (res < 1e3)) {
             // GMRES converged
             x = base::DataVector(xVec);
-            printer.printStatusUpdate(
+            Printer::getInstance().printStatusUpdate(
               "solving with Gmm++ (k = " +
               std::to_string(iter.get_iteration()) +
               ", residual norm = " + std::to_string(res) + ")");
-            printer.printStatusEnd();
+            Printer::getInstance().printStatusEnd();
             return true;
           } else {
             // GMRES didn't converge ==> try again without preconditioner
             gmm::identity_matrix P;
 
-            printer.printStatusNewLine();
-            printer.printStatusUpdate(
+            Printer::getInstance().printStatusNewLine();
+            Printer::getInstance().printStatusUpdate(
               "solving with preconditioner failed, trying again without one");
-            printer.printStatusNewLine();
+            Printer::getInstance().printStatusNewLine();
 
             // call GMRES again
             gmm::gmres(A, xVec, bVec, P, 50, iter);
@@ -88,21 +88,21 @@ namespace SGPP {
 
             if (iter.converged() && (res < 1e3)) {
               x = base::DataVector(xVec);
-              printer.printStatusUpdate(
+              Printer::getInstance().printStatusUpdate(
                 "solving with Gmm++ (k = " +
                 std::to_string(iter.get_iteration()) +
                 ", residual norm = " + std::to_string(res) + ")");
-              printer.printStatusEnd();
+              Printer::getInstance().printStatusEnd();
               return true;
             } else {
-              printer.printStatusEnd(
+              Printer::getInstance().printStatusEnd(
                 "error: could not solve linear system, "
                 "method didn't converge");
               return false;
             }
           }
         } catch (std::exception& e) {
-          printer.printStatusEnd(
+          Printer::getInstance().printStatusEnd(
             "error: could not solve linear system, what(): " +
             std::string(e.what()));
           return false;
@@ -113,7 +113,7 @@ namespace SGPP {
       bool Gmmpp::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {
 #ifdef USE_GMMPP
-        printer.printStatusBegin("Solving linear system (Gmm++)...");
+        Printer::getInstance().printStatusBegin("Solving linear system (Gmm++)...");
 
         const size_t n = system.getDimension();
         size_t nnz = 0;
@@ -160,7 +160,7 @@ namespace SGPP {
                   char str[10];
                   snprintf(str, 10, "%.1f%%",
                   static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
-                  printer.printStatusUpdate("constructing sparse matrix (" +
+                  Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
                   std::string(str) + ")");
                 }
               }
@@ -172,8 +172,8 @@ namespace SGPP {
           gmm::copy(A, A2);
         }
 
-        printer.printStatusUpdate("constructing sparse matrix (100.0%)");
-        printer.printStatusNewLine();
+        Printer::getInstance().printStatusUpdate("constructing sparse matrix (100.0%)");
+        Printer::getInstance().printStatusNewLine();
 
         // print ratio of nonzero entries
         {
@@ -182,8 +182,8 @@ namespace SGPP {
                               (static_cast<float_t>(n) *
                                static_cast<float_t>(n));
           snprintf(str, 10, "%.1f%%", nnz_ratio * 100.0);
-          printer.printStatusUpdate("nnz ratio: " + std::string(str));
-          printer.printStatusNewLine();
+          Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
+          Printer::getInstance().printStatusNewLine();
         }
 
         x.resize(n);

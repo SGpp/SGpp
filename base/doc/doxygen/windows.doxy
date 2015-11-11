@@ -7,14 +7,15 @@ Windows platforms, but most of them will. Nevertheless, by following
 the instructions below you will be able to build SG++ also on Windows
 and use the Python and Java/Matlab interface.
 
-@section overview Overview
-- \ref requirements
-- \ref compilation_scons
-- \ref troubleshooting
+@section installationWindowsOverview Overview
+- \ref installationWindowsRequirements
+- \ref howtoinstallonwindows
+- \ref installationWindowsCompilation_scons
+- \ref installationWindowsTroubleshooting
 
 
-@section requirements Requirements and Recommendations
-@subsection requirements_necessary Required
+@section installationWindowsRequirements Requirements and Recommendations
+@subsection installationWindowsRequirements_necessary Required
 
 - Visual Studio (>= 14), https://www.visualstudio.com/, is
 recommended
@@ -32,7 +33,7 @@ interface
 - doxygen, http://www.doxygen.nl/index.html, is required to create and compile
 the documentation. Essentially, what can be found at
 http://sgpp.sparsegrids.org
-@subsection requirements_optional Optional packages
+@subsection installationWindowsRequirements_optional Optional packages
 - swig, for generating the interfaces to python and java/Matlab,
 http://www.swig.org/download.html
 - numpy, for python support, http://sourceforge.net/projects/numpy/files/NumPy/1.10.1/
@@ -73,7 +74,7 @@ added to PATH.
   - Make sure that both paths to the executables of doxygen and graphviz
     are available in the system path variable (PATH)
 
-@section compilation_scons Compilation with SCons
+@section installationWindowsCompilation_scons Compilation with SCons
 
 Compilation of the C++ libraries is done with SCons. Execute
 @verbatim
@@ -89,7 +90,7 @@ To obtain help on parameters for compilation, type
 After compilation just the unit-tests (located in the
 <tt>tests</tt>-folder of each module) are executed.
 
-@subsection sconsConfiguration Configuration for compilation
+@subsection installationWindowsSconsConfiguration Configuration for compilation
 
 SCons uses the file <tt>SConstruct</tt>. This file contains all
 information for compiling SGpp. To build SG++ under Windows you need
@@ -115,7 +116,7 @@ The library is installed to
 
 <tt>lib/sgpp/sgpp<package name\>static.lib</tt>
 
-@subsection Building dlls and bindexplib
+@subsection installationWindowsBuilding Building dlls and bindexplib
 
 However, if you want to build a dynamic library just 32 Bit is
 supported. The issue here is that the default behavior of a dll is to
@@ -150,14 +151,14 @@ to obtain the dynamic library. The library is installed to
 
 <tt>lib/sgpp/sgpp<package name\>.{lib|dll}</tt>
 
-@subsection Cleaning the project
+@subsection installationWindowsCleaning Cleaning the project
 
 Please execute
 @code{bash}
   scons SG_PARALLEL=0 SG_COMBIGRID=0 MSVC_USE_SCRIPT="C:\path\to\Visual Studio\VC\bin\vcvars32.bat" -c
 @endcode
 
-@subsection Available modules
+@subsection installationWindowsAvailable Available modules
 
 You are able to compile different SG++ modules independently. However, you should take into account the dependencies between the modules to
 avoid "undefined symbol" errors: When using them, depending on the dependencies, other modules might have to be included, too. The currently available modules are (see the @ref modules page):
@@ -186,7 +187,7 @@ For example, the command
 will create the shared library sgppbase.dll and the corresponding
 import library sgppbase.lib.
 
-@subsection pysgpp Building the python bindings
+@subsection installationWindowsPysgpp Building the python bindings
 
 The pything bindings are built if the <tt>SG_PYTHON=1</tt> flag is
 set. After compilation, two files, pysgpp.py and _pysgpp_swig.dll are
@@ -220,14 +221,14 @@ to the C++ code, for example write
 @endcode
 to use the uncertainty quantification python package.
 
-@subsection jsgpp Building the jsgpp library for use with Java
+@subsection installationWindowsJsgpp Building the jsgpp library for use with Java
 
 For the use of SGpp with Java, you have to generate the <tt>jsgpp</tt>. It can be generated with
 @code{bash}
   scons SG_JAVA=1 SG_PYTHON=1 SG_PARALLEL=0 SG_COMBIGRID=0 TARGETCPU=VCC MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 @endcode
 
-@subsection sconsVisualStudio Configuration for use of Scons within Visual Studio
+@subsection installationWindowsSconsVisualStudio Configuration for use of Scons within Visual Studio
 
 Create a new project by
   - File -> New -> Project from existing code; select Visual C++ as
@@ -242,37 +243,38 @@ Create a new project by
   - If you want to adjust the build command, go to the properties of
   the project -> NMake -> Build Command Line.
 
-@section troubleshooting Troubleshooting
-A few helpful hints that have caused trouble before (or might cause trouble...)
+@section installationWindowsTroubleshooting Troubleshooting
+A few helpful hints for what has caused trouble before
+(or might cause trouble in the future...)
 
 - Building shared libraries for amd64 is not supported due to missing
-  functionality of the bindexplib application
-- In general amd64 architecture is causing trouble with the java and
+  functionality of the bindexplib application.
+- In general, amd64 architecture is causing trouble with the java and
   the python interface due to non consistent handling of the size_t
   type in swig. It does not work out of the box and no automatic
   solution is available at the moment.
-- make the variable JAVA_HOME available globally that scons finds the
-  headers for the java interface
-- make sure that python 2.7 is installed in a folder with full access (do
+- Make the variable JAVA_HOME available globally so that SCons finds the
+  headers for the Java interface.
+- Make sure that Python 2.7 is installed in a folder with full access (do
   not use "Program Data" or comparable system folders), otherwise
-  scons won't install.
-- the python interface on windows does not provide enum types from
+  SCons won't install.
+- The Python interface on Windows does not provide enum types from
   C++. This does restrict its usability significantly but currently
   there is no solution to that issue available.
-- running boost tests automatically does not work. You can compile
+- Running boost tests automatically does not work. You can compile
   them by specifying COMPILE_BOOST_TESTS=1 but you need to set
   RUN_BOOST_TESTS=0 otherwise the build will fail.
-- to run the python unit tests one needs to make the full python
+- To run the Python unit tests one needs to make the full Python
   package available. This can be done in Unix either by installation
   of the package via the <tt>setup.py</tt> script or via setting
-  the python path to <tt>lib</tt>. However, in Windows just the first
+  the python path to <tt>lib</tt>. However, in Windows, just the first
   approach is available currently. To make sure that <tt>pysgpp</tt>
-  is available in the <tt>PYTHONPATH</tt> one needs to install it
-  somewhere. Currently scons installs it to some temporary folder and
-  adds this very folder to the python path. To avoid conflicts with
-  other installed versions of <tt>pysgpp</tt> the temporary folder is
+  is available in the <tt>PYTHONPATH</tt>, one needs to install it
+  somewhere. Currently, SCons installs it to some temporary folder and
+  adds this very folder to the Python path. To avoid conflicts with
+  other installed versions of <tt>pysgpp</tt>, the temporary folder is
   added as first element to the <tt>PYTHONPATH</tt>. This is a bit
-  hacky but works with current python releases. To make the user aware
+  hacky but works with current Python releases. To make the user aware
   of this problem a warning is shown if more than one <tt>pysgpp</tt>
   installations are detected.
 */

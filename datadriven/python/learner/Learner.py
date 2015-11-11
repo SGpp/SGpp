@@ -21,7 +21,7 @@ import types
 # The class also implements the subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer
 # design pattern</a>.
 #
-# @section Observer design pattern
+# @section Learner_Observer design pattern
 # To customize the processing of progress information in SGPP the observer pattern
 # is used. The classes that want to be informed about events should implement LearnerEvenController
 # and subscribe by the instance of Learner subclass

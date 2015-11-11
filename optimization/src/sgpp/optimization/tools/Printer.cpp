@@ -19,8 +19,6 @@
 namespace SGPP {
   namespace optimization {
 
-    Printer printer;
-
     Printer::Printer() :
       verbose(DEFAULT_VERBOSITY),
       statusPrintingEnabled(true),
@@ -175,14 +173,17 @@ namespace SGPP {
     }
 
     void Printer::enableStatusPrinting() {
+      ScopedLock lock(mutex);
       statusPrintingEnabled = true;
     }
 
     void Printer::disableStatusPrinting() {
+      ScopedLock lock(mutex);
       statusPrintingEnabled = false;
     }
 
     bool Printer::isStatusPrintingEnabled() {
+      ScopedLock lock(mutex);
       return statusPrintingEnabled;
     }
 

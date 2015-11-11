@@ -31,7 +31,7 @@ namespace SGPP {
       }
 
       void GradientDescent::optimize() {
-        printer.printStatusBegin("Optimizing (gradient descent)...");
+        Printer::getInstance().printStatusBegin("Optimizing (gradient descent)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -70,7 +70,7 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx));
 
@@ -91,7 +91,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = fx;
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const {

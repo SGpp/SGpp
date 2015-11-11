@@ -6,22 +6,30 @@
 #ifndef SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP
 #define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP
 
-#include <cstddef>
 #include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
 
 namespace SGPP {
   namespace optimization {
 
     /**
-     * Empty implementation of VectorFunction.
+     * Singleton containing an empty implementation of VectorFunction.
      * This is intended as a fill-in for ConstrainedOptimizer, if
      * only equality or inequality constraints are supported.
      */
-#if defined _WIN32 && !defined _USE_STATICLIB
-    extern __declspec(dllimport) WrapperVectorFunction emptyVectorFunction;
-#else
-    extern WrapperVectorFunction emptyVectorFunction;
-#endif
+    class EmptyVectorFunction {
+      public:
+        inline static WrapperVectorFunction& getInstance() {
+          static WrapperVectorFunction wrapperVectorFunction(
+            0, 0, [](const base::DataVector & x,
+          base::DataVector & value) {});
+          return wrapperVectorFunction;
+        }
+
+      private:
+        EmptyVectorFunction() {}
+        EmptyVectorFunction(const EmptyVectorFunction&) = delete;
+        void operator=(const EmptyVectorFunction&) = delete;
+    };
 
   }
 }

@@ -35,7 +35,7 @@ public class java_example {
     // (interferes with SWIG's director feature)
     sgpp.jsgpp.omp_set_num_threads(1);
     // increase output verbosity
-    sgpp.jsgpp.getOptPrinterInstance().setVerbosity(2);
+    sgpp.OptPrinter.getInstance().setVerbosity(2);
 
     System.out.println("SGPP::optimization example program started.\n");
 

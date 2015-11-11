@@ -29,7 +29,7 @@ namespace SGPP {
       }
 
       void AdaptiveGradientDescent::optimize() {
-        printer.printStatusBegin("Optimizing (adaptive gradient descent)...");
+        Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -117,7 +117,7 @@ namespace SGPP {
           alpha *= rhoAlphaPlus;
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx));
 
@@ -138,7 +138,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = fx;
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const {

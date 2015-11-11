@@ -40,7 +40,6 @@ const bool UMFPACK_ENABLED;
 
 // necessary tools
 %rename(OptRNG)         SGPP::optimization::RandomNumberGenerator;
-%rename(OptRNGInstance) SGPP::optimization::randomNumberGenerator;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
 
 // renames
@@ -60,8 +59,8 @@ const bool UMFPACK_ENABLED;
 %rename(OptVectorFunction)                      SGPP::optimization::VectorFunction;
 %rename(OptVectorFunctionGradient)              SGPP::optimization::VectorFunctionGradient;
 %rename(OptVectorFunctionHessian)               SGPP::optimization::VectorFunctionHessian;
-%rename(OptEmptyVectorFunction)                 SGPP::optimization::emptyVectorFunction;
-%rename(OptEmptyVectorFunctionGradient)         SGPP::optimization::emptyVectorFunctionGradient;
+%rename(OptEmptyVectorFunction)                 SGPP::optimization::EmptyVectorFunction;
+%rename(OptEmptyVectorFunctionGradient)         SGPP::optimization::EmptyVectorFunctionGradient;
 %rename(OptInterpolantVectorFunction)           SGPP::optimization::InterpolantVectorFunction;
 %rename(OptInterpolantVectorGradient)           SGPP::optimization::InterpolantVectorGradient;
 %rename(OptInterpolantVectorHessian)            SGPP::optimization::InterpolantVectorHessian;
@@ -140,7 +139,6 @@ const bool UMFPACK_ENABLED;
 %rename(OptMathHouseholderTransformation)   SGPP::optimization::math::householderTransformation;
 %rename(OptMutexType)                       SGPP::optimization::MutexType;
 %rename(OptPrinter)                         SGPP::optimization::Printer;
-%rename(OptPrinterInstance)                 SGPP::optimization::printer;
 
 // classes with director interface
 %feature("director") SGPP::optimization::ConstraintFunction;

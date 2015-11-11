@@ -88,7 +88,7 @@ namespace SGPP {
                           base::DataMatrix& B,
                           base::DataMatrix& X) const {
 #ifdef USE_UMFPACK
-        printer.printStatusBegin("Solving linear system (UMFPACK)...");
+        Printer::getInstance().printStatusBegin("Solving linear system (UMFPACK)...");
 
         const size_t n = system.getDimension();
 
@@ -99,7 +99,7 @@ namespace SGPP {
 
         // parallelize only if the system is cloneable
         #pragma omp parallel if (system.isCloneable()) \
-        shared(system, Ti, Tj, Tx, nnz, printer) default(none)
+        shared(system, Ti, Tj, Tx, nnz) default(none)
         {
           SLE* system2 = &system;
 #ifdef _OPENMP
@@ -137,15 +137,15 @@ namespace SGPP {
                 char str[10];
                 snprintf(str, 10, "%.1f%%",
                 static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
-                printer.printStatusUpdate("constructing sparse matrix (" +
+                Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
                 std::string(str) + ")");
               }
             }
           }
         }
 
-        printer.printStatusUpdate("constructing sparse matrix (100.0%)");
-        printer.printStatusNewLine();
+        Printer::getInstance().printStatusUpdate("constructing sparse matrix (100.0%)");
+        Printer::getInstance().printStatusNewLine();
 
         // print ratio of nonzero entries
         {
@@ -154,8 +154,8 @@ namespace SGPP {
                               (static_cast<float_t>(n) *
                                static_cast<float_t>(n));
           snprintf(str, 10, "%.1f%%", nnz_ratio * 100.0);
-          printer.printStatusUpdate("nnz ratio: " + std::string(str));
-          printer.printStatusNewLine();
+          Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
+          Printer::getInstance().printStatusNewLine();
         }
 
         std::vector<sslong> Ap(n + 1, 0);
@@ -174,7 +174,7 @@ namespace SGPP {
             TjArray[k] = static_cast<sslong>(Tj[k]);
           }
 
-          printer.printStatusUpdate("step 1: umfpack_dl_triplet_to_col");
+          Printer::getInstance().printStatusUpdate("step 1: umfpack_dl_triplet_to_col");
 
           result = umfpack_dl_triplet_to_col(
                      static_cast<sslong>(n), static_cast<sslong>(n),
@@ -183,7 +183,7 @@ namespace SGPP {
                      &Ap[0], &Ai[0], &Ax[0], NULL);
 
           if (result != UMFPACK_OK) {
-            printer.printStatusEnd(
+            Printer::getInstance().printStatusEnd(
               "error: could not convert to CCS via "
               "umfpack_dl_triplet_to_col, error code " +
               std::to_string(result));
@@ -193,8 +193,8 @@ namespace SGPP {
 
         void* symbolic, *numeric;
 
-        printer.printStatusNewLine();
-        printer.printStatusUpdate("step 2: umfpack_dl_symbolic");
+        Printer::getInstance().printStatusNewLine();
+        Printer::getInstance().printStatusUpdate("step 2: umfpack_dl_symbolic");
 
         // call umfpack_dl_symbolic
         result = umfpack_dl_symbolic(static_cast<sslong>(n),
@@ -203,21 +203,21 @@ namespace SGPP {
                                      &symbolic, NULL, NULL);
 
         if (result != UMFPACK_OK) {
-          printer.printStatusEnd("error: could solve via umfpack_dl_symbolic, "
-                                 "error code " + std::to_string(result));
+          Printer::getInstance().printStatusEnd("error: could solve via umfpack_dl_symbolic, "
+                                                "error code " + std::to_string(result));
           return false;
         }
 
-        printer.printStatusNewLine();
-        printer.printStatusUpdate("step 3: umfpack_dl_numeric");
+        Printer::getInstance().printStatusNewLine();
+        Printer::getInstance().printStatusUpdate("step 3: umfpack_dl_numeric");
 
         // call umfpack_dl_numeric
         result = umfpack_dl_numeric(&Ap[0], &Ai[0], &Ax[0],
                                     symbolic, &numeric, NULL, NULL);
 
         if (result != UMFPACK_OK) {
-          printer.printStatusEnd("error: could solve via umfpack_dl_numeric, "
-                                 "error code " + std::to_string(result));
+          Printer::getInstance().printStatusEnd("error: could solve via umfpack_dl_numeric, "
+                                                "error code " + std::to_string(result));
           umfpack_dl_free_symbolic(&symbolic);
           return false;
         }
@@ -231,29 +231,29 @@ namespace SGPP {
         // call umfpack_dl_solve for each RHS
         for (size_t i = 0; i < B.getNcols(); i++) {
           B.getColumn(i, b);
-          printer.printStatusNewLine();
+          Printer::getInstance().printStatusNewLine();
 
           if (B.getNcols() == 1) {
-            printer.printStatusUpdate("step 4: umfpack_dl_solve");
+            Printer::getInstance().printStatusUpdate("step 4: umfpack_dl_solve");
           } else {
-            printer.printStatusUpdate("step 4: umfpack_dl_solve (RHS " +
-                                      std::to_string(i + 1) +
-                                      " of " + std::to_string(B.getNcols()) +
-                                      ")");
+            Printer::getInstance().printStatusUpdate("step 4: umfpack_dl_solve (RHS " +
+                std::to_string(i + 1) +
+                " of " + std::to_string(B.getNcols()) +
+                ")");
           }
 
           if (solveInternal(numeric, Ap, Ai, Ax, b, x)) {
             X.setColumn(i, x);
           } else {
-            printer.printStatusEnd("error: could solve via umfpack_dl_solve, "
-                                   "error code " + std::to_string(result));
+            Printer::getInstance().printStatusEnd("error: could solve via umfpack_dl_solve, "
+                                                  "error code " + std::to_string(result));
             umfpack_dl_free_numeric(&numeric);
             return false;
           }
         }
 
         umfpack_dl_free_numeric(&numeric);
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
 
         return true;
 #else
