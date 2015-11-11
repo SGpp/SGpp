@@ -26,7 +26,7 @@ def printLine():
 # disable multi-threading
 pysgpp.omp_set_num_threads(1)
 # increase output verbosity
-pysgpp.cvar.OptPrinterInstance.setVerbosity(2)
+pysgpp.OptPrinter.getInstance().setVerbosity(2)
 
 print "SGPP::optimization example program started.\n"
 

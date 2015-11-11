@@ -12,7 +12,7 @@
 # The class also implements the subject of <a href="Observer_pattern" target="new">the observer
 # design pattern</a>.
 #
-# @section Observer design pattern
+# @section LinearSolver_Observer design pattern
 # To customize the processing of progress information in SGPP the observer pattern
 # is used. The classes that want to be informed about events should implement SolverEvenController
 # and subscribe by the instance of LinearSolver subclass with

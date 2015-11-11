@@ -29,12 +29,10 @@ namespace SGPP {
         /// default number of intervals
         static const level_type DEFAULT_MAX_LEVEL = 16;
 
-        /**
-         * Constructor creating the lookup table.
-         *
-         * @param maxLevel    level up to which grid points should be pre-computed
-         */
-        ClenshawCurtisTable(level_type maxLevel = DEFAULT_MAX_LEVEL);
+        inline static ClenshawCurtisTable& getInstance() {
+          static ClenshawCurtisTable clenshawCurtisTable;
+          return clenshawCurtisTable;
+        }
 
         /**
          * @param l       level of the grid point
@@ -86,13 +84,26 @@ namespace SGPP {
           return (std::cos(
                     M_PI * (1.0 - static_cast<float_t>(i) * h)) + 1.0) / 2.0;
         }
+
+      private:
+        /**
+         * Constructor creating the lookup table.
+         *
+         * @param maxLevel    level up to which grid points should be pre-computed
+         */
+        ClenshawCurtisTable(level_type maxLevel = DEFAULT_MAX_LEVEL);
+
+        /**
+         * Deleted copy constructor.
+         */
+        ClenshawCurtisTable(const ClenshawCurtisTable&) = delete;
+
+        /**
+         * Deleted assignment operator.
+         */
+        void operator=(const ClenshawCurtisTable&) = delete;
     };
 
-#if defined _WIN32 && !defined _USE_STATICLIB
-    extern __declspec(dllimport) ClenshawCurtisTable clenshawCurtisTable;
-#else
-    extern ClenshawCurtisTable clenshawCurtisTable;
-#endif
   }
 }
 

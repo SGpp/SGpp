@@ -26,7 +26,7 @@ namespace SGPP {
       }
 
       void NelderMead::optimize() {
-        printer.printStatusBegin("Optimizing (Nelder-Mead)...");
+        Printer::getInstance().printStatusBegin("Optimizing (Nelder-Mead)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -193,8 +193,8 @@ namespace SGPP {
 
           // status printing
           if (k % 10 == 0) {
-            printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                      std::to_string(fPoints[0]));
+            Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                std::to_string(fPoints[0]));
           }
 
           if (numberOfFcnEvals + (d + 2) > N) {
@@ -210,9 +210,9 @@ namespace SGPP {
         xOpt = points[0];
         fOpt = fPoints[0];
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fPoints[0]));
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+            std::to_string(fPoints[0]));
+        Printer::getInstance().printStatusEnd();
       }
 
       float_t NelderMead::getAlpha() const {

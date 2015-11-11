@@ -422,7 +422,7 @@ namespace SGPP {
       }
 
       void AugmentedLagrangian::optimize() {
-        printer.printStatusBegin("Optimizing (Augmented Lagrangian)...");
+        Printer::getInstance().printStatusBegin("Optimizing (Augmented Lagrangian)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -484,7 +484,7 @@ namespace SGPP {
           kHist.push_back(numberInnerEvaluations);
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx) +
             ", g(x) = " + gx.toString() +
@@ -518,7 +518,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = fx;
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
@@ -556,7 +556,8 @@ namespace SGPP {
 
         AugmentedLagrangian optimizer(
           auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
-          emptyVectorFunction, emptyVectorFunctionGradient);
+          EmptyVectorFunction::getInstance(),
+          EmptyVectorFunctionGradient::getInstance());
         optimizer.setStartingPoint(auxX);
         optimizer.optimize();
         auxX = optimizer.getOptimalPoint();

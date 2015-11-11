@@ -59,7 +59,7 @@ namespace SGPP {
       }
 
       void AdaptiveNewton::optimize() {
-        printer.printStatusBegin("Optimizing (adaptive Newton)...");
+        Printer::getInstance().printStatusBegin("Optimizing (adaptive Newton)...");
 
         const size_t d = f.getNumberOfParameters();
 
@@ -92,7 +92,7 @@ namespace SGPP {
         const float_t ALPHA1 = 1e-6;
         const float_t ALPHA2 = 1e-6;
         const float_t P = 0.1;
-        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
+        const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
         while (k < N) {
           // calculate gradient and Hessian
@@ -119,13 +119,13 @@ namespace SGPP {
 
           // solve linear system with damped Hessian as system matrix
           if (statusPrintingEnabled) {
-            printer.disableStatusPrinting();
+            Printer::getInstance().disableStatusPrinting();
           }
 
           lsSolved = sleSolver.solve(system, b, dir);
 
           if (statusPrintingEnabled) {
-            printer.enableStatusPrinting();
+            Printer::getInstance().enableStatusPrinting();
           }
 
           const float_t dirNorm = dir.l2Norm();
@@ -180,9 +180,9 @@ namespace SGPP {
               }
 
               // solve linear system with damped Hessian as system matrix
-              printer.disableStatusPrinting();
+              Printer::getInstance().disableStatusPrinting();
               lsSolved = sleSolver.solve(system, b, dir);
-              printer.enableStatusPrinting();
+              Printer::getInstance().enableStatusPrinting();
 
               // recalculate inner product
               gradFxTimesDir = gradFx.dotProduct(dir);
@@ -218,7 +218,7 @@ namespace SGPP {
           lambda *= rhoLambdaMinus;
 
           // status printing
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::to_string(k) + " evaluations, x = " + x.toString() +
             ", f(x) = " + std::to_string(fx));
 
@@ -239,7 +239,7 @@ namespace SGPP {
         xOpt.resize(d);
         xOpt = x;
         fOpt = fx;
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
       }
 
       ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const {

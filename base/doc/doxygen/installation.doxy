@@ -2,7 +2,7 @@
 @page installationLinux Installation and Compilation on Linux
 Compilation, installation and dependecies.
 
-@section overview Overview
+@section installationOverview Overview
 - \ref requirements
 - \ref compilation_scons
 - \ref troubleshooting

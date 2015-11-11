@@ -161,16 +161,16 @@ namespace SGPP {
             return static_cast<float_t>(i) / 2.0;
           } else if (i == 0) {
             // = x_{l,1} - (x_{l,2} - x_{l,1})
-            return 2.0 * clenshawCurtisTable.getPoint(l, 1, hInv) -
-                   clenshawCurtisTable.getPoint(l, 2, hInv);
+            return 2.0 * ClenshawCurtisTable::getInstance().getPoint(l, 1, hInv) -
+                   ClenshawCurtisTable::getInstance().getPoint(l, 2, hInv);
           } else if (i >= hInv) {
-            const float_t x1 = clenshawCurtisTable.getPoint(l, 1, hInv);
-            const float_t x2 = clenshawCurtisTable.getPoint(l, 2, hInv);
+            const float_t x1 = ClenshawCurtisTable::getInstance().getPoint(l, 1, hInv);
+            const float_t x2 = ClenshawCurtisTable::getInstance().getPoint(l, 2, hInv);
             const float_t hBoundary = x2 - x1;
 
             return (1.0 - x1) + hBoundary * static_cast<float_t>(i - hInv + 1);
           } else {
-            return clenshawCurtisTable.getPoint(l, i, hInv);
+            return ClenshawCurtisTable::getInstance().getPoint(l, i, hInv);
           }
         }
 
@@ -181,8 +181,8 @@ namespace SGPP {
          * @return      (-ni)-th Clenshaw-Curtis grid point with level l
          */
         inline float_t clenshawCurtisPointNegativeIndex(LT l, IT ni, IT hInv) const {
-          const float_t x1 = clenshawCurtisTable.getPoint(l, 1, hInv);
-          const float_t x2 = clenshawCurtisTable.getPoint(l, 2, hInv);
+          const float_t x1 = ClenshawCurtisTable::getInstance().getPoint(l, 1, hInv);
+          const float_t x2 = ClenshawCurtisTable::getInstance().getPoint(l, 2, hInv);
           const float_t hBoundary = x2 - x1;
 
           return x1 - hBoundary * static_cast<float_t>(ni + 1);

@@ -49,7 +49,7 @@ namespace SGPP {
 
         for (size_t t = 0; t < d; t++) {
           // every component is normally distributed
-          displacement[t] = randomNumberGenerator.getGaussianRN(stdDev);
+          displacement[t] = RandomNumberGenerator::getInstance().getGaussianRN(stdDev);
         }
       }
 

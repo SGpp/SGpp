@@ -82,7 +82,7 @@ namespace SGPP {
                         base::DataMatrix& B,
                         base::DataMatrix& X) const {
 #ifdef USE_EIGEN
-        printer.printStatusBegin("Solving linear system (Eigen)...");
+        Printer::getInstance().printStatusBegin("Solving linear system (Eigen)...");
 
         const size_t n = system.getDimension();
         EigenMatrix A = EigenMatrix::Zero(n, n);
@@ -90,7 +90,7 @@ namespace SGPP {
 
         // parallelize only if the system is cloneable
         #pragma omp parallel if (system.isCloneable()) \
-        shared(system, A, nnz, printer) default(none)
+        shared(system, A, nnz) default(none)
         {
           SLE* system2 = &system;
 #ifdef _OPENMP
@@ -125,15 +125,15 @@ namespace SGPP {
                 char str[10];
                 snprintf(str, 10, "%.1f%%",
                 static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
-                printer.printStatusUpdate("constructing matrix (" +
+                Printer::getInstance().printStatusUpdate("constructing matrix (" +
                 std::string(str) + ")");
               }
             }
           }
         }
 
-        printer.printStatusUpdate("constructing matrix (100.0%)");
-        printer.printStatusNewLine();
+        Printer::getInstance().printStatusUpdate("constructing matrix (100.0%)");
+        Printer::getInstance().printStatusNewLine();
 
         // print ratio of nonzero entries
         {
@@ -142,12 +142,12 @@ namespace SGPP {
                               (static_cast<float_t>(n) *
                                static_cast<float_t>(n));
           snprintf(str, 10, "%.1f%%", nnz_ratio * 100.0);
-          printer.printStatusUpdate("nnz ratio: " + std::string(str));
-          printer.printStatusNewLine();
+          Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
+          Printer::getInstance().printStatusNewLine();
         }
 
         // calculate QR factorization of system matrix
-        printer.printStatusUpdate("step 1: Householder QR factorization");
+        Printer::getInstance().printStatusUpdate("step 1: Householder QR factorization");
         ::Eigen::HouseholderQR<EigenMatrix> A_QR = A.householderQr();
 
         base::DataVector x(n);
@@ -157,26 +157,26 @@ namespace SGPP {
         // solve system for each RHS
         for (size_t i = 0; i < B.getNcols(); i++) {
           B.getColumn(i, b);
-          printer.printStatusNewLine();
+          Printer::getInstance().printStatusNewLine();
 
           if (B.getNcols() == 1) {
-            printer.printStatusUpdate("step 2: solving");
+            Printer::getInstance().printStatusUpdate("step 2: solving");
           } else {
-            printer.printStatusUpdate("step 2: solving (RHS " +
-                                      std::to_string(i + 1) +
-                                      " of " + std::to_string(B.getNcols()) +
-                                      ")");
+            Printer::getInstance().printStatusUpdate("step 2: solving (RHS " +
+                std::to_string(i + 1) +
+                " of " + std::to_string(B.getNcols()) +
+                ")");
           }
 
           if (solveInternal(A, A_QR, b, x)) {
             X.setColumn(i, x);
           } else {
-            printer.printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
             return false;
           }
         }
 
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusEnd();
         return true;
 #else
         std::cerr << "Error in sle_solver::Eigen::solve: "

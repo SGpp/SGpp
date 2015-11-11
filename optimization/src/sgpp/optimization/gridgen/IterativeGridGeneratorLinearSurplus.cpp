@@ -27,8 +27,14 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(
-      ScalarFunction& f, base::Grid& grid, size_t N, float_t adaptivity) :
-      IterativeGridGenerator(f, grid, N), gamma(adaptivity) {
+      ScalarFunction& f,
+      base::Grid& grid,
+      size_t N,
+      float_t adaptivity,
+      base::level_t initialLevel) :
+      IterativeGridGenerator(f, grid, N),
+      gamma(adaptivity),
+      initialLevel(initialLevel) {
       if ((grid.getType() == base::GridType::Bspline)
           || (grid.getType() == base::GridType::Wavelet)
           || (grid.getType() == base::GridType::Linear)
@@ -66,8 +72,16 @@ namespace SGPP {
       this->gamma = adaptivity;
     }
 
+    base::level_t IterativeGridGeneratorLinearSurplus::getInitialLevel() const {
+      return initialLevel;
+    }
+
+    void IterativeGridGeneratorLinearSurplus::setInitialLevel(base::level_t initialLevel) {
+      this->initialLevel = initialLevel;
+    }
+
     bool IterativeGridGeneratorLinearSurplus::generate() {
-      printer.printStatusBegin("Adaptive grid generation (linear surplus)...");
+      Printer::getInstance().printStatusBegin("Adaptive grid generation (linear surplus)...");
 
       base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
 
@@ -109,7 +123,7 @@ namespace SGPP {
       // generate initial grid
       {
         std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
-        gridGen->regular(3);
+        gridGen->regular(initialLevel);
       }
 
       size_t currentN = gridStorage.size();
@@ -141,9 +155,9 @@ namespace SGPP {
         sle_solver::BiCGStab sleSolver;
 
         // solve system
-        printer.disableStatusPrinting();
+        Printer::getInstance().disableStatusPrinting();
         sleSolver.solve(hierSLE, fXCutoff, coeffs);
-        printer.enableStatusPrinting();
+        Printer::getInstance().enableStatusPrinting();
       }
 
       // iteration counter
@@ -167,7 +181,7 @@ namespace SGPP {
           char str[10];
           snprintf(str, 10, "%.1f%%",
                    static_cast<float_t>(currentN) / static_cast<float_t>(N) * 100.0);
-          printer.printStatusUpdate(
+          Printer::getInstance().printStatusUpdate(
             std::string(str) + " (N = " + std::to_string(currentN) + ")");
         }
 
@@ -186,7 +200,7 @@ namespace SGPP {
 
         if (newN == currentN) {
           // size unchanged ==> nothing refined (should not happen)
-          printer.printStatusEnd(
+          Printer::getInstance().printStatusEnd(
             "error: size unchanged in IterativeGridGeneratorLinearSurplus");
           result = false;
           break;
@@ -236,8 +250,8 @@ namespace SGPP {
       fX.resize(currentN);
 
       if (result) {
-        printer.printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ")");
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ")");
+        Printer::getInstance().printStatusEnd();
         return true;
       } else {
         return false;

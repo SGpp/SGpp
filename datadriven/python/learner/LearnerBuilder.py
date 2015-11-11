@@ -26,7 +26,7 @@ from formatter import LearnedKnowledgeFormatter
 
 ## Implement mechanisms to create customized learning system
 #
-# @section Examples Usage examples
+# @section LearnerBuilder_Examples Usage examples
 #
 # To create a learning system first define if it should be for classification
 # @code
