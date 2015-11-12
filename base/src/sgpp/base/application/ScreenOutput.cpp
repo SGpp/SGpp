@@ -60,7 +60,7 @@ namespace SGPP {
 
       std::cout << "[";
 
-      for (i = 0; i < ((int)(((float_t)progress) * 0.64)); i++) {
+      for (i = 0; i < static_cast<size_t>(static_cast<float_t>(progress) * 0.64); i++) {
         std::cout << "=";
       }
 

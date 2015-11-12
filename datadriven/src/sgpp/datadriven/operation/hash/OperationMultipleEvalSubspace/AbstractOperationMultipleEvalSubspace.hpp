@@ -40,6 +40,9 @@ namespace SGPP {
                                        const size_t start_index_data, const size_t end_index_data) = 0;
 
         void multTranspose(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override {
+
+          std::cout << "multTranspose" << std::endl;
+
           if (!this->isPrepared) {
             this->prepare();
           }
@@ -69,6 +72,8 @@ namespace SGPP {
         }
 
         void mult(SGPP::base::DataVector& source, SGPP::base::DataVector& result) override {
+
+          std::cout << "mult" << std::endl;
 
           if (!this->isPrepared) {
             this->prepare();
@@ -103,7 +108,7 @@ namespace SGPP {
 
         virtual size_t getAlignment() = 0;
 
-        virtual float_t getDuration () {
+        virtual float_t getDuration () override {
           return this->duration;
         }
 

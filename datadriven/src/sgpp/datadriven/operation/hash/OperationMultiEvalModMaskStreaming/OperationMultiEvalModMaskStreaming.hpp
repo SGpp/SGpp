@@ -54,7 +54,7 @@ public:
 
     void prepare() override;
 
-    float_t getDuration();
+    float_t getDuration() override;
 
 private:
     void getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber, size_t* segmentStart,
