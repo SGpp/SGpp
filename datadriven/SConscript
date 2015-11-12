@@ -92,7 +92,7 @@ if env["ARCH"].upper() == "MIC":
             exampleTargetList.append(example)
 
 # build unit tests
-if env['COMPILE_BOOST_TESTS'] == "1":
+if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
     test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework", "z"])

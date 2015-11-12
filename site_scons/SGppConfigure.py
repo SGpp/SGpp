@@ -219,7 +219,45 @@ Please install the corresponding package, e.g. using command on Ubuntu
         else:
             print "You must specify a valid ARCH value for gnu."
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
+            sys.exit(1)   
+    elif env['COMPILER'].upper() == 'CLANG':
+        print "Using clang"
+
+        env['CC'] = ('clang')
+        env['LINK'] = ('clang++')
+        env['CXX'] = ('clang++')
+
+        allWarnings = "-Wall -Wextra".split(" ")
+
+        # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
+        #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
+        #     ensure you also compile with -fno-strict-aliasing"
+        env.Append(CPPFLAGS=allWarnings + [
+                             '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
+        env.Append(CPPFLAGS=['-fopenmp=libomp'])
+        env.Append(LINKFLAGS=['-fopenmp=libomp'])
+        
+        if env['ARCH'].upper() == 'SSE3':
+            config.env.AppendUnique(CPPFLAGS="-msse3")
+        elif env['ARCH'].upper() == 'SSE42':
+            config.env.AppendUnique(CPPFLAGS="-msse4.2")
+        elif env['ARCH'].upper() == 'AVX':
+            config.env.AppendUnique(CPPFLAGS="-mavx")
+        elif env['ARCH'].upper() == 'FMA4':
+            config.env.AppendUnique(CPPFLAGS="-mavx")
+            config.env.AppendUnique(CPPFLAGS="-mfma4")
+        elif env['ARCH'].upper() == 'AVX2':
+            config.env.AppendUnique(CPPFLAGS="-mavx2")
+            config.env.AppendUnique(CPPFLAGS="-mfma")
+        elif env['ARCH'].upper() == 'AVX512':
+            config.env.AppendUnique(CPPFLAGS="-mavx512f")
+            config.env.AppendUnique(CPPFLAGS="-mavx512cd")
+            config.env.AppendUnique(CPPFLAGS="-mfma")
+        else:
+            print "You must specify a valid ARCH value for gnu."
+            print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
             sys.exit(1)            
+                     
     elif env['COMPILER'].upper() == 'INTEL':
         print "Using icc"
         env.Append(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
@@ -257,7 +295,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])  
     else:
         print "You must specify a valid value for Compiler."
-        print "Available configurations are: gnu and intel"
+        print "Available configurations are: gnu, clang and intel"
         sys.exit(1)
 
     # special treatment for different platforms

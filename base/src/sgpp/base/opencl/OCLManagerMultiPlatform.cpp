@@ -204,7 +204,6 @@ void OCLManagerMultiPlatform::buildKernel(const std::string &program_src, const 
             build_opts = "-cl-opt-disable"; // -g
         }
 
-        //TODO: check multi device support
         // compiling the program
         err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
 
