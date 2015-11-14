@@ -8,9 +8,7 @@ import unittest, sys
 #import test_BBT_SSE
 #import test_BBT_AVX
 
-if __name__ == '__main__': 
-    sys.stdout.write("Running unit tests. ")
-        
+if __name__ == '__main__':
     alltests = unittest.TestSuite([
 #                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_SSE),
 #                unittest.defaultTestLoader.loadTestsFromModule(test_BBT_AVX)

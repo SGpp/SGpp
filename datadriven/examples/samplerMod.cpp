@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     // setup grid
     gridConfig.dim_ = 0; //dim is inferred from the data
     gridConfig.level_ = maxLevel;
-    gridConfig.type_ = sg::base::ModLinear;
+    gridConfig.type_ = SGPP::base::GridType::ModLinear;
 
     // Set Adaptivity
     adaptConfig.maxLevelType_ = false;
@@ -38,13 +38,13 @@ int main(int argc, char** argv) {
     SLESolverConfigRefine.eps_ = 0;
     SLESolverConfigRefine.maxIterations_ = 0;
     SLESolverConfigRefine.threshold_ = -1.0;
-    SLESolverConfigRefine.type_ = sg::solver::CG;
+    SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = 0;
     SLESolverConfigFinal.maxIterations_ = 10;
     SLESolverConfigFinal.threshold_ = -1.0;
-    SLESolverConfigFinal.type_ = sg::solver::CG;
+    SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
     std::string metaInformation = "refine: " + std::to_string((unsigned long long) adaptConfig.numRefinements_)
             + " points: " + std::to_string((unsigned long long) adaptConfig.noPoints_) + " iterations: "

@@ -16,7 +16,7 @@ namespace SGPP {
   namespace optimization {
 
     OperationMultipleHierarchisationLinearBoundary::OperationMultipleHierarchisationLinearBoundary(
-      base::LinearTruncatedBoundaryGrid& grid) :
+      base::LinearBoundaryGrid& grid) :
       grid(grid) {
     }
 
@@ -40,7 +40,7 @@ namespace SGPP {
       base::DataVector x(d, 0.0);
 
       for (size_t j = 0; j < storage.size(); j++) {
-        const base::GridIndex& gp = *storage.get(j);
+        const base::GridIndex& gp = *storage[j];
 
         for (size_t t = 0; t < d; t++) {
           x[t] = gp.getCoord(t);
@@ -74,7 +74,7 @@ namespace SGPP {
         alpha.getColumn(i, alpha1);
 
         for (size_t j = 0; j < storage.size(); j++) {
-          const base::GridIndex& gp = *storage.get(j);
+          const base::GridIndex& gp = *storage[j];
 
           for (size_t t = 0; t < d; t++) {
             x[t] = gp.getCoord(t);

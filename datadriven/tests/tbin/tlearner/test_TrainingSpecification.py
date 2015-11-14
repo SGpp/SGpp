@@ -1,29 +1,29 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
 
-#correct the syspath, so python looks for packages in the root directory of SGpp
+#correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
 pathname = os.path.dirname(__file__)
 pathsgpp = os.path.abspath(pathname) + '/../../..'
 if pathsgpp not in sys.path: sys.path.append(pathsgpp)
 
-from datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowledge
 
 
 ##
 # @package tests.tbin.test_TrainingSpecification
-# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link datadriven.src.python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Contains class test_TrainingSpecification::TestTrainingSpecification with unittests for @link python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 
 ##
-# Class with unittests for @link datadriven.src.python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# Class with unittests for @link python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 #
 # @ingroup tests
 #
-# @test Unittests for @link datadriven.src.python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
+# @test Unittests for @link python.learner.TrainingSpecification.TrainingSpecification TrainingSpecification @endlink
 # @todo (khakhutv) implement the test case for TrainingSpecification
 class TestTrainingSpecification(unittest.TestCase):
 

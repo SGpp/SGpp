@@ -15,6 +15,69 @@ namespace SGPP {
   namespace optimization {
     namespace file_io {
 
+      template <>
+      void writeEntry(std::ofstream& f, const std::string& entry) {
+        // write string terminated by null character
+        f << entry << '\0';
+      }
+
+      template <>
+      void readEntry(std::ifstream& f, std::string& entry) {
+        char ch;
+        entry = "";
+
+        // read until null character
+        while (f.get(ch)) {
+          if (ch != '\0') {
+            entry += ch;
+          } else {
+            break;
+          }
+        }
+      }
+
+      template <>
+      const char* getTypeString(const std::vector<uint8_t>& A) {
+        (void)A;
+        return "uint8           ";
+      }
+
+      template <>
+      const char* getTypeString(const std::vector<uint16_t>& A) {
+        (void)A;
+        return "uint16          ";
+      }
+
+      template <>
+      const char* getTypeString(const std::vector<uint32_t>& A) {
+        (void)A;
+        return "uint32          ";
+      }
+
+      template <>
+      const char* getTypeString(const std::vector<uint64_t>& A) {
+        (void)A;
+        return "uint64          ";
+      }
+
+      template <>
+      const char* getTypeString(const std::vector<float>& A) {
+        (void)A;
+        return "float           ";
+      }
+
+      template <>
+      const char* getTypeString(const std::vector<double>& A) {
+        (void)A;
+        return "double          ";
+      }
+
+      template <>
+      const char* getTypeString(const std::vector<std::string>& A) {
+        (void)A;
+        return "string          ";
+      }
+
       void writeGrid(const std::string& filename,
                      const base::GridStorage& gridStorage) {
         const size_t N = gridStorage.size();
@@ -43,7 +106,7 @@ namespace SGPP {
         f.write(reinterpret_cast<const char*>(&d), sizeof(d));
 
         for (size_t j = 0; j < N; j++) {
-          const base::GridIndex& gp = *gridStorage.get(j);
+          const base::GridIndex& gp = *gridStorage[j];
 
           for (size_t t = 0; t < d; t++) {
             const float_t x = gp.getCoord(t);
@@ -57,7 +120,7 @@ namespace SGPP {
           }
 
           // function value at the current grid point
-          const float_t fX = functionValues.get(j);
+          const float_t fX = functionValues[j];
           f.write(reinterpret_cast<const char*>(&fX), sizeof(float_t));
         }
       }

@@ -183,7 +183,7 @@ namespace SGPP {
       unused = 0;
     }
 
-    size_t DataMatrixSP::appendRow(DataVectorSP& vec) {
+    size_t DataMatrixSP::appendRow(const DataVectorSP& vec) {
       if (vec.getSize() != this->ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrixSP::appendRow : Dimensions do not match");
@@ -333,6 +333,29 @@ namespace SGPP {
       }
     }
 
+    void DataMatrixSP::addReduce(DataVectorSP& reduction, DataVectorSP& beta,
+                                 size_t start_beta) {
+      if (this->nrows != reduction.getSize() ) {
+        throw new SGPP::base::data_exception(
+          "DataMatrixSP::addReduce : Dimensions do not match (reduction)");
+      }
+
+      if (this->ncols + start_beta > beta.getSize() ) {
+        throw new SGPP::base::data_exception(
+          "DataMatrixSP::addReduce : Dimensions do not match (beta)");
+      }
+
+      for (size_t i = 0; i < this->nrows; i++) {
+        float tmp = 0.0;
+
+        for (size_t j = 0; j < this->ncols; j++) {
+          tmp += beta[j + start_beta] * this->data[(i * this->ncols) + j];
+        }
+
+        reduction.set(i, reduction[i] + tmp);
+      }
+    }
+
     void DataMatrixSP::expand(const DataVectorSP& expand) {
       if (this->nrows != expand.getSize() ) {
         throw new SGPP::base::data_exception(
@@ -377,6 +400,28 @@ namespace SGPP {
 
       for (size_t i = 0; i < n; i++) {
         data[i] *= scalar;
+      }
+    }
+
+    void DataMatrixSP::mult(const DataVectorSP& x, DataVectorSP& y) {
+      if (ncols != x.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrixSP::mult : Dimensions do not match (x)");
+      }
+
+      if (nrows != y.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrixSP::mult : Dimensions do not match (y)");
+      }
+
+      for (size_t i = 0; i < nrows; i++) {
+        float entry = 0.0f;
+
+        for (size_t j = 0; j < ncols; j++) {
+          entry += data[(i * ncols) + j] * x[j];
+        }
+
+        y[i] = entry;
       }
     }
 
@@ -478,7 +523,7 @@ namespace SGPP {
 
     float DataMatrixSP::min(size_t d) const {
       size_t n = nrows * ncols;
-      float min = data[d];
+      float min = INFINITY;
 
       for (size_t i = d; i < n; i += ncols) {
         if (min > data[i]) {
@@ -491,9 +536,9 @@ namespace SGPP {
 
     float DataMatrixSP::min() const {
       size_t n = nrows * ncols;
-      float min = data[0];
+      float min = INFINITY;
 
-      for (size_t i = 1; i < n; i += 1) {
+      for (size_t i = 0; i < n; i++) {
         if (min > data[i]) {
           min = data[i];
         }
@@ -504,7 +549,7 @@ namespace SGPP {
 
     float DataMatrixSP::max(size_t d) const {
       size_t n = nrows * ncols;
-      float max = data[d];
+      float max = -INFINITY;
 
       for (size_t i = d; i < n; i += ncols) {
         if (max < data[i]) {
@@ -517,9 +562,9 @@ namespace SGPP {
 
     float DataMatrixSP::max() const {
       size_t n = nrows * ncols;
-      float max = data[0];
+      float max = -INFINITY;
 
-      for (size_t i = 1; i < n; i += 1) {
+      for (size_t i = 0; i < n; i++) {
         if (max < data[i]) {
           max = data[i];
         }
@@ -537,8 +582,8 @@ namespace SGPP {
       }
 
       // find min and max of column col
-      float min_t = data[col];
-      float max_t = data[col];
+      float min_t = INFINITY;
+      float max_t = -INFINITY;
 
       for (size_t i = col; i < n; i += ncols) {
         if (min_t > data[i]) {
@@ -557,15 +602,10 @@ namespace SGPP {
     void DataMatrixSP::minmax(float* min, float* max) const {
       size_t n = nrows * ncols;
 
-      if (n == 0) {
-        throw new SGPP::base::data_exception(
-          "DataMatrixSP::minmax : Empty DataMatrixSP");
-      }
+      float min_t = INFINITY;
+      float max_t = -INFINITY;
 
-      float min_t = data[0];
-      float max_t = data[0];
-
-      for (size_t i = 1; i < n; i += 1) {
+      for (size_t i = 0; i < n; i++) {
         if (min_t > data[i]) {
           min_t = data[i];
         }
@@ -580,6 +620,10 @@ namespace SGPP {
     }
 
     float* DataMatrixSP::getPointer() {
+      return data;
+    }
+
+    const float* DataMatrixSP::getPointer() const {
       return data;
     }
 

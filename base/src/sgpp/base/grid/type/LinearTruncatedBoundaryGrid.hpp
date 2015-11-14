@@ -3,9 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LINEARTRUNCATEDBOUNDARYGRID_HPP
-#define LINEARTRUNCATEDBOUNDARYGRID_HPP
-
+#ifndef LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_
+#define LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <iostream>
@@ -18,6 +17,9 @@ namespace SGPP {
 
     /**
      * grid with linear base functions with boundaries, pentagon cut
+     * Generalization of the LinearL0Boundary and LinearBoundary Grids
+     * The sparse grid does contain all fullgrids with |l|<a given level, and l_min>l_user
+     * For l_user=0 we obtain the LinearL0BoundaryGrid and for l_user=1 we obtain the linear truncated boundary grid
      */
     class LinearTruncatedBoundaryGrid : public Grid {
       protected:
@@ -43,7 +45,7 @@ namespace SGPP {
          */
         virtual ~LinearTruncatedBoundaryGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 
@@ -55,4 +57,4 @@ namespace SGPP {
   }
 }
 
-#endif /* LINEARTRUNCATEDBOUNDARYGRID_HPP */
+#endif /* LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_ */

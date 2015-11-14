@@ -32,8 +32,8 @@ namespace SGPP {
     WaveletGrid::~WaveletGrid() {
     }
 
-    const char* WaveletGrid::getType() {
-      return "wavelet";
+    SGPP::base::GridType WaveletGrid::getType() {
+      return SGPP::base::GridType::Wavelet;
     }
 
     const SBasis& WaveletGrid::getBasis() {

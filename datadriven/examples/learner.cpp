@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
 // setup grid
     gridConfig.dim_ = 0;    //dim is inferred from the data
     gridConfig.level_ = 7;    //base level
-    gridConfig.type_ = sg::base::Linear;
+    gridConfig.type_ = SGPP::base::GridType::Linear;
 
 // setup adaptivity
     adaptConfig.maxLevelType_ = false;
@@ -178,13 +178,13 @@ int main(int argc, char *argv[]) {
     SLESolverConfigRefine.eps_ = 0;
     SLESolverConfigRefine.maxIterations_ = 5;
     SLESolverConfigRefine.threshold_ = -1.0;
-    SLESolverConfigRefine.type_ = sg::solver::CG;
+    SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
 // setup solver for final step
     SLESolverConfigFinal.eps_ = 0;
     SLESolverConfigFinal.maxIterations_ = 5;
     SLESolverConfigFinal.threshold_ = -1.0;
-    SLESolverConfigFinal.type_ = sg::solver::CG;
+    SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
 // operation type
     SGPP::datadriven::OperationMultipleEvalType type = SGPP::datadriven::OperationMultipleEvalType::DEFAULT;

@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ project
+﻿# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -6,7 +6,7 @@
 import distutils.sysconfig
 import os
 import sys
-import commands
+import subprocess
 import re
 
 import SGppConfigureExtend
@@ -17,42 +17,33 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
-                                            'CheckFlag' : SGppConfigureExtend.CheckFlag })    
+                                            'CheckFlag' : SGppConfigureExtend.CheckFlag })
     # boost library
-    # TODO add check and error
+    #TODO: add check and error
     config.env.AppendUnique(CPPPATH=config.env['BOOST_INCLUDE_PATH'])
     config.env.AppendUnique(LIBPATH=config.env['BOOST_LIBRARY_PATH'])
 
     # check C++11 support
-    if not config.CheckFlag("-std=c++11"):
-        sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-        sys.exit(1) #TODO: exist undefined, fix
-    config.env.AppendUnique(CPPFLAGS="-std=c++11")
-
-#    if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS'] or env['TARGETCPU'] == "MIC":
-#      print "architecture set from outside"
-#    else:
-#      if not env['SSE3_FALLBACK']:
-#          # check avx support
-#          if not config.CheckFlag("-mavx"):
-#              sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
-#              sys.exit(1)
-#          config.env.AppendUnique(CPPFLAGS="-mavx")
-#      else:
-#          config.env.AppendUnique(CPPFLAGS="-msse3")
+    # C++11 support is enabled by default on win32; no avx support for win32
+    if env['PLATFORM'] not in ['cygwin', 'win32']:
+        if not config.CheckFlag("-std=c++11"):
+            sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
+            sys.exit(1) #TODO: exist undefined, fix
+        config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
         sys.stderr.write("Warning: doxygen cannot be found.\n  You will not be able to generate the documentation.\n  Check PATH environment variable!\n")
     else:
-        print "Using doxygen " + commands.getoutput('doxygen --version')
+        print "Using doxygen " + re.findall(r"[0-9.]*[0-9]+",
+                                            subprocess.check_output(['doxygen', '--version']))[0]
 
     # check whether dot installed
     if not config.CheckExec('dot'):
         sys.stderr.write("Warning: dot (Graphviz) cannot be found.\n  The documentation might lack diagrams.\n  Check PATH environment variable!\n")
     else:
-        print "Using " + commands.getoutput('dot -V').splitlines()[0]
-    
+        print subprocess.check_output(['dot', '-V'])
+
     if config.env['USE_OCL']:
       if 'OCL_INCLUDE_PATH' in config.env['ENV']:
         config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
@@ -60,11 +51,11 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         config.env.AppendUnique(CPPPATH=config.env['OCL_INCLUDE_PATH'])
       else:
         sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
-         
+
       if not config.CheckCXXHeader('CL/cl.h'):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
-        
+
       if 'OCL_LIBRARY_PATH' in config.env['ENV']:
         config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
       elif 'OCL_LIBRARY_PATH' in config.env:
@@ -72,41 +63,52 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
         
-      if not config.CheckLib('OpenCL', language="C++"):
+      if not config.CheckLib('OpenCL', language="c++"):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
-        
+
       config.env.AppendUnique(CPPDEFINES="USE_OCL")
     else:
       print "Info: OpenCL is not enabled"
-    
+
     # Check the availability of the boost unit test dependencies
     if env['COMPILE_BOOST_TESTS']:
-        if not config.CheckHeader("boost/test/unit_test.hpp", language="c++"):
+        if not config.CheckHeader(os.path.join("boost", "test", "unit_test.hpp"), language="c++"):
             env['COMPILE_BOOST_TESTS'] = False
             print """****************************************************
-No Boost Unit Test Headers found. Omitting Boost unit tests. 
+No Boost Unit Test Headers found. Omitting Boost unit tests.
 Please install the corresponding package, e.g. using command on Ubuntu
 > sudo apt-get install libboost-test-dev
 ****************************************************
 """
 
-        if not config.CheckLib('boost_unit_test_framework', autoadd=0):
+        if not config.CheckLib('boost_unit_test_framework', autoadd=0, language="c++"):
             env['COMPILE_BOOST_TESTS'] = False
             print """****************************************************
-No Boost Unit Test library found. Omitting Boost unit tests. 
+No Boost Unit Test library found. Omitting Boost unit tests.
 Please install the corresponding package, e.g. using command on Ubuntu
 > sudo apt-get install libboost-test-dev
 ****************************************************
 """
-    
+
     if env["SG_PYTHON"]:
         # check whether swig installed
         if not config.CheckExec('swig'):
             sys.stderr.write("Error: swig cannot be found, but required for SG_PYTHON. Check PATH environment variable!\n")
             sys.exit(1)
 
-        print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+", commands.getoutput('swig -version'))[0]
+        # make sure swig version is new enough
+        from SCons.Script.SConscript import SConsEnvironment
+        import warnings
+        sconsenv = SConsEnvironment()
+        swig_ver = sconsenv._get_major_minor_revision(re.findall(r"[0-9.]*[0-9]+",
+                                                      subprocess.check_output(['swig', '-version']))[0])
+        if swig_ver < (3, 0, 0):
+          sys.stderr.write("Error: swig version too old! Use swig >= 3.0.0\n")
+          sys.exit(1)
+
+        print "Using SWIG " + re.findall(r"[0-9.]*[0-9]+",
+                                         subprocess.check_output(['swig', '-version']))[0]
         config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
         print "pythonpath: ", distutils.sysconfig.get_python_inc()
 
@@ -160,21 +162,26 @@ Please install the corresponding package, e.g. using command on Ubuntu
                                  + "or directly $JNI_CPPINCLUDE with $JNI_CPPINCLUDE/jni.h\n")
                 sys.exit(1)
     else:
-        print "Info: Compiling without java support"
+        print 'Warning: Java support ("SG_JAVA") not enabled.'
 
     # now set up all further environment settings that should never fail
     # compiler setup should be always after checking headers and flags, as they can make the checks invalid
     # e.g. by setting "-Werror"
 
-    # TODO check
-    if env['OPT'] == True:
-       env.Append(CPPFLAGS=['-O3'])
-    else:
-       env.Append(CPPFLAGS=['-g', '-O0']) #, '-O0'
+    if env['PLATFORM'] not in ['cygwin', 'win32']:
+        if env['OPT'] == True:
+           env.Append(CPPFLAGS=['-O3'])
+        else:
+           env.Append(CPPFLAGS=['-g', '-O0'])
+
+    if not env['USE_DOUBLE_PRECISION']:
+       env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
     if env['COMPILER'].upper() == 'GNU':
-        print "Using default gcc " + commands.getoutput(env['CXX'] + ' -dumpversion')
-
+        gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
+        gcc_ver = env._get_major_minor_revision(gcc_ver_str)
+        print "Using default gcc " + gcc_ver_str
+        
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
             -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
             -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport  -Winit-self  \
@@ -189,17 +196,25 @@ Please install the corresponding package, e.g. using command on Ubuntu
         #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
         #     ensure you also compile with -fno-strict-aliasing"
         env.Append(CPPFLAGS=allWarnings + [
-                             # '-Wall', '-Wextra',
-                             #'-std=c++11',  # '-Wno-long-long', '-Wno-deprecated',
-                             # '-Werror',
                              '-Wno-unused-parameter',
-                             # '-Wconversion',
                              '-fno-strict-aliasing',
                              '-funroll-loops', '-mfpmath=sse',
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
         
+        if env['USE_STATICLIB']:
+            env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
+
+        if not env['USE_DOUBLE_PRECISION']:
+            if gcc_ver >= (4, 9, 0):
+                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
+                # (-Wno-float-conversion was introduced with g++ 4.9)
+                env.Append(CPPFLAGS=['-Wno-float-conversion'])
+            else:
+                # disable all conversion warnings
+                env.Append(CPPFLAGS=['-Wno-conversion'])
+
         if env['ARCH'].upper() == 'SSE3':
             config.env.AppendUnique(CPPFLAGS="-msse3")
         elif env['ARCH'].upper() == 'SSE42':
@@ -237,6 +252,18 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env.Append(CPPFLAGS=['-fopenmp=libomp'])
         env.Append(LINKFLAGS=['-fopenmp=libomp'])
         
+        if env['USE_STATICLIB']:
+            env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
+
+        if not env['USE_DOUBLE_PRECISION']:
+            if gcc_ver >= (4, 9, 0):
+                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
+                # (-Wno-float-conversion was introduced with g++ 4.9)
+                env.Append(CPPFLAGS=['-Wno-float-conversion'])
+            else:
+                # disable all conversion warnings
+                env.Append(CPPFLAGS=['-Wno-conversion'])
+        
         if env['ARCH'].upper() == 'SSE3':
             config.env.AppendUnique(CPPFLAGS="-msse3")
         elif env['ARCH'].upper() == 'SSE42':
@@ -271,6 +298,18 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['CXX'] = ('icpc')
         env.Append(CPPFLAGS=['-openmp'])
         env.Append(LINKFLAGS=['-openmp'])
+        
+        if env['USE_STATICLIB']:
+            env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
+
+        if not env['USE_DOUBLE_PRECISION']:
+            if gcc_ver >= (4, 9, 0):
+                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
+                # (-Wno-float-conversion was introduced with g++ 4.9)
+                env.Append(CPPFLAGS=['-Wno-float-conversion'])
+            else:
+                # disable all conversion warnings
+                env.Append(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'].upper() == 'SSE3':
             config.env.AppendUnique(CPPFLAGS="-msse3")
@@ -292,10 +331,19 @@ Please install the corresponding package, e.g. using command on Ubuntu
             print "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic"
             sys.exit(1)  
 
-        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])  
+        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+    elif env['COMPILER'].upper() == 'VCC':
+        print "Using vcc"
+        env.Append(CPPFLAGS=['/EHsc'])
+        env.Append(CPPFLAGS=['/DNOMINMAX'])
+        env.Append(CPPFLAGS=['/D_USE_MATH_DEFINES'])
+        if env['USE_STATICLIB']:
+            env.Append(CPPFLAGS=['/D_USE_STATICLIB'])
+        # env.Append(CPPFLAGS=['/openmp']) -> does not work due to missing openMP3 support
+        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for Compiler."
-        print "Available configurations are: gnu, clang and intel"
+        print "Available configurations are: gnu, clang, vcc and intel"
         sys.exit(1)
 
     # special treatment for different platforms
@@ -306,9 +354,9 @@ Please install the corresponding package, e.g. using command on Ubuntu
         # the python binding (pysgpp) requires lpython and a flat namespace
         # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
         env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
-        #The GNU assembler (GAS) is not supported in Mac OS X. A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
-        #From the man pages for as (version 1.38): -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
-        #Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and -q is the relevant flag to make it use integrated assembler
+        # The GNU assembler (GAS) is not supported in Mac OS X. A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
+        # From the man pages for as (version 1.38): -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
+        # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and -q is the relevant flag to make it use integrated assembler
         env.Append(CPPFLAGS=['-Wa,-q'])
         env.AppendUnique(CPPPATH="/usr/local/include")
         env.AppendUnique(LIBPATH="/usr/local/lib")
@@ -322,7 +370,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
     # will lead to a warning on cygwin (and we have -Werror enabled)
     # is enabled by default on cygwin
-    if env['PLATFORM'] != 'cygwin':
+    if env['PLATFORM'] not in ['cygwin', 'win32']:
         env.Append(CPPFLAGS=['-fPIC'])
 
     # setup the include base folder

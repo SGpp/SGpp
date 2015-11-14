@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <iostream>
-// All SG++ headers
-#include "sgpp_base.hpp"
+// All SG++ base headers
+#include <sgpp_base.hpp>
 
 using namespace std;
 using namespace SGPP::base;

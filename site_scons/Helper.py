@@ -88,15 +88,28 @@ def prepareDoxyfile(modules):
 
     # create example menu page
     with open('base/doc/doxygen/examples.doxy', 'w') as examplesFile:
-        examplesFile.write('/**\n')
-        examplesFile.write('@page examples Examples\n\n')
-        examplesFile.write('This is a collection of examples from all modules.\n')
-        examplesFile.write('To add new examples, go to the respective folder module/doc/doxygen/\n')
-        examplesFile.write('and add a new example file code_examples_NAME.doxy with doxygen-internal\n')
-        examplesFile.write('name code_examples_NAME.\n\n')
+        examplesFile.write('''/**
+@page examples Examples
 
+This is a collection of examples from all modules.
+To add new examples to the documentation,
+go to the respective folder MODULE_NAME/doc/doxygen/ and
+add a new example file code_examples_NAME.doxy with doxygen-internal
+name code_examples_NAME.
+
+Note that SCons automatically compiles (but not runs)
+all C++ examples on each run.
+For this to work, the examples must lie in the directories of the form
+\c /path/to/SGpp/trunk/MODULE_NAME/examples.
+
+''')
+
+        modules.sort()
         for moduleName in modules:
-            for subpage in glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy')):
+            examplesFile.write('<h2>Module '+moduleName+'</h2>\n')
+            subpages = glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy'))
+            subpages.sort()
+            for subpage in subpages:
                 examplesFile.write('- @subpage ' + (os.path.split(subpage)[-1])[:-5] + '\n')
 
         examplesFile.write('**/\n')
@@ -112,3 +125,10 @@ def prepareDoxyfile(modules):
 
         with open('base/doc/doxygen/modules.stub1', 'r') as stubFile:
             modulesFile.write(stubFile.read())
+
+
+def flatDependencyGraph(dependencies, acc):
+    for dependency in dependencies[::-1]:
+        if dependency not in acc:
+            acc = [dependency] + acc
+    return acc

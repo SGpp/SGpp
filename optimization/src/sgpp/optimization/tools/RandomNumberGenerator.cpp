@@ -11,8 +11,6 @@
 namespace SGPP {
   namespace optimization {
 
-    RandomNumberGenerator randomNumberGenerator;
-
     RandomNumberGenerator::RandomNumberGenerator() {
       setSeed();
     }

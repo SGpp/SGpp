@@ -25,6 +25,9 @@
   }
 }
 
+%{
+#include <omp.h>
+%}
 
 %{
 #include "sgpp_base.hpp"

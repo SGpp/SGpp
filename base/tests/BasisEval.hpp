@@ -1,8 +1,6 @@
 #ifndef BASIS_EVAL_HPP
 #define BASIS_EVAL_HPP
 
-#include <boost/test/unit_test.hpp>
-
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>

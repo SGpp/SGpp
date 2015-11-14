@@ -6,35 +6,50 @@
 #ifndef SGPP_OPTIMIZATION_HPP
 #define SGPP_OPTIMIZATION_HPP
 
-#include <sgpp/optimization/function/ConstraintFunction.hpp>
-#include <sgpp/optimization/function/ConstraintGradient.hpp>
-#include <sgpp/optimization/function/EmptyConstraintFunction.hpp>
-#include <sgpp/optimization/function/EmptyConstraintGradient.hpp>
-#include <sgpp/optimization/function/InterpolantFunction.hpp>
-#include <sgpp/optimization/function/InterpolantGradient.hpp>
-#include <sgpp/optimization/function/InterpolantHessian.hpp>
-#include <sgpp/optimization/function/ObjectiveFunction.hpp>
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
-#include <sgpp/optimization/function/ObjectiveHessian.hpp>
-#include <sgpp/optimization/function/test/Ackley.hpp>
-#include <sgpp/optimization/function/test/Beale.hpp>
-#include <sgpp/optimization/function/test/Branin.hpp>
-#include <sgpp/optimization/function/test/Easom.hpp>
-#include <sgpp/optimization/function/test/Eggholder.hpp>
-#include <sgpp/optimization/function/test/GoldsteinPrice.hpp>
-#include <sgpp/optimization/function/test/Griewank.hpp>
-#include <sgpp/optimization/function/test/Hartman3.hpp>
-#include <sgpp/optimization/function/test/Hartman6.hpp>
-#include <sgpp/optimization/function/test/Himmelblau.hpp>
-#include <sgpp/optimization/function/test/HoelderTable.hpp>
-#include <sgpp/optimization/function/test/Michalewicz.hpp>
-#include <sgpp/optimization/function/test/Mladineo.hpp>
-#include <sgpp/optimization/function/test/Rastrigin.hpp>
-#include <sgpp/optimization/function/test/Rosenbrock.hpp>
-#include <sgpp/optimization/function/test/SHCB.hpp>
-#include <sgpp/optimization/function/test/Schwefel.hpp>
-#include <sgpp/optimization/function/test/Sphere.hpp>
-#include <sgpp/optimization/function/test/TestFunction.hpp>
+#include <sgpp/optimization/function/scalar/ComponentScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp>
+
+#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/InterpolantVectorFunction.hpp>
+#include <sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp>
+#include <sgpp/optimization/function/vector/VectorFunction.hpp>
+#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/VectorFunctionHessian.hpp>
+#include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
+#include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp>
+
+#include <sgpp/optimization/function/scalar/test/Ackley.hpp>
+#include <sgpp/optimization/function/scalar/test/Beale.hpp>
+#include <sgpp/optimization/function/scalar/test/Branin.hpp>
+#include <sgpp/optimization/function/scalar/test/Easom.hpp>
+#include <sgpp/optimization/function/scalar/test/Eggholder.hpp>
+#include <sgpp/optimization/function/scalar/test/GoldsteinPrice.hpp>
+#include <sgpp/optimization/function/scalar/test/Griewank.hpp>
+#include <sgpp/optimization/function/scalar/test/Hartman3.hpp>
+#include <sgpp/optimization/function/scalar/test/Hartman6.hpp>
+#include <sgpp/optimization/function/scalar/test/Himmelblau.hpp>
+#include <sgpp/optimization/function/scalar/test/HoelderTable.hpp>
+#include <sgpp/optimization/function/scalar/test/Michalewicz.hpp>
+#include <sgpp/optimization/function/scalar/test/Mladineo.hpp>
+#include <sgpp/optimization/function/scalar/test/Rastrigin.hpp>
+#include <sgpp/optimization/function/scalar/test/Rosenbrock.hpp>
+#include <sgpp/optimization/function/scalar/test/SHCB.hpp>
+#include <sgpp/optimization/function/scalar/test/Schwefel.hpp>
+#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
+#include <sgpp/optimization/function/scalar/test/TestFunction.hpp>
 
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
@@ -65,6 +80,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/CMAES.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
@@ -74,6 +90,9 @@
 #include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+
+#include <sgpp/optimization/optimizer/least_squares/LeastSquaresOptimizer.hpp>
+#include <sgpp/optimization/optimizer/least_squares/LevenbergMarquardt.hpp>
 
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>

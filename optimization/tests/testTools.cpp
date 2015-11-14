@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/optimization/function/test/Sphere.hpp>
+#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/FileIO.hpp>
@@ -34,10 +34,10 @@ void gridEqualityTest(base::Grid& grid1, base::Grid& grid2) {
 
   for (size_t k = 0; k < n; k++) {
     for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_EQUAL(storage1.get(k)->getLevel(t),
-                        storage2.get(k)->getLevel(t));
-      BOOST_CHECK_EQUAL(storage1.get(k)->getIndex(t),
-                        storage2.get(k)->getIndex(t));
+      BOOST_CHECK_EQUAL(storage1[k]->getLevel(t),
+                        storage2[k]->getLevel(t));
+      BOOST_CHECK_EQUAL(storage1[k]->getIndex(t),
+                        storage2[k]->getIndex(t));
     }
   }
 }
@@ -74,7 +74,7 @@ void orthogonalityTest(base::DataMatrix& A) {
       SGPP::float_t entry = 0.0;
 
       for (size_t l = 0; l < n; l++) {
-        entry += A.get(i, l) * A.get(j, l);
+        entry += A(i, l) * A(j, l);
       }
 
       BOOST_CHECK_SMALL(entry - ((i == j) ? static_cast<SGPP::float_t>(1.0) :
@@ -90,7 +90,7 @@ void symmetryTest(base::DataMatrix& A) {
 
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < i; j++) {
-      BOOST_CHECK_CLOSE(A.get(i, j), A.get(j, i), 1e-10);
+      BOOST_CHECK_CLOSE(A(i, j), A(j, i), 1e-10);
     }
   }
 }
@@ -109,8 +109,8 @@ void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
       SGPP::float_t entry1 = 0.0, entry2 = 0.0;
 
       for (size_t l = 0; l < n; l++) {
-        entry1 += A.get(i, l) * V.get(l, j);
-        entry2 += V.get(i, l) * B.get(l, j);
+        entry1 += A(i, l) * V(l, j);
+        entry2 += V(i, l) * B(l, j);
       }
 
       BOOST_CHECK_CLOSE(entry1, entry2, (use_double_precision ? 5e-5 : 1.0));
@@ -121,33 +121,33 @@ void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
 void generateRandomMatrix(base::DataMatrix& A) {
   for (size_t i = 0; i < A.getNrows(); i++) {
     for (size_t j = 0; j < A.getNcols(); j++) {
-      A.set(i, j, randomNumberGenerator.getGaussianRN());
+      A(i, j) = RandomNumberGenerator::getInstance().getGaussianRN();
     }
   }
 }
 
 template <class T>
 void randomMatrixEntry(T& x) {
-  x = static_cast<T>(randomNumberGenerator.getUniformIndexRN(100));
+  x = static_cast<T>(RandomNumberGenerator::getInstance().getUniformIndexRN(100));
 }
 
 template <>
 void randomMatrixEntry(float& x) {
-  x = static_cast<float>(randomNumberGenerator.getUniformRN(-100.0, 100.0));
+  x = static_cast<float>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
 }
 
 template <>
 void randomMatrixEntry(double& x) {
-  x = static_cast<double>(randomNumberGenerator.getUniformRN(-100.0, 100.0));
+  x = static_cast<double>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
 }
 
 template <>
 void randomMatrixEntry(std::string& x) {
-  const size_t length = randomNumberGenerator.getUniformIndexRN(100);
+  const size_t length = RandomNumberGenerator::getInstance().getUniformIndexRN(100);
   x.clear();
 
   for (size_t i = 0; i < length; i++) {
-    x += static_cast<char>(32 + randomNumberGenerator.getUniformIndexRN(96));
+    x += static_cast<char>(32 + RandomNumberGenerator::getInstance().getUniformIndexRN(96));
   }
 }
 
@@ -184,8 +184,8 @@ void testReadWriteMatrix(std::vector<T>& A1, size_t m1, size_t n1) {
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
   // Test SGPP::optimization::file_io::readGrid/writeGrid.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   for (size_t d = 1; d < 6; d++) {
     std::unique_ptr<base::Grid> grid1(base::Grid::createLinearGrid(d)),
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
     base::DataVector functionValues2(0);
 
     for (size_t k = 0; k < functionValues1.getSize(); k++) {
-      functionValues1[k] = randomNumberGenerator.getUniformRN();
+      functionValues1[k] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     {
@@ -228,8 +228,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
   // Test SGPP::optimization::file_io::readMatrix/writeMatrix.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
   const size_t m1 = 100;
   const size_t n1 = 200;
 
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 
     for (size_t i = 0; i < m1; i++) {
       for (size_t j = 0; j < n1; j++) {
-        A1.set(i, j, randomNumberGenerator.getUniformRN());
+        A1(i, j) = RandomNumberGenerator::getInstance().getUniformRN();
       }
     }
 
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 
     for (size_t i = 0; i < m1; i++) {
       for (size_t j = 0; j < n1; j++) {
-        BOOST_CHECK_EQUAL(A1.get(i, j), A2.get(i, j));
+        BOOST_CHECK_EQUAL(A1(i, j), A2(i, j));
       }
     }
   }
@@ -304,8 +304,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
   // Test SGPP::optimization::file_io::readVector/writeVector.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 100;
 
   // test read/write with std::vector<SGPP::float_t>
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
     std::vector<SGPP::float_t> v1, v2;
 
     for (size_t i = 0; i < n; i++) {
-      v1.push_back(randomNumberGenerator.getUniformRN());
+      v1.push_back(RandomNumberGenerator::getInstance().getUniformRN());
     }
 
     {
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
     base::DataVector v1(n), v2(0);
 
     for (size_t i = 0; i < n; i++) {
-      v1[i] = randomNumberGenerator.getUniformRN();
+      v1[i] = RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     {
@@ -360,14 +360,14 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
   std::vector<SGPP::float_t> numbers(N);
 
   // set and test seed getting/setting
-  randomNumberGenerator.setSeed();
-  randomNumberGenerator.setSeed(seed);
-  BOOST_CHECK_EQUAL(randomNumberGenerator.getSeed(), seed);
+  RandomNumberGenerator::getInstance().setSeed();
+  RandomNumberGenerator::getInstance().setSeed(seed);
+  BOOST_CHECK_EQUAL(RandomNumberGenerator::getInstance().getSeed(), seed);
 
   // test continuous uniform random numbers
   {
     for (size_t i = 0; i < N; i++) {
-      numbers[i] = randomNumberGenerator.getUniformRN();
+      numbers[i] = RandomNumberGenerator::getInstance().getUniformRN();
       BOOST_CHECK_GE(numbers[i], 0.0);
       BOOST_CHECK_LE(numbers[i], 1.0);
     }
@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
 
     for (size_t k = 0; k < mus.size(); k++) {
       for (size_t i = 0; i < N; i++) {
-        numbers[i] = randomNumberGenerator.getGaussianRN(sigmas[k], mus[k]);
+        numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(sigmas[k], mus[k]);
       }
 
       BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k],
@@ -403,7 +403,7 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
   for (size_t k = 1; k < 11; k++) {
     for (size_t i = 0; i < N; i++) {
       numbers[i] = static_cast<SGPP::float_t>(
-                     randomNumberGenerator.getUniformIndexRN(k));
+                     RandomNumberGenerator::getInstance().getUniformIndexRN(k));
       BOOST_CHECK_EQUAL(numbers[i], static_cast<int>(numbers[i]));
       BOOST_CHECK_GE(numbers[i], 0);
       BOOST_CHECK_LE(numbers[i], k - 1);
@@ -423,7 +423,7 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
 
 BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
   // Test SGPP::optimization::math::householderTransformation.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
   base::DataMatrix A(n, n);
   generateRandomMatrix(A);
@@ -444,7 +444,7 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
       SGPP::float_t entry = 0.0;
 
       for (size_t l = p; l < n; l++) {
-        entry += Q.get(i - p, l - p) * A.get(l, q);
+        entry += Q(i - p, l - p) * A(l, q);
       }
 
       BOOST_CHECK_SMALL(entry, static_cast<SGPP::float_t>(
@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
 
 BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
   // Test SGPP::optimization::math::hessenbergForm.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
   base::DataMatrix A(n, n);
   generateRandomMatrix(A);
@@ -468,14 +468,14 @@ BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
 
   for (size_t i = 2; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(H.get(i, j), static_cast<SGPP::float_t>(1e-10));
+      BOOST_CHECK_SMALL(H(i, j), static_cast<SGPP::float_t>(1e-10));
     }
   }
 }
 
 BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
   // Test SGPP::optimization::math::QRDecomposition.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
   base::DataMatrix A(n, n);
   generateRandomMatrix(A);
@@ -487,7 +487,7 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
 
   for (size_t i = 1; i < n; i++) {
     for (size_t j = 0; j < i - 1; j++) {
-      BOOST_CHECK_SMALL(R.get(i, j), static_cast<SGPP::float_t>(1e-10));
+      BOOST_CHECK_SMALL(R(i, j), static_cast<SGPP::float_t>(1e-10));
     }
   }
 
@@ -496,10 +496,10 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
       SGPP::float_t entry = 0.0;
 
       for (size_t l = 0; l < n; l++) {
-        entry += Q.get(i, l) * R.get(l, j);
+        entry += Q(i, l) * R(l, j);
       }
 
-      BOOST_CHECK_CLOSE(A.get(i, j), entry, static_cast<SGPP::float_t>(
+      BOOST_CHECK_CLOSE(A(i, j), entry, static_cast<SGPP::float_t>(
                           use_double_precision ? 1e-10 : 1e-2));
     }
   }
@@ -507,14 +507,14 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
 
 BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
   // Test SGPP::optimization::math::schurDecomposition.
-  randomNumberGenerator.setSeed(42);
+  RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
   base::DataMatrix A(n, n);
   generateRandomMatrix(A);
 
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < i; j++) {
-      A.set(i, j, A.get(j, i));
+      A(i, j) = A(j, i);
     }
   }
 
@@ -528,7 +528,7 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
       if (i != j) {
-        BOOST_CHECK_SMALL(S.get(i, j), static_cast<SGPP::float_t>(
+        BOOST_CHECK_SMALL(S(i, j), static_cast<SGPP::float_t>(
                             use_double_precision ? 1e-8 : 1e-5));
       }
     }
@@ -539,27 +539,27 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   // Test SGPP::optimization::Printer.
 
   // redirect std::cout to not confuse the user
-  const std::string fileName = "testTools_printer.tmp";
+  const std::string fileName = "testTools_Printer::getInstance().tmp";
   std::ofstream outStream(fileName);
-  printer.setStream(&outStream);
+  Printer::getInstance().setStream(&outStream);
 
-  printer.setVerbosity(2);
-  printer.printStatusBegin("Testing status printing...");
-  printer.printStatusUpdate("Test status update 1");
-  printer.printStatusUpdate("Test status update 2");
-  printer.printStatusEnd("Testing status printing ended.");
+  Printer::getInstance().setVerbosity(2);
+  Printer::getInstance().printStatusBegin("Testing status printing...");
+  Printer::getInstance().printStatusUpdate("Test status update 1");
+  Printer::getInstance().printStatusUpdate("Test status update 2");
+  Printer::getInstance().printStatusEnd("Testing status printing ended.");
 
-  printer.getMutex();
+  Printer::getInstance().getMutex();
 
-  const SGPP::float_t duration = printer.getLastDurationSecs();
+  const SGPP::float_t duration = Printer::getInstance().getLastDurationSecs();
   BOOST_CHECK_GE(duration, 0.0);
   BOOST_CHECK_LE(duration, 0.01);
 
   base::DataMatrix A(3, 3, 0.0);
-  A.set(0, 1, 12.3);
-  A.set(1, 2, 42.1337);
+  A(0, 1) = 12.3;
+  A(1, 2) = 42.1337;
   FullSLE sle(A);
-  printer.printSLE(sle);
+  Printer::getInstance().printSLE(sle);
 
   const size_t d = 1;
   const size_t p = 5;
@@ -568,10 +568,10 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   std::unique_ptr<base::Grid> grid(base::Grid::createModBsplineGrid(d, p));
   IterativeGridGeneratorRitterNovak gridGen(f, *grid, N, 0.85);
   BOOST_CHECK(gridGen.generate());
-  printer.printIterativeGridGenerator(gridGen);
+  Printer::getInstance().printIterativeGridGenerator(gridGen);
 
   // undo redirection
   outStream.close();
   std::remove(fileName.c_str());
-  printer.setStream(&std::cout);
+  Printer::getInstance().setStream(&std::cout);
 }

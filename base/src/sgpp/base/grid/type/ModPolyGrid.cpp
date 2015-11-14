@@ -37,8 +37,8 @@ namespace SGPP {
       }
     }
 
-    const char* ModPolyGrid::getType() {
-      return "modpoly";
+    SGPP::base::GridType ModPolyGrid::getType() {
+      return SGPP::base::GridType::ModPoly;
     }
 
     const SBasis& ModPolyGrid::getBasis() {

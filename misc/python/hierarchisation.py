@@ -88,7 +88,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     print function
     
     # generate a regular test grid
-    grid = Grid.createLinearBoundaryGrid(dim)
+    grid = Grid.createLinearBoundaryGrid(dim, 0)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     
@@ -146,7 +146,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND
     print function
     
     # generate a regular test grid
-    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+    grid = Grid.createLinearBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     
@@ -319,7 +319,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, l
     print function
     
     # generate a regular test grid
-    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+    grid = Grid.createLinearBoundaryGrid(dim)
     generator  = grid.createGridGenerator()
     generator.regular(level)
     

@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReference(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReference(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
 //        BOOST_TEST_MESSAGE(std::get<0>(fileNameError));
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }

@@ -27,10 +27,10 @@ namespace SGPP {
       }
     }
 
-    void DirichletGridConverter::buildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid** InnerGrid, DataVector** InnerCoefs) {
+    void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid, DataVector& boundaryCoefs, Grid** innerGrid, DataVector** innerCoefs) {
       if (this->bFirstTime == true) {
-        if (strcmp(BoundaryGrid.getType(), "linearBoundary") == 0 || strcmp(BoundaryGrid.getType(), "linearTruncatedBoundary") == 0) {
-          GridStorage* myGridStorage = BoundaryGrid.getStorage();
+        if (boundaryGrid.getType() == base::GridType::LinearL0Boundary || boundaryGrid.getType() == base::GridType::LinearBoundary) {
+          GridStorage* myGridStorage = boundaryGrid.getStorage();
 
           // determine the number of grid points for both grids
           this->numTotalGridPoints = myGridStorage->size();
@@ -43,16 +43,16 @@ namespace SGPP {
           this->conCoefArray = new size_t[this->numInnerGridPoints];
 
           // Get the algorithmic dimensions
-          std::vector<size_t> BSalgoDims = BoundaryGrid.getAlgorithmicDimensions();
+          std::vector<size_t> BSalgoDims = boundaryGrid.getAlgorithmicDimensions();
 
           // create new inner Grid, with one grid point
-          *InnerGrid = new LinearGrid(*BoundaryGrid.getBoundingBox());
+          *innerGrid = new LinearGrid(*boundaryGrid.getBoundingBox());
 
           // Set algorithmic dimensions for inner Grid
-          (*InnerGrid)->setAlgorithmicDimensions(BSalgoDims);
+          (*innerGrid)->setAlgorithmicDimensions(BSalgoDims);
 
           // create new DataVector for storing the inner grid's coefficients
-          *InnerCoefs = new DataVector(this->numInnerGridPoints);
+          *innerCoefs = new DataVector(this->numInnerGridPoints);
 
           // Iterate through all grid points and filter inner points
           size_t numInner = 0;
@@ -63,10 +63,10 @@ namespace SGPP {
             if (curPoint->isInnerPoint() == true) {
               // handle coefficients
               this->conCoefArray[numInner] = i;
-              (*InnerCoefs)->set(numInner, BoundaryCoefs.get(i));
+              (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
               numInner++;
               // insert point into inner grid
-              (*InnerGrid)->getStorage()->insert(*curPoint);
+              (*innerGrid)->getStorage()->insert(*curPoint);
             }
           }
 
@@ -77,8 +77,8 @@ namespace SGPP {
           //(*InnerGrid)->getStorage()->recalcLeafProperty();
 
           this->bFirstTime = false;
-        } else if (strcmp(BoundaryGrid.getType(), "linearStretchedTruncatedBoundary") == 0) {
-          GridStorage* myGridStorage = BoundaryGrid.getStorage();
+        } else if (boundaryGrid.getType() == base::GridType::LinearStretchedBoundary) {
+          GridStorage* myGridStorage = boundaryGrid.getStorage();
 
           // determine the number of grid points for both grids
           this->numTotalGridPoints = myGridStorage->size();
@@ -91,16 +91,16 @@ namespace SGPP {
           this->conCoefArray = new size_t[this->numInnerGridPoints];
 
           // Get the algorithmic dimensions
-          std::vector<size_t> BSalgoDims = BoundaryGrid.getAlgorithmicDimensions();
+          std::vector<size_t> BSalgoDims = boundaryGrid.getAlgorithmicDimensions();
 
           // create new inner Grid, with one grid point
-          *InnerGrid = new LinearStretchedGrid(*BoundaryGrid.getStretching());
+          *innerGrid = new LinearStretchedGrid(*boundaryGrid.getStretching());
 
           // Set algorithmic dimensions for inner Grid
-          (*InnerGrid)->setAlgorithmicDimensions(BSalgoDims);
+          (*innerGrid)->setAlgorithmicDimensions(BSalgoDims);
 
           // create new DataVector for storing the inner grid's coefficients
-          *InnerCoefs = new DataVector(this->numInnerGridPoints);
+          *innerCoefs = new DataVector(this->numInnerGridPoints);
 
           // Iterate through all grid points and filter inner points
           size_t numInner = 0;
@@ -111,10 +111,10 @@ namespace SGPP {
             if (curPoint->isInnerPoint() == true) {
               // handle coefficients
               this->conCoefArray[numInner] = i;
-              (*InnerCoefs)->set(numInner, BoundaryCoefs.get(i));
+              (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
               numInner++;
               // insert point into inner grid
-              (*InnerGrid)->getStorage()->insert(*curPoint);
+              (*innerGrid)->getStorage()->insert(*curPoint);
             }
           }
 
@@ -133,11 +133,11 @@ namespace SGPP {
       }
     }
 
-    void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& BoundaryGrid, DataVector& BoundaryCoefs, Grid** InnerGrid, DataVector** InnerCoefs) {
+    void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid, DataVector& boundaryCoefs, Grid** innerGrid, DataVector** innerCoefs) {
       if (this->bFirstTime == false) {
-        if (strcmp(BoundaryGrid.getType(), "linearBoundary") == 0 || strcmp(BoundaryGrid.getType(), "linearTruncatedBoundary") == 0
-            || strcmp(BoundaryGrid.getType(), "linearStretchedTruncatedBoundary") == 0) {
-          GridStorage* myGridStorage = BoundaryGrid.getStorage();
+        if (boundaryGrid.getType() == base::GridType::LinearL0Boundary || boundaryGrid.getType() == base::GridType::LinearBoundary
+            || boundaryGrid.getType() == base::GridType::LinearStretchedBoundary) {
+          GridStorage* myGridStorage = boundaryGrid.getStorage();
 
           // determine the number of grid points for both grids
           this->numTotalGridPoints = myGridStorage->size();
@@ -148,17 +148,17 @@ namespace SGPP {
           this->conCoefArray = new size_t[this->numInnerGridPoints];
 
           // Get the algorithmic dimensions
-          std::vector<size_t> BSalgoDims = BoundaryGrid.getAlgorithmicDimensions();
+          std::vector<size_t> BSalgoDims = boundaryGrid.getAlgorithmicDimensions();
 
           // create new inner Grid, with one grid point
-          (*InnerGrid)->getStorage()->emptyStorage();
+          (*innerGrid)->getStorage()->emptyStorage();
 
           // Set algorithmic dimensions for inner Grid
-          (*InnerGrid)->setAlgorithmicDimensions(BSalgoDims);
+          (*innerGrid)->setAlgorithmicDimensions(BSalgoDims);
 
           // create new DataVector for storing the inner grid's coefficients
-          delete (*InnerCoefs);
-          *InnerCoefs = new DataVector(this->numInnerGridPoints);
+          delete (*innerCoefs);
+          *innerCoefs = new DataVector(this->numInnerGridPoints);
 
           // Iterate through all grid points and filter inner points
           size_t numInner = 0;
@@ -169,10 +169,10 @@ namespace SGPP {
             if (curPoint->isInnerPoint() == true) {
               // handle coefficients
               this->conCoefArray[numInner] = i;
-              (*InnerCoefs)->set(numInner, BoundaryCoefs.get(i));
+              (*innerCoefs)->set(numInner, boundaryCoefs.get(i));
               numInner++;
               // insert point into inner grid
-              (*InnerGrid)->getStorage()->insert(*curPoint);
+              (*innerGrid)->getStorage()->insert(*curPoint);
             }
           }
 

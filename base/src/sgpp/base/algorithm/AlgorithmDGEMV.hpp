@@ -44,7 +44,7 @@ namespace SGPP {
          * @param x the d-dimensional vector with data points (row-wise)
          * @param result the result vector of the matrix vector multiplication
          */
-        void mult_transposed(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result) {
+        void mult_transposed(GridStorage* storage, BASIS& basis, const DataVector& source, DataMatrix& x, DataVector& result) {
           typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
           result.setAll(0.0);
@@ -92,7 +92,7 @@ namespace SGPP {
          * @param x the d-dimensional vector with data points (row-wise)
          * @param result the result vector of the matrix vector multiplication
          */
-        void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x, DataVector& result) {
+        void mult(GridStorage* storage, BASIS& basis, const DataVector& source, DataMatrix& x, DataVector& result) {
           typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
           result.setAll(0.0);

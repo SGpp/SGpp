@@ -1,0 +1,11 @@
+# ------------------------------------------------------------------------
+# SG++ was successfully compiled. Update the your environment variables.
+# Execute in cmd
+
+set PATH=%PATH%;$SGPP_BUILD_PATH
+
+# If you installed Python support execute the following in cmd from the root
+# directory of SG++ to install the python library
+
+python setup.py install --user
+# ------------------------------------------------------------------------

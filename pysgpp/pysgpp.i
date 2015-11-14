@@ -1,11 +1,11 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-%module(directors="1") pysgpp
-%feature("autodoc", "2"); 
-%feature("docstring");
+%module(directors="1") pysgpp_swig
+// %feature("autodoc", "2");
+// %feature("docstring");
 
 %include "base/src/sgpp/globaldef.hpp"
 
@@ -16,7 +16,7 @@
 %include "std_complex.i"
 %include "std_map.i"
 %include "carrays.i"
-%include "cpointer.i" 
+%include "cpointer.i"
 %include "typemaps.i"
 %include "stdint.i"
 %include "exception.i"
@@ -33,6 +33,19 @@
     SWIG_exception(SWIG_RuntimeError, e.what());
   }
 }
+
+%{
+#include <omp.h>
+%}
+
+// -----------------------------------------------------------
+// needed for windows wrapper since swig does not understand
+// that unsigned int is equal to size_t and generates
+// template specifications twice
+#ifdef SWIGWIN
+typedef unsigned int size_t;
+#endif
+// -----------------------------------------------------------
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -76,6 +89,10 @@ import_array();
 #endif
 %}
 
+#ifdef PYDOC
+%include "doc.i"
+#endif
+
 %include "base/build/pysgpp/base.i"
 
 #ifdef SG_DATADRIVEN
@@ -105,4 +122,5 @@ import_array();
 #ifdef SG_OPTIMIZATION
 %include "optimization/build/pysgpp/optimization.i"
 #endif
+
 

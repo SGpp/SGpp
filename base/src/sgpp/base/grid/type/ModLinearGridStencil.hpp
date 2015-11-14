@@ -44,7 +44,7 @@ namespace SGPP {
          */
         virtual ~ModLinearGridStencil();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual const SBasis& getBasis();
 

@@ -30,8 +30,8 @@ namespace SGPP {
     PolyGrid::~PolyGrid() {
     }
 
-    const char* PolyGrid::getType() {
-      return "poly";
+    SGPP::base::GridType PolyGrid::getType() {
+      return SGPP::base::GridType::Poly;
     }
 
     const SBasis& PolyGrid::getBasis() {

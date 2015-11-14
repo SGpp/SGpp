@@ -42,10 +42,7 @@ namespace SGPP {
        * @param entry     entry to be written
        */
       template <>
-      void writeEntry(std::ofstream& f, const std::string& entry) {
-        // write string terminated by null character
-        f << entry << '\0';
-      }
+      void writeEntry(std::ofstream& f, const std::string& entry);
 
       /**
        * Read bytes of entry representation from input stream
@@ -66,19 +63,7 @@ namespace SGPP {
        * @param[out] entry  entry to be read
        */
       template <>
-      void readEntry(std::ifstream& f, std::string& entry) {
-        char ch;
-        entry = "";
-
-        // read until null character
-        while (f.get(ch)) {
-          if (ch != '\0') {
-            entry += ch;
-          } else {
-            break;
-          }
-        }
-      }
+      void readEntry(std::ifstream& f, std::string& entry);
 
       /**
        * @param A ignored
@@ -95,70 +80,49 @@ namespace SGPP {
        * @return  type string for uint8_t (right-padded "uint8")
        */
       template <>
-      const char* getTypeString(const std::vector<uint8_t>& A) {
-        (void)A;
-        return "uint8           ";
-      }
+      const char* getTypeString(const std::vector<uint8_t>& A);
 
       /**
        * @param A ignored
        * @return  type string for uint16_t (right-padded "uint16")
        */
       template <>
-      const char* getTypeString(const std::vector<uint16_t>& A) {
-        (void)A;
-        return "uint16          ";
-      }
+      const char* getTypeString(const std::vector<uint16_t>& A);
 
       /**
        * @param A ignored
        * @return  type string for uint32_t (right-padded "uint32")
        */
       template <>
-      const char* getTypeString(const std::vector<uint32_t>& A) {
-        (void)A;
-        return "uint32          ";
-      }
+      const char* getTypeString(const std::vector<uint32_t>& A);
 
       /**
        * @param A ignored
        * @return  type string for uint64_t (right-padded "uint64")
        */
       template <>
-      const char* getTypeString(const std::vector<uint64_t>& A) {
-        (void)A;
-        return "uint64          ";
-      }
+      const char* getTypeString(const std::vector<uint64_t>& A);
 
       /**
        * @param A ignored
        * @return  type string for float (right-padded "float")
        */
       template <>
-      const char* getTypeString(const std::vector<float>& A) {
-        (void)A;
-        return "float           ";
-      }
+      const char* getTypeString(const std::vector<float>& A);
 
       /**
        * @param A ignored
        * @return  type string for double (right-padded "double")
        */
       template <>
-      const char* getTypeString(const std::vector<double>& A) {
-        (void)A;
-        return "double          ";
-      }
+      const char* getTypeString(const std::vector<double>& A);
 
       /**
        * @param A ignored
        * @return  type string for string (right-padded "string")
        */
       template <>
-      const char* getTypeString(const std::vector<std::string>& A) {
-        (void)A;
-        return "string          ";
-      }
+      const char* getTypeString(const std::vector<std::string>& A);
 
       /**
        * Write a grid (only grid points) to a file.
@@ -181,7 +145,7 @@ namespace SGPP {
        * size_t   d (dimension)
        * for j = 0, ..., N-1
        *     for t = 0, ..., d-1
-       *         float_t           grid_point[j].getCoord(t)
+       *         float_t          grid_point[j].getCoord(t)
        *         unsigned int     grid_point[j].level(t)
        *         unsigned int     grid_point[j].index(t)
        *     end

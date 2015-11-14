@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
     // setup grid
     gridConfig.dim_ = 0; //dim is inferred from the data
     gridConfig.level_ = maxLevel;
-    gridConfig.type_ = sg::base::Linear;
+    gridConfig.type_ = SGPP::base::GridType::Linear;
 
     // Set Adaptivity
     adaptConfig.maxLevelType_ = false;
@@ -44,13 +44,13 @@ int main(int argc, char **argv) {
     SLESolverConfigRefine.eps_ = 0;
     SLESolverConfigRefine.maxIterations_ = 5;
     SLESolverConfigRefine.threshold_ = -1.0;
-    SLESolverConfigRefine.type_ = sg::solver::CG;
+    SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = 0;
     SLESolverConfigFinal.maxIterations_ = 20;
     SLESolverConfigFinal.threshold_ = -1.0;
-    SLESolverConfigFinal.type_ = sg::solver::CG;
+    SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
     double lambda = 0.000001;
 

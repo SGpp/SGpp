@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createBsplineGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createBsplineTruncatedBoundaryGrid(d, p))));
+                              Grid::createBsplineBoundaryGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createBsplineClenshawCurtisGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createLinearGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createLinearTruncatedBoundaryGrid(d))));
+                              Grid::createLinearBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createLinearClenshawCurtisGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
@@ -71,13 +71,13 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createWaveletGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createWaveletTruncatedBoundaryGrid(d))));
+                              Grid::createWaveletBoundaryGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createModWaveletGrid(d))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
                               Grid::createPolyGrid(d, p))));
   grids.push_back(std::move(std::unique_ptr<Grid>(
-                              Grid::createPolyTruncatedBoundaryGrid(d, p))));
+                              Grid::createPolyBoundaryGrid(d, p))));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::move(std::unique_ptr<SBasis>(
@@ -119,8 +119,16 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
     // don't test gradients for linear function
     const bool hasGradients =
-      (std::string(grid.getType()).find("linear") == std::string::npos) &&
-      (std::string(grid.getType()).find("poly") == std::string::npos);
+      (grid.getType() == base::GridType::Bspline) ||
+      (grid.getType() == base::GridType::BsplineBoundary) ||
+      (grid.getType() == base::GridType::BsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::ModBspline) ||
+      (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
+      (grid.getType() == base::GridType::FundamentalSpline) ||
+      (grid.getType() == base::GridType::ModFundamentalSpline) ||
+      (grid.getType() == base::GridType::Wavelet) ||
+      (grid.getType() == base::GridType::WaveletBoundary) ||
+      (grid.getType() == base::GridType::ModWavelet);
 
     // create regular sparse grid
     std::unique_ptr<GridGenerator> gridGen(grid.createGridGenerator());
@@ -133,9 +141,9 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       // don't forget to set the point distribution to Clenshaw-Curtis
       // if necessary (currently not done automatically)
-      if ((std::string(grid.getType()) == "bsplineClenshawCurtis") ||
-          (std::string(grid.getType()) == "modBsplineClenshawCurtis") ||
-          (std::string(grid.getType()) == "linearClenshawCurtis")) {
+      if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
+          (grid.getType() == base::GridType::ModBsplineClenshawCurtis) ||
+          (grid.getType() == base::GridType::LinearClenshawCurtis)) {
         gp.setPointDistribution(GridIndex::PointDistribution::ClenshawCurtis);
       }
 
@@ -219,7 +227,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
               }
             }
 
-            fxHessian.set(j, k, fxHessian.get(j, k) + val);
+            fxHessian(j, k) += val;
           }
         }
       }
@@ -277,8 +285,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
         for (size_t t2 = 0; t2 < d; t2++) {
           // test Hessian evaluation
-          BOOST_CHECK_CLOSE(fxHessian.get(t1, t2),
-                            fxHessian2.get(t1, t2), 1e-10);
+          BOOST_CHECK_CLOSE(fxHessian(t1, t2), fxHessian2(t1, t2), 1e-10);
         }
       }
     }

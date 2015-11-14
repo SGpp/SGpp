@@ -43,6 +43,7 @@ namespace std {
 %include "GridFactory.i"
 
 
+%ignore SGPP::base::DataVectorSP::DataVectorSP(std::vector<float> input);
 %ignore SGPP::base::DataVectorSP::operator=;
 %ignore SGPP::base::DataVectorSP::operator[];
 %ignore SGPP::base::DataVectorSP::toString(std::string& text) const;
@@ -98,11 +99,11 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
 %include "base/src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
-%include "base/src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
+%include "base/src/sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
-%include "base/src/sgpp/base/grid/generation/StretchedTruncatedBoundaryGridGenerator.hpp"
-%include "base/src/sgpp/base/grid/generation/TruncatedBoundaryGridGenerator.hpp"
+%include "base/src/sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp"
+%include "base/src/sgpp/base/grid/generation/BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"

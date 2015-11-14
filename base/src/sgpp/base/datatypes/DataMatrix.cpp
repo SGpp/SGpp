@@ -200,7 +200,7 @@ namespace SGPP {
       unused = 0;
     }
 
-    size_t DataMatrix::appendRow(DataVector& vec) {
+    size_t DataMatrix::appendRow(const DataVector& vec) {
       if (vec.getSize() != this->ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrix::appendRow : Dimensions do not match");
@@ -377,7 +377,8 @@ namespace SGPP {
       }
     }
 
-    void DataMatrix::addReduce(DataVector& reduction, DataVector& beta, size_t start_beta) {
+    void DataMatrix::addReduce(DataVector& reduction, DataVector& beta,
+                               size_t start_beta) {
       if (this->nrows != reduction.getSize() ) {
         throw new SGPP::base::data_exception(
           "DataMatrix::addReduce : Dimensions do not match (reduction)");
@@ -470,6 +471,28 @@ namespace SGPP {
 
       for (size_t i = 0; i < n; i++) {
         data[i] *= scalar;
+      }
+    }
+
+    void DataMatrix::mult(const DataVector& x, DataVector& y) {
+      if (ncols != x.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrix::mult : Dimensions do not match (x)");
+      }
+
+      if (nrows != y.getSize()) {
+        throw new SGPP::base::data_exception(
+          "DataMatrix::mult : Dimensions do not match (y)");
+      }
+
+      for (size_t i = 0; i < nrows; i++) {
+        float_t entry = 0.0;
+
+        for (size_t j = 0; j < ncols; j++) {
+          entry += data[(i * ncols) + j] * x[j];
+        }
+
+        y[i] = entry;
       }
     }
 
@@ -604,7 +627,7 @@ namespace SGPP {
 
     float_t DataMatrix::min(size_t d) const {
       size_t n = nrows * ncols;
-      float_t min = data[d];
+      float_t min = INFINITY;
 
       for (size_t i = d; i < n; i += ncols) {
         if (min > data[i]) {
@@ -617,9 +640,9 @@ namespace SGPP {
 
     float_t DataMatrix::min() const {
       size_t n = nrows * ncols;
-      float_t min = data[0];
+      float_t min = INFINITY;
 
-      for (size_t i = 1; i < n; i += 1) {
+      for (size_t i = 0; i < n; i++) {
         if (min > data[i]) {
           min = data[i];
         }
@@ -630,7 +653,7 @@ namespace SGPP {
 
     float_t DataMatrix::max(size_t d) const {
       size_t n = nrows * ncols;
-      float_t max = data[d];
+      float_t max = -INFINITY;
 
       for (size_t i = d; i < n; i += ncols) {
         if (max < data[i]) {
@@ -643,9 +666,9 @@ namespace SGPP {
 
     float_t DataMatrix::max() const {
       size_t n = nrows * ncols;
-      float_t max = data[0];
+      float_t max = -INFINITY;
 
-      for (size_t i = 1; i < n; i += 1) {
+      for (size_t i = 0; i < n; i++) {
         if (max < data[i]) {
           max = data[i];
         }
@@ -663,8 +686,8 @@ namespace SGPP {
       }
 
       // find min and max of column col
-      float_t min_t = data[col];
-      float_t max_t = data[col];
+      float_t min_t = INFINITY;
+      float_t max_t = -INFINITY;
 
       for (size_t i = col; i < n; i += ncols) {
         if (min_t > data[i]) {
@@ -683,15 +706,10 @@ namespace SGPP {
     void DataMatrix::minmax(float_t* min, float_t* max) const {
       size_t n = nrows * ncols;
 
-      if (n == 0) {
-        throw new SGPP::base::data_exception(
-          "DataMatrix::minmax : Empty DataMatrix");
-      }
+      float_t min_t = INFINITY;
+      float_t max_t = -INFINITY;
 
-      float_t min_t = data[0];
-      float_t max_t = data[0];
-
-      for (size_t i = 1; i < n; i += 1) {
+      for (size_t i = 0; i < n; i++) {
         if (min_t > data[i]) {
           min_t = data[i];
         }
@@ -706,6 +724,10 @@ namespace SGPP {
     }
 
     float_t* DataMatrix::getPointer() {
+      return data;
+    }
+
+    const float_t* DataMatrix::getPointer() const {
       return data;
     }
 

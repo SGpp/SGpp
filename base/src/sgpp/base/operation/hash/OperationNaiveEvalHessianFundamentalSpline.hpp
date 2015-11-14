@@ -45,8 +45,10 @@ namespace SGPP {
          * @param[out]  hessian     Hessian matrix of linear combination
          * @return                  value of linear combination
          */
-        virtual float_t evalHessian(DataVector& alpha, DataVector& point,
-                                    DataVector& gradient, DataMatrix& hessian);
+        virtual float_t evalHessian(const DataVector& alpha,
+                                    const DataVector& point,
+                                    DataVector& gradient,
+                                    DataMatrix& hessian) override;
 
       protected:
         /// storage of the sparse grid

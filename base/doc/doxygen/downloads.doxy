@@ -13,6 +13,10 @@ Finally, it's out there!
 
 Please note that release version 1.0.0 contains a major restructuring. Interfaces habe been redesigned, factory methods restructured, and a lot of improvements have been done.
 
+Important changes that might cause side-effects in codes using previous versions include:
+- There are entirely new parameters for compilation. Please see <tt>scons -h</tt> for further information.
+- Some of the Grid-Classes have been renamed. This affects especially the boundary-based grids. LinearBoundaryGrid is now the grid with the same discretization on the boundary as on the main axis.
+
 Features of Release Version 1.0.0
 - Automatic check for requirements in SCons for compilation
 - Full module support

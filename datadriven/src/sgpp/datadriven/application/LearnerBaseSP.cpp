@@ -22,7 +22,7 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../../../base/src/sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp"
+#include "../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
 
 
 namespace SGPP {
@@ -84,11 +84,11 @@ namespace SGPP {
     }
 
     void LearnerBaseSP::InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig) {
-      if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
-        grid_ = new SGPP::base::LinearTruncatedBoundaryGrid(GridConfig.dim_);
-      } else if (GridConfig.type_ == SGPP::base::ModLinear) {
+      if (GridConfig.type_ == SGPP::base::GridType::LinearBoundary) {
+        grid_ = new SGPP::base::LinearBoundaryGrid(GridConfig.dim_);
+      } else if (GridConfig.type_ == SGPP::base::GridType::ModLinear) {
         grid_ = new SGPP::base::ModLinearGrid(GridConfig.dim_);
-      } else if (GridConfig.type_ == SGPP::base::Linear) {
+      } else if (GridConfig.type_ == SGPP::base::GridType::Linear) {
         grid_ = new SGPP::base::LinearGrid(GridConfig.dim_);
       } else {
         grid_ = NULL;
@@ -168,9 +168,9 @@ namespace SGPP {
 
       SGPP::solver::SLESolverSP* myCG;
 
-      if (SolverConfigRefine.type_ == SGPP::solver::CG) {
+      if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
         myCG = new SGPP::solver::ConjugateGradientsSP(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
-      } else if (SolverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
+      } else if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
         myCG = new SGPP::solver::BiCGStabSP(SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
       } else {
         throw base::application_exception("LearnerBaseSP::train: An unsupported SLE solver type was chosen!");

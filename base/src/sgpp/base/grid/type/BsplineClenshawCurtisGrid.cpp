@@ -7,7 +7,7 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 
-#include <sgpp/base/grid/generation/TruncatedBoundaryGridGenerator.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
@@ -35,8 +35,8 @@ namespace SGPP {
       }
     }
 
-    const char* BsplineClenshawCurtisGrid::getType() {
-      return "bsplineClenshawCurtis";
+    SGPP::base::GridType BsplineClenshawCurtisGrid::getType() {
+      return SGPP::base::GridType::BsplineClenshawCurtis;
     }
 
     const SBasis& BsplineClenshawCurtisGrid::getBasis() {
@@ -65,7 +65,7 @@ namespace SGPP {
      * This must be changed if we add other storage types
      */
     GridGenerator* BsplineClenshawCurtisGrid::createGridGenerator() {
-      return new TruncatedBoundaryGridGenerator(this->storage);
+      return new BoundaryGridGenerator(this->storage);
     }
 
   }
