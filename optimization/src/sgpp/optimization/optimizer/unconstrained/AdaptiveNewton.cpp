@@ -14,8 +14,8 @@ namespace SGPP {
     namespace optimizer {
 
       AdaptiveNewton::AdaptiveNewton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -36,8 +36,8 @@ namespace SGPP {
       }
 
       AdaptiveNewton::AdaptiveNewton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -58,10 +58,16 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
-      float_t AdaptiveNewton::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (adaptive Newton)...");
+      void AdaptiveNewton::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (adaptive Newton)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
         float_t fx = NAN;
         base::DataVector gradFx(d);
@@ -86,12 +92,17 @@ namespace SGPP {
         const float_t ALPHA1 = 1e-6;
         const float_t ALPHA2 = 1e-6;
         const float_t P = 0.1;
-        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
+        const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
         while (k < N) {
           // calculate gradient and Hessian
           fx = fHessian.eval(x, gradFx, hessianFx);
           k++;
+
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           const float_t gradFxNorm = gradFx.l2Norm();
 
@@ -103,20 +114,18 @@ namespace SGPP {
             // RHS of linear system to be solved
             b[t] = -gradFx[t];
             // add damping
-            hessianFx.set(t, t, hessianFx.get(t, t) + lambda);
+            hessianFx(t, t) += lambda;
           }
 
           // solve linear system with damped Hessian as system matrix
-          system.setA(hessianFx);
-
           if (statusPrintingEnabled) {
-            printer.disableStatusPrinting();
+            Printer::getInstance().disableStatusPrinting();
           }
 
           lsSolved = sleSolver.solve(system, b, dir);
 
           if (statusPrintingEnabled) {
-            printer.enableStatusPrinting();
+            Printer::getInstance().enableStatusPrinting();
           }
 
           const float_t dirNorm = dir.l2Norm();
@@ -167,14 +176,13 @@ namespace SGPP {
 
               for (size_t t = 0; t < d; t++) {
                 // add damping
-                hessianFx.set(t, t, hessianFx.get(t, t) - oldLambda + lambda);
+                hessianFx(t, t) += lambda - oldLambda;
               }
 
               // solve linear system with damped Hessian as system matrix
-              system.setA(hessianFx);
-              printer.disableStatusPrinting();
+              Printer::getInstance().disableStatusPrinting();
               lsSolved = sleSolver.solve(system, b, dir);
-              printer.enableStatusPrinting();
+              Printer::getInstance().enableStatusPrinting();
 
               // recalculate inner product
               gradFxTimesDir = gradFx.dotProduct(dir);
@@ -200,6 +208,8 @@ namespace SGPP {
           // save new point
           x = xNew;
           fx = fxNew;
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // increase step size
           alpha = std::min(rhoAlphaPlus * alpha, float_t(1.0) );
@@ -208,9 +218,9 @@ namespace SGPP {
           lambda *= rhoLambdaMinus;
 
           // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+          Printer::getInstance().printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // stopping criterion:
           // stop if alpha * dir is smaller than tolerance theta
@@ -228,16 +238,11 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
-        printer.printStatusEnd();
-
-        return fx;
+        fOpt = fx;
+        Printer::getInstance().printStatusEnd();
       }
 
-      ObjectiveHessian& AdaptiveNewton::getObjectiveHessian() const {
+      ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const {
         return fHessian;
       }
 
@@ -294,6 +299,11 @@ namespace SGPP {
         rhoLs = lineSearchAccuracy;
       }
 
+      void AdaptiveNewton::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new AdaptiveNewton(*this));
+      }
     }
   }
 }

@@ -13,8 +13,8 @@ namespace SGPP {
     namespace optimizer {
 
       BFGS::BFGS(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -28,10 +28,15 @@ namespace SGPP {
         rhoLs(lineSearchAccuracy) {
       }
 
-      float_t BFGS::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (BFGS)...");
+      void BFGS::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (BFGS)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
 
         base::DataVector x(x0);
         float_t fx = NAN;
@@ -50,7 +55,7 @@ namespace SGPP {
 
         for (size_t i = 0; i < d; i++) {
           for (size_t j = 0; j < d; j++) {
-            inverseHessian.set(i, j, (i == j ? 1.0 : 0.0));
+            inverseHessian(i, j) = (i == j ? 1.0 : 0.0);
           }
         }
 
@@ -67,6 +72,11 @@ namespace SGPP {
           fx = fGradient.eval(x, gradFx);
           k++;
 
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
+
           const float_t gradFxNorm = gradFx.l2Norm();
 
           if (gradFxNorm == 0.0) {
@@ -77,7 +87,7 @@ namespace SGPP {
             dir[i] = 0.0;
 
             for (size_t j = 0; j < d; j++) {
-              dir[i] -= inverseHessian.get(i, j) * gradFx[j];
+              dir[i] -= inverseHessian(i, j) * gradFx[j];
             }
           }
 
@@ -134,6 +144,8 @@ namespace SGPP {
           x = xNew;
           fx = fxNew;
           gradFx = gradFxNew;
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // increase step size
           alpha *= rhoAlphaPlus;
@@ -143,8 +155,7 @@ namespace SGPP {
           if (deltaTimesY != 0.0) {
             for (size_t i = 0; i < d; i++) {
               for (size_t j = 0; j < d; j++) {
-                M.set(i, j, (i == j ? 1.0 : 0.0) -
-                      y[i] * delta[j] / deltaTimesY);
+                M(i, j) = (i == j ? 1.0 : 0.0) - y[i] * delta[j] / deltaTimesY;
               }
             }
 
@@ -154,12 +165,11 @@ namespace SGPP {
 
                 for (size_t p = 0; p < d; p++) {
                   for (size_t q = 0; q < d; q++) {
-                    entry +=
-                      M.get(p, i) * inverseHessian.get(p, q) * M.get(q, j);
+                    entry += M(p, i) * inverseHessian(p, q) * M(q, j);
                   }
                 }
 
-                inverseHessianNew.set(i, j, entry);
+                inverseHessianNew(i, j) = entry;
               }
             }
 
@@ -167,9 +177,9 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+          Printer::getInstance().printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // stopping criterion:
           // stop if delta is smaller than tolerance theta
@@ -187,16 +197,11 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));;
-        printer.printStatusEnd();
-
-        return fx;
+        fOpt = fx;
+        Printer::getInstance().printStatusEnd();
       }
 
-      ObjectiveGradient& BFGS::getObjectiveGradient() const {
+      ScalarFunctionGradient& BFGS::getObjectiveGradient() const {
         return fGradient;
       }
 
@@ -235,6 +240,11 @@ namespace SGPP {
         rhoLs = lineSearchAccuracy;
       }
 
+      void BFGS::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new BFGS(*this));
+      }
     }
   }
 }

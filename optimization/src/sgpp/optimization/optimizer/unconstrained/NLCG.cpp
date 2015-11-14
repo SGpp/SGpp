@@ -15,8 +15,8 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      NLCG::NLCG(ObjectiveFunction& f,
-                 ObjectiveGradient& fGradient,
+      NLCG::NLCG(ScalarFunction& f,
+                 ScalarFunctionGradient& fGradient,
                  size_t maxItCount, float_t beta, float_t gamma,
                  float_t tolerance, float_t epsilon,
                  float_t restartThreshold) :
@@ -29,10 +29,16 @@ namespace SGPP {
         alpha(restartThreshold) {
       }
 
-      float_t NLCG::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (NLCG)...");
+      void NLCG::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
         float_t fx;
         float_t fy;
@@ -45,6 +51,9 @@ namespace SGPP {
 
         fx = fGradient.eval(x0, gradFx);
         float_t gradFxNorm = gradFx.l2Norm();
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         size_t k = 1;
 
@@ -100,29 +109,26 @@ namespace SGPP {
             s[t] = beta * s[t] - gradFy[t];
           }
 
-          // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
-
           x = y;
           fx = fy;
           gradFx = gradFy;
           gradFxNorm = gradFyNorm;
+          xHist.appendRow(x);
+          fHist.append(fx);
+
+          // status printing
+          Printer::getInstance().printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
         }
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
-        printer.printStatusEnd();
-
-        return fx;
+        fOpt = fx;
+        Printer::getInstance().printStatusEnd();
       }
 
-      ObjectiveGradient& NLCG::getObjectiveGradient() const {
+      ScalarFunctionGradient& NLCG::getObjectiveGradient() const {
         return fGradient;
       }
 
@@ -166,6 +172,11 @@ namespace SGPP {
         alpha = restartThreshold;
       }
 
+      void NLCG::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new NLCG(*this));
+      }
     }
   }
 }

@@ -15,7 +15,7 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      NelderMead::NelderMead(ObjectiveFunction& f,
+      NelderMead::NelderMead(ScalarFunction& f,
                              size_t maxFcnEvalCount, float_t alpha,
                              float_t beta, float_t gamma, float_t delta) :
         UnconstrainedOptimizer(f, maxFcnEvalCount),
@@ -25,10 +25,16 @@ namespace SGPP {
         delta(delta) {
       }
 
-      float_t NelderMead::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (Nelder-Mead)...");
+      void NelderMead::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (Nelder-Mead)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         std::vector<base::DataVector> points(d + 1, x0);
         std::vector<base::DataVector> pointsNew(d + 1, x0);
         base::DataVector fPoints(d + 1);
@@ -187,8 +193,8 @@ namespace SGPP {
 
           // status printing
           if (k % 10 == 0) {
-            printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                      std::to_string(fPoints[0]));
+            Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                std::to_string(fPoints[0]));
           }
 
           if (numberOfFcnEvals + (d + 2) > N) {
@@ -196,16 +202,17 @@ namespace SGPP {
           }
 
           k++;
+          xHist.appendRow(points[0]);
+          fHist.append(fPoints[0]);
         }
 
         xOpt.resize(d);
         xOpt = points[0];
+        fOpt = fPoints[0];
 
-        printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                  std::to_string(fPoints[0]));
-        printer.printStatusEnd();
-
-        return fPoints[0];
+        Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+            std::to_string(fPoints[0]));
+        Printer::getInstance().printStatusEnd();
       }
 
       float_t NelderMead::getAlpha() const {
@@ -240,6 +247,11 @@ namespace SGPP {
         this->delta = delta;
       }
 
+      void NelderMead::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new NelderMead(*this));
+      }
     }
   }
 }

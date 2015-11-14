@@ -18,14 +18,14 @@ namespace SGPP {
   namespace optimization {
     namespace optimizer {
 
-      DifferentialEvolution::DifferentialEvolution(ObjectiveFunction& f,
+      DifferentialEvolution::DifferentialEvolution(ScalarFunction& f,
           size_t maxFcnEvalCount, size_t populationSize,
           float_t crossoverProbability, float_t scalingFactor,
           size_t idleGenerationsCount, float_t avgImprovementThreshold,
           float_t maxDistanceThreshold) :
         UnconstrainedOptimizer(f, maxFcnEvalCount),
         populationSize((populationSize > 0) ? populationSize :
-                       10 * f.getDimension()),
+                       10 * f.getNumberOfParameters()),
         crossoverProbability(crossoverProbability),
         scalingFactor(scalingFactor),
         idleGenerationsCount(idleGenerationsCount),
@@ -33,10 +33,15 @@ namespace SGPP {
         maxDistanceThreshold(maxDistanceThreshold) {
       }
 
-      float_t DifferentialEvolution::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (differential evolution)...");
+      void DifferentialEvolution::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
 
         // vector of individuals
         std::vector<base::DataVector> x1(populationSize,
@@ -55,14 +60,14 @@ namespace SGPP {
         // initial pseudorandom points
         for (size_t i = 0; i < populationSize; i++) {
           for (size_t t = 0; t < d; t++) {
-            (*xOld)[i][t] = randomNumberGenerator.getUniformRN();
+            (*xOld)[i][t] = RandomNumberGenerator::getInstance().getUniformRN();
           }
 
           fx[i] = f.eval((*xOld)[i]);
         }
 
         // smallest function value in the population
-        float_t fOpt = INFINITY;
+        float_t fCurrentOpt = INFINITY;
         // index of the point with value fOpt
         size_t xOptIndex = 0;
         // iteration number of the last iteration with significant improvement
@@ -88,26 +93,26 @@ namespace SGPP {
         for (size_t k = 0; k < maxK; k++) {
           for (size_t i = 0; i < populationSize; i++) {
             do {
-              a[k][i] = randomNumberGenerator.
+              a[k][i] = RandomNumberGenerator::getInstance().
                         getUniformIndexRN(populationSize);
             } while (a[k][i] == i);
 
             do {
-              b[k][i] = randomNumberGenerator.
+              b[k][i] = RandomNumberGenerator::getInstance().
                         getUniformIndexRN(populationSize);
             } while ((b[k][i] == i) || (b[k][i] == a[k][i]));
 
             do {
-              c[k][i] = randomNumberGenerator.
+              c[k][i] = RandomNumberGenerator::getInstance().
                         getUniformIndexRN(populationSize);
             } while ((c[k][i] == i) || (c[k][i] == a[k][i]) ||
                      (c[k][i] == b[k][i]));
 
-            j[k][i] = randomNumberGenerator.getUniformIndexRN(d);
+            j[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(d);
 
             for (size_t t = 0; t < d; t++) {
               if (t != j[k][i]) {
-                prob[k][i][t] = randomNumberGenerator.getUniformRN();
+                prob[k][i][t] = RandomNumberGenerator::getInstance().getUniformRN();
               }
             }
           }
@@ -121,12 +126,12 @@ namespace SGPP {
           const std::vector<base::DataVector>& prob_k = prob[k];
 
           #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, \
-          xOld, fx, fOpt, xOptIndex, xNew) default(none)
+          xOld, fx, fCurrentOpt, xOptIndex, xNew) default(none)
           {
             base::DataVector y(d);
-            ObjectiveFunction* curFPtr = &f;
+            ScalarFunction* curFPtr = &f;
 #ifdef _OPENMP
-            std::unique_ptr<ObjectiveFunction> curF;
+            std::unique_ptr<ScalarFunction> curF;
 
             if (omp_get_max_threads() > 1) {
               f.clone(curF);
@@ -146,7 +151,7 @@ namespace SGPP {
 
               // for each dimension
               for (size_t t = 0; t < d; t++) {
-                const float_t& curProb = prob_ki.get(t);
+                const float_t& curProb = prob_ki[t];
 
                 if ((t == cur_j) || (curProb < crossoverProbability)) {
                   // mutate point in this dimension
@@ -174,9 +179,9 @@ namespace SGPP {
                 {
                   fx[i] = fy;
 
-                  if (fy < fOpt) {
+                  if (fy < fCurrentOpt) {
                     xOptIndex = i;
-                    fOpt = fy;
+                    fCurrentOpt = fy;
                   }
                 }
 
@@ -240,20 +245,22 @@ namespace SGPP {
 
           // status message
           if (k % 10 == 0) {
-          printer.printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                    std::to_string(fOpt));
+          Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+                std::to_string(fCurrentOpt));
           }
+
+          xHist.appendRow((*xOld)[xOptIndex]);
+          fHist.append(fCurrentOpt);
         }
 
         // optimal point
         xOpt.resize(d);
         xOpt = (*xOld)[xOptIndex];
+        fOpt = fCurrentOpt;
 
-        printer.printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
-                                  std::to_string(fOpt));
-        printer.printStatusEnd();
-
-        return fOpt;
+        Printer::getInstance().printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
+            std::to_string(fCurrentOpt));
+        Printer::getInstance().printStatusEnd();
       }
 
       size_t DifferentialEvolution::getPopulationSize() const {
@@ -264,6 +271,11 @@ namespace SGPP {
         this->populationSize = populationSize;
       }
 
+      void DifferentialEvolution::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new DifferentialEvolution(*this));
+      }
     }
   }
 }

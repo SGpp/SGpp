@@ -20,8 +20,8 @@ namespace SGPP {
     namespace optimizer {
 
       Newton::Newton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p) :
@@ -39,8 +39,8 @@ namespace SGPP {
       }
 
       Newton::Newton(
-        ObjectiveFunction& f,
-        ObjectiveHessian& fHessian,
+        ScalarFunction& f,
+        ScalarFunctionHessian& fHessian,
         size_t max_it_count, float_t beta, float_t gamma,
         float_t tolerance, float_t epsilon, float_t alpha1,
         float_t alpha2, float_t p,
@@ -58,29 +58,38 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
-      float_t Newton::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (Newton)...");
+      void Newton::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
         float_t fx = NAN;
 
-        bool lsSolved;
-        base::DataVector dk(d);
-
         base::DataVector gradFx(d);
         base::DataMatrix hessianFx(d, d);
+        base::DataVector dk(d);
         base::DataVector s(d);
         base::DataVector y(d);
 
         FullSLE system(hessianFx);
         size_t k = 0;
-        const bool statusPrintingEnabled = printer.isStatusPrintingEnabled();
+        const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
         while (k < N) {
           // calculate gradient, Hessian and gradient norm
           fx = fHessian.eval(x, gradFx, hessianFx);
           k++;
+
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
 
           const float_t gradFxNorm = gradFx.l2Norm();
 
@@ -95,16 +104,14 @@ namespace SGPP {
           }
 
           // solve linear system with Hessian as system matrix
-          system.setA(hessianFx);
-
           if (statusPrintingEnabled) {
-            printer.disableStatusPrinting();
+            Printer::getInstance().disableStatusPrinting();
           }
 
-          lsSolved = sleSolver.solve(system, s, dk);
+          bool lsSolved = sleSolver.solve(system, s, dk);
 
           if (statusPrintingEnabled) {
-            printer.enableStatusPrinting();
+            Printer::getInstance().enableStatusPrinting();
           }
 
           // norm of solution
@@ -127,9 +134,9 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+          Printer::getInstance().printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // line search
           if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
@@ -141,20 +148,17 @@ namespace SGPP {
           }
 
           x = y;
+          xHist.appendRow(x);
+          fHist.append(fx);
         }
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
-        printer.printStatusEnd();
-
-        return fx;
+        fOpt = fx;
+        Printer::getInstance().printStatusEnd();
       }
 
-      ObjectiveHessian& Newton::getObjectiveHessian() const {
+      ScalarFunctionHessian& Newton::getObjectiveHessian() const {
         return fHessian;
       }
 
@@ -214,6 +218,11 @@ namespace SGPP {
         this->p = p;
       }
 
+      void Newton::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new Newton(*this));
+      }
     }
   }
 }

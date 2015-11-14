@@ -36,7 +36,7 @@ namespace SGPP {
            * @param populationSize  number of individual points
            *                        (default: \f$\min(10d, 100)\f$)
            */
-          MultiStart(ObjectiveFunction& f,
+          MultiStart(ScalarFunction& f,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      size_t populationSize = 0);
 
@@ -55,11 +55,7 @@ namespace SGPP {
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      size_t populationSize = 0);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return                  number of individual points
@@ -71,6 +67,18 @@ namespace SGPP {
            */
           void setPopulationSize(size_t populationSize);
 
+          /**
+           * @return vector in which the k-th entry indicates the number of
+           *         inner iterations in the k-th (outer) iteration,
+           *         empty vector on error
+           */
+          const std::vector<size_t>& getHistoryOfInnerIterations() const;
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// default optimization algorithm
           NelderMead defaultOptimizer;
@@ -78,6 +86,8 @@ namespace SGPP {
           UnconstrainedOptimizer& optimizer;
           /// number of individual points
           size_t populationSize;
+          /// search history (inner iterations)
+          std::vector<size_t> kHist;
 
           /**
            * Initializes populationSize.

@@ -34,8 +34,10 @@ namespace SGPP {
       public:
         /// default adaptivity
         static constexpr float_t DEFAULT_ADAPTIVITY = 0.85;
+        /// default level of initial regular sparse grid
+        static const base::level_t DEFAULT_INITIAL_LEVEL = 3;
         /// default maximal level of grid points
-        static const size_t DEFAULT_MAX_LEVEL = 20;
+        static const base::level_t DEFAULT_MAX_LEVEL = 20;
 
         /// exponentiation methods
         enum PowMethod {
@@ -50,16 +52,18 @@ namespace SGPP {
          * @param grid          grid (should be empty)
          * @param N             maximal number of grid points
          * @param adaptivity    adaptivity between 0 and 1
+         * @param initialLevel  level of initial regular sparse grid
          * @param maxLevel      maximal level of grid points
          * @param powMethod     exponentiation method
          *                      (fastPow is faster than std::pow,
          *                      but only approximative)
          */
         IterativeGridGeneratorRitterNovak(
-          ObjectiveFunction& f,
+          ScalarFunction& f,
           base::Grid& grid,
           size_t N,
           float_t adaptivity = DEFAULT_ADAPTIVITY,
+          base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
           base::level_t maxLevel = DEFAULT_MAX_LEVEL,
           PowMethod powMethod = STD_POW);
 
@@ -79,6 +83,16 @@ namespace SGPP {
          * @param adaptivity  adaptivity between 0 and 1
          */
         void setAdaptivity(float_t adaptivity);
+
+        /**
+         * @return              level of initial regular sparse grid
+         */
+        base::level_t getInitialLevel() const;
+
+        /**
+         * @param initialLevel  level of initial regular sparse grid
+         */
+        void setInitialLevel(base::level_t initialLevel);
 
         /**
          * @return          maximal level of grid points
@@ -103,6 +117,8 @@ namespace SGPP {
       protected:
         /// adaptivity
         float_t gamma;
+        /// level of initial regular sparse grid
+        base::level_t initialLevel;
         /// maximal level of grid points
         base::level_t maxLevel;
         /// exponentiation method

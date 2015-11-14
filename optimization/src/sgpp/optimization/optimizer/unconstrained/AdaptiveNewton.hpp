@@ -8,13 +8,13 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveHessian.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <memory>
-#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -54,8 +54,8 @@ namespace SGPP {
            * @param dampingDecreaseFactor     damping decrease factor
            * @param lineSearchAccuracy        line search accuracy
            */
-          AdaptiveNewton(ObjectiveFunction& f,
-                         ObjectiveHessian& fHessian,
+          AdaptiveNewton(ScalarFunction& f,
+                         ScalarFunctionHessian& fHessian,
                          size_t maxItCount = DEFAULT_N,
                          float_t tolerance = DEFAULT_TOLERANCE,
                          float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
@@ -82,8 +82,8 @@ namespace SGPP {
            *                                  solving the linear systems
            *                                  (Hessian as coefficient matrix)
            */
-          AdaptiveNewton(ObjectiveFunction& f,
-                         ObjectiveHessian& fHessian,
+          AdaptiveNewton(ScalarFunction& f,
+                         ScalarFunctionHessian& fHessian,
                          size_t maxItCount,
                          float_t tolerance,
                          float_t stepSizeIncreaseFactor,
@@ -93,16 +93,12 @@ namespace SGPP {
                          float_t lineSearchAccuracy,
                          const sle_solver::SLESolver& sleSolver);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function Hessian
            */
-          ObjectiveHessian& getObjectiveHessian() const;
+          ScalarFunctionHessian& getObjectiveHessian() const;
 
           /**
            * @return tolerance
@@ -164,9 +160,14 @@ namespace SGPP {
            */
           void setLineSearchAccuracy(float_t lineSearchAccuracy);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function Hessian
-          ObjectiveHessian& fHessian;
+          ScalarFunctionHessian& fHessian;
           /// tolerance
           float_t theta;
           /// step size increase factor

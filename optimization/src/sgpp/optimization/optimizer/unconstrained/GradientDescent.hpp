@@ -8,10 +8,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
-
 #include <memory>
+
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -44,24 +44,20 @@ namespace SGPP {
            * @param tolerance     tolerance (parameter for Armijo's rule)
            * @param epsilon       epsilon (parameter for Armijo's rule)
            */
-          GradientDescent(ObjectiveFunction& f,
-                          ObjectiveGradient& fGradient,
+          GradientDescent(ScalarFunction& f,
+                          ScalarFunctionGradient& fGradient,
                           size_t maxItCount = DEFAULT_MAX_IT_COUNT,
                           float_t beta = DEFAULT_BETA,
                           float_t gamma = DEFAULT_GAMMA,
                           float_t tolerance = DEFAULT_TOLERANCE,
                           float_t epsilon = DEFAULT_EPSILON);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
            */
-          ObjectiveGradient& getObjectiveGradient() const;
+          ScalarFunctionGradient& getObjectiveGradient() const;
 
           /**
            * @return              beta (parameter for Armijo's rule)
@@ -103,9 +99,14 @@ namespace SGPP {
            */
           void setEpsilon(float_t epsilon);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
-          ObjectiveGradient& fGradient;
+          ScalarFunctionGradient& fGradient;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)

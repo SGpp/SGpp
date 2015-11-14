@@ -17,7 +17,7 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(
-      ObjectiveFunction& f, base::Grid& grid, size_t N,
+      ScalarFunction& f, base::Grid& grid, size_t N,
       float_t adaptivity) :
       IterativeGridGenerator(f, grid, N) {
       setAdaptivity(adaptivity);
@@ -30,7 +30,7 @@ namespace SGPP {
 
     void IterativeGridGeneratorSOO::setAdaptivity(float_t adaptivity) {
       hMax = [adaptivity](size_t n) {
-        return std::pow(n, adaptivity);
+        return static_cast<size_t>(std::pow(n, adaptivity));
       };
     }
 
@@ -40,20 +40,20 @@ namespace SGPP {
     }
 
     bool IterativeGridGeneratorSOO::generate() {
-      printer.printStatusBegin("Adaptive grid generation (SOO)...");
+      Printer::getInstance().printStatusBegin("Adaptive grid generation (SOO)...");
 
       bool result = true;
-      base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
+      base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
       base::GridStorage& gridStorage = *grid.getStorage();
-      const size_t d = f.getDimension();
+      const size_t d = f.getNumberOfParameters();
 
       HashRefinementMultiple refinement;
 
-      if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
+      if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
+          grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
+          grid.getType() == base::GridType::LinearClenshawCurtis) {
         // Clenshaw-Curtis grid
-        distr = base::GridIndex::ClenshawCurtis;
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
       }
 
       // generate initial grid
@@ -80,7 +80,7 @@ namespace SGPP {
       fX.resize(N);
 
       {
-        base::GridIndex& gp = *gridStorage.get(0);
+        base::GridIndex& gp = *gridStorage[0];
         base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
@@ -106,9 +106,9 @@ namespace SGPP {
           snprintf(str, 10, "%.1f%%",
                    static_cast<float_t>(currentN) /
                    static_cast<float_t>(N) * 100.0);
-          printer.printStatusUpdate(std::string(str) +
-                                    " (N = " + std::to_string(currentN) +
-                                    ", k = " + std::to_string(k) + ")");
+          Printer::getInstance().printStatusUpdate(std::string(str) +
+              " (N = " + std::to_string(currentN) +
+              ", k = " + std::to_string(k) + ")");
         }
 
         const size_t curDepthBound =
@@ -137,7 +137,7 @@ namespace SGPP {
 
             if (newN == currentN) {
               // size unchanged ==> point not refined (should not happen)
-              printer.printStatusEnd(
+              Printer::getInstance().printStatusEnd(
                 "error: size unchanged in IterativeGridGeneratorSOO");
               result = false;
               breakLoop = true;
@@ -157,7 +157,7 @@ namespace SGPP {
             refinementAlpha[iBest] = 0.0;
 
             for (size_t i = currentN; i < newN; i++) {
-              base::GridIndex& gp = *gridStorage.get(i);
+              base::GridIndex& gp = *gridStorage[i];
               // set point distribution accordingly to
               // normal/Clenshaw-Curtis grids
               gp.setPointDistribution(distr);
@@ -200,9 +200,9 @@ namespace SGPP {
       fX.resize(currentN);
 
       if (result) {
-        printer.printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
-                                  ", k = " + std::to_string(k) + ")");
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
+            ", k = " + std::to_string(k) + ")");
+        Printer::getInstance().printStatusEnd();
         return true;
       } else {
         return false;

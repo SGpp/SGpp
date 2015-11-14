@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "GradientDescent.hpp"
+#include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -15,8 +15,8 @@ namespace SGPP {
     namespace optimizer {
 
       GradientDescent::GradientDescent(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t beta,
         float_t gamma,
@@ -30,12 +30,18 @@ namespace SGPP {
         eps(epsilon) {
       }
 
-      float_t GradientDescent::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (gradient descent)...");
+      void GradientDescent::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (gradient descent)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
+
         base::DataVector x(x0);
-        float_t fx = 0.0;
+        float_t fx = NAN;
 
         base::DataVector gradFx(d);
         base::DataVector s(d);
@@ -48,6 +54,11 @@ namespace SGPP {
           k++;
           float_t gradFxNorm = gradFx.l2Norm();
 
+          if (k == 1) {
+            xHist.appendRow(x);
+            fHist.append(fx);
+          }
+
           // exit if norm small enough
           if (gradFxNorm < tol) {
             break;
@@ -59,9 +70,9 @@ namespace SGPP {
           }
 
           // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+          Printer::getInstance().printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // line search
           if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
@@ -73,20 +84,17 @@ namespace SGPP {
           }
 
           x = y;
+          xHist.appendRow(x);
+          fHist.append(fx);
         }
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
-        printer.printStatusEnd();
-
-        return fx;
+        fOpt = fx;
+        Printer::getInstance().printStatusEnd();
       }
 
-      ObjectiveGradient& GradientDescent::getObjectiveGradient() const {
+      ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const {
         return fGradient;
       }
 
@@ -122,6 +130,11 @@ namespace SGPP {
         eps = epsilon;
       }
 
+      void GradientDescent::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new GradientDescent(*this));
+      }
     }
   }
 }

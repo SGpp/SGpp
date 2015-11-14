@@ -38,10 +38,16 @@ namespace SGPP {
     }
 
     IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
-      ObjectiveFunction& f, base::Grid& grid, size_t N,
-      float_t adaptivity, base::level_t maxLevel, PowMethod powMethod) :
+      ScalarFunction& f,
+      base::Grid& grid,
+      size_t N,
+      float_t adaptivity,
+      base::level_t initialLevel,
+      base::level_t maxLevel,
+      PowMethod powMethod) :
       IterativeGridGenerator(f, grid, N),
       gamma(adaptivity),
+      initialLevel(initialLevel),
       maxLevel(maxLevel),
       powMethod(powMethod) {
     }
@@ -52,6 +58,14 @@ namespace SGPP {
 
     void IterativeGridGeneratorRitterNovak::setAdaptivity(float_t adaptivity) {
       this->gamma = adaptivity;
+    }
+
+    base::level_t IterativeGridGeneratorRitterNovak::getInitialLevel() const {
+      return initialLevel;
+    }
+
+    void IterativeGridGeneratorRitterNovak::setInitialLevel(base::level_t initialLevel) {
+      this->initialLevel = initialLevel;
     }
 
     base::level_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
@@ -73,27 +87,27 @@ namespace SGPP {
     }
 
     bool IterativeGridGeneratorRitterNovak::generate() {
-      printer.printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
+      Printer::getInstance().printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
 
       bool result = true;
-      base::GridIndex::PointDistribution distr = base::GridIndex::Normal;
+      base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
       base::GridStorage& gridStorage = *grid.getStorage();
-      const size_t d = f.getDimension();
+      const size_t d = f.getNumberOfParameters();
 
       HashRefinementMultiple refinement;
 
-      if ((std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) ||
-          (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0)) {
+      if (grid.getType() == base::GridType::BsplineClenshawCurtis ||
+          grid.getType() == base::GridType::ModBsplineClenshawCurtis ||
+          grid.getType() == base::GridType::LinearClenshawCurtis) {
         // Clenshaw-Curtis grid
-        distr = base::GridIndex::ClenshawCurtis;
+        distr = base::GridIndex::PointDistribution::ClenshawCurtis;
       }
 
       // generate initial grid
       {
         std::unique_ptr<base::GridGenerator> gridGen(
           grid.createGridGenerator());
-        gridGen->regular(3);
+        gridGen->regular(initialLevel);
       }
 
       size_t currentN = gridStorage.size();
@@ -126,7 +140,7 @@ namespace SGPP {
       refinementAlpha.setAll(0.0);
 
       for (size_t i = 0; i < currentN; i++) {
-        base::GridIndex& gp = *gridStorage.get(i);
+        base::GridIndex& gp = *gridStorage[i];
         gp.setPointDistribution(distr);
         // prepare fXOrder and rank
         fXOrder[i] = i;
@@ -144,7 +158,7 @@ namespace SGPP {
       // determine fXOrder and rank (prepared above)
       std::sort(fXOrder.begin(), fXOrder.begin() + currentN,
       [&](size_t a, size_t b) {
-        return (fX.get(a) < fX.get(b));
+        return (fX[a] < fX[b]);
       });
       std::sort(rank.begin(), rank.begin() + currentN,
       [&](size_t a, size_t b) {
@@ -166,9 +180,9 @@ namespace SGPP {
           snprintf(str, 10, "%.1f%%",
                    static_cast<float_t>(currentN) /
                    static_cast<float_t>(N) * 100.0);
-          printer.printStatusUpdate(std::string(str) +
-                                    " (N = " + std::to_string(currentN) +
-                                    ", k = " + std::to_string(k) + ")");
+          Printer::getInstance().printStatusUpdate(std::string(str) +
+              " (N = " + std::to_string(currentN) +
+              ", k = " + std::to_string(k) + ")");
         }
 
         // determine the best i (i.e. i_best = argmin_i g_i)
@@ -198,7 +212,7 @@ namespace SGPP {
             // ==> check if a refinement of this point would generate
             // children with a level greater than max_level
             // (in one coordinate), if yes ignore the point
-            base::GridIndex& gp = *gridStorage.get(i);
+            base::GridIndex& gp = *gridStorage[i];
 
             {
               base::index_t sourceIndex, childIndex;
@@ -270,7 +284,7 @@ namespace SGPP {
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)
-          printer.printStatusEnd(
+          Printer::getInstance().printStatusEnd(
             "error: size unchanged in IterativeGridGeneratorRitterNovak");
           result = false;
           break;
@@ -288,7 +302,7 @@ namespace SGPP {
         refinementAlpha[iBest] = 0.0;
 
         for (size_t i = currentN; i < newN; i++) {
-          base::GridIndex& gp = *gridStorage.get(i);
+          base::GridIndex& gp = *gridStorage[i];
           // set point distribution accordingly to normal/Clenshaw-Curtis grids
           gp.setPointDistribution(distr);
           refinementAlpha[i] = 0.0;
@@ -339,9 +353,9 @@ namespace SGPP {
       fX.resize(currentN);
 
       if (result) {
-        printer.printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
-                                  ", k = " + std::to_string(k) + ")");
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
+            ", k = " + std::to_string(k) + ")");
+        Printer::getInstance().printStatusEnd();
         return true;
       } else {
         return false;
