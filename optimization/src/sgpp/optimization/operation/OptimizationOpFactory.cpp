@@ -11,16 +11,16 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
-#include <sgpp/base/grid/type/BsplineTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
-#include <sgpp/base/grid/type/WaveletTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
@@ -45,46 +45,46 @@ namespace SGPP {
 
     optimization::OperationMultipleHierarchisation*
     createOperationMultipleHierarchisation(base::Grid& grid) {
-      if (std::strcmp(grid.getType(), "linear") == 0) {
+      if (grid.getType() == base::GridType::Linear) {
         return new optimization::OperationMultipleHierarchisationLinear(
                  dynamic_cast<base::LinearGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "linearTruncatedBoundary") == 0) {
+      } else if (grid.getType() == base::GridType::LinearBoundary) {
         return new optimization::OperationMultipleHierarchisationLinearBoundary(
-                 dynamic_cast<base::LinearTruncatedBoundaryGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "linearClenshawCurtis") == 0) {
+                 dynamic_cast<base::LinearBoundaryGrid&>(grid));
+      } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
         return new optimization::OperationMultipleHierarchisationLinearClenshawCurtis(
                  dynamic_cast<base::LinearClenshawCurtisGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "modlinear") == 0) {
+      } else if (grid.getType() == base::GridType::ModLinear) {
         return new optimization::OperationMultipleHierarchisationModLinear(
                  dynamic_cast<base::ModLinearGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "bspline") == 0) {
+      } else if (grid.getType() == base::GridType::Bspline) {
         return new optimization::OperationMultipleHierarchisationBspline(
                  dynamic_cast<base::BsplineGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "bsplineTruncatedBoundary") == 0) {
+      } else if (grid.getType() == base::GridType::BsplineBoundary) {
         return new optimization::OperationMultipleHierarchisationBsplineBoundary(
-                 dynamic_cast<base::BsplineTruncatedBoundaryGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "bsplineClenshawCurtis") == 0) {
+                 dynamic_cast<base::BsplineBoundaryGrid&>(grid));
+      } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
         return new optimization::OperationMultipleHierarchisationBsplineClenshawCurtis(
                  dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "modBspline") == 0) {
+      } else if (grid.getType() == base::GridType::ModBspline) {
         return new optimization::OperationMultipleHierarchisationModBspline(
                  dynamic_cast<base::ModBsplineGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "modBsplineClenshawCurtis") == 0) {
+      } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
         return new optimization::OperationMultipleHierarchisationModBsplineClenshawCurtis(
                  dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "wavelet") == 0) {
+      } else if (grid.getType() == base::GridType::Wavelet) {
         return new optimization::OperationMultipleHierarchisationWavelet(
                  dynamic_cast<base::WaveletGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "waveletTruncatedBoundary") == 0) {
+      } else if (grid.getType() == base::GridType::WaveletBoundary) {
         return new optimization::OperationMultipleHierarchisationWaveletBoundary(
-                 dynamic_cast<base::WaveletTruncatedBoundaryGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "modWavelet") == 0) {
+                 dynamic_cast<base::WaveletBoundaryGrid&>(grid));
+      } else if (grid.getType() == base::GridType::ModWavelet) {
         return new optimization::OperationMultipleHierarchisationModWavelet(
                  dynamic_cast<base::ModWaveletGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "fundamentalSpline") == 0) {
+      } else if (grid.getType() == base::GridType::FundamentalSpline) {
         return new optimization::OperationMultipleHierarchisationFundamentalSpline(
                  dynamic_cast<base::FundamentalSplineGrid&>(grid));
-      } else if (std::strcmp(grid.getType(), "modFundamentalSpline") == 0) {
+      } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
         return new optimization::OperationMultipleHierarchisationModFundamentalSpline(
                  dynamic_cast<base::ModFundamentalSplineGrid&>(grid));
       } else {

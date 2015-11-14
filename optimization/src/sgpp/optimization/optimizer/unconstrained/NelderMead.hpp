@@ -45,18 +45,14 @@ namespace SGPP {
            * @param gamma                 contraction coefficient
            * @param delta                 shrinking coefficient
            */
-          NelderMead(ObjectiveFunction& f,
+          NelderMead(ScalarFunction& f,
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      float_t alpha = DEFAULT_ALPHA,
                      float_t beta = DEFAULT_BETA,
                      float_t gamma = DEFAULT_GAMMA,
                      float_t delta = DEFAULT_DELTA);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return          reflection coefficient
@@ -97,6 +93,11 @@ namespace SGPP {
            * @param delta     shrinking coefficient
            */
           void setDelta(float_t delta);
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// reflection coefficient

@@ -8,13 +8,14 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveHessian.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <memory>
-#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+
 
 namespace SGPP {
   namespace optimization {
@@ -60,8 +61,8 @@ namespace SGPP {
            * @param alpha2            steepest descent restart parameter 2
            * @param p                 steepest descent restart exponent
            */
-          Newton(ObjectiveFunction& f,
-                 ObjectiveHessian& fHessian,
+          Newton(ScalarFunction& f,
+                 ScalarFunctionHessian& fHessian,
                  size_t maxItCount = DEFAULT_N,
                  float_t beta = DEFAULT_BETA,
                  float_t gamma = DEFAULT_GAMMA,
@@ -89,8 +90,8 @@ namespace SGPP {
            *                          the linear systems
            *                          (Hessian as coefficient matrix)
            */
-          Newton(ObjectiveFunction& f,
-                 ObjectiveHessian& fHessian,
+          Newton(ScalarFunction& f,
+                 ScalarFunctionHessian& fHessian,
                  size_t maxItCount,
                  float_t beta,
                  float_t gamma,
@@ -101,16 +102,12 @@ namespace SGPP {
                  float_t p,
                  const sle_solver::SLESolver& sleSolver);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function Hessian
            */
-          ObjectiveHessian& getObjectiveHessian() const;
+          ScalarFunctionHessian& getObjectiveHessian() const;
 
           /**
            * @return              beta (parameter for Armijo's rule)
@@ -182,9 +179,14 @@ namespace SGPP {
            */
           void setP(float_t p);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function Hessian
-          ObjectiveHessian& fHessian;
+          ScalarFunctionHessian& fHessian;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)

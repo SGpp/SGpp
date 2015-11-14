@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -48,8 +48,8 @@ namespace SGPP {
            * @param epsilon           epsilon (parameter for Armijo's rule)
            * @param restartThreshold  restart threshold
            */
-          NLCG(ObjectiveFunction& f,
-               ObjectiveGradient& fGradient,
+          NLCG(ScalarFunction& f,
+               ScalarFunctionGradient& fGradient,
                size_t maxItCount = DEFAULT_N,
                float_t beta = DEFAULT_BETA,
                float_t gamma = DEFAULT_GAMMA,
@@ -57,16 +57,12 @@ namespace SGPP {
                float_t epsilon = DEFAULT_EPSILON,
                float_t restartThreshold = DEFAULT_RESTART_THRESHOLD);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
            */
-          ObjectiveGradient& getObjectiveGradient() const;
+          ScalarFunctionGradient& getObjectiveGradient() const;
 
           /**
            * @return              beta (parameter for Armijo's rule)
@@ -118,9 +114,14 @@ namespace SGPP {
            */
           void setRestartThreshold(float_t restartThreshold);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
-          ObjectiveGradient& fGradient;
+          ScalarFunctionGradient& fGradient;
           /// beta (parameter for Armijo's rule)
           float_t beta;
           /// gamma (parameter for Armijo's rule)

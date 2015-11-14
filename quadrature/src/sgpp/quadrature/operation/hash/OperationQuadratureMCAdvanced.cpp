@@ -11,11 +11,10 @@
 #include <iostream>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/Random.hpp>
-#include "../../sampling/HaltonSampleGenerator.hpp"
-#include "../../sampling/LatinHypercubeSampleGenerator.hpp"
-#include "../../sampling/NaiveSampleGenerator.hpp"
-#include "../../sampling/SampleGenerator.hpp"
-#include "../../sampling/StratifiedSampleGenerator.hpp"
+#include <sgpp/quadrature/sampling/HaltonSampleGenerator.hpp>
+#include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
+#include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
+#include <sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp>
 
 namespace SGPP {
   namespace quadrature {

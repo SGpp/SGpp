@@ -48,7 +48,7 @@ namespace SGPP {
                             base::DataMatrix& B,
                             base::DataMatrix& X) const {
 #ifdef USE_ARMADILLO
-        printer.printStatusBegin("Solving linear system (Armadillo)...");
+        Printer::getInstance().printStatusBegin("Solving linear system (Armadillo)...");
 
         const arma::uword n = static_cast<arma::uword>(system.getDimension());
         ArmadilloMatrix A(n, n);
@@ -58,7 +58,7 @@ namespace SGPP {
 
         // parallelize only if the system is cloneable
         #pragma omp parallel if (system.isCloneable()) \
-        shared(system, A, nnz, printer) default(none)
+        shared(system, A, nnz) default(none)
         {
           SLE* system2 = &system;
 #ifdef _OPENMP
@@ -93,15 +93,15 @@ namespace SGPP {
                 char str[10];
                 snprintf(str, 10, "%.1f%%",
                 static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
-                printer.printStatusUpdate("constructing matrix (" +
+                Printer::getInstance().printStatusUpdate("constructing matrix (" +
                 std::string(str) + ")");
               }
             }
           }
         }
 
-        printer.printStatusUpdate("constructing matrix (100.0%)");
-        printer.printStatusNewLine();
+        Printer::getInstance().printStatusUpdate("constructing matrix (100.0%)");
+        Printer::getInstance().printStatusNewLine();
 
         // print ratio of nonzero entries
         {
@@ -110,8 +110,8 @@ namespace SGPP {
                              (static_cast<float_t>(n) *
                               static_cast<float_t>(n));
           snprintf(str, 10, "%.1f%%", nnzRatio * 100.0);
-          printer.printStatusUpdate("nnz ratio: " + std::string(str));
-          printer.printStatusNewLine();
+          Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
+          Printer::getInstance().printStatusNewLine();
         }
 
         if (B.getNcols() == 1) {
@@ -119,16 +119,16 @@ namespace SGPP {
           ArmadilloVector bArmadillo(B.getPointer(), n);
           ArmadilloVector xArmadillo(n);
 
-          printer.printStatusUpdate("solving with Armadillo");
+          Printer::getInstance().printStatusUpdate("solving with Armadillo");
 
           if (arma::solve(xArmadillo, A, bArmadillo)) {
             base::DataVector x(xArmadillo.memptr(), n);
             X.resize(n, 1);
             X.setColumn(0, x);
-            printer.printStatusEnd();
+            Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            printer.printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
             return false;
           }
         } else {
@@ -144,7 +144,7 @@ namespace SGPP {
             BArmadillo.col(i) = ArmadilloVector(b.getPointer(), n);
           }
 
-          printer.printStatusUpdate("solving with Armadillo");
+          Printer::getInstance().printStatusUpdate("solving with Armadillo");
 
           if (arma::solve(XArmadillo, A, BArmadillo)) {
             X.resize(n, B_count);
@@ -155,10 +155,10 @@ namespace SGPP {
               X.setColumn(i, x);
             }
 
-            printer.printStatusEnd();
+            Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            printer.printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
             return false;
           }
         }

@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -41,8 +41,8 @@ namespace SGPP {
            * @param stepSizeDecreaseFactor  step size decrease factor
            * @param lineSearchAccuracy      line search accuracy
            */
-          BFGS(ObjectiveFunction& f,
-               ObjectiveGradient& fGradient,
+          BFGS(ScalarFunction& f,
+               ScalarFunctionGradient& fGradient,
                size_t maxItCount = DEFAULT_N,
                float_t tolerance = DEFAULT_TOLERANCE,
                float_t stepSizeIncreaseFactor =
@@ -51,16 +51,12 @@ namespace SGPP {
                  DEFAULT_STEP_SIZE_DECREASE_FACTOR,
                float_t lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
            */
-          ObjectiveGradient& getObjectiveGradient() const;
+          ScalarFunctionGradient& getObjectiveGradient() const;
 
           /**
            * @return tolerance
@@ -102,9 +98,14 @@ namespace SGPP {
            */
           void setLineSearchAccuracy(float_t lineSearchAccuracy);
 
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
-          ObjectiveGradient& fGradient;
+          ScalarFunctionGradient& fGradient;
           /// tolerance
           float_t theta;
           /// step size increase factor

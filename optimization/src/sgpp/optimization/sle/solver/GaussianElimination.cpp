@@ -19,7 +19,7 @@ namespace SGPP {
       bool GaussianElimination::solve(SLE& system,
                                       base::DataVector& b,
                                       base::DataVector& x) const {
-        printer.printStatusBegin(
+        Printer::getInstance().printStatusBegin(
           "Solving linear system (Gaussian elimination)...");
 
         // size of the system
@@ -30,10 +30,10 @@ namespace SGPP {
         // set W := (A, b) at the beginning
         for (size_t i = 0; i < n; i++) {
           for (size_t j = 0; j < n; j++) {
-            W.set(i, j, system.getMatrixEntry(i, j));
+            W(i, j) = system.getMatrixEntry(i, j);
           }
 
-          W.set(i, n, b[i]);
+          W(i, n) = b[i];
         }
 
         // at the beginning of the l-th iteration, W should be of the form
@@ -49,7 +49,7 @@ namespace SGPP {
         // |    l    (n-l)     1    column(s)        |
         // +-----------------------------------------+
         for (size_t l = 0; l < n; l++) {
-          printer.printStatusUpdate("k = " + std::to_string(l));
+          Printer::getInstance().printStatusUpdate("k = " + std::to_string(l));
 
           // search for pivot entry = maximum of the absolute values
           // of the entries w_{l,l}, ..., w_{n,l}
@@ -58,7 +58,7 @@ namespace SGPP {
           size_t i = l;
 
           for (size_t j = l; j < n; j++) {
-            float_t entry = std::abs(W.get(j, l));
+            float_t entry = std::abs(W(j, l));
 
             if (entry > maxEntry) {
               maxEntry = entry;
@@ -68,34 +68,34 @@ namespace SGPP {
 
           // all entries are zero ==> matrices W and A are rank deficient
           if (maxEntry == 0) {
-            printer.printStatusEnd(
+            Printer::getInstance().printStatusEnd(
               "error: could not solve linear system!");
             return false;
           }
 
           // swap rows l and i
           for (size_t k = l; k <= n; k++) {
-            const float_t entry = W.get(l, k);
-            W.set(l, k, W.get(i, k));
-            W.set(i, k, entry);
+            const float_t entry = W(l, k);
+            W(l, k) = W(i, k);
+            W(i, k) = entry;
           }
 
           // divide l-th row by w_{l,l}
           {
-            const float_t wll = W.get(l, l);
+            const float_t wll = W(l, l);
 
             for (size_t k = l; k <= n; k++) {
-              W.set(l, k, W.get(l, k) / wll);
+              W(l, k) /= wll;
             }
           }
 
           // subtract w_{j,l} times l-th row from all rows j != l
           for (size_t j = 0; j < n; j++) {
             if (j != l) {
-              const float_t wjl = W.get(j, l);
+              const float_t wjl = W(j, l);
 
               for (size_t k = l; k <= n; k++) {
-                W.set(j, k, W.get(j, k) - wjl * W.get(l, k));
+                W(j, k) -= wjl * W(l, k);
               }
             }
           }
@@ -105,8 +105,8 @@ namespace SGPP {
         x.resize(n);
         W.getColumn(n, x);
 
-        printer.printStatusUpdate("k = " + std::to_string(n));
-        printer.printStatusEnd();
+        Printer::getInstance().printStatusUpdate("k = " + std::to_string(n));
+        Printer::getInstance().printStatusEnd();
         return true;
       }
 

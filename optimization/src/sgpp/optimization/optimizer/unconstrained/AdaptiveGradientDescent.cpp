@@ -13,8 +13,8 @@ namespace SGPP {
     namespace optimizer {
 
       AdaptiveGradientDescent::AdaptiveGradientDescent(
-        ObjectiveFunction& f,
-        ObjectiveGradient& fGradient,
+        ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
         size_t maxItCount,
         float_t tolerance,
         float_t stepSizeIncreaseFactor,
@@ -28,14 +28,22 @@ namespace SGPP {
         rhoLs(lineSearchAccuracy) {
       }
 
-      float_t AdaptiveGradientDescent::optimize(base::DataVector& xOpt) {
-        printer.printStatusBegin("Optimizing (adaptive gradient descent)...");
+      void AdaptiveGradientDescent::optimize() {
+        Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
 
-        const size_t d = f.getDimension();
+        const size_t d = f.getNumberOfParameters();
+
+        xOpt.resize(0);
+        fOpt = NAN;
+        xHist.resize(0, d);
+        fHist.resize(0);
 
         base::DataVector x(x0);
         float_t fx = f.eval(x);
         base::DataVector gradFx(d);
+
+        xHist.appendRow(x);
+        fHist.append(fx);
 
         base::DataVector xNew(d);
         float_t fxNew;
@@ -102,14 +110,16 @@ namespace SGPP {
           // save new point
           x = xNew;
           fx = fxNew;
+          xHist.appendRow(x);
+          fHist.append(fx);
 
           // increase step size
           alpha *= rhoAlphaPlus;
 
           // status printing
-          printer.printStatusUpdate(
-            std::to_string(k) + " evaluations, f(x) = " +
-            std::to_string(fx));
+          Printer::getInstance().printStatusUpdate(
+            std::to_string(k) + " evaluations, x = " + x.toString() +
+            ", f(x) = " + std::to_string(fx));
 
           // stopping criterion:
           // stop if alpha is smaller than tolerance theta
@@ -127,16 +137,11 @@ namespace SGPP {
 
         xOpt.resize(d);
         xOpt = x;
-
-        printer.printStatusUpdate(
-          std::to_string(k) + " evaluations, f(x) = " +
-          std::to_string(fx));
-        printer.printStatusEnd();
-
-        return fx;
+        fOpt = fx;
+        Printer::getInstance().printStatusEnd();
       }
 
-      ObjectiveGradient& AdaptiveGradientDescent::getObjectiveGradient() const {
+      ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const {
         return fGradient;
       }
 
@@ -175,6 +180,11 @@ namespace SGPP {
         rhoLs = lineSearchAccuracy;
       }
 
+      void AdaptiveGradientDescent::clone(
+        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+        clone = std::unique_ptr<UnconstrainedOptimizer>(
+                  new AdaptiveGradientDescent(*this));
+      }
     }
   }
 }

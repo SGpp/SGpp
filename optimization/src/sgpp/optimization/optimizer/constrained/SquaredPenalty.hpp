@@ -8,9 +8,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/ObjectiveGradient.hpp>
-#include <sgpp/optimization/function/ConstraintGradient.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 namespace SGPP {
   namespace optimization {
@@ -46,12 +46,12 @@ namespace SGPP {
            * @param penaltyStartValue     penalty start value
            * @param penaltyIncreaseFactor penalty increase factor
            */
-          SquaredPenalty(ObjectiveFunction& f,
-                         ObjectiveGradient& fGradient,
-                         ConstraintFunction& g,
-                         ConstraintGradient& gGradient,
-                         ConstraintFunction& h,
-                         ConstraintGradient& hGradient,
+          SquaredPenalty(ScalarFunction& f,
+                         ScalarFunctionGradient& fGradient,
+                         VectorFunction& g,
+                         VectorFunctionGradient& gGradient,
+                         VectorFunction& h,
+                         VectorFunctionGradient& hGradient,
                          size_t maxItCount = DEFAULT_N,
                          float_t xTolerance = DEFAULT_X_TOLERANCE,
                          float_t constraintTolerance =
@@ -61,26 +61,22 @@ namespace SGPP {
                          float_t penaltyIncreaseFactor =
                            DEFAULT_PENALTY_INCREASE_FACTOR);
 
-          /**
-           * @param[out] xOpt optimal point
-           * @return          optimal objective function value
-           */
-          float_t optimize(base::DataVector& xOpt);
+          void optimize();
 
           /**
            * @return objective function gradient
            */
-          ObjectiveGradient& getObjectiveGradient() const;
+          ScalarFunctionGradient& getObjectiveGradient() const;
 
           /**
            * @return inequality constraint function gradient
            */
-          ConstraintGradient& getInequalityConstraintGradient() const;
+          VectorFunctionGradient& getInequalityConstraintGradient() const;
 
           /**
            * @return equality constraint function gradient
            */
-          ConstraintGradient& getEqualityConstraintGradient() const;
+          VectorFunctionGradient& getEqualityConstraintGradient() const;
 
           /**
            * @return point tolerance
@@ -122,13 +118,25 @@ namespace SGPP {
            */
           void setPenaltyIncreaseFactor(float_t penaltyIncreaseFactor);
 
+          /**
+           * @return vector in which the k-th entry indicates the number of
+           *         inner iterations in the k-th (outer) iteration,
+           *         empty vector on error
+           */
+          const std::vector<size_t>& getHistoryOfInnerIterations() const;
+
+          /**
+           * @param[out] clone pointer to cloned object
+           */
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+
         protected:
           /// objective function gradient
-          ObjectiveGradient& fGradient;
+          ScalarFunctionGradient& fGradient;
           /// inequality constraint function gradient
-          ConstraintGradient& gGradient;
+          VectorFunctionGradient& gGradient;
           /// equality constraint function gradient
-          ConstraintGradient& hGradient;
+          VectorFunctionGradient& hGradient;
           /// point tolerance
           float_t theta;
           /// constraint tolerance
@@ -137,6 +145,8 @@ namespace SGPP {
           float_t mu0;
           /// penalty increase factor
           float_t rhoMuPlus;
+          /// search history (inner iterations)
+          std::vector<size_t> kHist;
       };
 
     }

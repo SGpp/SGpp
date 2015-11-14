@@ -58,7 +58,7 @@ namespace SGPP {
 
       bool Auto::solve(SLE& system, base::DataMatrix& B,
                        base::DataMatrix& X) const {
-        printer.printStatusBegin(
+        Printer::getInstance().printStatusBegin(
           "Solving linear system (automatic method)...");
 
         Armadillo solverArmadillo;
@@ -109,7 +109,7 @@ namespace SGPP {
                          ESTIMATE_NNZ_ROWS_SAMPLE_SIZE *
                          static_cast<float_t>(n)) + 1;
 
-          printer.printStatusUpdate("estimating sparsity pattern");
+          Printer::getInstance().printStatusUpdate("estimating sparsity pattern");
 
           for (size_t i = 0; i < n; i += inc) {
             nrows++;
@@ -130,9 +130,9 @@ namespace SGPP {
           {
             char str[10];
             snprintf(str, 10, "%.1f%%", nnzRatio * 100.0);
-            printer.printStatusUpdate("estimated nnz ratio: " +
-                                      std::string(str));
-            printer.printStatusNewLine();
+            Printer::getInstance().printStatusUpdate("estimated nnz ratio: " +
+                std::string(str));
+            Printer::getInstance().printStatusNewLine();
           }
 
           if (nnzRatio <= MAX_NNZ_RATIO_FOR_SPARSE) {
@@ -155,12 +155,12 @@ namespace SGPP {
           bool result = solvers[i]->solve(system, B, X);
 
           if (result) {
-            printer.printStatusEnd();
+            Printer::getInstance().printStatusEnd();
             return true;
           } else if ((solvers[i] == &solverGmmpp) &&
                      (n > MAX_DIM_FOR_FULL)) {
             // don't use full solvers and return approximative solution
-            printer.printStatusEnd(
+            Printer::getInstance().printStatusEnd(
               "warning: using non-converged solution of iterative "
               "solver, residual can be large "
               "(matrix too large to try other solvers)");
@@ -168,7 +168,7 @@ namespace SGPP {
           }
         }
 
-        printer.printStatusEnd("error: could not solve linear system!");
+        Printer::getInstance().printStatusEnd("error: could not solve linear system!");
         return false;
       }
 
