@@ -2,7 +2,7 @@
 
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 ## @package classifier
@@ -16,11 +16,9 @@
 from optparse import OptionParser
 import sys,os
 
-if os.environ.has_key("SGPP"):
-    sys.path.append(os.path.join(os.environ["SGPP"], "bin"))
-from tools import *
+from pysgpp.extensions.datadriven.tools import *
 from pysgpp import *
-from pysgpp.datadriven import *
+from pysgpp.extensions.datadriven import *
 from painlesscg import cg,sd,cg_new
 from math import sqrt
 from math import ceil
@@ -77,7 +75,7 @@ def exec_mode(mode):
         for m in modes.keys():
             print "%10s: %s" % (m, modes[m]['help'])
         sys.exit(0)
-    
+
     # check valid mode
     if not modes.has_key(mode):
         print("Wrong mode! Please refer to --mode help for further information.")
@@ -120,7 +118,7 @@ def exec_mode(mode):
 # @param filename filename of the file
 # @return the data stored in the file as a set of arrays
 def openAlphaFile(filename):
-    return readAlpha(filename)    
+    return readAlpha(filename)
 
 
 #-------------------------------------------------------------------------------
@@ -148,12 +146,12 @@ def constructGrid(dim):
                 sys.exit(1)
             if options.trapezoidboundary == True:
                 if options.verbose:
-                    print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
-                grid = Grid.createLinearTruncatedBoundaryGrid(dim)            
+                    print "LinearBoundaryGrid, l=%s" % (options.level)
+                grid = Grid.createLinearBoundaryGrid(dim)
             if options.completeboundary == True:
                 if options.verbose:
-                    print "LinearBoundaryGrid, l=%s" % (options.level)
-                grid = Grid.createLinearBoundaryGrid(dim)            
+                    print "LinearL0BoundaryGrid, l=%s" % (options.level)
+                grid = Grid.createLinearBoundaryGrid(dim, 0)
         elif options.function_type == "modWavelet":
             if options.verbose:
                 print "ModWaveletGrid, l=%s" % (options.level)
@@ -176,8 +174,8 @@ def constructGrid(dim):
                     sys.exit(1)
                 else:
                     if options.verbose:
-                        print "LinearTruncatedBoundaryGrid, l=%s" % (options.level)
-                    grid = Grid.createLinearTruncatedBoundaryGrid(dim)
+                        print "LinearBoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearBoundaryGrid(dim)
             # more grid points on boundary?
             elif options.boundary == 2:
                 if options.polynom > 1:
@@ -185,8 +183,8 @@ def constructGrid(dim):
                     sys.exit(1)
                 else:
                     if options.verbose:
-                        print "LinearBoundaryGrid, l=%s" % (options.level)
-                    grid = Grid.createLinearBoundaryGrid(dim)
+                        print "LinearL0BoundaryGrid, l=%s" % (options.level)
+                    grid = Grid.createLinearBoundaryGrid(dim, 0)
             else: #no border points
                 if options.polynom > 1:
                     if options.verbose:
@@ -196,14 +194,14 @@ def constructGrid(dim):
                     if options.verbose:
                         print "LinearGrid, l=%s" % (options.level)
                     grid = Grid.createLinearGrid(dim)
-                    
+
         generator = grid.createGridGenerator()
         generator.regular(options.level)
     else: #read grid from file
         if options.verbose:
             print "reading grid from %s" % (options.grid)
         grid = readGrid(options.grid)
-    
+
     return grid
 
 ## Calculates the number of points, that should be refined
@@ -212,7 +210,7 @@ def constructGrid(dim):
 # @return: number of points, that should be refined
 def getNumOfPoints(options, grid):
     numOfPoints = 0
-    if options.adapt_rate: 
+    if options.adapt_rate:
         numOfPoints = int(ceil( options.adapt_rate * grid.createGridGenerator().getNumberOfRefinablePoints()))
     else: numOfPoints = options.adapt_points
     return numOfPoints
@@ -228,23 +226,23 @@ def doApply():
     data = openFile(options.data[0])
     dim = data["data"].getNcols()
     numData = data["data"].getNrows()
-    
+
     # read alpha vector
 #    alpha = buildTrainingVector(openAlphaFile(options.alpha))
     alpha = openAlphaFile(options.alpha)
-    
+
     # construct corresponding grid
     grid = constructGrid(dim)
     if(len(alpha) != grid.getStorage().size()):
         print "Error: Inconsistent Grid and Alpha-Vector"
         print "alpha size %d, grid size %d" % (len(alpha),grid.getStorage().size())
         sys.exit(1)
-    
+
     # copy data to DataVector
     #(x,y) = createDataVectorFromDataset(data)
     x = data['data']
     y = data['classes']
-    
+
     # evaluate
     q = DataVector(dim)
     classes = []
@@ -268,26 +266,26 @@ def doApply():
     # output accuracy:
     acc = acc / float(numData)
     print "Accuracy on test data: %9.5f%%" % (100*acc)
-    
-    if options.regression: 
+
+    if options.regression:
         m = Matrix(grid, buildTrainingVector(data), options.regparam, options.CMode, options.Hk)
         mse = evaluateError(buildYVector(data), alpha, m)[0]
-            
+
     # get filename for output file
     if(options.outfile != None):
         data["filename"] = options.outfile
     else:
         data["filename"] = data["filename"] + ".out.arff"
-    
+
     # write data with function values to ARFF-file
     data["classes"] = classes
     writeDataARFF([data])
 
 
 #-------------------------------------------------------------------------------
-## Evaluate a sparse grid function given by a grid and an 
+## Evaluate a sparse grid function given by a grid and an
 # alpha-Vector (ARFF-file) at a set of data points (ARFF-file).
-# If the data set contains class values, output some statistics 
+# If the data set contains class values, output some statistics
 # (classification accuracy, or - if regularization - mse and other measures).
 # Outputs classification or (if regression) function values to ARFF-file.
 def doEval():
@@ -311,7 +309,7 @@ def doEval():
 #    (x,y) = createDataVectorFromDataset(data)
     x = data['data']
     y = data['classes']
-    
+
     # evaluate
     q = DataVector(dim)
     classes = []
@@ -341,7 +339,7 @@ def doEval():
             acc = acc / float(numData)
             print "Accuracy on test data: %9.5f%%" % (100*acc)
     # regression:
-    else: 
+    else:
         # traverse Data
         for i in xrange(numData):
             x.getRow(i,q)
@@ -361,7 +359,7 @@ def doEval():
     data["classes"] = classes
     writeDataARFF([data])
 
-    
+
 #-------------------------------------------------------------------------------
 ## Evaluate a sparse grid function given by grid and alphas at data points
 # which are provided at stdin.
@@ -391,7 +389,7 @@ def doEvalStdin():
     # read in normalization information if available
     if options.normfile:
         (border, minvals, maxvals, deltavals) = readNormfile(options.normfile)
-        
+
     # evaluate
     q = DataVector(dim)
     # read data
@@ -417,7 +415,7 @@ def doEvalStdin():
     sys.stdout.write("\n")
     sys.stdout.flush()
 
-    
+
 #-------------------------------------------------------------------------------
 ## Learn a dataset
 def doNormal():
@@ -425,12 +423,12 @@ def doNormal():
     data = openFile(options.data[0])
     dim = data["data"].getNcols()
     numData = data["data"].getNrows()
-    
+
     if options.verbose:
         print "Dimension is:", dim
         print "Size of datasets is:", numData
         print "Gridsize is:", grid.getSize()
-        
+
     training = buildTrainingVector(data)
     y = buildYVector(data)
 
@@ -445,13 +443,13 @@ def doNormal():
         writeAlphaARFF(options.outfile, alpha)
     if options.gridfile:
         writeGrid(options.gridfile, grid)
-    
+
     if(options.gnuplot != None):
         if(dim != 2):
             print("Wrong dimension for gnuplot-Output!")
         else:
             writeGnuplot(options.gnuplot, grid, alpha, options.res)
-        
+
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -466,7 +464,7 @@ def run(grid, training, classes):
 
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
         b = m.generateb(classes)
-            
+
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
         print "Conjugate Gradient output:"
         print res
@@ -476,8 +474,8 @@ def run(grid, training, classes):
 
         if options.checkpoint != None:
             writeCheckpoint(options.checkpoint, grid, alpha, options.adapt_start + adaptStep)
-        
-        
+
+
         if(adaptStep  < options.adaptive):
             #if(options.verbose):
             print("refining grid")
@@ -491,7 +489,7 @@ def run(grid, training, classes):
 #Subroutine evaluation of error
 #@todo remove printing messages from the subroutine and place it into the suited methods
 #
-def evaluateError(classes, alpha, m):   
+def evaluateError(classes, alpha, m):
     error = DataVector(len(classes))
     m.B.mult(alpha, error)
     error.sub(classes) # error vector
@@ -549,13 +547,13 @@ def doTest():
     te_refine = []
     tr_refine = []
     num_refine = []
-    
+
     adaptStep = 0
     while True: #loop exit condition on the end of the loop
         print "Adaptive Step:", (options.adapt_start + adaptStep)
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
         b = m.generateb(y)
-        
+
         alpha = DataVector(grid.getStorage().size())
         alpha.setAll(0.0)
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
@@ -563,7 +561,7 @@ def doTest():
         print res
 
         num_refine.append(grid.getStorage().size())
-        
+
         if options.regression:
             print "Training Data:"
             tr, errors = evaluateError(y, alpha, m)
@@ -572,21 +570,21 @@ def doTest():
             m_test = Matrix(grid, test_data, options.regparam, options.CMode, options.Hk)
             mse = evaluateError(test_classes, alpha, m_test)[0]
             te_refine.append(mse)
-        else:     
+        else:
             print "Training results:"
             tr = testVectorFastWithCharacteristicNumbers(grid, alpha, training, y)
             print "Test results:"
             te = testVectorFastWithCharacteristicNumbers(grid, alpha, test_data, test_classes)
             tr_refine.append(tr)
             te_refine.append(te)
-        
+
         if not options.regression:
             print "Correctly classified on training data: ",tr
             print "Correctly classified on testing data:  ",te
 
         if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, alpha, (options.adapt_start + adaptStep))
         if options.verbose: print formTxt([te_refine[-1]], [tr_refine[-1]], [num_refine[-1]], False)
-            
+
         #increment adaptive step
         adaptStep += 1
 #        if(options.adaptive >= 0 and adaptStep <= options.adaptive) \
@@ -613,14 +611,14 @@ def doTest():
                 grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, getNumOfPoints(options, grid), options.adapt_threshold))
             else:
                 grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid), options.adapt_threshold))
-           
+
             if(options.verbose): print("Number of points: %d" %(grid.getStorage().size(),))
-            
-        #Break condition for while-loop: 
-        #number of adaptive steps is achieved or MSE of test data increase last 20 epochs or last MSE less then given boundary 
+
+        #Break condition for while-loop:
+        #number of adaptive steps is achieved or MSE of test data increase last 20 epochs or last MSE less then given boundary
         else:
             break
-        
+
     #--end of while loop
 
     if options.outfile:
@@ -632,7 +630,7 @@ def doTest():
         txt = formTxt(te_refine, tr_refine, num_refine)
         writeStats(options.stats, txt)
         if options.verbose: print txt
-    
+
     if(options.gnuplot != None):
         if(dim != 1 and dim != 2):
             print("Wrong dimension for gnuplot-Output!")
@@ -685,7 +683,7 @@ def formTxtVal(te_refine, tr_refine, val_refine, num_points, withHeader = True):
 def doFold():
     data = openFile(options.data[0])
     (dvec, cvec) = split_n_folds(data, options.f_level, options.seed)
-        
+
     if options.regression:
         performFoldRegression(dvec, cvec)
     else:
@@ -707,12 +705,12 @@ def doFolds():
 #-------------------------------------------------------------------------------
 ## Learn a data-set with a stratified n-fold.
 # Unlike the method doFoldStratified(), here all folds will run. One can use
-# doFoldStratified() with options.onlyfoldnum == -1 to achieve the same 
+# doFoldStratified() with options.onlyfoldnum == -1 to achieve the same
 # behaviour.
 def doFoldr():
     data = openFile(options.data[0])
     (dvec, cvec) = split_n_folds_stratified(data, options.f_level, options.seed)
-    
+
     if options.regression:
         performFoldRegression(dvec, cvec)
     else:
@@ -720,7 +718,7 @@ def doFoldr():
 
 #-------------------------------------------------------------------------------
 ## Learn a dataset with a stratified n-fold.
-# Unlike the method doFoldr(), doFoldStratified() is able to learn from the 
+# Unlike the method doFoldr(), doFoldStratified() is able to learn from the
 # selected fold only defined in options.onlyfoldnum.
 def doFoldStratified():
     data = openFile(options.data[0])
@@ -747,17 +745,17 @@ def doFoldf():
     if len(options.data)==1:
         print("Error: Not enough to do. At least two data-Files necessary!")
         sys.exit(1)
-        
+
     dvec = []
     cvec = []
-    
+
     for file in options.data:
         data = openFile(file)
         dvec.append(buildTrainingVector(data))
         cvec.append(buildYVector(data))
-        
+
     options.f_level = len(dvec)
-    
+
     if options.regression:
         performFoldRegression(dvec, cvec)
     else:
@@ -768,11 +766,11 @@ def doFoldf():
 def performFold(dvec,cvec):
 
     grid = constructGrid(dvec[0].getDim())
-        
+
     num_points = []
     tr_refine = []
     te_refine = []
-    
+
     for adaptStep in xrange(options.adaptive + 1):
         trainingCorrect = []
         testingCorrect =[]
@@ -781,11 +779,11 @@ def performFold(dvec,cvec):
         refinealpha.setAll(0.0)
 
         alpha = DataVector(refinealpha)
-        
+
         for foldSetNumber in xrange(options.f_level):
 #            alpha.setAll(0.0)
             training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
-            
+
             m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
             b = m.generateb(classes)
 
@@ -807,13 +805,13 @@ def performFold(dvec,cvec):
             refinealpha.add(alpha)
 
         if options.verbose:
-            print(trainingCorrect)   
+            print(trainingCorrect)
             print(testingCorrect)
 
-      
+
         tr = sum(trainingCorrect)/options.f_level
         te = sum(testingCorrect)/options.f_level
-        
+
         if options.verbose:
             print "training: ",tr
             print "testing:  ",te
@@ -821,13 +819,13 @@ def performFold(dvec,cvec):
         num_points.append(grid.getStorage().size())
         tr_refine.append(tr)
         te_refine.append(te)
-        
+
         refinealpha.mult(1.0/options.f_level)
-        
+
         if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, refinealpha)
-        
-        if options.stats != None: writeStats(options.stats, formTxt(te_refine, tr_refine, num_points)) 
-        
+
+        if options.stats != None: writeStats(options.stats, formTxt(te_refine, tr_refine, num_points))
+
         if options.verbose:
             print "alpha"
             print refinealpha
@@ -860,7 +858,7 @@ def performFoldNew(dvec,cvec,ifold):
     tr_refine = []
     val_refine = []
     te_refine = []
-    
+
     # construct/split DataVectors
     training,classes = assembleTrainingVector(dvec, cvec, ifold)
     data_tr,data_val,class_tr,class_val = split_DataVectors_by_proportion_stratified(training, classes, 0.66)
@@ -874,7 +872,7 @@ def performFoldNew(dvec,cvec,ifold):
         alpha.setAll(0.0)
         m = Matrix(grid, data_tr, options.regparam, options.CMode, options.Hk)
         b = m.generateb(class_tr)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, 
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix,
                      options.reuse, options.verbose, max_threshold=options.max_r)
         if options.verbose: print res
 
@@ -886,7 +884,7 @@ def performFoldNew(dvec,cvec,ifold):
         # Therefore construct and solve CG again for whole training data and evaluate on test data
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
         b = m.generateb(classes)
-        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, 
+        res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix,
                      True, options.verbose, max_threshold=options.max_r)
         te = testVectorFast(grid, alpha, dvec[ifold], cvec[ifold])
 
@@ -902,9 +900,9 @@ def performFoldNew(dvec,cvec,ifold):
             print "testing:   ", te
 
         # write checkpoint
-        if options.checkpoint != None: 
+        if options.checkpoint != None:
             writeCheckpoint(options.checkpoint, grid, alpha, options.adapt_start + adaptStep, fold=ifold)
-        
+
         # refine
         if(adaptStep < options.adaptive):
             if options.verbose: print "refining"
@@ -924,28 +922,28 @@ def performFoldRegression(dvec,cvec):
     """Perform n-fold cross-validation.
     @param dvec contains n DataMatrices for the single folds;
     @param cvec contains n DataVectors with function values for the single folds"""
-    
+
     grid = constructGrid(dvec[0].getNcols())
-        
+
     num_points = []
     tr_refine = []
     te_refine = []
     tr_meanSqrError = []
     te_meanSqrError = []
-        
+
     for adaptStep in xrange(options.adaptive + 1):
         meanSqrErrorsTraining = []
-        meanSqrErrorsTesting = []        
+        meanSqrErrorsTesting = []
 
         refineerrors = DataVector(grid.getStorage().size())
         refineerrors.setAll(0.0)
 
         alpha = DataVector(grid.getStorage().size())
-        
+
         for foldSetNumber in xrange(options.f_level):
 #            alpha.setAll(0.0)
             training,classes = assembleTrainingVector(dvec,cvec,foldSetNumber)
-            
+
             m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
             b = m.generateb(classes)
 
@@ -971,12 +969,12 @@ def performFoldRegression(dvec,cvec):
 
             if options.verbose:
                 print "Fold-%d MSE (te, tr):" % (foldSetNumber), te, tr
-                 
+
         trSqrError = sum(meanSqrErrorsTraining)/options.f_level
         trVar = sum(map(lambda x: (x-trSqrError)**2, meanSqrErrorsTraining))/(options.f_level-1)
         teSqrError = sum(meanSqrErrorsTesting)/options.f_level
         teVar = sum(map(lambda x: (x-teSqrError)**2, meanSqrErrorsTesting))/(options.f_level-1)
-        
+
         if options.verbose:
             print "testing:  ", teSqrError, teVar
             print "training: ", trSqrError, trVar
@@ -984,7 +982,7 @@ def performFoldRegression(dvec,cvec):
         num_points.append(grid.getStorage().size())
         tr_meanSqrError.append(trSqrError)
         te_meanSqrError.append(teSqrError)
-        
+
         refineerrors.mult(1.0/options.f_level)
         if options.checkpoint != None: writeCheckpoint(options.checkpoint, grid, refineerrors)
 
@@ -1007,12 +1005,12 @@ def assembleTrainingVector(dvecs,cvecs,omit):
     size = 0
     for dataset in dvecs:
         size = size + dataset.getNrows()
-    
+
     size = size - dvecs[omit].getNrows()
-    
+
     training = DataMatrix(size, dvecs[0].getNcols())
     classes = DataVector(size)
-    
+
     i=0
     cv = DataVector(dvecs[0].getNcols())
     for vec in dvecs:
@@ -1022,15 +1020,15 @@ def assembleTrainingVector(dvecs,cvecs,omit):
             vec.getRow(x, cv)
             training.setRow(i, cv)
             i = i + 1
-    
+
     i=0
     for vec in cvecs:
         if vec == cvecs[omit]:
-            continue 
+            continue
         for x in xrange(len(vec)):
             classes[i] = vec[x]
             i = i + 1
-            
+
     return training, classes
 
 
@@ -1044,16 +1042,16 @@ def buildTrainingVector(data):
     return data["data"]
 #    dim = len(data["data"])
 #    training = DataVector(len(data["data"][0]), dim)
-#    
+#
 #    # i iterates over the data points, d over the dimension of one data point
 #    for i in xrange(len(data["data"][0])):
 #        for d in xrange(dim):
 #            training[i*dim + d] = data["data"][d][i]
-#    
+#
 #    return training
 
 #-------------------------------------------------------------------------------
-## Computes the classification accuracy on some test data. 
+## Computes the classification accuracy on some test data.
 # Tests on the classes {+1, -1}, cut-off at 0.
 # @param grid the sparse grid
 # @param alpha DataVector of surplusses
@@ -1068,11 +1066,11 @@ def testVector(grid,alpha,test,classes):
         val = createOperationEval(grid).eval(alpha,p)
         if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
             correct = correct + 1
-            
+
     return float(correct)/test.getNrows()
 
 #-------------------------------------------------------------------------------
-## Computes the classification accuracy on some test data. 
+## Computes the classification accuracy on some test data.
 #
 # Tests on the classes {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
 # @param grid the sparse grid
@@ -1084,7 +1082,7 @@ def testVectorFast(grid, alpha, test, classes):
     return createOperationTest(grid).test(alpha, test, classes)/float(test.getNrows())
 
 #-------------------------------------------------------------------------------
-## Computes the MSE on some test data. 
+## Computes the MSE on some test data.
 #
 # Tests on the classes {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
 # @param grid the sparse grid
@@ -1097,7 +1095,7 @@ def testVectorFastMSE(grid, alpha, test, vals):
 
 
 #-------------------------------------------------------------------------------
-## Computes the classification accuracy on some test data. 
+## Computes the classification accuracy on some test data.
 #
 # Tests on the classes {+1, -1}, cut-off at 0. testVectorFast uses an OpenMP enabled c++ routine for testing
 # and displays TP TN FP FN
@@ -1127,7 +1125,7 @@ def testVectorValues(grid,alpha,test,classes,evalValues):
         evalValues.append(val)
         if (val < 0 and classes[i] < 0 ) or (val > 0 and classes[i] > 0 ):
             correct = correct + 1
-            
+
     return float(correct)/test.getNrows()
 
 #-------------------------------------------------------------------------------
@@ -1152,16 +1150,16 @@ def testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues):
         evalValues.append(val)
         if (val > 0 and classes[i] > 0 ):
             TP = TP + 1
-            
+
         if (val < 0 and classes[i] < 0 ):
             TN = TN + 1
-            
+
         if (val > 0 and classes[i] < 0 ):
             FP = FP + 1
-        
+
         if (val < 0 and classes[i] > 0 ):
-            FN = FN + 1       
-            
+            FN = FN + 1
+
     print "TP: " + str(TP)
     print "TN: " + str(TN)
     print "FP: " + str(FP)
@@ -1174,11 +1172,11 @@ def testValuesWithCharacteristicNumbers(grid,alpha,test,classes,evalValues):
 # @return DataVector that contains the class information, length of the vector is identical to the length of the data vector
 def buildYVector(data):
     return data["classes"]
-    
+
 #    y = DataVector(len(data["classes"]))
 #    for i in xrange(len(data["classes"])):
 #        y[i] = data["classes"][i]
-#        
+#
 #    return y
 
 
@@ -1245,7 +1243,7 @@ if __name__=='__main__':
     # check some options
     CMode = options.CMode.lower()
 
-    #this incrementation is unobvious, the default value of options.adaptive 
+    #this incrementation is unobvious, the default value of options.adaptive
     #options.adaptive = options.adaptive + 1
 
     # check C-mode
@@ -1270,7 +1268,7 @@ if __name__=='__main__':
     # check further parameters:
     if options.onlyfoldnum <> -1 and (not options.onlyfoldnum in range(options.f_level)):
         parser.error("--onlyfoldnum: Not in range 0,...,--foldlevel -1")
-    
+
     # adapt_rate has to be <1
     if options.adapt_rate != None and (options.adapt_rate <= 0 or options.adapt_rate >= 1):
         parser.error("--adapt_rate has to be between 0 and 1")

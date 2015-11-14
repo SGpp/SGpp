@@ -1,10 +1,9 @@
-
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <vector>
 
-#include <sgpp/optimization/function/test/Rosenbrock.hpp>
+#include <sgpp/optimization/function/scalar/test/Rosenbrock.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
@@ -18,8 +17,8 @@ using namespace SGPP::optimization;
 
 BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
   // Test SGPP::optimization iterative grid generators.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 2;
   const size_t p = 3;
@@ -47,7 +46,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     BOOST_CHECK_EQUAL(gridGen.getMaxLevel(), maxLevel);
 
     const IterativeGridGeneratorRitterNovak::PowMethod powMethod =
-      IterativeGridGeneratorRitterNovak::FAST_POW;
+      IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW;
     gridGen.setPowMethod(powMethod);
     BOOST_CHECK_EQUAL(gridGen.getPowMethod(), powMethod);
   }
@@ -85,7 +84,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     IterativeGridGeneratorLinearSurplus gridGenLS(f, *grid, N, 0.85);
     IterativeGridGeneratorSOO gridGenSOO(f, *grid, N, 0.85);
 
-    gridGenRNFastPow.setPowMethod(IterativeGridGeneratorRitterNovak::FAST_POW);
+    gridGenRNFastPow.setPowMethod(IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW);
 
     std::vector<IterativeGridGenerator*> gridGens = {
       &gridGenRN, &gridGenRNFastPow, &gridGenLS, &gridGenSOO
@@ -110,11 +109,11 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
         base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
-          x[t] = grid->getStorage()->get(i)->getCoord(t);
+          x[t] = (*grid->getStorage())[i]->getCoord(t);
         }
 
         // test function value
-        BOOST_CHECK_CLOSE(functionValues.get(i), f.eval(x), 1e-10);
+        BOOST_CHECK_CLOSE(functionValues[i], f.eval(x), 1e-10);
       }
     }
   }

@@ -65,9 +65,9 @@ void LearnerScenario::writeToFile(std::string fileName) {
         file << "grid.dim=" << "0 # inferred from dataset" << std::endl;
         file << "grid.level=" << gridConfig.level_ << std::endl;
 
-        if (gridConfig.type_ == SGPP::base::Linear) {
+        if (gridConfig.type_ == SGPP::base::GridType::Linear) {
             file << "grid.type=Linear" << std::endl;
-        } else if (gridConfig.type_ == SGPP::base::ModLinear) {
+        } else if (gridConfig.type_ == SGPP::base::GridType::ModLinear) {
             file << "grid.type=ModLinear" << std::endl;
         } else {
             throw;
@@ -77,9 +77,9 @@ void LearnerScenario::writeToFile(std::string fileName) {
         file << "solverRefine.maxIterations=" << solverConfigRefine.maxIterations_ << std::endl;
         file << "solverRefine.threshold=" << solverConfigRefine.threshold_ << std::endl;
 
-        if (solverConfigRefine.type_ == SGPP::solver::CG) {
+        if (solverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
             file << "solverRefine.type=CG" << std::endl;
-        } else if (solverConfigRefine.type_ == SGPP::solver::BiCGSTAB) {
+        } else if (solverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
             file << "solverRefine.type=BiCGSTAB" << std::endl;
         } else {
             throw;
@@ -89,9 +89,9 @@ void LearnerScenario::writeToFile(std::string fileName) {
         file << "solverFinal.maxIterations=" << solverConfigFinal.maxIterations_ << std::endl;
         file << "solverFinal.threshold=" << solverConfigFinal.threshold_ << std::endl;
 
-        if (solverConfigFinal.type_ == SGPP::solver::CG) {
+        if (solverConfigFinal.type_ == SGPP::solver::SLESolverType::CG) {
             file << "solverFinal.type=CG" << std::endl;
-        } else if (solverConfigFinal.type_ == SGPP::solver::BiCGSTAB) {
+        } else if (solverConfigFinal.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
             file << "solverFinal.type=BiCGSTAB" << std::endl;
         } else {
             throw;
@@ -168,9 +168,9 @@ void LearnerScenario::readFromFile(std::string fileName) {
                 check |= 0x00000008;
             } else if (name.compare("grid.type") == 0) {
                 if (value.compare("Linear") == 0) {
-                    gridConfig.type_ = SGPP::base::Linear;
+                    gridConfig.type_ = SGPP::base::GridType::Linear;
                 } else if (value.compare("ModLinear") == 0) {
-                    gridConfig.type_ = SGPP::base::ModLinear;
+                    gridConfig.type_ = SGPP::base::GridType::ModLinear;
                 } else {
                     throw;
                 }
@@ -186,9 +186,9 @@ void LearnerScenario::readFromFile(std::string fileName) {
                 check |= 0x00000080;
             } else if (name.compare("solverRefine.type") == 0) {
                 if (value.compare("CG") == 0) {
-                    solverConfigRefine.type_ = SGPP::solver::CG;
+                    solverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
                 } else if (name.compare("BiCGSTAB") == 0) {
-                    solverConfigRefine.type_ = SGPP::solver::BiCGSTAB;
+                    solverConfigRefine.type_ = SGPP::solver::SLESolverType::BiCGSTAB;
                 } else {
                     throw;
                 }
@@ -204,9 +204,9 @@ void LearnerScenario::readFromFile(std::string fileName) {
                 check |= 0x00000800;
             } else if (name.compare("solverFinal.type") == 0) {
                 if (value.compare("CG") == 0) {
-                    solverConfigFinal.type_ = SGPP::solver::CG;
+                    solverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
                 } else if (name.compare("BiCGSTAB") == 0) {
-                    solverConfigRefine.type_ = SGPP::solver::BiCGSTAB;
+                    solverConfigRefine.type_ = SGPP::solver::SLESolverType::BiCGSTAB;
                 } else {
                     throw;
                 }

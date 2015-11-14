@@ -4,8 +4,14 @@
 
 export LD_LIBRARY_PATH=$SGPP_BUILD_PATH:$LD_LIBRARY_PATH
 
-# If you installed Python support execute the following code or add add it
-# to your ~/.bashrc file
+# If you installed Python support execute the following from the root
+# directory of SG++ to install the python library in your local
+# site-packages folder
 
-export PYTHONPATH=$SGPP_HOME:$PYSGPP_BUILD_PATH:$PYTHONPATH
+python setup.py install --user
+
+# or use the internal python package structure of SG++ by executing the
+# following code or by adding it to your ~/.bashrc file
+
+export PYTHONPATH=$PYSGPP_PACKAGE_PATH:$PYTHONPATH
 # ------------------------------------------------------------------------

@@ -22,6 +22,8 @@
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 
+#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 
@@ -59,7 +61,7 @@ namespace SGPP {
     class LearnerOnlineSGD: public SGPP::datadriven::Learner {
 
       public:
-        LearnerOnlineSGD(SGPP::datadriven::LearnerRegularizationType& regularization,
+        LearnerOnlineSGD(SGPP::pde::RegularizationType& regularization,
                          const bool isRegression, const bool isVerbose = true);
 
 

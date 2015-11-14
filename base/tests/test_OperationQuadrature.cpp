@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
     HashGridIndex* gp = gS->get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
-    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<uint>(lvl), static_cast<uint>(idx));
+    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   size_t level = 3;
   size_t deg = 4;
 
-  Grid* grid = Grid::createPolyTruncatedBoundaryGrid(dim, deg);
+  Grid* grid = Grid::createPolyBoundaryGrid(dim, deg);
   grid->createGridGenerator()->regular(level);
   GridStorage* gS = grid->getStorage();
   size_t N = gS->size();
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
     HashGridIndex* gp = gS->get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
-    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<uint>(lvl), static_cast<uint>(idx));
+    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }

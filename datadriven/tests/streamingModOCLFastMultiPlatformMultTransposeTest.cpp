@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     for (size_t i = 0; i < fileNames.size(); i++) {
-        double mse = compareToReferenceTranspose(SGPP::base::ModLinear, fileNames[i], level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level, configuration);
         BOOST_CHECK(mse < errors[i]);
     }
 }

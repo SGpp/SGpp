@@ -86,17 +86,20 @@ interpolant and the gradient-free optimization of the objective function
 find reasonable approximations of the minimum, which lies at
 \f$(3\pi/16, 3\pi/14) \approx (0.58904862, 0.67319843)\f$.
 
-To compile and run the C++ example, you need to set some
-compiler/linker flags and you also have to adjust the environment
-variable \c LD_LIBRARY_PATH accordingly
-(see \ref code_examples_quick_start).
+The example can be compiled, linked, and executed by
+@code
+g++ -std=c++11 -O3 -I../../base/src -I../../optimization/src -L../../lib/sgpp -o c++_example c++_example.cpp -lsgppbase -lsgppoptimization
+export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp"
+./c++_example
+@endcode
+For details see \ref code_examples_quick_start.
 
 \section code_examples_optimization_python Python
 
 The C++ code can be translated into the following Python code:
 \include python_example.py
 
-To compile run the Python example, you need to adjust the environment
+To run the Python example, you need to adjust the environment
 variables \c LD_LIBRARY_PATH and \c PYTHONPATH accordingly
 (see \ref code_examples_quick_start).
 When run, the example gives (nearly) the same output as the C++ example.
@@ -129,37 +132,28 @@ with different pointer sizes of 64 bits).
 You can somehow override MATLAB's choice of libraries with
 the environmental variables BLAS_VERSION and LAPACK_VERSION,
 but this is strongly discouraged as MATLAB itself may produce
-wrong results (e.g., det [1 2; 3 4] = 2).
+unexpected wrong results (e.g., det [1 2; 3 4] = 2).
+Static linking to Armadillo and UMFPACK would be
+a possible solution to circumvent this problem.
 
-To run the MATLAB example, you first need to compile to \c ExampleFunction
-into a \c .jar file:
+To make SG++ usuable within MATLAB, please follow
+\ref code_examples__matlab "the instructions provided here".
+However, to run the MATLAB example, you additionally need to compile
+the class \c ExampleFunction into a \c .jar file
+(before starting MATLAB):
 \code
 javac -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar ExampleFunction.java
 jar -cf ExampleFunction.jar ExampleFunction.class
 \endcode
-
-Second, you need to adjust \c /path/to/MATLAB/toolbox/local/librarypath.txt
-to include the \c /path/to/SGpp/trunk/lib/jsgpp directory.
-
-Third, you need to set environment variables to specific values:
+After setting the environment variables and the
+\c librarypath.txt correctly
+(\ref code_examples__matlab "as described here"), you can start MATLAB.
+In order to run the example, you need to add the example objective
+function to MATLAB's Java search path via
 \code
-export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/alglib:/path/to/SGpp/trunk/lib/jsgpp"
-export LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libstdc++.so.6"
-\endcode
-The first line tells MATLAB where to find the necessary libraries.
-The second line causes loading the system version of \c libstdc++
-and not MATLAB's version
-(for more info on these two lines,
-see \ref code_examples_quick_start).
-
-Fourth, after setting the environment variables, you can start MATLAB.
-In MATLAB, run
-\code
-javaaddpath('/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar');
 javaaddpath('/path/to/SGpp/trunk/optimization/examples/ExampleFunction.jar');
 \endcode
-to add both the jsgpp library and our example objective function to
-MATLAB's Java search path.
+(i.e., right after adding \c jsgpp.jar to MATLAB's Java path).
 Now, you should be able to run the MATLAB example.
 When run, the example gives (nearly) the same output as the C++ example.
 

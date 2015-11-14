@@ -36,8 +36,8 @@ namespace SGPP {
     LinearStretchedGrid::~LinearStretchedGrid() {
     }
 
-    const char* LinearStretchedGrid::getType() {
-      return "linearStretched";
+    SGPP::base::GridType LinearStretchedGrid::getType() {
+      return SGPP::base::GridType::LinearStretched;
     }
 
     const SBasis& LinearStretchedGrid::getBasis() {

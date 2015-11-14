@@ -84,9 +84,12 @@ namespace SGPP {
         static const int DEFAULT_VERBOSITY = 0;
 
         /**
-         * Constructor.
+         * @return singleton instance
          */
-        Printer();
+        inline static Printer& getInstance() {
+          static Printer printer;
+          return printer;
+        }
 
         /**
          * Call at the beginning of a time-consuming operation.
@@ -182,6 +185,16 @@ namespace SGPP {
         void setStream(std::ostream* stream);
 
         /**
+         * @return maximum length of lines, 0 if unbounded
+         */
+        size_t getLineLengthLimit();
+
+        /**
+         * @param lineLengthLimit maximum length of lines, 0 if unbounded
+         */
+        void setLineLengthLimit(size_t lineLengthLimit);
+
+        /**
          * Print a grid (grid points and function values).
          *
          * @param gridGen       grid to be printed
@@ -197,6 +210,9 @@ namespace SGPP {
         void printSLE(SLE& system) const;
 
       protected:
+        static const size_t INDENTATION_LENGTH = 4;
+        static const char INDENTATION_CHAR = ' ';
+
         /// verbosity level
         int verbose;
         /// whether status printing is enabled
@@ -214,16 +230,33 @@ namespace SGPP {
         std::stack<base::SGppStopwatch> watches;
         /// length of last operation in seconds
         float_t lastDuration;
+        /// maximum length of lines, 0 if unbounded
+        size_t lineLengthLimit;
+        /// indentation
+        std::string indentation;
 
         /// internal mutex
         MutexType mutex;
 
         /// stream used for printing (default std::cout)
         std::ostream* stream;
-    };
 
-    /// singleton printer instance
-    extern Printer printer;
+      private:
+        /**
+         * Constructor.
+         */
+        Printer();
+
+        /**
+         * Deleted copy constructor.
+         */
+        Printer(const Printer&) = delete;
+
+        /**
+         * Deleted assignment operator.
+         */
+        void operator=(const Printer&) = delete;
+    };
 
   }
 }

@@ -497,7 +497,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -522,7 +522,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 //
 //  size_t dim = dataset.getDimension();
 //  //TODO: possible error in test, was set to dim=1 in python-test
-//  Grid *grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+//  Grid *grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 //  GridGenerator *generator = grid->createGridGenerator();
 //  generator->regular(level);
 //  GridStorage *gridStorage = grid->getStorage();
@@ -546,7 +546,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -570,7 +570,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -598,7 +598,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -622,7 +622,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -646,7 +646,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -670,7 +670,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -713,12 +713,12 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE(TestLinearTruncatedBoundaryGrid)
+BOOST_AUTO_TEST_SUITE(TestLinearBoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
 
   size_t level = 1;
-  Grid* grid = SGPP::base::Grid::createLinearTruncatedBoundaryGrid(1);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(1);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -746,12 +746,12 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_SUITE(TestLinearBoundaryGrid)
+BOOST_AUTO_TEST_SUITE(TestLinearL0BoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
 
   size_t level = 1;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(1);
+  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(1, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();

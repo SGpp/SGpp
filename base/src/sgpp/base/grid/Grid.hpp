@@ -6,7 +6,6 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
@@ -15,7 +14,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace base {
 
@@ -23,31 +21,33 @@ namespace SGPP {
      * enum to address different gridtypes in a standardized way
      *
      */
-    enum GridType {
-      Linear,
-      LinearStretched,
-      LinearBoundary,
-      LinearTruncatedBoundary,
-      LinearStretchedTruncatedBoundary,
-      LinearGeneralizedTruncatedBoundary,
-      ModLinear,
-      Poly,
-      PolyTruncatedBoundary,
-      ModPoly,
-      ModWavelet,
-      ModBspline,
-      Prewavelet,
-      SquareRoot,
-      Periodic,
-      LinearClenshawCurtis,
-      Bspline,
-      BsplineTruncatedBoundary,
-      BsplineClenshawCurtis,
-      Wavelet,
-      WaveletTruncatedBoundary,
-      FundamentalSpline,
-      ModFundamentalSpline,
-      ModBsplineClenshawCurtis
+    enum class GridType {
+      Linear,                       //  0
+      LinearStretched,              //  1
+      LinearL0Boundary,             //  2
+      LinearBoundary,               //  3
+      LinearStretchedBoundary,      //  4
+      LinearTruncatedBoundary,      //  5
+      ModLinear,                    //  6
+      Poly,                         //  7
+      PolyBoundary,                 //  8
+      ModPoly,                      //  9
+      ModWavelet,                   // 10
+      ModBspline,                   // 11
+      Prewavelet,                   // 12
+      SquareRoot,                   // 13
+      Periodic,                     // 14
+      LinearClenshawCurtis,         // 15
+      Bspline,                      // 16
+      BsplineBoundary,              // 17
+      BsplineClenshawCurtis,        // 18
+      Wavelet,                      // 19
+      WaveletBoundary,              // 20
+      FundamentalSpline,            // 21
+      ModFundamentalSpline,         // 22
+      ModBsplineClenshawCurtis,     // 23
+      LinearStencil,                // 24
+      ModLinearStencil              // 25
     };
 
     /**
@@ -121,24 +121,21 @@ namespace SGPP {
          * creates a linear boundary grid
          *
          * @param dim the grid's dimension
+         * @param boundaryLevel on which level the boundary grid points and
+         *                      basis functions should be added;
+         *                      the default is 1, which results in a grid with
+         *                      the same resolution on the boundary as on the
+         *                      main axis
          * @return grid
          */
-        static Grid* createLinearBoundaryGrid(size_t dim);
-
-        /**
-         * creates a linear truncated boundary grid
-         *
-         * @param dim the grid's dimension
-         * @return grid
-         */
-        static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
+        static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel = 1);
 
         /**
          * creates a linearstretched truncated boundary grid
          *
          * @param dim the grid's dimension
          */
-        static Grid* createLinearStretchedTruncatedBoundaryGrid(size_t dim);
+        static Grid* createLinearStretchedBoundaryGrid(size_t dim);
 
         /**
          * creates a linear Clenshaw-Curtis grid
@@ -172,7 +169,7 @@ namespace SGPP {
          * @param degree the polynom's max. degree
          * @return grid
          */
-        static Grid* createPolyTruncatedBoundaryGrid(size_t dim, size_t degree);
+        static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * creates a poly grid
@@ -196,7 +193,7 @@ namespace SGPP {
          *
          * @param dim the grid's dimension
          */
-        static Grid* createWaveletTruncatedBoundaryGrid(size_t dim);
+        static Grid* createWaveletBoundaryGrid(size_t dim);
 
         /**
          * creates a mod wavelet grid
@@ -222,7 +219,7 @@ namespace SGPP {
          * @param degree the B-spline degree
          * @return grid
          */
-        static Grid* createBsplineTruncatedBoundaryGrid(size_t dim, size_t degree);
+        static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * creates a Bspline Clenshaw-Curtis grid
@@ -291,7 +288,7 @@ namespace SGPP {
          * @param dim the grid's dimension
          * @return grid
          */
-        static Grid* createLinearGeneralizedTruncatedBoundaryGrid(size_t dim);
+        static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
 
         /**
          * creates a periodic grid
@@ -382,7 +379,7 @@ namespace SGPP {
          *
          * @return string that identifies the grid type uniquely
          */
-        virtual const char* getType() = 0;
+        virtual SGPP::base::GridType getType() = 0;
 
         /**
          * Returns the Basis class associated with the grid
@@ -472,9 +469,9 @@ namespace SGPP {
 
         typedef Grid* (*Factory)(std::istream&);
         typedef std::map<std::string, Grid::Factory> factoryMap;
+        typedef std::map<SGPP::base::GridType, std::string> gridTypeVerboseMap;
 
         static Grid* nullFactory(std::istream&);
-
 
       private:
         /**
@@ -483,6 +480,14 @@ namespace SGPP {
          * @return a map with all available grid types for serialization
          */
         static factoryMap& typeMap();
+
+        /**
+         *  This method returns a map with string representation for the type
+         *  of all available grids.
+         * @return a map with string representation for the type
+         *  of all available grids.
+         */
+        static gridTypeVerboseMap& typeVerboseMap();
 
         //pointer to the Operation Eval used in Grid.eval()
         static OperationEval* evalOp;

@@ -116,10 +116,10 @@ void printSettings(std::string dataFile, std::string testFile, bool isRegression
     std::cout << "Mode: Classification" << std::endl << std::endl;
   }
 
-  if (GridConfig.type_ == SGPP::base::Linear) {
+  if (GridConfig.type_ == SGPP::base::GridType::Linear) {
     std::cout << "chosen gridtype: Linear" << std::endl << std::endl;
-  } else if (GridConfig.type_ == SGPP::base::LinearTruncatedBoundary) {
-    std::cout << "chosen gridtype: LinearTruncatedBoundary" << std::endl << std::endl;
+  } else if (GridConfig.type_ == SGPP::base::LinearBoundary) {
+    std::cout << "chosen gridtype: LinearBoundary" << std::endl << std::endl;
   } else {
     const char* modlinear_mode = getenv("SGPP_MODLINEAR_EVAL");
 
@@ -406,23 +406,23 @@ int main(int argc, char* argv[]) {
     SLESolverConfigRefine.eps_ = cg_eps_learning;
     SLESolverConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverConfigRefine.threshold_ = -1.0;
-    SLESolverConfigRefine.type_ = SGPP::solver::CG;
+    SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
     SLESolverSPConfigRefine.eps_ = static_cast<float>(cg_eps_learning);
     SLESolverSPConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverSPConfigRefine.threshold_ = -1.0f;
-    SLESolverSPConfigRefine.type_ = SGPP::solver::CG;
+    SLESolverSPConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = cg_eps;
     SLESolverConfigFinal.maxIterations_ = cg_max;
     SLESolverConfigFinal.threshold_ = -1.0;
-    SLESolverConfigFinal.type_ = SGPP::solver::CG;
+    SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
     SLESolverSPConfigFinal.eps_ = static_cast<float>(cg_eps);
     SLESolverSPConfigFinal.maxIterations_ = cg_max;
     SLESolverSPConfigFinal.threshold_ = -1.0f;
-    SLESolverSPConfigFinal.type_ = SGPP::solver::CG;
+    SLESolverSPConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
@@ -456,11 +456,11 @@ int main(int argc, char* argv[]) {
     ggridtype = gridtype;
 
     if (gridtype == "linearboundary") {
-      gridConfig.type_ = SGPP::base::LinearTruncatedBoundary;
+      gridConfig.type_ = SGPP::base::LinearBoundary;
     } else if (gridtype == "modlinear") {
-      gridConfig.type_ = SGPP::base::ModLinear;
+      gridConfig.type_ = SGPP::base::GridType::ModLinear;
     } else if (gridtype == "linear") {
-      gridConfig.type_ = SGPP::base::Linear;
+      gridConfig.type_ = SGPP::base::GridType::Linear;
     } else {
       std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." << std::endl << std::endl;
       return -1;

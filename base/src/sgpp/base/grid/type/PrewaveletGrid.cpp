@@ -30,8 +30,8 @@ namespace SGPP {
     PrewaveletGrid::~PrewaveletGrid() {
     }
 
-    const char* PrewaveletGrid::getType() {
-      return "prewavelet";
+    SGPP::base::GridType PrewaveletGrid::getType() {
+      return base::GridType::Prewavelet;
     }
 
     const SBasis& PrewaveletGrid::getBasis() {

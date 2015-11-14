@@ -48,6 +48,8 @@ namespace SGPP {
         typedef HashGridIndex index_type;
         /// pointer to index_type
         typedef HashGridIndex* index_pointer;
+        /// pointer to constant index_type
+        typedef const HashGridIndex* index_const_pointer;
         /// unordered_map of index_pointers
         typedef std::unordered_map<index_pointer, size_t, HashGridIndexPointerHashFunctor, HashGridIndexPointerEqualityFunctor > grid_map;
         /// iterator of grid_map
@@ -187,24 +189,23 @@ namespace SGPP {
         size_t dim() const;
 
         /**
-         * gets the sequence number for given gridpoint by its index
+         * gets the index number for given gridpoint by its sequence number
          *
-         * @param index gridindex object
+         * @param seq the sequence number of the index
          *
-         * @return sequence number of the given index
+         * @return gridindex object (pointer)
          */
-        inline size_t& operator[](index_pointer index) {
-          return map[index];
+        inline index_pointer operator[](size_t seq) {
+          return list[seq];
         }
 
         /**
          * gets the index number for given gridpoint by its sequence number
          *
          * @param seq the sequence number of the index
-         *
-         * @return gridindex object (reference)
+         * @return gridindex object (constant pointer)
          */
-        inline index_pointer& operator[](size_t seq) {
+        inline index_const_pointer operator[](size_t seq) const {
           return list[seq];
         }
 
@@ -215,7 +216,7 @@ namespace SGPP {
          *
          * @return gridindex object (pointer)
          */
-        inline HashGridIndex* get(size_t seq) const {
+        inline index_pointer get(size_t seq) const {
           return list[seq];
         }
 

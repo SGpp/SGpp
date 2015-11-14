@@ -41,4 +41,3 @@ p[0] = 0.52
 p[1] = 0.73
 opEval = createOperationEval(grid)
 print "u(0.52, 0.73) = {}".format(opEval.eval(alpha, p))
-print "f(0.52, 0.73) = {}".format(f(p[0], p[1]))

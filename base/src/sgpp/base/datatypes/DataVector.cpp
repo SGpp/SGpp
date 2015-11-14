@@ -422,9 +422,9 @@ namespace SGPP {
     }
 
     float_t DataVector::min() const {
-      float_t min = data[0];
+      float_t min = INFINITY;
 
-      for (size_t i = 1; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         if (min > data[i]) {
           min = data[i];
         }
@@ -434,9 +434,9 @@ namespace SGPP {
     }
 
     float_t DataVector::max() const {
-      float_t max = data[0];
+      float_t max = -INFINITY;
 
-      for (size_t i = 1; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         if (max < data[i]) {
           max = data[i];
         }
@@ -446,8 +446,8 @@ namespace SGPP {
     }
 
     void DataVector::minmax(float_t* min, float_t* max) const {
-      float_t min_t = data[0];
-      float_t max_t = data[0];
+      float_t min_t = INFINITY;
+      float_t max_t = -INFINITY;
 
       for (size_t i = 0; i < size; i++) {
         if (min_t > data[i]) {
@@ -464,6 +464,10 @@ namespace SGPP {
     }
 
     float_t* DataVector::getPointer() {
+      return data;
+    }
+
+    const float_t* DataVector::getPointer() const {
       return data;
     }
 

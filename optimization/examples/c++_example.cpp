@@ -12,12 +12,12 @@
 /**
  * Example test function.
  */
-class ExampleFunction : public SGPP::optimization::ObjectiveFunction {
+class ExampleFunction : public SGPP::optimization::ScalarFunction {
   public:
     /**
      * Constructor.
      */
-    ExampleFunction() : ObjectiveFunction(2) {
+    ExampleFunction() : SGPP::optimization::ScalarFunction(2) {
     }
 
     /**
@@ -28,14 +28,16 @@ class ExampleFunction : public SGPP::optimization::ObjectiveFunction {
      */
     SGPP::float_t eval(const SGPP::base::DataVector& x) {
       // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
-      return std::sin(8.0 * x.get(0)) + std::sin(7.0 * x.get(1));
+      return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
     }
 
     /**
      * @param[out] clone pointer to cloned object
      */
-    virtual void clone(std::unique_ptr<ObjectiveFunction>& clone) const {
-      clone = std::unique_ptr<ObjectiveFunction>(new ExampleFunction(*this));
+    virtual void clone(
+      std::unique_ptr<SGPP::optimization::ScalarFunction>& clone) const {
+      clone = std::unique_ptr<SGPP::optimization::ScalarFunction>(
+                new ExampleFunction(*this));
     }
 };
 
@@ -58,12 +60,12 @@ int main(int argc, const char* argv[]) {
   (void)argv;
 
   std::cout << "SGPP::optimization example program started.\n\n";
-  SGPP::optimization::printer.setVerbosity(2);
+  SGPP::optimization::Printer::getInstance().setVerbosity(2);
 
   // objective function
   ExampleFunction f;
   // dimension of domain
-  const size_t d = f.getDimension();
+  const size_t d = f.getNumberOfParameters();
   // B-spline degree
   const size_t p = 3;
   // maximal number of grid points
@@ -110,8 +112,8 @@ int main(int argc, const char* argv[]) {
 
   printLine();
   std::cout << "Optimizing smooth interpolant...\n\n";
-  SGPP::optimization::InterpolantFunction ft(grid, coeffs);
-  SGPP::optimization::InterpolantGradient ftGradient(grid, coeffs);
+  SGPP::optimization::InterpolantScalarFunction ft(grid, coeffs);
+  SGPP::optimization::InterpolantScalarFunctionGradient ftGradient(grid, coeffs);
   SGPP::optimization::optimizer::GradientDescent gradientMethod(ft, ftGradient);
   SGPP::base::DataVector x0(d);
   SGPP::float_t fX0;
@@ -129,7 +131,7 @@ int main(int argc, const char* argv[]) {
                                         functionValues.getSize()));
 
     for (size_t t = 0; t < d; t++) {
-      x0[t] = gridStorage.get(x0Index)->getCoord(t);
+      x0[t] = gridStorage[x0Index]->getCoord(t);
     }
 
     fX0 = functionValues[x0Index];
@@ -140,8 +142,9 @@ int main(int argc, const char* argv[]) {
   std::cout << "f(x0) = " << fX0 << ", ft(x0) = " << ftX0 << "\n\n";
 
   gradientMethod.setStartingPoint(x0);
-  SGPP::base::DataVector xOpt(d);
-  const SGPP::float_t ftXOpt = gradientMethod.optimize(xOpt);
+  gradientMethod.optimize();
+  const SGPP::base::DataVector& xOpt = gradientMethod.getOptimalPoint();
+  const SGPP::float_t ftXOpt = gradientMethod.getOptimalValue();
   const SGPP::float_t fXOpt = f.eval(xOpt);
 
   std::cout << "\nxOpt = " << xOpt.toString() << "\n";
@@ -155,8 +158,9 @@ int main(int argc, const char* argv[]) {
   std::cout << "Optimizing objective function (for comparison)...\n\n";
 
   SGPP::optimization::optimizer::NelderMead nelderMead(f, 1000);
-  SGPP::base::DataVector xOptNM(d);
-  const SGPP::float_t fXOptNM = nelderMead.optimize(xOptNM);
+  nelderMead.optimize();
+  SGPP::base::DataVector xOptNM = nelderMead.getOptimalPoint();
+  const SGPP::float_t fXOptNM = nelderMead.getOptimalValue();
   const SGPP::float_t ftXOptNM = ft.eval(xOptNM);
 
   std::cout << "\nnxOptNM = " << xOptNM.toString() << "\n";

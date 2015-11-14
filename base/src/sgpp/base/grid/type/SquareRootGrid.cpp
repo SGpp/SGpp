@@ -36,8 +36,8 @@ namespace SGPP {
     SquareRootGrid::~SquareRootGrid() {
     }
 
-    const char* SquareRootGrid::getType() {
-      return "squareRoot";
+    SGPP::base::GridType SquareRootGrid::getType() {
+      return SGPP::base::GridType::SquareRoot;
     }
 
     const SBasis& SquareRootGrid::getBasis() {

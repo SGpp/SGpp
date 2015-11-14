@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE(TestStreamingSubspaceCombinedMultTranspose)
 BOOST_AUTO_TEST_CASE(Simple) {
 
     std::vector<std::tuple<std::string, double> > fileNamesError = { std::tuple<std::string, double>(
-            "datadriven/tests/data/friedman_4d.arff.gz", 1E-15), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-18) };
+            "datadriven/tests/data/friedman_4d.arff.gz", 1E-13), std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-17) };
 
     uint32_t level = 5;
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
 //        BOOST_TEST_MESSAGE(std::get<0>(fileNameError));
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }

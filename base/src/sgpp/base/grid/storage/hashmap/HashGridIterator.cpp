@@ -168,31 +168,6 @@ namespace SGPP {
       return hasIndex;
     }
 
-    void
-    HashGridIterator::get(size_t d, index_type::level_type& l,
-                          index_type::index_type& i) const {
-      index.get(d, l, i);
-    }
-
-    void
-    HashGridIterator::set(size_t d, index_type::level_type l,
-                          index_type::index_type i) {
-      index.set(d, l, i);
-      this->seq_ = storage->seq(&index);
-    }
-
-    void
-    HashGridIterator::set(const index_type& point) {
-      index = point;
-      this->seq_ = storage->seq(&index);
-    }
-
-    void
-    HashGridIterator::push(size_t d, index_type::level_type l,
-                           index_type::index_type i) {
-      index.push(d, l, i);
-    }
-
     size_t
     HashGridIterator::seq() const {
       return seq_;

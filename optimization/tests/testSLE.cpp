@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <sgpp/optimization/function/InterpolantFunction.hpp>
+#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/solver/BiCGStab.hpp>
@@ -43,8 +43,8 @@ void testSLESystem(SLE& system, const base::DataVector& x,
   for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
       const SGPP::float_t Aij = system.getMatrixEntry(i, j);
-      A.set(i, j, Aij);
-      Ax[i] += Aij * x.get(j);
+      A(i, j) = Aij;
+      Ax[i] += Aij * x[j];
 
       // test isMatrixEntryNonZero
       BOOST_CHECK_EQUAL(system.isMatrixEntryNonZero(i, j), Aij != 0);
@@ -69,14 +69,14 @@ void testSLESolution(const base::DataMatrix& A,
   SGPP::float_t bNormSquared = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    SGPP::float_t ri = b.get(i);
+    SGPP::float_t ri = b[i];
+    bNormSquared += ri * ri;
 
     for (size_t j = 0; j < n; j++) {
-      ri -= A.get(i, j) * x.get(j);
+      ri -= A(i, j) * x[j];
     }
 
     rNormSquared += ri * ri;
-    bNormSquared += b.get(i) * b.get(i);
   }
 
   // test relative residual
@@ -87,8 +87,8 @@ void testSLESolution(const base::DataMatrix& A,
 
 BOOST_AUTO_TEST_CASE(TestSLESolvers) {
   // Test SGPP::optimization::sle_solver with SGPP::optimization::FullSLE.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t m = 4;
 
@@ -154,14 +154,14 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
     base::DataMatrix B(n, m);
 
     for (size_t i = 0; i < n; i++) {
-      b[i] = randomNumberGenerator.getUniformRN(-1.0, 1.0);
+      b[i] = RandomNumberGenerator::getInstance().getUniformRN(-1.0, 1.0);
 
       for (size_t j = 0; j < m; j++) {
-        B.set(i, j, randomNumberGenerator.getUniformRN(-1.0, 1.0));
+        B(i, j) = RandomNumberGenerator::getInstance().getUniformRN(-1.0, 1.0);
       }
 
       for (size_t j = 0; j < n; j++) {
-        A.set(i, j, randomNumberGenerator.getUniformRN(-1.0, 1.0));
+        A(i, j) = RandomNumberGenerator::getInstance().getUniformRN(-1.0, 1.0);
       }
     }
 
@@ -205,8 +205,8 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
 BOOST_AUTO_TEST_CASE(TestFullSLE) {
   // Test SGPP::optimization::FullSLE.
   base::DataMatrix A(3, 3, 0.0);
-  A.set(0, 1, 12.3);
-  A.set(1, 2, 42.1337);
+  A(0, 1) = 12.3;
+  A(1, 2) = 42.1337;
 
   FullSLE sle(A);
   std::unique_ptr<CloneableSLE> sle2(nullptr);
@@ -228,8 +228,8 @@ BOOST_AUTO_TEST_CASE(TestFullSLE) {
 
 BOOST_AUTO_TEST_CASE(TestHierarchisationSLE) {
   // Test SGPP::optimization::HierarchisationSLE.
-  printer.setVerbosity(-1);
-  randomNumberGenerator.setSeed(42);
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 2;
   const size_t p = 3;
@@ -262,16 +262,16 @@ BOOST_AUTO_TEST_CASE(TestHierarchisationSLE) {
     testSLESolution(A, alpha, functionValues);
 
     // create interpolant
-    InterpolantFunction ft(*grid, alpha);
+    InterpolantScalarFunction ft(*grid, alpha);
 
-    // test InterpolantFunction::clone()
-    std::unique_ptr<ObjectiveFunction> ft2(nullptr);
+    // test InterpolantScalarFunction::clone()
+    std::unique_ptr<ScalarFunction> ft2(nullptr);
     ft.clone(ft2);
 
     for (size_t i = 0; i < 100; i++) {
       for (size_t t = 0; t < d; t++) {
         // don't go near the boundary (should suffice)
-        x[t] = randomNumberGenerator.getUniformRN(0.2, 0.8);
+        x[t] = RandomNumberGenerator::getInstance().getUniformRN(0.2, 0.8);
       }
 
       // test infinity norm of difference roughly

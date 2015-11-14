@@ -44,7 +44,7 @@ int main (int argc, char** args) {
   solverConfig.eps_ = 0;
   solverConfig.maxIterations_ = 20;
   solverConfig.threshold_ = -1.0;//not used by BatchLearner
-  solverConfig.type_ = SGPP::solver::CG;
+  solverConfig.type_ = SGPP::solver::SLESolverType::CG;
 
   // Set parameters for the batchLearner
   batchConfig.filename = "../tests/data/friedman_4d_2000.arff";

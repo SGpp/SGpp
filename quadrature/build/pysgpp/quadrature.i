@@ -7,6 +7,7 @@
 %include "quadrature/src/sgpp/quadrature/Random.hpp"
 %include "quadrature/src/sgpp/quadrature/sampling/SampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sampling/NaiveSampleGenerator.hpp"
+%include "quadrature/src/sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sampling/HaltonSampleGenerator.hpp"
 

@@ -51,14 +51,14 @@ BOOST_AUTO_TEST_CASE(Simple) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("PLATFORM", "first");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
+    parameters.set("MAX_DEVICES", "DISABLED");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "4");
     parameters.set("KERNEL_STORE_DATA", "register");
     parameters.set("PLATFORM", "first");
-    parameters.set("MAX_DEVICES", "1");
+    parameters.set("MAX_DEVICES", "DISABLED");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("PLATFORM", "first");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("MAX_DEVICES", "1");
+    parameters.set("MAX_DEVICES", "DISABLED");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     parameters.set("KERNEL_STORE_DATA", "array");
     parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
     parameters.set("PLATFORM", "first");
-    parameters.set("MAX_DEVICES", "1");
+    parameters.set("MAX_DEVICES", "DISABLED");
     parameters.set("SELECT_SPECIFIC_DEVICE", "0");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReferenceTranspose(SGPP::base::Linear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }

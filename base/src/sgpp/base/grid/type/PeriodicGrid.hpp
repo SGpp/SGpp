@@ -36,7 +36,7 @@ namespace SGPP {
          */
         virtual ~PeriodicGrid();
 
-        virtual const char* getType();
+        virtual SGPP::base::GridType getType();
 
         virtual GridGenerator* createGridGenerator();
 

@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
   // configure solver
   cout << "# create solver config" << endl;
   SGPP::solver::SLESolverConfiguration solverConfig;
+  solverConfig.type_ = SGPP::solver::SLESolverType::CG;
   solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-10;
   solverConfig.threshold_ = 1e-10;
@@ -70,6 +71,7 @@ int main(int argc, char** argv) {
   }
 
   cout << "--------------------------------------------------------" << endl;
+  cout << (learner.getGrid())->getSize() << " -> " << (learner.getAlpha())->sum() << endl;
   cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)" << endl;
   cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)" << endl;
   cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)" << endl;

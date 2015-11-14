@@ -21,7 +21,7 @@ print "Using SCons", SCons.__version__
 sconsenv = SConsEnvironment()
 scons_ver = sconsenv._get_major_minor_revision(SCons.__version__)
 if scons_ver < (2, 3, 0):
-  warnings.warn("You are using an older version of scons than we do!\nSGpp officially supports scons >= 2.3.0.\nThere are reports, that it also compiles with scons >= 2.1.0")
+  warnings.warn("You are using an older version of scons than we do!\nSGpp officially supports scons >= 2.3.0.\nThere are reports that it also compiles with scons >= 2.1.0.")
 
 # to ignore folders containing a SConscript file, do the following:
 # ignoreFolders = ["jsgpp"]
@@ -53,6 +53,8 @@ vars = Variables("custom.py")
 # define the flags
 vars.Add('CPPFLAGS', 'Set additional Flags, they are compiler-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
 vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
+vars.Add('CPPPATH', 'Set paths where to look for additional headers', '')
+vars.Add('LIBPATH', 'Set paths where to look for additional libs', '')
 # define the target
 vars.Add('ARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', 'avx')
 vars.Add('COMPILER', "Sets the processor you are compiling for. 'gnu' means using gcc with standard configuration. Also available are: 'intel', here Intel Compiler in version 11 or higher must be used", 'gnu')
@@ -82,9 +84,12 @@ vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only r
 vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
+vars.Add('MSVC_USE_SCRIPT', 'Sets the script to initialize the environment for the Visual Studio compiler and linker.', '')
+vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
+
 if 'CXX' in ARGUMENTS:
   print "CXX: ", ARGUMENTS['CXX']
   env['CXX'] = ARGUMENTS['CXX']
@@ -102,6 +107,11 @@ if 'CPPDEFINES' in ARGUMENTS:
     defineDict[key] = value
   env.AppendUnique(CPPDEFINES = defineDict)
   print env['CPPDEFINES']
+if 'CPPPATH' in ARGUMENTS:
+    env['CPPPATH'] = ARGUMENTS['CPPPATH'].split(",")
+if 'LIBPATH' in ARGUMENTS:
+    env['LIBPATH'] = ARGUMENTS['LIBPATH'].split(",")
+
 env.Export('moduleNames')
 env.Export('moduleFolders')
 
@@ -139,7 +149,9 @@ vars.GenerateHelpText(env))
 # adds trailing slashes were required and if not present
 BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
 Export('BUILD_DIR')
-PYSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'pysgpp'))
+PYSGPP_PACKAGE_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib'))
+Export('PYSGPP_PACKAGE_PATH')
+PYSGPP_BUILD_PATH = Dir(os.path.join(PYSGPP_PACKAGE_PATH.abspath, 'pysgpp'))
 Export('PYSGPP_BUILD_PATH')
 JSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
 Export('JSGPP_BUILD_PATH')
@@ -170,12 +182,18 @@ env.Append(CPPPATH=['#/tools'])
 config = env.Configure()
 Export('config')
 # set up paths (Only Tested on Ubuntu!)
-env["ENV"]["LD_LIBRARY_PATH"] = ":".join([
-    env["ENV"].get("LD_LIBRARY_PATH", ""),
-    BUILD_DIR.abspath])
-env["ENV"]["PYTHONPATH"] = ":".join([
+if env['PLATFORM'] == 'win32':
+    env["ENV"]["PATH"] = os.pathsep.join([
+        env["ENV"].get("PATH", ""),
+        BUILD_DIR.abspath])
+else:
+    env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([
+        env["ENV"].get("LD_LIBRARY_PATH", ""),
+        BUILD_DIR.abspath])
+
+env["ENV"]["PYTHONPATH"] = os.pathsep.join([
     env["ENV"].get("PYTHONPATH", ""),
-    PYSGPP_BUILD_PATH.abspath])
+    PYSGPP_PACKAGE_PATH.abspath])
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
@@ -200,6 +218,7 @@ env.Export('boostTestTargetList')
 env.Export('exampleTargetList')
 
 # compile selected modules
+flattenedDependencyGraph = []
 for moduleFolder in moduleFolders:
   if not env['SG_' + moduleFolder.upper()]:
     continue
@@ -207,64 +226,125 @@ for moduleFolder in moduleFolders:
   # SConscript('src/sgpp/SConscript' + moduleFolder, variant_dir='#/tmp/build/', duplicate=0)
   env.SConscript('#/' + moduleFolder + '/SConscript', {'env': env, 'moduleName': moduleFolder})
 
+  # add the dependencies of the current module to the overall dependency graph
+  Import("moduleDependencies")
+  Import("libname")
+  flattenedDependencyGraph = flatDependencyGraph([libname] + moduleDependencies,
+                                                 flattenedDependencyGraph)
+
+Export('flattenedDependencyGraph')
+
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
 
-#TODO: ask julian
 if env['SG_JAVA']:
   env.SConscript('#/jsgpp/SConscript', {'env': env, 'moduleName': "jsgpp"})
 
-# Unit tests
+# Python tests
 #########################################################################
 
-# necessary to enforce an order on the final steps of the building of the wrapper
-dependency = None
+# execute first test after installing the last module
+dependencies = [installTargetList]
+separator = 70 * "-"
+
+def printRunningPythonTests(target, source, env):
+  print "\n" + separator + "\nRunning Python tests...\n" + separator
+
+def installPythonLibToTmp(target, source, env):
+  # prepare python package for unit testing
+  import sys, os, subprocess
+
+  # get temp directory
+  tmpfolder = source[0].get_string(0)
+
+  # install python interface to tmp directory
+  p = subprocess.call(["python", "setup.py",
+                       "--quiet",
+                       "install", "--install-lib=%s" % tmpfolder])
+  if p != 0:
+      print "Error: installing python package to the temporary folder '%s' failed; I can not run the python unit tests automatically." % tmpfolder
+      exit(-1)
+
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
+  # -------------------------------------------------------------------------
+  # prepare python package for unit testing
+  if env['PLATFORM'] == 'win32':
+    # try to import pysgpp to detect an already existing installation, which
+    # could cause trouble
+    try:
+      import pysgpp
+      print "Warning: more than one installations of pysgpp are detected. To get rid of this warning remove the pysgpp package from your local python installation."
+    except:
+      None
+
+    # get a temporary folders
+    import tempfile, uuid
+    # get temp directory
+    tmpfolder = os.path.join(tempfile.gettempdir(),
+                             "site-pyspp-%s" % str(uuid.uuid4()))
+    # create temp folder
+    os.makedirs(tmpfolder)
+
+    # add it to the build python path
+    env["ENV"]["PYTHONPATH"] = os.pathsep.join([tmpfolder,
+                                                env["ENV"].get("PYTHONPATH", "")])
+    # install the python library to that temporary folder
+    dependencies.append(env.Command('installPythonLibToTmp', [tmpfolder], installPythonLibToTmp))
+  else:
+    # add lib folder tp python path
+    env["ENV"]["PYTHONPATH"] = os.pathsep.join([os.path.abspath(os.path.join("lib")),
+                                                env["ENV"].get("PYTHONPATH", "")])
+  # -------------------------------------------------------------------------
+  dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))
+
   # serialize tests and move them at the end of the build
   for testTarget in testTargetList:
     env.Requires(testTarget, installTargetList)
+    dependencies.append(testTarget)
 
-    if dependency is None:
-      #print testTarget, 'depends on nothing'
-      dependency = testTarget
-    else:
-      #print testTarget, 'depends on', dependency
-      env.Depends(testTarget, dependency)
-      dependency = testTarget
+# Boost tests
+#########################################################################
+
+def printRunningBoostTests(target, source, env):
+  print "\n" + separator + "\nRunning Boost tests...\n" + separator
 
 if env['COMPILE_BOOST_TESTS'] and env['RUN_BOOST_TESTS']:
+  dependencies.append(env.Command('printRunningBoostTests', [], printRunningBoostTests))
+
   for testTarget in boostTestTargetList:
     env.Requires(testTarget, installTargetList)
-    if dependency is None:
-      dependency = testTarget
-    else:
-      env.Depends(testTarget, dependency)
-      dependency = testTarget
+    dependencies.append(testTarget)
+
+# Examples
+#########################################################################
+
+def printLinkingExamples(target, source, env):
+  print "\n" + separator + "\nLinking examples...\n" + separator
+
+dependencies.append(env.Command('printLinkingExamples', [], printLinkingExamples))
 
 for exampleTarget in exampleTargetList:
   env.Requires(exampleTarget, installTargetList)
-  if dependency is None:
-    dependency = exampleTarget
+  dependencies.append(exampleTarget)
+
+# Final output
+#########################################################################
+
+def printFinished(target, source, env):
+  import string
+  if env['PLATFORM'] in ['cygwin', 'win32']:
+    filename = "INSTRUCTIONS_WINDOWS"
   else:
-    env.Depends(exampleTarget, dependency)
-    dependency = exampleTarget
+    filename = "INSTRUCTIONS"
 
-# final output
-def finish(target, source, env):
-    from string import Template
-    fd = open("INSTRUCTIONS")
-    instructionsTemplate = Template(fd.read())
-    fd.close()
-    s = instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-                                             PYSGPP_BUILD_PATH=PYSGPP_BUILD_PATH.abspath,
-                                             SGPP_HOME=os.getcwd())
+  with open(filename) as f:
+    instructionsTemplate = string.Template(f.read())
     print
-    print s
+    print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
+                                               PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
 
-moduleFinish = env.Command('finish', [], finish)
-# env.Requires(moduleFinish, installTargetList)
-# # testTargetList.append(moduleFinish)
-if dependency is not None:
-    env.Depends(moduleFinish, dependency)
-# env.Default(moduleFinish)
-  
+dependencies.append(env.Command('printFinished', [], printFinished))
+
+# necessary to enforce an order on the final steps of the building of the wrapper
+for i in range(len(dependencies) - 1):
+  env.Depends(dependencies[i + 1], dependencies[i])

@@ -33,7 +33,7 @@ namespace SGPP {
 
 
     LearnerOnlineSGD::LearnerOnlineSGD(
-      SGPP::datadriven::LearnerRegularizationType& regularization,
+      SGPP::pde::RegularizationType& regularization,
       const bool isRegression, const bool isVerbose) :
       Learner(regularization, isRegression, isVerbose),
       mainTrainDataset(NULL), mainClasses(NULL),

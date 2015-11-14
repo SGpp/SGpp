@@ -6,7 +6,7 @@
 /**
  * Example test function.
  */
-public class ExampleFunction extends sgpp.OptObjectiveFunction {
+public class ExampleFunction extends sgpp.OptScalarFunction {
   /**
    * Constructor.
    */

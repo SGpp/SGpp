@@ -6,7 +6,7 @@ import sys
 
 
 
-class ExampleFunction(pysgpp.OptObjectiveFunction):
+class ExampleFunction(pysgpp.OptScalarFunction):
     """Example objective function from the title of my Master's thesis."""
     def __init__(self):
         super(ExampleFunction, self).__init__(2)
@@ -26,14 +26,14 @@ def printLine():
 # disable multi-threading
 pysgpp.omp_set_num_threads(1)
 # increase output verbosity
-pysgpp.cvar.OptPrinterInstance.setVerbosity(2)
+pysgpp.OptPrinter.getInstance().setVerbosity(2)
 
 print "SGPP::optimization example program started.\n"
 
 # objective function
 f = ExampleFunction()
 # dimension of domain
-d = f.getDimension()
+d = f.getNumberOfParameters()
 # B-spline degree
 p = 3
 # maximal number of grid points
@@ -77,8 +77,8 @@ if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
 
 printLine()
 print "Optimizing smooth interpolant...\n"
-ft = pysgpp.OptInterpolantFunction(grid, coeffs)
-ftGradient = pysgpp.OptInterpolantGradient(grid, coeffs)
+ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
+ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
 gradientMethod = pysgpp.OptGradientDescent(ft, ftGradient)
 x0 = pysgpp.DataVector(d)
 
@@ -102,8 +102,9 @@ print "x0 = {}".format(x0)
 print "f(x0) = {:.6g}, ft(x0) = {:.6g}\n".format(fX0, ftX0)
 
 gradientMethod.setStartingPoint(x0)
-xOpt = pysgpp.DataVector(d)
-ftXOpt = gradientMethod.optimize(xOpt)
+gradientMethod.optimize()
+xOpt = gradientMethod.getOptimalPoint()
+ftXOpt = gradientMethod.getOptimalValue()
 fXOpt = f.eval(xOpt)
 
 print "\nxOpt = {}".format(xOpt)
@@ -116,8 +117,9 @@ print "f(xOpt) = {:.6g}, ft(xOpt) = {:.6g}\n".format(fXOpt, ftXOpt)
 printLine()
 print "Optimizing objective function (for comparison)...\n"
 nelderMead = pysgpp.OptNelderMead(f, 1000)
-xOptNM = pysgpp.DataVector(d)
-fXOptNM = nelderMead.optimize(xOptNM)
+nelderMead.optimize()
+xOptNM = nelderMead.getOptimalPoint()
+fXOptNM = nelderMead.getOptimalValue()
 ftXOptNM = ft.eval(xOptNM)
 
 print "\nxOptNM = {}".format(xOptNM)

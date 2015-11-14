@@ -5,6 +5,7 @@
 
 import os
 import fnmatch
+import subprocess
 
 Import("env")
 Import("BUILD_DIR")
@@ -17,12 +18,21 @@ Import("config")
 
 
 
-libs = ["sgppbase"]
+moduleDependencies = ["sgppbase"]
+Export('moduleDependencies')
+
+libname = "sgpp%s" % moduleName
+if env['USE_STATICLIB']:
+    libname += "static"
+    for i, _ in enumerate(moduleDependencies):
+        moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
+Export('libname')
 #config = env.Configure()
 
 if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
-    if config.CheckHeader("suitesparse/umfpack.h", language="c++"):
-        libs.append("umfpack")
+    if config.CheckHeader("suitesparse/umfpack.h", language="C++") and \
+            config.CheckLib("umfpack", language="C++"):
+        moduleDependencies.append("umfpack")
         env.Append(CPPDEFINES=["USE_UMFPACK"])
         print "SGPP::optimization will be compiled with UMFPACK."
     else:
@@ -32,7 +42,7 @@ else:
     print "SGPP::optimization will be compiled without UMFPACK."
 
 if ("USE_EIGEN" in config.env) and config.env["USE_EIGEN"]:
-    if config.CheckHeader("eigen3/Eigen/Dense", language="c++"):
+    if config.CheckHeader("eigen3/Eigen/Dense", language="C++"):
         env.Append(CPPDEFINES=["USE_EIGEN"])
         print "SGPP::optimization will be compiled with Eigen."
     else:
@@ -42,8 +52,9 @@ else:
     print "SGPP::optimization will be compiled without Eigen."
 
 if ("USE_ARMADILLO" in config.env) and config.env["USE_ARMADILLO"]:
-    if config.CheckHeader("armadillo", language="c++"):
-        libs.append("armadillo")
+    if config.CheckHeader("armadillo", language="C++") and \
+            config.CheckLib("armadillo", language="C++"):
+        moduleDependencies.append("armadillo")
         env.Append(CPPDEFINES=["USE_ARMADILLO"])
         print "SGPP::optimization will be compiled with Armadillo."
     else:
@@ -53,7 +64,7 @@ else:
     print "SGPP::optimization will be compiled without Armadillo."
 
 if ("USE_GMMPP" in config.env) and config.env["USE_GMMPP"]:
-    if config.CheckHeader("gmm/gmm.h", language="c++"):
+    if config.CheckHeader("gmm/gmm.h", language="C++"):
         env.Append(CPPDEFINES=["USE_GMMPP"])
         print "SGPP::optimization will be compiled with Gmm++."
     else:
@@ -67,22 +78,60 @@ else:
 dependencies = ["base"]
 
 srcs = []
-for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith("./src"):
-        for fileName in fnmatch.filter(fileNames, "*.cpp"):
-            srcs.append(os.path.join(currentFolder, fileName))
+for currentFolder, subdirNames, fileNames in os.walk("src"):
+    for fileName in fnmatch.filter(fileNames, "*.cpp"):
+        srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []
 for sourceFile in srcs:
     objs.append(env.SharedObject(sourceFile))
-    # objs.append(sourceFile)
- 
-lib = env.SharedLibrary(target="sgpp%s" % moduleName,
-                        source=objs,
-                        LIBPATH=BUILD_DIR,
-                        LIBS=libs)
 
-env.Depends(lib, "#/" + BUILD_DIR.path + "/" + env["LIBPREFIX"] + "sgppbase" + env["SHLIBSUFFIX"])
+if env['USE_STATICLIB']:
+    libsuffix = env['LIBSUFFIX']
+    # building static libraries is the same for unix and windows platforms
+    lib = env.StaticLibrary(target=libname,
+                            source=objs,
+                            LIBPATH=BUILD_DIR,
+                            LIBS=moduleDependencies)
+else:
+    # building shared libraries differ
+    libsuffix = env['SHLIBSUFFIX']
+    if env['PLATFORM'] in ['cygwin', 'win32']:
+        # remove old moduleDependencies if they exist already
+        for ext in ['lib', 'exp', 'dll', 'def']:
+            newlibFilename = "%s.%s" % (libname, ext)
+            if os.path.exists(newlibFilename):
+                os.remove(newlibFilename)
+
+        def buildDefFile(target, source, env):
+            # load all object files
+            win32objs = []
+            for currentFolder, subdirNames, fileNames in os.walk(os.path.join(moduleName, "src")):
+                for fileName in fnmatch.filter(fileNames, '*.obj'):
+                    win32objs.append(os.path.join(currentFolder, fileName))
+            # build windows module definition file (def-file)
+            subprocess.call(['bindexplib.exe', '-o', os.path.join(moduleName, '%s.def' % libname), os.path.join(moduleName, '%s.dll' % libname)] + win32objs)
+
+        cmd = env.Command('buildDefFile', [], buildDefFile)
+        lib = env.SharedLibrary(target=libname,
+                                source=objs,
+                                LIBPATH=BUILD_DIR,
+                                LIBS=moduleDependencies,
+                                LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
+        env.Depends(cmd, objs)
+        env.Depends(lib, cmd)
+    else:    
+        lib = env.SharedLibrary(target=libname,
+                                source=objs,
+                                LIBPATH=BUILD_DIR,
+                                LIBS=moduleDependencies)
+
+for lib_str in moduleDependencies:
+    if lib_str.startswith("sgpp"):
+        env.Depends(lib, os.path.join("#", BUILD_DIR.path,
+                                      "%s%s%s" % (env["LIBPREFIX"],
+                                                  lib_str,
+                                                  libsuffix)))
 
 libInstall = env.Install(BUILD_DIR, lib)
 
@@ -90,7 +139,7 @@ for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         example = env.Program(source=os.path.join("examples", fileName),
                               LIBPATH=BUILD_DIR,
-                              LIBS=libs + ["sgpp%s" % moduleName])
+                              LIBS=[libname] + moduleDependencies)
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
 
@@ -98,7 +147,7 @@ for fileName in os.listdir("examples"):
 if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
-    test_env.AppendUnique(LIBS=libs + ["sgpp%s" % moduleName, "boost_unit_test_framework"])
+    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework"])
     testObjects = []
     for fileName in os.listdir("tests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
@@ -110,6 +159,7 @@ if env['COMPILE_BOOST_TESTS']:
         if env['RUN_BOOST_TESTS']:
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
+
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

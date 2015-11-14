@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
-#include <sgpp/base/grid/type/WaveletTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
@@ -28,7 +28,7 @@ namespace SGPP {
          * @param grid      grid
          */
         OperationMultipleHierarchisationWaveletBoundary(
-          base::WaveletTruncatedBoundaryGrid& grid);
+          base::WaveletBoundaryGrid& grid);
 
         /**
          * Virtual destructor.
@@ -67,7 +67,7 @@ namespace SGPP {
 
       protected:
         /// storage of the sparse grid
-        base::WaveletTruncatedBoundaryGrid& grid;
+        base::WaveletBoundaryGrid& grid;
     };
 
   }

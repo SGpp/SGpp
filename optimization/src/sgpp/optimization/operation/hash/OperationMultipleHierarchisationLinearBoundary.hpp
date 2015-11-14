@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
-#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
@@ -28,7 +28,7 @@ namespace SGPP {
          * @param grid      grid
          */
         OperationMultipleHierarchisationLinearBoundary(
-          base::LinearTruncatedBoundaryGrid& grid);
+          base::LinearBoundaryGrid& grid);
 
         /**
          * Virtual destructor.
@@ -67,7 +67,7 @@ namespace SGPP {
 
       protected:
         /// storage of the sparse grid
-        base::LinearTruncatedBoundaryGrid& grid;
+        base::LinearBoundaryGrid& grid;
     };
 
   }

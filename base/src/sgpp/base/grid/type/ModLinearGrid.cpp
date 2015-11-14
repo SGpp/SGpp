@@ -32,8 +32,8 @@ namespace SGPP {
     ModLinearGrid::~ModLinearGrid() {
     }
 
-    const char* ModLinearGrid::getType() {
-      return "modlinear";
+    SGPP::base::GridType ModLinearGrid::getType() {
+      return SGPP::base::GridType::ModLinear;
     }
 
     const SBasis& ModLinearGrid::getBasis() {

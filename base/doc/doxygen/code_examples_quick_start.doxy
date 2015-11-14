@@ -11,7 +11,7 @@ programming languages.
 
 To this end, we create a regular sparse grid with level three in two dimensions
 using piecewise linear basis functions without gridpoints on the
-boundary. We then interpolate the function 
+boundary. We then interpolate the function
 @f[ f(x_0,x_1) := 16 * (x_0-1)*x_0 * (x_1-1)*x_1 @f]
 with
 @f[ u(x_0,x_1) := \sum_{j=1}^N \alpha_j \varphi_j(x_0,x_1) @f]
@@ -44,9 +44,9 @@ found in the directory @c base/examples/, which we then discuss line by line.
 which can be executed by
 @code
 export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp"
-export PYTHONPATH="/path/to/SGpp/trunk/lib/pysgpp"
+export PYTHONPATH="/path/to/SGpp/trunk/lib"
 python python_simple.py
-@endcode 
+@endcode
 in the directory @c base/examples/.
 Keep in mind that you need to seed the @c LD_LIBRARY_PATH and @c PYTHONPATH
 environment variables correctly, allowing Python to find pysgpp and SG++.
@@ -70,7 +70,7 @@ with the most important being SGPP::base::DataVector and SGPP::base::Grid.
 creates a two-dimensional grid object with piecewise bilinear basis
 functions with the help of the factory method
 SGPP::base::Grid.createLinearGrid().
-Then we obtain a reference to the Grid's 
+Then we obtain a reference to the Grid's
 GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points.
@@ -149,7 +149,7 @@ defines the function @f$f@f$ we want to interpolate.
 creates a two-dimensional grid object with piecewise bilinear basis
 functions with the help of the factory method
 SGPP::base::Grid.createLinearGrid().
-Then we obtain a reference to the Grid's 
+Then we obtain a reference to the Grid's
 GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points.
@@ -201,7 +201,7 @@ we change to the directory @c base/examples/ and run
 javac -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar java_simple.java
 export LD_LIBRARY_PATH="/path/to/SGpp/trunk/lib/sgpp:/path/to/SGpp/trunk/lib/jsgpp"
 java -cp .:/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar java_simple
-@endcode 
+@endcode
 Note that you have to set the @c LD_LIBRARY_PATH
 environment variable to be able to use the shared library.
 
@@ -229,7 +229,7 @@ which is needed to find the methods.
 creates a two-dimensional grid object with piecewise bi-linear basis
 functions with the help of the factory method
 SGPP::base::Grid.createLinearGrid().
-Then we obtain a reference to the Grid's 
+Then we obtain a reference to the Grid's
 GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points.
@@ -337,7 +337,7 @@ We can now change to the directory @c base/examples/ and run the matlab_simple
 example with
 @code
 matlab_simple
-@endcode 
+@endcode
 
 This results in the same output as before:
 
@@ -346,19 +346,12 @@ This results in the same output as before:
 
 
 @subsection code_examples__matlab_hints Hints
-@code
-javaaddpath('/path/to/SGpp/trunk/lib/jsgpp/jsgpp.jar')
-@endcode
-adds the path to the dynamic Java path.
-To add it to the static Java path (thus permanently),
-change the @c /path/To/MATLAB/toolbox/local/classpath.txt file,
-so you do not have to use @c javaaddpath any longer.
 Use
 @code
 javaclasspath
 @endcode
 to see the loaded jar files (upper part static, lower
-part dynamic; our jsgpp.jar should be in there).
+part dynamic; our jsgpp.jar should be in the latter part).
 Write
 @code
 import sgpp.*
@@ -397,7 +390,7 @@ defines the function @f$f@f$ we want to interpolate.
 creates a two-dimensional grid object with piecewise bi-linear basis
 functions with the help of the factory method
 SGPP::base::Grid.createLinearGrid().
-Then we obtain a reference to the Grid's 
+Then we obtain a reference to the Grid's
 GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points.

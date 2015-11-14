@@ -41,6 +41,24 @@ namespace SGPP {
       std::memcpy(this->data, input, size * sizeof(float));
     }
 
+    DataVectorSP::DataVectorSP(std::vector<float> input) :
+      DataVectorSP(input.size()) {
+      // copy data
+      std::copy(input.begin(), input.end(), this->data);
+    }
+
+    DataVectorSP::DataVectorSP(std::vector<int> input) :
+      DataVectorSP(input.size()) {
+      // copy data
+      int in = 0;
+
+      for (std::vector<int>::iterator it = input.begin(); it < input.end();
+           it++) {
+        data[in] = static_cast<float>(*it);
+        in++;
+      }
+    }
+
     void DataVectorSP::restructure(std::vector<size_t>& remainingIndex) {
       if (remainingIndex.size() > this->size) {
         throw SGPP::base::algorithm_exception("more indices than entries!");
@@ -360,9 +378,9 @@ namespace SGPP {
     }
 
     float DataVectorSP::min() const {
-      float min = data[0];
+      float min = INFINITY;
 
-      for (size_t i = 1; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         if (min > data[i]) {
           min = data[i];
         }
@@ -372,9 +390,9 @@ namespace SGPP {
     }
 
     float DataVectorSP::max() const {
-      float max = data[0];
+      float max = -INFINITY;
 
-      for (size_t i = 1; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         if (max < data[i]) {
           max = data[i];
         }
@@ -384,8 +402,8 @@ namespace SGPP {
     }
 
     void DataVectorSP::minmax(float* min, float* max) const {
-      float min_t = data[0];
-      float max_t = data[0];
+      float min_t = INFINITY;
+      float max_t = -INFINITY;
 
       for (size_t i = 0; i < size; i++) {
         if (min_t > data[i]) {
@@ -402,6 +420,10 @@ namespace SGPP {
     }
 
     float* DataVectorSP::getPointer() {
+      return data;
+    }
+
+    const float* DataVectorSP::getPointer() const {
       return data;
     }
 

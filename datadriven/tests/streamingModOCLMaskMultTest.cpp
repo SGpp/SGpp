@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReference(SGPP::base::ModLinear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(Local) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReference(SGPP::base::ModLinear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReference(SGPP::base::ModLinear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReference(SGPP::base::ModLinear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReference(SGPP::base::ModLinear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
 
     for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-        double mse = compareToReference(SGPP::base::ModLinear, std::get<0>(fileNameError), level, configuration);
+        double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError), level, configuration);
         BOOST_CHECK(mse < std::get<1>(fileNameError));
     }
 }

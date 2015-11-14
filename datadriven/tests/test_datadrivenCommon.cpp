@@ -208,9 +208,9 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRe
   size_t dim = dataset.getDimension();
 
   std::shared_ptr<SGPP::base::Grid> grid;
-  if (gridType == SGPP::base::Linear) {
+  if (gridType == SGPP::base::GridType::Linear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
-  } else if (gridType == SGPP::base::ModLinear) {
+  } else if (gridType == SGPP::base::GridType::ModLinear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createModLinearGrid(dim));
   }
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
@@ -272,9 +272,9 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
   size_t dim = dataset.getDimension();
 
   std::shared_ptr<SGPP::base::Grid> grid;
-  if (gridType == SGPP::base::Linear) {
+  if (gridType == SGPP::base::GridType::Linear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
-  } else if (gridType == SGPP::base::ModLinear) {
+  } else if (gridType == SGPP::base::GridType::ModLinear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createModLinearGrid(dim));
   }
 

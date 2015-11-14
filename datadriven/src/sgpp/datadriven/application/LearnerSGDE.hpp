@@ -9,10 +9,12 @@
 #include "DensityEstimator.hpp"
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/pde/application/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
@@ -48,10 +50,10 @@ namespace SGPP {
          * @param regularizationConfig config for regularization operator
          * @param learnerSGDEConfig configuration for the learner
          */
-        LearnerSGDE(base::RegularGridConfiguration& gridConfig,
-                    base::AdpativityConfiguration& adaptivityConfig,
-                    solver::SLESolverConfiguration& solverConfig,
-                    pde::RegularizationConfiguration& regularizationConfig,
+        LearnerSGDE(SGPP::base::RegularGridConfiguration& gridConfig,
+                    SGPP::base::AdpativityConfiguration& adaptivityConfig,
+                    SGPP::solver::SLESolverConfiguration& solverConfig,
+                    SGPP::pde::RegularizationConfiguration& regularizationConfig,
                     LearnerSGDEConfiguration& learnerSGDEConfig);
         virtual ~LearnerSGDE();
 
@@ -61,20 +63,20 @@ namespace SGPP {
          *
          * @param samples DataMatrix (nrows = number of samples, ncols = dimensionality)
          */
-        void initialize(base::DataMatrix& samples);
+        void initialize(SGPP::base::DataMatrix& samples);
 
         /**
          * This methods evaluates the sparse grid density at a single point
          * @param x DataVector length equal to dimensionality
          */
-        virtual float_t pdf(base::DataVector& x);
+        virtual float_t pdf(SGPP::base::DataVector& x);
 
         /**
          * Evaluation of the sparse grid density at a set of points.
          * @param points DataMatrix (nrows = number of samples, ncols = dimensionality)
          * @param res DataVector (size = number of samples) where the results are stored
          */
-        virtual void pdf(base::DataMatrix& points, base::DataVector& res);
+        virtual void pdf(SGPP::base::DataMatrix& points, SGPP::base::DataVector& res);
 
         /**
          * This method computes the mean of the density function
@@ -89,18 +91,18 @@ namespace SGPP {
         /**
          * WARNING: Not yet implemented
          */
-        virtual void cov(base::DataMatrix& cov);
+        virtual void cov(SGPP::base::DataMatrix& cov);
 
         /**
          * returns the samples in the given dimension
          * @param dim
          */
-        virtual base::DataVector* getSamples(size_t dim);
+        virtual SGPP::base::DataVector* getSamples(size_t dim);
 
         /**
          * returns the complete sample set
          */
-        virtual base::DataMatrix* getSamples();
+        virtual SGPP::base::DataMatrix* getSamples();
 
         /**
          * get number of dimensions
@@ -112,7 +114,10 @@ namespace SGPP {
          */
         virtual size_t getNsamples();
 
-      private:
+        virtual SGPP::base::Grid* getGrid();
+        virtual SGPP::base::DataVector* getAlpha();
+
+      protected:
 
         /**
          * Does the learning step on a given grid, training set and regularization parameter lambda
@@ -122,8 +127,8 @@ namespace SGPP {
          * @param train sample set
          * @param lambdaReg regularization parameter
          */
-        void train(base::Grid& grid, base::DataVector& alpha, base::DataMatrix& train,
-                   float_t lambdaReg);
+        virtual void train(SGPP::base::Grid& grid, SGPP::base::DataVector& alpha,
+                           SGPP::base::DataMatrix& train, float_t lambdaReg);
 
         /**
          * generates a regular grid
@@ -140,7 +145,7 @@ namespace SGPP {
         /**
          * Compute the residual for a given test data set on a learned grid
          *
-         * $|(A - lambda C) \alpha - \frac{1}{n}B|$
+         * $|(A - lambda C) alpha - 1/n B|$
          *
          * This is used as quality criterion for the estimated density.
          *
@@ -150,14 +155,15 @@ namespace SGPP {
          * @param lambdaReg regularization parameters
          * @return
          */
-        float_t computeResidual(base::Grid& grid, base::DataVector& alpha,
-                                base::DataMatrix& test, float_t lambdaReg);
+        float_t computeResidual(SGPP::base::Grid& grid, SGPP::base::DataVector& alpha,
+                                SGPP::base::DataMatrix& test, float_t lambdaReg);
 
         /**
          * generates the regularization matrix
          * @param grid grid
          */
-        base::OperationMatrix* computeRegularizationMatrix(base::Grid& grid);
+        SGPP::base::OperationMatrix* computeRegularizationMatrix(
+          SGPP::base::Grid& grid);
 
         /**
          * splits the complete sample set in a set of smaller training and test
@@ -166,17 +172,17 @@ namespace SGPP {
          * @param strain vector containing the training samples for cv
          * @param stest vector containing the test samples for cv
          */
-        void splitset(std::vector<base::DataMatrix*>& strain,
-                      std::vector<base::DataMatrix*>& stest);
+        void splitset(std::vector<SGPP::base::DataMatrix*>& strain,
+                      std::vector<SGPP::base::DataMatrix*>& stest);
 
-        base::Grid* grid;
-        base::DataVector alpha;
-        base::DataMatrix* samples;
+        SGPP::base::Grid* grid;
+        SGPP::base::DataVector alpha;
+        SGPP::base::DataMatrix* samples;
 
-        base::RegularGridConfiguration gridConfig;
-        base::AdpativityConfiguration adaptivityConfig;
-        solver::SLESolverConfiguration solverConfig;
-        pde::RegularizationConfiguration regularizationConfig;
+        SGPP::base::RegularGridConfiguration gridConfig;
+        SGPP::base::AdpativityConfiguration adaptivityConfig;
+        SGPP::solver::SLESolverConfiguration solverConfig;
+        SGPP::pde::RegularizationConfiguration regularizationConfig;
         LearnerSGDEConfiguration learnerSGDEConfig;
     };
 

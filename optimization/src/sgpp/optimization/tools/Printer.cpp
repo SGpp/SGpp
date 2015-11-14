@@ -11,11 +11,13 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <iostream>
+#ifndef _WIN32
+#include <sys/ioctl.h>
+#include <unistd.h>
+#endif
 
 namespace SGPP {
   namespace optimization {
-
-    Printer printer;
 
     Printer::Printer() :
       verbose(DEFAULT_VERBOSITY),
@@ -25,7 +27,18 @@ namespace SGPP {
       cursorInClearLine(true),
       lastMsgLength(0),
       lastDuration(0.0),
+      lineLengthLimit(0),
+      indentation(INDENTATION_LENGTH, INDENTATION_CHAR),
       stream(&std::cout) {
+
+#ifndef _WIN32
+      struct winsize w;
+
+      if ((ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1) && (w.ws_col > 0)) {
+        lineLengthLimit = w.ws_col - 1;
+      }
+
+#endif
     }
 
     void Printer::printStatusBegin(const std::string& msg) {
@@ -66,23 +79,33 @@ namespace SGPP {
         return;
       }
 
+      std::string printMsg = msg;
+      const size_t totalIndentationLength =
+        indentationLevel * INDENTATION_LENGTH;
+
+      if ((lineLengthLimit > 0) && (totalIndentationLength +
+                                    printMsg.length() > lineLengthLimit)) {
+        printMsg = printMsg.substr(0, lineLengthLimit -
+                                   totalIndentationLength - 3) + "...";
+      }
+
       // print indentation
       if (cursorInClearLine) {
         printStatusIdentation();
       }
 
       // go back to start of last message and overwrite it with the new message
-      (*stream) << std::string(lastMsgLength, '\b') << msg;
+      (*stream) << std::string(lastMsgLength, '\b') << printMsg;
 
       // new message is too short ==> print spaces to hide the old one and
       // go back again
-      if (lastMsgLength > msg.length()) {
-        (*stream) << std::string(lastMsgLength - msg.length(), ' ') <<
-                  std::string(lastMsgLength - msg.length(), '\b');
+      if (lastMsgLength > printMsg.length()) {
+        (*stream) << std::string(lastMsgLength - printMsg.length(), ' ') <<
+                  std::string(lastMsgLength - printMsg.length(), '\b');
       }
 
       (*stream) << std::flush;
-      lastMsgLength = msg.length();
+      lastMsgLength = printMsg.length();
       cursorInClearLine = false;
     }
 
@@ -105,7 +128,7 @@ namespace SGPP {
 
       // print indentation
       for (int i = 0; i < indentationLevel; i++) {
-        (*stream) << "    ";
+        (*stream) << indentation;
       }
     }
 
@@ -150,14 +173,17 @@ namespace SGPP {
     }
 
     void Printer::enableStatusPrinting() {
+      ScopedLock lock(mutex);
       statusPrintingEnabled = true;
     }
 
     void Printer::disableStatusPrinting() {
+      ScopedLock lock(mutex);
       statusPrintingEnabled = false;
     }
 
     bool Printer::isStatusPrintingEnabled() {
+      ScopedLock lock(mutex);
       return statusPrintingEnabled;
     }
 
@@ -177,6 +203,14 @@ namespace SGPP {
       this->stream = stream;
     }
 
+    size_t Printer::getLineLengthLimit() {
+      return lineLengthLimit;
+    }
+
+    void Printer::setLineLengthLimit(size_t lineLengthLimit) {
+      this->lineLengthLimit = lineLengthLimit;
+    }
+
     void Printer::printIterativeGridGenerator(
       const IterativeGridGenerator& grid_gen) const {
       base::GridStorage& gridStorage = *grid_gen.getGrid().getStorage();
@@ -189,7 +223,7 @@ namespace SGPP {
         }
 
         // print grid point and function value
-        (*stream) << *gridStorage.get(i) << ", " << functionValues.get(i);
+        (*stream) << *gridStorage[i] << ", " << functionValues[i];
       }
 
       (*stream) << "\n";
