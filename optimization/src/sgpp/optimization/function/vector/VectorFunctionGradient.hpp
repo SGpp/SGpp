@@ -39,7 +39,7 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
         virtual ~VectorFunctionGradient() {
         }

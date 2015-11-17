@@ -42,7 +42,7 @@ namespace SGPP {
          */
         virtual void collectRefinablePoints(GridStorage* storage,
                                             RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                            RefinementFunctor::value_type* max_values);
+                                            RefinementFunctor::value_type* max_values) override;
     };
 
   } /* namespace base */

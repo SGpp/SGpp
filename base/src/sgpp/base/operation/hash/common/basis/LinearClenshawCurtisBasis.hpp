@@ -22,12 +22,18 @@ namespace SGPP {
     class LinearClenshawCurtisBasis: public Basis<LT, IT> {
       public:
         /**
+         * Destructor.
+         */
+        virtual ~LinearClenshawCurtisBasis() override {
+        }
+
+        /**
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
          * @return      value of Clenshaw-Curtis linear basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           if (l == 0) {
             // first level
             if (i == 0) {

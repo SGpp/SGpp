@@ -35,17 +35,19 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          Mladineo() : TestFunction(2) {
-          }
+          Mladineo();
+
+          /**
+           * Destructor.
+           */
+          virtual ~Mladineo() override;
 
           /**
            * Generate normally distributed pseudorandom displacement with
            * default standard deviation and with the restriction of
            * \f$\vec{d} \in [-0.01, 0] \times [-0.01, 0]\f$.
            */
-          void generateDisplacement() {
-            generateDisplacement(TestFunction::DEFAULT_STANDARD_DEVIATION);
-          }
+          virtual void generateDisplacement() override;
 
           /**
            * Generate normally distributed pseudorandom displacement
@@ -54,12 +56,7 @@ namespace SGPP {
            *
            * @param stdDev standard deviation of the displacement coordinates
            */
-          void generateDisplacement(float_t stdDev) {
-            do {
-              TestFunction::generateDisplacement(stdDev);
-            } while ((displacement[0] > 0) || (displacement[0] < -0.01) ||
-                     (displacement[1] > 0) || (displacement[1] < -0.01));
-          }
+          virtual void generateDisplacement(float_t stdDev) override;
 
           /**
            * Evaluates the test function.
@@ -67,14 +64,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^2\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            const float_t x1 = 0.99 * x[0] + 0.01;
-            const float_t x2 = 0.99 * x[1] + 0.01;
-
-            return 1.0 + (x1 * x1 + x2 * x2) / 2.0 -
-                   std::cos(10.0 * std::log(2.0 * x1)) *
-                   std::cos(10.0 * std::log(3.0 * x2));
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -84,19 +74,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(2);
-            x[0] = 0.001542;
-            x[1] = 0.004449;
-            return evalUndisplaced(x);
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Mladineo(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

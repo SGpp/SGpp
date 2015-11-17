@@ -38,7 +38,7 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
         virtual ~ScalarFunctionHessian() {
         }

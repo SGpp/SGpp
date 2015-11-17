@@ -52,7 +52,12 @@ namespace SGPP {
                           float_t tolerance = DEFAULT_TOLERANCE,
                           float_t epsilon = DEFAULT_EPSILON);
 
-          void optimize();
+          /**
+           * Destructor.
+           */
+          virtual ~GradientDescent() override;
+
+          virtual void optimize() override;
 
           /**
            * @return objective function gradient
@@ -102,7 +107,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
         protected:
           /// objective function gradient

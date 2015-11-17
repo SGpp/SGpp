@@ -37,17 +37,19 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          HoelderTable() : TestFunction(2) {
-          }
+          HoelderTable();
+
+          /**
+           * Destructor.
+           */
+          virtual ~HoelderTable() override;
 
           /**
            * Generate normally distributed pseudorandom displacement with
            * default standard deviation and with the restriction of
            * \f$\vec{d} \in [-0.005, 0.005] \times [-0.01, 0.01]\f$.
            */
-          void generateDisplacement() {
-            generateDisplacement(TestFunction::DEFAULT_STANDARD_DEVIATION);
-          }
+          virtual void generateDisplacement() override;
 
           /**
            * Generate normally distributed pseudorandom displacement
@@ -56,12 +58,7 @@ namespace SGPP {
            *
            * @param stdDev standard deviation of the displacement coordinates
            */
-          void generateDisplacement(float_t stdDev) {
-            do {
-              TestFunction::generateDisplacement(stdDev);
-            } while ((displacement[0] > 0.005) || (displacement[0] < -0.005) ||
-                     (displacement[1] > 0.01) || (displacement[1] < -0.01));
-          }
+          virtual void generateDisplacement(float_t stdDev) override;
 
           /**
            * Evaluates the test function.
@@ -69,14 +66,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^2\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            const float_t x1 = 20.0 * x[0] - 10.0;
-            const float_t x2 = 20.0 * x[1] - 10.0;
-
-            return -std::abs(
-                     std::sin(x1) * std::cos(x2) * std::exp(
-                       std::abs(1.0 - std::sqrt(x1 * x1 + x2 * x2) / M_PI)));
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -86,20 +76,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(2);
-            x[0] = 0.902751;
-            x[1] = 0.9832295;
-            return evalUndisplaced(x);
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(
-                      new HoelderTable(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

@@ -58,6 +58,9 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
+      Newton::~Newton() {
+      }
+
       void Newton::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
 

@@ -20,7 +20,7 @@ namespace SGPP {
          * the weights are additionally normalized to 1.
          */
         GaussLegendreQuadRule1D();
-        virtual ~GaussLegendreQuadRule1D();
+        virtual ~GaussLegendreQuadRule1D() override;
 
         /**
          * the coordinates are normalized to [0, 1].

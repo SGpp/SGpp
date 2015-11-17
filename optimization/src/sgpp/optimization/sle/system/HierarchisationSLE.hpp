@@ -159,7 +159,7 @@ namespace SGPP {
          * @return      whether the i-th grid point lies in the support of
          *              the j-th basis function
          */
-        inline bool isMatrixEntryNonZero(size_t i, size_t j) {
+        inline virtual bool isMatrixEntryNonZero(size_t i, size_t j) override {
           return (evalBasisFunctionAtGridPoint(j, i) != 0.0);
         }
 
@@ -168,7 +168,7 @@ namespace SGPP {
          * @param j     column index
          * @return      value of the j-th basis function at the i-th grid point
          */
-        inline float_t getMatrixEntry(size_t i, size_t j) {
+        inline virtual float_t getMatrixEntry(size_t i, size_t j) override {
           return evalBasisFunctionAtGridPoint(j, i);
         }
 
@@ -193,14 +193,14 @@ namespace SGPP {
           return gridStorage;
         }
 
-        size_t getDimension() const {
+        virtual size_t getDimension() const override {
           return gridStorage.size();
         }
 
         /**
          * @param[out] clone pointer to cloned object
          */
-        virtual void clone(std::unique_ptr<CloneableSLE>& clone) const {
+        virtual void clone(std::unique_ptr<CloneableSLE>& clone) const override {
           clone = std::unique_ptr<CloneableSLE>(
                     new HierarchisationSLE(grid, gridStorage));
         }

@@ -28,6 +28,9 @@ namespace SGPP {
         rhoLs(lineSearchAccuracy) {
       }
 
+      BFGS::~BFGS() {
+      }
+
       void BFGS::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (BFGS)...");
 

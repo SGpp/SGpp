@@ -35,7 +35,8 @@ namespace SGPP {
         RefinementDecorator(AbstractRefinement* refinement) {
           decorated_refinement_ = refinement;
         };
-        ~RefinementDecorator() {
+
+        virtual ~RefinementDecorator() {
         }
         ;
 

@@ -288,12 +288,18 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~FundamentalSplineModifiedBasis() override {
+        }
+
+        /**
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
          * @return      value of modified fundamental spline basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           if (l == 1) {
             return 1.0;
           }

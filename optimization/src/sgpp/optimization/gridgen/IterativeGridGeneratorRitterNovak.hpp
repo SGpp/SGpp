@@ -68,11 +68,16 @@ namespace SGPP {
           PowMethod powMethod = STD_POW);
 
         /**
+         * Destructor.
+         */
+        virtual ~IterativeGridGeneratorRitterNovak() override;
+
+        /**
          * Generate the grid.
          *
          * @return true on success, otherwise false
          */
-        bool generate();
+        virtual bool generate() override;
 
         /**
          * @return            adaptivity between 0 and 1

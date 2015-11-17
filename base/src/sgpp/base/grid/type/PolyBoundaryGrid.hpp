@@ -34,13 +34,13 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~PolyBoundaryGrid();
+        virtual ~PolyBoundaryGrid() override;
 
-        virtual const SBasis& getBasis();
-        virtual SGPP::base::GridType getType();
-        virtual void serialize(std::ostream& ostr);
+        virtual const SBasis& getBasis() override;
+        virtual SGPP::base::GridType getType() override;
+        virtual void serialize(std::ostream& ostr) override;
 
-        virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator() override;
 
         static Grid* unserialize(std::istream& istr);
         size_t getDegree() const;

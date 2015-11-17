@@ -111,12 +111,18 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~ComponentScalarFunction() override {
+        }
+
+        /**
          * @param x     evaluation point \f$\vec{x} \in [0, 1]^n\f$
          * @return      \f$g(\vec{x}) := f_k(y_1, \dotsc, y_d)\f$
          *              where \f$(x_1, \dotsc, x_n) =
          *              (y_{i_1}, \dotsc, y_{i_n})\f$
          */
-        inline float_t eval(const base::DataVector& x) {
+        inline virtual float_t eval(const base::DataVector& x) override {
           size_t t2 = 0;
 
           // select entries of x which correspond to NAN entries in
@@ -141,7 +147,7 @@ namespace SGPP {
         /**
          * @param[out] clone pointer to cloned object
          */
-        virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
+        virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override {
           clone = std::unique_ptr<ScalarFunction>(
                     new ComponentScalarFunction(*this));
         }

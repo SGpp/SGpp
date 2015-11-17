@@ -23,19 +23,25 @@ namespace SGPP {
     class LinearPeriodicBasis: public Basis<LT, IT>  {
       public:
         /**
+         * Destructor.
+         */
+        virtual ~LinearPeriodicBasis() override {
+        }
+
+        /**
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
          *
-         * @param level the level of the current basis function
-         * @param index the index of the current basis function
-         * @param p the absolute position of the evaluation point
+         * @param l the level of the current basis function
+         * @param i the index of the current basis function
+         * @param x the absolute position of the evaluation point
          */
-        float_t eval(LT level, IT index, float_t p) {
-          if (level == 0) {
-            return fabs(2 * p - 1);
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
+          if (l == 0) {
+            return fabs(2 * x - 1);
           } else {
-            return 1.0 - fabs(static_cast<float_t>(1 << level) * p -
-                              static_cast<float_t>(index));
+            return 1.0 - fabs(static_cast<float_t>(1 << l) * x -
+                              static_cast<float_t>(i));
           }
 
           // should not happen

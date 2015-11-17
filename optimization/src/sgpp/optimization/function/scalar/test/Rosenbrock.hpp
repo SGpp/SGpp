@@ -32,8 +32,12 @@ namespace SGPP {
            *
            * @param d     dimension of the domain
            */
-          Rosenbrock(size_t d) : TestFunction(d) {
-          }
+          Rosenbrock(size_t d);
+
+          /**
+           * Destructor.
+           */
+          virtual ~Rosenbrock() override;
 
           /**
            * Evaluates the test function.
@@ -41,22 +45,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^d\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            float_t result = 0.0;
-
-            float_t xt = 15.0 * x[0] - 5.0;
-
-            for (size_t t = 1; t < d; t++) {
-              const float_t xtm1 = xt;
-              xt = 15.0 * x[t] - 5.0;
-
-              const float_t tmp1 = xt - xtm1 * xtm1;
-              const float_t tmp2 = 1.0 - xtm1;
-              result += 100.0 * tmp1 * tmp1 + tmp2 * tmp2;
-            }
-
-            return result;
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -66,18 +55,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(d);
-            x.setAll(0.4);
-            return 0.0;
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Rosenbrock(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

@@ -32,8 +32,12 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          GoldsteinPrice() : TestFunction(2) {
-          }
+          GoldsteinPrice();
+
+          /**
+           * Destructor.
+           */
+          virtual ~GoldsteinPrice() override;
 
           /**
            * Evaluates the test function.
@@ -41,17 +45,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^2\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            const float_t x1 = 4.0 * x[0] - 2.0;
-            const float_t x2 = 4.0 * x[1] - 2.0;
-
-            return (1.0 + (x1 + x2 + 1.0) * (x1 + x2 + 1.0) *
-                    (19.0 - 14.0 * x1 + 3.0 * x1 * x1 - 14.0 * x2 +
-                     6.0 * x1 * x2 + 3.0 * x2 * x2)) *
-                   (30.0 + (2.0 * x1 - 3.0 * x2) * (2.0 * x1 - 3.0 * x2) *
-                    (18.0 - 32.0 * x1 + 12.0 * x1 * x1 + 48.0 * x2 -
-                     36.0 * x1 * x2 + 27.0 * x2 * x2));
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -61,20 +55,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(2);
-            x[0] = 0.5;
-            x[1] = 0.25;
-            return 3.0;
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(
-                      new GoldsteinPrice(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

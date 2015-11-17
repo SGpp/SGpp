@@ -35,17 +35,23 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~WrapperScalarFunction() override {
+        }
+
+        /**
          * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @return      \f$f(\vec{x})\f$
          */
-        inline float_t eval(const base::DataVector& x) {
+        inline virtual float_t eval(const base::DataVector& x) override {
           return f(x);
         }
 
         /**
          * @param[out] clone pointer to cloned object
          */
-        void clone(std::unique_ptr<ScalarFunction>& clone) const {
+        void clone(std::unique_ptr<ScalarFunction>& clone) const override {
           clone = std::unique_ptr<ScalarFunction>(
                     new WrapperScalarFunction(d, f));
         }

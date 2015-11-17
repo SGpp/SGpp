@@ -31,9 +31,9 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
-        virtual ~OperationNaiveEvalHessianModWavelet() {
+        virtual ~OperationNaiveEvalHessianModWavelet() override {
         }
 
         /**
@@ -46,7 +46,7 @@ namespace SGPP {
         virtual float_t evalHessian(const DataVector& alpha,
                                     const DataVector& point,
                                     DataVector& gradient,
-                                    DataMatrix& hessian);
+                                    DataMatrix& hessian) override;
 
       protected:
         /// storage of the sparse grid

@@ -34,8 +34,12 @@ namespace SGPP {
            *
            * @param d     dimension of the domain
            */
-          Rastrigin(size_t d) : TestFunction(d) {
-          }
+          Rastrigin(size_t d);
+
+          /**
+           * Destructor.
+           */
+          virtual ~Rastrigin() override;
 
           /**
            * Evaluates the test function.
@@ -43,16 +47,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^d\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            float_t result = 10.0 * static_cast<float_t>(d);
-
-            for (size_t t = 0; t < d; t++) {
-              const float_t xt = 10.0 * x[t] - 2.0;
-              result += xt * xt - 10.0 * std::cos(2 * M_PI * xt);
-            }
-
-            return result;
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -62,18 +57,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(d);
-            x.setAll(0.2);
-            return 0.0;
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Rastrigin(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }
