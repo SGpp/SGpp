@@ -48,17 +48,17 @@ template<> struct getType<double> {
 template<typename real_type>
 class AdaptiveOCLKernelSourceBuilder {
 private:
-  std::shared_ptr<base::OCLConfigurationParameters> parameters;
+  std::shared_ptr<base::OCLOperationConfiguration> parameters;
   real_type blubb;
 public:
-  AdaptiveOCLKernelSourceBuilder(std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+  AdaptiveOCLKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters) :
       parameters(parameters) {
 
   }
 
   std::string generateSourceMult(size_t dims) {
 
-    if (parameters->getAsBoolean("REUSE_SOURCE")) {
+    if ((*parameters)["REUSE_SOURCE"].getBool()) {
       std::stringstream stream_program_src;
       std::ifstream file;
       file.open("multKernel_tmp.cl");
@@ -74,9 +74,9 @@ public:
       return stream_program_src.str();
     }
 
-    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
-//    bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    uint64_t maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    size_t localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+//    bool useLocalMemory = this->(*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    uint64_t maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
 
     std::stringstream stream_program_src;
 
@@ -223,7 +223,7 @@ public:
 
   std::string generateSourceMultTrans(size_t dims) {
 
-    if (parameters->getAsBoolean("REUSE_SOURCE")) {
+    if ((*parameters)["REUSE_SOURCE"].getBool()) {
       std::stringstream stream_program_src;
       std::ifstream file;
       file.open("multTransKernel_tmp.cl");
@@ -239,9 +239,9 @@ public:
       return stream_program_src.str();
     }
 
-    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
-//    bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    uint64_t maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    size_t localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+//    bool useLocalMemory = this->(*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    uint64_t maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
 
     std::stringstream stream_program_src;
     std::string strPrecisionType = AdaptiveOCL::getType<real_type>::asString();

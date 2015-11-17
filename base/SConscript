@@ -19,8 +19,11 @@ Import('exampleTargetList')
 moduleDependencies = []
 Export('moduleDependencies')
 
+additionalDependencies = []
 if env['USE_OCL']:
-    moduleDependencies += ['OpenCL']
+    additionalDependencies += ['OpenCL']
+    
+moduleDependencies = additionalDependencies + moduleDependencies
     
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):

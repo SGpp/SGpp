@@ -9,7 +9,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
 namespace base {
@@ -17,11 +17,11 @@ namespace base {
 class LinearLoadBalancer {
 private:
     size_t deviceCount;
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     double* weights;
     double* partition;
 public:
-    LinearLoadBalancer(std::shared_ptr<OCLManager> manager, std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+    LinearLoadBalancer(std::shared_ptr<OCLManager> manager, std::shared_ptr<base::OCLOperationConfiguration> parameters) :
             deviceCount(manager->num_devices), parameters(parameters) {
         this->weights = new double[manager->num_devices];
         this->partition = new double[manager->num_devices];
@@ -38,7 +38,7 @@ public:
     }
 
     void getPartitionSegments(size_t start, size_t end, size_t blockSize, size_t* segmentStart, size_t* segmentEnd) {
-        bool setVerboseLoadBalancing = parameters->getAsBoolean("LOAD_BALANCING_VERBOSE");
+        bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
         size_t totalSize = end - start;
 
         // check for valid input
@@ -88,7 +88,7 @@ public:
 
     //TODO: consider inactive device due to nothing to do?
     void update(double* timings) {
-        bool setVerboseLoadBalancing = parameters->getAsBoolean("LOAD_BALANCING_VERBOSE");
+        bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
 
         //recalculate weights
         for (size_t i = 0; i < this->deviceCount; i++) {

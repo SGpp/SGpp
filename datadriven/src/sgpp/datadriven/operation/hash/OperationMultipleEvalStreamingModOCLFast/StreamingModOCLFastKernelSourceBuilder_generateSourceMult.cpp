@@ -14,7 +14,7 @@ namespace datadriven {
 
 std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMult() {
 
-    if (parameters->getAsBoolean("REUSE_SOURCE")) {
+    if ((*parameters)["REUSE_SOURCE"].getBool()) {
         return this->reuseSource("multKernelModFast_tmp.cl");
     }
 
@@ -46,7 +46,7 @@ std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMult() {
     }
 
     //caching data in register array, this also requires loading the data into the registers (in contrast using pointers to data directly)
-    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         for (size_t i = 0; i < dataBlockSize; i++) {
             sourceStream << indent << this->asString() << " data_" << i << "[" << dims << "];" << std::endl;
         }
@@ -136,7 +136,7 @@ std::string StreamingModOCLFastKernelSourceBuilder::generateSourceMult() {
 
     sourceStream << "}" << std::endl;
 
-    if (parameters->getAsBoolean("WRITE_SOURCE")) {
+    if ((*parameters)["WRITE_SOURCE"].getBool()) {
         this->writeSource("multKernelModFast_tmp.cl", sourceStream.str());
     }
 

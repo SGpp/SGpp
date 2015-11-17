@@ -12,7 +12,7 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 //#include "StreamingOCLParameters.hpp"
 
@@ -21,7 +21,7 @@ namespace datadriven {
 
 class StreamingModOCLMaskKernelSourceBuilder {
 private:
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
     size_t dims;
 
@@ -49,7 +49,7 @@ private:
 
     void recalculateLevelIndexMask();
 public:
-    StreamingModOCLMaskKernelSourceBuilder(std::shared_ptr<base::OCLConfigurationParameters> parameters, size_t dims);
+    StreamingModOCLMaskKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims);
 
     std::string generateSourceMult();
 

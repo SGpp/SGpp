@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/LinearLoadBalancer.hpp>
 #include <sgpp/base/opencl/OCLClonedBuffer.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 
@@ -47,7 +47,7 @@ private:
 
     StreamingOCLKernelSourceBuilder kernelSourceBuilder;
     std::shared_ptr<base::OCLManager> manager;
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
     base::LinearLoadBalancer multLoadBalancer;
     base::LinearLoadBalancer multTransposeLoadBalancer;
@@ -55,7 +55,7 @@ private:
 public:
 
     StreamingOCLKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager,
-            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
                     parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
                     this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
@@ -143,9 +143,9 @@ public:
 
         multLoadBalancer.update(this->deviceTimingsMult);
 
-        size_t dataBlockingSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t dataBlockingSize = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
         multLoadBalancer.getPartitionSegments(start_index_data, end_index_data,
-                parameters->getAsUnsigned("LOCAL_SIZE") * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
+                (*parameters)["LOCAL_SIZE"].getUInt() * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
@@ -177,7 +177,7 @@ public:
         cl_event* clTimings = new cl_event[manager->num_devices];
 
         // enqueue kernel
-        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
+        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
         size_t active_devices = 0;
 
         for (size_t i = 0; i < manager->num_devices; i++) {
@@ -277,7 +277,7 @@ public:
         }
 
         double time = 0.0;
-        size_t transGridBlockingSize = parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+        size_t transGridBlockingSize = (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
 
         if (kernel_multTrans[0] == nullptr) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
@@ -294,7 +294,7 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters->getAsUnsigned("LOCAL_SIZE") * transGridBlockingSize, gpu_start_index_grid,
+                (*parameters)["LOCAL_SIZE"].getUInt() * transGridBlockingSize, gpu_start_index_grid,
                 gpu_end_index_grid);
 
         // set kernel arguments
@@ -331,7 +331,7 @@ public:
         cl_event* clTimings = new cl_event[manager->num_devices];
 
         // enqueue kernels
-        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
+        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
         size_t active_devices = 0;
 
         for (size_t i = 0; i < manager->num_devices; i++) {

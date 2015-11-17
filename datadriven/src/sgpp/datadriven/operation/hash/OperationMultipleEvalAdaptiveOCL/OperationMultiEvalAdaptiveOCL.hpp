@@ -12,7 +12,7 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include "AdaptiveOCLKernelImpl.hpp"
 
@@ -24,7 +24,7 @@ class OperationMultiEvalAdaptiveOCL: public base::OperationMultipleEval {
 protected:
     size_t m_dims;
     SGPP::base::DataMatrix preparedDataset;
-    base::OCLConfigurationParameters parameters;
+    base::OCLOperationConfiguration parameters;
     T *kernelDataset = nullptr;
     size_t datasetSize = 0;
 
@@ -56,7 +56,7 @@ protected:
 public:
 
     OperationMultiEvalAdaptiveOCL(base::Grid& grid, base::DataMatrix& dataset,
-            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(*parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
         this->manager = std::make_shared<base::OCLManager>(parameters);
@@ -80,8 +80,8 @@ public:
             this->kernelDataset[i] = (T) this->preparedDataset[i];
         }
 
-        m_softAdaptivityLimit = (float)(this->parameters.getAsUnsigned("ADAPTIVE_STREAMING_DENSITY"))/100.f;
-        m_hardAdaptivityLimit = static_cast<uint32_t>(this->parameters.getAsUnsigned("ADAPTIVE_STREAMING_HARD_LIMIT"));
+        m_softAdaptivityLimit = (float)(this->parameters["ADAPTIVE_STREAMING_DENSITY"].getUInt())/100.f;
+        m_hardAdaptivityLimit = static_cast<uint32_t>(this->parameters["ADAPTIVE_STREAMING_HARD_LIMIT"].getUInt());
 
         //create the kernel specific data structures
         this->prepare();
@@ -202,7 +202,7 @@ private:
     size_t padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-    size_t dataBlocking = parameters.getAsUnsigned("LOCAL_SIZE");
+    size_t dataBlocking = parameters["LOCAL_SIZE"].getUInt();
 
     size_t vecWidth = dataBlocking;
 
@@ -399,13 +399,13 @@ private:
 
     void buildDatastructure()
     {
-        size_t dataBlocking = parameters.getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-        size_t transGridBlocking = parameters.getAsUnsigned("KERNEL_TRANS_GRID_BLOCKING_SIZE");
+        size_t dataBlocking = parameters["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+        size_t transGridBlocking = parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
 
         //TODO: is this a bug, Raphael? (David)
         size_t blockingSize = std::max(dataBlocking, transGridBlocking);
 
-        uint32_t localWorkSize = static_cast<uint32_t>(parameters.getAsUnsigned("LOCAL_SIZE")) * static_cast<uint32_t>(blockingSize);
+        uint32_t localWorkSize = static_cast<uint32_t>(parameters["LOCAL_SIZE"].getUInt()) * static_cast<uint32_t>(blockingSize);
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

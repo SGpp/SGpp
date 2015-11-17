@@ -17,16 +17,16 @@ namespace SGPP {
 namespace datadriven {
 
 StreamingModOCLMaskKernelSourceBuilder::StreamingModOCLMaskKernelSourceBuilder(
-        std::shared_ptr<base::OCLConfigurationParameters> parameters, size_t dims) :
+        std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims) :
         parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
                 "                ") {
-    localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
-    useLocalMemory = parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-//    maxDimUnroll = parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+    useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
+//    maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
 }
 
 std::string StreamingModOCLMaskKernelSourceBuilder::asString() {
-    if (parameters->get("INTERNAL_PRECISION") == "float") {
+    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "float";
     } else {
         return "double";
@@ -34,7 +34,7 @@ std::string StreamingModOCLMaskKernelSourceBuilder::asString() {
 }
 
 std::string StreamingModOCLMaskKernelSourceBuilder::constSuffix() {
-    if (parameters->get("INTERNAL_PRECISION") == "float") {
+    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "f";
     } else {
         return "";
@@ -42,7 +42,7 @@ std::string StreamingModOCLMaskKernelSourceBuilder::constSuffix() {
 }
 
 std::string StreamingModOCLMaskKernelSourceBuilder::intAsString() {
-    if (parameters->get("INTERNAL_PRECISION") == "float") {
+    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "uint";
     } else {
         return "ulong";

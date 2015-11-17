@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "JSONTextNode.hpp"
+#include "TextNode.hpp"
 
 #include <fstream>
 
@@ -13,13 +13,13 @@
 
 namespace json {
 
-JSONTextNode::JSONTextNode() :
+TextNode::TextNode() :
     value() {
 }
 
-void JSONTextNode::parse(std::vector<JSONToken> &stream) {
+void TextNode::parse(std::vector<Token> &stream) {
 //create new text node
-  if (stream[0].type == JSONTokenType::STRING) {
+  if (stream[0].type == TokenType::STRING) {
     this->value = stream[0].value;
     stream.erase(stream.begin());
   } else {
@@ -27,24 +27,24 @@ void JSONTextNode::parse(std::vector<JSONToken> &stream) {
   }
 }
 
-void JSONTextNode::serialize(std::ofstream &outFile, size_t indentWidth) {
+void TextNode::serialize(std::ofstream &outFile, size_t indentWidth) {
   outFile << "\"" << this->value << "\"";
 }
 
-std::string &JSONTextNode::get() {
+std::string &TextNode::get() {
   return this->value;
 }
 
-void JSONTextNode::set(const std::string &value) {
+void TextNode::set(const std::string &value) {
   this->value = value;
 }
 
-size_t JSONTextNode::size() {
+size_t TextNode::size() {
   return 1;
 }
 
-JSONNode *JSONTextNode::clone() {
-  JSONTextNode *newNode = new JSONTextNode(*this);
+Node *TextNode::clone() {
+  TextNode *newNode = new TextNode(*this);
   return newNode;
 }
 

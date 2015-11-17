@@ -316,3 +316,31 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
   BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
   return mse;
 }
+
+SGPP::base::OCLOperationConfiguration getConfigurationDefaultsSingleDevice() {
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.replaceIDAttr("VERBOSE", false);
+    parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
+    parameters.replaceTextAttr("PLATFORM", "first");
+    parameters.replaceIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+    return parameters;
+}
+
+SGPP::base::OCLOperationConfiguration getConfigurationDefaultsMultiDevice() {
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.replaceIDAttr("VERBOSE", false);
+    parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
+    parameters.replaceTextAttr("PLATFORM", "first");
+    return parameters;
+}
+
+SGPP::base::OCLOperationConfiguration getConfigurationDefaultsMultiPlatform() {
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.replaceIDAttr("VERBOSE", false);
+    parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
+    parameters.replaceTextAttr("PLATFORM", "all");
+    return parameters;
+}

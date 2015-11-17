@@ -11,7 +11,7 @@
 #include <random>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
@@ -40,7 +40,7 @@ SGPP::base::DataVector& alpha, std::mt19937 mt, std::uniform_real_distribution<d
 
 int main(int argc, char** argv) {
 
-    /*    SGPP::base::OCLConfigurationParameters parameters;
+    /*    SGPP::base::OCLOperationConfiguration parameters;
      parameters.readFromFile("StreamingOCL.cfg");
      std::cout << "internal precision: " << parameters.get("INTERNAL_PRECISION") << std::endl;*/
 
@@ -52,18 +52,18 @@ int main(int argc, char** argv) {
 
     std::cout << "Dataset: " << fileName << std::endl;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-	parameters.set("OCL_MANAGER_VERBOSE", "true");
-	parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-	parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-	parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-	parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
-	parameters.set("PLATFORM", "first");
-	parameters.set("SELECT_SPECIFIC_DEVICE", "1");
-	parameters.set("MAX_DEVICES", "1");
-	parameters.set("LOCAL_SIZE", "128");
-	parameters.set("ADAPTIVE_STREAMING_HARD_LIMIT", "10"); //absolute value
-	parameters.set("ADAPTIVE_STREAMING_DENSITY", "5"); //In percent
+    SGPP::base::OCLOperationConfiguration parameters;
+	parameters.addIDAttr("OCL_MANAGER_VERBOSE", "true");
+	parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", "false");
+	parameters.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", "1");
+	parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
+	parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", "1");
+	parameters.addIDAttr("PLATFORM", "first");
+	parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", "1");
+	parameters.addIDAttr("MAX_DEVICES", "1");
+	parameters.addIDAttr("LOCAL_SIZE", "128");
+	parameters.addIDAttr("ADAPTIVE_STREAMING_HARD_LIMIT", "10"); //absolute value
+	parameters.addIDAttr("ADAPTIVE_STREAMING_DENSITY", "5"); //In percent
 
     bool bCompare = true;
     bool bBoth = false;

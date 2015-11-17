@@ -10,8 +10,8 @@
 #include "OperationMultiEvalStreamingOCLMultiPlatform.hpp"
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include "../../../../../../../base/src/sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -19,39 +19,62 @@ namespace datadriven {
 base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(base::Grid& grid, base::DataMatrix& dataset,
 SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
 
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
     if (configuration.getParameters().operator bool()) {
-        parameters = std::dynamic_pointer_cast<base::OCLConfigurationParameters>(configuration.getParameters()->clone());
+        base::OCLOperationConfiguration *cloned =
+                dynamic_cast<base::OCLOperationConfiguration *>(configuration.getParameters()->clone());
+        parameters = std::shared_ptr<base::OCLOperationConfiguration>(cloned);
     } else {
-        parameters = std::make_shared<base::OCLConfigurationParameters>();
-        parameters->set("KERNEL_USE_LOCAL_MEMORY", "false");
-        parameters->set("KERNEL_STORE_DATA", "array");
-        parameters->set("KERNEL_MAX_DIM_UNROLL", "10");
-        parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
-        parameters->set("KERNEL_DATA_BLOCKING_SIZE", "1");
-        parameters->set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-        parameters->set("LINEAR_LOAD_BALANCING_VERBOSE", "false");
-        parameters->readFromFile("StreamingOCLMultiPlatform.cfg");
+        parameters = std::make_shared<base::OCLOperationConfiguration>("StreamingOCLMultiPlatform.cfg");
+
+        if ((*parameters).contains("KERNEL_USE_LOCAL_MEMORY") == false) {
+            (*parameters).addTextAttr("KERNEL_USE_LOCAL_MEMORY", "false");
+        }
+
+        if ((*parameters).contains("KERNEL_STORE_DATA") == false) {
+            (*parameters).addTextAttr("KERNEL_STORE_DATA", "array");
+        }
+
+        if ((*parameters).contains("KERNEL_MAX_DIM_UNROLL") == false) {
+            (*parameters).addTextAttr("KERNEL_MAX_DIM_UNROLL", "10");
+        }
+
+        if ((*parameters).contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
+            (*parameters).addTextAttr("LINEAR_LOAD_BALANCING_VERBOSE", "false");
+        }
+
+        if ((*parameters).contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
+            (*parameters).addTextAttr("KERNEL_DATA_BLOCKING_SIZE", "1");
+        }
+
+        if ((*parameters).contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
+            (*parameters).addTextAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
+        }
+
+        if ((*parameters).contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
+            (*parameters).addTextAttr("LINEAR_LOAD_BALANCING_VERBOSE", "false");
+        }
     }
 
-    if (parameters->getAsBoolean("VERBOSE")) {
-        std::cout << "are optimizations on: " << parameters->getAsBoolean("ENABLE_OPTIMIZATIONS") << std::endl;
-        std::cout << "is local memory on: " << parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY") << std::endl;
-        std::cout << "local size: " << parameters->getAsUnsigned("LOCAL_SIZE") << std::endl;
-        std::cout << "internal precision: " << parameters->get("INTERNAL_PRECISION") << std::endl;
-        std::cout << "platform is: " << parameters->get("PLATFORM") << std::endl;
-        std::cout << "device type is: " << parameters->get("DEVICE_TYPE") << std::endl;
-        std::cout << "KERNEL_USE_LOCAL_MEMORY: " << parameters->get("KERNEL_USE_LOCAL_MEMORY") << std::endl;
-        std::cout << "KERNEL_DATA_BLOCKING_SIZE: " << parameters->get("KERNEL_DATA_BLOCKING_SIZE") << std::endl;
-        std::cout << "KERNEL_TRANS_GRID_BLOCKING_SIZE: " << parameters->get("KERNEL_TRANS_GRID_BLOCKING_SIZE") << std::endl;
-        std::cout << "LOAD_BALANCING_VERBOSE: " << parameters->get("LOAD_BALANCING_VERBOSE") << std::endl;
-        std::cout << "KERNEL_STORE_DATA: " << parameters->get("KERNEL_STORE_DATA") << std::endl;
+    if ((*parameters)["VERBOSE"].getBool()) {
+        std::cout << "are optimizations on: " << (*parameters)["ENABLE_OPTIMIZATIONS"].getBool() << std::endl;
+        std::cout << "is local memory on: " << (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool() << std::endl;
+        std::cout << "local size: " << (*parameters)["LOCAL_SIZE"].getUInt() << std::endl;
+        std::cout << "internal precision: " << (*parameters)["INTERNAL_PRECISION"].get() << std::endl;
+        std::cout << "platform is: " << (*parameters)["PLATFORM"].get() << std::endl;
+        std::cout << "device type is: " << (*parameters)["DEVICE_TYPE"].get() << std::endl;
+        std::cout << "KERNEL_USE_LOCAL_MEMORY: " << (*parameters)["KERNEL_USE_LOCAL_MEMORY"].get() << std::endl;
+        std::cout << "KERNEL_DATA_BLOCKING_SIZE: " << (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].get() << std::endl;
+        std::cout << "KERNEL_TRANS_GRID_BLOCKING_SIZE: " << (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].get()
+                << std::endl;
+        std::cout << "LOAD_BALANCING_VERBOSE: " << (*parameters)["LOAD_BALANCING_VERBOSE"].get() << std::endl;
+        std::cout << "KERNEL_STORE_DATA: " << (*parameters)["KERNEL_STORE_DATA"].get() << std::endl;
     }
 
-    if (parameters->get("INTERNAL_PRECISION") == "float") {
+    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return new datadriven::OperationMultiEvalStreamingOCLMultiPlatform<float>(grid, dataset, parameters);
-    } else if (parameters->get("INTERNAL_PRECISION") == "double") {
+    } else if ((*parameters)["INTERNAL_PRECISION"].get() == "double") {
         return new datadriven::OperationMultiEvalStreamingOCLMultiPlatform<double>(grid, dataset, parameters);
     } else {
         throw base::factory_exception(

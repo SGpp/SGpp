@@ -11,13 +11,13 @@
 
 namespace json {
 
-enum class JSONTokenType {
+enum class TokenType {
   LBRACE, RBRACE, LBRACKET, RBRACKET, COLON, ID, STRING, COMMA, COMMENT, SINGLELINE, MULTILINECOMMENT, MULTILINECOMMENTSTAR, NONE
 };
 
-class JSONToken {
+class Token {
 public:
-  JSONTokenType type;
+  TokenType type;
   std::string value;
   size_t lineNumber;
   size_t charNumber;

@@ -12,7 +12,7 @@
 
 namespace json {
 
-json_exception::json_exception(JSONToken &token, const std::string &message) {
+json_exception::json_exception(Token &token, const std::string &message) {
   std::stringstream messageStream;
   messageStream << "error: (line: " << token.lineNumber << ", char: " << token.charNumber << ") at \"" << token.value
       << "\": ";

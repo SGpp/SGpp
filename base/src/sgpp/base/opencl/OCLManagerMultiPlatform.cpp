@@ -15,9 +15,61 @@
 namespace SGPP {
 namespace base {
 
-OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLOperationConfiguration> parameters) :
         parameters(parameters), deviceType(0) {
-    this->verbose = parameters->getAsBoolean("OCL_MANAGER_VERBOSE");
+
+    // augment default values to configuration
+    if (parameters->contains("LOCAL_SIZE") == false) {
+        parameters->addIDAttr("LOCAL_SIZE", 64ul);
+    }
+
+    if (parameters->contains("ENABLE_OPTIMIZATIONS") == false) {
+        parameters->addIDAttr("ENABLE_OPTIMIZATIONS", true);
+    }
+
+    if (parameters->contains("OPTIMIZATION_FLAGS") == false) {
+        parameters->addTextAttr("OPTIMIZATION_FLAGS", "");
+    }
+
+    if (parameters->contains("INTERNAL_PRECISION") == false) {
+        parameters->addTextAttr("INTERNAL_PRECISION", "double");
+    }
+
+    if (parameters->contains("PLATFORM") == false) {
+        parameters->addTextAttr("PLATFORM", "first");
+    }
+
+    if (parameters->contains("DEVICE_TYPE") == false) {
+        parameters->addTextAttr("DEVICE_TYPE", "CL_DEVICE_TYPE_ALL");
+    }
+
+    if (parameters->contains("REUSE_SOURCE") == false) {
+        parameters->addIDAttr("REUSE_SOURCE", false);
+    }
+
+    if (parameters->contains("WRITE_SOURCE") == false) {
+        parameters->addIDAttr("WRITE_SOURCE", false);
+    }
+
+    if (parameters->contains("VERBOSE") == false) {
+        // sets the kernel to verbose
+        parameters->addIDAttr("VERBOSE", true);
+    }
+
+    if (parameters->contains("OCL_MANAGER_VERBOSE") == false) {
+        // sets the manager to verbose
+        parameters->addIDAttr("OCL_MANAGER_VERBOSE", false);
+    }
+
+    if (parameters->contains("LOAD_BALANCING_VERBOSE") == false) {
+        parameters->addIDAttr("LOAD_BALANCING_VERBOSE", false);
+    }
+
+    if (parameters->contains("SHOW_BUILD_LOG") == false) {
+        parameters->addIDAttr("SHOW_BUILD_LOG", false);
+    }
+
+    this->verbose = (*parameters)["OCL_MANAGER_VERBOSE"].getBool();
 
     cl_int err;
 
@@ -39,12 +91,15 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
         std::cout << "OCL Info: " << overallDeviceCount << " OpenCL devices have been found!" << std::endl;
     }
 
-    bool isSelectSpecificDeviceEnabled = parameters->get("SELECT_SPECIFIC_DEVICE").compare("DISABLED") != 0;
-    bool isMaxDevicesEnabled = parameters->get("MAX_DEVICES").compare("DISABLED") != 0;
+//    bool isSelectSpecificDeviceEnabled = (*parameters)["SELECT_SPECIFIC_DEVICE"].get().compare("DISABLED") != 0;
+//    bool isMaxDevicesEnabled = (*parameters)["MAX_DEVICES"].get().compare("DISABLED") != 0;
+    bool isSelectSpecificDeviceEnabled = (*parameters).contains("SELECT_SPECIFIC_DEVICE");
+    bool isMaxDevicesEnabled = (*parameters).contains("MAX_DEVICES");
 
     if (isSelectSpecificDeviceEnabled && isMaxDevicesEnabled) {
         std::stringstream errorString;
-        errorString << "OCL Error: Can specify \"MAX_DEVICES\" and \"SELECT_SPECIFIC_DEVICE\" at the same time" << std::endl;
+        errorString << "OCL Error: Can specify \"MAX_DEVICES\" and \"SELECT_SPECIFIC_DEVICE\" at the same time"
+                << std::endl;
         throw SGPP::base::operation_exception(errorString.str());
     }
 
@@ -55,7 +110,7 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        size_t selectedDevice = parameters->getAsUnsigned("SELECT_SPECIFIC_DEVICE");
+        size_t selectedDevice = (*parameters)["SELECT_SPECIFIC_DEVICE"].getUInt();
 
         if (selectedDevice > platforms[0].deviceCount) {
             std::stringstream errorString;
@@ -80,11 +135,11 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        size_t maxDevices = parameters->getAsUnsigned("MAX_DEVICES");
+        size_t maxDevices = (*parameters)["MAX_DEVICES"].getUInt();
 
         //always for the first platform
         platforms[0].deviceCount = maxDevices;
-        overallDeviceCount = maxDevices;
+        overallDeviceCount = static_cast<cl_uint>(maxDevices);
 
         if (verbose) {
             std::cout << "OCL Info: select number of devices: " << maxDevices << std::endl;
@@ -141,7 +196,7 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfig
 
         if (verbose) {
             std::cout << "OCL Info: Successfully initialized OpenCL (local workgroup size: "
-                    << parameters->getAsUnsigned("LOCAL_SIZE") << ")" << std::endl << std::endl;
+                    << (*parameters)["LOCAL_SIZE"].get() << ")" << std::endl << std::endl;
         }
     }
 }
@@ -197,9 +252,9 @@ void OCLManagerMultiPlatform::buildKernel(const std::string &program_src, const 
 
         std::string build_opts;
 
-        if (parameters->getAsBoolean("ENABLE_OPTIMIZATIONS")) {
+        if ((*parameters)["ENABLE_OPTIMIZATIONS"].getBool()) {
             //TODO: user should be able to change
-            build_opts = parameters->get("OPTIMIZATION_FLAGS"); // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
+            build_opts = (*parameters)["OPTIMIZATION_FLAGS"].get(); // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
         } else {
             build_opts = "-cl-opt-disable"; // -g
         }
@@ -317,7 +372,7 @@ void OCLManagerMultiPlatform::setupPlatforms() {
                 std::cout << "OCL Info: Platform " << i << " name: " << platform_name << std::endl;
             }
 
-            if (parameters->get("PLATFORM").compare(platform_name) == 0) {
+            if ((*parameters)["PLATFORM"].get().compare(platform_name) == 0) {
                 selectedPlatformIndex = i;
                 found = true;
 
@@ -328,14 +383,14 @@ void OCLManagerMultiPlatform::setupPlatforms() {
         }
     }
 
-    if (parameters->get("PLATFORM").compare("first") == 0) {
+    if ((*parameters)["PLATFORM"].get().compare("first") == 0) {
         if (verbose) {
             std::cout << "using first platform" << std::endl;
         }
         OCLPlatformWrapper selectedPlatform = platforms[0];
         platforms.clear();
         platforms.push_back(selectedPlatform);
-    } else if (parameters->get("PLATFORM").compare("all") != 0) {
+    } else if ((*parameters)["PLATFORM"].get().compare("all") != 0) {
         if (found) {
             OCLPlatformWrapper selectedPlatform = platforms[selectedPlatformIndex];
             platforms.clear();
@@ -391,25 +446,25 @@ void OCLManagerMultiPlatform::setupDeviceIDs() {
 }
 
 void OCLManagerMultiPlatform::setDeviceType() {
-    if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_CPU") {
+    if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_CPU") {
         if (verbose) {
             std::cout << "OCL Info: looking for CPU device" << std::endl;
         }
 
         this->deviceType = CL_DEVICE_TYPE_CPU;
-    } else if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_GPU") {
+    } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_GPU") {
         if (verbose) {
             std::cout << "OCL Info: looking for GPU device" << std::endl;
         }
 
         this->deviceType = CL_DEVICE_TYPE_GPU;
-    } else if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ACCELERATOR") {
+    } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_ACCELERATOR") {
         if (verbose) {
             std::cout << "OCL Info: looking for device of accelerator type" << std::endl;
         }
 
         this->deviceType = CL_DEVICE_TYPE_ACCELERATOR;
-    } else if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ALL") {
+    } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_ALL") {
         if (verbose) {
             std::cout << "OCL Info: looking for device of all available devices" << std::endl;
         }

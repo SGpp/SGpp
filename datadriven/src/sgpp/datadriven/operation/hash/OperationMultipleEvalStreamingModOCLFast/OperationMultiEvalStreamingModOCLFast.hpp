@@ -12,7 +12,7 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include "StreamingModOCLFastKernelImpl.hpp"
 
@@ -23,7 +23,7 @@ template<typename T>
 class OperationMultiEvalStreamingModOCLFast: public base::OperationMultipleEval {
 protected:
     size_t dims;SGPP::base::DataMatrix preparedDataset;
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     T* kernelDataset = nullptr;
     size_t datasetSize = 0;
     /// Member to store the sparse grid's levels for better vectorization
@@ -43,7 +43,7 @@ protected:
 public:
 
     OperationMultiEvalStreamingModOCLFast(base::Grid& grid, base::DataMatrix& dataset,
-            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
 
@@ -186,8 +186,8 @@ private:
     size_t padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-        size_t vecWidth = parameters->getAsUnsigned("LOCAL_SIZE")
-                * parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+        size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt()
+                * (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
 
         // Assure that data has a even number of instances -> padding might be needed
         size_t remainder = dataset.getNrows() % vecWidth;
@@ -214,7 +214,7 @@ private:
         if (this->index != nullptr)
             delete this->index;
 
-        uint32_t localWorkSize = (uint32_t) parameters->getAsUnsigned("LOCAL_SIZE");
+        uint32_t localWorkSize = (uint32_t) (*parameters)["LOCAL_SIZE"].getUInt();
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

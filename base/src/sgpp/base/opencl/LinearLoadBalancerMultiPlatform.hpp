@@ -19,12 +19,12 @@ namespace base {
 class LinearLoadBalancerMultiPlatform {
 private:
     std::shared_ptr<OCLManagerMultiPlatform> manager;
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     std::map<cl_platform_id, double *> weights;
     std::map<cl_platform_id, double *> partition;
 public:
     LinearLoadBalancerMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform> manager,
-            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
             manager(manager), parameters(parameters) {
         for (OCLPlatformWrapper platform : manager->platforms) {
             this->weights[platform.platformId] = new double[platform.deviceCount];
@@ -48,7 +48,7 @@ public:
 
     void getPartitionSegments(size_t start, size_t end, size_t blockSize,
             std::map<cl_platform_id, size_t *> segmentStart, std::map<cl_platform_id, size_t *> segmentEnd) {
-        bool setVerboseLoadBalancing = parameters->getAsBoolean("LOAD_BALANCING_VERBOSE");
+        bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
         size_t totalSize = end - start;
 
         // check for valid input
@@ -104,7 +104,7 @@ public:
 
     //TODO: consider inactive device due to nothing to do?
     void update(std::map<cl_platform_id, double *> timings) {
-        bool setVerboseLoadBalancing = parameters->getAsBoolean("LOAD_BALANCING_VERBOSE");
+        bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
 
         //recalculate weights
         for (OCLPlatformWrapper platform : manager->platforms) {

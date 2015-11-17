@@ -5,12 +5,18 @@
 namespace SGPP {
 namespace datadriven {
 
+enum class ParameterType {
+    ID, UINT, INT, DOUBLE, TEXT, BOOL
+};
+
 class TunableParameter {
 private:
     std::string name;
     std::vector<std::string> values;
+    ParameterType type;
 public:
-    TunableParameter(std::string name, std::vector<std::string> values): name(name), values(values) {
+    TunableParameter(std::string name, std::vector<std::string> values, ParameterType type) :
+            name(name), values(values), type(type) {
 
     }
 

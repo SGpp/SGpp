@@ -13,27 +13,33 @@
 #include <memory>
 #include <iostream>
 
-#include "JSONDictNode.hpp"
-#include "JSONToken.hpp"
+#include "DictNode.hpp"
+#include "Token.hpp"
 
 namespace json {
 
-class JSON: public JSONDictNode {
+class JSON: public DictNode {
 private:
 
   std::string fileName;
 
-  std::vector<JSONToken> tokenize(std::string &input);
+  std::vector<Token> tokenize(std::string &input);
 
 public:
 
-  JSON(std::string fileName);
+  JSON(const std::string &fileName);
 
   JSON();
 
-  void serialize(std::string outFileName);
+  JSON(const JSON &original);
 
-  using JSONDictNode::serialize;
+  virtual JSON *clone();
+
+  void clear();
+
+  void serialize(const std::string &outFileName);
+
+  using DictNode::serialize;
 
 };
 

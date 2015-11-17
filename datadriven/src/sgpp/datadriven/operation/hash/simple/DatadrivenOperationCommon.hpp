@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/base/tools/OperationConfiguration.hpp>
 
 namespace SGPP {
 namespace datadriven {
@@ -28,9 +28,9 @@ class OperationMultipleEvalConfiguration {
 private:
     OperationMultipleEvalType type = OperationMultipleEvalType::DEFAULT;
     OperationMultipleEvalSubType subType = OperationMultipleEvalSubType::DEFAULT;
-    std::shared_ptr<base::ConfigurationParameters> parameters;
+    std::shared_ptr<base::OperationConfiguration> parameters;
 
-    //operational - can be set for easier reporting
+    //optional - can be set for easier reporting
     std::string name;
 public:
 
@@ -42,11 +42,11 @@ public:
     }
 
     OperationMultipleEvalConfiguration(OperationMultipleEvalType type, OperationMultipleEvalSubType subType,
-            base::ConfigurationParameters &parameters, std::string name = "unnamed") {
+            base::OperationConfiguration &parameters, std::string name = "unnamed") {
         this->type = type;
         this->subType = subType;
         this->name = name;
-        this->parameters = parameters.clone();
+        this->parameters = std::shared_ptr<base::OperationConfiguration>(parameters.clone());
     }
 
     OperationMultipleEvalType getType() {
@@ -58,7 +58,7 @@ public:
     }
 
     //TODO: change this to return a reference
-    std::shared_ptr<base::ConfigurationParameters> getParameters() {
+    std::shared_ptr<base::OperationConfiguration> getParameters() {
         return this->parameters;
     }
 

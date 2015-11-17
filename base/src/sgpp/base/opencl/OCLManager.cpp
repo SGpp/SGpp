@@ -15,9 +15,61 @@
 namespace SGPP {
 namespace base {
 
-OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> parameters) :
         parameters(parameters) {
-    verbose = parameters->getAsBoolean("OCL_MANAGER_VERBOSE");
+
+    // augment default values to configuration
+    if (parameters->contains("LOCAL_SIZE") == false) {
+        parameters->addIDAttr("LOCAL_SIZE", 64ul);
+    }
+
+    if (parameters->contains("ENABLE_OPTIMIZATIONS") == false) {
+        parameters->addIDAttr("ENABLE_OPTIMIZATIONS", true);
+    }
+
+    if (parameters->contains("OPTIMIZATION_FLAGS") == false) {
+        parameters->addTextAttr("OPTIMIZATION_FLAGS", "");
+    }
+
+    if (parameters->contains("INTERNAL_PRECISION") == false) {
+        parameters->addTextAttr("INTERNAL_PRECISION", "double");
+    }
+
+    if (parameters->contains("PLATFORM") == false) {
+        parameters->addTextAttr("PLATFORM", "first");
+    }
+
+    if (parameters->contains("DEVICE_TYPE") == false) {
+        parameters->addTextAttr("DEVICE_TYPE", "CL_DEVICE_TYPE_ALL");
+    }
+
+    if (parameters->contains("REUSE_SOURCE") == false) {
+        parameters->addIDAttr("REUSE_SOURCE", false);
+    }
+
+    if (parameters->contains("WRITE_SOURCE") == false) {
+        parameters->addIDAttr("WRITE_SOURCE", false);
+    }
+
+    if (parameters->contains("VERBOSE") == false) {
+        // sets the kernel to verbose
+        parameters->addIDAttr("VERBOSE", true);
+    }
+
+    if (parameters->contains("OCL_MANAGER_VERBOSE") == false) {
+        // sets the manager to verbose
+        parameters->addIDAttr("OCL_MANAGER_VERBOSE", false);
+    }
+
+    if (parameters->contains("LOAD_BALANCING_VERBOSE") == false) {
+        parameters->addIDAttr("LOAD_BALANCING_VERBOSE", false);
+    }
+
+    if (parameters->contains("SHOW_BUILD_LOG") == false) {
+        parameters->addIDAttr("SHOW_BUILD_LOG", false);
+    }
+
+    verbose = (*parameters)["OCL_MANAGER_VERBOSE"].getBool();
     cl_int err;
 
     //upper limit for number of devices of a single platform
@@ -84,7 +136,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
                 std::cout << "OCL Info: Platform " << ui << " name: " << platform_name << std::endl;
             }
 
-            if (parameters->get("PLATFORM").compare(platform_name) == 0) {
+            if ((*parameters)["PLATFORM"].get().compare(platform_name) == 0) {
                 platform_id = platform_ids[ui];
 
                 if (verbose) {
@@ -98,7 +150,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
         std::cout << std::endl;
     }
 
-    if (parameters->get("PLATFORM").compare("first") == 0) {
+    if ((*parameters)["PLATFORM"].get().compare("first") == 0) {
         if (verbose) {
             std::cout << "using first platform" << std::endl;
         }
@@ -107,7 +159,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
     }
 
     // Find out how many devices there are
-    if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_CPU") {
+    if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_CPU") {
         if (verbose) {
             std::cout << "OCL Info: looking for CPU device" << std::endl;
         }
@@ -117,7 +169,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
         device_ids = new cl_device_id[num_devices];
         // get the device ids
         err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, num_devices, device_ids, nullptr);
-    } else if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_GPU") {
+    } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_GPU") {
         if (verbose) {
             std::cout << "OCL Info: looking for GPU device" << std::endl;
         }
@@ -127,7 +179,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
         device_ids = new cl_device_id[num_devices];
         // get the device ids
         err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, nullptr);
-    } else if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ACCELERATOR") {
+    } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_ACCELERATOR") {
         if (verbose) {
             std::cout << "OCL Info: looking for device of accelerator type" << std::endl;
         }
@@ -137,7 +189,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
         device_ids = new cl_device_id[num_devices];
         // get the device ids
         err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR, num_devices, device_ids, nullptr);
-    } else if (parameters->get("DEVICE_TYPE") == "CL_DEVICE_TYPE_ALL") {
+    } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_ALL") {
         if (verbose) {
             std::cout << "OCL Info: looking for device of all available devices" << std::endl;
         }
@@ -162,10 +214,10 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
         std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
     }
 
-    cl_uint maxDevices = (cl_uint) parameters->getAsUnsigned("MAX_DEVICES");
+    bool isMaxDevicesEnabled = (*parameters).contains("MAX_DEVICES");
 
-    if (parameters->get("SELECT_SPECIFIC_DEVICE").compare("DISABLED") != 0) {
-        if (maxDevices != 1) {
+    if ((*parameters).contains("SELECT_SPECIFIC_DEVICE")) {
+        if (isMaxDevicesEnabled) {
             std::stringstream errorString;
             errorString
                     << "OCL Error: Cannot select a specific device if more than one device is used, MAX_DEVICES be set incorrectly"
@@ -173,7 +225,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        size_t selectedDevice = parameters->getAsUnsigned("SELECT_SPECIFIC_DEVICE");
+        size_t selectedDevice = (*parameters)["SELECT_SPECIFIC_DEVICE"].getUInt();
 
         if (selectedDevice > num_devices) {
             std::stringstream errorString;
@@ -188,18 +240,21 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
         }
     }
 
-    if (maxDevices != 0 && maxDevices < num_devices) {
-        num_devices = maxDevices;
+    if (isMaxDevicesEnabled) {
+        cl_uint maxDevices = (cl_uint) (*parameters)["MAX_DEVICES"].getUInt();
+        if (maxDevices < num_devices) {
+            num_devices = maxDevices;
+        }
     }
 
     if (verbose) {
         std::cout << "OCL Info: using " << num_devices << " device/s" << std::endl;
     }
 
-    // allocate arrays
+// allocate arrays
     command_queue = new cl_command_queue[num_devices];
 
-    // Create OpenCL context
+// Create OpenCL context
     context = clCreateContext(0, num_devices, device_ids, nullptr, nullptr, &err);
 
     if (err != CL_SUCCESS) {
@@ -208,7 +263,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
         throw SGPP::base::operation_exception(errorString.str());
     }
 
-    // Creating the command queues
+// Creating the command queues
     for (size_t i = 0; i < num_devices; i++) {
         char buffer[128];
         err = clGetDeviceInfo(device_ids[i], CL_DEVICE_NAME, 128 * sizeof(char), &buffer, nullptr);
@@ -235,7 +290,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLConfigurationParameters> paramet
 
     if (verbose) {
         std::cout << "OCL Info: Successfully initialized OpenCL (local workgroup size: "
-                << parameters->getAsUnsigned("LOCAL_SIZE") << ")" << std::endl << std::endl;
+                << (*parameters)["LOCAL_SIZE"].getUInt() << ")" << std::endl << std::endl;
     }
 }
 
@@ -274,7 +329,7 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
         size_t num_devices, cl_device_id* device_ids, cl_kernel* kernel) {
     cl_int err;
 
-    // setting the program
+// setting the program
     const char* kernel_src = program_src.c_str();
     cl_program program = clCreateProgramWithSource(context, 1, &kernel_src,
     NULL, &err);
@@ -287,20 +342,20 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
 
     std::string build_opts;
 
-    if (parameters->getAsBoolean("ENABLE_OPTIMIZATIONS")) {
+    if ((*parameters)["ENABLE_OPTIMIZATIONS"].getBool()) {
         //TODO: user should be able to change
-        build_opts = parameters->get("OPTIMIZATION_FLAGS"); // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
+        build_opts = (*parameters)["OPTIMIZATION_FLAGS"].get(); // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
     } else {
         build_opts = "-cl-opt-disable"; // -g
     }
 
-    //TODO: check multi device support
-    // compiling the program
+//TODO: check multi device support
+// compiling the program
     err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
 
-    //if (err != CL_SUCCESS) {
+//if (err != CL_SUCCESS) {
 
-    if (parameters->getAsBoolean("SHOW_BUILD_LOG")) {
+    if ((*parameters)["SHOW_BUILD_LOG"].getBool()) {
         // get the build log
         size_t len;
         clGetProgramBuildInfo(program, device_ids[0], CL_PROGRAM_BUILD_LOG, 0, NULL, &len);
@@ -319,7 +374,7 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
         throw SGPP::base::operation_exception(errorString.str());
     }
 
-    // creating the kernel
+// creating the kernel
     for (size_t i = 0; i < num_devices; i++) {
         kernel[i] = clCreateKernel(program, kernel_name, &err);
 
