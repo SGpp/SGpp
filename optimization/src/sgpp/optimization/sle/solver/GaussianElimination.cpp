@@ -16,6 +16,9 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
+      GaussianElimination::~GaussianElimination() {
+      }
+
       bool GaussianElimination::solve(SLE& system,
                                       base::DataVector& b,
                                       base::DataVector& x) const {

@@ -28,9 +28,9 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
-        virtual ~OperationNaiveEvalLinearClenshawCurtis() {
+        virtual ~OperationNaiveEvalLinearClenshawCurtis() override {
         }
 
         /**
@@ -38,7 +38,7 @@ namespace SGPP {
          * @param point     evaluation point
          * @return          value of linear combination
          */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point);
+        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
 
       protected:
         /// storage of the sparse grid

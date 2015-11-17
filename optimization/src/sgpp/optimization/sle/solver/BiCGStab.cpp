@@ -28,6 +28,9 @@ namespace SGPP {
         x0(x0) {
       }
 
+      BiCGStab::~BiCGStab() {
+      }
+
       bool BiCGStab::solve(SLE& system, base::DataVector& b,
                            base::DataVector& x) const {
         Printer::getInstance().printStatusBegin("Solving linear system (BiCGStab)...");

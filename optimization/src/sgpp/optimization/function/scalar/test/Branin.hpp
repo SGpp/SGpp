@@ -35,8 +35,12 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          Branin() : TestFunction(2) {
-          }
+          Branin();
+
+          /**
+           * Destructor.
+           */
+          virtual ~Branin() override;
 
           /**
            * Evaluates the test function.
@@ -44,15 +48,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^2\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            const float_t x1 = 15.0 * x[0] - 5.0;
-            const float_t x2 = 15.0 * x[1];
-            const float_t tmp = x2 - 5.1 * x1 * x1 / (4.0 * M_PI * M_PI) +
-                                5.0 * x1 / M_PI - 6.0;
-
-            return tmp * tmp +
-                   10.0 * (1.0 - 1.0 / (8.0 * M_PI)) * std::cos(x1) + 10.0;
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -62,19 +58,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(2);
-            x[0] = 0.5427728435726528825641;
-            x[1] = 0.151666666666666666666666667;
-            return evalUndisplaced(x);
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Branin(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

@@ -151,6 +151,9 @@ namespace SGPP {
         kHist() {
       }
 
+      LogBarrier::~LogBarrier() {
+      }
+
       void LogBarrier::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (Log Barrier)...");
 

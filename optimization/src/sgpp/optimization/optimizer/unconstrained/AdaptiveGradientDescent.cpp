@@ -28,6 +28,9 @@ namespace SGPP {
         rhoLs(lineSearchAccuracy) {
       }
 
+      AdaptiveGradientDescent::~AdaptiveGradientDescent() {
+      }
+
       void AdaptiveGradientDescent::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
 

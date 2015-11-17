@@ -50,11 +50,13 @@ class ScalarTestFunction : public ScalarFunction {
   public:
     ScalarTestFunction(size_t d) : ScalarFunction(d) {}
 
-    SGPP::float_t eval(const base::DataVector& x) {
+    virtual ~ScalarTestFunction() override {}
+
+    virtual SGPP::float_t eval(const base::DataVector& x) override {
       return x.sum();
     }
 
-    virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
+    virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override {
       clone = std::unique_ptr<ScalarFunction>(
                 new ScalarTestFunction(*this));
     }
@@ -64,8 +66,10 @@ class ScalarTestGradient : public ScalarFunctionGradient {
   public:
     ScalarTestGradient(size_t d) : ScalarFunctionGradient(d) {}
 
-    SGPP::float_t eval(const base::DataVector& x,
-                       base::DataVector& gradient) {
+    virtual ~ScalarTestGradient() override {}
+
+    virtual SGPP::float_t eval(const base::DataVector& x,
+                               base::DataVector& gradient) override {
       for (size_t t = 0; t < d; t++) {
         gradient[t] = static_cast<SGPP::float_t>(t) * x[t];
       }
@@ -73,7 +77,7 @@ class ScalarTestGradient : public ScalarFunctionGradient {
       return x.sum();
     }
 
-    virtual void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+    virtual void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
       clone = std::unique_ptr<ScalarFunctionGradient>(
                 new ScalarTestGradient(*this));
     }
@@ -83,9 +87,11 @@ class ScalarTestHessian : public ScalarFunctionHessian {
   public:
     ScalarTestHessian(size_t d) : ScalarFunctionHessian(d) {}
 
-    SGPP::float_t eval(const base::DataVector& x,
-                       base::DataVector& gradient,
-                       base::DataMatrix& hessian) {
+    virtual ~ScalarTestHessian() override {}
+
+    virtual SGPP::float_t eval(const base::DataVector& x,
+                               base::DataVector& gradient,
+                               base::DataMatrix& hessian) override {
       for (size_t t = 0; t < d; t++) {
         gradient[t] = static_cast<SGPP::float_t>(t) * x[t];
 
@@ -98,7 +104,7 @@ class ScalarTestHessian : public ScalarFunctionHessian {
       return x.sum();
     }
 
-    virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const {
+    virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const override {
       clone = std::unique_ptr<ScalarFunctionHessian>(
                 new ScalarTestHessian(*this));
     }
@@ -108,14 +114,16 @@ class VectorTestFunction : public VectorFunction {
   public:
     VectorTestFunction(size_t d, size_t m) : VectorFunction(d, m) {}
 
-    void eval(const base::DataVector& x,
-              base::DataVector& value) {
+    virtual ~VectorTestFunction() override {}
+
+    virtual void eval(const base::DataVector& x,
+                      base::DataVector& value) override {
       for (size_t i = 0; i < m; i++) {
         value[i] = static_cast<SGPP::float_t>(i) * x.sum();
       }
     }
 
-    virtual void clone(std::unique_ptr<VectorFunction>& clone) const {
+    virtual void clone(std::unique_ptr<VectorFunction>& clone) const override {
       clone = std::unique_ptr<VectorFunction>(
                 new VectorTestFunction(*this));
     }
@@ -125,9 +133,11 @@ class VectorTestGradient : public VectorFunctionGradient {
   public:
     VectorTestGradient(size_t d, size_t m) : VectorFunctionGradient(d, m) {}
 
-    void eval(const base::DataVector& x,
-              base::DataVector& value,
-              base::DataMatrix& gradient) {
+    virtual ~VectorTestGradient() override {}
+
+    virtual void eval(const base::DataVector& x,
+                      base::DataVector& value,
+                      base::DataMatrix& gradient) override {
       for (size_t i = 0; i < m; i++) {
         value[i] = static_cast<SGPP::float_t>(i) * x.sum();
 
@@ -138,7 +148,7 @@ class VectorTestGradient : public VectorFunctionGradient {
       }
     }
 
-    virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
+    virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const override {
       clone = std::unique_ptr<VectorFunctionGradient>(
                 new VectorTestGradient(*this));
     }
@@ -148,10 +158,12 @@ class VectorTestHessian : public VectorFunctionHessian {
   public:
     VectorTestHessian(size_t d, size_t m) : VectorFunctionHessian(d, m) {}
 
-    void eval(const base::DataVector& x,
-              base::DataVector& value,
-              base::DataMatrix& gradient,
-              std::vector<base::DataMatrix>& hessian) {
+    virtual ~VectorTestHessian() override {}
+
+    virtual void eval(const base::DataVector& x,
+                      base::DataVector& value,
+                      base::DataMatrix& gradient,
+                      std::vector<base::DataMatrix>& hessian) override {
       for (size_t i = 0; i < m; i++) {
         value[i] = static_cast<SGPP::float_t>(i) * x.sum();
 
@@ -168,7 +180,7 @@ class VectorTestHessian : public VectorFunctionHessian {
       }
     }
 
-    virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const {
+    virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const override {
       clone = std::unique_ptr<VectorFunctionHessian>(
                 new VectorTestHessian(*this));
     }

@@ -69,6 +69,9 @@ namespace SGPP {
       }
 #endif /* USE_UMFPACK */
 
+      UMFPACK::~UMFPACK() {
+      }
+
       bool UMFPACK::solve(SLE& system, base::DataVector& b,
                           base::DataVector& x) const {
         base::DataMatrix B(b.getPointer(), b.getSize(), 1);

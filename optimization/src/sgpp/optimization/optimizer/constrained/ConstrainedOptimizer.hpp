@@ -53,9 +53,9 @@ namespace SGPP {
           }
 
           /**
-           * Virtual destructor.
+           * Destructor.
            */
-          virtual ~ConstrainedOptimizer() {
+          virtual ~ConstrainedOptimizer() override {
           }
 
           /**

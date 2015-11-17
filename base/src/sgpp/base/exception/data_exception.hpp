@@ -37,14 +37,14 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~data_exception() throw() { }
+        virtual ~data_exception() throw() override { }
 
         /**
          * Return message of exception object.
          *
          * @return Returns the message specified in the constructor, otherwise a general text
          */
-        virtual const char* what() const throw() {
+        virtual const char* what() const throw() override {
           if (msg) {
             return msg;
           } else {

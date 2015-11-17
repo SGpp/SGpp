@@ -30,8 +30,12 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          Beale() : TestFunction(2) {
-          }
+          Beale();
+
+          /**
+           * Destructor.
+           */
+          virtual ~Beale() override;
 
           /**
            * Evaluates the test function.
@@ -39,15 +43,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^2\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            const float_t x1 = 10.0 * x[0] - 5.0;
-            const float_t x2 = 10.0 * x[1] - 5.0;
-            const float_t tmp1 = 1.5 - x1 * (1.0 - x2);
-            const float_t tmp2 = 2.25 - x1 * (1.0 - x2 * x2);
-            const float_t tmp3 = 2.625 - x1 * (1.0 - x2 * x2 * x2);
-
-            return tmp1 * tmp1 + tmp2 * tmp2 + tmp3 * tmp3;
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -57,19 +53,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(2);
-            x[0] = 0.8;
-            x[1] = 0.55;
-            return 0.0;
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Beale(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

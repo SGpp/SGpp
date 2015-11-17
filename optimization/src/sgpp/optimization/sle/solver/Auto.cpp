@@ -41,6 +41,9 @@ namespace SGPP {
         }
       }
 
+      Auto::~Auto() {
+      }
+
       bool Auto::solve(SLE& system, base::DataVector& b,
                        base::DataVector& x) const {
         base::DataMatrix B(b.getPointer(), b.getSize(), 1);

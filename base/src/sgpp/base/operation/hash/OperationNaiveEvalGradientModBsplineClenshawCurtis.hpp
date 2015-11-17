@@ -34,9 +34,9 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
-        virtual ~OperationNaiveEvalGradientModBsplineClenshawCurtis() {
+        virtual ~OperationNaiveEvalGradientModBsplineClenshawCurtis() override {
         }
 
         /**
@@ -47,7 +47,7 @@ namespace SGPP {
          */
         virtual float_t evalGradient(const DataVector& alpha,
                                      const DataVector& point,
-                                     DataVector& gradient);
+                                     DataVector& gradient) override;
 
       protected:
         /// storage of the sparse grid

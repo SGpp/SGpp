@@ -32,8 +32,12 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          Easom() : TestFunction(2) {
-          }
+          Easom();
+
+          /**
+           * Destructor.
+           */
+          virtual ~Easom() override;
 
           /**
            * Evaluates the test function.
@@ -41,14 +45,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^2\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            const float_t x1 = 200.0 * x[0] - 100.0;
-            const float_t x2 = 200.0 * x[1] - 100.0;
-
-            return -std::cos(x1) * std::cos(x2) *
-                   std::exp(-((x1 - M_PI) * (x1 - M_PI) +
-                              (x2 - M_PI) * (x2 - M_PI)));
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -58,18 +55,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(2);
-            x.setAll(0.51570796326794896619231);
-            return -1.0;
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Easom(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

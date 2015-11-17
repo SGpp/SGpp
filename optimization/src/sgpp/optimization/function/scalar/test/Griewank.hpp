@@ -34,8 +34,12 @@ namespace SGPP {
            *
            * @param d     dimension of the domain
            */
-          Griewank(size_t d) : TestFunction(d) {
-          }
+          Griewank(size_t d);
+
+          /**
+           * Destructor.
+           */
+          virtual ~Griewank() override;
 
           /**
            * Evaluates the test function.
@@ -43,19 +47,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^d\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            float_t result = 1.0;
-            float_t tmp = 1.0;
-
-            for (size_t t = 0; t < d; t++) {
-              const float_t xt = 1200.0 * x[t] - 600.0;
-              result += xt * xt / 4000.0;
-              tmp *= std::cos(xt / std::sqrt(static_cast<float_t>(t + 1)));
-            }
-
-            result -= tmp;
-            return result;
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -65,18 +57,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(d);
-            x.setAll(0.5);
-            return 0.0;
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Griewank(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

@@ -44,9 +44,9 @@ namespace SGPP {
           TestFunction(size_t d);
 
           /**
-           * Virtual destructor.
+           * Destructor.
            */
-          virtual ~TestFunction();
+          virtual ~TestFunction() override;
 
           /**
            * Evaluate displaced function.
@@ -55,7 +55,7 @@ namespace SGPP {
            * @return  \f$f(\vec{x} + \vec{d})\f$
            *          with displacement \f$\vec{d}\f$
            */
-          float_t eval(const base::DataVector& x);
+          virtual float_t eval(const base::DataVector& x) override;
 
           /**
            * Pure virtual method for evaluating the undisplaced function.

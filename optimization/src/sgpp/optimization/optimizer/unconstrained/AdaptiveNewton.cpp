@@ -58,6 +58,9 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
+      AdaptiveNewton::~AdaptiveNewton() {
+      }
+
       void AdaptiveNewton::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (adaptive Newton)...");
 

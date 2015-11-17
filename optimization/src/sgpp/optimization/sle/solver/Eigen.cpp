@@ -63,6 +63,9 @@ namespace SGPP {
       }
 #endif /* USE_EIGEN */
 
+      Eigen::~Eigen() {
+      }
+
       bool Eigen::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {
         base::DataMatrix B(b.getPointer(), b.getSize(), 1);

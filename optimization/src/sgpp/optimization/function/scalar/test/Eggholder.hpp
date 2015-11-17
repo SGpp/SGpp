@@ -36,17 +36,19 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          Eggholder() : TestFunction(2) {
-          }
+          Eggholder();
+
+          /**
+           * Destructor.
+           */
+          virtual ~Eggholder() override;
 
           /**
            * Generate normally distributed pseudorandom displacement with
            * default standard deviation and
            * with the restriction of \f$d_1 = 0\f$.
            */
-          void generateDisplacement() {
-            generateDisplacement(TestFunction::DEFAULT_STANDARD_DEVIATION);
-          }
+          virtual void generateDisplacement() override;
 
           /**
            * Generate normally distributed pseudorandom displacement
@@ -54,10 +56,7 @@ namespace SGPP {
            *
            * @param stdDev standard deviation of the displacement coordinates
            */
-          void generateDisplacement(float_t stdDev) {
-            TestFunction::generateDisplacement(stdDev);
-            displacement[0] = 0.0;
-          }
+          virtual void generateDisplacement(float_t stdDev) override;
 
           /**
            * Evaluates the test function.
@@ -65,14 +64,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^2\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            const float_t x1 = 1024.0 * x[0] - 512.0;
-            const float_t x2 = 1024.0 * x[1] - 512.0;
-
-            return -(x2 + 47.0) *
-                   std::sin(std::sqrt(std::abs(x1 / 2.0 + x2 + 47.0))) -
-                   x1 * std::sin(std::sqrt(std::abs(x1 - (x2 + 47.0))));
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -82,19 +74,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(2);
-            x[0] = 1.0;
-            x[1] = 0.8947577;
-            return evalUndisplaced(x);
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Eggholder(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

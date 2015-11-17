@@ -46,6 +46,12 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~BsplineModifiedClenshawCurtisBasis() override {
+        }
+
+        /**
          * @param l     level of the grid point
          * @param i     index of the grid point
          * @return      i-th Clenshaw-Curtis grid point with level l
@@ -72,7 +78,7 @@ namespace SGPP {
          * @return      value of modified Clenshaw-Curtis
          *              B-spline basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           if (l == 1) {
             return 1.0;
           }

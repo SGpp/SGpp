@@ -31,9 +31,9 @@ namespace SGPP {
           base::ModBsplineClenshawCurtisGrid& grid);
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
-        virtual ~OperationMultipleHierarchisationModBsplineClenshawCurtis();
+        virtual ~OperationMultipleHierarchisationModBsplineClenshawCurtis() override;
 
         /**
          * @param[in,out] nodeValues before: vector of function values at
@@ -41,14 +41,14 @@ namespace SGPP {
          *                           after: vector of hierarchical coefficients
          * @return                   whether hierarchisation was successful
          */
-        virtual bool doHierarchisation(base::DataVector& nodeValues);
+        virtual bool doHierarchisation(base::DataVector& nodeValues) override;
 
         /**
          * @param[in,out] alpha before: vector of hierarchical coefficients,
          *                      after: vector of function values at
          *                      the grid points
          */
-        virtual void doDehierarchisation(base::DataVector& alpha);
+        virtual void doDehierarchisation(base::DataVector& alpha) override;
 
         /**
          * @param[in,out] nodeValues before: matrix of function values at
@@ -56,14 +56,14 @@ namespace SGPP {
          *                           after: matrix of hierarchical coefficients
          * @return                   whether hierarchisation was successful
          */
-        virtual bool doHierarchisation(base::DataMatrix& nodeValues);
+        virtual bool doHierarchisation(base::DataMatrix& nodeValues) override;
 
         /**
          * @param[in,out] alpha before: matrix of hierarchical coefficients,
          *                      after: matrix of function values at
          *                      the grid points
          */
-        virtual void doDehierarchisation(base::DataMatrix& alpha);
+        virtual void doDehierarchisation(base::DataMatrix& alpha) override;
 
       protected:
         /// storage of the sparse grid

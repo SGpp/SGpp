@@ -21,14 +21,20 @@ namespace SGPP {
       class Gmmpp : public SLESolver {
         public:
           /**
+           * Destructor.
+           */
+          virtual ~Gmmpp() override;
+
+          /**
            * @param       system  system to be solved
            * @param       b       right-hand side
            * @param[out]  x       solution to the system
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          bool solve(SLE& system, base::DataVector& b,
-                     base::DataVector& x) const;
+          virtual bool solve(SLE& system,
+                             base::DataVector& b,
+                             base::DataVector& x) const override;
       };
 
     }

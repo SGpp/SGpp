@@ -110,6 +110,9 @@ namespace SGPP {
       }
 #endif /* USE_GMMPP */
 
+      Gmmpp::~Gmmpp() {
+      }
+
       bool Gmmpp::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {
 #ifdef USE_GMMPP

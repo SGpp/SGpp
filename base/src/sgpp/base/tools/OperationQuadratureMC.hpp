@@ -38,14 +38,14 @@ namespace SGPP {
          */
         OperationQuadratureMC(SGPP::base::Grid& grid, int mcPaths);
 
-        virtual ~OperationQuadratureMC() {}
+        virtual ~OperationQuadratureMC() override {}
 
         /**
          * Quadrature using simple MC in @f$\Omega=[0,1]^d@f$.
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual float_t doQuadrature(SGPP::base::DataVector& alpha);
+        virtual float_t doQuadrature(SGPP::base::DataVector& alpha) override;
 
         /**
          * Quadrature of an arbitrary function using

@@ -47,8 +47,12 @@ namespace SGPP {
           /**
            * Constructor.
            */
-          Hartman3() : TestFunction(3) {
-          }
+          Hartman3();
+
+          /**
+           * Destructor.
+           */
+          virtual ~Hartman3() override;
 
           /**
            * Evaluates the test function.
@@ -56,20 +60,7 @@ namespace SGPP {
            * @param x     point \f$\vec{x} \in [0, 1]^3\f$
            * @return      \f$f(\vec{x})\f$
            */
-          float_t evalUndisplaced(const base::DataVector& x) {
-            return -1.0 * std::exp(-3.0 * (x[0] - 0.3689) * (x[0] - 0.3689) -
-                                   10.0 * (x[1] - 0.1170) * (x[1] - 0.1170) -
-                                   30.0 * (x[2] - 0.2673) * (x[2] - 0.2673)) -
-                   1.2 * std::exp(-0.1 * (x[0] - 0.4699) * (x[0] - 0.4699) -
-                                  10.0 * (x[1] - 0.4387) * (x[1] - 0.4387) -
-                                  35.0 * (x[2] - 0.7470) * (x[2] - 0.7470)) -
-                   3.0 * std::exp(-3.0 * (x[0] - 0.1091) * (x[0] - 0.1091) -
-                                  10.0 * (x[1] - 0.8732) * (x[1] - 0.8732) -
-                                  30.0 * (x[2] - 0.5547) * (x[2] - 0.5547)) -
-                   3.2 * std::exp(-0.1 * (x[0] - 0.0382) * (x[0] - 0.0382) -
-                                  10.0 * (x[1] - 0.5743) * (x[1] - 0.5743) -
-                                  35.0 * (x[2] - 0.8828) * (x[2] - 0.8828));
-          }
+          virtual float_t evalUndisplaced(const base::DataVector& x) override;
 
           /**
            * Returns minimal point and function value of the test function.
@@ -79,20 +70,12 @@ namespace SGPP {
            * @return       minimal function value
            *               \f$f_{\text{opt}} = f(\vec{x}_{\text{opt}})\f$
            */
-          float_t getOptimalPointUndisplaced(base::DataVector& x) {
-            x.resize(3);
-            x[0] = 0.114614;
-            x[1] = 0.555649;
-            x[2] = 0.852547;
-            return evalUndisplaced(x);
-          }
+          virtual float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
-            clone = std::unique_ptr<ScalarFunction>(new Hartman3(*this));
-          }
+          virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override;
       };
 
     }

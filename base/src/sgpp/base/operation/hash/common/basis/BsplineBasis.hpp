@@ -41,6 +41,12 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~BsplineBasis() override {
+        }
+
+        /**
          * @param x     evaluation point
          * @param p     B-spline degree
          * @return      value of uniform B-spline
@@ -1590,7 +1596,7 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of B-spline basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
 
           return uniformBSpline(
