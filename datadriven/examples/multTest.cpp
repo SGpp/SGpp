@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
   adaptConfig.threshold_ = 0.0;
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-  SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
-  SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
+  SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+  SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

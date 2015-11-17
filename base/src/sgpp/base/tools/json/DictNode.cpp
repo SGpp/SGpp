@@ -49,7 +49,10 @@ void DictNode::parse(std::vector<Token> &stream) {
     }
     stream.erase(stream.begin());
 
-    this->parseAttributes(stream);
+    //special case for empty dict
+    if (stream[0].type != TokenType::RBRACE) {
+        this->parseAttributes(stream);
+    }
 
     if (stream[0].type != TokenType::RBRACE) {
         throw json_exception(stream[0], "expected \"}\"");

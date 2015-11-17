@@ -67,37 +67,37 @@ std::vector<Token> JSON::tokenize(std::string &input) {
     if (state == TokenType::NONE) {
       if (input[i] == '{') {
         token.type = TokenType::LBRACE;
-        token.value = "";
+        token.value = "{";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == ',') {
         token.type = TokenType::COMMA;
-        token.value = "";
+        token.value = ",";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == '}') {
         token.type = TokenType::RBRACE;
-        token.value = "";
+        token.value = "}";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == '[') {
         token.type = TokenType::LBRACKET;
-        token.value = "";
+        token.value = "[";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == ']') {
         token.type = TokenType::RBRACKET;
-        token.value = "";
+        token.value = "]";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == ':') {
         token.type = TokenType::COLON;
-        token.value = "";
+        token.value = ":";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
