@@ -29,11 +29,11 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         parameters = std::make_shared<base::OCLOperationConfiguration>("StreamingOCL.cfg");
 
         if ((*parameters).contains("KERNEL_USE_LOCAL_MEMORY") == false) {
-            (*parameters).addTextAttr("KERNEL_USE_LOCAL_MEMORY", "false");
+            (*parameters).addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
         }
 
         if ((*parameters).contains("KERNEL_MAX_DIM_UNROLL") == false) {
-            (*parameters).addTextAttr("KERNEL_MAX_DIM_UNROLL", "10");
+            (*parameters).addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
         }
 
         if ((*parameters).contains("KERNEL_STORE_DATA") == false) {
@@ -41,19 +41,19 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         }
 
         if ((*parameters).contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
-            (*parameters).addTextAttr("LINEAR_LOAD_BALANCING_VERBOSE", "false");
+            (*parameters).addIDAttr("LINEAR_LOAD_BALANCING_VERBOSE", false);
         }
 
         if ((*parameters).contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-            (*parameters).addTextAttr("KERNEL_DATA_BLOCKING_SIZE", "1");
+            (*parameters).addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
         }
 
         if ((*parameters).contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-            (*parameters).addTextAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
+            (*parameters).addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
         }
 
         if ((*parameters).contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
-            (*parameters).addTextAttr("LINEAR_LOAD_BALANCING_VERBOSE", "false");
+            (*parameters).addIDAttr("LINEAR_LOAD_BALANCING_VERBOSE", false);
         }
     }
 
