@@ -10,14 +10,14 @@
 #include <fstream>
 
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
 namespace datadriven {
 
 class StreamingOCLKernelSourceBuilder {
 private:
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     size_t dims;
 
     size_t localWorkgroupSize;
@@ -50,7 +50,7 @@ private:
 
     std::string getIndexTrans(std::string dim, size_t gridBlockingIndex);
 public:
-    StreamingOCLKernelSourceBuilder(std::shared_ptr<base::OCLConfigurationParameters> parameters, size_t dims);
+    StreamingOCLKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims);
 
     std::string generateSourceMult();
 

@@ -15,7 +15,7 @@
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLClonedBuffer.hpp>
@@ -44,7 +44,7 @@ void doStuff(std::shared_ptr<OCLManagerMultiPlatform> manager, double *values, s
 
 int main(int argc, char** argv) {
 
-    auto parameters = std::make_shared<OCLConfigurationParameters>();
+    auto parameters = std::make_shared<OCLOperationConfiguration>();
 
     auto manager = std::make_shared<OCLManagerMultiPlatform>(parameters);
 

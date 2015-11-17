@@ -9,7 +9,7 @@
 #if USE_OCL == 1
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/application/StaticParameterTuner.hpp>
 #include <sgpp/datadriven/application/LearnerScenario.hpp>
 

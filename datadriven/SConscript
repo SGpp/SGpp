@@ -35,8 +35,11 @@ def isAVXFolder(folder):
 moduleDependencies = ['sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
+additionalDependencies = []
 if env['USE_OCL']:
-    moduleDependencies += ['OpenCL']
+    additionalDependencies += ['OpenCL']
+
+moduleDependencies = additionalDependencies + moduleDependencies
 
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:

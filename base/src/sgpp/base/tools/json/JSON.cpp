@@ -17,7 +17,7 @@ JSON::JSON(): fileName("") {
 
 }
 
-JSON::JSON(std::string fileName) :
+JSON::JSON(const std::string &fileName) :
     fileName(fileName) {
   std::ifstream file(fileName);
   file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -27,7 +27,7 @@ JSON::JSON(std::string fileName) :
 
   file.close();
 
-  std::vector<JSONToken> tokenStream = this->tokenize(content);
+  std::vector<Token> tokenStream = this->tokenize(content);
 
   this->parse(tokenStream);
   if (tokenStream.size() != 0) {
@@ -36,12 +36,16 @@ JSON::JSON(std::string fileName) :
 
 }
 
-std::vector<JSONToken> JSON::tokenize(std::string &input) {
-  std::vector<JSONToken> stream;
+JSON::JSON(const JSON &original) : DictNode(original) {
+    this->fileName = original.fileName;
+}
 
-  JSONTokenType state = JSONTokenType::NONE;
+std::vector<Token> JSON::tokenize(std::string &input) {
+  std::vector<Token> stream;
 
-  JSONToken token;
+  TokenType state = TokenType::NONE;
+
+  Token token;
   size_t lineNumber = 1;
   size_t charNumber = 0;
 
@@ -54,76 +58,76 @@ std::vector<JSONToken> JSON::tokenize(std::string &input) {
     }
 
 //skip whitespace while not tokenizing anything
-    if (state == JSONTokenType::NONE) {
+    if (state == TokenType::NONE) {
       if (input[i] == ' ' || input[i] == '\r' || input[i] == '\n' || input[i] == '\t') {
         continue;
       }
     }
 
-    if (state == JSONTokenType::NONE) {
+    if (state == TokenType::NONE) {
       if (input[i] == '{') {
-        token.type = JSONTokenType::LBRACE;
+        token.type = TokenType::LBRACE;
         token.value = "";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == ',') {
-        token.type = JSONTokenType::COMMA;
+        token.type = TokenType::COMMA;
         token.value = "";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == '}') {
-        token.type = JSONTokenType::RBRACE;
+        token.type = TokenType::RBRACE;
         token.value = "";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == '[') {
-        token.type = JSONTokenType::LBRACKET;
+        token.type = TokenType::LBRACKET;
         token.value = "";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == ']') {
-        token.type = JSONTokenType::RBRACKET;
+        token.type = TokenType::RBRACKET;
         token.value = "";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == ':') {
-        token.type = JSONTokenType::COLON;
+        token.type = TokenType::COLON;
         token.value = "";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
         stream.push_back(token);
       } else if (input[i] == '"') {
-        token.type = JSONTokenType::STRING;
+        token.type = TokenType::STRING;
         token.value = "";
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
-        state = JSONTokenType::STRING;
+        state = TokenType::STRING;
       } else if (input[i] == '/') {
-        state = JSONTokenType::COMMENT;
+        state = TokenType::COMMENT;
       } else {
-        token.type = JSONTokenType::ID;
+        token.type = TokenType::ID;
         token.value = input[i];
         token.lineNumber = lineNumber;
         token.charNumber = charNumber;
-        state = JSONTokenType::ID;
+        state = TokenType::ID;
       }
-    } else if (state == JSONTokenType::STRING) {
+    } else if (state == TokenType::STRING) {
       if (input[i] == '"') {
         stream.push_back(token);
-        state = JSONTokenType::NONE;
+        state = TokenType::NONE;
       } else {
         token.value.push_back(input[i]);
       }
-    } else if (state == JSONTokenType::ID) {
+    } else if (state == TokenType::ID) {
       if (input[i] == '{' || input[i] == '}' || input[i] == '[' || input[i] == ']' || input[i] == ':' || input[i] == ','
           || input[i] == ' ' || input[i] == '\t' || input[i] == '\r' || input[i] == '\n') {
         stream.push_back(token);
-        state = JSONTokenType::NONE;
+        state = TokenType::NONE;
         if (input[i] == '\n') {
           lineNumber -= 1; //as the char will be reprocessed
         }
@@ -132,27 +136,27 @@ std::vector<JSONToken> JSON::tokenize(std::string &input) {
       } else {
         token.value.push_back(input[i]);
       }
-    } else if (state == JSONTokenType::COMMENT) {
+    } else if (state == TokenType::COMMENT) {
       if (input[i] == '/') {
-        state = JSONTokenType::SINGLELINE;
+        state = TokenType::SINGLELINE;
       } else if (input[i] == '*') {
-        state = JSONTokenType::MULTILINECOMMENT;
+        state = TokenType::MULTILINECOMMENT;
       } else {
         std::stringstream messageStream;
         messageStream << "error: (line: " << lineNumber << ", char: " << (charNumber - 1) << "): expected a single- or multiline comment after \"/\"";
         throw json_exception(messageStream.str());
       }
-    } else if (state == JSONTokenType::SINGLELINE) {
+    } else if (state == TokenType::SINGLELINE) {
       if (input[i] == '\n') {
-        state = JSONTokenType::NONE;
+        state = TokenType::NONE;
       }
-    } else if (state == JSONTokenType::MULTILINECOMMENT) {
+    } else if (state == TokenType::MULTILINECOMMENT) {
       if (input[i] == '*') {
-        state = JSONTokenType::MULTILINECOMMENTSTAR;
+        state = TokenType::MULTILINECOMMENTSTAR;
       }
-    } else if (state == JSONTokenType::MULTILINECOMMENTSTAR) {
+    } else if (state == TokenType::MULTILINECOMMENTSTAR) {
       if (input[i] == '/') {
-        state = JSONTokenType::NONE;
+        state = TokenType::NONE;
       }
     } else {
       std::stringstream messageStream;
@@ -164,13 +168,26 @@ std::vector<JSONToken> JSON::tokenize(std::string &input) {
   return stream;
 }
 
-void JSON::serialize(std::string outFileName) {
+void JSON::serialize(const std::string &outFileName) {
   std::ofstream outFile(outFileName);
   outFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
   this->serialize(outFile, 0);
 
   outFile.close();
+}
+
+JSON *JSON::clone() {
+    return new JSON(*this);
+}
+
+void JSON::clear() {
+    this->fileName = "";
+    this->attributes.clear();
+    this->keyOrder.clear();
+    //it shouldn't even be necessary to reset these
+    this->orderedKeyIndex = 0;
+    this->parent = nullptr;
 }
 
 }

@@ -10,7 +10,7 @@
 #include <exception>
 #include <string>
 
-#include "JSONToken.hpp"
+#include "Token.hpp"
 
 namespace json {
 
@@ -20,7 +20,7 @@ private:
   std::string message;
 
 public:
-  json_exception(JSONToken &token, const std::string &message);
+  json_exception(Token &token, const std::string &message);
 
   json_exception(const std::string &message);
 

@@ -48,16 +48,16 @@ namespace SGPP {
     template<typename real_type>
     class StreamingModOCLKernelSourceBuilder {
       private:
-        std::shared_ptr<base::ConfigurationParameters> parameters;
+        std::shared_ptr<base::OCLOperationConfiguration> parameters;
       public:
-        StreamingModOCLKernelSourceBuilder(std::shared_ptr<base::ConfigurationParameters> parameters) :
+        StreamingModOCLKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters) :
           parameters(parameters) {
 
         }
 
         std::string generateSourceMult(size_t dims) {
 
-          if (parameters->getAsBoolean("REUSE_SOURCE")) {
+          if ((*parameters)["REUSE_SOURCE"].getBool()) {
             std::stringstream stream_program_src;
             std::ifstream file;
             file.open("multKernelMod_tmp.cl");
@@ -77,10 +77,10 @@ namespace SGPP {
             return stream_program_src.str();
           }
 
-          size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
-          bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
+          size_t localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+          bool useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
 
-          size_t dataBlockSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
+          size_t dataBlockSize = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
 
           std::stringstream stream_program_src;
 
@@ -384,7 +384,7 @@ namespace SGPP {
 
         std::string generateSourceMultTrans(size_t dims) {
 
-          if (parameters->getAsBoolean("REUSE_SOURCE")) {
+          if ((*parameters)["REUSE_SOURCE"].getBool()) {
             std::stringstream stream_program_src;
             std::ifstream file;
             file.open("multTransKernelMod_tmp.cl");
@@ -404,8 +404,8 @@ namespace SGPP {
             return stream_program_src.str();
           }
 
-          size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
-          bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
+          size_t localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+          bool useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
 
           std::stringstream stream_program_src;
 

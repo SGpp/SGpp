@@ -15,14 +15,14 @@
 #include <vector>
 
 #include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include "OCLOperationConfiguration.hpp"
 
 namespace SGPP {
 namespace base {
 
 class OCLManagerMultiPlatform {
 public:
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     cl_uint deviceType;
 
     std::vector<OCLPlatformWrapper> platforms;
@@ -40,7 +40,7 @@ public:
     bool verbose;
 
 public:
-    OCLManagerMultiPlatform(std::shared_ptr<base::OCLConfigurationParameters> parameters);
+    OCLManagerMultiPlatform(std::shared_ptr<base::OCLOperationConfiguration> parameters);
 
     ~OCLManagerMultiPlatform();
 

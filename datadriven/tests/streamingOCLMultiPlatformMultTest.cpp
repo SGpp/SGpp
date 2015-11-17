@@ -26,7 +26,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 BOOST_AUTO_TEST_SUITE(TestStreamingOCLMultiPlatformMult)
 
@@ -37,17 +37,12 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
     uint32_t level = 5;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
-    parameters.set("PLATFORM", "first");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "DISABLED");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -67,17 +62,14 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
     uint32_t level = 6;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "register");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "first");
-    parameters.set("MAX_DEVICES", "DISABLED");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    //TODO: why blocking ohnly for data?
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -97,15 +89,12 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
     uint32_t level = 6;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "first");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiDevice();
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -125,15 +114,12 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
     uint32_t level = 6;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "all");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiPlatform();
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -153,17 +139,13 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
     uint32_t level = 6;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "first");
-    parameters.set("MAX_DEVICES", "DISABLED");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -183,17 +165,13 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
     uint32_t level = 6;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "first");
-    parameters.set("MAX_DEVICES", "DISABLED");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -213,16 +191,13 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
     uint32_t level = 6;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "first");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiDevice();
+    parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -242,16 +217,13 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
     uint32_t level = 6;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "all");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiPlatform();
+    parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,

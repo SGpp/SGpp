@@ -15,21 +15,21 @@
 namespace SGPP {
 namespace datadriven {
 
-StreamingModOCLFastKernelSourceBuilder::StreamingModOCLFastKernelSourceBuilder(std::shared_ptr<base::ConfigurationParameters> parameters,
+StreamingModOCLFastKernelSourceBuilder::StreamingModOCLFastKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters,
         size_t dims) :
         parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
                 "                ") {
-    localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
-    useLocalMemory = parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    dataBlockSize = parameters->getAsUnsigned("KERNEL_DATA_BLOCKING_SIZE");
-    maxDimUnroll = parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+    useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    dataBlockSize = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+    maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
 }
 
 std::string StreamingModOCLFastKernelSourceBuilder::getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
-    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "data_" << dataBlockingIndex << "[" << dim << "]";
-    } else if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim << ") + " << dataBlockingIndex
                 << "]";
     } else {
@@ -46,21 +46,21 @@ std::string StreamingModOCLFastKernelSourceBuilder::getData(size_t dim, size_t d
 }
 
 std::string StreamingModOCLFastKernelSourceBuilder::asString() {
-    if (parameters->get("INTERNAL_PRECISION") == "float") {
+    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "float";
     } else {
         return "double";
     }
 }
 std::string StreamingModOCLFastKernelSourceBuilder::constSuffix() {
-    if (parameters->get("INTERNAL_PRECISION") == "float") {
+    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "f";
     } else {
         return "";
     }
 }
 std::string StreamingModOCLFastKernelSourceBuilder::intAsString() {
-    if (parameters->get("INTERNAL_PRECISION") == "float") {
+    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "uint";
     } else {
         return "ulong";
@@ -132,9 +132,9 @@ std::string StreamingModOCLFastKernelSourceBuilder::getDataTrans(std::string dim
 
 std::string StreamingModOCLFastKernelSourceBuilder::getLevelTrans(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
-    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "level_" << gridBlockingIndex << "[" << dim << "]";
-    } else if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrLevel[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -144,9 +144,9 @@ std::string StreamingModOCLFastKernelSourceBuilder::getLevelTrans(std::string di
 
 std::string StreamingModOCLFastKernelSourceBuilder::getIndexTrans(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
-    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "index_" << gridBlockingIndex << "[" << dim << "]";
-    } else if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrIndex[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -157,8 +157,8 @@ std::string StreamingModOCLFastKernelSourceBuilder::getIndexTrans(std::string di
 std::string StreamingModOCLFastKernelSourceBuilder::unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim,
         size_t endDim, std::string unrollVariable, size_t gridBlockIndex) {
 
-    size_t transDataBlockSize = this->parameters->getAsUnsigned("KERNEL_TRANS_DATA_BLOCK_SIZE");
-    size_t transGridBlockSize = this->parameters->getAsUnsigned("KERNEL_TRANS_GRID_BLOCK_SIZE");
+    size_t transDataBlockSize = (*parameters)["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
+    size_t transGridBlockSize = (*parameters)["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
 
     std::stringstream output;
 
@@ -175,7 +175,7 @@ std::string StreamingModOCLFastKernelSourceBuilder::unrolledBasisFunctionEvalula
 
         output << indent3 << "dimDataIndex = " << "(" << dString << " * sourceSize) + k;" << std::endl;
 
-        if (parameters->get("KERNEL_STORE_DATA").compare("pointer") == 0) {
+        if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
             output << indent3 << "dimLevelIndex = " << "((" << transGridBlockSize << " * groupIdx + " << gridBlockIndex
                     << ") * " << dims << ") +" << dString << ";" << std::endl;
         }

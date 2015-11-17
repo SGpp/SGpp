@@ -19,13 +19,13 @@ namespace datadriven {
 
 std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
 
-    if (parameters->getAsBoolean("REUSE_SOURCE")) {
+    if ((*parameters)["REUSE_SOURCE"].getBool()) {
         return this->reuseSource("StreamingOCL_multTrans.cl");
     }
 
-    size_t localWorkgroupSize = parameters->getAsUnsigned("LOCAL_SIZE");
-    bool useLocalMemory = this->parameters->getAsBoolean("KERNEL_USE_LOCAL_MEMORY");
-    uint64_t maxDimUnroll = this->parameters->getAsUnsigned("KERNEL_MAX_DIM_UNROLL");
+    size_t localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+    bool useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    uint64_t maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
 
     std::stringstream sourceStream;
 
@@ -61,7 +61,7 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
     }
 
     // create a register storage for the level and index of the grid points of the work item
-    if (parameters->get("KERNEL_STORE_DATA").compare("array") == 0) {
+    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
             sourceStream << indent << this->asString() << " level_" << gridIndex << "[" << dims << "];" << std::endl;
             sourceStream << indent << this->asString() << " index_" << gridIndex << "[" << dims << "];" << std::endl;
@@ -76,7 +76,7 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
             sourceStream << std::endl;
         }
         sourceStream << std::endl;
-    } else if (parameters->get("KERNEL_STORE_DATA").compare("register") == 0) {
+    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
 
             for (size_t d = 0; d < dims; d++) {
@@ -164,7 +164,7 @@ std::string StreamingOCLKernelSourceBuilder::generateSourceMultTrans() {
     }
     sourceStream << "}" << std::endl;
 
-    if (parameters->getAsBoolean("WRITE_SOURCE")) {
+    if ((*parameters)["WRITE_SOURCE"].getBool()) {
         this->writeSource("StreamingOCL_multTrans.cl", sourceStream.str());
     }
 

@@ -17,7 +17,7 @@ namespace datadriven {
 
 std::string StreamingModOCLMaskKernelSourceBuilder::generateSourceMult() {
 
-    if (parameters->getAsBoolean("REUSE_SOURCE")) {
+    if ((*parameters)["REUSE_SOURCE"].getBool()) {
         return this->reuseSource("streamingModOCLMask_mult.cl");
     }
 
@@ -157,7 +157,7 @@ std::string StreamingModOCLMaskKernelSourceBuilder::generateSourceMult() {
     sourceStream << "   ptrResult[globalIdx] = myResult;" << std::endl;
     sourceStream << "}" << std::endl;
 
-    if (parameters->getAsBoolean("WRITE_SOURCE")) {
+    if ((*parameters)["WRITE_SOURCE"].getBool()) {
         this->writeSource("streamingModOCLMask_mult.cl", sourceStream.str());
     }
 

@@ -24,20 +24,9 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 BOOST_AUTO_TEST_SUITE(TestStreamingModOCLMaskMultTranspose)
-
-SGPP::base::OCLConfigurationParameters getConfigurationDefaults() {
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("VERBOSE", "false");
-    parameters.set("ENABLE_OPTIMIZATIONS", "true");
-    parameters.set("PLATFORM", "first");
-    parameters.set("MAX_DEVICES", "1");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    return parameters;
-}
 
 BOOST_AUTO_TEST_CASE(Simple) {
 
@@ -47,9 +36,9 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
     uint32_t level = 5;
 
-    SGPP::base::OCLConfigurationParameters parameters = getConfigurationDefaults();
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -69,9 +58,9 @@ BOOST_AUTO_TEST_CASE(Local) {
 
     uint32_t level = 5;
 
-    SGPP::base::OCLConfigurationParameters parameters = getConfigurationDefaults();
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -91,11 +80,9 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
     uint32_t level = 5;
 
-    SGPP::base::OCLConfigurationParameters parameters = getConfigurationDefaults();
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
-    parameters.set("MAX_DEVICES", "0");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiDevice();
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
 
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -116,10 +103,10 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
     uint32_t level = 5;
 
-    SGPP::base::OCLConfigurationParameters parameters = getConfigurationDefaults();
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -139,10 +126,10 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
 
     uint32_t level = 5;
 
-    SGPP::base::OCLConfigurationParameters parameters = getConfigurationDefaults();
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
+    parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -162,12 +149,10 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
     uint32_t level = 5;
 
-    SGPP::base::OCLConfigurationParameters parameters = getConfigurationDefaults();
-    parameters.set("INTERNAL_PRECISION", "float");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "true");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("MAX_DEVICES", "0");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "DISABLED");
+    SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiDevice();
+    parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
+    parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
+    parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,

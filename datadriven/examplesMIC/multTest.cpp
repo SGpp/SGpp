@@ -8,7 +8,7 @@
 #include <random>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
@@ -37,7 +37,7 @@ SGPP::base::DataVector& alpha, std::mt19937 mt, std::uniform_real_distribution<d
 
 int main(int argc, char** argv) {
 
-    /*    SGPP::base::OCLConfigurationParameters parameters;
+    /*    SGPP::base::OCLOperationConfiguration parameters;
      parameters.readFromFile("StreamingOCL.cfg");
      std::cout << "internal precision: " << parameters.get("INTERNAL_PRECISION") << std::endl;*/
 

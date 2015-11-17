@@ -6,7 +6,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/application/StaticParameterTuner.hpp>
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 
@@ -24,34 +24,59 @@ StaticParameterTuner::StaticParameterTuner(std::string tunerFileName, bool colle
     this->readFromFile(tunerFileName);
 }
 
-void StaticParameterTuner::addFixedParameter(std::string name, std::string value) {
-    this->fixedParameters.set(name, value);
+void StaticParameterTuner::addFixedParameter(const std::string &name, const std::string &value, const ParameterType type) {
+    if (type == ParameterType::TEXT) {
+        this->fixedParameters.addTextAttr(name, value);
+    } else if (type == ParameterType::ID) {
+        this->fixedParameters.addIDAttr(name, value);
+    } else if (type == ParameterType::BOOL) {
+        bool boolValue;
+        std::istringstream convert(value);
+        convert >> boolValue;
+        this->fixedParameters.addIDAttr(name, boolValue);
+    } else if (type == ParameterType::DOUBLE) {
+        double doubleValue;
+        std::istringstream convert(value);
+        convert >> doubleValue;
+        this->fixedParameters.addIDAttr(name, doubleValue);
+    } else if (type == ParameterType::INT) {
+        int64_t intValue;
+        std::istringstream convert(value);
+        convert >> intValue;
+        this->fixedParameters.addIDAttr(name, intValue);
+    } else if (type == ParameterType::UINT) {
+        uint64_t uintValue;
+        std::istringstream convert(value);
+        convert >> uintValue;
+        this->fixedParameters.addIDAttr(name, uintValue);
+    }
+
 }
 
-void StaticParameterTuner::addParameter(std::string name, std::vector<std::string> valueRange) {
-    this->tunableParameters.push_back(TunableParameter(name, valueRange));
+void StaticParameterTuner::addParameter(const std::string &name, const std::vector<std::string> &valueRange, const ParameterType type) {
+    this->tunableParameters.push_back(TunableParameter(name, valueRange, type));
 }
 
-SGPP::base::OCLConfigurationParameters StaticParameterTuner::tuneParameters(
-SGPP::datadriven::LearnerScenario scenario) {
+SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &scenario) {
 
     if (collectStatistics) {
         this->statistics.clear();
     }
 
-    SGPP::base::OCLConfigurationParameters currentParameters = fixedParameters;
+    SGPP::base::OCLOperationConfiguration currentParameters = fixedParameters;
 
     //create initial parameter combination
     std::vector<size_t> valueIndices(tunableParameters.size());
     for (size_t i = 0; i < valueIndices.size(); i++) {
         valueIndices[i] = 0;
         TunableParameter &parameter = tunableParameters[i];
-        currentParameters.set(parameter.getName(), parameter.getValues()[0]);
+        //TODO: replace by set with type (see addFixedParameter)
+        currentParameters[parameter.getName()].set(parameter.getValues()[0]);
     }
 
     // evaluate initial parameter combination
     double shortestDuration = evaluateSetup(scenario, currentParameters);
-    SGPP::base::OCLConfigurationParameters bestParameters = currentParameters;
+    SGPP::base::OCLOperationConfiguration bestParameters = currentParameters;
 
     size_t parameterIndex = 0;
     while (parameterIndex < tunableParameters.size()) {
@@ -61,12 +86,14 @@ SGPP::datadriven::LearnerScenario scenario) {
         TunableParameter &parameter = tunableParameters[parameterIndex];
         if (valueIndices[parameterIndex] + 1 < parameter.getValues().size()) {
             valueIndices[parameterIndex] += 1;
-            currentParameters.set(parameter.getName(), parameter.getValues()[valueIndices[parameterIndex]]);
+            //TODO: replace by set with type (see addFixedParameter)
+            currentParameters[parameter.getName()].set(parameter.getValues()[valueIndices[parameterIndex]]);
             //reset lower indices
             for (size_t i = 0; i < parameterIndex; i++) {
                 valueIndices[i] = 0;
                 TunableParameter &parameterForReset = tunableParameters[i];
-                currentParameters.set(parameterForReset.getName(), parameterForReset.getValues()[0]);
+                //TODO: replace by set with type (see addFixedParameter)
+                currentParameters[parameterForReset.getName()].set(parameterForReset.getValues()[0]);
             }
             parameterIndex = 0;
 
@@ -87,8 +114,8 @@ SGPP::datadriven::LearnerScenario scenario) {
     return bestParameters;
 }
 
-double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario scenario,
-SGPP::base::OCLConfigurationParameters currentParameters) {
+double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
+SGPP::base::OCLOperationConfiguration &currentParameters) {
 
     SGPP::datadriven::MetaLearner learner(scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
             scenario.getSolverConfigurationFinal(), scenario.getAdaptivityConfiguration(), scenario.getLambda(),
@@ -119,15 +146,15 @@ SGPP::base::OCLConfigurationParameters currentParameters) {
     return duration;
 }
 
-void StaticParameterTuner::writeToFile(std::string fileName) {
+void StaticParameterTuner::writeToFile(const std::string &fileName) {
     std::ofstream file(fileName);
 
     if (file.is_open()) {
 
         file << "fixed parameters" << std::endl;
 
-        for (std::string key : this->fixedParameters.getKeys()) {
-            file << key << "=" << this->fixedParameters.get(key) << std::endl;
+        for (std::string &key : this->fixedParameters.keys()) {
+            file << key << "=" << this->fixedParameters[key].get() << std::endl;
         }
 
         file << "tuned parameters" << std::endl;
@@ -155,7 +182,7 @@ void StaticParameterTuner::writeToFile(std::string fileName) {
     file.close();
 }
 
-void StaticParameterTuner::readFromFile(std::string fileName) {
+void StaticParameterTuner::readFromFile(const std::string &fileName) {
 
     //reset instance if already initialized
     this->fixedParameters.clear();
@@ -210,14 +237,16 @@ void StaticParameterTuner::readFromFile(std::string fileName) {
             boost::algorithm::trim(value);
 
             if (state == ParserState::FIXED) {
-                this->addFixedParameter(key, value);
+                //TODO: type is wrong
+                this->addFixedParameter(key, value, ParameterType::TEXT);
             } else if (state == ParserState::TUNABLE) {
                 std::vector<std::string> valuesSplitted;
                 boost::split(valuesSplitted, value, boost::is_any_of(","));
                 for (std::string &singleValue : valuesSplitted) {
                     boost::algorithm::trim(singleValue);
                 }
-                this->addParameter(key, valuesSplitted);
+                //TODO: type is wrong
+                this->addParameter(key, valuesSplitted, ParameterType::TEXT);
             } else {
                 throw;
             }
@@ -230,7 +259,7 @@ void StaticParameterTuner::readFromFile(std::string fileName) {
     file.close();
 }
 
-void StaticParameterTuner::writeStatisticsToFile(std::string statisticsFileName) {
+void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFileName) {
     if (!collectStatistics) {
         throw;
     }
@@ -251,8 +280,8 @@ void StaticParameterTuner::writeStatisticsToFile(std::string statisticsFileName)
     }
     file << "duration" << std::endl;
 
-    for (auto parameterDurationPair : this->statistics) {
-        SGPP::base::OCLConfigurationParameters &parameter = parameterDurationPair.first;
+    for (auto &parameterDurationPair : this->statistics) {
+        SGPP::base::OCLOperationConfiguration&parameter = parameterDurationPair.first;
         double duration = parameterDurationPair.second;
 
         first = true;
@@ -262,7 +291,7 @@ void StaticParameterTuner::writeStatisticsToFile(std::string statisticsFileName)
             } else {
                 first = false;
             }
-            file << parameter.get(columnParameter.getName());
+            file << parameter[columnParameter.getName()].get();
         }
         if (this->tunableParameters.size() > 0) {
             file << ", ";

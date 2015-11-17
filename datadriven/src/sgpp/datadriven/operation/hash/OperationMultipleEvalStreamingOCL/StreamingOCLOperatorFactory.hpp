@@ -11,7 +11,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
 namespace datadriven {

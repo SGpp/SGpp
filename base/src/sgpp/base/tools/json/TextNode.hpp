@@ -7,19 +7,19 @@
 
 #pragma once
 
-#include "JSONNode.hpp"
+#include "Node.hpp"
 
 namespace json {
 
-class JSONTextNode: public JSONNode {
+class TextNode: public Node {
 private:
 
   std::string value;
 
 public:
-  JSONTextNode();
+  TextNode();
 
-  virtual void parse(std::vector<JSONToken> &stream) override;
+  virtual void parse(std::vector<Token> &stream) override;
 
   virtual void serialize(std::ofstream &outFile, size_t indentWidth) override;
 
@@ -29,7 +29,7 @@ public:
 
   virtual size_t size() override;
 
-  virtual JSONNode *clone() override;
+  virtual Node *clone() override;
 };
 
 }

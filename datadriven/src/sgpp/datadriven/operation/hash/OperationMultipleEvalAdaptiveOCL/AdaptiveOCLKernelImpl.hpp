@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/LinearLoadBalancer.hpp>
 #include <sgpp/base/opencl/OCLClonedBuffer.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 #include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
@@ -59,7 +59,7 @@ private:
 
     AdaptiveOCLKernelSourceBuilder<real_type> kernelSourceBuilder;
     std::shared_ptr<base::OCLManager> manager;
-    std::shared_ptr<base::OCLConfigurationParameters> parameters;
+    std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
     base::LinearLoadBalancer multLoadBalancer;
     base::LinearLoadBalancer multTransposeLoadBalancer;
@@ -67,7 +67,7 @@ private:
 public:
 
     AdaptiveOCLKernelImpl(size_t dims, std::shared_ptr<base::OCLManager> manager,
-            std::shared_ptr<base::OCLConfigurationParameters> parameters) :
+            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
             deviceData(manager), deviceStreamArray(manager), deviceSubspaceArray(manager),deviceMetaInfo(manager), deviceAlpha(manager), deviceTemp(manager), kernelSourceBuilder(
                     parameters), manager(manager), parameters(parameters), multLoadBalancer(manager, this->parameters), multTransposeLoadBalancer(
                     manager, this->parameters) {
@@ -154,7 +154,7 @@ public:
         double time = 0.0;
 
         if (kernel_mult[0] == nullptr) {
-            this->createMult(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), manager->context, num_devices, device_ids,
+            this->createMult(this->dims, (*parameters)["LOCAL_SIZE"].getUInt(), manager->context, num_devices, device_ids,
                     kernel_mult);
         }
 
@@ -166,7 +166,7 @@ public:
         size_t* gpu_end_index_data = new size_t[num_devices];
 
         multLoadBalancer.update(this->deviceTimingsMult);
-        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters->getAsUnsigned("LOCAL_SIZE"),
+        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, (*parameters)["LOCAL_SIZE"].getUInt(),
                 gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
@@ -200,7 +200,7 @@ public:
         cl_event *clTimings = new cl_event[num_devices];
 
         // enqueue kernel
-        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
+        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {
@@ -298,7 +298,7 @@ public:
         double time = 0.0;
 
         if (kernel_multTrans[0] == nullptr) {
-            this->createMultTrans(this->dims, parameters->getAsUnsigned("LOCAL_SIZE"), manager->context, num_devices, device_ids,
+            this->createMultTrans(this->dims, (*parameters)["LOCAL_SIZE"].getUInt(), manager->context, num_devices, device_ids,
                     kernel_multTrans);
         }
 
@@ -311,14 +311,14 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                parameters->getAsUnsigned("LOCAL_SIZE"), gpu_start_index_grid, gpu_end_index_grid);
+                (*parameters)["LOCAL_SIZE"].getUInt(), gpu_start_index_grid, gpu_end_index_grid);
 
         // determine best fit
         size_t* gpu_start_index_data = new size_t[num_devices];
         size_t* gpu_end_index_data = new size_t[num_devices];
 
         multLoadBalancer.update(this->deviceTimingsMult);
-        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, parameters->getAsUnsigned("LOCAL_SIZE"),
+        multLoadBalancer.getPartitionSegments(start_index_data, end_index_data, (*parameters)["LOCAL_SIZE"].getUInt(),
                 gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
@@ -356,7 +356,7 @@ public:
         cl_event* clTimings = new cl_event[num_devices];
 
         // enqueue kernels
-        size_t local = parameters->getAsUnsigned("LOCAL_SIZE");
+        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
         size_t active_devices = 0;
 
         for (size_t i = 0; i < num_devices; i++) {

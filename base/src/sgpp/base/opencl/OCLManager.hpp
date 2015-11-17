@@ -13,14 +13,14 @@
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
   namespace base {
 
     class OCLManager {
       public:
-        std::shared_ptr<base::OCLConfigurationParameters> parameters;
+        std::shared_ptr<base::OCLOperationConfiguration> parameters;
         cl_uint num_platforms;
         cl_platform_id platform_id;
         cl_platform_id* platform_ids;
@@ -31,7 +31,7 @@ namespace SGPP {
         bool verbose;
 
       public:
-        OCLManager(std::shared_ptr<base::OCLConfigurationParameters> parameters);
+        OCLManager(std::shared_ptr<base::OCLOperationConfiguration> parameters);
 
         ~OCLManager();
 

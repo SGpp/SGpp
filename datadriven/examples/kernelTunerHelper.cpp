@@ -9,8 +9,9 @@
 #if USE_OCL == 1
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/application/StaticParameterTuner.hpp>
+#include <sgpp/datadriven/application/TunableParameter.hpp>
 #include <sgpp/datadriven/application/LearnerScenario.hpp>
 
 int main(int argc, char **argv) {
@@ -58,35 +59,35 @@ int main(int argc, char **argv) {
 
     SGPP::datadriven::StaticParameterTuner staticParameterTuner(true, true);
 
-    staticParameterTuner.addFixedParameter("OCL_MANAGER_VERBOSE", "false");
-    staticParameterTuner.addFixedParameter("VERBOSE", "false");
-    staticParameterTuner.addFixedParameter("PLATFORM", "NVIDIA CUDA");
-    staticParameterTuner.addFixedParameter("SELECT_SPECIFIC_DEVICE", "DISABLED");
-    staticParameterTuner.addFixedParameter("MAX_DEVICES", "1");
-    staticParameterTuner.addFixedParameter("INTERNAL_PRECISION", "float");
+    staticParameterTuner.addFixedParameter("OCL_MANAGER_VERBOSE", "false", SGPP::datadriven::ParameterType::BOOL);
+    staticParameterTuner.addFixedParameter("VERBOSE", "false", SGPP::datadriven::ParameterType::BOOL);
+    staticParameterTuner.addFixedParameter("PLATFORM", "NVIDIA CUDA", SGPP::datadriven::ParameterType::TEXT);
+    staticParameterTuner.addFixedParameter("SELECT_SPECIFIC_DEVICE", "DISABLED", SGPP::datadriven::ParameterType::TEXT);
+    staticParameterTuner.addFixedParameter("MAX_DEVICES", "1", SGPP::datadriven::ParameterType::TEXT);
+    staticParameterTuner.addFixedParameter("INTERNAL_PRECISION", "float", SGPP::datadriven::ParameterType::DOUBLE);
 
-    staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
-    staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register"}); //"array",
-    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"4"}); //"1", "8", "16"
+    staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"}, SGPP::datadriven::ParameterType::BOOL);
+    staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", {"1", "2", "4", "8"}, SGPP::datadriven::ParameterType::UINT);
+    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", {"1", "2", "4", "8"}, SGPP::datadriven::ParameterType::UINT);
+    staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register"}, SGPP::datadriven::ParameterType::TEXT); //"array",
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"4"}, SGPP::datadriven::ParameterType::UINT); //"1", "8", "16"
 
 //    staticParameterTuner.writeToFile("testOut.tuner");
 //
 //    SGPP::datadriven::StaticParameterTuner readStaticParameterTuner("testOut.tuner");
 
-    SGPP::base::OCLConfigurationParameters bestParameters = staticParameterTuner.tuneParameters(scenario);
+    SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneParameters(scenario);
 
-    std::vector<std::string> keys = bestParameters.getKeys();
+    std::vector<std::string> keys = bestParameters.keys();
     std::cout << "--------------------------------------" << std::endl;
     std::cout << "best parameters:" << std::endl;
     for (std::string key : keys) {
         if (key.compare(0, 7, "KERNEL_", 0, 7) == 0) {
-            std::cout << "key: " << key << " value: " << bestParameters.get(key) << std::endl;
+            std::cout << "key: " << key << " value: " << bestParameters[key].get() << std::endl;
         }
     }
 
-    bestParameters.writeToFile("bestParameters.cfg");
+    bestParameters.serialize("bestParameters.cfg");
 
     staticParameterTuner.writeStatisticsToFile("statistics.csv");
 

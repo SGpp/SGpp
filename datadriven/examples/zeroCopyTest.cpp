@@ -11,7 +11,7 @@
 #include <thread>
 #include <chrono>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLClonedBuffer.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
@@ -43,10 +43,9 @@ void testZeroCopyReadOnly(std::shared_ptr<OCLManager> manager, double *values, s
 
 int main(int argc, char** argv) {
 
-    auto parameters = std::make_shared<OCLConfigurationParameters>();
-    //parameters->set("OCL_MANAGER_VERBOSE", "true");
-    parameters->set("MAX_DEVICES", "1");
-    parameters->set("SELECT_SPECIFIC_DEVICE", "0");
+    auto parameters = std::make_shared<OCLOperationConfiguration>();
+    (*parameters).addIDAttr("MAX_DEVICES", 1ul);
+    (*parameters).addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
 
     auto manager = std::make_shared<OCLManager>(parameters);
 

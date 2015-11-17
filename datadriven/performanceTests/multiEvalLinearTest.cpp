@@ -28,7 +28,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 
 #define OUT_FILENAME "results.csv"
@@ -201,16 +201,16 @@ void prepareGrid(std::string fileName, SGPP::base::GridType gridType, size_t lev
     SGPP::datadriven::MetaLearner * learner = new SGPP::datadriven::MetaLearner(gridConfig, SLESolverConfigRefine,
             SLESolverConfigFinal, adaptConfig, lambda, verbose);
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "true");
-    parameters.set("VERBOSE", "true");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
-//    parameters.set("PLATFORM", "Intel(R) OpenCL");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-//    parameters.set("WRITE_SOURCE", "true");
-//    parameters.set("REUSE_SOURCE", "true");
-    parameters.set("MAX_DEVICES", "1");
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.addIDAttr("OCL_MANAGER_VERBOSE", true);
+    parameters.addIDAttr("VERBOSE", true);
+    parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
+//    parameters.addIDAttr("PLATFORM", "Intel(R) OpenCL");
+    parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+//    parameters.addIDAttr("WRITE_SOURCE", "true");
+//    parameters.addIDAttr("REUSE_SOURCE", "true");
+    parameters.addIDAttr("MAX_DEVICES", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
 
@@ -510,16 +510,16 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
 //    adaptConfig.percent_ = 200.0;
 //    adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "array");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "1");
-    parameters.set("PLATFORM", "first");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+    parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.addTextAttr("KERNEL_STORE_DATA", "array");
+    parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+    parameters.addTextAttr("PLATFORM", "first");
+    parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+    parameters.addIDAttr("MAX_DEVICES", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -581,17 +581,16 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 //    adaptConfig.percent_ = 200.0;
 //    adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "true");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "register");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
-    parameters.set("VERBOSE", "true");
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+    parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.addTextAttr("KERNEL_STORE_DATA", "register");
+    parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
+    parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+    parameters.addIDAttr("MAX_DEVICES", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -613,17 +612,16 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
 //    adaptConfig.percent_ = 200.0;
 //    adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "true");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_STORE_DATA", "register");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
-    parameters.set("VERBOSE", "true");
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 4ul);
+    parameters.addTextAttr("KERNEL_STORE_DATA", "register");
+    parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
+    parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+    parameters.addIDAttr("MAX_DEVICES", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -671,16 +669,16 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 //    adaptConfig.percent_ = 200.0;
 //    adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_TRANS_GRID_BLOCKING_SIZE", "1");
-    parameters.set("KERNEL_STORE_DATA", "register");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+    parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.addTextAttr("KERNEL_STORE_DATA", "register");
+    parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
+    parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+    parameters.addIDAttr("MAX_DEVICES", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -703,18 +701,17 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
 //    adaptConfig.percent_ = 200.0;
 //    adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("KERNEL_DATA_BLOCKING_SIZE", "4");
-    parameters.set("KERNEL_TRANS_GRID_BLOCK_SIZE", "1");
-    parameters.set("KERNEL_TRANS_DATA_BLOCK_SIZE", "8");
-
-    parameters.set("KERNEL_STORE_DATA", "register");
-    parameters.set("KERNEL_MAX_DIM_UNROLL", "10");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 4ul);
+    parameters.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+    parameters.addIDAttr("KERNEL_TRANS_DATA_BLOCKING_SIZE", 8ul);
+    parameters.addTextAttr("KERNEL_STORE_DATA", "register");
+    parameters.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
+    parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+    parameters.addIDAttr("MAX_DEVICES", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -737,12 +734,12 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 //    adaptConfig.percent_ = 200.0;
 //    adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLConfigurationParameters parameters;
-    parameters.set("OCL_MANAGER_VERBOSE", "false");
-    parameters.set("KERNEL_USE_LOCAL_MEMORY", "false");
-    parameters.set("PLATFORM", "NVIDIA CUDA");
-    parameters.set("SELECT_SPECIFIC_DEVICE", "0");
-    parameters.set("MAX_DEVICES", "1");
+    SGPP::base::OCLOperationConfiguration parameters;
+    parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
+    parameters.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    parameters.addTextAttr("PLATFORM", "NVIDIA CUDA");
+    parameters.addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+    parameters.addIDAttr("MAX_DEVICES", 1ul);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,

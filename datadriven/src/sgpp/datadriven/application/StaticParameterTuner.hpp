@@ -18,39 +18,39 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/application/TunableParameter.hpp>
 #include <sgpp/datadriven/application/LearnerScenario.hpp>
 
 namespace SGPP {
 namespace datadriven {
+
 class StaticParameterTuner {
 private:
     bool collectStatistics;
     bool verbose;
-    std::vector<std::pair<SGPP::base::OCLConfigurationParameters, double>> statistics;
-    SGPP::base::OCLConfigurationParameters fixedParameters;
+    std::vector<std::pair<SGPP::base::OCLOperationConfiguration, double>> statistics;SGPP::base::OCLOperationConfiguration fixedParameters;
     std::vector<TunableParameter> tunableParameters;
 
-    double evaluateSetup(SGPP::datadriven::LearnerScenario scenario,
-    SGPP::base::OCLConfigurationParameters currentParameters);
+    double evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
+            SGPP::base::OCLOperationConfiguration &currentParameters);
 public:
     StaticParameterTuner(bool collectStatistics = false, bool verbose = false);
 
     //write a file with detailed stats for the optimization
     StaticParameterTuner(std::string tunerFileName, bool collectStatistics = false, bool verbose = false);
 
-    void addFixedParameter(std::string name, std::string value);
+    void addFixedParameter(const std::string &name, const std::string &value, const ParameterType type);
 
-    void addParameter(std::string name, std::vector<std::string> valueRange);
+    void addParameter(const std::string &name, const std::vector<std::string> &valueRange, const ParameterType type);
 
-    SGPP::base::OCLConfigurationParameters tuneParameters(SGPP::datadriven::LearnerScenario scenario);
+    SGPP::base::OCLOperationConfiguration tuneParameters(SGPP::datadriven::LearnerScenario &scenario);
 
-    void writeToFile(std::string fileName);
+    void writeToFile(const std::string &fileName);
 
-    void readFromFile(std::string fileName);
+    void readFromFile(const std::string &fileName);
 
-    void writeStatisticsToFile(std::string statisticsFileName);
+    void writeStatisticsToFile(const std::string &statisticsFileName);
 
 };
 
