@@ -29,28 +29,41 @@ class StaticParameterTuner {
 private:
     bool collectStatistics;
     bool verbose;
-    std::vector<std::pair<SGPP::base::OCLOperationConfiguration, double>> statistics;SGPP::base::OCLOperationConfiguration fixedParameters;
+    std::vector<std::pair<SGPP::base::OCLOperationConfiguration, double>> statistics;
+
+    SGPP::base::OCLOperationConfiguration fixedParameters;
+
     std::vector<TunableParameter> tunableParameters;
 
+//    json::Node &kernelNode;
+
     double evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
-            SGPP::base::OCLOperationConfiguration &currentParameters);
+    SGPP::base::OCLOperationConfiguration &currentParameters, const std::string &kernelName);
+
+    void writeStatisticsToFile(const std::string &statisticsFileName, const std::string &platformName,
+            const std::string &deviceName, const std::string &kernelName);
 public:
-    StaticParameterTuner(bool collectStatistics = false, bool verbose = false);
+    StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters, bool collectStatistics = false,
+            bool verbose = false);
 
-    //write a file with detailed stats for the optimization
-    StaticParameterTuner(std::string tunerFileName, bool collectStatistics = false, bool verbose = false);
+////    //write a file with detailed stats for the optimization
+//    StaticParameterTuner(const std::string &tunerFileName, SGPP::base::OCLOperationConfiguration &fixedParameters,
+//            bool collectStatistics = false, bool verbose = false);
 
-    void addFixedParameter(const std::string &name, const std::string &value, const ParameterType type);
+//    void addFixedParameter(const std::string &name, const std::string &value, const ParameterType type);
 
-    void addParameter(const std::string &name, const std::vector<std::string> &valueRange, const ParameterType type);
+    void addParameter(const std::string &name, const std::vector<std::string> &valueRange);
 
-    SGPP::base::OCLOperationConfiguration tuneParameters(SGPP::datadriven::LearnerScenario &scenario);
+    SGPP::base::OCLOperationConfiguration tuneEverything(SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName, bool useDoublePrecision);
 
-    void writeToFile(const std::string &fileName);
+    void tuneParameters(SGPP::datadriven::LearnerScenario &scenario,
+            const std::string &platformName, const std::string &deviceName, const std::string &kernelName);
 
-    void readFromFile(const std::string &fileName);
+//    void writeToFile(const std::string &fileName);
+//
+//    void readFromFile(const std::string &fileName);
 
-    void writeStatisticsToFile(const std::string &statisticsFileName);
+
 
 };
 

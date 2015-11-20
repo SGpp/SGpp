@@ -11,17 +11,21 @@
 
 namespace json {
 
-enum class InternalIDType {ID, DOUBLE, UINT, INT, BOOL};
+//enum class InternalIDType {ID, DOUBLE, UINT, INT, BOOL};
 
 class IDNode: public Node {
 private:
   std::string value;
 
 //  bool isNumber;
-  InternalIDType internalType;
+//  InternalIDType internalType;
+  bool isDouble;
   double doubleValue; //only used for number types
+  bool isUnsigned;
   uint64_t unsignedValue;
+  bool isSigned;
   int64_t signedValue;
+  bool isBool;
   bool boolValue;
 
   void setupInternalType();

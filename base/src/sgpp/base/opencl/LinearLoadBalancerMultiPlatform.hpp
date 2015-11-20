@@ -20,29 +20,25 @@ class LinearLoadBalancerMultiPlatform {
 private:
     std::shared_ptr<OCLManagerMultiPlatform> manager;
     std::shared_ptr<base::OCLOperationConfiguration> parameters;
-    std::map<cl_platform_id, double *> weights;
-    std::map<cl_platform_id, double *> partition;
+    std::map<cl_platform_id, std::vector<double>> weights;
+    std::map<cl_platform_id, std::vector<double>> partition;
+    std::map<cl_platform_id, std::vector<double>> lastMeaningfulPartition;
 public:
     LinearLoadBalancerMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform> manager,
             std::shared_ptr<base::OCLOperationConfiguration> parameters) :
             manager(manager), parameters(parameters) {
         for (OCLPlatformWrapper platform : manager->platforms) {
-            this->weights[platform.platformId] = new double[platform.deviceCount];
-            this->partition[platform.platformId] = new double[platform.deviceCount];
+            this->weights[platform.platformId] = std::vector<double>(platform.getDeviceCount());
+            this->partition[platform.platformId] = std::vector<double>(platform.getDeviceCount());
+            this->lastMeaningfulPartition[platform.platformId] = std::vector<double>(platform.getDeviceCount());
         }
 
         for (OCLPlatformWrapper platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 //initialize with same timing to enforce equal problem sizes in the beginning
                 this->partition[platform.platformId][i] = 1.0 / static_cast<double>(manager->overallDeviceCount);
+                this->lastMeaningfulPartition[platform.platformId][i] = 1.0 / static_cast<double>(manager->overallDeviceCount);
             }
-        }
-    }
-
-    ~LinearLoadBalancerMultiPlatform() {
-        for (OCLPlatformWrapper platform : manager->platforms) {
-            delete[] this->weights[platform.platformId];
-            delete[] this->partition[platform.platformId];
         }
     }
 
@@ -64,7 +60,7 @@ public:
         size_t currentStartIndex = start;
 
         for (OCLPlatformWrapper &platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 size_t partitionElements = static_cast<size_t>(static_cast<double>(totalSize)
                         * partition[platform.platformId][i]);
 
@@ -75,7 +71,7 @@ public:
                 //last device has to ensure that all data is in one partition
                 if (currentStartIndex + partitionElements > end
                         || ((&platform == &(manager->platforms[manager->platforms.size() - 1]))
-                                && (i == platform.deviceCount - 1))) {
+                                && (i == platform.getDeviceCount() - 1))) {
                     partitionElements = end - currentStartIndex;
                 }
 
@@ -108,8 +104,11 @@ public:
 
         //recalculate weights
         for (OCLPlatformWrapper platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 weights[platform.platformId][i] = timings[platform.platformId][i] / partition[platform.platformId][i];
+                if (setVerboseLoadBalancing) {
+                    std::cout << "platform: \"" << platform.platformName << "\" device: " << i << " took " << timings[platform.platformId][i] << "s" << std::endl;
+                }
             }
         }
 
@@ -117,7 +116,7 @@ public:
         double t = 0.0;
 
         for (OCLPlatformWrapper platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 t += 1.0 / weights[platform.platformId][i];
             }
         }
@@ -130,11 +129,13 @@ public:
 
         //calculate optimal partition
         for (OCLPlatformWrapper platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 if (t == 0.0) {
-                    partition[platform.platformId][i] = 1.0 / static_cast<double>(manager->overallDeviceCount);
+//                    partition[platform.platformId][i] = 1.0 / static_cast<double>(manager->overallDeviceCount);
+                    partition[platform.platformId][i] = lastMeaningfulPartition[platform.platformId][i];
                 } else {
                     partition[platform.platformId][i] = t / weights[platform.platformId][i];
+                    lastMeaningfulPartition[platform.platformId][i] = partition[platform.platformId][i];
                 }
 
                 if (setVerboseLoadBalancing) {

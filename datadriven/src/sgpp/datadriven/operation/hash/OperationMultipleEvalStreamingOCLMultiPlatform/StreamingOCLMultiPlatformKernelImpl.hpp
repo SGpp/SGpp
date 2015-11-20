@@ -54,21 +54,22 @@ private:
     bool multKernelsBuilt = false;
     bool multTransKernelsBuilt = false;
 
+    json::Node &firstDeviceConfig;
 public:
 
     StreamingOCLMultiPlatformKernelImpl(size_t dims, std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
+            std::shared_ptr<base::OCLOperationConfiguration> parameters, json::Node &firstDeviceConfig) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
-                    parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
-                    this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
+                    parameters, dims, firstDeviceConfig), manager(manager), parameters(parameters), multLoadBalancer(manager,
+                    this->parameters), multTransposeLoadBalancer(manager, this->parameters), firstDeviceConfig(firstDeviceConfig) {
 
         this->dims = dims;
 
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            this->deviceTimingsMult[platform.platformId] = new double[platform.deviceCount];
-            this->deviceTimingsMultTranspose[platform.platformId] = new double[platform.deviceCount];
+            this->deviceTimingsMult[platform.platformId] = new double[platform.getDeviceCount()];
+            this->deviceTimingsMultTranspose[platform.platformId] = new double[platform.getDeviceCount()];
 
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 //initialize with same timing to enforce equal problem sizes in the beginning
                 this->deviceTimingsMult[platform.platformId][i] = 1.0;
                 this->deviceTimingsMultTranspose[platform.platformId][i] = 1.0;
@@ -78,10 +79,10 @@ public:
         this->err = CL_SUCCESS;
 
 //        for (base::OCLPlatformWrapper &platform : manager->platforms) {
-//            this->kernelsMult[platform.platformId] = new cl_kernel[platform.deviceCount];
-//            this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.deviceCount];
+//            this->kernelsMult[platform.platformId] = new cl_kernel[platform.getDeviceCount()];
+//            this->kernelsMultTrans[platform.platformId] = new cl_kernel[platform.getDeviceCount()];
 //            // initialize arrays
-//            for (size_t i = 0; i < platform.deviceCount; i++) {
+//            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
 //                this->kernelsMult[platform.platformId][i] = nullptr;
 //                this->kernelsMultTrans[platform.platformId][i] = nullptr;
 //            }
@@ -139,19 +140,19 @@ public:
         // determine best fit
         std::map<cl_platform_id, size_t *> gpu_start_index_data;
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            gpu_start_index_data[platform.platformId] = new size_t[platform.deviceCount];
+            gpu_start_index_data[platform.platformId] = new size_t[platform.getDeviceCount()];
         }
 
         std::map<cl_platform_id, size_t *> gpu_end_index_data;
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            gpu_end_index_data[platform.platformId] = new size_t[platform.deviceCount];
+            gpu_end_index_data[platform.platformId] = new size_t[platform.getDeviceCount()];
         }
 
         multLoadBalancer.update(this->deviceTimingsMult);
 
-        size_t dataBlockingSize = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+        size_t dataBlockingSize = firstDeviceConfig["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
         multLoadBalancer.getPartitionSegments(start_index_data, end_index_data,
-                (*parameters)["LOCAL_SIZE"].getUInt() * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
+                firstDeviceConfig["LOCAL_SIZE"].getUInt() * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
@@ -160,7 +161,7 @@ public:
         //    std::cout << "start grid: " << gpu_start_grid << " end grid: " << gpu_end_grid << std::endl;
 
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 cl_uint gpu_start_data = (cl_uint) gpu_start_index_data[platform.platformId][i]
                         / (cl_uint) dataBlockingSize;
                 cl_uint gpu_end_data = (cl_uint) gpu_end_index_data[platform.platformId][i]
@@ -228,11 +229,11 @@ public:
 
         std::map<cl_platform_id, cl_event *> clTimings;
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            clTimings[platform.platformId] = new cl_event[platform.deviceCount];
+            clTimings[platform.platformId] = new cl_event[platform.getDeviceCount()];
         }
 
         // enqueue kernel
-        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
+        size_t local = firstDeviceConfig["LOCAL_SIZE"].getUInt();
 
         std::map<cl_platform_id, size_t> platformTransferringDevice;
 
@@ -243,7 +244,7 @@ public:
                 continue;
             }
             size_t activeDevices = 0;
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 size_t rangeSize = (gpu_end_index_data[platform.platformId][i] / dataBlockingSize)
                         - (gpu_start_index_data[platform.platformId][i] / dataBlockingSize);
 
@@ -281,7 +282,7 @@ public:
 
         // determine kernel execution time
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 double tmpTime;
                 cl_ulong startTime, endTime;
                 startTime = endTime = 0;
@@ -319,7 +320,7 @@ public:
             }
 
             // clean up
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 if (gpu_end_index_data[platform.platformId][i] > gpu_start_index_data[platform.platformId][i]) {
                     clReleaseEvent(clTimings[platform.platformId][i]);
                 }
@@ -344,7 +345,7 @@ public:
         }
 
         double time = 0.0;
-        size_t transGridBlockingSize = (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+        size_t transGridBlockingSize = firstDeviceConfig["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
 
         if (!multTransKernelsBuilt) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
@@ -358,17 +359,17 @@ public:
         // determine best fit
         std::map<cl_platform_id, size_t *> gpu_start_index_grid;
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            gpu_start_index_grid[platform.platformId] = new size_t[platform.deviceCount];
+            gpu_start_index_grid[platform.platformId] = new size_t[platform.getDeviceCount()];
         }
 
         std::map<cl_platform_id, size_t *> gpu_end_index_grid;
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            gpu_end_index_grid[platform.platformId] = new size_t[platform.deviceCount];
+            gpu_end_index_grid[platform.platformId] = new size_t[platform.getDeviceCount()];
         }
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                (*parameters)["LOCAL_SIZE"].getUInt() * transGridBlockingSize, gpu_start_index_grid,
+                firstDeviceConfig["LOCAL_SIZE"].getUInt() * transGridBlockingSize, gpu_start_index_grid,
                 gpu_end_index_grid);
 
         // set kernel arguments
@@ -377,7 +378,7 @@ public:
         cl_uint gpu_end_data = (cl_uint) end_index_data;
 
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 cl_uint gpu_start_grid = (cl_uint) gpu_start_index_grid[platform.platformId][i]
                         / (cl_uint) transGridBlockingSize;
                 cl_uint gpu_end_grid = (cl_uint) gpu_end_index_grid[platform.platformId][i]
@@ -411,11 +412,11 @@ public:
 
         std::map<cl_platform_id, cl_event *> clTimings;
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            clTimings[platform.platformId] = new cl_event[platform.deviceCount];
+            clTimings[platform.platformId] = new cl_event[platform.getDeviceCount()];
         }
 
         // enqueue kernels
-        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
+        size_t local = firstDeviceConfig["LOCAL_SIZE"].getUInt();
 
         std::map<cl_platform_id, size_t> platformTransferringDevice;
 
@@ -426,7 +427,7 @@ public:
                 continue;
             }
             size_t activeDevices = 0;
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 size_t gpuEndGrid = gpu_end_index_grid[platform.platformId][i];
                 size_t gpuStartGrid = gpu_start_index_grid[platform.platformId][i];
                 size_t rangeSize = (gpuEndGrid / transGridBlockingSize) - (gpuStartGrid / transGridBlockingSize);
@@ -466,7 +467,7 @@ public:
 
         // determine kernel execution time
         for (base::OCLPlatformWrapper &platform : manager->platforms) {
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 double tmpTime;
                 cl_ulong startTime, endTime;
                 startTime = endTime = 0;
@@ -504,7 +505,7 @@ public:
             }
 
             // clean up
-            for (size_t i = 0; i < platform.deviceCount; i++) {
+            for (size_t i = 0; i < platform.getDeviceCount(); i++) {
                 if (gpu_end_index_grid[platform.platformId][i] > gpu_start_index_grid[platform.platformId][i]) {
                     clReleaseEvent(clTimings[platform.platformId][i]);
                 }

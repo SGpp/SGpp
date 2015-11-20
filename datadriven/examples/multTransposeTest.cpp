@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
 SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen, std::mt19937 mt,
@@ -48,7 +49,7 @@ int main(int argc, char** argv) {
 //  std::string fileName = "DR5_train.arff";
     //std::string fileName = "debugging_small.arff";
 
-    uint32_t level = 10;
+    uint32_t level = 7;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -57,9 +58,11 @@ int main(int argc, char** argv) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
+    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
+
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL);
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);

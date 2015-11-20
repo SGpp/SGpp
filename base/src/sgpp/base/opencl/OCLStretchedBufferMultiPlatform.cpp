@@ -54,9 +54,9 @@ void OCLStretchedBufferMultiPlatform::initializeBuffer(size_t sizeofType, size_t
         }
         this->hostBuffer[platform.platformId] = hostBuffer;
 
-        cl_mem* bufferList = new cl_mem[platform.deviceCount];
+        cl_mem* bufferList = new cl_mem[platform.getDeviceCount()];
 
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             bufferList[i] = clCreateBuffer(platform.context, CL_MEM_READ_WRITE, sizeofType * elements, nullptr, &err);
 
             if (err != CL_SUCCESS) {
@@ -124,7 +124,7 @@ void OCLStretchedBufferMultiPlatform::freeBuffer() {
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             if (this->platformBufferList[platform.platformId][i] != nullptr) {
                 clReleaseMemObject(this->platformBufferList[platform.platformId][i]);
                 this->platformBufferList[platform.platformId][i] = nullptr;
@@ -191,9 +191,9 @@ void OCLStretchedBufferMultiPlatform::readFromBuffer(std::map<cl_platform_id, si
 //    size_t actionIndex = 0;
 
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        platformActionEvents[platform.platformId] = new cl_event[platform.deviceCount];
+        platformActionEvents[platform.platformId] = new cl_event[platform.getDeviceCount()];
         size_t devicesTransferring = 0;
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             size_t indexEndDevice = indexEnd[platform.platformId][i];
             size_t indexStartDevice = indexStart[platform.platformId][i];
             size_t range = indexEndDevice - indexStartDevice;
@@ -239,7 +239,7 @@ void OCLStretchedBufferMultiPlatform::combineBuffer(std::map<cl_platform_id, siz
         if (platform.platformId == platformId) {
             continue;
         }
-        for (size_t deviceIndex = 0; deviceIndex < platform.deviceCount; deviceIndex++) {
+        for (size_t deviceIndex = 0; deviceIndex < platform.getDeviceCount(); deviceIndex++) {
             size_t indexStartDevice = indexStart[platform.platformId][deviceIndex];
             size_t indexEndDevice = indexEnd[platform.platformId][deviceIndex];
             size_t range = indexEndDevice - indexStartDevice;
@@ -254,7 +254,7 @@ void OCLStretchedBufferMultiPlatform::writeToBuffer() {
     cl_int err;
 
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             err = clEnqueueWriteBuffer(platform.commandQueues[i], platformBufferList[platform.platformId][i],
             CL_TRUE, 0, this->sizeofType * this->elements, this->mappedHostBuffer[platform.platformId], 0, nullptr,
                     nullptr);

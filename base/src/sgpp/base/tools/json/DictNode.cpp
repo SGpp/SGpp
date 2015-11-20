@@ -22,6 +22,8 @@ DictNode::DictNode() {
 
 DictNode::DictNode(const DictNode &original) {
     this->keyOrder = original.keyOrder;
+    this->orderedKeyIndex = original.orderedKeyIndex;
+    this->parent = nullptr;
 
     for (auto &tuple : original.attributes) {
         std::unique_ptr<Node> clonedValue(tuple.second->clone());
@@ -32,6 +34,8 @@ DictNode::DictNode(const DictNode &original) {
 
 DictNode& DictNode::operator=(const DictNode &right) {
     this->keyOrder = right.keyOrder;
+    this->orderedKeyIndex = right.orderedKeyIndex;
+    this->parent = nullptr;
 
     for (auto &tuple : right.attributes) {
         std::unique_ptr<Node> clonedValue(tuple.second->clone());
@@ -144,7 +148,7 @@ void DictNode::parseAttributes(std::vector<Token> &stream) {
 
 }
 
-Node &DictNode::operator[](std::string key) {
+Node &DictNode::operator[](const std::string &key) {
     if (this->attributes.count(key) == 0) {
         throw json_exception("operator[](): key not found");
     }
@@ -176,14 +180,7 @@ size_t DictNode::size() {
 }
 
 Node *DictNode::clone() {
-
-    DictNode *newNode = new DictNode();
-
-    for (auto &tuple : this->attributes) {
-        newNode->attributes[tuple.first] = std::unique_ptr<Node>(tuple.second->clone());
-    }
-    newNode->keyOrder = this->keyOrder;
-
+    DictNode *newNode = new DictNode(*this);
     return newNode;
 }
 
