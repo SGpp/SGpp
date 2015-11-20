@@ -15,6 +15,7 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include "StreamingOCLMultiPlatformKernelImpl.hpp"
+#include "StreamingOCLMultiPlatformConfiguration.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -40,15 +41,19 @@ protected:
 
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     std::unique_ptr<StreamingOCLMultiPlatformKernelImpl<T> > kernel;
+
+    //TODO: improve for per-device configuration
+    json::Node &firstDeviceConfig;
 public:
 
     OperationMultiEvalStreamingOCLMultiPlatform(base::Grid& grid, base::DataMatrix& dataset,
-            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
+            std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+            std::shared_ptr<base::OCLOperationConfiguration> parameters, json::Node &firstDeviceConfig) :
             OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
-            SGPP::base::SGppStopwatch()), duration(-1.0) {
+            SGPP::base::SGppStopwatch()), duration(-1.0), manager(manager), firstDeviceConfig(firstDeviceConfig) {
 
-        if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0
-                && dataset.getNcols() > (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
+        if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0
+                && dataset.getNcols() > firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
             std::stringstream errorString;
             errorString
                     << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
@@ -56,10 +61,8 @@ public:
             throw SGPP::base::operation_exception(errorString.str());
         }
 
-        this->manager = std::make_shared<base::OCLManagerMultiPlatform>(parameters);
-
         this->dims = dataset.getNcols(); //be aware of transpose!
-        this->kernel = std::make_unique<StreamingOCLMultiPlatformKernelImpl<T>>(dims, this->manager, parameters);
+        this->kernel = std::make_unique<StreamingOCLMultiPlatformKernelImpl<T>>(dims, this->manager, parameters, firstDeviceConfig);
 
         this->storage = grid.getStorage();
         this->padDataset(this->preparedDataset);
@@ -186,11 +189,11 @@ private:
     size_t padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-        size_t dataBlocking = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-        size_t transGridBlocking = (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+        size_t dataBlocking = firstDeviceConfig["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+        size_t transGridBlocking = firstDeviceConfig["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
 
         size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
-        size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt() * blockingPadRequirements;
+        size_t vecWidth = firstDeviceConfig["LOCAL_SIZE"].getUInt() * blockingPadRequirements;
 
         // Assure that data has a even number of instances -> padding might be needed
         size_t remainder = dataset.getNrows() % vecWidth;
@@ -212,12 +215,12 @@ private:
 
     void recalculateLevelAndIndex() {
 
-        size_t dataBlocking = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-        size_t transGridBlocking = (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+        size_t dataBlocking = firstDeviceConfig["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+        size_t transGridBlocking = firstDeviceConfig["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
 
         size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
 
-        uint32_t localWorkSize = static_cast<uint32_t>((*parameters)["LOCAL_SIZE"].getUInt()) * static_cast<uint32_t>(blockingPadRequirements);
+        uint32_t localWorkSize = static_cast<uint32_t>(firstDeviceConfig["LOCAL_SIZE"].getUInt()) * static_cast<uint32_t>(blockingPadRequirements);
 
         size_t remainder = this->storage->size() % localWorkSize;
         size_t padding = 0;

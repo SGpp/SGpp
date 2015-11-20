@@ -17,7 +17,7 @@ namespace datadriven {
 
 class StreamingOCLMultiPlatformKernelSourceBuilder {
 private:
-    std::shared_ptr<base::OCLOperationConfiguration> parameters;
+//    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     size_t dims;
 
     size_t localWorkgroupSize;
@@ -49,8 +49,11 @@ private:
     std::string getLevelTrans(std::string dim, size_t gridBlockingIndex);
 
     std::string getIndexTrans(std::string dim, size_t gridBlockingIndex);
+
+    json::Node &firstDeviceConfig;
 public:
-    StreamingOCLMultiPlatformKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims);
+    StreamingOCLMultiPlatformKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters,
+            size_t dims, json::Node &firstDeviceConfig);
 
     std::string generateSourceMult();
 

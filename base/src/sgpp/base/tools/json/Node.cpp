@@ -15,7 +15,7 @@ Node::Node(): orderedKeyIndex(0), parent(nullptr) {
 
 }
 
-Node &Node::operator[](std::string key) {
+Node &Node::operator[](const std::string &key) {
   throw json_exception("operator[] is only implemented for dict nodes");
 }
 

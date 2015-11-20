@@ -45,8 +45,8 @@ void OCLClonedBufferMultiPlatform::writeToBuffer(void* hostData, size_t* offsets
 
     //size_t actionIndex = 0;
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        platformActionEvents[platform.platformId] = new cl_event[platform.deviceCount];
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        platformActionEvents[platform.platformId] = new cl_event[platform.getDeviceCount()];
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             if (offsets == nullptr) {
                 err = clEnqueueWriteBuffer(platform.commandQueues[i], this->platformBufferList[platform.platformId][i],
                 CL_FALSE, 0, this->sizeofType * this->elements, hostData, 0, nullptr,
@@ -67,11 +67,11 @@ void OCLClonedBufferMultiPlatform::writeToBuffer(void* hostData, size_t* offsets
     }
 
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        clWaitForEvents((cl_uint) platform.deviceCount, platformActionEvents[platform.platformId]);
+        clWaitForEvents((cl_uint) platform.getDeviceCount(), platformActionEvents[platform.platformId]);
     }
 
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             clReleaseEvent(platformActionEvents[platform.platformId][i]);
         }
         delete[] platformActionEvents[platform.platformId];
@@ -86,9 +86,9 @@ void OCLClonedBufferMultiPlatform::readFromBuffer(void* hostData, size_t* offset
 
     size_t actionIndex = 0;
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        platformActionEvents[platform.platformId] = new cl_event[platform.deviceCount];
+        platformActionEvents[platform.platformId] = new cl_event[platform.getDeviceCount()];
         // read data back
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             if (offsets == nullptr) {
                 err = clEnqueueReadBuffer(platform.commandQueues[i], this->platformBufferList[platform.platformId][i],
                 CL_FALSE, 0, this->sizeofType * this->elements, hostData, 0, nullptr,
@@ -110,11 +110,11 @@ void OCLClonedBufferMultiPlatform::readFromBuffer(void* hostData, size_t* offset
     }
 
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        clWaitForEvents((cl_uint) platform.deviceCount, platformActionEvents[platform.platformId]);
+        clWaitForEvents((cl_uint) platform.getDeviceCount(), platformActionEvents[platform.platformId]);
     }
 
     for (OCLPlatformWrapper &platform : this->manager->platforms) {
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             clReleaseEvent(platformActionEvents[platform.platformId][i]);
         }
         delete[] platformActionEvents[platform.platformId];
@@ -127,9 +127,9 @@ void OCLClonedBufferMultiPlatform::initializeBuffer(void* initialValues, size_t 
     cl_int err;
 
     for (OCLPlatformWrapper &platform : manager->platforms) {
-        cl_mem* bufferList = new cl_mem[platform.deviceCount];
+        cl_mem* bufferList = new cl_mem[platform.getDeviceCount()];
 
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             if (initialValues != nullptr) {
                 bufferList[i] = clCreateBuffer(platform.context,
                 CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeofType * elements, initialValues, &err);
@@ -164,7 +164,7 @@ void OCLClonedBufferMultiPlatform::freeBuffer() {
             throw SGPP::base::operation_exception(errorString.str());
         }
         cl_mem *bufferList = this->platformBufferList[platform.platformId];
-        for (size_t i = 0; i < platform.deviceCount; i++) {
+        for (size_t i = 0; i < platform.getDeviceCount(); i++) {
             if (bufferList[i] != nullptr) {
                 clReleaseMemObject(bufferList[i]);
                 bufferList[i] = nullptr;

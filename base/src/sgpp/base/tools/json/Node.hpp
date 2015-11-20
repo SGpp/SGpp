@@ -34,7 +34,7 @@ public:
 
   virtual void serialize(std::ofstream &outFile, size_t indentWidth) = 0;
 
-  virtual Node &operator[](std::string key);
+  virtual Node &operator[](const std::string &key);
 
   virtual Node &operator[](size_t index);
 

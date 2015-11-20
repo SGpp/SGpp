@@ -17,33 +17,34 @@
 namespace SGPP {
 namespace datadriven {
 
-StreamingOCLMultiPlatformKernelSourceBuilder::StreamingOCLMultiPlatformKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters,
-        size_t dims) :
-        parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
-                "                ") {
-    localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
-    useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    dataBlockSize = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-    transGridBlockSize = (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
-    maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
+StreamingOCLMultiPlatformKernelSourceBuilder::StreamingOCLMultiPlatformKernelSourceBuilder(
+        std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims, json::Node &firstDeviceConfig) :
+//        parameters(parameters),
+        dims(dims), indent("    "), indent2("        "), indent3("            "), indent4("                "), firstDeviceConfig(
+                firstDeviceConfig) {
+    localWorkgroupSize = firstDeviceConfig["LOCAL_SIZE"].getUInt();
+    useLocalMemory = firstDeviceConfig["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    dataBlockSize = firstDeviceConfig["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+    transGridBlockSize = firstDeviceConfig["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+    maxDimUnroll = firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt();
 }
 
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::asString() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    if (firstDeviceConfig["INTERNAL_PRECISION"].get().compare("float") == 0) {
         return "float";
     } else {
         return "double";
     }
 }
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::constSuffix() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    if (firstDeviceConfig["INTERNAL_PRECISION"].get().compare("float") == 0) {
         return "f";
     } else {
         return "";
     }
 }
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::intAsString() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    if (firstDeviceConfig["INTERNAL_PRECISION"].get().compare("float") == 0) {
         return "uint";
     } else {
         return "ulong";
@@ -80,11 +81,11 @@ void StreamingOCLMultiPlatformKernelSourceBuilder::writeSource(std::string fileN
 
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "data_" << dataBlockingIndex << "[" << dim << "]";
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         output << "data_" << dataBlockingIndex << "_" << dim;
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim << ") + " << dataBlockingIndex
                 << "]";
     } else {
@@ -102,11 +103,11 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::getData(size_t dim, si
 
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::getLevelTrans(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "level_" << gridBlockingIndex << "[" << dim << "]";
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         output << "level_" << gridBlockingIndex << "_" << dim;
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrLevel[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -116,11 +117,11 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::getLevelTrans(std::str
 
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::getIndexTrans(std::string dim, size_t gridBlockingIndex) {
     std::stringstream output;
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "index_" << gridBlockingIndex << "[" << dim << "]";
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         output << "index_" << gridBlockingIndex << "_" << dim;
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrIndex[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -130,7 +131,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::getIndexTrans(std::str
 
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::getDataTrans(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
-    if ((*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool()) {
+    if (firstDeviceConfig["KERNEL_USE_LOCAL_MEMORY"].getBool()) {
         // (locData[(d * 128)+k])
         output << "locData[(" << dim << " * " << localWorkgroupSize << ")+k]";
     } else {
@@ -156,7 +157,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::unrolledBasisFunctionE
         std::string pointerAccess = dimElement.str();
 
         std::string dString;
-        if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+        if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
             std::stringstream stream;
             stream << (d);
             dString = stream.str();
@@ -187,8 +188,8 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::unrolledBasisFunctionE
     return output.str();
 }
 
-std::string StreamingOCLMultiPlatformKernelSourceBuilder::unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim,
-        size_t endDim, std::string unrollVariable) {
+std::string StreamingOCLMultiPlatformKernelSourceBuilder::unrolledBasisFunctionEvalulationTrans(size_t dims,
+        size_t startDim, size_t endDim, std::string unrollVariable) {
     std::stringstream output;
 
     for (size_t d = startDim; d < endDim; d++) {
@@ -203,7 +204,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::unrolledBasisFunctionE
         std::string pointerAccess = dimElement.str();
 
         std::string dString;
-        if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+        if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
             std::stringstream stream;
             stream << (d);
             dString = stream.str();

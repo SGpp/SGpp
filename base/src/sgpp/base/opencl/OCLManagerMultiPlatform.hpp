@@ -23,7 +23,6 @@ namespace base {
 class OCLManagerMultiPlatform {
 public:
     std::shared_ptr<base::OCLOperationConfiguration> parameters;
-    cl_uint deviceType;
 
     std::vector<OCLPlatformWrapper> platforms;
 //        cl_uint platformCount;
@@ -40,6 +39,8 @@ public:
     bool verbose;
 
 public:
+    OCLManagerMultiPlatform(bool verbose = false);
+
     OCLManagerMultiPlatform(std::shared_ptr<base::OCLOperationConfiguration> parameters);
 
     ~OCLManagerMultiPlatform();
@@ -59,17 +60,27 @@ public:
     void buildKernel(const std::string &program_src, const char* kernel_name,
             std::map<cl_platform_id, std::vector<cl_kernel> > &kernels);
 
-    void setPlatformIDs();
+//    void setPlatformIDs();
+//
+//    void printPlatformsInfo();
+//
+//    void setupPlatforms();
+//
+//    void setTotalDeviceCount();
+//
+//    void setDeviceType();
+//
+//    void setupDeviceIDs();
 
-    void printPlatformsInfo();
+    void configure(base::OCLOperationConfiguration &configuration, bool useConfiguration = false);
 
-    void setupPlatforms();
+    void configurePlatform(cl_platform_id platformId, base::OCLOperationConfiguration &configuration,
+            bool useConfiguration);
 
-    void setTotalDeviceCount();
+    void configureDevice(cl_device_id deviceId, json::Node &devicesNode, std::vector<cl_device_id> &filteredDeviceIds,
+            std::map<std::string, size_t> &countLimitMap, bool useConfiguration);
 
-    void setDeviceType();
-
-    void setupDeviceIDs();
+    std::shared_ptr<base::OCLOperationConfiguration> getConfiguration();
 
 };
 

@@ -26,6 +26,8 @@ ListNode::ListNode(const ListNode &original) {
         cloned->parent = this;
         this->list.push_back(std::move(cloned));
     }
+    this->orderedKeyIndex = original.orderedKeyIndex;
+    this->parent = nullptr;
 }
 
 ListNode &ListNode::operator=(const ListNode &right) {
@@ -34,6 +36,8 @@ ListNode &ListNode::operator=(const ListNode &right) {
         cloned->parent = this;
         this->list.push_back(std::move(cloned));
     }
+    this->orderedKeyIndex = right.orderedKeyIndex;
+    this->parent = nullptr;
     return *this;
 }
 
@@ -132,11 +136,8 @@ void ListNode::addValue(std::unique_ptr<Node> node) {
     this->list.push_back(std::move(node));
 }
 
-Node * ListNode::clone() {
-    ListNode *newNode = new ListNode();
-    for (auto &node : this->list) {
-        newNode->list.push_back(std::unique_ptr<Node>(node->clone()));
-    }
+Node *ListNode::clone() {
+    ListNode *newNode = new ListNode(*this);
     return newNode;
 }
 

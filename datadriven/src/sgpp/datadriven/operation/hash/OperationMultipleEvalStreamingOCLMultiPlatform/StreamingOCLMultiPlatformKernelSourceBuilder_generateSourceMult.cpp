@@ -17,13 +17,13 @@ namespace datadriven {
 
 std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMult() {
 
-    if ((*parameters)["REUSE_SOURCE"].getBool()) {
+    if (firstDeviceConfig["REUSE_SOURCE"].getBool()) {
         return this->reuseSource("StreamingOCLMultiPlatform_mult.cl");
     }
 
-    size_t localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
-    bool useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    uint64_t maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
+    size_t localWorkgroupSize = firstDeviceConfig["LOCAL_SIZE"].getUInt();
+    bool useLocalMemory = firstDeviceConfig["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    uint64_t maxDimUnroll = firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt();
 
     std::stringstream sourceStream;
 
@@ -64,7 +64,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMult() {
     sourceStream << std::endl;
 
     //caching data in register array, this also requires loading the data into the registers (in contrast using pointers to data directly)
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         for (size_t i = 0; i < dataBlockSize; i++) {
             sourceStream << indent << this->asString() << " data_" << i << "[" << dims << "];" << std::endl;
         }
@@ -76,7 +76,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMult() {
             }
             sourceStream << std::endl;
         }
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         for (size_t i = 0; i < dataBlockSize; i++) {
             for (size_t d = 0; d < dims; d++) {
                 sourceStream << indent << this->asString() << " " << getData(d, i) << " = ptrData[" << i << " + ("
@@ -166,7 +166,7 @@ std::string StreamingOCLMultiPlatformKernelSourceBuilder::generateSourceMult() {
     }
     sourceStream << "}" << std::endl;
 
-    if ((*parameters)["WRITE_SOURCE"].getBool()) {
+    if (firstDeviceConfig["WRITE_SOURCE"].getBool()) {
         this->writeSource("StreamingOCLMultiPlatform_mult.cl", sourceStream.str());
     }
 

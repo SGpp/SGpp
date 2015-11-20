@@ -34,7 +34,7 @@ public:
 
   virtual void serialize(std::ofstream &outFile, size_t indentWidth) override;
 
-  virtual Node &operator[](std::string key) override;
+  virtual Node &operator[](const std::string &key) override;
 
   virtual size_t size() override;
 

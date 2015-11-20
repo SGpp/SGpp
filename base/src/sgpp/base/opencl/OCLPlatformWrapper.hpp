@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <CL/cl.h>
 
 #include <sgpp/globaldef.hpp>
@@ -12,15 +14,12 @@ public:
     cl_platform_id platformId;
     char platformName[128];
     cl_context context;
-    cl_device_id *deviceIds;
-    size_t deviceCount;
-    cl_command_queue *commandQueues;
+    std::vector<cl_device_id> deviceIds;
+    std::vector<cl_command_queue> commandQueues;
 
-    OCLPlatformWrapper(cl_platform_id platformId);
+    OCLPlatformWrapper(cl_platform_id platformId, char (&platformName)[128], std::vector<cl_device_id> &deviceIds);
 
-    OCLPlatformWrapper(const OCLPlatformWrapper &original);
-
-    ~OCLPlatformWrapper();
+    size_t getDeviceCount();
 };
 
 }
