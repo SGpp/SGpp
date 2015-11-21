@@ -54,8 +54,11 @@ private:
     std::string unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim, size_t endDim,
             std::string unrollVariable, size_t gridBlockIndex);
 
+    //TODO: improve
+    json::Node &firstDeviceConfig;
+
 public:
-    StreamingModOCLFastMultiPlatformKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims);
+    StreamingModOCLFastMultiPlatformKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims, json::Node &firstDeviceConfig);
 
     std::string asString();
 

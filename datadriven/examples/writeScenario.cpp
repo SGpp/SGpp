@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     // setup grid
     gridConfig.dim_ = 0; //dim is inferred from the data
     gridConfig.level_ = maxLevel;
-    gridConfig.type_ = SGPP::base::GridType::Linear;
+    gridConfig.type_ = SGPP::base::GridType::ModLinear;
 
     // Set Adaptivity
     adaptConfig.maxLevelType_ = false;
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
             SLESolverConfigFinal, adaptConfig);
 
-    scenario.writeToFile("friedman4d_linear.scenario");
+    scenario.writeToFile("friedman4d_modlinear.scenario");
 
     std::cout << "done" << std::endl;
 

@@ -17,61 +17,6 @@
 namespace SGPP {
 namespace datadriven {
 
-void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
-
-    for (std::string &platformName : parameters["PLATFORMS"].keys()) {
-        json::Node &platformNode = parameters["PLATFORMS"][platformName];
-        for (std::string &deviceName : platformNode["DEVICES"].keys()) {
-            json::Node &deviceNode = platformNode["DEVICES"][deviceName];
-
-            const std::string &kernelName = SGPP::datadriven::StreamingOCLMultiPlatformConfiguration::getKernelName();
-
-            json::Node &kernelNode =
-                    deviceNode["KERNELS"].contains(kernelName) ?
-                            deviceNode["KERNELS"][kernelName] : deviceNode["KERNELS"].addDictAttr(kernelName);
-//            std::cout << "in kernel augment" << std::endl;
-//            std::cout << "-----------------------------------" << std::endl;
-//            for (std::string &key: kernelNode.keys()) {
-//                std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
-//            }
-
-            if (kernelNode.contains("LOCAL_SIZE") == false) {
-                kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
-            }
-
-            if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
-                kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-            }
-
-            if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
-                kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
-            }
-
-            if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
-                kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-            }
-
-//            if (kernelNode.contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
-//                kernelNode.addIDAttr("LINEAR_LOAD_BALANCING_VERBOSE", false);
-//            }
-
-            if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-                kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
-            }
-
-            if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-                kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
-            }
-
-
-
-//            if (kernelNode.contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
-//                kernelNode.addIDAttr("LINEAR_LOAD_BALANCING_VERBOSE", false);
-//            }
-        }
-    }
-}
-
 base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(base::Grid& grid, base::DataMatrix& dataset,
 SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
 
@@ -89,7 +34,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         parameters = manager->getConfiguration();
     }
 
-    augmentDefaultParameters(*parameters);
+    StreamingOCLMultiPlatformConfiguration::augmentDefaultParameters(*parameters);
 
     std::string &firstPlatformName = (*parameters)["PLATFORMS"].keys()[0];
     std::string &firstDeviceName = (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];

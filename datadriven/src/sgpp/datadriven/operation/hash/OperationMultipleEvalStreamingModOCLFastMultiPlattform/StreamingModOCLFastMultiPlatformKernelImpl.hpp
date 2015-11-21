@@ -55,13 +55,16 @@ private:
     bool multKernelsBuilt = false;
     bool multTransKernelsBuilt = false;
 
+    //TODO: improve
+    json::Node &firstDeviceConfig;
+
 public:
 
     StreamingModOCLFastMultiPlatformKernelImpl(size_t dims, std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-            std::shared_ptr<base::OCLOperationConfiguration> parameters) :
+            std::shared_ptr<base::OCLOperationConfiguration> parameters, json::Node &firstDeviceConfig) :
             deviceData(manager), deviceLevel(manager), deviceIndex(manager), deviceGrid(manager), deviceTemp(manager), kernelSourceBuilder(
-                    parameters, dims), manager(manager), parameters(parameters), multLoadBalancer(manager,
-                    this->parameters), multTransposeLoadBalancer(manager, this->parameters) {
+                    parameters, dims, firstDeviceConfig), manager(manager), parameters(parameters), multLoadBalancer(manager,
+                    this->parameters), multTransposeLoadBalancer(manager, this->parameters), firstDeviceConfig(firstDeviceConfig) {
 
         this->dims = dims;
 
@@ -154,9 +157,9 @@ public:
 
         multLoadBalancer.update(this->deviceTimingsMult);
 
-        size_t dataBlockingSize = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+        size_t dataBlockingSize = firstDeviceConfig["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
         multLoadBalancer.getPartitionSegments(start_index_data, end_index_data,
-                (*parameters)["LOCAL_SIZE"].getUInt() * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
+                firstDeviceConfig["LOCAL_SIZE"].getUInt() * dataBlockingSize, gpu_start_index_data, gpu_end_index_data);
 
         // set kernel arguments
         cl_uint clResultSize = (cl_uint) datasetSize;
@@ -197,7 +200,7 @@ public:
         }
 
         // enqueue kernel
-        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
+        size_t local = firstDeviceConfig["LOCAL_SIZE"].getUInt();
 
         std::map<cl_platform_id, size_t> platformTransferringDevice;
 
@@ -310,7 +313,7 @@ public:
         }
 
         double time = 0.0;
-        size_t gridBlockingSize = (*parameters)["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
+        size_t gridBlockingSize = firstDeviceConfig["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
 
         if (!multTransKernelsBuilt) {
             std::string program_src = kernelSourceBuilder.generateSourceMultTrans();
@@ -334,7 +337,7 @@ public:
 
         multTransposeLoadBalancer.update(this->deviceTimingsMultTranspose);
         multTransposeLoadBalancer.getPartitionSegments(start_index_grid, end_index_grid,
-                (*parameters)["LOCAL_SIZE"].getUInt() * gridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
+                firstDeviceConfig["LOCAL_SIZE"].getUInt() * gridBlockingSize, gpu_start_index_grid, gpu_end_index_grid);
 
         // set kernel arguments
         cl_uint clSourceSize = (cl_uint) datasetSize;
@@ -377,7 +380,7 @@ public:
         }
 
         // enqueue kernels
-        size_t local = (*parameters)["LOCAL_SIZE"].getUInt();
+        size_t local = firstDeviceConfig["LOCAL_SIZE"].getUInt();
 
         std::map<cl_platform_id, size_t> platformTransferringDevice;
 

@@ -13,13 +13,13 @@ namespace SGPP {
 namespace datadriven {
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceMultTrans() {
 
-    if ((*parameters)["REUSE_SOURCE"].getBool()) {
+    if (firstDeviceConfig["REUSE_SOURCE"].getBool()) {
         return this->reuseSource("streamingModOCLFastMP_multTrans.cl");
     }
 
-    size_t localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
-    size_t transGridBlockSize = (*parameters)["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
-    size_t transDataBlockSize = (*parameters)["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
+    size_t localWorkgroupSize = firstDeviceConfig["LOCAL_SIZE"].getUInt();
+    size_t transGridBlockSize = firstDeviceConfig["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
+    size_t transDataBlockSize = firstDeviceConfig["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
 
     std::stringstream sourceStream;
 
@@ -56,7 +56,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
     }
 
     // create a register storage for the level and index of the grid points of the work item
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
             sourceStream << indent << this->asString() << " level_" << gridIndex << "[" << dims << "];" << std::endl;
             sourceStream << indent << this->asString() << " index_" << gridIndex << "[" << dims << "];" << std::endl;
@@ -70,7 +70,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
             sourceStream << std::endl;
         }
         sourceStream << std::endl;
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
 
 
@@ -87,7 +87,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
 
     sourceStream << indent << "size_t dimDataIndex;" << std::endl;
 
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         sourceStream << indent << "size_t dimLevelIndex;" << std::endl;
     }
 
@@ -153,7 +153,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::generateSourceM
 
     sourceStream << "}" << std::endl;
 
-    if ((*parameters)["WRITE_SOURCE"].getBool()) {
+    if (firstDeviceConfig["WRITE_SOURCE"].getBool()) {
         this->writeSource("streamingModOCLFastMP_multTrans.cl", sourceStream.str());
     }
 

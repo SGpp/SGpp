@@ -59,6 +59,8 @@ SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName, bool
         for (const std::string &deviceName : devicesCopy) {
             json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
+            std::cout << "tuning for device: " << deviceName << std::endl;
+
             //temporarily remove all other devices
             std::vector<std::string> otherDevicesName;
             std::vector<std::unique_ptr<json::Node>> otherDevices;
@@ -232,6 +234,9 @@ SGPP::base::OCLOperationConfiguration &currentParameters, const std::string &ker
     if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
         operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
         operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
+    } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
+        operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+        operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
     } else {
         throw;
     }
@@ -243,7 +248,7 @@ SGPP::base::OCLOperationConfiguration &currentParameters, const std::string &ker
 
     double duration = std::numeric_limits<double>::max();
     try {
-      std::cout << "evaluating parameter combination" << std::endl;
+        std::cout << "evaluating parameter combination" << std::endl;
         learner.learn(configuration, fileName);
 
         LearnerTiming timing = learner.getLearnerTiming();
