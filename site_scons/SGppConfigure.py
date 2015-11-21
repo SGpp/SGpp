@@ -20,8 +20,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
     # boost library
     #TODO: add check and error
-    config.env.AppendUnique(CPPPATH=config.env['BOOST_INCLUDE_PATH'])
-    config.env.AppendUnique(LIBPATH=config.env['BOOST_LIBRARY_PATH'])
+    config.env.AppendUnique(CPPPATH=[config.env['BOOST_INCLUDE_PATH']])
+    config.env.AppendUnique(LIBPATH=[config.env['BOOST_LIBRARY_PATH']])
 
     # check C++11 support
     # C++11 support is enabled by default on win32; no avx support for win32
@@ -29,7 +29,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         if not config.CheckFlag("-std=c++11"):
             sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
             sys.exit(1) #TODO: exist undefined, fix
-        config.env.AppendUnique(CPPFLAGS="-std=c++11")
+        config.env.AppendUnique(CPPFLAGS=["-std=c++11"])
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
@@ -46,20 +46,22 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
     if config.env['USE_OCL']:
       if 'OCL_INCLUDE_PATH' in config.env['ENV']:
-        config.env.AppendUnique(CPPPATH=config.env['ENV']['OCL_INCLUDE_PATH'])
+        config.env.AppendUnique(CPPPATH=[config.env['ENV']['OCL_INCLUDE_PATH']])
       elif 'OCL_INCLUDE_PATH' in config.env:
-        config.env.AppendUnique(CPPPATH=config.env['OCL_INCLUDE_PATH'])
+        config.env.AppendUnique(CPPPATH=[config.env['OCL_INCLUDE_PATH']])
       else:
-        sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
+        sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")        
+
+      print config.env['CPPPATH']
 
       if not config.CheckCXXHeader('CL/cl.h'):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
 
       if 'OCL_LIBRARY_PATH' in config.env['ENV']:
-        config.env.AppendUnique(LIBPATH=config.env['ENV']['OCL_LIBRARY_PATH'])
+        config.env.AppendUnique(LIBPATH=[config.env['ENV']['OCL_LIBRARY_PATH']])
       elif 'OCL_LIBRARY_PATH' in config.env:
-        config.env.AppendUnique(LIBPATH=config.env['OCL_LIBRARY_PATH'])
+        config.env.AppendUnique(LIBPATH=[config.env['OCL_LIBRARY_PATH']])
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
         
@@ -67,7 +69,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
 
-      config.env.AppendUnique(CPPDEFINES="USE_OCL")
+      config.env.AppendUnique(CPPDEFINES=["USE_OCL"])
     else:
       print "Info: OpenCL is not enabled"
 
@@ -216,21 +218,21 @@ Please install the corresponding package, e.g. using command on Ubuntu
                 env.Append(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'].upper() == 'SSE3':
-            config.env.AppendUnique(CPPFLAGS="-msse3")
+            config.env.AppendUnique(CPPFLAGS=["-msse3"])
         elif env['ARCH'].upper() == 'SSE42':
-            config.env.AppendUnique(CPPFLAGS="-msse4.2")
+            config.env.AppendUnique(CPPFLAGS=["-msse4.2"])
         elif env['ARCH'].upper() == 'AVX':
-            config.env.AppendUnique(CPPFLAGS="-mavx")
+            config.env.AppendUnique(CPPFLAGS=["-mavx"])
         elif env['ARCH'].upper() == 'FMA4':
-            config.env.AppendUnique(CPPFLAGS="-mavx")
-            config.env.AppendUnique(CPPFLAGS="-mfma4")
+            config.env.AppendUnique(CPPFLAGS=["-mavx"])
+            config.env.AppendUnique(CPPFLAGS=["-mfma4"])
         elif env['ARCH'].upper() == 'AVX2':
-            config.env.AppendUnique(CPPFLAGS="-mavx2")
-            config.env.AppendUnique(CPPFLAGS="-mfma")
+            config.env.AppendUnique(CPPFLAGS=["-mavx2"])
+            config.env.AppendUnique(CPPFLAGS=["-mfma"])
         elif env['ARCH'].upper() == 'AVX512':
-            config.env.AppendUnique(CPPFLAGS="-mavx512f")
-            config.env.AppendUnique(CPPFLAGS="-mavx512cd")
-            config.env.AppendUnique(CPPFLAGS="-mfma")
+            config.env.AppendUnique(CPPFLAGS=["-mavx512f"])
+            config.env.AppendUnique(CPPFLAGS=["-mavx512cd"])
+            config.env.AppendUnique(CPPFLAGS=["-mfma"])
         else:
             print "You must specify a valid ARCH value for gnu."
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
@@ -265,21 +267,21 @@ Please install the corresponding package, e.g. using command on Ubuntu
                 env.Append(CPPFLAGS=['-Wno-conversion'])
         
         if env['ARCH'].upper() == 'SSE3':
-            config.env.AppendUnique(CPPFLAGS="-msse3")
+            config.env.AppendUnique(CPPFLAGS=["-msse3"])
         elif env['ARCH'].upper() == 'SSE42':
-            config.env.AppendUnique(CPPFLAGS="-msse4.2")
+            config.env.AppendUnique(CPPFLAGS=["-msse4.2"])
         elif env['ARCH'].upper() == 'AVX':
-            config.env.AppendUnique(CPPFLAGS="-mavx")
+            config.env.AppendUnique(CPPFLAGS=["-mavx"])
         elif env['ARCH'].upper() == 'FMA4':
-            config.env.AppendUnique(CPPFLAGS="-mavx")
-            config.env.AppendUnique(CPPFLAGS="-mfma4")
+            config.env.AppendUnique(CPPFLAGS=["-mavx"])
+            config.env.AppendUnique(CPPFLAGS=["-mfma4"])
         elif env['ARCH'].upper() == 'AVX2':
-            config.env.AppendUnique(CPPFLAGS="-mavx2")
-            config.env.AppendUnique(CPPFLAGS="-mfma")
+            config.env.AppendUnique(CPPFLAGS=["-mavx2"])
+            config.env.AppendUnique(CPPFLAGS=["-mfma"])
         elif env['ARCH'].upper() == 'AVX512':
-            config.env.AppendUnique(CPPFLAGS="-mavx512f")
-            config.env.AppendUnique(CPPFLAGS="-mavx512cd")
-            config.env.AppendUnique(CPPFLAGS="-mfma")
+            config.env.AppendUnique(CPPFLAGS=["-mavx512f"])
+            config.env.AppendUnique(CPPFLAGS=["-mavx512cd"])
+            config.env.AppendUnique(CPPFLAGS=["-mfma"])
         else:
             print "You must specify a valid ARCH value for gnu."
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
@@ -287,7 +289,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
                      
     elif env['COMPILER'].upper() == 'INTEL':
         print "Using icc"
-        env.Append(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
+        env.AppendUnique(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
                                '-fno-strict-aliasing',
                                '-ip', '-ipo', '-funroll-loops',
                                '-ansi-alias', '-fp-speculation=safe',
@@ -296,51 +298,51 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['CC'] = ('icc')
         env['LINK'] = ('icpc')
         env['CXX'] = ('icpc')
-        env.Append(CPPFLAGS=['-openmp'])
-        env.Append(LINKFLAGS=['-openmp'])
+        env.AppendUnique(CPPFLAGS=['-openmp'])
+        env.AppendUnique(LINKFLAGS=['-openmp'])
         
         if env['USE_STATICLIB']:
-            env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
+            env.AppendUnique(CPPFLAGS=['-D_USE_STATICLIB'])
 
         if not env['USE_DOUBLE_PRECISION']:
             if gcc_ver >= (4, 9, 0):
                 # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
                 # (-Wno-float-conversion was introduced with g++ 4.9)
-                env.Append(CPPFLAGS=['-Wno-float-conversion'])
+                env.AppendUnique(CPPFLAGS=['-Wno-float-conversion'])
             else:
                 # disable all conversion warnings
-                env.Append(CPPFLAGS=['-Wno-conversion'])
+                env.AppendUnique(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'].upper() == 'SSE3':
-            config.env.AppendUnique(CPPFLAGS="-msse3")
+            config.env.AppendUnique(CPPFLAGS=["-msse3"])
         elif env['ARCH'].upper() == 'SSE42':
-            config.env.AppendUnique(CPPFLAGS="-msse4.2")
+            config.env.AppendUnique(CPPFLAGS=["-msse4.2"])
         elif env['ARCH'].upper() == 'AVX':
-            config.env.AppendUnique(CPPFLAGS="-mavx")
+            config.env.AppendUnique(CPPFLAGS=["-mavx"])
         elif env['ARCH'].upper() == 'AVX2':
-            config.env.AppendUnique(CPPFLAGS="-xCORE-AVX2")
-            config.env.AppendUnique(CPPFLAGS="-fma")
+            config.env.AppendUnique(CPPFLAGS=["-xCORE-AVX2"])
+            config.env.AppendUnique(CPPFLAGS=["-fma"])
         elif env['ARCH'].upper() == 'AVX512':
-            config.env.AppendUnique(CPPFLAGS="-xCOMMON-AVX512")
-            config.env.AppendUnique(CPPFLAGS="-fma")
+            config.env.AppendUnique(CPPFLAGS=["-xCOMMON-AVX512"])
+            config.env.AppendUnique(CPPFLAGS=["-fma"])
         elif env['ARCH'].upper() == 'MIC':
-            config.env.AppendUnique(CPPFLAGS="-mmic")
-            config.env.Append(LINKFLAGS=['-mmic'])
+            config.env.AppendUnique(CPPFLAGS=["-mmic"])
+            config.env.AppendUnique(LINKFLAGS=['-mmic'])
         else:
             print "You must specify a valid ARCH value for intel."
             print "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic"
             sys.exit(1)  
 
-        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+        env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     elif env['COMPILER'].upper() == 'VCC':
         print "Using vcc"
-        env.Append(CPPFLAGS=['/EHsc'])
-        env.Append(CPPFLAGS=['/DNOMINMAX'])
-        env.Append(CPPFLAGS=['/D_USE_MATH_DEFINES'])
+        env.AppendUnique(CPPFLAGS=['/EHsc'])
+        env.AppendUnique(CPPFLAGS=['/DNOMINMAX'])
+        env.AppendUnique(CPPFLAGS=['/D_USE_MATH_DEFINES'])
         if env['USE_STATICLIB']:
-            env.Append(CPPFLAGS=['/D_USE_STATICLIB'])
+            env.AppendUnique(CPPFLAGS=['/D_USE_STATICLIB'])
         # env.Append(CPPFLAGS=['/openmp']) -> does not work due to missing openMP3 support
-        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+        env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for Compiler."
         print "Available configurations are: gnu, clang, vcc and intel"
@@ -353,11 +355,11 @@ Please install the corresponding package, e.g. using command on Ubuntu
         # beware: if symbols are missing that are actually required (because the symbols don't reside in a shared library), there will be no error during compilation
         # the python binding (pysgpp) requires lpython and a flat namespace
         # also for the python binding, the library must be suffixed with '*.so' even though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
-        env.Append(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
+        env.AppendUnique(LINKFLAGS=['-flat_namespace', '-undefined', 'dynamic_lookup', '-lpython'])
         # The GNU assembler (GAS) is not supported in Mac OS X. A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
         # From the man pages for as (version 1.38): -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
         # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and -q is the relevant flag to make it use integrated assembler
-        env.Append(CPPFLAGS=['-Wa,-q'])
+        env.AppendUnique(CPPFLAGS=['-Wa,-q'])
         env.AppendUnique(CPPPATH="/usr/local/include")
         env.AppendUnique(LIBPATH="/usr/local/lib")
         env['SHLIBSUFFIX'] = '.dylib'
@@ -371,14 +373,14 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # will lead to a warning on cygwin (and we have -Werror enabled)
     # is enabled by default on cygwin
     if env['PLATFORM'] not in ['cygwin', 'win32']:
-        env.Append(CPPFLAGS=['-fPIC'])
+        env.AppendUnique(CPPFLAGS=['-fPIC'])
 
     # setup the include base folder
     # env.Append(CPPPATH=['#/src/sgpp'])
     for moduleFolder in moduleFolders:
       if moduleFolder in languageWrapperFolders:
         continue
-      env.Append(CPPPATH=['#/' + moduleFolder + '/src/'])
+      env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
 
     # detour compiler output
     env['PRINT_CMD_LINE_FUNC'] = Helper.print_cmd_line

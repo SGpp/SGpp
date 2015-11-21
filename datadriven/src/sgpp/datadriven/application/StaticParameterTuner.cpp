@@ -243,6 +243,7 @@ SGPP::base::OCLOperationConfiguration &currentParameters, const std::string &ker
 
     double duration = std::numeric_limits<double>::max();
     try {
+      std::cout << "evaluating parameter combination" << std::endl;
         learner.learn(configuration, fileName);
 
         LearnerTiming timing = learner.getLearnerTiming();
