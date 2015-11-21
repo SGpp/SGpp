@@ -39,7 +39,7 @@ additionalDependencies = []
 if env['USE_OCL']:
     additionalDependencies += ['OpenCL']
 
-moduleDependencies = additionalDependencies + moduleDependencies
+moduleDependencies = moduleDependencies + additionalDependencies
 
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:
