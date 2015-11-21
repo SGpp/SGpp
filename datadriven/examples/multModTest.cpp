@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
 SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
@@ -38,9 +39,10 @@ int main(int argc, char** argv) {
 
     //  std::string fileName = "friedman2_90000.arff";
     //  std::string fileName = "debugging.arff";
-    std::string fileName = "DR5_train.arff";
+//    std::string fileName = "DR5_train.arff";
+    std::string fileName = "friedman_4d.arff";
 
-    uint32_t level = 10;
+    uint32_t level = 7;
     //  uint32_t level = 3;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
@@ -50,9 +52,11 @@ int main(int argc, char** argv) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
+    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
+
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL);
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -103,11 +107,11 @@ int main(int argc, char** argv) {
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "duration: " << elapsed_seconds.count() << std::endl;
-/*
+
     std::cout << "calculating comparison values..." << std::endl;
 
     SGPP::base::OperationMultipleEval* evalCompare =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
 
     SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
     dataSizeVectorResultCompare.setAll(0.0);
@@ -129,6 +133,6 @@ int main(int argc, char** argv) {
     }
 
     mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-    std::cout << "mse: " << mse << std::endl;*/
+    std::cout << "mse: " << mse << std::endl;
 }
 

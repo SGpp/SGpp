@@ -12,12 +12,12 @@
 namespace SGPP {
 namespace datadriven {
 
-class StreamingOCLMultiPlatformConfiguration {
+class StreamingModOCLFastMultiPlatformConfiguration {
 private:
-    StreamingOCLMultiPlatformConfiguration() = default;
+    StreamingModOCLFastMultiPlatformConfiguration() = default;
 public:
     static const std::string &getKernelName() {
-        static std::string kernelName = "StreamingOCLMultiPlatform";
+        static std::string kernelName = "StreamingModOCLFastMultiPlatform";
         return kernelName;
     }
 
@@ -28,7 +28,7 @@ public:
             for (std::string &deviceName : platformNode["DEVICES"].keys()) {
                 json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
-                const std::string &kernelName = SGPP::datadriven::StreamingOCLMultiPlatformConfiguration::getKernelName();
+                const std::string &kernelName = SGPP::datadriven::StreamingModOCLFastMultiPlatformConfiguration::getKernelName();
 
                 json::Node &kernelNode =
                         deviceNode["KERNELS"].contains(kernelName) ?
@@ -59,23 +59,17 @@ public:
                     kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
                 }
 
-    //            if (kernelNode.contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
-    //                kernelNode.addIDAttr("LINEAR_LOAD_BALANCING_VERBOSE", false);
-    //            }
-
                 if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
                     kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
                 }
 
-                if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+                if (kernelNode.contains("KERNEL_TRANS_DATA_BLOCK_SIZE") == false) {
+                    kernelNode.addIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ul);
                 }
 
-
-
-    //            if (kernelNode.contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
-    //                kernelNode.addIDAttr("LINEAR_LOAD_BALANCING_VERBOSE", false);
-    //            }
+                if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCK_SIZE") == false) {
+                    kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
+                }
             }
         }
     }

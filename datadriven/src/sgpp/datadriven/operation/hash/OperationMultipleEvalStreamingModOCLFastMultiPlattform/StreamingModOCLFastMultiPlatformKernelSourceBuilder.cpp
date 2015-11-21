@@ -16,22 +16,22 @@ namespace SGPP {
 namespace datadriven {
 
 StreamingModOCLFastMultiPlatformKernelSourceBuilder::StreamingModOCLFastMultiPlatformKernelSourceBuilder(
-        std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims) :
+        std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims, json::Node &firstDeviceConfig) :
         parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
-                "                ") {
-    localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
-    useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    dataBlockSize = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-    maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
+                "                "), firstDeviceConfig(firstDeviceConfig) {
+    localWorkgroupSize = firstDeviceConfig["LOCAL_SIZE"].getUInt();
+    useLocalMemory = firstDeviceConfig["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    dataBlockSize = firstDeviceConfig["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+    maxDimUnroll = firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt();
 }
 
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getData(std::string dim, size_t dataBlockingIndex) {
     std::stringstream output;
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "data_" << dataBlockingIndex << "[" << dim << "]";
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         output << "data_" << dataBlockingIndex << "_" << dim;
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim << ") + " << dataBlockingIndex
                 << "]";
     } else {
@@ -48,21 +48,21 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getData(size_t 
 }
 
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::asString() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    if (firstDeviceConfig["INTERNAL_PRECISION"].get() == "float") {
         return "float";
     } else {
         return "double";
     }
 }
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::constSuffix() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    if (firstDeviceConfig["INTERNAL_PRECISION"].get() == "float") {
         return "f";
     } else {
         return "";
     }
 }
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::intAsString() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    if (firstDeviceConfig["INTERNAL_PRECISION"].get() == "float") {
         return "uint";
     } else {
         return "ulong";
@@ -86,7 +86,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFu
 
 
         std::string dString;
-        if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+        if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
             std::stringstream stream;
             stream << (d);
             dString = stream.str();
@@ -148,11 +148,11 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getDataTrans(st
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getLevelTrans(std::string dim,
         size_t gridBlockingIndex) {
     std::stringstream output;
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "level_" << gridBlockingIndex << "[" << dim << "]";
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         output << "level_" << gridBlockingIndex << "_" << dim;
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrLevel[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -163,11 +163,11 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getLevelTrans(s
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getIndexTrans(std::string dim,
         size_t gridBlockingIndex) {
     std::stringstream output;
-    if ((*parameters)["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("array") == 0) {
         output << "index_" << gridBlockingIndex << "[" << dim << "]";
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         output << "index_" << gridBlockingIndex << "_" << dim;
-    } else if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+    } else if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
         output << "ptrIndex[dimLevelIndex]";
     } else {
         throw new base::operation_exception("OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
@@ -178,8 +178,8 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::getIndexTrans(s
 std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFunctionEvalulationTrans(size_t dims,
         size_t startDim, size_t endDim, std::string unrollVariable, size_t gridBlockIndex) {
 
-    size_t transDataBlockSize = (*parameters)["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
-    size_t transGridBlockSize = (*parameters)["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
+    size_t transDataBlockSize = firstDeviceConfig["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
+    size_t transGridBlockSize = firstDeviceConfig["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
 
     std::stringstream output;
 
@@ -196,7 +196,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFu
 
 
         std::string dString;
-        if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+        if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0) {
             std::stringstream stream;
             stream << (d);
             dString = stream.str();
@@ -206,7 +206,7 @@ std::string StreamingModOCLFastMultiPlatformKernelSourceBuilder::unrolledBasisFu
 
         output << indent3 << "dimDataIndex = " << "(" << pointerAccess << " * sourceSize) + k;" << std::endl;
 
-        if ((*parameters)["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+        if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
             output << indent3 << "dimLevelIndex = " << "((" << transGridBlockSize << " * groupIdx + " << gridBlockIndex
                     << ") * " << dims << ") +" << pointerAccess << ";" << std::endl;
         }

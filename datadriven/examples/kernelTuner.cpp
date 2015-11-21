@@ -73,12 +73,20 @@ int main(int argc, char **argv) {
 
     SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
+    //TODO: LOCAL_SIZE should be added
     if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
         staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "false", "true" }); //
-        staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "4", "2", "4", "8" }); //
-        staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", { "1", "4", "2", "4", "8" }); //
+        staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
+        staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
         staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
-        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "1", "4", "8", "16" }); //
+        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "1", "4", }); // "8", "16"
+    } else if (kernelName.compare("StreamingModOCLFastMultiPlatform")) {
+        staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "false", "true" }); //
+        staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
+        staticParameterTuner.addParameter("KERNEL_TRANS_DATA_BLOCK_SIZE", { "1", "2", "4", "8" }); //
+        staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", { "1", "4", "2", "4", "8" }); //
+        staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
+        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "1", "4", }); // "8", "16"
     } else {
         throw;
     }
