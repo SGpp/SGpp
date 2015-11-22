@@ -1,7 +1,7 @@
 lambda=1e-06
 datasetFileName=DR5_train.arff
 grid.dim=0 # inferred from dataset
-grid.level=10
+grid.level=9
 grid.type=Linear
 solverRefine.eps=0
 solverRefine.maxIterations=1
