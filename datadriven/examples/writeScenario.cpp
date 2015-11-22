@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     int maxLevel = 10;
 //    std::string fileName = "friedman_4d_small.arff";
-    std::string fileName = "friedman_4d.arff";
+    std::string fileName = "DR5_train.arff";
     sg::base::RegularGridConfiguration gridConfig;
     sg::solver::SLESolverConfiguration SLESolverConfigRefine;
     sg::solver::SLESolverConfiguration SLESolverConfigFinal;
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
             SLESolverConfigFinal, adaptConfig);
 
-    scenario.writeToFile("friedman4d_modlinear.scenario");
+    scenario.writeToFile("DR5_modlinear.scenario");
 
     std::cout << "done" << std::endl;
 
