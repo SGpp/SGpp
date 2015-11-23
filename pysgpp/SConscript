@@ -33,6 +33,9 @@ if env['PLATFORM'] == 'win32':
     # scons/swig does not seem to set this flag automatically
     swigflags.append('-DSWIGWIN')
 
+if env['PYDOC']:
+    swigflags.append('-DPYDOC')
+
 py_env.AppendUnique(SWIGFLAGS=swigflags)
 
 if not py_env['USE_DOUBLE_PRECISION']:
