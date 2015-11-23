@@ -236,7 +236,8 @@ Export('flattenedDependencyGraph')
 if env['PYDOC']:
   with open('moduleDoxy', 'r') as template:
     data = template.read()
-    for module in moduleNames:
+    for module in moduleFolders:
+      print module
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
         doxyFile.write(data.replace('$modname', module))
 
