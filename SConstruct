@@ -237,18 +237,18 @@ if env['PYDOC']:
   with open('moduleDoxy', 'r') as template:
     data = template.read()
     for module in moduleFolders:
-      print module
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
         doxyFile.write(data.replace('$modname', module))
 
       doxy_env = env.Clone()
 
       doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
-      doxy2swig = doxy_env.Command(os.path.join(module, 'doc/doc.i'), doxygen, "python pysgpp/doxy2swig.py -o -c $SOURCE $TARGET")
+      doxy2swig = doxy_env.Command(os.path.join(module, 'doc/doc.i'), os.path.join(module, 'doc/xml/index.xml'), "python pysgpp/doxy2swig.py -o -c $SOURCE $TARGET")
       for root, dirs, files in os.walk(os.path.join(module, 'src')):
         for file in files:
           doxy_env.Depends(doxygen, os.path.join(root, file))
           doxy_env.Depends(doxy2swig, os.path.join(root, file))
+      doxy_env.Depends(doxy2swig, doxygen)
       pydocTargetList.append(doxy2swig)
 
 if env['SG_PYTHON']:
