@@ -96,6 +96,10 @@ def setupPython(target, source, env):
     fd = open(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "__init__.py"), "w")
     fd.close()
 
+if env['PYDOC']:
+   Import('pydocTargetList')
+   py_env.Depends(libPython, pydocTargetList)
+
 installLibPython = py_env.Install(PYSGPP_BUILD_PATH, libPython)
 installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")
 py_env.Depends(installLibPython, installLibWrapperPython)
