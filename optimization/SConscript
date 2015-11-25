@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import os
@@ -120,7 +120,7 @@ else:
                                 LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
         env.Depends(cmd, objs)
         env.Depends(lib, cmd)
-    else:    
+    else:
         lib = env.SharedLibrary(target=libname,
                                 source=objs,
                                 LIBPATH=BUILD_DIR,
