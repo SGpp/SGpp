@@ -67,7 +67,7 @@ else:
                                 LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
         env.Depends(cmd, objs)
         env.Depends(lib, cmd)
-    else:    
+    else:
         lib = env.SharedLibrary(target=libname,
                                 source=objs,
                                 LIBPATH=BUILD_DIR,
@@ -84,8 +84,8 @@ libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
+  py_test_env = env.Clone()
+  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
 for fileName in os.listdir("examples"):
