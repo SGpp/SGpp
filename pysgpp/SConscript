@@ -33,9 +33,6 @@ if env['PLATFORM'] == 'win32':
     # scons/swig does not seem to set this flag automatically
     swigflags.append('-DSWIGWIN')
 
-if env['PYDOC']:
-    swigflags.append('-DPYDOC')
-
 py_env.AppendUnique(SWIGFLAGS=swigflags)
 
 if not py_env['USE_DOUBLE_PRECISION']:
@@ -98,10 +95,6 @@ def setupPython(target, source, env):
     # -> this is the root for the pysgpp package
     fd = open(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "__init__.py"), "w")
     fd.close()
-
-if env['PYDOC']:
-   Import('pydocTargetList')
-   py_env.Depends(libPython, pydocTargetList)
 
 installLibPython = py_env.Install(PYSGPP_BUILD_PATH, libPython)
 installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")

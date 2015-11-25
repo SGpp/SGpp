@@ -62,9 +62,7 @@ vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
-vars.Add(BoolVariable('PYDOC', 'Build python wrapper with comments', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
-
 
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
@@ -208,13 +206,11 @@ installTargetList = []
 testTargetList = []
 boostTestTargetList = []
 exampleTargetList = []
-pydocTargetList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
 env.Export('testTargetList')
 env.Export('boostTestTargetList')
 env.Export('exampleTargetList')
-env.Export('pydocTargetList')
 
 # compile selected modules
 flattenedDependencyGraph = []
@@ -232,24 +228,6 @@ for moduleFolder in moduleFolders:
                                                  flattenedDependencyGraph)
 
 Export('flattenedDependencyGraph')
-
-if env['PYDOC']:
-  with open('moduleDoxy', 'r') as template:
-    data = template.read()
-    for module in moduleFolders:
-      with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
-        doxyFile.write(data.replace('$modname', module))
-
-      doxy_env = env.Clone()
-
-      doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
-      doxy2swig = doxy_env.Command(os.path.join(module, 'doc/doc.i'), os.path.join(module, 'doc/xml/index.xml'), "python pysgpp/doxy2swig.py -o -c $SOURCE $TARGET")
-      for root, dirs, files in os.walk(os.path.join(module, 'src')):
-        for file in files:
-          doxy_env.Depends(doxygen, os.path.join(root, file))
-          doxy_env.Depends(doxy2swig, os.path.join(root, file))
-      doxy_env.Depends(doxy2swig, doxygen)
-      pydocTargetList.append(doxy2swig)
 
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
