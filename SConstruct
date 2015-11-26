@@ -194,7 +194,7 @@ env["ENV"]["PYTHONPATH"] = os.pathsep.join([
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
     # do the actual thing
-    builder = Builder(action="python $SOURCE.file", chdir=1)
+    builder = Builder(action="python $SOURCE", chdir=0)
     env.Append(BUILDERS={'Test' : builder})
     builder = Builder(action="python $SOURCE")
     env.Append(BUILDERS={'SimpleTest' : builder})
