@@ -92,8 +92,6 @@ import_array();
 
 #ifdef PYDOC
 %include "base/doc/doc.i"
-#ifdef PYDOC
-%include "doc.i"
 #endif
 
 %include "base/build/pysgpp/base.i"

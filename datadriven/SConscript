@@ -34,11 +34,8 @@ def isAVXFolder(folder):
 moduleDependencies = ['sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
-additionalDependencies = []
 if env['USE_OCL']:
-    additionalDependencies += ['OpenCL']
-
-moduleDependencies = moduleDependencies + additionalDependencies
+    moduleDependencies += ['OpenCL']
 
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:
@@ -115,25 +112,15 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
-# build examples
-if env["ARCH"].upper() != "MIC":
-    example_env = env.Clone()
-    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_program_options"])
-    for fileName in os.listdir("examples"):
-        if fnmatch.fnmatch(fileName, "*.cpp"):
-            example = example_env.Program(source=os.path.join("examples", fileName))
-            example_env.Requires(example, libInstall)
-            exampleTargetList.append(example)
-
-# build examples for mic
-if env["ARCH"].upper() == "MIC":
-    example_env = env.Clone()
-    example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
-    for fileName in os.listdir("examplesMIC"):
-        if fnmatch.fnmatch(fileName, "*.cpp"):
-            example = example_env.Program(source=os.path.join("examplesMIC", fileName))
-            example_env.Requires(example, libInstall)
-            exampleTargetList.append(example)
+example_env = env.Clone()
+example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
+for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*.cpp"):
+        example = example_env.Program(source=os.path.join("examples", fileName),
+                              # LIBS=moduleDependencies + ["sgpp%s" % moduleName]
+                              )
+        example_env.Requires(example, libInstall)
+        exampleTargetList.append(example)
 
 # build unit tests
 if env['COMPILE_BOOST_TESTS']:
@@ -152,19 +139,6 @@ if env['COMPILE_BOOST_TESTS']:
         if env['RUN_BOOST_TESTS']:
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
-
-# build unit tests
-if env['COMPILE_BOOST_PERFORMANCE_TESTS']:
-    test_env = env.Clone()
-    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework", "z"])
-    testObjects = []
-    for fileName in os.listdir("performanceTests"):
-        if fnmatch.fnmatch(fileName, "*.cpp"):
-            testObjects += [test_env.Object(source=os.path.join("performanceTests", fileName))]
-    if len(testObjects) > 0:
-        fileName = os.path.join("performanceTests", "test_{}_performance".format(moduleName))
-        test = test_env.Program(fileName, testObjects)
-        test_env.Requires(test, libInstall)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

@@ -107,5 +107,5 @@ if env['PLATFORM'] != 'win32':
     # windows does not support symbolic links out of the box
     # so we disable this feature
     moduleSetupPython = env.Command('setupPython', [], setupPython)
-    py_env.Depends(installLibWrapperPython, moduleSetupPython)
+    py_env.Depends(installLibWrapperPython, moduleSetupPython)                      
 installTargetList.append(installLibPython)

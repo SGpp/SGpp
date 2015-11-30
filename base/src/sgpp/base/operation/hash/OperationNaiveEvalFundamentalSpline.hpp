@@ -41,7 +41,7 @@ namespace SGPP {
          * @param point     evaluation point
          * @return          value of linear combination
          */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
+        virtual float_t eval(const DataVector& alpha, const DataVector& point);
 
       protected:
         /// storage of the sparse grid

@@ -5,20 +5,18 @@
  *      Author: pfandedd
  */
 
-#pragma once
-
 #include <CL/cl.h>
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/opencl/OCLManager.hpp>
+#include "OCLManager.hpp"
 
 namespace SGPP {
   namespace base {
 
     class OCLClonedBuffer {
       public:
-        std::shared_ptr<OCLManager> manager;
+        OCLManager& manager;
         bool initialized;
         cl_mem* bufferList;
         size_t sizeofType;
@@ -26,9 +24,7 @@ namespace SGPP {
 
       public:
 
-        OCLClonedBuffer(std::shared_ptr<OCLManager> manager);
-
-        ~OCLClonedBuffer();
+        OCLClonedBuffer(OCLManager& manager);
 
         bool isInitialized();
 

@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -375,7 +375,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -423,7 +423,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -442,7 +442,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -451,7 +451,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -476,7 +476,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -491,7 +491,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -500,7 +500,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -515,7 +515,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix* trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
@@ -524,7 +524,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBTMatrix(grid, *trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 

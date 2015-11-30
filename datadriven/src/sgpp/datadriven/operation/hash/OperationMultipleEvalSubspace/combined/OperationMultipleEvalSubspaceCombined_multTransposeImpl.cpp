@@ -121,7 +121,7 @@ namespace SGPP {
             //                        intermediatesAll);
             //size_t nextIterationToRecalc = nextIterationToRecalcReferences[validIndices[0]];
 
-            listMultInner(dim, datasetPtr, alpha, dataIndexBase, end_index_data, subspace, subspace.subspaceArray.data(),
+            listMultInner(dim, datasetPtr, alpha, dataIndexBase, end_index_data, subspace, subspace.subspaceArray,
                           validIndicesCount, validIndices, levelIndices,
                           //nextIterationToRecalcReferences, nextIterationToRecalc,
                           evalIndexValuesAll, intermediatesAll);
@@ -170,9 +170,9 @@ namespace SGPP {
         } // end iterate subspaces
       } // end iterate chunks
 
-      delete[] evalIndexValuesAll;
-      delete[] intermediatesAll;
-      delete[] listSubspace;
+      delete evalIndexValuesAll;
+      delete intermediatesAll;
+      delete listSubspace;
 
       /*cout << "avr. dims to recalc.: " << (recomputeDimsTotal / evaluationCounter) << endl;
       for (size_t i = 0; i < dim; i++) {
