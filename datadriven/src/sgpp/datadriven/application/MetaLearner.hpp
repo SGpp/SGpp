@@ -18,10 +18,9 @@
 #include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
   namespace datadriven {
@@ -29,9 +28,7 @@ namespace SGPP {
     class MetaLearner {
       private:
 
-        size_t dim;
         size_t instances;
-        size_t baseLevel;
         float_t lambda;
 
         std::string csvSep;
@@ -60,9 +57,10 @@ namespace SGPP {
       public:
         MetaLearner() = delete;
 
-        MetaLearner(SGPP::solver::SLESolverConfiguration solverConfig, SGPP::solver::SLESolverConfiguration solverFinalStep,
-                    SGPP::base::AdpativityConfiguration adaptivityConfiguration, size_t baseLevel, float_t lambda, bool verbose =
-                      false);
+        // gridConfig.dim is inferred from the dataset
+        MetaLearner(SGPP::base::RegularGridConfiguration gridConfig, SGPP::solver::SLESolverConfiguration solverConfig,
+                    SGPP::solver::SLESolverConfiguration solverFinalStep,
+                    SGPP::base::AdpativityConfiguration adaptivityConfiguration, float_t lambda, bool verbose = false);
 
         ~MetaLearner() {
           if (this->myLearner != nullptr) {
@@ -74,17 +72,29 @@ namespace SGPP {
           }
         }
 
-        void learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string datasetFileName);
+        void learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &datasetFileName, bool isRegression = true);
 
-        void learnReference(std::string fileName);
+        void learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, std::string &content, bool isRegression = true);
+
+        void learnReference(std::string &fileName, bool isRegression = true);
+
+        void learnReferenceString(std::string &content, bool isRegression = true);
 
         //learn and test against test dataset and measure hits/mse
         void learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                          std::string datasetFileName, std::string testFileName, bool isBinaryClassification);
+                          std::string &datasetFileName, std::string &testFileName, bool isRegression = true);
+
+        //learn and test against test dataset and measure hits/mse
+        void learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+                          std::string &dataContent, std::string &testContent, bool isRegression = true);
 
         //learn and test against the streaming implementation
         float_t learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                std::string datasetFileName, size_t gridGranularity, float_t tolerance);
+                                std::string &datasetFileName, size_t gridGranularity);
+
+        //learn and test against the streaming implementation
+        float_t learnAndCompareString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+                                std::string &content, size_t gridGranularity);
 
         void refinementAndOverallPerformance(
           std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
@@ -102,6 +112,13 @@ namespace SGPP {
 
         void testRegular(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration, size_t dim,
                          size_t level, size_t instances, float_t& duration, float_t& durationReference);
+
+        SGPP::base::Grid &getLearnedGrid();
+
+        LearnerTiming getLearnerTiming();
+
+        LearnerTiming getLearnerReferenceTiming();
+
     };
 
   }

@@ -80,7 +80,7 @@ namespace SGPP {
         if (it == this->allLevelsIndexMap.end()) {
           this->allLevelsIndexMap.insert(std::make_pair(flatLevel, this->subspaceCount));
 
-          this->allSubspaceNodes.emplace_back(SubspaceNodeCombined(level, flatLevel, maxIndex, index));
+          this->allSubspaceNodes.emplace_back(level, flatLevel, maxIndex, index);
 
           SubspaceNodeCombined& subspace = this->allSubspaceNodes[this->subspaceCount];
 
@@ -182,7 +182,7 @@ namespace SGPP {
 #endif
 
       //add padding subspace at the end
-      this->allSubspaceNodes.emplace_back(SubspaceNodeCombined(this->dim, this->subspaceCount));
+      this->allSubspaceNodes.emplace_back(this->dim, this->subspaceCount);
 
       //////////////////////////////////////
       // now the jump links can be created

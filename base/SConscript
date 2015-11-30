@@ -19,18 +19,11 @@ Import('exampleTargetList')
 moduleDependencies = []
 Export('moduleDependencies')
 
+additionalDependencies = []
 if env['USE_OCL']:
-    moduleDependencies += ['OpenCL']
+    additionalDependencies += ['OpenCL']
 
-# srcs = []
-# for currentFolder, subdirNames, fileNames in os.walk("."):
-#     if currentFolder.startswith("./src"):
-#         for fileName in fnmatch.filter(fileNames, '*.cpp'):
-#             srcs.append(os.path.join(currentFolder, fileName))
-#
-# objs = []
-# for sourceFile in srcs:
-#     objs.append(env.SharedObject(sourceFile))
+moduleDependencies = additionalDependencies + moduleDependencies
 
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
@@ -90,13 +83,13 @@ else:
 
 libInstall = env.Install(BUILD_DIR, lib)
 
-for fileName in os.listdir("examples"):
-    if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=BUILD_DIR,
-                              LIBS=[libname] + moduleDependencies)
-        env.Requires(example, libInstall)
-        exampleTargetList.append(example)
+if env["ARCH"] != "MIC":
+    for fileName in os.listdir("examples"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            example = env.Program(source=os.path.join("examples", fileName),
+                                  LIBS=[libname] + moduleDependencies)
+            env.Requires(example, libInstall)
+            exampleTargetList.append(example)
 
 # build unit tests
 if env['COMPILE_BOOST_TESTS']:
@@ -125,4 +118,3 @@ if env['COMPILE_BOOST_TESTS']:
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
-

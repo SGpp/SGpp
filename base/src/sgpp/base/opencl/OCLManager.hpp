@@ -7,18 +7,20 @@
 
 #pragma once
 
+#include <sgpp/globaldef.hpp>
+
 //define required for clCreateCommandQueue on platforms that don't support OCL2.0 yet
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
 
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
   namespace base {
 
     class OCLManager {
       public:
-        base::OpenCLConfigurationParameters parameters;
+        std::shared_ptr<base::OCLOperationConfiguration> parameters;
         cl_uint num_platforms;
         cl_platform_id platform_id;
         cl_platform_id* platform_ids;
@@ -29,7 +31,9 @@ namespace SGPP {
         bool verbose;
 
       public:
-        OCLManager(base::OpenCLConfigurationParameters parameters);
+        OCLManager(std::shared_ptr<base::OCLOperationConfiguration> parameters);
+
+        ~OCLManager();
 
         /**
          * @brief buildKernel builds the program that is represented by @a program_src and creates @a num_devices kernel objects

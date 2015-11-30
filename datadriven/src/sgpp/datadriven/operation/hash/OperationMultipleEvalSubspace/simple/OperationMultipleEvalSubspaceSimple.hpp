@@ -58,7 +58,7 @@ namespace SGPP {
 
         size_t flattenLevel(size_t dim, size_t maxLevel, std::vector<size_t>& level);
 
-        static inline size_t calculateIndexComponent(size_t dim, float_t unadjusted) {
+        static inline size_t calculateIndexComponent(float_t unadjusted) {
           //implies flooring
           size_t rounded = static_cast<size_t>(unadjusted);
 
