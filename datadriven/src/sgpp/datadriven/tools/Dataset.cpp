@@ -29,12 +29,12 @@ namespace SGPP {
       return dimension;
     }
 
-    SGPP::base::DataVector &Dataset::getClasses() {
-      return classes;
+    SGPP::base::DataVector* Dataset::getClasses() {
+      return &classes;
     }
 
-    SGPP::base::DataMatrix &Dataset::getTrainingData() {
-      return trainingData;
+    SGPP::base::DataMatrix* Dataset::getTrainingData() {
+      return &trainingData;
     }
 
   }

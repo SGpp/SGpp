@@ -79,11 +79,6 @@ namespace SGPP {
         virtual void prepare() {
         }
 
-        virtual float_t getDuration() {
-            throw new SGPP::base::operation_exception(
-              "error: OperationMultipleEval::getDuration(): not implemented for this kernel");
-        }
-
         /**
          * Name of this implementation of the operation.
          */

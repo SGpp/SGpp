@@ -13,12 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
-#ifndef STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH
-//#define STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH 24
-#define STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH 96
-#endif
-
 namespace SGPP {
   namespace datadriven {
 
@@ -53,7 +47,7 @@ namespace SGPP {
 
         void prepare() override;
 
-        float_t getDuration() override;
+        float_t getDuration();
 
       private:
         void getPartitionSegment(size_t start, size_t end, size_t segmentCount,

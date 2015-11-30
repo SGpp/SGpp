@@ -66,7 +66,7 @@ namespace SGPP {
             //float_t unadjusted = dataTuplePtr[i] * hInversePtr[i];
             float_t unadjusted = dataTuplePtr[i] * static_cast<float_t>(hInversePtr[i]);
             //cout << "dataPoints[" << (i) << "] = " << dataTuplePtr[i] << endl;
-            indexPtr[i] = calculateIndexComponent(unadjusted);
+            indexPtr[i] = calculateIndexComponent(dim, unadjusted);
           }
 
           size_t indexFlat = this->flattenIndex(intermediates, dim, hInversePtr, indexPtr, nextIterationToRecalc);
@@ -117,4 +117,4 @@ namespace SGPP {
     }
 
   }
-
+}

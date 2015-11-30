@@ -47,18 +47,4 @@ namespace SGPP {
 }
 /* namespace SGPP */
 
-#if __cplusplus == 201103L
-#include <memory>
-
-namespace std {
-//Implementation for "make_unique" in c++11 as it doesn't contain this function.  (see std::make_shared)
-//This function is part of the C++14 (and newer) standard.
-template<typename T, typename ...Args>
-std::unique_ptr<T> make_unique(Args&& ...args) {
-return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-
-}
-#endif
-
 #endif /* SGPP_GLOBALDEF_HPP_ */

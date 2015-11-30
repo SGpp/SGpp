@@ -65,7 +65,7 @@ namespace SGPP {
           for (size_t i = 0; i < dim; i++) {
 #endif
             float_t unadjusted = dataTuplePtr[i] * static_cast<float_t>(hInversePtr[i]);
-            indexPtr[i] = calculateIndexComponent(unadjusted);
+            indexPtr[i] = calculateIndexComponent(dim, unadjusted);
           }
 
           size_t indexFlat = this->flattenIndex(intermediates, dim, hInversePtr, indexPtr, nextIterationToRecalc);
@@ -113,9 +113,9 @@ namespace SGPP {
 
       } // end iterate data points
 
-      delete[] indexPtr;
-      delete[] evalIndexValues;
-      delete[] intermediates;
+      delete indexPtr;
+      delete evalIndexValues;
+      delete intermediates;
 
       #pragma omp barrier
 

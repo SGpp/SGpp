@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/opencl/OCLManager.hpp>
+#include "OCLManager.hpp"
 
 namespace SGPP {
   namespace base {
@@ -20,7 +20,7 @@ namespace SGPP {
 
     class OCLStretchedBuffer {
       private:
-        std::shared_ptr<OCLManager> manager;
+        OCLManager& manager;
         bool initialized;
         cl_mem* bufferList;
         size_t sizeofType;
@@ -31,9 +31,7 @@ namespace SGPP {
         void* mappedHostBuffer;
       public:
 
-        OCLStretchedBuffer(std::shared_ptr<OCLManager> manager);
-
-        ~OCLStretchedBuffer();
+        OCLStretchedBuffer(OCLManager& manager);
 
         bool isInitialized();
 

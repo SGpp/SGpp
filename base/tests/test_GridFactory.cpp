@@ -457,6 +457,7 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
   // This should fail
   BOOST_CHECK_THROW( gen->regular(3), generation_exception );
 
+
   delete( gen );
   delete( factory );
 }

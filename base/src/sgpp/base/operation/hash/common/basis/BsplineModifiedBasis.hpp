@@ -168,269 +168,269 @@ namespace SGPP {
 
               break;
 
-              /*case 2:
-                  if ((x < 0.0) || (x >= 2.5))
-                  {
-                      return 0.0;
-                  } else if (x < 1.5)
-                  {
-                      return -x + 2.0;
-                  } else
-                  {
-                      return 0.5*x*x - 2.5*x + 3.125;
-                  }
-                  break;
-              case 4:
-                  if ((x < 0.0) || (x >= 3.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      return -x + 2.0;
-                  } else if (x < 1.5)
-                  {
-                      float_t result = 1.0/24.0;
-                      result = -1.0/12.0 + result * x;
-                      result = 0.0625 + result * x;
-                      result = -49.0/48.0 + result * x;
-                      result = 769.0/384.0 + result * x;
-                      return result;
-                  } else if (x < 2.5)
-                  {
-                      float_t result = -1.0/12.0;
-                      result = 2.0/3.0 + result * x;
-                      result = -1.625 + result * x;
-                      result = 2.0/3.0 + result * x;
-                      result = 263.0/192.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = 1.0/24.0;
-                      result = -7.0/12.0 + result * x;
-                      result = 3.0625 + result * x;
-                      result = -343.0/48.0 + result * x;
-                      result = 2401.0/384.0 + result * x;
-                      return result;
-                  }
-                  break;
-              case 6:
-                  if ((x < 0.0) || (x >= 4.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      float_t result = 1.0/720.0;
-                      result = 1.0/240.0 + result * x;
-                      result = 1.0/192.0 + result * x;
-                      result = 1.0/288.0 + result * x;
-                      result = 1.0/768.0 + result * x;
-                      result = -3839.0/3840.0 + result * x;
-                      result = 92161.0/46080.0 + result * x;
-                      return result;
-                  } else if (x < 1.5)
-                  {
-                      float_t result = -1.0/180.0;
-                      result = 0.025 + result * x;
-                      result = -1.0/48.0 + result * x;
-                      result = 1.0/48.0 + result * x;
-                      result = -1.0/192.0 + result * x;
-                      result = -0.9984375 + result * x;
-                      result = 23039.0/11520.0 + result * x;
-                      return result;
-                  } else if (x < 2.5)
-                  {
-                      float_t result = 1.0/120.0;
-                      result = -0.1 + result * x;
-                      result = 43.0/96.0 + result * x;
-                      result = -11.0/12.0 + result * x;
-                      result = 403.0/384.0 + result * x;
-                      result = -1.63125 + result * x;
-                      result = 49723.0/23040.0 + result * x;
-                      return result;
-                  } else if (x < 3.5)
-                  {
-                      float_t result = -1.0/180.0;
-                      result = 13.0/120.0 + result * x;
-                      result = -41.0/48.0 + result * x;
-                      result = 493.0/144.0 + result * x;
-                      result = -1361.0/192.0 + result * x;
-                      result = 12493.0/1920.0 + result * x;
-                      result = -14201.0/11520.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = 1.0/720.0;
-                      result = -0.0375 + result * x;
-                      result = 0.421875 + result * x;
-                      result = -2.53125 + result * x;
-                      result = 8.54296875 + result * x;
-                      result = -15.37734375 + result * x;
-                      result = 11.5330078125 + result * x;
-                      return result;
-                  }
-                  break;
-              case 8:
-                  if ((x < 0.0) || (x >= 5.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      float_t result = -1.0/6720.0;
-                      result = -1.0/2520.0 + result * x;
-                      result = 1.0/2880.0 + result * x;
-                      result = 1.0/288.0 + result * x;
-                      result = 37.0/4608.0 + result * x;
-                      result = 59.0/5760.0 + result * x;
-                      result = 361.0/46080.0 + result * x;
-                      result = -32147.0/32256.0 + result * x;
-                      result = 10325197.0/5160960.0 + result * x;
-                      return result;
-                  } else if (x < 1.5)
-                  {
-                      float_t result = 1.0/2688.0;
-                      result = -5.0/2016.0 + result * x;
-                      result = 23.0/5760.0 + result * x;
-                      result = -1.0/5760.0 + result * x;
-                      result = 95.0/9216.0 + result * x;
-                      result = 43.0/4608.0 + result * x;
-                      result = 743.0/92160.0 + result * x;
-                      result = -642961.0/645120.0 + result * x;
-                      result = 4130083.0/2064384.0 + result * x;
-                      return result;
-                  } else if (x < 2.5)
-                  {
-                      float_t result = -1.0/2016.0;
-                      result = 1.0/126.0 + result * x;
-                      result = -73.0/1440.0 + result * x;
-                      result = 59.0/360.0 + result * x;
-                      result = -685.0/2304.0 + result * x;
-                      result = 109.0/288.0 + result * x;
-                      result = -6193.0/23040.0 + result * x;
-                      result = -35401.0/40320.0 + result * x;
-                      result = 1021039.0/516096.0 + result * x;
-                      return result;
-                  } else if (x < 3.5)
-                  {
-                      float_t result = 1.0/2688.0;
-                      result = -19.0/2016.0 + result * x;
-                      result = 583.0/5760.0 + result * x;
-                      result = -3431.0/5760.0 + result * x;
-                      result = 19135.0/9216.0 + result * x;
-                      result = -20131.0/4608.0 + result * x;
-                      result = 522103.0/92160.0 + result * x;
-                      result = -3300791.0/645120.0 + result * x;
-                      result = 6818531.0/2064384.0 + result * x;
-                      return result;
-                  } else if (x < 4.5)
-                  {
-                      float_t result = -1.0/6720.0;
-                      result = 13.0/2520.0 + result * x;
-                      result = -223.0/2880.0 + result * x;
-                      result = 943.0/1440.0 + result * x;
-                      result = -15643.0/4608.0 + result * x;
-                      result = 63073.0/5760.0 + result * x;
-                      result = -974263.0/46080.0 + result * x;
-                      result = 3498403.0/161280.0 + result * x;
-                      result = -43484083.0/5160960.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = 1.0/40320.0;
-                      result = -11.0/10080.0 + result * x;
-                      result = 121.0/5760.0 + result * x;
-                      result = -1331.0/5760.0 + result * x;
-                      result = 14641.0/9216.0 + result * x;
-                      result = -161051.0/23040.0 + result * x;
-                      result = 1771561.0/92160.0 + result * x;
-                      result = -19487171.0/645120.0 + result * x;
-                      result = 214358881.0/10321920.0 + result * x;
-                      return result;
-                  }
-                  break;
-              case 9:
-                  if ((x < 0.0) || (x >= 6.0))
-                  {
-                      return 0.0;
-                  } else if (x < 1.0)
-                  {
-                      float_t result = 1.0/17280.0;
-                      result = -1.0/6720.0 + result * x;
-                      result = -1.0/2520.0 + result * x;
-                      result *= x;
-                      result = 1.0/360.0 + result * x;
-                      result = 1.0/120.0 + result * x;
-                      result = 7.0/540.0 + result * x;
-                      result = 1.0/84.0 + result * x;
-                      result = -5009.0/5040.0 + result * x;
-                      result = 1441.0/720.0 + result * x;
-                      return result;
-                  } else if (x < 2.0)
-                  {
-                      float_t result = -1.0/10368.0;
-                      result = 5.0/4032.0 + result * x;
-                      result = -1.0/168.0 + result * x;
-                      result = 7.0/540.0 + result * x;
-                      result = -1.0/60.0 + result * x;
-                      result = 1.0/36.0 + result * x;
-                      result *= x;
-                      result = 11.0/630.0 + result * x;
-                      result = -209.0/210.0 + result * x;
-                      result = 1297.0/648.0 + result * x;
-                      return result;
-                  } else if (x < 3.0)
-                  {
-                      float_t result = 1.0/10368.0;
-                      result = -1.0/448.0 + result * x;
-                      result = 11.0/504.0 + result * x;
-                      result = -7.0/60.0 + result * x;
-                      result = 67.0/180.0 + result * x;
-                      result = -0.75 + result * x;
-                      result = 28.0/27.0 + result * x;
-                      result = -61.0/70.0 + result * x;
-                      result = -347.0/630.0 + result * x;
-                      result = 137.0/72.0 + result * x;
-                      return result;
-                  } else if (x < 4.0)
-                  {
-                      float_t result = -1.0/17280.0;
-                      result = 13.0/6720.0 + result * x;
-                      result = -71.0/2520.0 + result * x;
-                      result = 7.0/30.0 + result * x;
-                      result = -433.0/360.0 + result * x;
-                      result = 3.975 + result * x;
-                      result = -4543.0/540.0 + result * x;
-                      result = 1579.0/140.0 + result * x;
-                      result = -48703.0/5040.0 + result * x;
-                      result = 3557.0/720.0 + result * x;
-                      return result;
-                  } else if (x < 5.0)
-                  {
-                      float_t result = 1.0/51840.0;
-                      result = -17.0/20160.0 + result * x;
-                      result = 41.0/2520.0 + result * x;
-                      result = -49.0/270.0 + result * x;
-                      result = 463.0/360.0 + result * x;
-                      result = -2153.0/360.0 + result * x;
-                      result = 9793.0/540.0 + result * x;
-                      result = -43133.0/1260.0 + result * x;
-                      result = 180673.0/5040.0 + result * x;
-                      result = -99059.0/6480.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = -1.0/362880.0;
-                      result = 1.0/6720.0 + result * x;
-                      result = -1.0/280.0 + result * x;
-                      result = 0.05 + result * x;
-                      result = -0.45 + result * x;
-                      result = 2.7 + result * x;
-                      result = -10.8 + result * x;
-                      result = 972.0/35.0 + result * x;
-                      result = -1458.0/35.0 + result * x;
-                      result = 972.0/35.0 + result * x;
-                      return result;
-                  }
-                  break;*/
+            /*case 2:
+                if ((x < 0.0) || (x >= 2.5))
+                {
+                    return 0.0;
+                } else if (x < 1.5)
+                {
+                    return -x + 2.0;
+                } else
+                {
+                    return 0.5*x*x - 2.5*x + 3.125;
+                }
+                break;
+            case 4:
+                if ((x < 0.0) || (x >= 3.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    return -x + 2.0;
+                } else if (x < 1.5)
+                {
+                    float_t result = 1.0/24.0;
+                    result = -1.0/12.0 + result * x;
+                    result = 0.0625 + result * x;
+                    result = -49.0/48.0 + result * x;
+                    result = 769.0/384.0 + result * x;
+                    return result;
+                } else if (x < 2.5)
+                {
+                    float_t result = -1.0/12.0;
+                    result = 2.0/3.0 + result * x;
+                    result = -1.625 + result * x;
+                    result = 2.0/3.0 + result * x;
+                    result = 263.0/192.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = 1.0/24.0;
+                    result = -7.0/12.0 + result * x;
+                    result = 3.0625 + result * x;
+                    result = -343.0/48.0 + result * x;
+                    result = 2401.0/384.0 + result * x;
+                    return result;
+                }
+                break;
+            case 6:
+                if ((x < 0.0) || (x >= 4.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    float_t result = 1.0/720.0;
+                    result = 1.0/240.0 + result * x;
+                    result = 1.0/192.0 + result * x;
+                    result = 1.0/288.0 + result * x;
+                    result = 1.0/768.0 + result * x;
+                    result = -3839.0/3840.0 + result * x;
+                    result = 92161.0/46080.0 + result * x;
+                    return result;
+                } else if (x < 1.5)
+                {
+                    float_t result = -1.0/180.0;
+                    result = 0.025 + result * x;
+                    result = -1.0/48.0 + result * x;
+                    result = 1.0/48.0 + result * x;
+                    result = -1.0/192.0 + result * x;
+                    result = -0.9984375 + result * x;
+                    result = 23039.0/11520.0 + result * x;
+                    return result;
+                } else if (x < 2.5)
+                {
+                    float_t result = 1.0/120.0;
+                    result = -0.1 + result * x;
+                    result = 43.0/96.0 + result * x;
+                    result = -11.0/12.0 + result * x;
+                    result = 403.0/384.0 + result * x;
+                    result = -1.63125 + result * x;
+                    result = 49723.0/23040.0 + result * x;
+                    return result;
+                } else if (x < 3.5)
+                {
+                    float_t result = -1.0/180.0;
+                    result = 13.0/120.0 + result * x;
+                    result = -41.0/48.0 + result * x;
+                    result = 493.0/144.0 + result * x;
+                    result = -1361.0/192.0 + result * x;
+                    result = 12493.0/1920.0 + result * x;
+                    result = -14201.0/11520.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = 1.0/720.0;
+                    result = -0.0375 + result * x;
+                    result = 0.421875 + result * x;
+                    result = -2.53125 + result * x;
+                    result = 8.54296875 + result * x;
+                    result = -15.37734375 + result * x;
+                    result = 11.5330078125 + result * x;
+                    return result;
+                }
+                break;
+            case 8:
+                if ((x < 0.0) || (x >= 5.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    float_t result = -1.0/6720.0;
+                    result = -1.0/2520.0 + result * x;
+                    result = 1.0/2880.0 + result * x;
+                    result = 1.0/288.0 + result * x;
+                    result = 37.0/4608.0 + result * x;
+                    result = 59.0/5760.0 + result * x;
+                    result = 361.0/46080.0 + result * x;
+                    result = -32147.0/32256.0 + result * x;
+                    result = 10325197.0/5160960.0 + result * x;
+                    return result;
+                } else if (x < 1.5)
+                {
+                    float_t result = 1.0/2688.0;
+                    result = -5.0/2016.0 + result * x;
+                    result = 23.0/5760.0 + result * x;
+                    result = -1.0/5760.0 + result * x;
+                    result = 95.0/9216.0 + result * x;
+                    result = 43.0/4608.0 + result * x;
+                    result = 743.0/92160.0 + result * x;
+                    result = -642961.0/645120.0 + result * x;
+                    result = 4130083.0/2064384.0 + result * x;
+                    return result;
+                } else if (x < 2.5)
+                {
+                    float_t result = -1.0/2016.0;
+                    result = 1.0/126.0 + result * x;
+                    result = -73.0/1440.0 + result * x;
+                    result = 59.0/360.0 + result * x;
+                    result = -685.0/2304.0 + result * x;
+                    result = 109.0/288.0 + result * x;
+                    result = -6193.0/23040.0 + result * x;
+                    result = -35401.0/40320.0 + result * x;
+                    result = 1021039.0/516096.0 + result * x;
+                    return result;
+                } else if (x < 3.5)
+                {
+                    float_t result = 1.0/2688.0;
+                    result = -19.0/2016.0 + result * x;
+                    result = 583.0/5760.0 + result * x;
+                    result = -3431.0/5760.0 + result * x;
+                    result = 19135.0/9216.0 + result * x;
+                    result = -20131.0/4608.0 + result * x;
+                    result = 522103.0/92160.0 + result * x;
+                    result = -3300791.0/645120.0 + result * x;
+                    result = 6818531.0/2064384.0 + result * x;
+                    return result;
+                } else if (x < 4.5)
+                {
+                    float_t result = -1.0/6720.0;
+                    result = 13.0/2520.0 + result * x;
+                    result = -223.0/2880.0 + result * x;
+                    result = 943.0/1440.0 + result * x;
+                    result = -15643.0/4608.0 + result * x;
+                    result = 63073.0/5760.0 + result * x;
+                    result = -974263.0/46080.0 + result * x;
+                    result = 3498403.0/161280.0 + result * x;
+                    result = -43484083.0/5160960.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = 1.0/40320.0;
+                    result = -11.0/10080.0 + result * x;
+                    result = 121.0/5760.0 + result * x;
+                    result = -1331.0/5760.0 + result * x;
+                    result = 14641.0/9216.0 + result * x;
+                    result = -161051.0/23040.0 + result * x;
+                    result = 1771561.0/92160.0 + result * x;
+                    result = -19487171.0/645120.0 + result * x;
+                    result = 214358881.0/10321920.0 + result * x;
+                    return result;
+                }
+                break;
+            case 9:
+                if ((x < 0.0) || (x >= 6.0))
+                {
+                    return 0.0;
+                } else if (x < 1.0)
+                {
+                    float_t result = 1.0/17280.0;
+                    result = -1.0/6720.0 + result * x;
+                    result = -1.0/2520.0 + result * x;
+                    result *= x;
+                    result = 1.0/360.0 + result * x;
+                    result = 1.0/120.0 + result * x;
+                    result = 7.0/540.0 + result * x;
+                    result = 1.0/84.0 + result * x;
+                    result = -5009.0/5040.0 + result * x;
+                    result = 1441.0/720.0 + result * x;
+                    return result;
+                } else if (x < 2.0)
+                {
+                    float_t result = -1.0/10368.0;
+                    result = 5.0/4032.0 + result * x;
+                    result = -1.0/168.0 + result * x;
+                    result = 7.0/540.0 + result * x;
+                    result = -1.0/60.0 + result * x;
+                    result = 1.0/36.0 + result * x;
+                    result *= x;
+                    result = 11.0/630.0 + result * x;
+                    result = -209.0/210.0 + result * x;
+                    result = 1297.0/648.0 + result * x;
+                    return result;
+                } else if (x < 3.0)
+                {
+                    float_t result = 1.0/10368.0;
+                    result = -1.0/448.0 + result * x;
+                    result = 11.0/504.0 + result * x;
+                    result = -7.0/60.0 + result * x;
+                    result = 67.0/180.0 + result * x;
+                    result = -0.75 + result * x;
+                    result = 28.0/27.0 + result * x;
+                    result = -61.0/70.0 + result * x;
+                    result = -347.0/630.0 + result * x;
+                    result = 137.0/72.0 + result * x;
+                    return result;
+                } else if (x < 4.0)
+                {
+                    float_t result = -1.0/17280.0;
+                    result = 13.0/6720.0 + result * x;
+                    result = -71.0/2520.0 + result * x;
+                    result = 7.0/30.0 + result * x;
+                    result = -433.0/360.0 + result * x;
+                    result = 3.975 + result * x;
+                    result = -4543.0/540.0 + result * x;
+                    result = 1579.0/140.0 + result * x;
+                    result = -48703.0/5040.0 + result * x;
+                    result = 3557.0/720.0 + result * x;
+                    return result;
+                } else if (x < 5.0)
+                {
+                    float_t result = 1.0/51840.0;
+                    result = -17.0/20160.0 + result * x;
+                    result = 41.0/2520.0 + result * x;
+                    result = -49.0/270.0 + result * x;
+                    result = 463.0/360.0 + result * x;
+                    result = -2153.0/360.0 + result * x;
+                    result = 9793.0/540.0 + result * x;
+                    result = -43133.0/1260.0 + result * x;
+                    result = 180673.0/5040.0 + result * x;
+                    result = -99059.0/6480.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = -1.0/362880.0;
+                    result = 1.0/6720.0 + result * x;
+                    result = -1.0/280.0 + result * x;
+                    result = 0.05 + result * x;
+                    result = -0.45 + result * x;
+                    result = 2.7 + result * x;
+                    result = -10.8 + result * x;
+                    result = 972.0/35.0 + result * x;
+                    result = -1458.0/35.0 + result * x;
+                    result = 972.0/35.0 + result * x;
+                    return result;
+                }
+                break;*/
             default:
               // the degree is too damn high
               // ==> calculate modified B-spline value via definition
@@ -572,237 +572,237 @@ namespace SGPP {
 
               break;
 
-              /*case 2:
-                  if ((x < 0.0) || (x >= 2.5))
-                  {
-                      return 0.0;
-                  } else if (x < 1.5)
-                  {
-                      return -1.0;
-                  } else
-                  {
-                      return x - 2.5;
-                  }
-                  break;
-              case 4:
-                  if ((x < 0.0) || (x >= 3.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      return -1.0;
-                  } else if (x < 1.5)
-                  {
-                      return 1.0/6.0*x*x*x - 0.25*x*x + 0.125*x - 49.0/48.0;
-                  } else if (x < 2.5)
-                  {
-                      return -1.0/3.0*x*x*x + 2.0*x*x - 3.25*x + 2.0/3.0;
-                  } else
-                  {
-                      return 1.0/6.0*x*x*x - 1.75*x*x + 6.125*x - 343.0/48.0;
-                  }
-                  break;
-              case 6:
-                  if ((x < 0.0) || (x >= 4.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      float_t result = 1.0/120.0;
-                      result = 1.0/48.0 + result * x;
-                      result = 1.0/48.0 + result * x;
-                      result = 1.0/96.0 + result * x;
-                      result = 1.0/384.0 + result * x;
-                      result = -3839.0/3840.0 + result * x;
-                      return result;
-                  } else if (x < 1.5)
-                  {
-                      float_t result = -1.0/30.0;
-                      result = 0.125 + result * x;
-                      result = -1.0/12.0 + result * x;
-                      result = 0.0625 + result * x;
-                      result = -1.0/96.0 + result * x;
-                      result = -0.9984375 + result * x;
-                      return result;
-                  } else if (x < 2.5)
-                  {
-                      float_t result = 0.05;
-                      result = -0.5 + result * x;
-                      result = 43.0/24.0 + result * x;
-                      result = -2.75 + result * x;
-                      result = 403.0/192.0 + result * x;
-                      result = -1.63125 + result * x;
-                      return result;
-                  } else if (x < 3.5)
-                  {
-                      float_t result = -1.0/30.0;
-                      result = 13.0/24.0 + result * x;
-                      result = -41.0/12.0 + result * x;
-                      result = 493.0/48.0 + result * x;
-                      result = -1361.0/96.0 + result * x;
-                      result = 12493.0/1920.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = 1.0/120.0;
-                      result = -0.1875 + result * x;
-                      result = 1.6875 + result * x;
-                      result = -7.59375 + result * x;
-                      result = 17.0859375 + result * x;
-                      result = -15.37734375 + result * x;
-                      return result;
-                  }
-                  break;
-              case 8:
-                  if ((x < 0.0) || (x >= 5.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      float_t result = -1.0/840.0;
-                      result = -1.0/360.0 + result * x;
-                      result = 1.0/480.0 + result * x;
-                      result = 5.0/288.0 + result * x;
-                      result = 37.0/1152.0 + result * x;
-                      result = 59.0/1920.0 + result * x;
-                      result = 361.0/23040.0 + result * x;
-                      result = -32147.0/32256.0 + result * x;
-                      return result;
-                  } else if (x < 1.5)
-                  {
-                      float_t result = 1.0/336.0;
-                      result = -5.0/288.0 + result * x;
-                      result = 23.0/960.0 + result * x;
-                      result = -1.0/1152.0 + result * x;
-                      result = 95.0/2304.0 + result * x;
-                      result = 43.0/1536.0 + result * x;
-                      result = 743.0/46080.0 + result * x;
-                      result = -642961.0/645120.0 + result * x;
-                      return result;
-                  } else if (x < 2.5)
-                  {
-                      float_t result = -1.0/252.0;
-                      result = 1.0/18.0 + result * x;
-                      result = -73.0/240.0 + result * x;
-                      result = 59.0/72.0 + result * x;
-                      result = -685.0/576.0 + result * x;
-                      result = 109.0/96.0 + result * x;
-                      result = -6193.0/11520.0 + result * x;
-                      result = -35401.0/40320.0 + result * x;
-                      return result;
-                  } else if (x < 3.5)
-                  {
-                      float_t result = 1.0/336.0;
-                      result = -19.0/288.0 + result * x;
-                      result = 583.0/960.0 + result * x;
-                      result = -3431.0/1152.0 + result * x;
-                      result = 19135.0/2304.0 + result * x;
-                      result = -20131.0/1536.0 + result * x;
-                      result = 522103.0/46080.0 + result * x;
-                      result = -3300791.0/645120.0 + result * x;
-                      return result;
-                  } else if (x < 4.5)
-                  {
-                      float_t result = -1.0/840.0;
-                      result = 13.0/360.0 + result * x;
-                      result = -223.0/480.0 + result * x;
-                      result = 943.0/288.0 + result * x;
-                      result = -15643.0/1152.0 + result * x;
-                      result = 63073.0/1920.0 + result * x;
-                      result = -974263.0/23040.0 + result * x;
-                      result = 3498403.0/161280.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = 1.0/5040.0;
-                      result = -11.0/1440.0 + result * x;
-                      result = 121.0/960.0 + result * x;
-                      result = -1331.0/1152.0 + result * x;
-                      result = 14641.0/2304.0 + result * x;
-                      result = -161051.0/7680.0 + result * x;
-                      result = 1771561.0/46080.0 + result * x;
-                      result = -19487171.0/645120.0 + result * x;
-                      return result;
-                  }
-                  break;
-              case 9:
-                  if ((x < 0.0) || (x >= 6.0))
-                  {
-                      return 0.0;
-                  } else if (x < 1.0)
-                  {
-                      float_t result = 1.0/1920.0;
-                      result = -1.0/840.0 + result * x;
-                      result = -1.0/360.0 + result * x;
-                      result *= x;
-                      result = 1.0/72.0 + result * x;
-                      result = 1.0/30.0 + result * x;
-                      result = 7.0/180.0 + result * x;
-                      result = 1.0/42.0 + result * x;
-                      result = -5009.0/5040.0 + result * x;
-                      return result;
-                  } else if (x < 2.0)
-                  {
-                      float_t result = -1.0/1152.0;
-                      result = 5.0/504.0 + result * x;
-                      result = -1.0/24.0 + result * x;
-                      result = 7.0/90.0 + result * x;
-                      result = -1.0/12.0 + result * x;
-                      result = 1.0/9.0 + result * x;
-                      result *= x;
-                      result = 11.0/315.0 + result * x;
-                      result = -209.0/210.0 + result * x;
-                      return result;
-                  } else if (x < 3.0)
-                  {
-                      float_t result = 1.0/1152.0;
-                      result = -1.0/56.0 + result * x;
-                      result = 11.0/72.0 + result * x;
-                      result = -0.7 + result * x;
-                      result = 67.0/36.0 + result * x;
-                      result = -3.0 + result * x;
-                      result = 28.0/9.0 + result * x;
-                      result = -61.0/35.0 + result * x;
-                      result = -347.0/630.0 + result * x;
-                      return result;
-                  } else if (x < 4.0)
-                  {
-                      float_t result = -1.0/1920.0;
-                      result = 13.0/840.0 + result * x;
-                      result = -71.0/360.0 + result * x;
-                      result = 1.4 + result * x;
-                      result = -433.0/72.0 + result * x;
-                      result = 15.9 + result * x;
-                      result = -4543.0/180.0 + result * x;
-                      result = 1579.0/70.0 + result * x;
-                      result = -48703.0/5040.0 + result * x;
-                      return result;
-                  } else if (x < 5.0)
-                  {
-                      float_t result = 1.0/5760.0;
-                      result = -17.0/2520.0 + result * x;
-                      result = 41.0/360.0 + result * x;
-                      result = -49.0/45.0 + result * x;
-                      result = 463.0/72.0 + result * x;
-                      result = -2153.0/90.0 + result * x;
-                      result = 9793.0/180.0 + result * x;
-                      result = -43133.0/630.0 + result * x;
-                      result = 180673.0/5040.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = -1.0/40320.0;
-                      result = 1.0/840.0 + result * x;
-                      result = -0.025 + result * x;
-                      result = 0.3 + result * x;
-                      result = -2.25 + result * x;
-                      result = 10.8 + result * x;
-                      result = -32.4 + result * x;
-                      result = 1944.0/35.0 + result * x;
-                      result = -1458.0/35.0 + result * x;
-                      return result;
-                  }
-                  break;*/
+            /*case 2:
+                if ((x < 0.0) || (x >= 2.5))
+                {
+                    return 0.0;
+                } else if (x < 1.5)
+                {
+                    return -1.0;
+                } else
+                {
+                    return x - 2.5;
+                }
+                break;
+            case 4:
+                if ((x < 0.0) || (x >= 3.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    return -1.0;
+                } else if (x < 1.5)
+                {
+                    return 1.0/6.0*x*x*x - 0.25*x*x + 0.125*x - 49.0/48.0;
+                } else if (x < 2.5)
+                {
+                    return -1.0/3.0*x*x*x + 2.0*x*x - 3.25*x + 2.0/3.0;
+                } else
+                {
+                    return 1.0/6.0*x*x*x - 1.75*x*x + 6.125*x - 343.0/48.0;
+                }
+                break;
+            case 6:
+                if ((x < 0.0) || (x >= 4.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    float_t result = 1.0/120.0;
+                    result = 1.0/48.0 + result * x;
+                    result = 1.0/48.0 + result * x;
+                    result = 1.0/96.0 + result * x;
+                    result = 1.0/384.0 + result * x;
+                    result = -3839.0/3840.0 + result * x;
+                    return result;
+                } else if (x < 1.5)
+                {
+                    float_t result = -1.0/30.0;
+                    result = 0.125 + result * x;
+                    result = -1.0/12.0 + result * x;
+                    result = 0.0625 + result * x;
+                    result = -1.0/96.0 + result * x;
+                    result = -0.9984375 + result * x;
+                    return result;
+                } else if (x < 2.5)
+                {
+                    float_t result = 0.05;
+                    result = -0.5 + result * x;
+                    result = 43.0/24.0 + result * x;
+                    result = -2.75 + result * x;
+                    result = 403.0/192.0 + result * x;
+                    result = -1.63125 + result * x;
+                    return result;
+                } else if (x < 3.5)
+                {
+                    float_t result = -1.0/30.0;
+                    result = 13.0/24.0 + result * x;
+                    result = -41.0/12.0 + result * x;
+                    result = 493.0/48.0 + result * x;
+                    result = -1361.0/96.0 + result * x;
+                    result = 12493.0/1920.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = 1.0/120.0;
+                    result = -0.1875 + result * x;
+                    result = 1.6875 + result * x;
+                    result = -7.59375 + result * x;
+                    result = 17.0859375 + result * x;
+                    result = -15.37734375 + result * x;
+                    return result;
+                }
+                break;
+            case 8:
+                if ((x < 0.0) || (x >= 5.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    float_t result = -1.0/840.0;
+                    result = -1.0/360.0 + result * x;
+                    result = 1.0/480.0 + result * x;
+                    result = 5.0/288.0 + result * x;
+                    result = 37.0/1152.0 + result * x;
+                    result = 59.0/1920.0 + result * x;
+                    result = 361.0/23040.0 + result * x;
+                    result = -32147.0/32256.0 + result * x;
+                    return result;
+                } else if (x < 1.5)
+                {
+                    float_t result = 1.0/336.0;
+                    result = -5.0/288.0 + result * x;
+                    result = 23.0/960.0 + result * x;
+                    result = -1.0/1152.0 + result * x;
+                    result = 95.0/2304.0 + result * x;
+                    result = 43.0/1536.0 + result * x;
+                    result = 743.0/46080.0 + result * x;
+                    result = -642961.0/645120.0 + result * x;
+                    return result;
+                } else if (x < 2.5)
+                {
+                    float_t result = -1.0/252.0;
+                    result = 1.0/18.0 + result * x;
+                    result = -73.0/240.0 + result * x;
+                    result = 59.0/72.0 + result * x;
+                    result = -685.0/576.0 + result * x;
+                    result = 109.0/96.0 + result * x;
+                    result = -6193.0/11520.0 + result * x;
+                    result = -35401.0/40320.0 + result * x;
+                    return result;
+                } else if (x < 3.5)
+                {
+                    float_t result = 1.0/336.0;
+                    result = -19.0/288.0 + result * x;
+                    result = 583.0/960.0 + result * x;
+                    result = -3431.0/1152.0 + result * x;
+                    result = 19135.0/2304.0 + result * x;
+                    result = -20131.0/1536.0 + result * x;
+                    result = 522103.0/46080.0 + result * x;
+                    result = -3300791.0/645120.0 + result * x;
+                    return result;
+                } else if (x < 4.5)
+                {
+                    float_t result = -1.0/840.0;
+                    result = 13.0/360.0 + result * x;
+                    result = -223.0/480.0 + result * x;
+                    result = 943.0/288.0 + result * x;
+                    result = -15643.0/1152.0 + result * x;
+                    result = 63073.0/1920.0 + result * x;
+                    result = -974263.0/23040.0 + result * x;
+                    result = 3498403.0/161280.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = 1.0/5040.0;
+                    result = -11.0/1440.0 + result * x;
+                    result = 121.0/960.0 + result * x;
+                    result = -1331.0/1152.0 + result * x;
+                    result = 14641.0/2304.0 + result * x;
+                    result = -161051.0/7680.0 + result * x;
+                    result = 1771561.0/46080.0 + result * x;
+                    result = -19487171.0/645120.0 + result * x;
+                    return result;
+                }
+                break;
+            case 9:
+                if ((x < 0.0) || (x >= 6.0))
+                {
+                    return 0.0;
+                } else if (x < 1.0)
+                {
+                    float_t result = 1.0/1920.0;
+                    result = -1.0/840.0 + result * x;
+                    result = -1.0/360.0 + result * x;
+                    result *= x;
+                    result = 1.0/72.0 + result * x;
+                    result = 1.0/30.0 + result * x;
+                    result = 7.0/180.0 + result * x;
+                    result = 1.0/42.0 + result * x;
+                    result = -5009.0/5040.0 + result * x;
+                    return result;
+                } else if (x < 2.0)
+                {
+                    float_t result = -1.0/1152.0;
+                    result = 5.0/504.0 + result * x;
+                    result = -1.0/24.0 + result * x;
+                    result = 7.0/90.0 + result * x;
+                    result = -1.0/12.0 + result * x;
+                    result = 1.0/9.0 + result * x;
+                    result *= x;
+                    result = 11.0/315.0 + result * x;
+                    result = -209.0/210.0 + result * x;
+                    return result;
+                } else if (x < 3.0)
+                {
+                    float_t result = 1.0/1152.0;
+                    result = -1.0/56.0 + result * x;
+                    result = 11.0/72.0 + result * x;
+                    result = -0.7 + result * x;
+                    result = 67.0/36.0 + result * x;
+                    result = -3.0 + result * x;
+                    result = 28.0/9.0 + result * x;
+                    result = -61.0/35.0 + result * x;
+                    result = -347.0/630.0 + result * x;
+                    return result;
+                } else if (x < 4.0)
+                {
+                    float_t result = -1.0/1920.0;
+                    result = 13.0/840.0 + result * x;
+                    result = -71.0/360.0 + result * x;
+                    result = 1.4 + result * x;
+                    result = -433.0/72.0 + result * x;
+                    result = 15.9 + result * x;
+                    result = -4543.0/180.0 + result * x;
+                    result = 1579.0/70.0 + result * x;
+                    result = -48703.0/5040.0 + result * x;
+                    return result;
+                } else if (x < 5.0)
+                {
+                    float_t result = 1.0/5760.0;
+                    result = -17.0/2520.0 + result * x;
+                    result = 41.0/360.0 + result * x;
+                    result = -49.0/45.0 + result * x;
+                    result = 463.0/72.0 + result * x;
+                    result = -2153.0/90.0 + result * x;
+                    result = 9793.0/180.0 + result * x;
+                    result = -43133.0/630.0 + result * x;
+                    result = 180673.0/5040.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = -1.0/40320.0;
+                    result = 1.0/840.0 + result * x;
+                    result = -0.025 + result * x;
+                    result = 0.3 + result * x;
+                    result = -2.25 + result * x;
+                    result = 10.8 + result * x;
+                    result = -32.4 + result * x;
+                    result = 1944.0/35.0 + result * x;
+                    result = -1458.0/35.0 + result * x;
+                    return result;
+                }
+                break;*/
             default:
               float_t y = 0.0;
               float_t x2 = x + static_cast<float_t>(p + 1) / 2.0 - 1.0;
@@ -909,220 +909,220 @@ namespace SGPP {
               return 0.0;
               break;
 
-              /*case 2:
-                  if ((x < 0.0) || (x >= 2.5))
-                  {
-                      return 0.0;
-                  } else if (x < 1.5)
-                  {
-                      return 0.0;
-                  } else
-                  {
-                      return 1.0;
-                  }
-                  break;
-              case 4:
-                  if ((x < 0.0) || (x >= 3.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      return 0.0;
-                  } else if (x < 1.5)
-                  {
-                      return 0.5*x*x - 0.5*x + 0.125;
-                  } else if (x < 2.5)
-                  {
-                      return -x*x + 4.0*x - 3.25;
-                  } else
-                  {
-                      return 0.5*x*x - 3.5*x + 6.125;
-                  }
-                  break;
-              case 6:
-                  if ((x < 0.0) || (x >= 4.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      float_t result = 1.0/24.0;
-                      result = 1.0/12.0 + result * x;
-                      result = 0.0625 + result * x;
-                      result = 1.0/48.0 + result * x;
-                      result = 1.0/384.0 + result * x;
-                      return result;
-                  } else if (x < 1.5)
-                  {
-                      float_t result = -1.0/6.0;
-                      result = 0.5 + result * x;
-                      result = -0.25 + result * x;
-                      result = 0.125 + result * x;
-                      result = -1.0/96.0 + result * x;
-                      return result;
-                  } else if (x < 2.5)
-                  {
-                      float_t result = 0.25;
-                      result = -2.0 + result * x;
-                      result = 5.375 + result * x;
-                      result = -5.5 + result * x;
-                      result = 403.0/192.0 + result * x;
-                      return result;
-                  } else if (x < 3.5)
-                  {
-                      float_t result = -1.0/6.0;
-                      result = 13.0/6.0 + result * x;
-                      result = -10.25 + result * x;
-                      result = 493.0/24.0 + result * x;
-                      result = -1361.0/96.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = 1.0/24.0;
-                      result = -0.75 + result * x;
-                      result = 5.0625 + result * x;
-                      result = -15.1875 + result * x;
-                      result = 17.0859375 + result * x;
-                      return result;
-                  }
-                  break;
-              case 8:
-                  if ((x < 0.0) || (x >= 5.5))
-                  {
-                      return 0.0;
-                  } else if (x < 0.5)
-                  {
-                      float_t result = -1.0/120.0;
-                      result = -1.0/60.0 + result * x;
-                      result = 1.0/96.0 + result * x;
-                      result = 5.0/72.0 + result * x;
-                      result = 37.0/384.0 + result * x;
-                      result = 59.0/960.0 + result * x;
-                      result = 361.0/23040.0 + result * x;
-                      return result;
-                  } else if (x < 1.5)
-                  {
-                      float_t result = 1.0/48.0;
-                      result = -5.0/48.0 + result * x;
-                      result = 23.0/192.0 + result * x;
-                      result = -1.0/288.0 + result * x;
-                      result = 95.0/768.0 + result * x;
-                      result = 43.0/768.0 + result * x;
-                      result = 743.0/46080.0 + result * x;
-                      return result;
-                  } else if (x < 2.5)
-                  {
-                      float_t result = -1.0/36.0;
-                      result = 1.0/3.0 + result * x;
-                      result = -73.0/48.0 + result * x;
-                      result = 59.0/18.0 + result * x;
-                      result = -685.0/192.0 + result * x;
-                      result = 109.0/48.0 + result * x;
-                      result = -6193.0/11520.0 + result * x;
-                      return result;
-                  } else if (x < 3.5)
-                  {
-                      float_t result = 1.0/48.0;
-                      result = -19.0/48.0 + result * x;
-                      result = 583.0/192.0 + result * x;
-                      result = -3431.0/288.0 + result * x;
-                      result = 19135.0/768.0 + result * x;
-                      result = -20131.0/768.0 + result * x;
-                      result = 522103.0/46080.0 + result * x;
-                      return result;
-                  } else if (x < 4.5)
-                  {
-                      float_t result = -1.0/120.0;
-                      result = 13.0/60.0 + result * x;
-                      result = -223.0/96.0 + result * x;
-                      result = 943.0/72.0 + result * x;
-                      result = -15643.0/384.0 + result * x;
-                      result = 63073.0/960.0 + result * x;
-                      result = -974263.0/23040.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = 1.0/720.0;
-                      result = -11.0/240.0 + result * x;
-                      result = 121.0/192.0 + result * x;
-                      result = -1331.0/288.0 + result * x;
-                      result = 14641.0/768.0 + result * x;
-                      result = -161051.0/3840.0 + result * x;
-                      result = 1771561.0/46080.0 + result * x;
-                      return result;
-                  }
-                  break;
-              case 9:
-                  if ((x < 0.0) || (x >= 6.0))
-                  {
-                      return 0.0;
-                  } else if (x < 1.0)
-                  {
-                      float_t result = 1.0/240.0;
-                      result = -1.0/120.0 + result * x;
-                      result = -1.0/60.0 + result * x;
-                      result *= x;
-                      result = 1.0/18.0 + result * x;
-                      result = 0.1 + result * x;
-                      result = 7.0/90.0 + result * x;
-                      result = 1.0/42.0 + result * x;
-                      return result;
-                  } else if (x < 2.0)
-                  {
-                      float_t result = -1.0/144.0;
-                      result = 5.0/72.0 + result * x;
-                      result = -0.25 + result * x;
-                      result = 7.0/18.0 + result * x;
-                      result = -1.0/3.0 + result * x;
-                      result = 1.0/3.0 + result * x;
-                      result *= x;
-                      result = 11.0/315.0 + result * x;
-                      return result;
-                  } else if (x < 3.0)
-                  {
-                      float_t result = 1.0/144.0;
-                      result = -0.125 + result * x;
-                      result = 11.0/12.0 + result * x;
-                      result = -3.5 + result * x;
-                      result = 67.0/9.0 + result * x;
-                      result = -9.0 + result * x;
-                      result = 56.0/9.0 + result * x;
-                      result = -61.0/35.0 + result * x;
-                      return result;
-                  } else if (x < 4.0)
-                  {
-                      float_t result = -1.0/240.0;
-                      result = 13.0/120.0 + result * x;
-                      result = -71.0/60.0 + result * x;
-                      result = 7.0 + result * x;
-                      result = -433.0/18.0 + result * x;
-                      result = 47.7 + result * x;
-                      result = -4543.0/90.0 + result * x;
-                      result = 1579.0/70.0 + result * x;
-                      return result;
-                  } else if (x < 5.0)
-                  {
-                      float_t result = 1.0/720.0;
-                      result = -17.0/360.0 + result * x;
-                      result = 41.0/60.0 + result * x;
-                      result = -49.0/9.0 + result * x;
-                      result = 463.0/18.0 + result * x;
-                      result = -2153.0/30.0 + result * x;
-                      result = 9793.0/90.0 + result * x;
-                      result = -43133.0/630.0 + result * x;
-                      return result;
-                  } else
-                  {
-                      float_t result = -1.0/5040.0;
-                      result = 1.0/120.0 + result * x;
-                      result = -0.15 + result * x;
-                      result = 1.5 + result * x;
-                      result = -9.0 + result * x;
-                      result = 32.4 + result * x;
-                      result = -64.8 + result * x;
-                      result = 1944.0/35.0 + result * x;
-                      return result;
-                  }
-                  break;*/
+            /*case 2:
+                if ((x < 0.0) || (x >= 2.5))
+                {
+                    return 0.0;
+                } else if (x < 1.5)
+                {
+                    return 0.0;
+                } else
+                {
+                    return 1.0;
+                }
+                break;
+            case 4:
+                if ((x < 0.0) || (x >= 3.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    return 0.0;
+                } else if (x < 1.5)
+                {
+                    return 0.5*x*x - 0.5*x + 0.125;
+                } else if (x < 2.5)
+                {
+                    return -x*x + 4.0*x - 3.25;
+                } else
+                {
+                    return 0.5*x*x - 3.5*x + 6.125;
+                }
+                break;
+            case 6:
+                if ((x < 0.0) || (x >= 4.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    float_t result = 1.0/24.0;
+                    result = 1.0/12.0 + result * x;
+                    result = 0.0625 + result * x;
+                    result = 1.0/48.0 + result * x;
+                    result = 1.0/384.0 + result * x;
+                    return result;
+                } else if (x < 1.5)
+                {
+                    float_t result = -1.0/6.0;
+                    result = 0.5 + result * x;
+                    result = -0.25 + result * x;
+                    result = 0.125 + result * x;
+                    result = -1.0/96.0 + result * x;
+                    return result;
+                } else if (x < 2.5)
+                {
+                    float_t result = 0.25;
+                    result = -2.0 + result * x;
+                    result = 5.375 + result * x;
+                    result = -5.5 + result * x;
+                    result = 403.0/192.0 + result * x;
+                    return result;
+                } else if (x < 3.5)
+                {
+                    float_t result = -1.0/6.0;
+                    result = 13.0/6.0 + result * x;
+                    result = -10.25 + result * x;
+                    result = 493.0/24.0 + result * x;
+                    result = -1361.0/96.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = 1.0/24.0;
+                    result = -0.75 + result * x;
+                    result = 5.0625 + result * x;
+                    result = -15.1875 + result * x;
+                    result = 17.0859375 + result * x;
+                    return result;
+                }
+                break;
+            case 8:
+                if ((x < 0.0) || (x >= 5.5))
+                {
+                    return 0.0;
+                } else if (x < 0.5)
+                {
+                    float_t result = -1.0/120.0;
+                    result = -1.0/60.0 + result * x;
+                    result = 1.0/96.0 + result * x;
+                    result = 5.0/72.0 + result * x;
+                    result = 37.0/384.0 + result * x;
+                    result = 59.0/960.0 + result * x;
+                    result = 361.0/23040.0 + result * x;
+                    return result;
+                } else if (x < 1.5)
+                {
+                    float_t result = 1.0/48.0;
+                    result = -5.0/48.0 + result * x;
+                    result = 23.0/192.0 + result * x;
+                    result = -1.0/288.0 + result * x;
+                    result = 95.0/768.0 + result * x;
+                    result = 43.0/768.0 + result * x;
+                    result = 743.0/46080.0 + result * x;
+                    return result;
+                } else if (x < 2.5)
+                {
+                    float_t result = -1.0/36.0;
+                    result = 1.0/3.0 + result * x;
+                    result = -73.0/48.0 + result * x;
+                    result = 59.0/18.0 + result * x;
+                    result = -685.0/192.0 + result * x;
+                    result = 109.0/48.0 + result * x;
+                    result = -6193.0/11520.0 + result * x;
+                    return result;
+                } else if (x < 3.5)
+                {
+                    float_t result = 1.0/48.0;
+                    result = -19.0/48.0 + result * x;
+                    result = 583.0/192.0 + result * x;
+                    result = -3431.0/288.0 + result * x;
+                    result = 19135.0/768.0 + result * x;
+                    result = -20131.0/768.0 + result * x;
+                    result = 522103.0/46080.0 + result * x;
+                    return result;
+                } else if (x < 4.5)
+                {
+                    float_t result = -1.0/120.0;
+                    result = 13.0/60.0 + result * x;
+                    result = -223.0/96.0 + result * x;
+                    result = 943.0/72.0 + result * x;
+                    result = -15643.0/384.0 + result * x;
+                    result = 63073.0/960.0 + result * x;
+                    result = -974263.0/23040.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = 1.0/720.0;
+                    result = -11.0/240.0 + result * x;
+                    result = 121.0/192.0 + result * x;
+                    result = -1331.0/288.0 + result * x;
+                    result = 14641.0/768.0 + result * x;
+                    result = -161051.0/3840.0 + result * x;
+                    result = 1771561.0/46080.0 + result * x;
+                    return result;
+                }
+                break;
+            case 9:
+                if ((x < 0.0) || (x >= 6.0))
+                {
+                    return 0.0;
+                } else if (x < 1.0)
+                {
+                    float_t result = 1.0/240.0;
+                    result = -1.0/120.0 + result * x;
+                    result = -1.0/60.0 + result * x;
+                    result *= x;
+                    result = 1.0/18.0 + result * x;
+                    result = 0.1 + result * x;
+                    result = 7.0/90.0 + result * x;
+                    result = 1.0/42.0 + result * x;
+                    return result;
+                } else if (x < 2.0)
+                {
+                    float_t result = -1.0/144.0;
+                    result = 5.0/72.0 + result * x;
+                    result = -0.25 + result * x;
+                    result = 7.0/18.0 + result * x;
+                    result = -1.0/3.0 + result * x;
+                    result = 1.0/3.0 + result * x;
+                    result *= x;
+                    result = 11.0/315.0 + result * x;
+                    return result;
+                } else if (x < 3.0)
+                {
+                    float_t result = 1.0/144.0;
+                    result = -0.125 + result * x;
+                    result = 11.0/12.0 + result * x;
+                    result = -3.5 + result * x;
+                    result = 67.0/9.0 + result * x;
+                    result = -9.0 + result * x;
+                    result = 56.0/9.0 + result * x;
+                    result = -61.0/35.0 + result * x;
+                    return result;
+                } else if (x < 4.0)
+                {
+                    float_t result = -1.0/240.0;
+                    result = 13.0/120.0 + result * x;
+                    result = -71.0/60.0 + result * x;
+                    result = 7.0 + result * x;
+                    result = -433.0/18.0 + result * x;
+                    result = 47.7 + result * x;
+                    result = -4543.0/90.0 + result * x;
+                    result = 1579.0/70.0 + result * x;
+                    return result;
+                } else if (x < 5.0)
+                {
+                    float_t result = 1.0/720.0;
+                    result = -17.0/360.0 + result * x;
+                    result = 41.0/60.0 + result * x;
+                    result = -49.0/9.0 + result * x;
+                    result = 463.0/18.0 + result * x;
+                    result = -2153.0/30.0 + result * x;
+                    result = 9793.0/90.0 + result * x;
+                    result = -43133.0/630.0 + result * x;
+                    return result;
+                } else
+                {
+                    float_t result = -1.0/5040.0;
+                    result = 1.0/120.0 + result * x;
+                    result = -0.15 + result * x;
+                    result = 1.5 + result * x;
+                    result = -9.0 + result * x;
+                    result = 32.4 + result * x;
+                    result = -64.8 + result * x;
+                    result = 1944.0/35.0 + result * x;
+                    return result;
+                }
+                break;*/
             default:
               float_t y = 0.0;
               float_t x2 = x + static_cast<float_t>(p + 1) / 2.0 - 1.0;

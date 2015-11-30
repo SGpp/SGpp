@@ -12,8 +12,8 @@
 #include <immintrin.h>
 #include <assert.h>
 
-#include "OperationMultipleEvalSubspaceCombinedParameters.hpp"
-#include "SubspaceNodeCombined.hpp"
+#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp"
+#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedSubspaceNode.hpp"
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
 #include <sgpp/globaldef.hpp>
