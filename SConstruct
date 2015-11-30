@@ -187,9 +187,32 @@ else:
         env["ENV"].get("LD_LIBRARY_PATH", ""),
         BUILD_DIR.abspath])
 
-env["ENV"]["PYTHONPATH"] = os.pathsep.join([
-    env["ENV"].get("PYTHONPATH", ""),
-    PYSGPP_PACKAGE_PATH.abspath])
+# -------------------------------------------------------------------------
+# add the pysgpp package path to the environment
+if env['PLATFORM'] == 'win32':
+  # try to import pysgpp to detect an already existing installation, which
+  # could cause trouble
+  try:
+    import pysgpp
+    print "Warning: more than one installations of pysgpp are detected. To get rid of this warning remove the pysgpp package from your local python installation."
+  except:
+    None
+
+  # get a temporary folders
+  import tempfile, uuid
+  # get temp directory
+  pysgppTempFolder = os.path.join(tempfile.gettempdir(),
+                           "site-pyspp-%s" % str(uuid.uuid4()))
+  # create temp folder
+  os.makedirs(pysgppTempFolder)
+
+  # add it to the build python path
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([pysgppTempFolder,
+                                              env["ENV"].get("PYTHONPATH", "")])
+else:
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
+                                              PYSGPP_PACKAGE_PATH.abspath])
+# -------------------------------------------------------------------------
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
@@ -272,46 +295,22 @@ def installPythonLibToTmp(target, source, env):
   import sys, os, subprocess
 
   # get temp directory
-  tmpfolder = source[0].get_string(0)
+  pysgppTempFolder = source[0].get_string(0)
 
   # install python interface to tmp directory
   p = subprocess.call(["python", "setup.py",
                        "--quiet",
-                       "install", "--install-lib=%s" % tmpfolder])
+                       "install", "--install-lib=%s" % pysgppTempFolder])
   if p != 0:
-      print "Error: installing python package to the temporary folder '%s' failed; I can not run the python unit tests automatically." % tmpfolder
+      print "Error: installing python package to the temporary folder '%s' failed; I can not run the python unit tests automatically." % pysgppTempFolder
       exit(-1)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-  # -------------------------------------------------------------------------
-  # prepare python package for unit testing
   if env['PLATFORM'] == 'win32':
-    # try to import pysgpp to detect an already existing installation, which
-    # could cause trouble
-    try:
-      import pysgpp
-      print "Warning: more than one installations of pysgpp are detected. To get rid of this warning remove the pysgpp package from your local python installation."
-    except:
-      None
-
-    # get a temporary folders
-    import tempfile, uuid
-    # get temp directory
-    tmpfolder = os.path.join(tempfile.gettempdir(),
-                             "site-pyspp-%s" % str(uuid.uuid4()))
-    # create temp folder
-    os.makedirs(tmpfolder)
-
-    # add it to the build python path
-    env["ENV"]["PYTHONPATH"] = os.pathsep.join([tmpfolder,
-                                                env["ENV"].get("PYTHONPATH", "")])
     # install the python library to that temporary folder
-    dependencies.append(env.Command('installPythonLibToTmp', [tmpfolder], installPythonLibToTmp))
-  else:
-    # add lib folder tp python path
-    env["ENV"]["PYTHONPATH"] = os.pathsep.join([os.path.abspath(os.path.join("lib")),
-                                                env["ENV"].get("PYTHONPATH", "")])
-  # -------------------------------------------------------------------------
+    dependencies.append(env.Command('installPythonLibToTmp', [pysgppTempFolder], installPythonLibToTmp))
+
+  # print message that python tests are about to start
   dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))
 
   # serialize tests and move them at the end of the build
