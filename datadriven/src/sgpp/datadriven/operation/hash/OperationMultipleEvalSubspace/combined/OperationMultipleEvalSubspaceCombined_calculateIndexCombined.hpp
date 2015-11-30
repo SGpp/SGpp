@@ -263,4 +263,4 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
   _mm256_storeu_pd(phiEval, phiEvalReg);
   _mm256_storeu_pd(phiEval2, phiEvalReg2);
 #endif
-}
+
