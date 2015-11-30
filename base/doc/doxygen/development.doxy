@@ -27,7 +27,6 @@ If you modify existing code, do not forget
 to make sure that no new errors are introduced. If you write new
 functionalities, do @em always add unit tests for each functionality!
 
-
 <!-- ############################################################# -->
 @section development__doxygen Doxygen
 

@@ -79,7 +79,7 @@ namespace SGPP {
 
             levelArrayContinuous = listSubspace;
           } else {
-            levelArrayContinuous = subspace.subspaceArray;
+            levelArrayContinuous = subspace.subspaceArray.data();
           }
 
           validIndicesCount = 0;

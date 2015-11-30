@@ -8,7 +8,7 @@
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 
 #include <sgpp/globaldef.hpp>
 
