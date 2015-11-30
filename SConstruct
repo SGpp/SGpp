@@ -256,7 +256,7 @@ for moduleFolder in moduleFolders:
 
 Export('flattenedDependencyGraph')
 
-if env['PYDOC']:
+if env['PYDOC'] and env['SG_PYTHON']:
   with open('moduleDoxy', 'r') as template:
     data = template.read()
     for module in moduleFolders:
