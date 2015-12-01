@@ -26,17 +26,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # C++11 support is enabled by default on win32; no avx support for win32
     if env['PLATFORM'] not in ['cygwin', 'win32']:
         config.env.AppendUnique(CPPFLAGS="-std=c++11")
-        if "-msse3" in config.env['CPPFLAGS'] or "-avx" in config.env['CPPFLAGS']:
-          print "architecture set from outside"
-        else:
-          if not env['SSE3_FALLBACK']:
-              # check avx support
-              if not config.CheckFlag("-mavx"):
-                  sys.stderr.write("Error: compiler doesn't seem to support AVX. Abort! Fallin\n")
-                  sys.exit(1)
-              config.env.AppendUnique(CPPFLAGS="-mavx")
-          else:
-              config.env.AppendUnique(CPPFLAGS="-msse3")
 
     # boost library
     #TODO: add check and error

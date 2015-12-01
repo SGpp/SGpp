@@ -4,7 +4,8 @@ import fnmatch
 Import('env')
 
 objs = []
-if '-mavx' in env['CPPFLAGS']:
+if not '-msse3' in env['CPPFLAGS']:
+  print "compling with avx+ source!!!"
   for currentFolder, subdirNames, fileNames in os.walk("."):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
       sourceFile = os.path.join(currentFolder, fileName)
