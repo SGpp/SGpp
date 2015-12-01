@@ -273,11 +273,15 @@ if env['PYDOC'] and env['SG_PYTHON']:
       doxy_env = env.Clone()
 
       doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
-      doxy2swig = doxy_env.Command(os.path.join(module, 'doc/doc.i'), doxygen, "python pysgpp/doxy2swig.py -o -c $SOURCE $TARGET")
+
+      doxy2swig_command = "python pysgpp/doxy2swig.py -o -c " + ('' if env['VERBOSE'] else '-q') + " $SOURCE $TARGET"
+      doxy2swig = doxy_env.Command(os.path.join(module, 'doc/doc.i'), doxygen, doxy2swig_command)
+
       for root, dirs, files in os.walk(os.path.join(module, 'src')):
         for file in files:
-          doxy_env.Depends(doxygen, os.path.join(root, file))
-          doxy_env.Depends(doxy2swig, os.path.join(root, file))
+          if 'cpp' in file or 'hpp' in file:
+            doxy_env.Depends(doxygen, os.path.join(root, file))
+            doxy_env.Depends(doxy2swig, os.path.join(root, file))
       pydocTargetList.append(doxy2swig)
 
 if env['SG_PYTHON']:
