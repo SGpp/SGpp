@@ -5,6 +5,7 @@
  *      Author: pfandedd
  */
 
+#if USE_OCL==1
 #include <random>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
@@ -139,4 +140,10 @@ int main(int argc, char** argv) {
     std::cout << "mse: " << mse << std::endl;
 
 }
-
+#else
+#include <iostream>
+int main(int argc, char** argv) {
+    std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
+    return 0;
+}
+#endif

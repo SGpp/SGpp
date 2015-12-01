@@ -316,7 +316,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
   BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
   return mse;
 }
-
+#if USE_OCL==1
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsSingleDevice() {
     SGPP::base::OCLOperationConfiguration parameters;
     parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
@@ -344,3 +344,4 @@ SGPP::base::OCLOperationConfiguration getConfigurationDefaultsMultiPlatform() {
     parameters.replaceTextAttr("PLATFORM", "all");
     return parameters;
 }
+#endif

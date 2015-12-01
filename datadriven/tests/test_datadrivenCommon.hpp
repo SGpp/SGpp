@@ -11,7 +11,9 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#if USE_OCL==1
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#endif
 #include <sgpp/globaldef.hpp>
 
 std::string uncompressFile(std::string fileName);
@@ -32,9 +34,10 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRe
 
 double compareToReferenceTranspose(SGPP::base::GridType gridType, std::string fileName, size_t level,
 SGPP::datadriven::OperationMultipleEvalConfiguration configuration);
-
+#if USE_OCL==1
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsSingleDevice();
 
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsMultiDevice();
 
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsMultiPlatform();
+#endif
