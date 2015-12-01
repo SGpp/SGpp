@@ -37,11 +37,13 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 
 #ifdef __AVX__
+#if USE_DOUBLE_PRECISION==1
 //this use require either SSE3 or AVX
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
+#endif
 #endif
 
 #ifdef USE_OCL
@@ -199,7 +201,11 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
                 || configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
             if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 #ifdef __AVX__
+#if USE_DOUBLE_PRECISION==1
                 return new datadriven::OperationMultiEvalStreaming(grid, dataset);
+#else
+                throw base::factory_exception("Error creating function: the library wasn't compiled for double precision");
+#endif
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with AVX1/2/512");
 #endif
@@ -222,13 +228,21 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
             if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT
                     || configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::COMBINED) {
 #ifdef __AVX__
+#if USE_DOUBLE_PRECISION==1
                 return new datadriven::OperationMultipleEvalSubspaceCombined(grid, dataset);
+#else
+                throw base::factory_exception("Error creating function: the library wasn't compiled for double precision");
+#endif
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
             } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::SIMPLE) {
 #ifdef __AVX__
+#if USE_DOUBLE_PRECISION==1
                 return new datadriven::OperationMultipleEvalSubspaceSimple(grid, dataset);
+#else
+                throw base::factory_exception("Error creating function: the library wasn't compiled for double precision");
+#endif
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
@@ -247,7 +261,11 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
             if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 #ifdef __AVX__
+#if USE_DOUBLE_PRECISION==1
                 return new datadriven::OperationMultiEvalModMaskStreaming(grid, dataset);
+#else
+                throw base::factory_exception("Error creating function: the library wasn't compiled for double precision");
+#endif
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with AVX");
 #endif
