@@ -268,7 +268,7 @@ if env['PYDOC'] and env['SG_PYTHON']:
     for module in moduleFolders:
       print module
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
-        doxyFile.write(data.replace('$modname', module))
+        doxyFile.write(data.replace('$modname', module).replace('$quiet', 'NO' if env['VERBOSE'] else 'YES'))
 
       doxy_env = env.Clone()
 
