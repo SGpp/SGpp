@@ -114,7 +114,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   py_test_env = env.Clone()
   moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
-"""#TODO FIXME
+
 # build examples
 if env["ARCH"].upper() != "MIC":
     example_env = env.Clone()
@@ -165,6 +165,6 @@ if env['COMPILE_BOOST_PERFORMANCE_TESTS']:
         fileName = os.path.join("performanceTests", "test_{}_performance".format(moduleName))
         test = test_env.Program(fileName, testObjects)
         test_env.Requires(test, libInstall)
-"""
+
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
