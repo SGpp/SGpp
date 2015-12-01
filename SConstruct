@@ -69,8 +69,6 @@ vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languag
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
 
-vars.Add(BoolVariable('SSE3_FALLBACK', 'Tries to build as much as possible with SSE3 instead of AVX (intrinsics based functions won\'t work)', False))
-
 vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
