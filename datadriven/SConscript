@@ -34,18 +34,18 @@ def isAVXFolder(folder):
 moduleDependencies = ['sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
-additionalDependencies = []
-if env['USE_OCL']:
-    additionalDependencies += ['OpenCL']
-
-moduleDependencies = moduleDependencies + additionalDependencies
-
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:
     libname += "static"
     for i, _ in enumerate(moduleDependencies):
         moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
 Export('libname')
+
+additionalDependencies = []
+if env['USE_OCL']:
+    additionalDependencies += ['OpenCL']
+
+moduleDependencies = moduleDependencies + additionalDependencies
 
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
