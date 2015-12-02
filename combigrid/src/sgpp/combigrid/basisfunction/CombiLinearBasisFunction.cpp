@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombiLinearBasisFunction.hpp"
+#include <sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp>
 
 using namespace std;
 

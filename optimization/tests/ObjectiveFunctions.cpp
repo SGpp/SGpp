@@ -212,10 +212,10 @@ G3ObjectiveFunction::~G3ObjectiveFunction() {
 
 SGPP::float_t G3ObjectiveFunction::eval(const SGPP::base::DataVector& x) {
   const SGPP::float_t dDbl = static_cast<SGPP::float_t>(d);
-  SGPP::float_t fx = std::pow(dDbl, dDbl / 2.0);
+  SGPP::float_t fx = -std::pow(dDbl, dDbl / 2.0);
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
+    if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       fx *= x[t];
     } else {
       return INFINITY;
@@ -239,17 +239,15 @@ G3ObjectiveGradient::~G3ObjectiveGradient() {
 SGPP::float_t G3ObjectiveGradient::eval(const SGPP::base::DataVector& x,
                                         SGPP::base::DataVector& gradient) {
   const SGPP::float_t dDbl = static_cast<SGPP::float_t>(d);
-  SGPP::float_t fx = std::pow(dDbl, dDbl / 2.0);
+  SGPP::float_t fx = -std::pow(dDbl, dDbl / 2.0);
+
+  gradient.setAll(fx);
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
-      gradient[t] = fx;
-    } else {
+    if ((x[t] < 0.0) || (x[t] > 1.0)) {
       return INFINITY;
     }
-  }
 
-  for (size_t t = 0; t < d; t++) {
     for (size_t t2 = 0; t2 < d; t2++) {
       if (t2 != t) {
         gradient[t2] *= x[t];
@@ -280,7 +278,7 @@ void G3ConstraintFunction::eval(const SGPP::base::DataVector& x,
   SGPP::float_t gx = -1.0;
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
+    if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       gx += x[t] * x[t];
     } else {
       value[0] = INFINITY;
@@ -308,7 +306,7 @@ void G3ConstraintGradient::eval(const SGPP::base::DataVector& x,
   SGPP::float_t gx = -1.0;
 
   for (size_t t = 0; t < d; t++) {
-    if ((x[0] >= 0.0) && (x[1] <= 1.0)) {
+    if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       gx += x[t] * x[t];
       gradient(0, t) = 2.0 * x[t];
     } else {

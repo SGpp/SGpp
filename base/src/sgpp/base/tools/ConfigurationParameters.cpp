@@ -9,7 +9,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "ConfigurationParameters.hpp"
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
 
 namespace SGPP {
   namespace base {

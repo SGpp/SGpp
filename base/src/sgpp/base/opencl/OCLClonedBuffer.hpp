@@ -9,7 +9,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "OCLManager.hpp"
+#include <sgpp/base/opencl/OCLManager.hpp>
 
 namespace SGPP {
   namespace base {

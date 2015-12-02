@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "OpenCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
 
 #include <fstream>
 #include <iostream>

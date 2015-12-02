@@ -4,7 +4,7 @@
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
 // @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
-#include "OperationHierarchisationPolyBoundary.hpp"
+#include <sgpp/base/operation/hash/OperationHierarchisationPolyBoundary.hpp>
 
 #include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPolyBoundary.hpp>

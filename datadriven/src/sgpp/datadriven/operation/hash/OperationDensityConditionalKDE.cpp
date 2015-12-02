@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationDensityConditionalKDE.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityConditionalKDE.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>

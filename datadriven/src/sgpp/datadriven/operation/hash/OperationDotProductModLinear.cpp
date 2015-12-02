@@ -5,7 +5,7 @@
 
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
-#include "OperationDotProductModLinear.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDotProductModLinear.hpp>
 
 using namespace SGPP::base;
 #include <sgpp/globaldef.hpp>

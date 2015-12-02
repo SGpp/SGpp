@@ -9,7 +9,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "OCLClonedBuffer.hpp"
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 

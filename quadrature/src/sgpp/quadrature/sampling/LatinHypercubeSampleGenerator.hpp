@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <sgpp/globaldef.hpp>
-#include "SampleGenerator.hpp"
+#include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
 
 namespace SGPP {

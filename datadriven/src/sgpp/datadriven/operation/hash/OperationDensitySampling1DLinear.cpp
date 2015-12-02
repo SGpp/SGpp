@@ -10,7 +10,7 @@
 
 #include <sgpp/datadriven/operation/hash/OperationDensitySampling1DLinear.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include "OperationDensitySampling1DLinear.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensitySampling1DLinear.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>

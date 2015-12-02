@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "OCLManager.hpp"
+#include <sgpp/base/opencl/OCLManager.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 

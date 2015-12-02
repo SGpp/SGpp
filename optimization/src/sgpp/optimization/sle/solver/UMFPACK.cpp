@@ -187,7 +187,7 @@ namespace SGPP {
 
           if (result != UMFPACK_OK) {
             Printer::getInstance().printStatusEnd(
-              "error: could not convert to CCS via "
+              "error: Could not convert to CCS via "
               "umfpack_dl_triplet_to_col, error code " +
               std::to_string(result));
             return false;
@@ -206,7 +206,7 @@ namespace SGPP {
                                      &symbolic, NULL, NULL);
 
         if (result != UMFPACK_OK) {
-          Printer::getInstance().printStatusEnd("error: could solve via umfpack_dl_symbolic, "
+          Printer::getInstance().printStatusEnd("error: Could solve via umfpack_dl_symbolic, "
                                                 "error code " + std::to_string(result));
           return false;
         }
@@ -219,7 +219,7 @@ namespace SGPP {
                                     symbolic, &numeric, NULL, NULL);
 
         if (result != UMFPACK_OK) {
-          Printer::getInstance().printStatusEnd("error: could solve via umfpack_dl_numeric, "
+          Printer::getInstance().printStatusEnd("error: Could solve via umfpack_dl_numeric, "
                                                 "error code " + std::to_string(result));
           umfpack_dl_free_symbolic(&symbolic);
           return false;
@@ -248,7 +248,7 @@ namespace SGPP {
           if (solveInternal(numeric, Ap, Ai, Ax, b, x)) {
             X.setColumn(i, x);
           } else {
-            Printer::getInstance().printStatusEnd("error: could solve via umfpack_dl_solve, "
+            Printer::getInstance().printStatusEnd("error: Could solve via umfpack_dl_solve, "
                                                   "error code " + std::to_string(result));
             umfpack_dl_free_numeric(&numeric);
             return false;

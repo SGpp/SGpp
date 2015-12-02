@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombiArbitraryScheme.hpp"
+#include <sgpp/combigrid/combischeme/CombiArbitraryScheme.hpp>
 
 combigrid::CombiArbitraryScheme::CombiArbitraryScheme(std::vector < std::vector <
     int > > level_vectors) :

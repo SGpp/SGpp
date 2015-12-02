@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "GSGRefinement.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/GSGRefinement.hpp>
 
 #include <sgpp/globaldef.hpp>
 

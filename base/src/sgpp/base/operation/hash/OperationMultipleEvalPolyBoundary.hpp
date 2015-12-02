@@ -6,7 +6,7 @@
 #ifndef OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP
 #define OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP
 
-#include "OperationMultipleEval.hpp"
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 

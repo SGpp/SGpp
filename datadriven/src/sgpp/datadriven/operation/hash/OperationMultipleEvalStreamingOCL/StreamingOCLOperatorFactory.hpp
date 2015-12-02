@@ -10,7 +10,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
-#include "OperationMultiEvalStreamingOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/OperationMultiEvalStreamingOCL.hpp>
 
 #include <sgpp/globaldef.hpp>
 

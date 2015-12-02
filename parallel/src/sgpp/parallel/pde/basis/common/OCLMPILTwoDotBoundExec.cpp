@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OCLLTwoDotBound.hpp"
+#include <sgpp/parallel/pde/basis/common/OCLLTwoDotBound.hpp>
 
 #include <sgpp/globaldef.hpp>
 

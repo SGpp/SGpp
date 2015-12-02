@@ -12,7 +12,7 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
-#include "OCLKernelImpl.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/OCLKernelImpl.hpp>
 
 #include <sgpp/globaldef.hpp>
 

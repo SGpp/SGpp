@@ -6,7 +6,7 @@
 #ifndef TESTTRETCHINGCOMBI_HPP_
 #define TESTTRETCHINGCOMBI_HPP_
 
-#include "combigrid.hpp"
+#include <combigrid.hpp>
 
 namespace combigrid {
 
