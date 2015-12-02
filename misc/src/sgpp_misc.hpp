@@ -6,8 +6,8 @@
 #ifndef SGPP_MISC_HPP
 #define SGPP_MISC_HPP
 
-#include "sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp"
-#include "sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp"
-#include "sgpp/misc/operation/MiscOpFactory.hpp"
+#include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationLaplaceEnhancedLinearBoundary.hpp>
+#include <sgpp/misc/operation/MiscOpFactory.hpp>
 
 #endif /* SGPP_MISC_HPP */

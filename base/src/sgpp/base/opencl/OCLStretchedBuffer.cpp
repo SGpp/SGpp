@@ -9,7 +9,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "OCLStretchedBuffer.hpp"
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 

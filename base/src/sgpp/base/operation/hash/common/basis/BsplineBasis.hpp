@@ -7,6 +7,7 @@
 #define BSPLINE_BASE_HPP
 
 #include <cmath>
+#include <cstddef>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -23,7 +24,7 @@ namespace SGPP {
         /**
          * Default constructor.
          */
-        BsplineBasis(): degree(0) {
+        BsplineBasis() : degree(0) {
         }
 
         /**

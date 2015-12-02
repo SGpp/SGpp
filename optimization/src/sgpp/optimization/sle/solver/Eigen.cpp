@@ -174,7 +174,7 @@ namespace SGPP {
           if (solveInternal(A, A_QR, b, x)) {
             X.setColumn(i, x);
           } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
             return false;
           }
         }

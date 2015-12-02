@@ -12,8 +12,8 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include "LinearStretchedBoundaryGrid.hpp"
-#include "../generation/StretchedBoundaryGridGenerator.hpp"
+#include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
+#include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
 
 
 namespace SGPP {

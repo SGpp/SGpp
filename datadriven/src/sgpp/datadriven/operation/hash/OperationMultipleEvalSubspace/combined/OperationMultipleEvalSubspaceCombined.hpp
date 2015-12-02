@@ -8,12 +8,12 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "omp.h"
+#include <omp.h>
 #include <immintrin.h>
 #include <assert.h>
 
-#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp"
-#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedSubspaceNode.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedSubspaceNode.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -79,7 +79,7 @@ namespace SGPP {
 
       public:
 
-#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined_calculateIndexCombined.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined_calculateIndexCombined.hpp>
 
         OperationMultipleEvalSubspaceCombined(SGPP::base::Grid& grid, SGPP::base::DataMatrix& dataset);
 

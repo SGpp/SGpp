@@ -169,7 +169,8 @@ namespace SGPP {
           float_t gradFxTimesDir = gradFx.dotProduct(dir);
 
           // line search
-          while (fxNew > fx + rhoLs * alpha * gradFxTimesDir) {
+          while ((fxNew > fx + rhoLs * alpha * gradFxTimesDir) &&
+                 (alpha > 0.0)) {
             alpha *= rhoAlphaMinus;
 
             // increase damping
@@ -206,6 +207,11 @@ namespace SGPP {
             // evaluate at new point
             fxNew = (inDomain ? f.eval(xNew) : INFINITY);
             k++;
+          }
+
+          // after too many line search steps, alpha will be numerically zero
+          if (alpha == 0.0) {
+            break;
           }
 
           // save new point

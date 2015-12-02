@@ -16,7 +16,7 @@
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 #include <sgpp/base/opencl/OCLClonedBuffer.hpp>
 #include <sgpp/base/opencl/LinearLoadBalancer.hpp>
-#include "OCLKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingMaskOCL/OCLKernelSourceBuilder.hpp>
 
 namespace SGPP {
   namespace datadriven {

@@ -31,26 +31,6 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp>
 
-#include <sgpp/optimization/function/scalar/test/Ackley.hpp>
-#include <sgpp/optimization/function/scalar/test/Beale.hpp>
-#include <sgpp/optimization/function/scalar/test/Branin.hpp>
-#include <sgpp/optimization/function/scalar/test/Easom.hpp>
-#include <sgpp/optimization/function/scalar/test/Eggholder.hpp>
-#include <sgpp/optimization/function/scalar/test/GoldsteinPrice.hpp>
-#include <sgpp/optimization/function/scalar/test/Griewank.hpp>
-#include <sgpp/optimization/function/scalar/test/Hartman3.hpp>
-#include <sgpp/optimization/function/scalar/test/Hartman6.hpp>
-#include <sgpp/optimization/function/scalar/test/Himmelblau.hpp>
-#include <sgpp/optimization/function/scalar/test/HoelderTable.hpp>
-#include <sgpp/optimization/function/scalar/test/Michalewicz.hpp>
-#include <sgpp/optimization/function/scalar/test/Mladineo.hpp>
-#include <sgpp/optimization/function/scalar/test/Rastrigin.hpp>
-#include <sgpp/optimization/function/scalar/test/Rosenbrock.hpp>
-#include <sgpp/optimization/function/scalar/test/SHCB.hpp>
-#include <sgpp/optimization/function/scalar/test/Schwefel.hpp>
-#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
-#include <sgpp/optimization/function/scalar/test/TestFunction.hpp>
-
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
@@ -106,6 +86,36 @@
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/sle/system/SLE.hpp>
+
+#include <sgpp/optimization/test_problems/TestScalarFunction.hpp>
+#include <sgpp/optimization/test_problems/TestVectorFunction.hpp>
+
+#include <sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Ackley.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Beale.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Branin.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/EasomYang.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Eggholder.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/GoldsteinPrice.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Griewank.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Hartman3.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Hartman6.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Himmelblau.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/HoelderTable.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/IncreasingPower.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Michalewicz.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Mladineo.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Perm.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
+
+#include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
 
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>

@@ -13,7 +13,7 @@
 #endif
 
 #ifdef _OPENMP
-#include "omp.h"
+#include <omp.h>
 #endif
 
 #include <sgpp/globaldef.hpp>

@@ -6,7 +6,7 @@
 #ifndef OPERATIONNAIVEEVALPOLY_HPP_
 #define OPERATIONNAIVEEVALPOLY_HPP_
 
-#include "OperationNaiveEval.hpp"
+#include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>

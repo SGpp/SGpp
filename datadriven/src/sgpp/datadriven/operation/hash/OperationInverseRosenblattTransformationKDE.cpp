@@ -16,8 +16,8 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include "OperationInverseRosenblattTransformationKDE.hpp"
-#include "OperationRosenblattTransformationKDE.hpp"
+#include <sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationKDE.hpp>
+#include <sgpp/datadriven/operation/hash/OperationRosenblattTransformationKDE.hpp>
 
 #include <sgpp/globaldef.hpp>
 

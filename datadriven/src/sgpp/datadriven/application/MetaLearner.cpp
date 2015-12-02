@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "MetaLearner.hpp"
+#include <sgpp/datadriven/application/MetaLearner.hpp>
 
 #include <random>
 
@@ -11,7 +11,7 @@
 #include <iomanip>
 #include <cstdio>
 
-#include "LearnerLeastSquaresIdentity.hpp"
+#include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>

@@ -6,7 +6,7 @@
 #ifndef GAUSSLEGENDREQUADRULE1D_HPP_
 #define GAUSSLEGENDREQUADRULE1D_HPP_
 
-#include "QuadRule1D.hpp"
+#include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {

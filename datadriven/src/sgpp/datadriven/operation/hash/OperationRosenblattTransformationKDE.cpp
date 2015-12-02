@@ -12,7 +12,7 @@
 #include <random>
 #include <algorithm>
 
-#include "OperationRosenblattTransformationKDE.hpp"
+#include <sgpp/datadriven/operation/hash/OperationRosenblattTransformationKDE.hpp>
 
 #include <sgpp/globaldef.hpp>
 

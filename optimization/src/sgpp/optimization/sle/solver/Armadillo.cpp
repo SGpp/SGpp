@@ -131,7 +131,7 @@ namespace SGPP {
             Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
             return false;
           }
         } else {
@@ -161,7 +161,7 @@ namespace SGPP {
             Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
             return false;
           }
         }

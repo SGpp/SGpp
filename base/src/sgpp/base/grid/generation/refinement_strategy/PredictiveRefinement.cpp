@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "PredictiveRefinement.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
 
 
 #include <sgpp/globaldef.hpp>

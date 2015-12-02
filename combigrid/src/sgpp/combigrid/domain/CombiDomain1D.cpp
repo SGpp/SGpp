@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombiDomain1D.hpp"
+#include <sgpp/combigrid/domain/CombiDomain1D.hpp>
 #include <vector>
 #include <algorithm>
 

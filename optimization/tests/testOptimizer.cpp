@@ -466,15 +466,14 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
     std::vector<std::unique_ptr<optimizer::ConstrainedOptimizer>> optimizers;
 
     if (i == 0) {
-      d = 5;
-      fOptReal = 1.0;
-      x0.resize(d);
-      xOptReal.resize(d);
+      d = 4;
+      fOptReal = -1.0;
 
-      for (size_t t = 0; t < d; t++) {
-        x0[t] = 0.5;
-        xOptReal[t] = 1.0 / std::sqrt(d);
-      }
+      x0.resize(d);
+      x0.setAll(0.5);
+
+      xOptReal.resize(d);
+      xOptReal.setAll(1.0 / std::sqrt(d));
 
       f.reset(new G3ObjectiveFunction(d));
       fGradient.reset(new G3ObjectiveGradient(d));

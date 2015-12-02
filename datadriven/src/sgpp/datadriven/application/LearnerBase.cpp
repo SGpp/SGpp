@@ -19,7 +19,7 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 
 
 namespace SGPP {
