@@ -494,7 +494,10 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 #endif
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
+#ifndef _WIN32
 #warning "warning: using fallback implementation for OperationMultiEvalModMaskStreaming multTranspose kernel"
+#endif
+
 
 	for (size_t k = start_index_grid; k < end_index_grid;
 			k += std::min<size_t>((size_t) getChunkGridPoints(),

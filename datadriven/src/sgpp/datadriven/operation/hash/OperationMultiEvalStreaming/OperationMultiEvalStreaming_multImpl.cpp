@@ -573,7 +573,9 @@ SGPP::base::DataVector& result, const size_t start_index_grid,
 #endif
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
+#ifndef _WIN32
 #warning "warning: using fallback implementation for OperationMultiEvalStreaming mult kernel"
+#endif
 
 	for (size_t c = start_index_data; c < end_index_data;
 			c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
