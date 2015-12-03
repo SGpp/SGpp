@@ -150,7 +150,7 @@ void DictNode::parseAttributes(std::vector<Token> &stream) {
 
 Node &DictNode::operator[](const std::string &key) {
     if (this->attributes.count(key) == 0) {
-        throw json_exception("operator[](): key not found");
+        throw json_exception("operator[](): key not found: " + key);
     }
     return *(this->attributes[key]);
 }

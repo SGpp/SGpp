@@ -9,8 +9,8 @@
 namespace SGPP {
 namespace base {
 
-OCLPlatformWrapper::OCLPlatformWrapper(cl_platform_id platformId, char (&platformName)[128], std::vector<cl_device_id> &deviceIds) :
-        platformId(platformId), deviceIds(deviceIds) {
+OCLPlatformWrapper::OCLPlatformWrapper(cl_platform_id platformId, char (&platformName)[128], std::vector<cl_device_id> &deviceIds, std::vector<std::string> &deviceNames) :
+        platformId(platformId), deviceIds(deviceIds), deviceNames(deviceNames) {
 
     for (size_t i = 0; i < 128; i++) {
         this->platformName[i] = platformName[i];

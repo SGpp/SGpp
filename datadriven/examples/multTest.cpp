@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL, parameters);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -118,25 +118,25 @@ int main(int argc, char** argv) {
 //
 //    eval->multTranspose(dataSizeVectorResult, alpha2);
 
-    std::cout << "calculating comparison values..." << std::endl;
-
-    SGPP::base::OperationMultipleEval* evalCompare =
-    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
-
-    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-    dataSizeVectorResultCompare.setAll(0.0);
-
-    evalCompare->mult(alpha, dataSizeVectorResultCompare);
-
-    double mse = 0.0;
-
-    for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-        mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
-                * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
-    }
-
-    mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-    std::cout << "mse: " << mse << std::endl;
+//    std::cout << "calculating comparison values..." << std::endl;
+//
+//    SGPP::base::OperationMultipleEval* evalCompare =
+//    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
+//
+//    SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
+//    dataSizeVectorResultCompare.setAll(0.0);
+//
+//    evalCompare->mult(alpha, dataSizeVectorResultCompare);
+//
+//    double mse = 0.0;
+//
+//    for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
+//        mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
+//                * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+//    }
+//
+//    mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
+//    std::cout << "mse: " << mse << std::endl;
 
 }
 
