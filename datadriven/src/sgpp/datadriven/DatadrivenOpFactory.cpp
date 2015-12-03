@@ -50,6 +50,7 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/StreamingOCLMultiPlatformOperatorFactory.hpp>
 #include "operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskOperatorFactory.hpp"
+#include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/StreamingModOCLMaskMultiPlatformOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLOperatorFactory.hpp"
@@ -305,6 +306,12 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
             } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK) {
 #ifdef USE_OCL
                 return datadriven::createStreamingModOCLMaskConfigured(grid, dataset, configuration);
+#else
+                throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
+#endif
+            } else if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP) {
+#ifdef USE_OCL
+                return datadriven::createStreamingModOCLMaskMultiPlatformConfigured(grid, dataset, configuration);
 #else
                 throw base::factory_exception("Error creating function: the library wasn't compiled with OpenCL support");
 #endif

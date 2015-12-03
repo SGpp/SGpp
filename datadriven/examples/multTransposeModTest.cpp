@@ -47,16 +47,16 @@ int main(int argc, char** argv) {
     //  std::string fileName = "debugging.arff";
     std::string fileName = "friedman_4d.arff";
 
-    uint32_t level = 7;
+    uint32_t level = 9;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = 10;
+    adaptConfig.numRefinements_ = 0;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
+    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,

@@ -204,6 +204,9 @@ Please install the corresponding package, e.g. using command on Ubuntu
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
+
+        # required for profiling
+        env.Append(CPPFLAGS=['-fno-omit-frame-pointer'])
         
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])

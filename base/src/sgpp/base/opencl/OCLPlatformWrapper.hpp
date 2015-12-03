@@ -15,9 +15,10 @@ public:
     char platformName[128];
     cl_context context;
     std::vector<cl_device_id> deviceIds;
+    std::vector<std::string> deviceNames;
     std::vector<cl_command_queue> commandQueues;
 
-    OCLPlatformWrapper(cl_platform_id platformId, char (&platformName)[128], std::vector<cl_device_id> &deviceIds);
+    OCLPlatformWrapper(cl_platform_id platformId, char (&platformName)[128], std::vector<cl_device_id> &deviceIds, std::vector<std::string> &deviceName);
 
     size_t getDeviceCount();
 };

@@ -16,6 +16,7 @@
 
 #include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
 #include "OCLOperationConfiguration.hpp"
+#include "OCLDevice.hpp"
 
 namespace SGPP {
 namespace base {
@@ -25,6 +26,9 @@ public:
     std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
     std::vector<OCLPlatformWrapper> platforms;
+
+    //linear device list
+    std::vector<std::shared_ptr<OCLDevice>> devices;
 //        cl_uint platformCount;
 //
 //        std::map<cl_platform_id, size_t> platformDeviceCount; //devices on the individual platforms
@@ -57,8 +61,10 @@ public:
      * @param kernel already allocated array: the resulting kernels are put into this array, one for each device (=> at least num_devices entries)
      * @return
      */
-    void buildKernel(const std::string &program_src, const char* kernel_name,
+    void buildKernel(const std::string &program_src, const std::string &kernel_name,
             std::map<cl_platform_id, std::vector<cl_kernel> > &kernels);
+
+    cl_kernel buildKernel(const std::string &source, std::shared_ptr<OCLDevice> device, const std::string &kernelName);
 
 //    void setPlatformIDs();
 //
@@ -78,9 +84,12 @@ public:
             bool useConfiguration);
 
     void configureDevice(cl_device_id deviceId, json::Node &devicesNode, std::vector<cl_device_id> &filteredDeviceIds,
-            std::map<std::string, size_t> &countLimitMap, bool useConfiguration);
+            std::vector<std::string> &filteredDeviceNames, std::map<std::string, size_t> &countLimitMap,
+            bool useConfiguration);
 
     std::shared_ptr<base::OCLOperationConfiguration> getConfiguration();
+
+    std::vector<std::shared_ptr<OCLDevice>> &getDevices();
 
 };
 

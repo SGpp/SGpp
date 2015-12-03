@@ -3,6 +3,7 @@
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 int main(int argc, char** argv) {
 
@@ -10,8 +11,8 @@ int main(int argc, char** argv) {
     //  int maxLevel = 2;
 
     //  std::string fileName = "debugging.arff";
-//   std::string fileName = "friedman_4d.arff";
-   std::string fileName = "DR5_train.arff";
+   std::string fileName = "friedman_4d.arff";
+//   std::string fileName = "DR5_train.arff";
 //    std::string fileName = "chess_train.arff";
 //  std::string fileName = "chess_train.arff";
 //    std::string fileName = "bigger.arff";
@@ -65,9 +66,11 @@ int main(int argc, char** argv) {
     //streaming default - 1600 (13 without avx)
     //streaming ocl - 13
 
+    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
+
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
+            SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
     learner.learn(configuration, fileName);
     //learner.learnReference(fileName);
 
