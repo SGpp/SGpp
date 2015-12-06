@@ -681,12 +681,8 @@ BOOST_AUTO_TEST_CASE(TestTestFunctions) {
       BOOST_CHECK_LE(xOpt[t], 1.0);
     }
 
-#if USE_DOUBLE_PRECISION == 1
-    BOOST_CHECK_EQUAL(fOpt, fcn->eval(xOpt));
-#else
     BOOST_CHECK_SMALL(fOpt - fcn->eval(xOpt),
-                      static_cast<SGPP::float_t>(1e-6));
-#endif
+                      (use_double_precision ? 1e-10 : 1e-6));
 
     // test if xopt is minimal point for a sample of random points
     for (size_t i = 0; i < 1000; i++) {

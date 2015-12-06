@@ -68,9 +68,9 @@ if env['USE_STATICLIB']:
                             source=objs,
                             LIBS=moduleDependencies)
 else:
-    # building shared libraries differ
+    # building of shared libraries differs
     libsuffix = env['SHLIBSUFFIX']
-    if env['PLATFORM'] in ['cygwin', 'win32']:
+    if (env['PLATFORM'] == 'cygwin') or (env['COMPILER'] == 'vcc'):
         # remove old moduleDependencies if they exist already
         for ext in ['lib', 'exp', 'dll', 'def']:
             newlibFilename = "%s.%s" % (libname, ext)
@@ -116,7 +116,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   testTargetList.append(moduleTest)
 
 # build examples
-if env["ARCH"].upper() != "MIC":
+if env["ARCH"] != "mic":
     example_env = env.Clone()
     example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
     for fileName in os.listdir("examples"):
@@ -126,7 +126,7 @@ if env["ARCH"].upper() != "MIC":
             exampleTargetList.append(example)
 
 # build examples for mic
-if env["ARCH"].upper() == "MIC":
+if env["ARCH"] == "mic":
     example_env = env.Clone()
     example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
     for fileName in os.listdir("examplesMIC"):
@@ -146,7 +146,8 @@ if env['COMPILE_BOOST_TESTS']:
         if fnmatch.fnmatch(fileName, "*.cpp"):
             testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
     if len(testObjects) > 0:
-        fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
+        fileName = os.path.join("tests", "test_{}_boost".format(moduleName)) + \
+                (".exe" if env['PLATFORM'] == 'win32' else '')
         test = test_env.Program(fileName, testObjects)
         test_env.Requires(test, libInstall)
         if env['RUN_BOOST_TESTS']:

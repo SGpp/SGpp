@@ -4,6 +4,7 @@
 # sgpp.sparsegrids.org
 
 import os
+import sys
 import fnmatch
 
 Import('env')
@@ -96,8 +97,8 @@ MICOnlyFiles = [
 moduleDependencies = ['sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
-if env['PLATFORM'] == 'win32':
-    sys.stderr.write("Error: the parallel package is not supported on windows platforms.\n")
+if env['COMPILER'] == 'vcc':
+    sys.stderr.write("Error: The parallel package is not supported on MSVC++.\n")
     sys.exit(1)
 
 libname = "sgpp%s" % moduleName

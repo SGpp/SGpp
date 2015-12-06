@@ -92,6 +92,11 @@ vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
 
+# fix for "command line too long" errors on win32
+# (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
+if env['PLATFORM'] == 'win32':
+    set_win32_spawn(env)
+
 if 'CXX' in ARGUMENTS:
   print "CXX: ", ARGUMENTS['CXX']
   env['CXX'] = ARGUMENTS['CXX']
@@ -181,11 +186,20 @@ Export('env')
 env.Append(CPPPATH=['#/tools'])
 config = env.Configure()
 Export('config')
-# set up paths (Only Tested on Ubuntu!)
+
+# update PATH under win32/LD_LIBRARY_PATH otherwise
+# to add BUILD_DIR (so we can run the Boost tests)
 if env['PLATFORM'] == 'win32':
     env["ENV"]["PATH"] = os.pathsep.join([
         env["ENV"].get("PATH", ""),
         BUILD_DIR.abspath])
+    
+    # also add the Boost library path to the PATH
+    # so that the Boost test *.dll can be found when running the tests
+    if env['RUN_BOOST_TESTS']:
+      env["ENV"]["PATH"] = os.pathsep.join([
+          env["ENV"].get("PATH", ""),
+          env["BOOST_LIBRARY_PATH"]])
 else:
     env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([
         env["ENV"].get("LD_LIBRARY_PATH", ""),
