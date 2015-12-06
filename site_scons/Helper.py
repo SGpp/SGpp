@@ -132,3 +132,49 @@ def flatDependencyGraph(dependencies, acc):
         if dependency not in acc:
             acc = [dependency] + acc
     return acc
+
+
+
+# On win32, the command lines are limited to a ridiculously short length
+# (1000 chars). However, compiler/linker command lines easily exceed that
+# length. The following is a fix for that.
+# It has to be enabled with "env['SPAWN'] = win32_spawn".
+# (see https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
+def set_win32_spawn(env):
+    import win32file
+    import win32event
+    import win32process
+    import win32security
+
+    def win32_spawn(sh, escape, cmd, args, spawnenv):
+        for var in spawnenv:
+            spawnenv[var] = spawnenv[var].encode('ascii', 'replace')
+
+        sAttrs = win32security.SECURITY_ATTRIBUTES()
+        StartupInfo = win32process.STARTUPINFO()
+        newargs = ' '.join(map(escape, args[1:]))
+        cmdline = cmd + " " + newargs
+
+        # check for any special operating system commands
+        if cmd == 'del':
+            for arg in args[1:]:
+                win32file.DeleteFile(arg)
+            exit_code = 0
+        else:
+            # otherwise execute the command.
+            try:
+              hProcess, hThread, dwPid, dwTid = win32process.CreateProcess(
+                None, cmdline, None, None, 1, 0, spawnenv, None, StartupInfo)
+            except:
+              import win32api
+              error_code = win32api.GetLastError()
+              raise RuntimeError("Could not execute the following " + 
+                  "command line (error code {}): {}".format(
+                    error_code, cmdline))
+            win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
+            exit_code = win32process.GetExitCodeProcess(hProcess)
+            win32file.CloseHandle(hProcess)
+            win32file.CloseHandle(hThread)
+        return exit_code
+    
+    env['SPAWN'] = win32_spawn

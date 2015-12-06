@@ -9,9 +9,10 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-#ifdef _WIN32
+// disable warning on MSVC++
+#ifdef _MSC_VER
 #pragma warning(disable: 4267)
-#endif
+#endif /* MSC_VER */
 
 #include <sgpp/globaldef.hpp>
 

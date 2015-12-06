@@ -7,6 +7,12 @@
 // %feature("autodoc", "2");
 // %feature("docstring");
 
+// fix needed for MinGW: cmath has to be included before Python.h,
+// otherwise there are g++ errors like "Error: '::hypot' has not been declared"
+%begin %{
+    #include <cmath>
+%}
+
 %include "base/src/sgpp/globaldef.hpp"
 
 %include "stl.i"
@@ -39,7 +45,7 @@
 %}
 
 // -----------------------------------------------------------
-// needed for windows wrapper since swig does not understand
+// needed for MSVC++ wrapper since swig does not understand
 // that unsigned int is equal to size_t and generates
 // template specifications twice
 #ifdef SWIGWIN
