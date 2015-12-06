@@ -92,11 +92,6 @@ vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
 
-# fix for "command line too long" errors on win32
-# (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
-if env['PLATFORM'] == 'win32':
-    set_win32_spawn(env)
-
 if 'CXX' in ARGUMENTS:
   print "CXX: ", ARGUMENTS['CXX']
   env['CXX'] = ARGUMENTS['CXX']
@@ -168,6 +163,11 @@ Export('EXAMPLE_DIR')
 # no checks if clean:
 if not env.GetOption('clean'):
     SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+
+# fix for "command line too long" errors on MinGW
+# (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
+if (env['PLATFORM'] == 'win32') and (env['COMPILER'] != 'vcc'):
+    set_win32_spawn(env)
 
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)
