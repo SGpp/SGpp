@@ -89,8 +89,21 @@ vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relev
 vars.Add('MSVC_USE_SCRIPT', 'Sets the script to initialize the environment for the Visual Studio compiler and linker.', '')
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
 
+# create temporary environment to check which system and compiler we should use
+# (the Environment call without "tools=[]" crashes with MinGW,
+# so we do it like that)
+env = Environment(variables=vars, ENV=os.environ, tools=[])
+
+if (env['PLATFORM'].lower() == 'win32') and \
+   (env['COMPILER'].lower() == 'gnu'):
+	# MinGW: use gcc toolschain
+	tools = ['gnulink', 'gcc', 'g++', 'gas', 'ar', 'swig']
+else:
+	# otherwise: use default toolchain
+	tools = ['default']
+
 # initialize environment
-env = Environment(variables=vars, ENV=os.environ)
+env = Environment(variables=vars, ENV=os.environ, tools=tools)
 
 if 'CXX' in ARGUMENTS:
   print "CXX: ", ARGUMENTS['CXX']
