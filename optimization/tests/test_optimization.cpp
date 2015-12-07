@@ -1,6 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE BoostTestOptimization
 #include <boost/test/unit_test.hpp>
+#include <boost/version.hpp>
 #include <omp.h>
 
 struct GlobalFixture {
