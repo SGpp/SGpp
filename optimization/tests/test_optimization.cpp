@@ -16,4 +16,8 @@ struct GlobalFixture {
   }
 };
 
+#if BOOST_VERSION >= 105900
 BOOST_GLOBAL_FIXTURE(GlobalFixture);
+#else
+BOOST_GLOBAL_FIXTURE(GlobalFixture)
+#endif /* BOOST_VERSION >= 105900 */
