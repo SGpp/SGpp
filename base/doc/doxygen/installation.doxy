@@ -1,0 +1,9 @@
+/**
+@page installation Installation and Usage
+
+Select your operating system and compiler to get instructions.
+
+- @subpage linux
+- @subpage mingw
+- @subpage msvc
+**/
