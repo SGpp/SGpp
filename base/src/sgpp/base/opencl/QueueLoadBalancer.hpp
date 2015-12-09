@@ -51,10 +51,12 @@ public:
         this->currentStart = start;
 
         //employ padding
-        size_t remainder = scheduleSize % blockSize;
+        size_t remainder = this->scheduleSize % blockSize;
 
         if (remainder != 0) {
-            paddedScheduleSize = scheduleSize + (blockSize - remainder);
+            paddedScheduleSize = this->scheduleSize + (blockSize - remainder);
+        } else {
+            paddedScheduleSize = this->scheduleSize;
         }
         this->isInitialized = true;
     }
