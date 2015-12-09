@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(testInsert) {
   i.set(0, 1, 1);
   size_t i2 = s->insert(i);
 
-  BOOST_CHECK_EQUAL(i2, 0);
+  BOOST_CHECK_EQUAL(i2, 0U);
   BOOST_CHECK_EQUAL(s->size(), 1);
 
   delete s;

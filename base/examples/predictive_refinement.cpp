@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 // All SG++ headers
 //#include <sgpp_base.hpp>
 

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include "CombiAtanSpecialStretching.hpp"
-#include <math.h>
+#include <cmath>
 
 using namespace std;
 

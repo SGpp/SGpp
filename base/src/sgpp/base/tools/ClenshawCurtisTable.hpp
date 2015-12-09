@@ -6,7 +6,7 @@
 #ifndef CLENSHAWCURTISTABLE_HPP
 #define CLENSHAWCURTISTABLE_HPP
 
-#include <math.h>
+#include <cmath>
 #include <cstddef>
 
 #include <sgpp/globaldef.hpp>

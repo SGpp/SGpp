@@ -38,6 +38,10 @@
  * These seem not to be part of the C++ standard,
  * and they're missing, e.g., on MinGW-w64.
  */
+#ifdef _MSC_VER
+#undef  _MATH_DEFINES_DEFINED
+#define _MATH_DEFINES_DEFINED
+#endif
 // e
 #undef  M_E
 #define M_E         2.7182818284590452354
