@@ -210,12 +210,19 @@ We assume that SG++ or its bindings have been successfully built before.
 First, compile the program
 while supplying the include paths of the relevant modules:
 @verbatim
-g++ -o tutorial.o -c -std=c++11 -I/PATH_TO_SGPP/base/src tutorial.cpp
+g++ tutorial.cpp \
+  -c -std=c++11 -fopenmp \
+  -I/PATH_TO_SGPP/base/src \
+  -o tutorial.o
 @endverbatim
 Then, link the program by indicating the SG++ library path and the modules
 you want to link against:
 @verbatim
-g++ -o tutorial -fopenmp tutorial.o -L/PATH_TO_SGPP/lib/sgpp -lsgppbase
+g++ tutorial.o \
+  -fopenmp \
+  -L/PATH_TO_SGPP/lib/sgpp \
+  -lsgppbase \
+  -o tutorial
 @endverbatim
 To run the program, note that you have to set the @c LD_LIBRARY_PATH
 environment variable to include the SG++ library path:
@@ -268,6 +275,24 @@ The parameters to be passed to
 <a href="https://www.mathworks.com/help/matlab/ref/mex.html" target="_blank">
 MATLAB's @c mex function</a> which compiles
 the program are largely the same as for plain C++.
+Alternatively, you can link and compile by yourself:
+@verbatim
+g++ your_mex_program.cpp \
+  -c -std=c++11 -fopenmp -fPIC \
+  -Wall -Wextra \
+  -I/PATH_TO_MATLAB/extern/include \
+  -I/PATH_TO_SGPP/base/src \
+  -o your_mex_program.o
+g++ your_mex_program.o \
+  -shared -fopenmp \
+  -L/PATH_TO_MATLAB/bin/glnxa64 \
+  -L/PATH_TO_SGPP/lib/sgpp \
+  -lmex \
+  -lsgppbase \
+  -o your_mex_program.mexa64
+@endverbatim
+Of course, you have to add include paths and library switches for each
+module that @c your_mex_program uses.
 
 @subsubsection linux_using_matlab_jsgpp Via jsgpp
 

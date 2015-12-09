@@ -19,7 +19,7 @@ import sgpp.OperationEval;
 /**
  * Simple Java SG++ example.
  */
-public class java_simple {
+public class tutorial {
   /**
    * Test function.
    * 
