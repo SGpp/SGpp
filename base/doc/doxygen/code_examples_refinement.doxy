@@ -1,5 +1,5 @@
 /**
-@page code_examples_refinement Short Code Examples: Refinement
+@page code_examples_refinement Refinement Example
 
 The following example interpolates the (non-symmetric) function
 @f[ f(x_0,x_1) := 16 * (x_0-1)*x_0 * (x_1-1)*x_1^2 @f]
@@ -8,19 +8,20 @@ The following example interpolates the (non-symmetric) function
 The number of grid points is printed in each iteration.
 After refinement, the surplusses have to be set for all new grid
 points, i.e., the alpha-Vector has to be extended.
-@see code_examples
+@see @ref code_examples_tutorial
+
+For instructions how to compile and run the example,
+please see \ref installation.
+
+
 
 @section code_examples_refinement__python Python
 
-@include python_simple_refinement.py
-which can be executed by
-@code
-> python python_simple_refinement.py
-@endcode
-in the directory @c examples/.
+@include refinement.py
 
 This results in the output
-@include all_simple_refinement.output.txt
+
+@include refinement.output.txt
 
 There are clearly more efficient approaches than to set the function
 values for all grid points and to hierarchize the whole grid each
@@ -33,5 +34,4 @@ could be something modified!) and the number of grid points to refine
 (if available). It bases its refinement decision on the absolute
 values of the vector's entries, choosing the largest ones. Other
 refinement functors are available or can be implemented.
-
 */
