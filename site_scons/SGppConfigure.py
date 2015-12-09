@@ -355,7 +355,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
         print "Using vcc"
         env.AppendUnique(CPPFLAGS=['/EHsc'])
         env.AppendUnique(CPPFLAGS=['/DNOMINMAX'])
-        env.AppendUnique(CPPFLAGS=['/D_USE_MATH_DEFINES'])
         if env['USE_STATICLIB']:
             env.AppendUnique(CPPFLAGS=['/D_USE_STATICLIB'])
         # env.Append(CPPFLAGS=['/openmp']) -> does not work due to missing openMP3 support

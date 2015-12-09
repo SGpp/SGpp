@@ -21,7 +21,7 @@
 
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <utility>
 #include <iostream>

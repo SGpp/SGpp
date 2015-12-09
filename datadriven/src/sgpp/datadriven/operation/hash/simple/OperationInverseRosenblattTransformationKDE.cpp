@@ -10,7 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
-#include <math.h>
+#include <cmath>
 #include <random>
 #include <algorithm>
 

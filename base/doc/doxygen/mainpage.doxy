@@ -4,7 +4,7 @@
 Welcome to the SG++ documentation.<br/>
 The current version of SG++ can be found at @subpage downloads.
 
-<div style="border-style:double; width:40em; padding:1em; margin:1em auto;">
+<div style="border-style:double; max-width:40em; padding:1em; margin:1em auto;">
     If you use any part of the software or any resource of this webpage and/or
     documentation, you implicitly accept the copyright (see the \ref copyright).
     This includes that you have to cite one of the papers dealing
@@ -74,8 +74,8 @@ You can find these pages and more in the menu to the left. If you do not see a m
 Though we do not guarantee for anything, and though we do not have the money to provide quick and fast support, we are happy about any comments, recommendations, hints on missing information, ...
 
 See also:
-- @subpage development
 - @subpage manual
+- @subpage development
 - @subpage copyright
 - @ref downloads
 - Online version of this documentation at http://sgpp.sparsegrids.org
