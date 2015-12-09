@@ -36,7 +36,9 @@ protected:
     std::vector<T> mask;
     /// Member to store the sparse grid's offset for better vectorization
     std::vector<T> offset;
-    size_t gridSize;
+    size_t gridSizeUnpadded;
+    size_t gridSizePadded;
+
     /// Timer object to handle time measurements
     SGPP::base::SGppStopwatch myTimer;
 
@@ -49,6 +51,14 @@ protected:
 //    std::unique_ptr<StreamingModOCLMaskMultiPlatformKernelImpl<T>> kernel;
     std::vector<std::shared_ptr<base::OCLDevice>> devices;
     std::vector<StreamingModOCLMaskMultiPlatformKernelImpl<T>> kernels;
+
+    std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMult;
+    std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
+
+    size_t scheduleSize;
+    size_t scheduleSizeTranspose;
+    size_t overallGridBlockingSize;
+    size_t overallDataBlockingSize;
 public:
 
     OperationMultiEvalStreamingModOCLMaskMultiPlatform(base::Grid& grid, base::DataMatrix& dataset,
@@ -64,25 +74,26 @@ public:
 //                new StreamingModOCLMaskMultiPlatformKernelImpl<T>(dims, this->manager, parameters));
 
         this->storage = grid.getStorage();
-        this->gridSize = this->storage->size();
+
+        // padded grid size is set by prepare
+        this->gridSizeUnpadded = this->storage->size();
         this->padDataset(this->preparedDataset);
         this->preparedDataset.transpose();
         this->datasetSize = this->preparedDataset.getNcols();
 
         //TODO: better selection for those values
-        size_t scheduleSize = 20000;
-        size_t blockSize = 256;
+        scheduleSize = 20000;
+        scheduleSizeTranspose = 20000;
+        overallGridBlockingSize = 128;
+        overallDataBlockingSize = 128;
 
-        std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMult = std::make_shared<
-        SGPP::base::QueueLoadBalancer>(scheduleSize, 0, datasetSize, blockSize);
-        std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMultTrans = std::make_shared<
-        SGPP::base::QueueLoadBalancer>(scheduleSize, 0, gridSize, blockSize);
+        queueLoadBalancerMult = std::make_shared<SGPP::base::QueueLoadBalancer>();
+        queueLoadBalancerMultTrans = std::make_shared<SGPP::base::QueueLoadBalancer>();
 
         //    std::cout << "dims: " << this->dims << std::endl;
         //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
         this->kernelDataset = std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
-//        this->kernelDataset = new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
 
         for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
             this->kernelDataset[i] = (T) this->preparedDataset[i];
@@ -94,6 +105,7 @@ public:
         }
 
         //create the kernel specific data structures
+        //also sets the correct padded grid size
         this->prepare();
     }
 
@@ -102,20 +114,29 @@ public:
 
     void mult(SGPP::base::DataVector& alpha,
     SGPP::base::DataVector& result) override {
+
+        this->prepare();
+
         this->myTimer.start();
 
         size_t gridFrom = 0;
-        size_t gridTo = this->gridSize;
+        size_t gridTo = this->gridSizePadded;
         size_t datasetFrom = 0;
         size_t datasetTo = this->datasetSize;
 
-        std::vector<T> alphaArray(this->gridSize);
+        if (omp_get_thread_num() == 0) {
+        queueLoadBalancerMult->initialize(scheduleSize, datasetFrom, datasetTo, overallDataBlockingSize);
+        }
+
+#pragma omp barrier
+
+        std::vector<T> alphaArray(this->gridSizePadded);
 
         for (size_t i = 0; i < alpha.getSize(); i++) {
             alphaArray[i] = (T) alpha[i];
         }
 
-        for (size_t i = alpha.getSize(); i < this->gridSize; i++) {
+        for (size_t i = alpha.getSize(); i < this->gridSizePadded; i++) {
             alphaArray[i] = 0.0;
         }
 
@@ -125,19 +146,14 @@ public:
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
 
-        //TODO: comment in to actually use multiple devices
         omp_set_num_threads(static_cast<int>(devices.size()));
-//        omp_set_num_threads(1);
 
 #pragma omp parallel
         {
-//        for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
             size_t threadId = omp_get_thread_num();
-            std::cout << "threadId: " << threadId << std::endl;
-//        for (size_t deviceIndex = 0; deviceIndex < 1; deviceIndex++) {
-            this->kernels[threadId].mult(this->level, this->index, this->mask, this->offset, this->gridSize,
-                    this->kernelDataset, this->datasetSize, alphaArray, resultArray, gridFrom, gridTo, datasetFrom,
-                    datasetTo);
+//            std::cout << "threadId: " << threadId << std::endl;
+            this->kernels[threadId].mult(this->level, this->index, this->mask, this->offset, this->kernelDataset,
+                    alphaArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
         }
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
@@ -156,47 +172,63 @@ public:
     void multTranspose(
     SGPP::base::DataVector& source,
     SGPP::base::DataVector& result) override {
-        /*
-         this->myTimer.start();
 
-         size_t gridFrom = 0;
-         size_t gridTo = this->gridSize;
-         size_t datasetFrom = 0;
-         size_t datasetTo = this->datasetSize;
+        this->prepare();
 
-         std::vector<T> sourceArray(this->datasetSize);
+        this->myTimer.start();
 
-         for (size_t i = 0; i < source.getSize(); i++) {
-         sourceArray[i] = (T) source[i];
-         }
+        size_t gridFrom = 0;
+        size_t gridTo = this->gridSizePadded;
+        size_t datasetFrom = 0;
+        size_t datasetTo = this->datasetSize;
 
-         for (size_t i = source.getSize(); i < this->datasetSize; i++) {
-         sourceArray[i] = 0.0;
-         }
+        if (omp_get_thread_num() == 0) {
+        queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose, gridFrom, gridTo, overallDataBlockingSize);
+        }
 
-         std::vector<T> resultArray(this->gridSize);
+#pragma omp barrier
 
-         for (size_t i = 0; i < this->gridSize; i++) {
-         resultArray[i] = 0.0;
-         }
+        std::vector<T> sourceArray(this->datasetSize);
 
-         std::chrono::time_point<std::chrono::system_clock> start, end;
-         start = std::chrono::system_clock::now();
-         this->kernel->multTranspose(this->level, this->index, this->mask, this->offset, this->gridSize,
-         this->kernelDataset, this->preparedDataset.getNcols(), sourceArray, resultArray, gridFrom, gridTo,
-         datasetFrom, datasetTo);
-         end = std::chrono::system_clock::now();
-         std::chrono::duration<double> elapsed_seconds = end - start;
-         if (verbose) {
-         std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
-         }
+        for (size_t i = 0; i < source.getSize(); i++) {
+            sourceArray[i] = (T) source[i];
+        }
 
-         for (size_t i = 0; i < result.getSize(); i++) {
-         result[i] = resultArray[i];
-         }
+        for (size_t i = source.getSize(); i < this->datasetSize; i++) {
+            sourceArray[i] = 0.0;
+        }
 
-         this->duration = this->myTimer.stop();
-         */
+        std::vector<T> resultArray(this->gridSizePadded);
+
+        std::fill(resultArray.begin(), resultArray.end(), 0.0);
+
+        std::chrono::time_point<std::chrono::system_clock> start, end;
+        start = std::chrono::system_clock::now();
+
+        omp_set_num_threads(static_cast<int>(devices.size()));
+
+#pragma omp parallel
+        {
+
+            size_t threadId = omp_get_thread_num();
+//            std::cout << "threadId: " << threadId << std::endl;
+
+            this->kernels[threadId].multTranspose(this->level, this->index, this->mask, this->offset,
+                    this->kernelDataset, sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+
+        }
+        end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        if (verbose) {
+            std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
+        }
+
+        for (size_t i = 0; i < result.getSize(); i++) {
+            result[i] = resultArray[i];
+        }
+
+        this->duration = this->myTimer.stop();
+
     }
 
     float_t getDuration() {
@@ -260,17 +292,17 @@ private:
             padding = localWorkSize - remainder;
         }
 
-        this->gridSize = this->storage->size() + padding;
+        this->gridSizePadded = this->storage->size() + padding;
 
         SGPP::base::HashGridIndex::level_type curLevel;
         SGPP::base::HashGridIndex::index_type curIndex;
 
         //TODO: update the other kernels with this style
 
-        this->level = std::vector<T>(this->gridSize * this->dims);
-        this->index = std::vector<T>(this->gridSize * this->dims);
-        this->mask = std::vector<T>(this->gridSize * this->dims);
-        this->offset = std::vector<T>(this->gridSize * this->dims);
+        this->level = std::vector<T>(this->gridSizePadded * this->dims);
+        this->index = std::vector<T>(this->gridSizePadded * this->dims);
+        this->mask = std::vector<T>(this->gridSizePadded * this->dims);
+        this->offset = std::vector<T>(this->gridSizePadded * this->dims);
 
         for (size_t i = 0; i < this->storage->size(); i++) {
             for (size_t dim = 0; dim < this->dims; dim++) {
@@ -324,7 +356,7 @@ private:
             }
         }
 
-        for (size_t i = this->storage->size(); i < this->gridSize; i++) {
+        for (size_t i = this->storage->size(); i < this->gridSizePadded; i++) {
             for (size_t dim = 0; dim < this->dims; dim++) {
                 this->level[i * this->dims + dim] = 0;
                 this->index[i * this->dims + dim] = 0;

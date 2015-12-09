@@ -37,12 +37,14 @@ std::string StreamingModOCLMaskMultiPlatformKernelSourceBuilder::generateSourceM
     sourceStream << "           __global const " << this->asString() << "* ptrData," << std::endl;
     sourceStream << "           __global const " << this->asString() << "* ptrSource," << std::endl;
     sourceStream << "           __global       " << this->asString() << "* ptrResult," << std::endl;
-    sourceStream << "           uint sourceSize," << std::endl;
+//    sourceStream << "           uint sourceSize," << std::endl;
     sourceStream << "           uint start_data," << std::endl;
     sourceStream << "           uint end_data)" << std::endl;
     sourceStream << "{" << std::endl;
     sourceStream << "   int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << "   int localIdx = get_local_id(0);" << std::endl;
+    sourceStream << "   uint rangeData = end_data - start_data;" << std::endl;
+
     sourceStream << std::endl;
     sourceStream << "   " << this->asString() << " eval, index_calc, abs, last, localSupport, curSupport;" << std::endl
             << std::endl;
@@ -73,7 +75,7 @@ std::string StreamingModOCLMaskMultiPlatformKernelSourceBuilder::generateSourceM
 
         for (size_t d = 0; d < dims; d++) {
             sourceStream << "     locData[(" << d << "*" << localWorkgroupSize << ")+(localIdx)] = ptrData[(" << d
-                    << "*sourceSize)+(localIdx+i)];" << std::endl;
+                    << "*rangeData)+(localIdx+i)];" << std::endl;
         }
 
         sourceStream << "       locSource[localIdx] = ptrSource[i+localIdx];" << std::endl;
@@ -93,7 +95,7 @@ std::string StreamingModOCLMaskMultiPlatformKernelSourceBuilder::generateSourceM
             sourceStream << "         eval = ((level_" << d << ") * (locData[(" << d << "*" << localWorkgroupSize
                     << ")+k]));" << std::endl;
         } else {
-            sourceStream << "         eval = ((level_" << d << ") * (ptrData[(" << d << "*sourceSize)+k]));"
+            sourceStream << "         eval = ((level_" << d << ") * (ptrData[(" << d << "*rangeData)+k]));"
                     << std::endl;
         }
         sourceStream << "         index_calc = eval - (index_" << d << ");" << std::endl;

@@ -15,7 +15,6 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
-
 void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
 SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen, std::mt19937 mt,
         std::uniform_real_distribution<double>& dist) {
@@ -44,8 +43,9 @@ SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen, std::mt19937 mt,
 int main(int argc, char** argv) {
 
     //  std::string fileName = "friedman2_90000.arff";
-    //  std::string fileName = "debugging.arff";
-    std::string fileName = "friedman_4d.arff";
+//      std::string fileName = "debugging.arff";
+//    std::string fileName = "friedman_4d.arff";
+    std::string fileName = "DR5_train.arff";
 
     uint32_t level = 9;
 
@@ -56,11 +56,11 @@ int main(int argc, char** argv) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
+    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-            SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -117,8 +117,8 @@ int main(int argc, char** argv) {
     double mse = 0.0;
 
     for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
-        //    std::cout << "comp: " << (alphaResult[i] - alphaResultCompare[i])
-        //        << std::endl;
+//        std::cout << "comp: " << (alphaResult[i] - alphaResultCompare[i]) << std::endl;
+//        std::cout << "mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i] << " diff: " << (alphaResult[i] - alphaResultCompare[i]) << std::endl;
         mse += (alphaResult[i] - alphaResultCompare[i]) * (alphaResult[i] - alphaResultCompare[i]);
     }
 
