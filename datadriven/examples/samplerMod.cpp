@@ -71,11 +71,11 @@ int main(int argc, char** argv) {
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,
             SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
-//    learner.learn(configuration, fileName);
+    learner.learn(configuration, fileName);
     //learner.learnReference(fileName);
 
     //learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-    learner.learnAndCompare(configuration, fileName, 8);
+//    learner.learnAndCompare(configuration, fileName, 8);
 
 //    learner.learnAndCompare(configuration, fileName, 8, 1.0);
     //learner.writeStatisticsFile("statistics.csv", "test");
