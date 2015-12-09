@@ -82,8 +82,8 @@ public:
         this->datasetSize = this->preparedDataset.getNcols();
 
         //TODO: better selection for those values
-        scheduleSize = 20000;
-        scheduleSizeTranspose = 20000;
+        scheduleSize = (*parameters)["SCHEDULE_SIZE"].getUInt();
+        scheduleSizeTranspose = (*parameters)["SCHEDULE_SIZE_TRANSPOSE"].getUInt();
         overallGridBlockingSize = 128;
         overallDataBlockingSize = 128;
 
