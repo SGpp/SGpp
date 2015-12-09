@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 //    std::string fileName = "DR5_train.arff";
     std::string fileName = "friedman_4d.arff";
 
-    uint32_t level = 10;
+    uint32_t level = 9;
     //  uint32_t level = 3;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "duration: " << elapsed_seconds.count() << std::endl;
-/*
+
     std::cout << "calculating comparison values..." << std::endl;
 
     SGPP::base::OperationMultipleEval* evalCompare =
@@ -127,12 +127,12 @@ int main(int argc, char** argv) {
     double mse = 0.0;
 
     for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-//        std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+//        std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << " diff: " << (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]) << std::endl;
         mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i])
                 * (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
     }
 
     mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
-    std::cout << "mse: " << mse << std::endl;*/
+    std::cout << "mse: " << mse << std::endl;
 }
 

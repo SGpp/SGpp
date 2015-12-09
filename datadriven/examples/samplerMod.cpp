@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = 0;
-    SLESolverConfigFinal.maxIterations_ = 10;
+    SLESolverConfigFinal.maxIterations_ = 1;
     SLESolverConfigFinal.threshold_ = -1.0;
     SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
@@ -66,16 +66,18 @@ int main(int argc, char** argv) {
     //streaming default - 1600 (13 without avx)
     //streaming ocl - 13
 
-    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
+    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
             SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
-    learner.learn(configuration, fileName);
+            SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
+//    learner.learn(configuration, fileName);
     //learner.learnReference(fileName);
 
     //learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-    //learner.learnAndCompare(configuration, fileName, 8, 1.0);
+    learner.learnAndCompare(configuration, fileName, 8);
+
+//    learner.learnAndCompare(configuration, fileName, 8, 1.0);
     //learner.writeStatisticsFile("statistics.csv", "test");
 
     return EXIT_SUCCESS;
