@@ -1,28 +1,24 @@
 /**
 @mainpage SG++ Documentation
-Welcome to the SG++ documentation.
+
+Welcome to the SG++ documentation.<br/>
+The current version of SG++ can be found at @subpage downloads.
+
+<div style="border-style:double; width:40em; padding:1em; margin:1em auto;">
+    If you use any part of the software or any resource of this webpage and/or
+    documentation, you implicitly accept the copyright (see the \ref copyright).
+    This includes that you have to cite one of the papers dealing
+    with sparse grids when publishing work with the help of SG++ (see below).
+</div>
 
 @image html teaser.gif "Images taken from [1]"
 
-<div align="center">
-  <table width="600" border="1">
-    <tr>
-      <td>
-        <br/>
-        If you use any part of the software or any resource of this webpage and/or documentation, you implicitly accept the copyright (see the \ref copyright). This includes that you have to cite one of the papers dealing with sparse grids when publishing work with the help of SG++ (see below).
-	<br/><br/>
-      </td>
-     </tr>
-  </table>
-</div>
+[1] D. Pfl&uuml;ger,
+Spatially Adaptive Sparse Grids for Higher-Dimensional Problems.
+Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
 
 <!-- ############################################################# -->
-@section mainpage__downloads Downloads
-
-The current version can be found at @subpage downloads.
-
-<!-- ############################################################# -->
-@section mainpage__overview Overview
+@section mainpage_overview Overview
 
 SG++ is a toolbox allowing to employ spatially adaptive sparse grids
 straightforward, flexibly, and without the vast initial overhead that
@@ -81,12 +77,12 @@ See also:
 - @subpage development
 - @subpage manual
 - @subpage copyright
-- @subpage downloads
+- @ref downloads
 - Online version of this documentation at http://sgpp.sparsegrids.org
 
 
 <!-- ############################################################# -->
-@section mainpage__literature Literature
+@section mainpage_literature Literature
 
 Please cite one of the corresponding publications (BibTeX snippets below):
 
@@ -101,7 +97,7 @@ Please cite one of the corresponding publications (BibTeX snippets below):
 - For parallelization.
   - A. Heinecke and D. Pflüger: Multi- and Many-Core Data Mining with Adaptive Sparse Grids. In Proceedings of the 8th ACM International Conference on Computing Frontiers, p. 29:1–29:10. ACM, New York, USA, May 2011.
 
-@subsection mainpage__bibtex BibTeX
+@subsection mainpage_bibtex BibTeX
 @verbatim
 @book{pflueger10spatially,
     address = {M{\"{u}}nchen},
@@ -164,13 +160,4 @@ Please cite one of the corresponding publications (BibTeX snippets below):
 }
 @endverbatim
 
-
-<!-- ############################################################# -->
-@section mainpage__references References
-
-[1] D. Pfl&uuml;ger, Spatially Adaptive Sparse Grids for Higher-Dimensional Problems. Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
-
 */
-
-
-

@@ -92,6 +92,10 @@ def prepareDoxyfile(modules):
 @page examples Examples
 
 This is a collection of examples from all modules.
+
+If you're new to SG++ or want to try out quickly,
+read the @ref code_examples_tutorial first.
+
 To add new examples to the documentation,
 go to the respective folder MODULE_NAME/doc/doxygen/ and
 add a new example file code_examples_NAME.doxy with doxygen-internal
@@ -105,12 +109,23 @@ For this to work, the examples must lie in the directories of the form
 ''')
 
         modules.sort()
+        tutorial = 'code_examples_tutorial'
+        
         for moduleName in modules:
-            examplesFile.write('<h2>Module '+moduleName+'</h2>\n')
-            subpages = glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy'))
+            examplesFile.write('<h2>Module {}</h2>\n'.format(moduleName))
+            subpages = glob.glob(os.path.join(
+                moduleName, 'doc', 'doxygen', 'code_examples_*.doxy'))
+            subpages = [os.path.split(path)[-1][:-5]
+                        for path in glob.glob(os.path.join(
+                            moduleName, 'doc', 'doxygen',
+                            'code_examples_*.doxy'))]
             subpages.sort()
+            if tutorial in subpages:
+                del subpages[subpages.index(tutorial)]
+                subpages = [tutorial] + subpages
+            
             for subpage in subpages:
-                examplesFile.write('- @subpage ' + (os.path.split(subpage)[-1])[:-5] + '\n')
+                examplesFile.write('- @subpage {}\n'.format(subpage))
 
         examplesFile.write('**/\n')
 
