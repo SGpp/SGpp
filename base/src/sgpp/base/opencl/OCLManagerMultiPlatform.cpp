@@ -156,13 +156,14 @@ void OCLManagerMultiPlatform::buildKernel(const std::string &program_src, const 
     }
 }
 
-cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source, std::shared_ptr<OCLDevice> device, const std::string &kernelName) {
+cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source, std::shared_ptr<OCLDevice> device,
+        const std::string &kernelName) {
     cl_int err;
 
     // setting the program
     const char* kernel_src = source.c_str();
     cl_program program = clCreateProgramWithSource(device->context, 1, &kernel_src,
-            NULL, &err);
+    NULL, &err);
 
     if (err != CL_SUCCESS) {
         std::stringstream errorString;
@@ -190,7 +191,7 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source, std::s
         // get the build log
         size_t len;
         clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0,
-                NULL, &len);
+        NULL, &len);
         std::string buffer(len, '\0');
         clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
         buffer = buffer.substr(0, buffer.find('\0'));
@@ -329,7 +330,8 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
 
     for (cl_device_id deviceId : deviceIds) {
         //filter device ids
-        this->configureDevice(deviceId, devicesNode, filteredDeviceIds, filteredDeviceNames, countLimitMap, useConfiguration);
+        this->configureDevice(deviceId, devicesNode, filteredDeviceIds, filteredDeviceNames, countLimitMap,
+                useConfiguration);
     }
 
     OCLPlatformWrapper platformWrapper(platformId, platformName, filteredDeviceIds, filteredDeviceNames);
@@ -338,14 +340,16 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
 
     //create linear device list
     for (size_t deviceIndex = 0; deviceIndex < filteredDeviceIds.size(); deviceIndex++) {
-        this->devices.push_back(std::make_shared<OCLDevice>(platformWrapper.platformId, platformWrapper.deviceIds[deviceIndex], platformName,
-                platformWrapper.context, platformWrapper.commandQueues[deviceIndex]));
+        this->devices.push_back(
+                std::make_shared<OCLDevice>(platformWrapper.platformId, platformWrapper.deviceIds[deviceIndex],
+                        platformName, platformWrapper.deviceNames[deviceIndex], platformWrapper.context,
+                        platformWrapper.commandQueues[deviceIndex]));
     }
 }
 
 void OCLManagerMultiPlatform::configureDevice(cl_device_id deviceId, json::Node &devicesNode,
-        std::vector<cl_device_id> &filteredDeviceIds, std::vector<std::string> &filteredDeviceNames, std::map<std::string, size_t> &countLimitMap,
-        bool useConfiguration) {
+        std::vector<cl_device_id> &filteredDeviceIds, std::vector<std::string> &filteredDeviceNames,
+        std::map<std::string, size_t> &countLimitMap, bool useConfiguration) {
     cl_int err;
 
     char deviceName[128] = { 0 };

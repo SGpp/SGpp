@@ -15,7 +15,9 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/QueueLoadBalancer.hpp>
-#include "StreamingModOCLMaskMultiPlatformKernelImpl.hpp"
+#include "StreamingModOCLMaskMultiPlatformKernelMult.hpp"
+#include "StreamingModOCLMaskMultiPlatformKernelMultTranspose.hpp"
+#include "StreamingModOCLMaskMultiPlatformConfiguration.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -47,16 +49,20 @@ protected:
     float_t duration;
 
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
-    //TODO: platform, deviceIndex, kernel
-//    std::unique_ptr<StreamingModOCLMaskMultiPlatformKernelImpl<T>> kernel;
     std::vector<std::shared_ptr<base::OCLDevice>> devices;
-    std::vector<StreamingModOCLMaskMultiPlatformKernelImpl<T>> kernels;
+
+    bool useDouble;
+
+    std::vector<StreamingModOCLMaskMultiPlatformKernelMult<T>> multKernels;
+    std::vector<StreamingModOCLMaskMultiPlatformKernelMultTranspose<T>> multTransposeKernels;
 
     std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMult;
     std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
 
+    //TODO: remove those variables
     size_t scheduleSize;
     size_t scheduleSizeTranspose;
+
     size_t overallGridBlockingSize;
     size_t overallDataBlockingSize;
 public:
@@ -68,6 +74,11 @@ public:
             SGPP::base::SGppStopwatch()), duration(-1.0), manager(manager), devices(manager->getDevices()) {
 
         this->verbose = (*parameters)["VERBOSE"].getBool();
+        if (std::is_same<T, double>::value) {
+            useDouble = true;
+        } else {
+            useDouble = false;
+        }
 
         this->dims = dataset.getNcols(); //be aware of transpose!
 //        this->kernel = std::unique_ptr<StreamingModOCLMaskMultiPlatformKernelImpl<T>>(
@@ -77,11 +88,13 @@ public:
 
         // padded grid size is set by prepare
         this->gridSizeUnpadded = this->storage->size();
+        //initialized in prepare
+        this->gridSizePadded = 0;
         this->padDataset(this->preparedDataset);
         this->preparedDataset.transpose();
         this->datasetSize = this->preparedDataset.getNcols();
 
-        //TODO: better selection for those values
+        //TODO: should not necessarily be a global parameter!
         scheduleSize = (*parameters)["SCHEDULE_SIZE"].getUInt();
         scheduleSizeTranspose = (*parameters)["SCHEDULE_SIZE_TRANSPOSE"].getUInt();
         overallGridBlockingSize = 128;
@@ -100,7 +113,13 @@ public:
         }
 
         for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
-            kernels.emplace_back(devices[deviceIndex], dims, this->manager, parameters, queueLoadBalancerMult,
+            json::Node &platformConfiguration = (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
+            json::Node &deviceConfiguration = platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
+            json::Node &kernelConfiguration =
+                    deviceConfiguration["KERNELS"][StreamingModOCLMaskMultiPlatformConfiguration::getKernelName()];
+            multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
+                    queueLoadBalancerMult);
+            multTransposeKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
                     queueLoadBalancerMultTrans);
         }
 
@@ -125,7 +144,7 @@ public:
         size_t datasetTo = this->datasetSize;
 
         if (omp_get_thread_num() == 0) {
-        queueLoadBalancerMult->initialize(scheduleSize, datasetFrom, datasetTo, overallDataBlockingSize);
+            queueLoadBalancerMult->initialize(scheduleSize, datasetFrom, datasetTo, overallDataBlockingSize);
         }
 
 #pragma omp barrier
@@ -152,7 +171,7 @@ public:
         {
             size_t threadId = omp_get_thread_num();
 //            std::cout << "threadId: " << threadId << std::endl;
-            this->kernels[threadId].mult(this->level, this->index, this->mask, this->offset, this->kernelDataset,
+            this->multKernels[threadId].mult(this->level, this->index, this->mask, this->offset, this->kernelDataset,
                     alphaArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
         }
         end = std::chrono::system_clock::now();
@@ -183,7 +202,7 @@ public:
         size_t datasetTo = this->datasetSize;
 
         if (omp_get_thread_num() == 0) {
-        queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose, gridFrom, gridTo, overallDataBlockingSize);
+            queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose, gridFrom, gridTo, overallDataBlockingSize);
         }
 
 #pragma omp barrier
@@ -213,7 +232,7 @@ public:
             size_t threadId = omp_get_thread_num();
 //            std::cout << "threadId: " << threadId << std::endl;
 
-            this->kernels[threadId].multTranspose(this->level, this->index, this->mask, this->offset,
+            this->multTransposeKernels[threadId].multTranspose(this->level, this->index, this->mask, this->offset,
                     this->kernelDataset, sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
 
         }
@@ -239,7 +258,11 @@ public:
         this->recalculateLevelIndexMask();
 
         for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
-            this->kernels[deviceIndex].resetKernel();
+            this->multKernels[deviceIndex].resetKernel();
+        }
+
+        for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
+            this->multTransposeKernels[deviceIndex].resetKernel();
         }
     }
 
@@ -370,6 +393,24 @@ private:
                 this->offset[i * this->dims + dim] = 1.0;
             }
         }
+    }
+
+    size_t kgv(size_t left, size_t right) {
+        return left;
+    }
+
+    size_t calculateCommonDatasetPadding() {
+        size_t commonPaddingRequiredment = 1;
+        for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
+            json::Node &platformConfiguration = (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
+            json::Node &deviceConfiguration = platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
+            json::Node &kernelConfiguration =
+                    deviceConfiguration["KERNELS"][StreamingModOCLMaskMultiPlatformConfiguration::getKernelName()];
+            commonPaddingRequiredment = kgv(commonPaddingRequiredment,
+                    kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt());
+            commonPaddingRequiredment = kgv(commonPaddingRequiredment, kernelConfiguration["LOCAL_SIZE"].getUInt());
+        }
+        return commonPaddingRequiredment;
     }
 };
 

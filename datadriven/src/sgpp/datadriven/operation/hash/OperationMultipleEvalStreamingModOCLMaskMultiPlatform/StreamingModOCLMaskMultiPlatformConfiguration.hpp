@@ -71,6 +71,10 @@ public:
                 if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCK_SIZE") == false) {
                     kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
                 }
+
+                if (kernelNode.contains("VERBOSE") == false) {
+                    kernelNode.addIDAttr("VERBOSE", false);
+                }
             }
         }
     }
