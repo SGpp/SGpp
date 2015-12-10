@@ -7,14 +7,13 @@
 
 #include <omp.h>
 
-#include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/opencl/OCLManager.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/OCLKernelImpl.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include "StreamingOCLKernelImpl.hpp"
 
 namespace SGPP {
   namespace datadriven {
@@ -24,32 +23,43 @@ namespace SGPP {
       protected:
         size_t dims;
         SGPP::base::DataMatrix preparedDataset;
-        base::OpenCLConfigurationParameters parameters;
-        T* kernelDataset = nullptr;
+        std::shared_ptr<base::OCLOperationConfiguration> parameters;
+        std::vector<T> kernelDataset;
         size_t datasetSize = 0;
-        /// Member to store the sparse grid's levels for better vectorization
-        T* level = nullptr;
-        /// Member to store the sparse grid's indices for better vectorization
-        T* index = nullptr;
+        // Member to store the sparse grid's levels for better vectorization
+        std::vector<T> level;
+        // Member to store the sparse grid's indices for better vectorization
+        std::vector<T> index;
         size_t gridSize = 0;
-        /// Timer object to handle time measurements
+        // Timer object to handle time measurements
         SGPP::base::SGppStopwatch myTimer;
 
         base::GridStorage* storage;
 
         float_t duration;
 
-        base::OCLManager* manager;
-        OCLKernelImpl<T>* kernel;
+        std::shared_ptr<base::OCLManager> manager;
+        std::unique_ptr<StreamingOCLKernelImpl<T>> kernel;
       public:
 
-        OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset, base::OpenCLConfigurationParameters parameters) :
+        OperationMultiEvalStreamingOCL(base::Grid& grid, base::DataMatrix& dataset,
+                                       std::shared_ptr<base::OCLOperationConfiguration> parameters) :
           OperationMultipleEval(grid, dataset), preparedDataset(dataset), parameters(parameters), myTimer(
             SGPP::base::SGppStopwatch()), duration(-1.0) {
-          this->manager = new base::OCLManager(parameters);
+
+          if ((*parameters)["KERNEL_STORE_DATA"].get().compare("register") == 0
+              && dataset.getNcols() > (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
+            std::stringstream errorString;
+            errorString
+                << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+            errorString << " to be greater than the dimension of the data set" << std::endl;
+            throw SGPP::base::operation_exception(errorString.str());
+          }
+
+          this->manager = std::make_shared<base::OCLManager>(parameters);
 
           this->dims = dataset.getNcols(); //be aware of transpose!
-          this->kernel = new OCLKernelImpl<T>(dims, *(this->manager), parameters);
+          this->kernel = std::make_unique<StreamingOCLKernelImpl<T>>(dims, this->manager, parameters);
 
           this->storage = grid.getStorage();
           this->padDataset(this->preparedDataset);
@@ -59,7 +69,7 @@ namespace SGPP {
           //    std::cout << "dims: " << this->dims << std::endl;
           //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-          this->kernelDataset = new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
+          this->kernelDataset = std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
 
           for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
             this->kernelDataset[i] = (T) this->preparedDataset[i];
@@ -70,17 +80,17 @@ namespace SGPP {
         }
 
         ~OperationMultiEvalStreamingOCL() {
-          if (this->level != nullptr) {
-            delete this->level;
-          }
-
-          if (this->index != nullptr) {
-            delete this->index;
-          }
-
-          if (this->kernelDataset != nullptr) {
-            delete this->kernelDataset;
-          }
+          //        if (this->level != nullptr) {
+          //            delete this->level;
+          //        }
+          //
+          //        if (this->index != nullptr) {
+          //            delete this->index;
+          //        }
+          //
+          //        if (this->kernelDataset != nullptr) {
+          //            delete this->kernelDataset;
+          //        }
         }
 
         void mult(SGPP::base::DataVector& alpha,
@@ -92,7 +102,7 @@ namespace SGPP {
           size_t datasetFrom = 0;
           size_t datasetTo = this->datasetSize;
 
-          T* alphaArray = new T[this->gridSize];
+          std::vector<T> alphaArray(this->gridSize);
 
           for (size_t i = 0; i < alpha.getSize(); i++) {
             alphaArray[i] = (T) alpha[i];
@@ -102,7 +112,7 @@ namespace SGPP {
             alphaArray[i] = 0.0;
           }
 
-          T* resultArray = new T[this->datasetSize];
+          std::vector<T> resultArray(this->datasetSize);
 
           for (size_t i = 0; i < this->datasetSize; i++) {
             resultArray[i] = 0.0;
@@ -115,8 +125,6 @@ namespace SGPP {
             result[i] = resultArray[i];
           }
 
-          delete alphaArray;
-          delete resultArray;
           this->duration = this->myTimer.stop();
         }
 
@@ -130,7 +138,7 @@ namespace SGPP {
           size_t datasetFrom = 0;
           size_t datasetTo = this->datasetSize;
 
-          T* sourceArray = new T[this->datasetSize];
+          std::vector<T> sourceArray(this->datasetSize);
 
           for (size_t i = 0; i < source.getSize(); i++) {
             sourceArray[i] = (T) source[i];
@@ -140,7 +148,7 @@ namespace SGPP {
             sourceArray[i] = 0.0;
           }
 
-          T* resultArray = new T[this->gridSize];
+          std::vector<T> resultArray(this->gridSize);
 
           for (size_t i = 0; i < this->gridSize; i++) {
             resultArray[i] = 0.0;
@@ -153,12 +161,10 @@ namespace SGPP {
             result[i] = resultArray[i];
           }
 
-          delete sourceArray;
-          delete resultArray;
           this->duration = this->myTimer.stop();
         }
 
-        float_t getDuration() {
+        float_t getDuration() override {
           return this->duration;
         }
 
@@ -175,7 +181,11 @@ namespace SGPP {
         size_t padDataset(
           SGPP::base::DataMatrix& dataset) {
 
-          size_t vecWidth = parameters.getAsUnsigned("LOCAL_SIZE");
+          size_t dataBlocking = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+          size_t transGridBlocking = (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+
+          size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
+          size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt() * blockingPadRequirements;
 
           // Assure that data has a even number of instances -> padding might be needed
           size_t remainder = dataset.getNrows() % vecWidth;
@@ -196,13 +206,13 @@ namespace SGPP {
         }
 
         void recalculateLevelAndIndex() {
-          if (this->level != nullptr)
-            delete this->level;
 
-          if (this->index != nullptr)
-            delete this->index;
+          size_t dataBlocking = (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+          size_t transGridBlocking = (*parameters)["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
 
-          uint32_t localWorkSize = (uint32_t) parameters.getAsUnsigned("LOCAL_SIZE");
+          size_t blockingPadRequirements = std::max(dataBlocking, transGridBlocking);
+
+          uint32_t localWorkSize = static_cast<uint32_t>((*parameters)["LOCAL_SIZE"].getUInt()) * static_cast<uint32_t>(blockingPadRequirements);
 
           size_t remainder = this->storage->size() % localWorkSize;
           size_t padding = 0;
@@ -213,6 +223,7 @@ namespace SGPP {
 
           this->gridSize = this->storage->size() + padding;
 
+          //TODO: remove this
           SGPP::base::DataMatrix* levelMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
           SGPP::base::DataMatrix* indexMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
 
@@ -225,8 +236,8 @@ namespace SGPP {
             }
           }
 
-          this->level = new T[this->gridSize * this->dims];
-          this->index = new T[this->gridSize * this->dims];
+          this->level = std::vector<T>(this->gridSize * this->dims);
+          this->index = std::vector<T>(this->gridSize * this->dims);
 
           for (size_t i = 0; i < this->gridSize * this->dims; i++) {
             this->level[i] = (T) (*levelMatrix)[i];

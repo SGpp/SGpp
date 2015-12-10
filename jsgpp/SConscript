@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
@@ -44,7 +44,7 @@ if not j_env['USE_DOUBLE_PRECISION']:
 #j_env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 
 shlibprefix = "lib"
-if j_env['PLATFORM'] == 'win32':
+if j_env['COMPILER'] == 'vcc':
     shlibprefix = ""
 
 libJava = j_env.SharedLibrary(target="jsgpp",
@@ -60,7 +60,8 @@ installTargetList.append(installLibJava)
 # (see SConstruct_jsgpp_jar for more details)
 jar = j_env.Command(target="jsgpp.jar",
                     source=installLibJava,
-                    action="scons JSGPP_BUILD_PATH=\"{}\" -C \"{}\" -f \"{}\"".
-                        format(JSGPP_BUILD_PATH, moduleName, "SConstruct_jar"))
+                    action="scons{} JSGPP_BUILD_PATH=\"{}\" -C \"{}\" -f \"{}\"".
+                        format(".bat" if env['PLATFORM'] == 'win32' else "",
+                               JSGPP_BUILD_PATH, moduleName, "SConstruct_jar"))
 j_env.AlwaysBuild(jar)
 installTargetList.append(jar)

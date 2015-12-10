@@ -12,7 +12,7 @@
 #include <cstdio>
 
 #include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
@@ -23,44 +23,54 @@ using namespace SGPP::base;
 namespace SGPP {
   namespace datadriven {
 
-    MetaLearner::MetaLearner(SGPP::solver::SLESolverConfiguration solverConfig,
+    MetaLearner::MetaLearner(SGPP::base::RegularGridConfiguration gridConfig,
+                             SGPP::solver::SLESolverConfiguration solverConfig,
                              SGPP::solver::SLESolverConfiguration solverFinalStep, SGPP::base::AdpativityConfiguration adaptivityConfiguration,
-                             size_t baseLevel, float_t lambda, bool verbose) {
+                             float_t lambda, bool verbose) {
       this->csvSep = "& ";
+      this->gridConfig = gridConfig;
       this->solverConfig = solverConfig;
       this->solverFinalStep = solverFinalStep;
       this->adaptivityConfiguration = adaptivityConfiguration;
-      this->baseLevel = baseLevel;
       this->lambda = lambda;
       this->verbose = verbose;
       this->instances = 0;
-      this->dim = 0;
     }
 
     void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                            std::string datasetFileName) {
+                            std::string& datasetFileName, bool isRegression) {
+      std::ifstream t(datasetFileName);
 
-      Dataset dataset = ARFFTools::readARFF(datasetFileName);
-      this->dim = dataset.getDimension();
+      if (!t.is_open()) {
+        throw;
+      }
+
+      std::stringstream buffer;
+      buffer << t.rdbuf();
+      std::string bufferString = buffer.str();
+      this->learnString(operationConfiguration, bufferString);
+    }
+
+    void MetaLearner::learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+                                  std::string& content, bool isRegression) {
+
+      Dataset dataset = ARFFTools::readARFFFromString(content);
+
+      this->gridConfig.dim_ = dataset.getDimension();
       this->instances = dataset.getNumberInstances();
 
       if (verbose) {
         std::cout << "instances: " << this->instances << std::endl;
       }
 
-      // Set grid config
-      this->gridConfig.dim_ = this->dim;
-      this->gridConfig.type_ = SGPP::base::GridType::Linear;
-      this->gridConfig.level_ = static_cast<int>(this->baseLevel);
+      DataVector& classesVector = dataset.getClasses();
+      DataMatrix& trainingData = dataset.getTrainingData();
 
-      DataVector* classesVector = dataset.getClasses();
-      DataMatrix* trainingData = dataset.getTrainingData();
-
-      bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
+      //    bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
       LearnerLeastSquaresIdentity* myLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
       myLearner->setImplementation(operationConfiguration);
 
-      LearnerTiming timings = myLearner->train(*trainingData, *classesVector, this->gridConfig, this->solverConfig,
+      LearnerTiming timings = myLearner->train(trainingData, classesVector, this->gridConfig, this->solverConfig,
                               this->solverFinalStep, this->adaptivityConfiguration, false, this->lambda);
 
       this->myTiming = timings;
@@ -73,34 +83,48 @@ namespace SGPP {
       this->myLearner = myLearner;
     }
 
-    void MetaLearner::learnReference(std::string fileName) {
+    Grid& MetaLearner::getLearnedGrid() {
+      if (this->myLearner == nullptr) {
+        throw;
+      }
 
-      Dataset dataset = ARFFTools::readARFF(fileName);
-      this->dim = dataset.getDimension();
+      return this->myLearner->getGrid();
+    }
+
+    void MetaLearner::learnReference(std::string& datasetFileName, bool isRegression) {
+      std::ifstream t(datasetFileName);
+
+      if (!t.is_open()) {
+        throw;
+      }
+
+      std::stringstream buffer;
+      buffer << t.rdbuf();
+      std::string bufferString = buffer.str();
+      this->learnReferenceString(bufferString);
+    }
+
+    void MetaLearner::learnReferenceString(std::string& content, bool isRegression) {
+
+      Dataset dataset = ARFFTools::readARFFFromString(content);
+      this->gridConfig.dim_ = dataset.getDimension();
       this->instances = dataset.getNumberInstances();
 
       if (verbose) {
         std::cout << "instances: " << this->instances << std::endl;
       }
 
-      // Set grid config
-      this->gridConfig.dim_ = this->dim;
-      this->gridConfig.type_ = SGPP::base::GridType::Linear;
-      this->gridConfig.level_ = static_cast<int>(this->baseLevel);
+      DataVector& classesVector = dataset.getClasses();
+      DataMatrix& trainingData = dataset.getTrainingData();
 
-      DataVector* classesVector = dataset.getClasses();
-      DataMatrix* trainingData = dataset.getTrainingData();
-
-      // treat everything as if it were a regression, as classification is not fully supported by Learner
-      bool isRegression = true;
+      //    // treat everything as if it were a regression, as classification is not fully supported by Learner
+      //    bool isRegression = true;
       LearnerLeastSquaresIdentity* referenceLearner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
-      SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration;
-      operationConfiguration.type = OperationMultipleEvalType::DEFAULT;
-      operationConfiguration.subType = OperationMultipleEvalSubType::DEFAULT;
-      operationConfiguration.name = "STREAMING";
+      SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration(OperationMultipleEvalType::DEFAULT,
+          OperationMultipleEvalSubType::DEFAULT, "STREAMING");
       referenceLearner->setImplementation(operationConfiguration);
 
-      LearnerTiming timings = referenceLearner->train(*trainingData, *classesVector, gridConfig, solverConfig,
+      LearnerTiming timings = referenceLearner->train(trainingData, classesVector, gridConfig, solverConfig,
                               solverFinalStep, adaptivityConfiguration, false, lambda);
       this->referenceTiming = timings;
       this->ExecTimesOnStepReference = referenceLearner->getRefinementExecTimes();
@@ -113,21 +137,34 @@ namespace SGPP {
       this->referenceLearner = referenceLearner;
     }
 
-    //learn and test against test dataset and measure hits/mse
     void MetaLearner::learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                   std::string datasetFileName, std::string testFileName, bool isBinaryClassification) {
+                                   std::string& datasetFileName, std::string& testFileName, bool isRegression) {
+      std::ifstream dataFile(datasetFileName);
+      std::stringstream bufferData;
+      bufferData << dataFile.rdbuf();
+      std::ifstream testFile(datasetFileName);
+      std::stringstream bufferTest;
+      bufferTest << testFile.rdbuf();
+      std::string bufferDataString = bufferData.str();
+      std::string bufferTestString = bufferTest.str();
+      this->learnAndTestString(operationConfiguration, bufferDataString, bufferTestString, isRegression);
+    }
+
+    //learn and test against test dataset and measure hits/mse
+    void MetaLearner::learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+                                         std::string& dataContent, std::string& testContent, bool isRegression) {
 
       //always to this first
-      this->learn(operationConfiguration, datasetFileName);
+      this->learnString(operationConfiguration, dataContent);
 
-      Dataset testDataset = ARFFTools::readARFF(testFileName);
+      Dataset testDataset = ARFFTools::readARFFFromString(testContent);
       size_t testDim = testDataset.getDimension();
       size_t testInstances = testDataset.getNumberInstances();
 
-      DataVector* testClassesVector = testDataset.getClasses();
-      DataMatrix* testTrainingData = testDataset.getTrainingData();
+      DataVector& testClassesVector = testDataset.getClasses();
+      DataMatrix& testTrainingData = testDataset.getTrainingData();
 
-      if (verbose && testDim != dim) {
+      if (verbose && testDim != this->gridConfig.dim_) {
         std::cout << "dim of test dataset and training dataset doesn't match" << std::endl;
       }
 
@@ -135,18 +172,18 @@ namespace SGPP {
         std::cout << "computing classes of test dataset" << std::endl;
       }
 
-      DataVector computedClasses(testTrainingData->getNrows());
-      this->myLearner->predict(*testTrainingData, computedClasses);
+      DataVector computedClasses(testTrainingData.getNrows());
+      this->myLearner->predict(testTrainingData, computedClasses);
 
       if (verbose) {
         std::cout << "classes computed" << std::endl;
       }
 
-      if (!isBinaryClassification) {
+      if (isRegression) {
         float_t mse = 0.0;
 
         for (size_t i = 0; i < computedClasses.getSize(); i++) {
-          float_t diff = testClassesVector->get(i) - computedClasses.get(i);
+          float_t diff = testClassesVector.get(i) - computedClasses.get(i);
           mse += diff * diff;
         }
 
@@ -167,7 +204,7 @@ namespace SGPP {
             classToken = -1;
           }
 
-          if (classToken == testClassesVector->get(i)) {
+          if (classToken == testClassesVector.get(i)) {
             hits += 1;
           }
         }
@@ -180,19 +217,34 @@ namespace SGPP {
 
     //learn and test against the streaming implemenation
     float_t MetaLearner::learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                                         std::string datasetFileName, size_t gridGranularity, float_t tolerance) {
-      //always do this first
-      this->learn(operationConfiguration, datasetFileName);
-      this->learnReference(datasetFileName);
+                                         std::string& datasetFileName, size_t gridGranularity) {
+      std::ifstream t(datasetFileName);
 
-      DataMatrix testTrainingData(0, this->dim);
+      if (!t.is_open()) {
+        throw;
+      }
+
+      std::stringstream buffer;
+      buffer << t.rdbuf();
+      std::string bufferString = buffer.str();
+      return this->learnAndCompareString(operationConfiguration, bufferString, gridGranularity);
+    }
+
+    //learn and test against the streaming implemenation
+    float_t MetaLearner::learnAndCompareString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+        std::string& content, size_t gridGranularity) {
+      //always do this first
+      this->learnString(operationConfiguration, content);
+      this->learnReferenceString(content);
+
+      DataMatrix testTrainingData(0, this->gridConfig.dim_);
 
       float_t increment = 1.0 / static_cast<float_t>(gridGranularity);
 
       size_t index = 0;
-      DataVector testPoint(dim);
+      DataVector testPoint(this->gridConfig.dim_);
 
-      for (size_t i = 0; i < dim; i++) {
+      for (size_t i = 0; i < this->gridConfig.dim_; i++) {
         testPoint[i] = 0.0 + increment;
       }
 
@@ -200,7 +252,7 @@ namespace SGPP {
 
       unsigned int testInstanceCounter = 0;
 
-      while (index < dim) {
+      while (index < this->gridConfig.dim_) {
         // make 1.0 impossible
         float_t prior = testPoint[index] + increment;
 
@@ -226,7 +278,7 @@ namespace SGPP {
       }
 
       if (verbose) {
-        std::cout << "testInstanceCounter: " << testInstanceCounter << std::endl;
+        std::cout << "testInstanceCounter: " << (testInstanceCounter + 1) << std::endl;
         std::cout << "predicting..." << std::endl;
       }
 
@@ -248,24 +300,28 @@ namespace SGPP {
       // }
       // std::cout << std::endl;
 
-      for (size_t i = 0; i < computedClasses.getSize(); i++) {
-        float_t temp = fabs(computedClasses.get(i) - referenceClasses.get(i));
-        temp *= temp;
-        squareSum += temp;
+      double maxDiff = -1.0;
+      double firstValue = -1.0;
+      double secondValue = -1.0;
 
-        //        std::cout << "value: " << computedClasses.get(i) << std::endl;
-        //        std::cout << "reference: " << referenceClasses.get(i) << std::endl;
-        //        std::cout << "diff: " << fabs(computedClasses.get(i) - referenceClasses.get(i)) << std::endl;
-        if (verbose && fabs(computedClasses.get(i) - referenceClasses.get(i)) > tolerance) {
-          std::cout << "computed: " << computedClasses.get(i) << " but reference is: " << referenceClasses.get(i)
-                    << std::endl;
+      for (size_t i = 0; i < computedClasses.getSize(); i++) {
+        float_t diff = fabs(computedClasses.get(i) - referenceClasses.get(i));
+
+        if (diff > maxDiff) {
+          maxDiff = diff;
+          firstValue = computedClasses.get(i);
+          secondValue = referenceClasses.get(i);
         }
+
+        diff *= diff;
+        squareSum += diff;
       }
 
       squareSum = sqrt(squareSum);
 
       if (verbose) {
         std::cout << "sqrt: " << squareSum << std::endl;
+        std::cout << "maxDiff: " << maxDiff << " value: " << firstValue << " second: " << secondValue << std::endl;
       }
 
       return squareSum;
@@ -333,14 +389,14 @@ namespace SGPP {
         std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > refinementDetails;
         std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > > refinementDetailsReference;
 
-        std::string kernelMetaInformation = metaInformation + " kernel: " + operationConfiguration->name;
+        std::string kernelMetaInformation = metaInformation + " kernel: " + operationConfiguration->getName();
 
         std::ofstream myFile;
-        std::string experimentFile = "results/data/overall_" + experimentName + "_" + operationConfiguration->name
+        std::string experimentFile = "results/data/overall_" + experimentName + "_" + operationConfiguration->getName()
                                      + ".csv";
         remove(experimentFile.c_str());
         std::string experimentDetailsFile = "results/data/refinement_" + experimentName + "_"
-                                            + operationConfiguration->name + ".csv";
+                                            + operationConfiguration->getName() + ".csv";
         myFile.open(experimentFile, std::ios::out | std::ios::app);
         myFile << "# " << kernelMetaInformation << std::endl;
         myFile << "experiment" << csvSep << "duration" << csvSep << "durationLastIt";
@@ -390,10 +446,10 @@ namespace SGPP {
                                          std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances, std::string metaInformation,
                                          std::string experimentName) {
 
-      std::string kernelMetaInformation = metaInformation + " kernel: " + operationConfiguration.name;
+      std::string kernelMetaInformation = metaInformation + " kernel: " + operationConfiguration.getName();
 
       std::ofstream myFile;
-      std::string experimentFile = "results/data/" + experimentName + "_" + operationConfiguration.name + ".csv";
+      std::string experimentFile = "results/data/" + experimentName + "_" + operationConfiguration.getName() + ".csv";
       remove(experimentFile.c_str());
 
       myFile.open(experimentFile, std::ios::out | std::ios::app);
@@ -452,7 +508,7 @@ namespace SGPP {
 
         for (SGPP::datadriven::OperationMultipleEvalConfiguration* operationConfiguration : operationConfigurations) {
           for (std::string datasetName : datasetNames) {
-            myFile << csvSep << operationConfiguration->name << "/" << datasetName;
+            myFile << csvSep << operationConfiguration->getName() << "/" << datasetName;
           }
         }
 
@@ -485,12 +541,7 @@ namespace SGPP {
                                   size_t level, size_t instances, float_t& duration, float_t& durationReference) {
 
       srand(static_cast<unsigned int>(time(NULL)));
-      this->dim = dim;
-
-      // Set grid config
       this->gridConfig.dim_ = dim;
-      this->gridConfig.type_ = SGPP::base::GridType::Linear;
-      this->gridConfig.level_ = static_cast<int>(level);
 
       DataMatrix testTrainingData(instances, dim);
 
@@ -505,16 +556,21 @@ namespace SGPP {
       LearnerLeastSquaresIdentity* learner = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
       learner->setImplementation(operationConfiguration);
 
-      LearnerLeastSquaresIdentity* learnerReference = new LearnerLeastSquaresIdentity(isRegression,
-          this->verbose);
-      SGPP::datadriven::OperationMultipleEvalConfiguration referenceOperationConfiguration;
-      referenceOperationConfiguration.type = OperationMultipleEvalType::STREAMING;
-      referenceOperationConfiguration.subType = OperationMultipleEvalSubType::DEFAULT;
-      referenceOperationConfiguration.name = "STREAMING";
+      LearnerLeastSquaresIdentity* learnerReference = new LearnerLeastSquaresIdentity(isRegression, this->verbose);
+      SGPP::datadriven::OperationMultipleEvalConfiguration referenceOperationConfiguration(
+        OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::DEFAULT, "STREAMING");
       learnerReference->setImplementation(referenceOperationConfiguration);
 
       duration = learner->testRegular(this->gridConfig, testTrainingData);
       durationReference = learnerReference->testRegular(this->gridConfig, testTrainingData);
+    }
+
+    LearnerTiming MetaLearner::getLearnerTiming() {
+      return this->myTiming;
+    }
+
+    LearnerTiming MetaLearner::getLearnerReferenceTiming() {
+      return this->referenceTiming;
     }
 
   }

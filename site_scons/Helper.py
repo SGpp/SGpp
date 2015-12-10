@@ -92,6 +92,10 @@ def prepareDoxyfile(modules):
 @page examples Examples
 
 This is a collection of examples from all modules.
+
+If you're new to SG++ or want to try out quickly,
+read the @ref code_examples_tutorial first.
+
 To add new examples to the documentation,
 go to the respective folder MODULE_NAME/doc/doxygen/ and
 add a new example file code_examples_NAME.doxy with doxygen-internal
@@ -105,12 +109,23 @@ For this to work, the examples must lie in the directories of the form
 ''')
 
         modules.sort()
+        tutorial = 'code_examples_tutorial'
+        
         for moduleName in modules:
-            examplesFile.write('<h2>Module '+moduleName+'</h2>\n')
-            subpages = glob.glob(os.path.join(moduleName, 'doc', 'doxygen', 'code_examples_*.doxy'))
+            examplesFile.write('<h2>Module {}</h2>\n'.format(moduleName))
+            subpages = glob.glob(os.path.join(
+                moduleName, 'doc', 'doxygen', 'code_examples_*.doxy'))
+            subpages = [os.path.split(path)[-1][:-5]
+                        for path in glob.glob(os.path.join(
+                            moduleName, 'doc', 'doxygen',
+                            'code_examples_*.doxy'))]
             subpages.sort()
+            if tutorial in subpages:
+                del subpages[subpages.index(tutorial)]
+                subpages = [tutorial] + subpages
+            
             for subpage in subpages:
-                examplesFile.write('- @subpage ' + (os.path.split(subpage)[-1])[:-5] + '\n')
+                examplesFile.write('- @subpage {}\n'.format(subpage))
 
         examplesFile.write('**/\n')
 
@@ -132,3 +147,49 @@ def flatDependencyGraph(dependencies, acc):
         if dependency not in acc:
             acc = [dependency] + acc
     return acc
+
+
+
+# On win32, the command lines are limited to a ridiculously short length
+# (1000 chars). However, compiler/linker command lines easily exceed that
+# length. The following is a fix for that.
+# It has to be enabled with "env['SPAWN'] = win32_spawn".
+# (see https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
+def set_win32_spawn(env):
+    import win32file
+    import win32event
+    import win32process
+    import win32security
+
+    def win32_spawn(sh, escape, cmd, args, spawnenv):
+        for var in spawnenv:
+            spawnenv[var] = spawnenv[var].encode('ascii', 'replace')
+
+        sAttrs = win32security.SECURITY_ATTRIBUTES()
+        StartupInfo = win32process.STARTUPINFO()
+        newargs = ' '.join(map(escape, args[1:]))
+        cmdline = cmd + " " + newargs
+
+        # check for any special operating system commands
+        if cmd == 'del':
+            for arg in args[1:]:
+                win32file.DeleteFile(arg)
+            exit_code = 0
+        else:
+            # otherwise execute the command.
+            try:
+              hProcess, hThread, dwPid, dwTid = win32process.CreateProcess(
+                None, cmdline, None, None, 1, 0, spawnenv, None, StartupInfo)
+            except:
+              import win32api
+              error_code = win32api.GetLastError()
+              raise RuntimeError("Could not execute the following " + 
+                  "command line (error code {}): {}".format(
+                    error_code, cmdline))
+            win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
+            exit_code = win32process.GetExitCodeProcess(hProcess)
+            win32file.CloseHandle(hProcess)
+            win32file.CloseHandle(hThread)
+        return exit_code
+    
+    env['SPAWN'] = win32_spawn

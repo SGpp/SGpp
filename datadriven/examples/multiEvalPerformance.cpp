@@ -15,13 +15,14 @@
 
 int main(int argc, char** argv) {
 
-  std::string fileName = "../tests/data/friedman_4d_2000.arff";
+  //  std::string fileName = "friedman_4d_2000.arff";
+  std::string fileName = "debugging.arff";
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
   //SGPP::base::DataVector *classes = dataset.getClasses();
-  SGPP::base::DataMatrix* trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix& trainingData = dataset.getTrainingData();
 
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();
@@ -47,13 +48,12 @@ int main(int argc, char** argv) {
     //    std::cout << "alpha[" << i << "] = " << alpha[i] << std::endl;
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration;
-  configuration.type = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-  configuration.subType = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+    SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData,
-        configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
   SGPP::base::DataVector result(dataset.getNumberInstances());
 
@@ -67,11 +67,10 @@ int main(int argc, char** argv) {
   //  }
   //  std::cout << std::endl;
 
-
   std::cout << "calculating comparison values..." << std::endl;
 
   SGPP::base::OperationMultipleEval* evalCompare =
-    SGPP::op_factory::createOperationMultipleEval(*grid, *trainingData);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
   SGPP::base::DataVector resultCompare(dataset.getNumberInstances());
   evalCompare->eval(alpha, resultCompare);
 

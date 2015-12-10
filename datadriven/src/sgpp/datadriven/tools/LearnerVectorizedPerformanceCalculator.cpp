@@ -35,21 +35,21 @@ namespace SGPP {
 
             if (level == 1) {
             } else if (index == 1) {
-              result.GFlop_ += 1e-9 * 8.0 * static_cast<float_t>(numIterations)
+              result.GFlop_ += 1e-9 * 8.0 * (static_cast<float_t>(numIterations) + 3.5)
                                * static_cast<float_t>(numInstances);
-              result.GByte_ += 1e-9 * 4.0 * static_cast<float_t>(numIterations) * static_cast<float_t>(sizeDatatype)
+              result.GByte_ += 1e-9 * 4.0 * (static_cast<float_t>(numIterations) + 3.5) * static_cast<float_t>(sizeDatatype)
                                * static_cast<float_t>(numInstances);
             } else if (index
                        == static_cast<SGPP::base::GridStorage::index_type::index_type>((1
                            << static_cast<SGPP::base::GridStorage::index_type::index_type>(level)) - 1)) {
-              result.GFlop_ += 1e-9 * 10.0 * static_cast<float_t>(numIterations)
+              result.GFlop_ += 1e-9 * 10.0 * (static_cast<float_t>(numIterations) + 3.5)
                                * static_cast<float_t>(numInstances);
-              result.GByte_ += 1e-9 * 6.0 * static_cast<float_t>(numIterations) * static_cast<float_t>(sizeDatatype)
+              result.GByte_ += 1e-9 * 6.0 * (static_cast<float_t>(numIterations) + 3.5) * static_cast<float_t>(sizeDatatype)
                                * static_cast<float_t>(numInstances);
             } else {
-              result.GFlop_ += 1e-9 * 12.0 * static_cast<float_t>(numIterations)
+              result.GFlop_ += 1e-9 * 12.0 * (static_cast<float_t>(numIterations) + 3.5)
                                * static_cast<float_t>(numInstances);
-              result.GByte_ += 1e-9 * 6.0 * static_cast<float_t>(numIterations) * static_cast<float_t>(sizeDatatype)
+              result.GByte_ += 1e-9 * 6.0 * (static_cast<float_t>(numIterations) + 3.5) * static_cast<float_t>(sizeDatatype)
                                * static_cast<float_t>(numInstances);
             }
           }
@@ -67,20 +67,20 @@ namespace SGPP {
       } else {
         // GFlops
         result.GFlop_ += 2.0 * 1e-9 * static_cast<float_t>(nGridsize) * static_cast<float_t>(numInstances)
-                         * static_cast<float_t>(nDim) * 6.0 * static_cast<float_t>(numIterations);
+                         * static_cast<float_t>(nDim) * 6.0 * (static_cast<float_t>(numIterations) + 3.5);
 
         // GBytes
         result.GByte_ += 2.0 * 1e-9 * static_cast<float_t>(nGridsize) * static_cast<float_t>(numInstances)
-                         * static_cast<float_t>(nDim) * 3.0 * static_cast<float_t>(numIterations)
+                         * static_cast<float_t>(nDim) * 3.0 * (static_cast<float_t>(numIterations) + 3.5)
                          * static_cast<float_t>(sizeDatatype);
 
         // GBytes for EvalTrans (coefficients)
-        result.GByte_ += 1e-9 * static_cast<float_t>(numIterations)
+        result.GByte_ += 1e-9 * (static_cast<float_t>(numIterations) + 3.5)
                          * ((static_cast<float_t>(nGridsize) * static_cast<float_t>(numInstances)
                              * static_cast<float_t>(sizeDatatype)));
 
         // GBytes for Eval (coefficients)
-        result.GByte_ += 1e-9 * static_cast<float_t>(numIterations)
+        result.GByte_ += 1e-9 * (static_cast<float_t>(numIterations) + 3.5)
                          * ((static_cast<float_t>(nGridsize) * static_cast<float_t>(numInstances)
                              * static_cast<float_t>(sizeDatatype)));
       }

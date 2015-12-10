@@ -5,9 +5,9 @@
 
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
-#include <sgpp/datadriven/operation/hash/OperationRosenblattTransformationKDE.hpp>
-#include <sgpp/datadriven/operation/hash/OperationInverseRosenblattTransformationKDE.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityMarginalizeKDE.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 

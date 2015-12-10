@@ -8,13 +8,17 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
+
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace SGPP {
   namespace base {
 
     ConfigurationParameters::ConfigurationParameters() {
+
     }
 
     ConfigurationParameters::ConfigurationParameters(std::string fileName,
@@ -25,11 +29,31 @@ namespace SGPP {
       this->readFromFile(fileName);
     }
 
-    std::string ConfigurationParameters::operator[](std::string key) {
+    ConfigurationParameters::~ConfigurationParameters() {
+
+    }
+
+    void ConfigurationParameters::set(std::string key, std::string value) {
+      this->parameters[key] = value;
+    }
+
+    std::string& ConfigurationParameters::get(const std::string& key) {
+      if (this->parameters.count(key) != 1) {
+        std::stringstream errorString;
+        errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+      }
+
       return this->parameters[key];
     }
 
-    bool ConfigurationParameters::getAsBoolean(std::string key) {
+    bool ConfigurationParameters::getAsBoolean(const std::string& key) {
+      if (this->parameters.count(key) != 1) {
+        std::stringstream errorString;
+        errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+      }
+
       bool asBool;
       std::stringstream converter(parameters[key]);
       converter >> std::boolalpha;
@@ -37,7 +61,13 @@ namespace SGPP {
       return asBool;
     }
 
-    uint64_t ConfigurationParameters::getAsUnsigned(std::string key) {
+    uint64_t ConfigurationParameters::getAsUnsigned(const std::string& key) {
+      if (this->parameters.count(key) != 1) {
+        std::stringstream errorString;
+        errorString << "OCL Error: parameter \"" << key << "\" used but not set" << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+      }
+
       uint32_t asUnsigned;
       std::istringstream(parameters[key]) >> asUnsigned;
       return asUnsigned;
@@ -55,7 +85,7 @@ namespace SGPP {
       return splitted;
     }
 
-    void ConfigurationParameters::readFromMap(std::map<std::string, std::string> parametersMap) {
+    void ConfigurationParameters::readFromMap(std::map<std::string, std::string>& parametersMap) {
       for (auto pair : parametersMap) {
         this->parameters[pair.first] = pair.second;
       }
@@ -68,15 +98,60 @@ namespace SGPP {
         std::string line;
 
         while (std::getline(file, line)) {
+          if (line[0] == '#') {
+            continue;
+          }
+
           auto splitted = this->split(line, '=');
 
           if (splitted.size() == 2) {
             this->parameters[splitted[0]] = splitted[1];
           }
         }
+      } else {
+        throw;
       }
 
       file.close();
+    }
+
+    std::vector<std::string> ConfigurationParameters::getAsList(const std::string& key) {
+
+      std::string& listAttribute = this->get(key);
+
+      auto splitted = this->split(listAttribute, ',');
+
+      return splitted;
+    }
+
+    std::vector<std::string> ConfigurationParameters::getKeys() {
+      std::vector<std::string> keys;
+
+      for (auto& tuple : this->parameters) {
+        keys.push_back(tuple.first);
+      }
+
+      return keys;
+    }
+
+    void ConfigurationParameters::writeToFile(std::string fileName) {
+      std::ofstream file(fileName);
+
+      if (file.is_open()) {
+
+        for (std::pair<std::string, std::string> tuple : this->parameters) {
+          file << tuple.first << "=" << tuple.second << std::endl;
+        }
+
+      } else {
+        throw;
+      }
+
+      file.close();
+    }
+
+    void ConfigurationParameters::clear() {
+      this->parameters.clear();
     }
 
   }

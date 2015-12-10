@@ -4,7 +4,7 @@ import fnmatch
 Import('env')
 
 objs = []
-if '-mavx' in env['CPPFLAGS']:
+if env['ARCH'] == "avx" or env['ARCH'] == "avx2" or env['ARCH'] == "avx512":
   for currentFolder, subdirNames, fileNames in os.walk("."):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
       sourceFile = os.path.join(currentFolder, fileName)

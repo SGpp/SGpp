@@ -10,6 +10,8 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <memory>
+#include <iostream>
 
 #include <sgpp/globaldef.hpp>
 
@@ -25,15 +27,30 @@ namespace SGPP {
         ConfigurationParameters(std::string fileName,
                                 std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
 
-        std::string operator[](std::string key);
+        virtual ~ConfigurationParameters();
 
-        bool getAsBoolean(std::string key);
-        uint64_t getAsUnsigned(std::string key);
+        void set(const std::string key, std::string value);
 
-      protected:
-        void readFromMap(std::map<std::string, std::string> parametersMap);
+        std::string& get(const std::string& key);
+
+        bool getAsBoolean(const std::string& key);
+
+        uint64_t getAsUnsigned(const std::string& key);
+
+        std::vector<std::string> getAsList(const std::string& key);
+
+        void readFromMap(std::map<std::string, std::string>& parametersMap);
 
         void readFromFile(std::string fileName);
+
+        virtual std::shared_ptr<ConfigurationParameters> clone() = 0;
+
+        std::vector<std::string> getKeys();
+
+        void writeToFile(std::string fileName);
+
+        void clear();
+
       private:
         std::vector<std::string> split(const std::string& s, char delim);
     };

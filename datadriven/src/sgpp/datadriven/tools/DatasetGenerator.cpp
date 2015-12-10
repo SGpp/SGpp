@@ -4,13 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/tools/DatasetGenerator.hpp>
-#include <math.h>
 #include <cstdlib>
 #include <cmath>
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 #include <sgpp/globaldef.hpp>
 

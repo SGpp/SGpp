@@ -41,7 +41,7 @@ namespace SGPP {
 
 
       //counter of contributions - for DEBUG purposes
-      size_t counter = 0;
+      counter_value_type counter = 0;
 
       SBasis& basis = const_cast<SBasis&>(grid_->getBasis());
       //go through the whole dataset. -> if data point on the support of the grid point in all dim then calculate error Indicator.

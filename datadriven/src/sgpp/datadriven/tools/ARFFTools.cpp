@@ -31,8 +31,8 @@ namespace SGPP {
         std::transform(line.begin(), line.end(), line.begin(), toupper);
 
         if (dataReached && !line.empty()) {
-          writeNewClass(line, *dataset.getClasses(), instanceNo);
-          writeNewTrainingDataEntry(line, *dataset.getTrainingData(), instanceNo);
+          writeNewClass(line, dataset.getClasses(), instanceNo);
+          writeNewTrainingDataEntry(line, dataset.getTrainingData(), instanceNo);
           instanceNo++;
         }
 
@@ -61,7 +61,11 @@ namespace SGPP {
         std::getline(myfile, line);
         std::transform(line.begin(), line.end(), line.begin(), toupper);
 
-        if (line.find("@ATTRIBUTE", 0) != line.npos) {
+        if (line.find("@ATTRIBUTE class", 0) != line.npos) {
+          ;
+        } else if (line.find("@ATTRIBUTE CLASS", 0) != line.npos) {
+          ;
+        } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
           dimension++;
         } else if (line.find("@DATA", 0) != line.npos) {
           numberInstances = 0;
@@ -69,9 +73,6 @@ namespace SGPP {
           numberInstances++;
         }
       }
-
-      // the class is not regarded when getting the dimension
-      dimension--;
 
       myfile.close();
     }
@@ -88,7 +89,9 @@ namespace SGPP {
         std::transform(line.begin(), line.end(), line.begin(), toupper);
 
         if (line.find("@ATTRIBUTE class", 0) != line.npos) {
-          dimension--;
+          ;
+        } else if (line.find("@ATTRIBUTE CLASS", 0) != line.npos) {
+          ;
         } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
           dimension++;
         } else if (line.find("@DATA", 0) != line.npos) {
@@ -98,8 +101,6 @@ namespace SGPP {
         }
       }
 
-      // the class is not regarded when getting the dimension
-      //dimension--;
     }
 
     Dataset ARFFTools::readARFFFromString(const std::string& content) {
@@ -119,8 +120,8 @@ namespace SGPP {
         std::transform(line.begin(), line.end(), line.begin(), toupper);
 
         if (dataReached && !line.empty()) {
-          writeNewClass(line, *dataset.getClasses(), instanceNo);
-          writeNewTrainingDataEntry(line, *dataset.getTrainingData(), instanceNo);
+          writeNewClass(line, dataset.getClasses(), instanceNo);
+          writeNewTrainingDataEntry(line, dataset.getTrainingData(), instanceNo);
           instanceNo++;
         }
 

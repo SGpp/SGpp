@@ -430,6 +430,14 @@ namespace SGPP {
       return this->ExecTimeOnStep;
     }
 
+    SGPP::base::Grid& LearnerBase::getGrid() {
+      if (this->grid_ == nullptr) {
+        throw;
+      }
+
+      return *this->grid_;
+    }
+
   }
 
 }

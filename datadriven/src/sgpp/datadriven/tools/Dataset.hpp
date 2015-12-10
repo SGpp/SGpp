@@ -44,12 +44,12 @@ namespace SGPP {
         /**
          * @return classes data of the dataset
          */
-        SGPP::base::DataVector* getClasses();
+        SGPP::base::DataVector& getClasses();
 
         /**
          * @return training data of the dataset
          */
-        SGPP::base::DataMatrix* getTrainingData();
+        SGPP::base::DataMatrix& getTrainingData();
 
       protected:
         size_t numberInstances;
