@@ -46,6 +46,7 @@ The following software is recommended for core functionality:
   if you want to compile the Java bindings.
 - <a href="http://www.doxygen.org/" target="_blank">Doxygen</a> is required to
   create and compile the documentation, which you are reading right now.
+  It is also required to build the python documentation.
 
 @subsection linux_dependencies_optional Optional
 
@@ -135,6 +136,10 @@ The currently available modules are (see the @ref modules page):
 Also, there are two switches for supported high-level back-ends:
 - <tt>SG_PYTHON</tt>: Python bindings
 - <tt>SG_JAVA</tt>: Java bindings
+
+There is a inline documentation of the python wrapper which can be disabled
+by setting <tt>PYDOC=0</tt>. It is recommended to disable this feature if
+you are developing and have to frequently recompile the whole codebase.
 
 For example, the command
 @verbatim
