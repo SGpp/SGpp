@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
       const SGPP::float_t fOpt = optimizer->getOptimalValue();
 
       // test xOpt and fOpt
-      BOOST_CHECK_EQUAL(xOpt.getSize(), 2);
+      BOOST_CHECK_EQUAL(xOpt.getSize(), 2U);
       BOOST_CHECK_CLOSE(xOpt[0], 3.0 / 16.0 * M_PI, 0.1);
       BOOST_CHECK_CLOSE(xOpt[1], 3.0 / 14.0 * M_PI, 0.1);
       BOOST_CHECK_CLOSE(fOpt, -2.0, 1e-4);

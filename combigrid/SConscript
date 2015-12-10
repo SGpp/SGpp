@@ -1,9 +1,10 @@
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import os
+import sys
 import fnmatch
 
 Import('env')
@@ -18,8 +19,8 @@ Import('exampleTargetList')
 moduleDependencies = ['sgppbase']
 Export('moduleDependencies')
 
-if env['PLATFORM'] == 'win32':
-    sys.stderr.write("Error: the combigrid package is not supported on windows platforms.\n")
+if env['COMPILER'] == 'vcc':
+    sys.stderr.write("Error: The combigrid package is not supported on MSVC++.\n")
     sys.exit(1)
 
 libname = "sgpp%s" % moduleName
@@ -31,7 +32,12 @@ Export('libname')
 
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src"):
-    if currentFolder.startswith("src/sgpp/combigrid/test") or currentFolder.startswith("src/sgpp/combigrid/tests") or currentFolder.startswith  ("src/sgpp/combigrid/multigridFG/test"):
+    if currentFolder.startswith(os.path.join(
+          "src", "sgpp", "combigrid", "test")) or \
+       currentFolder.startswith(os.path.join(
+          "src", "sgpp", "combigrid", "tests")) or \
+       currentFolder.startswith(os.path.join(
+          "src", "sgpp", "combigrid", "multigridFG", "test")):
         continue
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
         sourceFile = os.path.join(currentFolder, fileName)
@@ -48,7 +54,7 @@ else:
                             source=objs,
                             LIBPATH=BUILD_DIR,
                             LIBS=moduleDependencies)
-                        
+
 for lib_str in moduleDependencies:
     if lib_str.startswith("sgpp"):
         env.Depends(lib, os.path.join("#", BUILD_DIR.path,
@@ -60,8 +66,8 @@ libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
+  py_test_env = env.Clone()
+  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
 for fileName in os.listdir("examples"):

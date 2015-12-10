@@ -1,11 +1,17 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 %module(directors="1") pysgpp_swig
-%feature("autodoc", "2"); 
-%feature("docstring");
+// %feature("autodoc", "2");
+// %feature("docstring");
+
+// fix needed for MinGW: cmath has to be included before Python.h,
+// otherwise there are g++ errors like "Error: '::hypot' has not been declared"
+%begin %{
+    #include <cmath>
+%}
 
 %include "base/src/sgpp/globaldef.hpp"
 
@@ -16,7 +22,7 @@
 %include "std_complex.i"
 %include "std_map.i"
 %include "carrays.i"
-%include "cpointer.i" 
+%include "cpointer.i"
 %include "typemaps.i"
 %include "stdint.i"
 %include "exception.i"
@@ -39,7 +45,7 @@
 %}
 
 // -----------------------------------------------------------
-// needed for windows wrapper since swig does not understand
+// needed for MSVC++ wrapper since swig does not understand
 // that unsigned int is equal to size_t and generates
 // template specifications twice
 #ifdef SWIGWIN
@@ -89,33 +95,67 @@ import_array();
 #endif
 %}
 
+
+#ifdef PYDOC
+%include "base/doc/doc.i"
+#endif
+
 %include "base/build/pysgpp/base.i"
 
 #ifdef SG_DATADRIVEN
+#ifdef PYDOC
+%include "datadriven/doc/doc.i"
+#endif
+
 %include "datadriven/build/pysgpp/datadriven.i"
 #endif
 
 #ifdef SG_PDE
+#ifdef PYDOC
+%include "pde/doc/doc.i"
+#endif
+
 %include "pde/build/pysgpp/pde.i"
 #endif
 
 #ifdef SG_FINANCE
+#ifdef PYDOC
+%include "finance/doc/doc.i"
+#endif
+
 %include "finance/build/pysgpp/finance.i"
 #endif
 
 #ifdef SG_SOLVER
+#ifdef PYDOC
+%include "solver/doc/doc.i"
+#endif
+
 %include "solver/build/pysgpp/solver.i"
 #endif
 
 #ifdef SG_QUADRATURE
+#ifdef PYDOC
+%include "quadrature/doc/doc.i"
+#endif
+
 %include "quadrature/build/pysgpp/quadrature.i"
 #endif
 
 #ifdef SG_COMBIGRID
+#ifdef PYDOC
+%include "combigrid/doc/doc.i"
+#endif
+
 %include "combigrid/build/pysgpp/combigrid.i"
 #endif
 
 #ifdef SG_OPTIMIZATION
+#ifdef PYDOC
+%include "optimization/doc/doc.i"
+#endif
+
 %include "optimization/build/pysgpp/optimization.i"
 #endif
+
 

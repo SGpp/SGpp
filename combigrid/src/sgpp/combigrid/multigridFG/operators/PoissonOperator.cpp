@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/multigridFG/operators/PoissonOperator.hpp>
-#include <math.h>
+#include <cmath>
 
 
 combigrid::PoissonOperator::PoissonOperator(const FullGridD* fg ,

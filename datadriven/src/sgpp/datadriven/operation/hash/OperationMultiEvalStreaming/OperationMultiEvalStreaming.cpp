@@ -10,8 +10,7 @@
 namespace SGPP {
   namespace datadriven {
 
-    OperationMultiEvalStreaming::OperationMultiEvalStreaming(base::Grid& grid,
-        base::DataMatrix& dataset) :
+    OperationMultiEvalStreaming::OperationMultiEvalStreaming(base::Grid& grid, base::DataMatrix& dataset) :
       OperationMultipleEval(grid, dataset), preparedDataset(dataset), myTimer_(
         SGPP::base::SGppStopwatch()), duration(-1.0) {
       this->storage = grid.getStorage();
@@ -30,9 +29,8 @@ namespace SGPP {
         delete this->index_;
     }
 
-    void OperationMultiEvalStreaming::getPartitionSegment(size_t start, size_t end,
-        size_t segmentCount, size_t segmentNumber, size_t* segmentStart,
-        size_t* segmentEnd, size_t blockSize) {
+    void OperationMultiEvalStreaming::getPartitionSegment(size_t start, size_t end, size_t segmentCount,
+        size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd, size_t blockSize) {
       size_t totalSize = end - start;
 
       // check for valid input
@@ -57,28 +55,30 @@ namespace SGPP {
         blockSegmentSize++;
         blockSegmentOffset = blockSegmentSize * segmentNumber;
       } else {
-        blockSegmentOffset = remainder * (blockSegmentSize + 1)
-                             + (segmentNumber - remainder) * blockSegmentSize;
+        blockSegmentOffset = remainder * (blockSegmentSize + 1) + (segmentNumber - remainder) * blockSegmentSize;
       }
 
       *segmentStart = start + blockSegmentOffset * blockSize;
       *segmentEnd = *segmentStart + blockSegmentSize * blockSize;
     }
 
-    void OperationMultiEvalStreaming::getOpenMPPartitionSegment(size_t start,
-        size_t end, size_t* segmentStart, size_t* segmentEnd,
-        size_t blocksize) {
+    void OperationMultiEvalStreaming::getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart,
+        size_t* segmentEnd, size_t blocksize) {
       size_t threadCount = omp_get_num_threads();
       size_t myThreadNum = omp_get_thread_num();
-      getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart,
-                          segmentEnd, blocksize);
+      getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart, segmentEnd, blocksize);
     }
 
     size_t OperationMultiEvalStreaming::getChunkGridPoints() {
+      //not used by the MIC-implementation
       return 12;
     }
     size_t OperationMultiEvalStreaming::getChunkDataPoints() {
+#if defined(__MIC__) || defined(__AVX512F__)
+      return STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH;
+# else
       return 24; // must be divisible by 24
+#endif
     }
 
     void OperationMultiEvalStreaming::mult(SGPP::base::DataVector& alpha,
@@ -95,10 +95,9 @@ namespace SGPP {
       {
         size_t start;
         size_t end;
-        getOpenMPPartitionSegment(0, this->preparedDataset.getNcols(), &start,
-                                  &end, getChunkDataPoints());
-        this->multImpl(level_, index_, &this->preparedDataset, alpha, result, 0,
-                       alpha.getSize(), start, end);
+        getOpenMPPartitionSegment(0, this->preparedDataset.getNcols(), &start, &end, getChunkDataPoints());
+
+        this->multImpl(level_, index_, &this->preparedDataset, alpha, result, 0, alpha.getSize(), start, end);
       }
       result.resize(originalSize);
       this->duration = this->myTimer_.stop();
@@ -125,10 +124,9 @@ namespace SGPP {
         size_t end;
 
         getOpenMPPartitionSegment(0, this->storage->size(), &start, &end, 1);
-        this->multTransposeImpl(this->level_, this->index_,
-                                &this->preparedDataset, source, result, start, end, 0,
-                                this->preparedDataset.getNcols());
 
+        this->multTransposeImpl(this->level_, this->index_, &this->preparedDataset, source, result, start, end, 0,
+                                this->preparedDataset.getNcols());
       }
       source.resize(originalSize);
       this->duration = this->myTimer_.stop();
@@ -141,10 +139,8 @@ namespace SGPP {
       if (this->index_ != nullptr)
         delete this->index_;
 
-      this->level_ = new SGPP::base::DataMatrix(this->storage->size(),
-          this->storage->dim());
-      this->index_ = new SGPP::base::DataMatrix(this->storage->size(),
-          this->storage->dim());
+      this->level_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
+      this->index_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
 
       this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
     }
@@ -152,7 +148,7 @@ namespace SGPP {
     size_t OperationMultiEvalStreaming::padDataset(
       SGPP::base::DataMatrix& dataset) {
 
-      size_t vecWidth = 24;
+      size_t vecWidth = this->getChunkDataPoints();
 
       // Assure that data has a even number of instances -> padding might be needed
       size_t remainder = dataset.getNrows() % vecWidth;
@@ -177,7 +173,6 @@ namespace SGPP {
     }
 
     void OperationMultiEvalStreaming::prepare() {
-      std::cout << "in prepare" << std::endl;
       this->recalculateLevelAndIndex();
     }
 

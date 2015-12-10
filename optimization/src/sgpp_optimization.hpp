@@ -116,6 +116,19 @@
 #include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
 
 #include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
+#include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
+#include <sgpp/optimization/test_problems/constrained/G03.hpp>
+#include <sgpp/optimization/test_problems/constrained/G04.hpp>
+#include <sgpp/optimization/test_problems/constrained/G05.hpp>
+#include <sgpp/optimization/test_problems/constrained/G06.hpp>
+#include <sgpp/optimization/test_problems/constrained/G08.hpp>
+#include <sgpp/optimization/test_problems/constrained/G09.hpp>
+#include <sgpp/optimization/test_problems/constrained/G10.hpp>
+#include <sgpp/optimization/test_problems/constrained/G11.hpp>
+#include <sgpp/optimization/test_problems/constrained/G12.hpp>
+#include <sgpp/optimization/test_problems/constrained/G13.hpp>
+#include <sgpp/optimization/test_problems/constrained/Simionescu.hpp>
+#include <sgpp/optimization/test_problems/constrained/Soland.hpp>
 
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>

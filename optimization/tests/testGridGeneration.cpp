@@ -75,7 +75,8 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
       return n * n;
     };
     gridGen.setAdaptivity(adaptivityFunction);
-    BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42), 42 * 42);
+    BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42),
+                      static_cast<size_t>(42 * 42));
   }
 
   for (auto& grid : grids) {

@@ -185,6 +185,17 @@ namespace SGPP {
         }
 
         /**
+         * Returns the i-th element.
+         * For the 5th element in the third row, i would be 2*getNcols()+4.
+         *
+         * @param i position of the element
+         * @return data[i]
+         */
+        inline float_t& operator[](size_t i) {
+          return data[i];
+        };
+
+        /**
          * Returns the value of the element at position [row,col]
          *
          * @param row Row

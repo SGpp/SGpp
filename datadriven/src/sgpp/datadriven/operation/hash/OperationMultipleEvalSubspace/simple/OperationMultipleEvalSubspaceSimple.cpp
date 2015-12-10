@@ -8,7 +8,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
   namespace datadriven {
     namespace x86simple {
@@ -207,7 +206,8 @@ namespace SGPP {
       size_t i = 0;
       uint32_t linearLevelIndexCounter = 0;
 
-      for (typename std::map<size_t, SubspaceNodeSimple>::iterator it = allLevelsMap.begin(); it != allLevelsMap.end(); ++it) {
+      for (typename std::map<size_t, SubspaceNodeSimple>::iterator it = allLevelsMap.begin(); it != allLevelsMap.end();
+           ++it) {
         SubspaceNodeSimple& subspace = it->second;
 
         for (size_t j = 0; j < this->dim; j++) {
@@ -283,7 +283,7 @@ namespace SGPP {
 
       }
 
-      delete lastChangeIndex;
+      delete[] lastChangeIndex;
 
       // first subspace always leads to finished
       allSubspaces[2 * this->dim] = computationFinishedMarker;
@@ -448,13 +448,14 @@ namespace SGPP {
     }
 
     size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t* intermediates, size_t dim, size_t* maxIndicesPtr,
-        size_t* indexPtr, size_t toRecalc) {
+        size_t* indexPtr, __attribute__((unused)) size_t toRecalc) {
 
 #if X86SIMPLE_ENABLE_PARTIAL_RESULT_REUSAGE == 1
       size_t indexFlat = intermediates[toRecalc]; // toRecalc 0 -> indexFlat 0
 
       for (size_t i = toRecalc; i < dim; i++) {
 #else
+
       size_t indexFlat = 0;
 
       for (size_t i = 0; i < dim; i++) {

@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -19,19 +19,12 @@ Import('exampleTargetList')
 moduleDependencies = []
 Export('moduleDependencies')
 
+additionalDependencies = []
 if env['USE_OCL']:
-    moduleDependencies += ['OpenCL']
+    additionalDependencies += ['OpenCL']
 
-# srcs = []
-# for currentFolder, subdirNames, fileNames in os.walk("."):
-#     if currentFolder.startswith("./src"):
-#         for fileName in fnmatch.filter(fileNames, '*.cpp'):
-#             srcs.append(os.path.join(currentFolder, fileName))
-# 
-# objs = []
-# for sourceFile in srcs:
-#     objs.append(env.SharedObject(sourceFile))
-    
+moduleDependencies = additionalDependencies + moduleDependencies
+
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
   if os.path.exists(os.path.join(currentFolder, "SConscript")):
@@ -57,14 +50,14 @@ if env['USE_STATICLIB']:
                             source=objs,
                             LIBS=moduleDependencies)
 else:
-    # building shared libraries differ
-    if env['PLATFORM'] in ['cygwin', 'win32']:
+    # building of shared libraries differs
+    if (env['PLATFORM'] == 'cygwin') or (env['COMPILER'] == 'vcc'):
         # remove old moduleDependencies if they exist already
         for ext in ['lib', 'exp', 'dll', 'def']:
             newlibFilename = "%s.%s" % (libname, ext)
             if os.path.exists(newlibFilename):
                os.remove(newlibFilename)
-    
+
         def buildDefFile(target, source, env):
             # load all object files
             win32objs = []
@@ -90,31 +83,32 @@ else:
 
 libInstall = env.Install(BUILD_DIR, lib)
 
-for fileName in os.listdir("examples"):
-    if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
-                              LIBPATH=BUILD_DIR,
-                              LIBS=[libname] + moduleDependencies)
-        env.Requires(example, libInstall)
-        exampleTargetList.append(example)
+if env["ARCH"] != "mic":
+    for fileName in os.listdir("examples"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            example = env.Program(source=os.path.join("examples", fileName),
+                                  LIBS=[libname] + moduleDependencies)
+            env.Requires(example, libInstall)
+            exampleTargetList.append(example)
 
 # build unit tests
 if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
     boostlib = "boost_unit_test_framework"
-    if env['PLATFORM'] == 'win32':
+    if env['COMPILER'] == 'vcc':
         test_env.Append(CPPFLAGS=['/DBOOST_ALL_DYN_LINK', '/MD', '/D _WIN32'])
         test_env.AppendUnique(LIBS=moduleDependencies + [libname])
     else:
         test_env.AppendUnique(LIBS=moduleDependencies + [libname, boostlib])
-    
+
     testObjects = []
     for currentFolder, subdirNames, fileNames in os.walk("tests", topdown=True):
       for fileName in fnmatch.filter(fileNames, '*.cpp'):
         testObjects.append(test_env.SharedObject(os.path.join(currentFolder, fileName)))
     if len(testObjects) > 0:
-        fileName = os.path.join("tests", "test_{}_boost".format(moduleName))
+        fileName = os.path.join("tests", "test_{}_boost".format(moduleName)) + \
+                (".exe" if env['PLATFORM'] == 'win32' else '')
         executable = fileName
         test = test_env.Program(executable, testObjects)
         test_env.Requires(test, libInstall)
@@ -125,4 +119,3 @@ if env['COMPILE_BOOST_TESTS']:
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
-

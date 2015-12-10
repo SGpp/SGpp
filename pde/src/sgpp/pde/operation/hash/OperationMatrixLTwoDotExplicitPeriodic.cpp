@@ -7,7 +7,7 @@
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <string.h>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <algorithm>
 
