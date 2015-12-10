@@ -278,7 +278,7 @@ scons SG_JAVA=1 ^
 @section msvc_troubleshooting Troubleshooting
 
 A few helpful hints for what has caused trouble before
-(or might cause trouble in the future...)
+(or might cause trouble in the future…).
 
 - Make the variable JAVA_HOME globally available so that SCons finds the
   headers for the Java interface.

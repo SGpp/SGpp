@@ -17,6 +17,8 @@ The current version of SG++ can be found at @subpage downloads.
 Spatially Adaptive Sparse Grids for Higher-Dimensional Problems.
 Verlag Dr. Hut, M&uuml;nchen, 2010. ISBN 9-783-868-53555-6.
 
+
+
 <!-- ############################################################# -->
 @section mainpage_overview Overview
 
@@ -24,9 +26,9 @@ SG++ is a toolbox allowing to employ spatially adaptive sparse grids
 straightforward, flexibly, and without the vast initial overhead that
 has to be spent when implementing sparse grids and the corresponding
 algorithms. To be able to deal with different kinds
-of problems in a spatially adaptive way - ranging from interpolation
+of problems in a spatially adaptive way—ranging from interpolation
 and quadrature via the solution of differential equations to
-regression, classification, and more - a main motivation behind the
+regression, classification, and more—a main motivation behind the
 development and all considerations was to create a toolbox which can
 be used in a very flexible and modular way by different users in
 different applications.
@@ -39,7 +41,7 @@ algorithmic variants. To ensure performance at run-time, we use C++
 for all performance critical parts. Considering flexibility, we have
 spent a great deal in ensuring modularity, reusability and the
 separation of data structures and algorithms. Furthermore, we provide
-the means to use the SG++ toolbox from within Python, Matlab, Java,
+the means to use the SG++ toolbox from within Python, MATLAB, Java,
 and C++, of course.
 
 To name a few special features:
@@ -59,19 +61,23 @@ SG++ is open source software and delivered as source code. For
 questions, contributions, and requests, please <a
 href="mailto:dirk.pflueger@ipvs.informatik.uni-stuttgart.de">contact us</a>.
 
-The documentation of the SG++ toolbox is structured in two main
-parts. The first one, @ref development, addresses all those who
+The documentation of the SG++ toolbox is structured in two main parts.
+The first one, @ref manual, is dedicated to users of SG++.
+For example, installation instructions are provided as well
+as short use cases as a quick start to using SG++.
+
+The second one, @ref development, addresses all those who
 want to contribute to SG++ or who are involved in its
 development. There, the styleguide can be found, references to useful
 tools and utilities are provided, and a few current issues are gathered.
 
-The second one, @ref manual, is dedicated to users of
-SG++. For example, installation instructions are provided as well
-as short use cases as a quick-start to using SG++.
+You can find these pages and more in the menu to the left.
+If you do not see a menu, JavaScript is deactivated. 
 
-You can find these pages and more in the menu to the left. If you do not see a menu, javascript is deactivated. 
-
-Though we do not guarantee for anything, and though we do not have the money to provide quick and fast support, we are happy about any comments, recommendations, hints on missing information, ...
+Though we do not guarantee for anything, and though we do not have the
+money to provide quick and fast support,
+we are happy about any comments, recommendations,
+hints on missing information, …
 
 See also:
 - @subpage manual
@@ -79,6 +85,7 @@ See also:
 - @subpage copyright
 - @ref downloads
 - Online version of this documentation at http://sgpp.sparsegrids.org
+
 
 
 <!-- ############################################################# -->
@@ -94,7 +101,7 @@ Please cite one of the corresponding publications (BibTeX snippets below):
   - D. Pflüger, B. Peherstorfer and H.-J. Bungartz: Spatially adaptive sparse grids for high-dimensional data-driven problems. In Journal of Complexity, Volume 26(5), p. 508––522. Academic Press, Inc., Orlando, FL, USA, October 2010. published online April 2010.
 - For clustering:
   - B. Peherstorfer, D. Pflüger and H.-J. Bungartz: Clustering Based on Density Estimation with Sparse Grids. In KI 2012: Advances in Artificial Intelligence, Volume 7526 of Lecture Notes in Computer Science. Springer, October 2012.
-- For parallelization.
+- For parallelization:
   - A. Heinecke and D. Pflüger: Multi- and Many-Core Data Mining with Adaptive Sparse Grids. In Proceedings of the 8th ACM International Conference on Computing Frontiers, p. 29:1–29:10. ACM, New York, USA, May 2011.
 
 @subsection mainpage_bibtex BibTeX
@@ -159,5 +166,4 @@ Please cite one of the corresponding publications (BibTeX snippets below):
     ISBN = {9781450306980}
 }
 @endverbatim
-
 */
