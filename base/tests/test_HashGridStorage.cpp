@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(testInsert) {
   size_t i2 = s->insert(i);
 
   BOOST_CHECK_EQUAL(i2, 0U);
-  BOOST_CHECK_EQUAL(s->size(), 1);
+  BOOST_CHECK_EQUAL(s->size(), 1U);
 
   delete s;
 }

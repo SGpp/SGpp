@@ -115,13 +115,10 @@ Naming:
   (e.g., <tt>INITIAL_LEVEL</tt>)
 - Nothing starts with underscores (only system/builtin/compiler).
 
-Don't&hellip;
-- &hellip; include <tt>sgpp_MODULENAME.hpp</tt>.
+Don't…
+- … include <tt>sgpp_MODULENAME.hpp</tt>.
   Only include the header files you require to avoid long building durations.
-- &hellip; use <tt>using namespace</tt>.
-- &hellip; use tabs, use two spaces instead!
+- … use <tt>using namespace</tt>.
+- … use tabs, use two spaces instead!
   Please configure your editor in order to do so!
-
-*/
-
 */

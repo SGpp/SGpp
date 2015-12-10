@@ -250,6 +250,8 @@ Please install the corresponding package, e.g. using command on Ubuntu
         
         # check if using MinGW (g++ on win32)
         if env['PLATFORM'] == 'win32':
+            # disable warnings which occur when including Boost in the tests
+            env.Append(CPPFLAGS='-Wno-switch-enum -Wno-deprecated-declarations')
             # also use "lib" prefix on MinGW for consistency with Linux
             # (default is no prefix)
             env['SHLIBPREFIX'] = 'lib'
