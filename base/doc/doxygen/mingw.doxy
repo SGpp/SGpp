@@ -96,7 +96,7 @@ It is advisable to install the requirements in this order:
    1. Download <tt>python-2.7.11.amd64.msi</tt> or similar from the
       <a href="http://python.org/" target="_blank">Python page</a>.
       Python 3.x is incompatible with SCons and
-      ahe x86 version will not work with pysgpp.
+      the x86 version will not work with pysgpp.
    2. Run the installer.
    3. Prepend <tt>C:\\PATH_TO_PYTHON</tt> and
       <tt>C:\\PATH_TO_PYTHON\\Scripts</tt>
