@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(TestFullSLE) {
   std::unique_ptr<CloneableSLE> sle2(nullptr);
   sle.clone(sle2);
 
-  BOOST_CHECK_EQUAL(sle2->countNNZ(), 2);
+  BOOST_CHECK_EQUAL(sle2->countNNZ(), 2U);
 
   if (use_double_precision) {
     BOOST_CHECK_EQUAL(sle2->getMatrixEntry(0, 1), 12.3);
