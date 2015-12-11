@@ -18,9 +18,10 @@
 
 namespace SGPP {
 namespace datadriven {
+namespace StreamingModOCLMaskMultiPlatform {
 
 template<typename T>
-class StreamingModOCLMaskMultiPlatformKernelSourceBuilderMultTranspose: public base::KernelSourceBuilderBase<T> {
+class SourceBuilderMultTranspose: public base::KernelSourceBuilderBase<T> {
 private:
 
     std::shared_ptr<base::OCLDevice> device;
@@ -34,7 +35,7 @@ private:
 
 public:
 
-    StreamingModOCLMaskMultiPlatformKernelSourceBuilderMultTranspose(std::shared_ptr<base::OCLDevice> device,
+    SourceBuilderMultTranspose(std::shared_ptr<base::OCLDevice> device,
             json::Node &kernelConfiguration, size_t dims) :
             device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
         localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
@@ -154,6 +155,7 @@ public:
 
 };
 
+}
 }
 }
 

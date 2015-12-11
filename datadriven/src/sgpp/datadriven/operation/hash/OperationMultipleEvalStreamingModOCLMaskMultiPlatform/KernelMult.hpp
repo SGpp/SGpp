@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "StreamingModOCLMaskMultiPlatformKernelImpl.hpp"
-
 #include <string.h>
 #include <limits>
 #include <chrono>
@@ -18,13 +16,14 @@
 #include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
-#include "StreamingModOCLMaskMultiPlatformKernelSourceBuilderMult.hpp"
+#include "KernelSourceBuilderMult.hpp"
 
 namespace SGPP {
 namespace datadriven {
+namespace StreamingModOCLMaskMultiPlatform {
 
 template<typename real_type>
-class StreamingModOCLMaskMultiPlatformKernelMult {
+class KernelMult {
 private:
 
     std::shared_ptr<base::OCLDevice> device;
@@ -47,7 +46,7 @@ private:
 
     double deviceTimingMult;
 
-    StreamingModOCLMaskMultiPlatformKernelSourceBuilderMult<real_type> kernelSourceBuilder;
+    KernelSourceBuilderMult<real_type> kernelSourceBuilder;
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     json::Node &kernelConfiguration;
@@ -58,7 +57,7 @@ private:
 
 public:
 
-    StreamingModOCLMaskMultiPlatformKernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
+    KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
             std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration,
             std::shared_ptr<base::QueueLoadBalancer> queueBalancerMult) :
             device(device), dims(dims), err(CL_SUCCESS), deviceLevel(device), deviceIndex(device), deviceMask(device), deviceOffset(
@@ -71,7 +70,7 @@ public:
         this->verbose = kernelConfiguration["VERBOSE"].getBool();
     }
 
-    ~StreamingModOCLMaskMultiPlatformKernelMult() {
+    ~KernelMult() {
         if (this->kernelMult != nullptr) {
             clReleaseKernel(this->kernelMult);
             this->kernelMult = nullptr;
@@ -341,5 +340,6 @@ private:
 }
 ;
 
+}
 }
 }
