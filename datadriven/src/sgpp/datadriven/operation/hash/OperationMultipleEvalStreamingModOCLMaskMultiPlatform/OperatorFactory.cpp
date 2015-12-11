@@ -9,8 +9,8 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include "Configuration.hpp"
 #include "OperationMultiEvalStreamingModOCLMaskMultiPlatform.hpp"
-#include "StreamingModOCLMaskMultiPlatformConfiguration.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -31,8 +31,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         parameters = manager->getConfiguration();
     }
 
-    StreamingModOCLMaskMultiPlatformConfiguration::augmentDefaultParameters(*parameters);
-
+    StreamingModOCLMaskMultiPlatform::Configuration::augmentDefaultParameters(*parameters);
 
     if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return new datadriven::OperationMultiEvalStreamingModOCLMaskMultiPlatform<float>(grid, dataset, manager, parameters);

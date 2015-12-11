@@ -20,9 +20,10 @@
 
 namespace SGPP {
 namespace datadriven {
+namespace StreamingModOCLMaskMultiPlatform {
 
 template<typename T>
-class StreamingModOCLMaskMultiPlatformKernelSourceBuilderMult: public base::KernelSourceBuilderBase<T> {
+class KernelSourceBuilderMult: public base::KernelSourceBuilderBase<T> {
 private:
 
     std::shared_ptr<base::OCLDevice> device;
@@ -36,7 +37,7 @@ private:
 
 public:
 
-    StreamingModOCLMaskMultiPlatformKernelSourceBuilderMult(std::shared_ptr<base::OCLDevice> device,
+    KernelSourceBuilderMult(std::shared_ptr<base::OCLDevice> device,
             json::Node &kernelConfiguration, size_t dims) :
             device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
         localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
@@ -199,6 +200,7 @@ public:
 
 };
 
+}
 }
 }
 

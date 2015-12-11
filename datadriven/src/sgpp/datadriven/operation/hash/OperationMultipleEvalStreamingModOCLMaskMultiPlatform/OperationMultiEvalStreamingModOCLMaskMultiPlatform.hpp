@@ -15,9 +15,9 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/QueueLoadBalancer.hpp>
-#include "StreamingModOCLMaskMultiPlatformKernelMult.hpp"
-#include "StreamingModOCLMaskMultiPlatformKernelMultTranspose.hpp"
-#include "StreamingModOCLMaskMultiPlatformConfiguration.hpp"
+#include "Configuration.hpp"
+#include "KernelMult.hpp"
+#include "KernelMultTranspose.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -29,7 +29,9 @@ protected:
     size_t dims;SGPP::base::DataMatrix preparedDataset;
     std::shared_ptr<base::OCLOperationConfiguration> parameters;
     std::vector<T> kernelDataset;
-    size_t datasetSize = 0;
+    size_t datasetSizeUnpadded;
+    size_t datasetSizePadded;
+    size_t datasetSizeBuffers;
     /// Member to store the sparse grid's levels for better vectorization
     std::vector<T> level;
     /// Member to store the sparse grid's indices for better vectorization
@@ -40,6 +42,7 @@ protected:
     std::vector<T> offset;
     size_t gridSizeUnpadded;
     size_t gridSizePadded;
+    size_t gridSizeBuffers;
 
     /// Timer object to handle time measurements
     SGPP::base::SGppStopwatch myTimer;
@@ -51,10 +54,8 @@ protected:
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     std::vector<std::shared_ptr<base::OCLDevice>> devices;
 
-    bool useDouble;
-
-    std::vector<StreamingModOCLMaskMultiPlatformKernelMult<T>> multKernels;
-    std::vector<StreamingModOCLMaskMultiPlatformKernelMultTranspose<T>> multTransposeKernels;
+    std::vector<StreamingModOCLMaskMultiPlatform::KernelMult<T>> multKernels;
+    std::vector<StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
     std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMult;
     std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
@@ -74,31 +75,30 @@ public:
             SGPP::base::SGppStopwatch()), duration(-1.0), manager(manager), devices(manager->getDevices()) {
 
         this->verbose = (*parameters)["VERBOSE"].getBool();
-        if (std::is_same<T, double>::value) {
-            useDouble = true;
-        } else {
-            useDouble = false;
-        }
 
         this->dims = dataset.getNcols(); //be aware of transpose!
-//        this->kernel = std::unique_ptr<StreamingModOCLMaskMultiPlatformKernelImpl<T>>(
-//                new StreamingModOCLMaskMultiPlatformKernelImpl<T>(dims, this->manager, parameters));
-
         this->storage = grid.getStorage();
 
         // padded grid size is set by prepare
         this->gridSizeUnpadded = this->storage->size();
         //initialized in prepare
         this->gridSizePadded = 0;
+        this->gridSizeBuffers = 0;
+        this->datasetSizeUnpadded = this->dataset.getNrows();
+        //initialize in pad
+        this->datasetSizePadded = 0;
+        this->datasetSizeBuffers = 0;
         this->padDataset(this->preparedDataset);
         this->preparedDataset.transpose();
-        this->datasetSize = this->preparedDataset.getNcols();
 
         //TODO: should not necessarily be a global parameter!
         scheduleSize = (*parameters)["SCHEDULE_SIZE"].getUInt();
         scheduleSizeTranspose = (*parameters)["SCHEDULE_SIZE_TRANSPOSE"].getUInt();
-        overallGridBlockingSize = 128;
-        overallDataBlockingSize = 128;
+        overallGridBlockingSize = calculateCommonGridPadding();
+        overallDataBlockingSize = calculateCommonDatasetPadding();
+
+        std::cout << "overallDataBlockingSize: " << overallDataBlockingSize << std::endl;
+        std::cout << "overallGridBlockingSize: " << overallGridBlockingSize << std::endl;
 
         queueLoadBalancerMult = std::make_shared<SGPP::base::QueueLoadBalancer>();
         queueLoadBalancerMultTrans = std::make_shared<SGPP::base::QueueLoadBalancer>();
@@ -106,6 +106,7 @@ public:
         //    std::cout << "dims: " << this->dims << std::endl;
         //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
+        //corresponds to size of dim * datasetSizeBuffers
         this->kernelDataset = std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
 
         for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
@@ -116,9 +117,11 @@ public:
             json::Node &platformConfiguration = (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
             json::Node &deviceConfiguration = platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
             json::Node &kernelConfiguration =
-                    deviceConfiguration["KERNELS"][StreamingModOCLMaskMultiPlatformConfiguration::getKernelName()];
+                    deviceConfiguration["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+
             multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
                     queueLoadBalancerMult);
+
             multTransposeKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
                     queueLoadBalancerMultTrans);
         }
@@ -141,13 +144,14 @@ public:
         size_t gridFrom = 0;
         size_t gridTo = this->gridSizePadded;
         size_t datasetFrom = 0;
-        size_t datasetTo = this->datasetSize;
+        size_t datasetTo = this->datasetSizePadded;
 
-        if (omp_get_thread_num() == 0) {
+//        if (omp_get_thread_num() == 0) {
             queueLoadBalancerMult->initialize(scheduleSize, datasetFrom, datasetTo, overallDataBlockingSize);
-        }
+//        }
 
-#pragma omp barrier
+        //TODO: not in a parallel region here?
+//#pragma omp barrier
 
         std::vector<T> alphaArray(this->gridSizePadded);
 
@@ -159,7 +163,7 @@ public:
             alphaArray[i] = 0.0;
         }
 
-        std::vector<T> resultArray(this->datasetSize);
+        std::vector<T> resultArray(this->datasetSizeBuffers);
         std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
         std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -199,25 +203,25 @@ public:
         size_t gridFrom = 0;
         size_t gridTo = this->gridSizePadded;
         size_t datasetFrom = 0;
-        size_t datasetTo = this->datasetSize;
+        size_t datasetTo = this->datasetSizePadded;
 
-        if (omp_get_thread_num() == 0) {
-            queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose, gridFrom, gridTo, overallDataBlockingSize);
-        }
+//        if (omp_get_thread_num() == 0) {
+            queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose, gridFrom, gridTo, overallGridBlockingSize);
+//        }
 
-#pragma omp barrier
+//#pragma omp barrier
 
-        std::vector<T> sourceArray(this->datasetSize);
+        std::vector<T> sourceArray(this->datasetSizePadded);
 
         for (size_t i = 0; i < source.getSize(); i++) {
             sourceArray[i] = (T) source[i];
         }
 
-        for (size_t i = source.getSize(); i < this->datasetSize; i++) {
+        for (size_t i = source.getSize(); i < this->datasetSizePadded; i++) {
             sourceArray[i] = 0.0;
         }
 
-        std::vector<T> resultArray(this->gridSizePadded);
+        std::vector<T> resultArray(this->gridSizeBuffers);
 
         std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
@@ -228,13 +232,10 @@ public:
 
 #pragma omp parallel
         {
-
             size_t threadId = omp_get_thread_num();
-//            std::cout << "threadId: " << threadId << std::endl;
 
             this->multTransposeKernels[threadId].multTranspose(this->level, this->index, this->mask, this->offset,
                     this->kernelDataset, sourceArray, resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
-
         }
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
@@ -268,28 +269,34 @@ public:
 
 private:
 
-    size_t padDataset(
+    void padDataset(
     SGPP::base::DataMatrix& dataset) {
 
-        size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt();
-//                * (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+        size_t oldSize = dataset.getNrows();
+
+        size_t commonDatasetPadding = calculateCommonDatasetPadding();
 
         // Assure that data has a even number of instances -> padding might be needed
-        size_t remainder = dataset.getNrows() % vecWidth;
-        size_t loopCount = vecWidth - remainder;
+        size_t remainder = oldSize % commonDatasetPadding;
+        //round up to next number divisible by padding (distributable to threads)
+        //then add another padding (for irregular schedules)
+        size_t padding = commonDatasetPadding - remainder + commonDatasetPadding;
 
-        if (loopCount != vecWidth) {
-            SGPP::base::DataVector lastRow(dataset.getNcols());
-            size_t oldSize = dataset.getNrows();
-            dataset.getRow(dataset.getNrows() - 1, lastRow);
-            dataset.resize(dataset.getNrows() + loopCount);
+        SGPP::base::DataVector lastRow(dataset.getNcols());
+        dataset.getRow(oldSize - 1, lastRow);
+        dataset.resize(oldSize + padding);
 
-            for (size_t i = 0; i < loopCount; i++) {
-                dataset.setRow(oldSize + i, lastRow);
-            }
+        for (size_t i = 0; i < padding; i++) {
+            dataset.setRow(oldSize + i, lastRow);
         }
 
-        return dataset.getNrows();
+        //excluding the additional padding for irregular schedules
+        this->datasetSizePadded = oldSize + commonDatasetPadding - remainder;
+        //totol size for buffer allocation
+        this->datasetSizeBuffers = oldSize + commonDatasetPadding - remainder + commonDatasetPadding;
+        std::cout << "datasetSizeUnpadded: " << datasetSizeUnpadded << std::endl;
+        std::cout << "datasetSizePadded: " << datasetSizePadded << std::endl;
+        std::cout << "datasetSizeBuffers: " << datasetSizeBuffers << std::endl;
     }
 
     /**
@@ -306,26 +313,28 @@ private:
      */
     void recalculateLevelIndexMask() {
 
-        uint32_t localWorkSize = (uint32_t) (*parameters)["LOCAL_SIZE"].getUInt();
+        size_t commonGridPadding = calculateCommonGridPadding();
 
-        size_t remainder = this->storage->size() % localWorkSize;
+        size_t remainder = this->storage->size() % commonGridPadding;
         size_t padding = 0;
 
         if (remainder != 0) {
-            padding = localWorkSize - remainder;
+            padding = commonGridPadding - remainder;
         }
 
+        //size to distribute, not actual padded grid size
         this->gridSizePadded = this->storage->size() + padding;
+
+        //size for distributing schedules of different size
+        this->gridSizeBuffers = this->storage->size() + padding + commonGridPadding;
 
         SGPP::base::HashGridIndex::level_type curLevel;
         SGPP::base::HashGridIndex::index_type curIndex;
 
-        //TODO: update the other kernels with this style
-
-        this->level = std::vector<T>(this->gridSizePadded * this->dims);
-        this->index = std::vector<T>(this->gridSizePadded * this->dims);
-        this->mask = std::vector<T>(this->gridSizePadded * this->dims);
-        this->offset = std::vector<T>(this->gridSizePadded * this->dims);
+        this->level = std::vector<T>(gridSizeBuffers * this->dims);
+        this->index = std::vector<T>(gridSizeBuffers * this->dims);
+        this->mask = std::vector<T>(gridSizeBuffers * this->dims);
+        this->offset = std::vector<T>(gridSizeBuffers * this->dims);
 
         for (size_t i = 0; i < this->storage->size(); i++) {
             for (size_t dim = 0; dim < this->dims; dim++) {
@@ -379,7 +388,7 @@ private:
             }
         }
 
-        for (size_t i = this->storage->size(); i < this->gridSizePadded; i++) {
+        for (size_t i = this->storage->size(); i < gridSizeBuffers; i++) {
             for (size_t dim = 0; dim < this->dims; dim++) {
                 this->level[i * this->dims + dim] = 0;
                 this->index[i * this->dims + dim] = 0;
@@ -395,20 +404,32 @@ private:
         }
     }
 
-    size_t kgv(size_t left, size_t right) {
-        return left;
-    }
-
     size_t calculateCommonDatasetPadding() {
         size_t commonPaddingRequiredment = 1;
         for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
             json::Node &platformConfiguration = (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
             json::Node &deviceConfiguration = platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
             json::Node &kernelConfiguration =
-                    deviceConfiguration["KERNELS"][StreamingModOCLMaskMultiPlatformConfiguration::getKernelName()];
-            commonPaddingRequiredment = kgv(commonPaddingRequiredment,
-                    kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt());
-            commonPaddingRequiredment = kgv(commonPaddingRequiredment, kernelConfiguration["LOCAL_SIZE"].getUInt());
+                    deviceConfiguration["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+
+            commonPaddingRequiredment = std::max(commonPaddingRequiredment,
+                    kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt()
+                            * kernelConfiguration["LOCAL_SIZE"].getUInt());
+        }
+        return commonPaddingRequiredment;
+    }
+
+    size_t calculateCommonGridPadding() {
+        size_t commonPaddingRequiredment = 1;
+        for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
+            json::Node &platformConfiguration = (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
+            json::Node &deviceConfiguration = platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
+            json::Node &kernelConfiguration =
+                    deviceConfiguration["KERNELS"][StreamingModOCLMaskMultiPlatform::Configuration::getKernelName()];
+
+            commonPaddingRequiredment = std::max(commonPaddingRequiredment,
+                    kernelConfiguration["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt()
+                            * kernelConfiguration["LOCAL_SIZE"].getUInt());
         }
         return commonPaddingRequiredment;
     }

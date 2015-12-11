@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "StreamingModOCLMaskMultiPlatformKernelImpl.hpp"
-
 #include <string.h>
 #include <limits>
 #include <chrono>
@@ -18,13 +16,14 @@
 #include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
-#include "StreamingModOCLMaskMultiPlatformKernelSourceBuilderMultTranspose.hpp"
+#include "SourceBuilderMultTranspose.hpp"
 
 namespace SGPP {
 namespace datadriven {
+namespace StreamingModOCLMaskMultiPlatform {
 
 template<typename real_type>
-class StreamingModOCLMaskMultiPlatformKernelMultTranspose {
+class KernelMultTranspose {
 private:
 
     std::shared_ptr<base::OCLDevice> device;
@@ -47,7 +46,7 @@ private:
 
     double deviceTimingMultTranspose;
 
-    StreamingModOCLMaskMultiPlatformKernelSourceBuilderMultTranspose<real_type> kernelSourceBuilder;
+    SourceBuilderMultTranspose<real_type> kernelSourceBuilder;
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     json::Node &kernelConfiguration;
@@ -58,7 +57,7 @@ private:
 
 public:
 
-    StreamingModOCLMaskMultiPlatformKernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
+    KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
             std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration,
             std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose) :
             device(device), dims(dims), err(CL_SUCCESS), deviceLevelTranspose(device), deviceIndexTranspose(device), deviceMaskTranspose(
@@ -72,7 +71,7 @@ public:
         this->verbose = kernelConfiguration["VERBOSE"].getBool();
     }
 
-    ~StreamingModOCLMaskMultiPlatformKernelMultTranspose() {
+    ~KernelMultTranspose() {
         if (this->kernelMultTranspose != nullptr) {
             clReleaseKernel(this->kernelMultTranspose);
             this->kernelMultTranspose = nullptr;
@@ -322,5 +321,6 @@ private:
 }
 ;
 
+}
 }
 }

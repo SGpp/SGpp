@@ -8,16 +8,18 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
 namespace datadriven {
+namespace StreamingModOCLMaskMultiPlatform {
 
-class StreamingModOCLMaskMultiPlatformConfiguration {
+class Configuration {
 private:
-    StreamingModOCLMaskMultiPlatformConfiguration() = delete;
+    Configuration() = delete;
 public:
     static const std::string &getKernelName() {
-        static std::string kernelName = "StreamingModOCLFastMultiPlatform";
+        static std::string kernelName = "StreamingModOCLMaskMultiPlatform";
         return kernelName;
     }
 
@@ -28,7 +30,7 @@ public:
             for (std::string &deviceName : platformNode["DEVICES"].keys()) {
                 json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
-                const std::string &kernelName = SGPP::datadriven::StreamingModOCLMaskMultiPlatformConfiguration::getKernelName();
+                const std::string &kernelName = SGPP::datadriven::StreamingModOCLMaskMultiPlatform::Configuration::getKernelName();
 
                 json::Node &kernelNode =
                         deviceNode["KERNELS"].contains(kernelName) ?
@@ -81,5 +83,6 @@ public:
 
 };
 
+}
 }
 }
