@@ -28,15 +28,23 @@ elif env['PLATFORM'] == 'darwin':
     py_env['SHLIBSUFFIX'] = '.so'
 
 # build python module with swig
-swigflags = ['-c++', '-python', '-fvirtual'] + ['-D' + c for c in py_env['CPPDEFINES']]
+swigflags = ['-c++', '-python', '-fvirtual']
+swigflags.extend(['-D' + c for c in py_env['CPPDEFINES']])
+
+# tell SWIG that we're on Windows
+# (SCons/SWIG do not seem to set this flag automatically)
 if env['COMPILER'] == 'vcc':
-    # scons/swig does not seem to set this flag automatically
     swigflags.append('-DSWIGWIN')
 
-py_env.AppendUnique(SWIGFLAGS=swigflags)
+# Python docstrings in SWIG-generated Python file
+if env['PYDOC']:
+    swigflags.append('-DPYDOC')
 
+# set single precision define
 if not py_env['USE_DOUBLE_PRECISION']:
-    py_env.AppendUnique(SWIGFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
+    swigflags.append('-DUSE_DOUBLE_PRECISION=0')
+
+py_env.AppendUnique(SWIGFLAGS=swigflags)
 
 pythonLibPaths = [BUILD_DIR]
 if env['PLATFORM'] == 'win32':
@@ -104,8 +112,8 @@ def setupPython(target, source, env):
     fd.close()
 
 if env['PYDOC']:
-   Import('pydocTargetList')
-   py_env.Depends(libPython, pydocTargetList)
+    Import('pydocTargetList')
+    py_env.Depends(libPython, pydocTargetList)
 
 installLibPython = py_env.Install(PYSGPP_BUILD_PATH, libPython)
 installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")
