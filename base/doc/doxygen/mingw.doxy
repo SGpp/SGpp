@@ -339,8 +339,13 @@ we have to add the @c jsgpp.jar file to MATLAB's class path with the command
 @verbatim
 javaaddpath('C:\PATH_TO_SGPP\lib\jsgpp\jsgpp.jar');
 @endverbatim
-We can now change to the directory @c base/examples/ and run the
-<tt>tutorial.m</tt> example with
+The final step consists in loading the jsgpp library via
+@verbatim
+sgpp.LoadJSGPPLib.loadJSGPPLib();
+@endverbatim
+You should now be able to use SG++ in MATLAB.
+For an example, change to the directory @c base/examples/ and run
+<tt>tutorial.m</tt> with
 @verbatim
 tutorial;
 @endverbatim
