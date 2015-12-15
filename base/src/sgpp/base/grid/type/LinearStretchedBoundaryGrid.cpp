@@ -19,16 +19,17 @@
 namespace SGPP {
   namespace base {
 
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) : Grid(istr) {
+    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) :
+      Grid(istr) {
 
     }
 
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) {
-      this->storage = new GridStorage(dim);
+    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) :
+      Grid(dim) {
     }
 
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(Stretching& BB) {
-      this->storage = new GridStorage(BB);
+    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(Stretching& BB) :
+      Grid(BB) {
     }
 
     LinearStretchedBoundaryGrid::~LinearStretchedBoundaryGrid() {

@@ -22,11 +22,12 @@
 namespace SGPP {
   namespace base {
 
-    ModLinearGrid::ModLinearGrid(std::istream& istr) : Grid(istr) {
+    ModLinearGrid::ModLinearGrid(std::istream& istr) :
+      Grid(istr) {
     }
 
-    ModLinearGrid::ModLinearGrid(size_t dim) {
-      this->storage = new GridStorage(dim);
+    ModLinearGrid::ModLinearGrid(size_t dim) :
+      Grid(dim) {
     }
 
     ModLinearGrid::~ModLinearGrid() {

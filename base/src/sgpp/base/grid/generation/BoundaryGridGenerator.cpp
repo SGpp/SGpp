@@ -17,7 +17,10 @@
 namespace SGPP {
   namespace base {
 
-    BoundaryGridGenerator::BoundaryGridGenerator(GridStorage* storage) : storage(storage) {
+    BoundaryGridGenerator::BoundaryGridGenerator(GridStorage* storage,
+        level_t boundaryLevel) :
+      storage(storage),
+      boundaryLevel(boundaryLevel) {
     }
 
     BoundaryGridGenerator::~BoundaryGridGenerator() {
@@ -25,7 +28,9 @@ namespace SGPP {
 
     void BoundaryGridGenerator::regular(size_t level) {
       HashGenerator gen;
-      gen.regularWithBoundaries(this->storage, static_cast<HashGenerator::level_t>(level), true);
+      gen.regularWithBoundaries(this->storage,
+                                static_cast<HashGenerator::level_t>(level),
+                                boundaryLevel);
     }
 
     void BoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
@@ -34,7 +39,8 @@ namespace SGPP {
 
     void BoundaryGridGenerator::full(size_t level) {
       HashGenerator gen;
-      gen.fullWithBoundary(this->storage, static_cast<HashGenerator::level_t>(level));
+      gen.fullWithBoundary(this->storage,
+                           static_cast<HashGenerator::level_t>(level));
     }
 
     void BoundaryGridGenerator::refine(RefinementFunctor* func) {
@@ -47,12 +53,15 @@ namespace SGPP {
       return refine.getNumberOfRefinablePoints(this->storage);
     }
 
-    void BoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha) {
+    void BoundaryGridGenerator::coarsen(CoarseningFunctor* func,
+                                        DataVector* alpha) {
       HashCoarsening coarsen;
       coarsen.free_coarsen(this->storage, func, alpha);
     }
 
-    void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly) {
+    void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func,
+        DataVector* alpha,
+        size_t numFirstOnly) {
       HashCoarsening coarsen;
       coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
     }
@@ -62,14 +71,18 @@ namespace SGPP {
       return coarsen.getNumberOfRemovablePoints(this->storage);
     }
 
-    void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, size_t maxLevel) {
+    void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func,
+        size_t maxLevel) {
       HashRefinementBoundariesMaxLevel refine;
-      refine.refineToMaxLevel(this->storage, func, static_cast<HashGenerator::level_t>(maxLevel));
+      refine.refineToMaxLevel(this->storage, func,
+                              static_cast<HashGenerator::level_t>(maxLevel));
     }
 
-    size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
+    size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
+      size_t maxLevel) {
       HashRefinementBoundariesMaxLevel refine;
-      return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, static_cast<HashGenerator::level_t>(maxLevel));
+      return refine.getNumberOfRefinablePointsToMaxLevel(
+               this->storage, static_cast<HashGenerator::level_t>(maxLevel));
     }
 
   }

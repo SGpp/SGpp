@@ -24,9 +24,12 @@ namespace SGPP {
         /**
          * Constructor
          *
-         * @param storage template type that holds the grid points
+         * @param storage       template type that holds the grid points
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted (default = 1: boundary has same level
+         *                      as main axes)
          */
-        BoundaryGridGenerator(GridStorage* storage);
+        BoundaryGridGenerator(GridStorage* storage, level_t boundaryLevel = 1);
 
         /**
          * Destructor
@@ -49,6 +52,8 @@ namespace SGPP {
       protected:
         /// Pointer to the grid's storage object
         GridStorage* storage;
+        /// level at which the boundary points should be inserted
+        level_t boundaryLevel;
     };
 
   }
