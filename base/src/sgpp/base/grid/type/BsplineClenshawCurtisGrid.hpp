@@ -35,8 +35,13 @@ namespace SGPP {
          *
          * @param dim the dimension of the grid
          * @param degree the bspline's degree
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted (default = 1: boundary has same level
+         *                      as main axes)
          */
-        BsplineClenshawCurtisGrid(size_t dim, size_t degree);
+        BsplineClenshawCurtisGrid(size_t dim,
+                                  size_t degree,
+                                  level_t boundaryLevel = 1);
 
         /**
          * Destructor.
@@ -83,8 +88,8 @@ namespace SGPP {
         size_t degree;
         /// B-spline basis
         const SBsplineClenshawCurtisBase* basis_;
-
-
+        /// level at which the boundary points should be inserted
+        level_t boundaryLevel;
     };
 
   }

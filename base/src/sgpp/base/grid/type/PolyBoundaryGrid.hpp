@@ -28,8 +28,11 @@ namespace SGPP {
          *
          * @param dim the dimension of the grid
          * @param degree the max. polynom's degree
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted (default = 1: boundary has same level
+         *                      as main axes)
          */
-        PolyBoundaryGrid(size_t dim, size_t degree);
+        PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
         /**
          * Destructor
@@ -48,7 +51,10 @@ namespace SGPP {
       protected:
         /// max. polynom's degree
         size_t degree;
+        /// polynomial basis
         const SPolyBoundaryBase* basis_;
+        /// level at which the boundary points should be inserted
+        level_t boundaryLevel;
     };
 
   }
