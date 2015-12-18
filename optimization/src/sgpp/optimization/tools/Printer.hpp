@@ -178,7 +178,7 @@ namespace SGPP {
         /**
          * @return stream used for printing (default std::cout)
          */
-        std::ostream* getStream() const;
+        std::ostream* getStream();
 
         /**
          * @param stream stream used for printing (default std::cout)
@@ -201,14 +201,14 @@ namespace SGPP {
          * @param gridGen       grid to be printed
          */
         void printIterativeGridGenerator(
-          const IterativeGridGenerator& gridGen) const;
+          const IterativeGridGenerator& gridGen);
 
         /**
          * Print a system of linear equations.
          *
          * @param system        system to be printed
          */
-        void printSLE(SLE& system) const;
+        void printSLE(SLE& system);
 
       protected:
         static const size_t INDENTATION_LENGTH = 4;
