@@ -6,6 +6,7 @@
 #ifndef SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 #define SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 
+#include <iostream>
 #include <algorithm>
 #include <cstddef>
 #include <stack>
