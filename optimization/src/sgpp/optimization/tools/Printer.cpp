@@ -10,7 +10,6 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <iostream>
 #ifndef _WIN32
 #include <sys/ioctl.h>
 #include <unistd.h>
