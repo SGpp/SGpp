@@ -97,14 +97,14 @@ import_array();
 
 
 #ifdef PYDOC
-%include "base/doc/doc.i"
+%include "base_doc.i"
 #endif
 
 %include "base/build/pysgpp/base.i"
 
 #ifdef SG_DATADRIVEN
 #ifdef PYDOC
-%include "datadriven/doc/doc.i"
+%include "datadriven_doc.i"
 #endif
 
 %include "datadriven/build/pysgpp/datadriven.i"
@@ -112,7 +112,7 @@ import_array();
 
 #ifdef SG_PDE
 #ifdef PYDOC
-%include "pde/doc/doc.i"
+%include "pde_doc.i"
 #endif
 
 %include "pde/build/pysgpp/pde.i"
@@ -120,7 +120,7 @@ import_array();
 
 #ifdef SG_FINANCE
 #ifdef PYDOC
-%include "finance/doc/doc.i"
+%include "finance_doc.i"
 #endif
 
 %include "finance/build/pysgpp/finance.i"
@@ -128,7 +128,7 @@ import_array();
 
 #ifdef SG_SOLVER
 #ifdef PYDOC
-%include "solver/doc/doc.i"
+%include "solver_doc.i"
 #endif
 
 %include "solver/build/pysgpp/solver.i"
@@ -136,7 +136,7 @@ import_array();
 
 #ifdef SG_QUADRATURE
 #ifdef PYDOC
-%include "quadrature/doc/doc.i"
+%include "quadrature_doc.i"
 #endif
 
 %include "quadrature/build/pysgpp/quadrature.i"
@@ -144,7 +144,7 @@ import_array();
 
 #ifdef SG_COMBIGRID
 #ifdef PYDOC
-%include "combigrid/doc/doc.i"
+%include "combigrid_doc.i"
 #endif
 
 %include "combigrid/build/pysgpp/combigrid.i"
@@ -152,7 +152,7 @@ import_array();
 
 #ifdef SG_OPTIMIZATION
 #ifdef PYDOC
-%include "optimization/doc/doc.i"
+%include "optimization_doc.i"
 #endif
 
 %include "optimization/build/pysgpp/optimization.i"
