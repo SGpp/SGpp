@@ -44,8 +44,6 @@ BOOST_AUTO_TEST_CASE(testSamplers) {
 
   NaiveSampleGenerator pNSampler(dim, seed);
   HaltonSampleGenerator pHSampler(dim);
-  SobolSampleGenerator soSampler(dim, seed);
-  ScrambledSobolSampleGenerator scsoSampler(dim, seed);
   LatinHypercubeSampleGenerator pLHSampler(dim, numSamples, seed);
   std::vector<size_t> blockSize(dim, seed);
 
