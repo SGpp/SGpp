@@ -11,7 +11,7 @@ namespace SGPP {
   namespace quadrature {
 
     bool Random::is_seeded = false;
-    std::mt19937 Random::gen = std::mt19937();
+    std::mt19937_64 Random::gen = std::mt19937_64();
     std::uniform_int_distribution<std::uint64_t> Random::distInt = std::uniform_int_distribution<std::uint64_t>(0, RAND_MAX);
     std::uniform_real_distribution<float_t> Random::distReal = std::uniform_real_distribution<float_t>(0, 1);
 
