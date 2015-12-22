@@ -27,19 +27,19 @@ namespace SGPP {
         static void seed(std::uint64_t seed_value = std::mt19937_64::default_seed);
 
         /**
-         * returns a random integer value.
+         * returns a random integer value in [0, RAND_MAX)
          */
         static std::uint64_t random_uint64();
 
         /**
-         * returns a random float_t value,
+         * returns a random float_t value in [0, 1)
          */
         static float_t random_double();
 
       protected:
         static bool is_seeded;
 
-        static std::mt19937 gen;
+        static std::mt19937_64 gen;
         static std::uniform_int_distribution<std::uint64_t> distInt;
         static std::uniform_real_distribution<float_t> distReal;
     };
