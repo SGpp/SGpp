@@ -174,8 +174,8 @@ void OperationMultiEvalModMaskStreaming::prepare() {
 void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
 
     //TODO: does the padding work? test
-//    uint32_t localWorkSize = 24;
-    uint32_t localWorkSize = this->getChunkGridPoints();
+//    size_t localWorkSize = 24;
+    size_t localWorkSize = this->getChunkGridPoints();
 
     size_t remainder = this->storage->size() % localWorkSize;
     size_t padding = 0;
