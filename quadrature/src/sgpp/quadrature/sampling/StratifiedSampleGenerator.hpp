@@ -73,7 +73,7 @@ namespace SGPP {
         void getNextStrata();
 
         //
-        std::uniform_real_distribution<> uniformRealDist;
+        std::uniform_real_distribution<float_t> uniformRealDist;
 
     };
 
