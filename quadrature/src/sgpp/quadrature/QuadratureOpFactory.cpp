@@ -5,12 +5,14 @@
 
 #include "QuadratureOpFactory.hpp"
 #include <sgpp/globaldef.hpp>
+#include <random>
 
 namespace SGPP {
   namespace op_factory {
 
-    quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples) {
-      return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples);
+    quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples,
+        std::uint64_t seed) {
+      return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples, seed);
     }
 
   } /* namespace op_factory */
