@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../sampling/SampleGenerator.hpp"
+#include "SampleGenerator.hpp"
 
 #include <sgpp/quadrature/Random.hpp>
 #include <sgpp/globaldef.hpp>
@@ -13,9 +13,9 @@ using namespace SGPP::base;
 namespace SGPP {
   namespace quadrature {
 
-    SampleGenerator::SampleGenerator(size_t dimensions, int seed) :
+    SampleGenerator::SampleGenerator(size_t dimensions, std::uint64_t seed) :
       dimensions(dimensions), seed(seed) {
-      Random::seed(seed);
+      rng.seed(seed);
     }
 
     SampleGenerator::~SampleGenerator() {
