@@ -48,7 +48,7 @@ namespace SGPP {
         std::vector<float_t> fVector;
         std::vector<float_t> resultVector;
         //
-        std::uniform_int_distribution<> distInt;
+        std::uniform_int_distribution<std::uint64_t> distInt;
     };
 
   }

@@ -55,8 +55,6 @@ BOOST_AUTO_TEST_CASE(testSamplers) {
 
   testSampler(pNSampler, dim, numSamples, analyticResult, 5e-2);
   testSampler(pHSampler, dim, numSamples, analyticResult, 1e-3);
-  // TODO: LatinHypercubeSampleGenerator is currently not tested
-  // (fails on mingw); Fabian: First attempt to solve it
   testSampler(pLHSampler, dim, numSamples, analyticResult, 1e-3);
   testSampler(pSSampler, dim, numSamples, analyticResult, 1e-3);
 }
@@ -131,8 +129,6 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::Stratified, dim, numSamples, blockSize,
                                     analyticResult, 1e-3, seed);
-  // TODO: LatinHypercubeSampleGenerator is currently not tested
-  // (fails on mingw); Fabian: first attempt to solve it
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::LatinHypercube, dim, numSamples, blockSize,
                                     analyticResult, 1e-3, seed);

@@ -40,8 +40,8 @@ namespace SGPP {
         static bool is_seeded;
 
         static std::mt19937 gen;
-        static std::uniform_int_distribution<> distInt;
-        static std::uniform_real_distribution<> distReal;
+        static std::uniform_int_distribution<std::uint64_t> distInt;
+        static std::uniform_real_distribution<float_t> distReal;
     };
   }
 }
