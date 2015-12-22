@@ -36,7 +36,8 @@ namespace SGPP {
          * @param grid Reference to the grid object
          * @param numberOfSamples Number of Monte Carlo samples
          */
-        OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, size_t numberOfSamples);
+        OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, size_t numberOfSamples,
+            std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * @brief Constructor of OperationQuadratureMCAdvanced, specifying dimensions
@@ -45,7 +46,8 @@ namespace SGPP {
          * @param dimensions dimensionality of this problem
          * @param numberOfSamples Number of Monte Carlo samples
          */
-        OperationQuadratureMCAdvanced(size_t dimensions, size_t numberOfSamples);
+        OperationQuadratureMCAdvanced(size_t dimensions, size_t numberOfSamples,
+            std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * Descructor
@@ -118,6 +120,9 @@ namespace SGPP {
         size_t numberOfSamples;
         // number of dimensions (same as in Grid, if given)
         size_t dimensions;
+
+        // seed for the sample generator
+        std::uint64_t seed;
 
         //SampleGenerator Instance
         SGPP::quadrature::SampleGenerator* myGenerator;
