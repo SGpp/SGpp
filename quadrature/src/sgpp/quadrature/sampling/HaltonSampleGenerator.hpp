@@ -26,7 +26,7 @@ namespace SGPP {
          *
          * @param dimension number of dimensions used for sample generation
          */
-        HaltonSampleGenerator(size_t dimension);
+        HaltonSampleGenerator(size_t dimension, std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * Destructor
@@ -47,7 +47,8 @@ namespace SGPP {
         std::vector<float_t> iVector;
         std::vector<float_t> fVector;
         std::vector<float_t> resultVector;
-
+        //
+        std::uniform_int_distribution<> distInt;
     };
 
   }

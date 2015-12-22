@@ -146,9 +146,8 @@ class Samples(object):
         return SamplesIterator(self._samples)
 
     def __str__(self):
-        return "SampleSet: nsamples = %i, ndims = %i" % (len(self._samples,
-                                                             self._dim))
-
+        return "SampleSet: nsamples = %i, ndims = %i" % (len(self._samples),
+                                                         self._dim)
 
 class SamplesIterator(object):
     """

@@ -75,7 +75,7 @@ namespace SGPP {
         std::vector< std::vector<size_t> > currentStrata;
 
         //
-        std::uniform_real_distribution<float_t> uniformRealDist;
+        std::uniform_real_distribution<> uniformRealDist;
     };
 
   }

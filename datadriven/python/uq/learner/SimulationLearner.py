@@ -100,33 +100,51 @@ class SimulationLearner(Learner):
     # @profile
     def setDataContainer(self, trainUQSetting, testUQSetting=None):
         """
-        Sets the training data container given a UQSetting
+        Sets the training dataContainerDict container given a UQSetting
         @param trainUQSetting: UQSetting
         @param testUQSetting: UQSetting
-        @param dtype: KnowledgeType
 
         WARNING: This method has severe performance issues. It needs
-        to be improved such that it returns just the last computed
+        to be improved such that it loads just the last computed
         chunk of samples.
         """
         # load time steps and quantity of interest
         toi = self.getTimeStepsOfInterest()
         qoi = self.getQoI()
-        # load all data points from UQSetting => empty ps
-        data = trainUQSetting.getTimeDependentResults(toi, qoi)
-        data = self.__prepareDataContainer(data, 'train')
-        # set the new data container
-        for dtype, values in data.items():
-            self.dataContainer[dtype] = {}
+
+        # lookup for new samples
+        ps = []
+        for dtype, dataDict in self.dataContainer:
+            for t, dataContainer in dataDict:
+                for sample in trainUQSetting.getSamplesStats().values():
+                    if sample.getActiveUnit() not in dataContainer:
+                        ps.append(sample)
+
+        # load the results for the new samples
+        if len(self.dataContainer) == 0:
+            ps = None
+
+        resultsDict = trainUQSetting.getTimeDependentResults(toi, qoi, ps)
+
+        # prepare the
+        dataContainerDict = self.__prepareDataContainer(resultsDict, 'train')
+        # set the new dataContainerDict container
+        for dtype, values in dataContainerDict.items():
+            if dtype not in self.dataContainer:
+                self.dataContainer[dtype] = {}
+
             for t, newDataContainer in values.items():
-                self.dataContainer[dtype][t] = newDataContainer
+                if t not in self.dataContainer[dtype]:
+                    self.dataContainer[dtype][t] = newDataContainer
+                else:
+                    self.dataContainer[dtype][t].combine(newDataContainer)
 
         # if there is a test setting given, combine the train and the
-        # test data container
+        # test dataContainerDict container
         if testUQSetting is not None:
-            data = testUQSetting.getTimeDependentResults(toi, qoi)
-            data = self.__prepareDataContainer(data, 'test')
-            for dtype, values in data.items():
+            dataContainerDict = testUQSetting.getTimeDependentResults(toi, qoi)
+            dataContainerDict = self.__prepareDataContainer(dataContainerDict, 'test')
+            for dtype, values in dataContainerDict.items():
                 for t, newDataContainer in values.items():
                     self.dataContainer[dtype][t] = \
                         self.dataContainer[dtype][t].combine(newDataContainer)
