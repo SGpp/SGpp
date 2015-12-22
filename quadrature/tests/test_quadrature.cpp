@@ -39,25 +39,24 @@ void testSampler(SampleGenerator& sampler, size_t dim, size_t numSamples,
 BOOST_AUTO_TEST_CASE(testSamplers) {
   size_t dim = 2;
   size_t numSamples = 100000;
-  int seed = 1234567;
   SGPP::float_t analyticResult = std::pow(2. / 3., dim);
 
-  NaiveSampleGenerator pNSampler(dim, seed);
+  NaiveSampleGenerator pNSampler(dim);
   HaltonSampleGenerator pHSampler(dim);
-  //LatinHypercubeSampleGenerator pLHSampler(dim, numSamples, seed);
+  LatinHypercubeSampleGenerator pLHSampler(dim, numSamples);
   std::vector<size_t> blockSize(dim);
 
   for (size_t i = 0; i < dim; i++) {
     blockSize[i] = 10;
   }
 
-  StratifiedSampleGenerator pSSampler(blockSize, seed);
+  StratifiedSampleGenerator pSSampler(blockSize);
 
   testSampler(pNSampler, dim, numSamples, analyticResult, 1e-2);
   testSampler(pHSampler, dim, numSamples, analyticResult, 1e-3);
   // TODO: LatinHypercubeSampleGenerator is currently not tested
-  // (fails on mingw)
-  //testSampler(pLHSampler, dim, numSamples, analyticResult, 1e-3);
+  // (fails on mingw); Fabian: First attempt to solve it
+  testSampler(pLHSampler, dim, numSamples, analyticResult, 1e-3);
   testSampler(pSSampler, dim, numSamples, analyticResult, 1e-3);
 }
 
@@ -99,7 +98,6 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
 BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
   size_t dim = 2;
   size_t numSamples = 100000;
-  int seed = 1234567;
   SGPP::float_t analyticResult = std::pow(2. / 3., dim);
 
   // interpolate f on a sparse grid
@@ -126,8 +124,6 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
     blockSize[i] = 10;
   }
 
-  StratifiedSampleGenerator pSSampler(blockSize, seed);
-
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::Naive, dim, numSamples, blockSize,
                                     analyticResult, 1e-2);
@@ -135,10 +131,10 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
                                     SGPP::quadrature::SamplerTypes::Stratified, dim, numSamples, blockSize,
                                     analyticResult, 1e-3);
   // TODO: LatinHypercubeSampleGenerator is currently not tested
-  // (fails on mingw)
-  /*testOperationQuadratureMCAdvanced(*grid, alpha,
+  // (fails on mingw); Fabian: first attempt to solve it
+  testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::LatinHypercube, dim, numSamples, blockSize,
-                                    analyticResult, 1e-3);*/
+                                    analyticResult, 1e-3);
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::Halton, dim, numSamples, blockSize,
                                     analyticResult, 1e-3);

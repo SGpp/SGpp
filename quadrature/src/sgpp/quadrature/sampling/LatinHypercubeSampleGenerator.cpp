@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../sampling/LatinHypercubeSampleGenerator.hpp"
+#include "LatinHypercubeSampleGenerator.hpp"
 
 #include <cmath>
 #include <list>
@@ -19,11 +19,11 @@ namespace SGPP {
   namespace quadrature {
 
     LatinHypercubeSampleGenerator::LatinHypercubeSampleGenerator(size_t dimensions,
-        size_t numberOfSamples, int seed) :
-      SampleGenerator(dimensions, seed), numberOfStrata(numberOfSamples), // each dimension is divided in n strata to provide n sample points
+        size_t numberOfStrata, std::uint64_t seed) :
+      SampleGenerator(dimensions, seed), numberOfStrata(numberOfStrata), // each dimension is divided in n strata to provide n sample points
       numberOfCurrentSample(1), // index number of current sample [1, n]
-      numberOfSamples(numberOfSamples), sizeOfStrata(
-        1. / static_cast<float_t>(numberOfStrata)) { // equidistant split of [0,1] in n strata -> size of one stratum = 1 / n
+      sizeOfStrata(1. / static_cast<float_t>(numberOfStrata)), // equidistant split of [0,1] in n strata -> size of one stratum = 1 / n
+      uniformRealDist(0, 1) {
 
       for (size_t i = 0; i < dimensions; i++) {
         currentStrata.push_back(std::vector<size_t>());
@@ -33,19 +33,19 @@ namespace SGPP {
         }
       }
 
-      shuffleStrataSequence();
+       shuffleStrataSequence();
     }
 
     LatinHypercubeSampleGenerator::~LatinHypercubeSampleGenerator() {
     }
 
-    void LatinHypercubeSampleGenerator::getSample(SGPP::base::DataVector& dv) {
+    void LatinHypercubeSampleGenerator::getSample(SGPP::base::DataVector& sample) {
 
       // compute random value inside the current stratum selected from the shuffled strata sequence
       for (size_t i = 0; i < dimensions; i++) {
-        dv[i] =
+        sample[i] =
           (static_cast<float_t>(currentStrata[i][numberOfCurrentSample - 1])
-           + Random::random_double()) * sizeOfStrata;
+           + uniformRealDist(rng)) * sizeOfStrata;
       }
 
       // select next sample from strata sequence. If one sequence is complete shuffle strata to get a new one.
@@ -57,14 +57,11 @@ namespace SGPP {
       }
     }
 
-    static size_t random_number_generator(size_t max) {
-      return Random::random() % max;
-    }
-
     void LatinHypercubeSampleGenerator::shuffleStrataSequence() {
       for (size_t i = 0; i < dimensions; i++) {
-        std::random_shuffle(currentStrata[i].begin(), currentStrata[i].end(),
-                            random_number_generator);
+        std::shuffle(currentStrata[i].begin(),
+                     currentStrata[i].end(),
+                     rng);
       }
     }
 

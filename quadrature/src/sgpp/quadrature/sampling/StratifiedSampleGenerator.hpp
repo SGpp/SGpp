@@ -8,6 +8,8 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/globaldef.hpp>
+#include <random>
+
 #include "SampleGenerator.hpp"
 
 namespace SGPP {
@@ -32,7 +34,7 @@ namespace SGPP {
          */
 
         StratifiedSampleGenerator(std::vector<size_t>& strataPerDimension,
-                                  int seed = -1);
+            std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * Destructor
@@ -69,6 +71,9 @@ namespace SGPP {
          * counts up the next dimension by 1.
          */
         void getNextStrata();
+
+        //
+        std::uniform_real_distribution<float_t> uniformRealDist;
 
     };
 

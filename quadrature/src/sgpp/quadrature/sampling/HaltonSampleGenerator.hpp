@@ -42,7 +42,7 @@ namespace SGPP {
         virtual void getSample(SGPP::base::DataVector& sample);
 
       private:
-        int index;
+        size_t index;
         std::vector<size_t> baseVector;
         std::vector<float_t> iVector;
         std::vector<float_t> fVector;
