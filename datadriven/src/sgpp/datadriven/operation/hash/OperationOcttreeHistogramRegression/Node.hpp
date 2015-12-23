@@ -17,8 +17,8 @@ namespace HistogramTree {
 
 class Node {
 private:
-    std::vector<double> x;
-    std::vector<double> h;
+    std::vector<float_t> x;
+    std::vector<float_t> h;
 
     size_t dim;
 
@@ -120,7 +120,7 @@ public:
             return std::unique_ptr<Node>(nullptr);
         }
 
-        double mse = getMSE(support, x, h, supportValue);
+        float_t mse = getMSE(support, x, h, supportValue);
 
         if (mse <= targetMSE) {
             if (verbose) {
@@ -259,35 +259,35 @@ public:
         float_t product = surplus;
         for (size_t d = 0; d < dim; d++) {
             //integrate left side of triangle
-            double integral1D = 0.0;
+            float_t integral1D = 0.0;
 
-            double gridPointHat = gridPoint.getCoord(d);
+            float_t gridPointHat = gridPoint.getCoord(d);
 
-            double gridPointH = (1.0 / static_cast<float_t>(1 << gridPoint.getLevel(d)));
+            float_t gridPointH = (1.0 / static_cast<float_t>(1 << gridPoint.getLevel(d)));
 //                    * static_cast<float_t>(gridPoint.getIndex(d));
 
 //            if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
 //                std::cout << "gridPointH: " << gridPointH << std::endl;
 //            }
 
-            double leftGridPointHat = gridPointHat - gridPointH;
-            double rightGridPointHat = gridPointHat + gridPointH;
+            float_t leftGridPointHat = gridPointHat - gridPointH;
+            float_t rightGridPointHat = gridPointHat + gridPointH;
 
 //            if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
 //                std::cout << "leftGridPointHat: " << leftGridPointHat << std::endl;
 //                std::cout << "rightGridPointHat: " << rightGridPointHat << std::endl;
 //            }
 
-            double leftGridPointConstant = x[d] - h[d];
-            double rightGridPointConstant = x[d] + h[d];
+            float_t leftGridPointConstant = x[d] - h[d];
+            float_t rightGridPointConstant = x[d] + h[d];
 
 //            if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
 //                std::cout << "leftGridPointConstant: " << leftGridPointConstant << std::endl;
 //                std::cout << "rightGridPointConstant: " << rightGridPointConstant << std::endl;
 //            }
 
-            double leftSideLeftBorder = std::max(leftGridPointHat, leftGridPointConstant);
-            double leftSideRightBorder = std::min(gridPointHat, rightGridPointConstant);
+            float_t leftSideLeftBorder = std::max(leftGridPointHat, leftGridPointConstant);
+            float_t leftSideRightBorder = std::min(gridPointHat, rightGridPointConstant);
 
             if (leftSideRightBorder > leftSideLeftBorder) {
 //                if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
@@ -295,7 +295,7 @@ public:
 //                    std::cout << "leftSideRightBorder: " << leftSideRightBorder << std::endl;
 //                }
 
-                double leftIntegral1D = (leftSideRightBorder - leftSideLeftBorder)
+                float_t leftIntegral1D = (leftSideRightBorder - leftSideLeftBorder)
                         * basis.eval(gridPoint.getLevel(d), gridPoint.getIndex(d),
                                 (leftSideRightBorder + leftSideLeftBorder) / 2.0);
                 integral1D += leftIntegral1D;
@@ -305,8 +305,8 @@ public:
 //                }
             }
 
-            double rightSideLeftBorder = std::max(gridPointHat, leftGridPointConstant);
-            double rightSideRightBorder = std::min(rightGridPointHat, rightGridPointConstant);
+            float_t rightSideLeftBorder = std::max(gridPointHat, leftGridPointConstant);
+            float_t rightSideRightBorder = std::min(rightGridPointHat, rightGridPointConstant);
 
             if (rightSideRightBorder > rightSideLeftBorder) {
 //                if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
@@ -314,7 +314,7 @@ public:
 //                    std::cout << "rightSideRightBorder: " << rightSideRightBorder << std::endl;
 //                }
 
-                double rightIntegral1D = (rightSideRightBorder - rightSideLeftBorder)
+                float_t rightIntegral1D = (rightSideRightBorder - rightSideLeftBorder)
                         * basis.eval(gridPoint.getLevel(d), gridPoint.getIndex(d),
                                 (rightSideRightBorder + rightSideLeftBorder) / 2.0);
                 integral1D += rightIntegral1D;
