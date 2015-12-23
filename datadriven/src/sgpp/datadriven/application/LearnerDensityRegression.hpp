@@ -43,7 +43,7 @@ public:
      * @param adaptivityConfig adaptive refinement configuration
      * @param solverConfig solver configuration (CG)
      * @param regularizationConfig config for regularization operator
-     * @param learnerSGDEConfig configuration for the learner
+     * @param verbose report additional information on the console
      */
     LearnerDensityRegression(SGPP::base::RegularGridConfiguration& gridConfig,
     SGPP::base::AdpativityConfiguration& adaptivityConfig,
@@ -53,10 +53,10 @@ public:
     /**
      * Does the learning step on a given grid, training set and regularization parameter lambda
      *
+     * @param piecewiseRegressor
      * @param grid grid
      * @param alpha coefficient vector
-     * @param train sample set
-     * @param lambdaReg regularization parameter
+     * @param lambda regularization parameter
      */
     void train(SGPP::datadriven::HistogramTree::Node &piecewiseRegressor, SGPP::base::Grid& grid,
     SGPP::base::DataVector& alpha, float_t lambda);

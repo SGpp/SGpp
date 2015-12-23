@@ -51,10 +51,7 @@ public:
      *
      * @param program_src the source of the program to compile
      * @param kernel_name name of the kernel function (in program_src) to create the kernel for
-     * @param context OpenCL context
-     * @param num_devices number of OpenCL devices
-     * @param device_ids array with device ids, necessary for displaying build info
-     * @param kernel already allocated array: the resulting kernels are put into this array, one for each device (=> at least num_devices entries)
+     * @param kernels already allocated array: the resulting kernels are put into this array, one for each device (=> at least num_devices entries)
      * @return
      */
     void buildKernel(const std::string &program_src, const char* kernel_name,

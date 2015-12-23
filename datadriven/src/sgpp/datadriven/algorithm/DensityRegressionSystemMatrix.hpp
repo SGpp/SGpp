@@ -39,8 +39,8 @@ public:
     /**
      * Std-Constructor
      *
+     * @param piecewiseRegressor approximation with piecewise-constant octtree
      * @param grid  reference to the sparse grid
-     * @param trainData reference to DataVector that contains the training data
      * @param C the regression functional
      * @param lambdaRegression the regression parameter
      */
