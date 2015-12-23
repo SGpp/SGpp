@@ -71,7 +71,7 @@ you can install most dependencies by installing the following packages:
   <a href="https://launchpad.net/ubuntu/utopic/amd64/swig3.0/3.0.2-1ubuntu1"
   target="_blank">
   SWIG 3.0 .deb file</a> here and install it via <tt>sudo dpkg -i debfile</tt>.
-- Python development headers: <tt>python-dev</tt>
+- Python development headers: <tt>libpython-dev</tt>
 - NumPy: <tt>python-numpy</tt>
 - Java: <tt>openjdk-6-jdk</tt>
 - Doxygen: <tt>doxygen</tt>
