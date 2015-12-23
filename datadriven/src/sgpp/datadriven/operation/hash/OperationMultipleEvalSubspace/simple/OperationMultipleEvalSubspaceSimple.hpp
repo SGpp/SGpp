@@ -51,8 +51,10 @@ namespace SGPP {
 
         void unflatten(base::DataVector& result);
 
+        // NOLINT
         size_t flattenIndex(size_t dim, std::vector<size_t>& maxIndices, std::vector<size_t>& index);
 
+        // NOLINT
         size_t flattenIndex(size_t* intermediates, size_t dim, size_t* maxIndicesPtr, size_t* indexPtr,
                             size_t toRecalc);
 
