@@ -53,7 +53,7 @@ public:
             bool onSupport = true;
 
             for (size_t d = 0; d < dim; d++) {
-                if (point[d] < (x[d] - h[d]) or point[d] > (x[d] + h[d])) {
+                if (point[d] < (x[d] - h[d]) || point[d] > (x[d] + h[d])) {
                     onSupport = false;
                     break;
                 }
