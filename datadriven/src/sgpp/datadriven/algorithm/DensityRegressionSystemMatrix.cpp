@@ -44,12 +44,6 @@ void DensityRegressionSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::ba
 
 // Matrix-Multiplikation verwenden
 void DensityRegressionSystemMatrix::generateb(SGPP::base::DataVector& rhs) {
-//      SGPP::base::DataVector y(this->data->getNrows());
-//      y.setAll(1.0);
-//      // Bt * 1
-//      this->B->multTranspose(y, rhs);
-//      // 1 / 2M * Bt * 1
-//      rhs.mult(1. / (float_t)this->data->getNrows());
 
 //store result in rhs!
     SGPP::base::GridStorage *storage = grid.getStorage();
@@ -62,7 +56,6 @@ void DensityRegressionSystemMatrix::generateb(SGPP::base::DataVector& rhs) {
 
 DensityRegressionSystemMatrix::~DensityRegressionSystemMatrix() {
     delete this->A;
-//      delete this->B;
 }
 
 }

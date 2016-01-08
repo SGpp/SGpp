@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
   if (dim == 2) {
     std::ofstream resultFile;
 #if USE_DOUBLE_PRECISION == 1
-    SGPP::float_t pointIncrement = 0.05;
+    SGPP::float_t pointIncrement = 0.01;
 #else
     SGPP::float_t pointIncrement = 0.05f;
 #endif
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
     throw;
   }
 
-  int maxLevel = 5;
+  int maxLevel = 7;
 
   SGPP::base::RegularGridConfiguration gridConfig;
   SGPP::solver::SLESolverConfiguration solverConfig;
@@ -171,9 +171,14 @@ int main(int argc, char **argv) {
   solverConfig.type_ = SGPP::solver::SLESolverType::CG;
 
   SGPP::pde::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = SGPP::pde::RegularizationType::Identity;
+  regularizationConfig.regType_ = SGPP::pde::RegularizationType::Laplace;
 
-  SGPP::float_t lambda = 0.00001;
+//  SGPP::float_t lambda = 0.1;
+  SGPP::float_t lambda = 0.0005;
+
+//  SGPP::float_t lambda = 0.0001;
+//  SGPP::float_t lambda = 0.001;
+
 
   auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
 
@@ -201,7 +206,7 @@ int main(int argc, char **argv) {
 
   if (dim == 2) {
 #if USE_DOUBLE_PRECISION == 1
-    SGPP::float_t pointIncrement = 0.05;
+    SGPP::float_t pointIncrement = 0.01;
 #else
     SGPP::float_t pointIncrement = 0.05f;
 #endif

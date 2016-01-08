@@ -68,6 +68,21 @@ public:
     SGPP::base::OperationMatrix* computeRegularizationMatrix(
     SGPP::base::Grid& grid);
 
+    /**
+     * Does cross-validation to obtain a suitable regularization parameter
+     */
+    float_t optimizeLambdaCV(size_t kFold);
+
+    /**
+     * splits the complete sample set in a set of smaller training and test
+     * samples for cross-validation.
+     *
+     * @param strain vector containing the training samples for cv
+     * @param stest vector containing the test samples for cv
+     */
+    void splitset(std::vector<SGPP::base::DataMatrix*>& strain,
+                  std::vector<SGPP::base::DataMatrix*>& stest);
+
 };
 
 } /* namespace datadriven */
