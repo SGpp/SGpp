@@ -35,6 +35,7 @@ namespace SGPP {
          *
          * @param grid Reference to the grid object
          * @param numberOfSamples Number of Monte Carlo samples
+         * @param seed Custom seed (defaults to default seed of mt19937_64)
          */
         OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, size_t numberOfSamples,
             std::uint64_t seed = std::mt19937_64::default_seed);
@@ -45,6 +46,7 @@ namespace SGPP {
          *
          * @param dimensions dimensionality of this problem
          * @param numberOfSamples Number of Monte Carlo samples
+         * @param seed Custom seed (defaults to default seed of mt19937_64)
          */
         OperationQuadratureMCAdvanced(size_t dimensions, size_t numberOfSamples,
             std::uint64_t seed = std::mt19937_64::default_seed);

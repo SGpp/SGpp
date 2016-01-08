@@ -6,6 +6,7 @@
  */
 
 #include <fstream>
+#include <random>
 
 #include <sgpp/globaldef.hpp>
 

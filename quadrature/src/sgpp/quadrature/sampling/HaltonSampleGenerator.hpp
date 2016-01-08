@@ -25,6 +25,7 @@ namespace SGPP {
          * Standard constructor
          *
          * @param dimension number of dimensions used for sample generation
+         * @param seed custom seed (defaults to default seed of mt19937_64)
          */
         HaltonSampleGenerator(size_t dimension, std::uint64_t seed = std::mt19937_64::default_seed);
 
