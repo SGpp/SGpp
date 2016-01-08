@@ -19,11 +19,11 @@ namespace SGPP {
   namespace op_factory {
 
     /**
-     * Creates an OperationQuadratureMCAdvanced, specifying a grid
-     * object and the number of samples to use.
+     * Creates an OperationQuadratureMCAdvanced.
      *
-     * @param grid
-     * @param numberOfSamples
+     * @param grid Reference to the grid object
+     * @param numberOfSamples Number of Monte Carlo samples
+     * @param seed Custom seed (defaults to default seed of mt19937_64)
      */
     quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples,
         std::uint64_t seed = std::mt19937_64::default_seed);

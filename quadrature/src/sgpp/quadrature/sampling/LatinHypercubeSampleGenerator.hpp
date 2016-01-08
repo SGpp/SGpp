@@ -32,8 +32,8 @@ namespace SGPP {
          * Standard constructor
          *
          * @param dimensions number of dimensions used for sample generation
-         * @param numberOfSamples number of samples to be drawn
-         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
+         * @param numberOfStrata number of strata
+         * @param seed custom seed (defaults to default seed of mt19937_64)
          */
 
         LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfStrata,
