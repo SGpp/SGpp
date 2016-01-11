@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import fnmatch
@@ -21,9 +21,12 @@ if os.path.exists("jsgpp_wrap.cc"):
     os.remove("jsgpp_wrap.cc")
 
 # clear jsgpp/java/*.java files
-for filename in os.listdir("java"):
-    if fnmatch.fnmatch(filename, "*.java"):
-        os.remove(os.path.join("java", filename))
+if os.path.isdir("java"):
+    for filename in os.listdir("java"):
+        if fnmatch.fnmatch(filename, "*.java"):
+            os.remove(os.path.join("java", filename))
+else:
+    os.mkdir("java")
 
 j_env = env.Clone()
 
