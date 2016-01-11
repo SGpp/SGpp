@@ -73,16 +73,17 @@ void DensityRegressionMetaLearner::optimizeLambdaCVGreedy_(size_t kFold, size_t 
     bestMSE = middleMSE;
 
     std::vector<float_t> lambdaValues;
-    if (middleLambda - lambdaStepSize > 0) {
-        lambdaValues.push_back(middleLambda - lambdaStepSize);
-    } else {
-        lambdaValues.push_back(LAMBDA_MIN);
-    }
-    if (middleLambda + lambdaStepSize < 1.0) {
-        lambdaValues.push_back(middleLambda + lambdaStepSize);
-    } else {
-        lambdaValues.push_back(1.0);
-    }
+//    lambdaValues.push_back(middleLambda / 10.0);
+//    if (middleLambda - lambdaStepSize > 0) {
+//        lambdaValues.push_back(middleLambda - lambdaStepSize);
+//    } else {
+//        lambdaValues.push_back(LAMBDA_MIN);
+//    }
+//    if (middleLambda + lambdaStepSize < 1.0) {
+//        lambdaValues.push_back(middleLambda + lambdaStepSize);
+//    } else {
+//        lambdaValues.push_back(1.0);
+//    }
     if (curLevel == 0) {
         lambdaValues.push_back(middleLambda);
     }
@@ -125,7 +126,7 @@ void DensityRegressionMetaLearner::optimizeLambdaCVGreedy_(size_t kFold, size_t 
         }
     }
 
-    if (curLevel <= maxLevel) {
+    if (curLevel < maxLevel) {
         this->optimizeLambdaCVGreedy_(kFold, maxLevel, trainingSets, trainingSetsValues, testSets, testSetsValues,
                 curLevel + 1, bestLambda, bestMSE, lambdaStepSize / 2.0, bestLambda, bestMSE);
     }
@@ -300,14 +301,23 @@ base::DataVector DensityRegressionMetaLearner::train(base::Grid &grid, base::Dat
 
     SGPP::datadriven::OperationOcttreeHistogramRegression piecewiseRegressorOperator(train, trainValues);
 
+    if (verbose) {
+        std::cout << "creating piecewise-constant representation..." << std::endl;
+    }
     std::unique_ptr<SGPP::datadriven::HistogramTree::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
-            0.0001, 30);
+            0.0001, 12);
+    if (verbose) {
+        std::cout << "piecewise-constant representation created, smoothing..." << std::endl;
+    }
 
     SGPP::datadriven::LearnerDensityRegression learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
-            false);
+            true);
 
     base::DataVector alpha(grid.getSize());
     learner.train(*piecewiseRegressor, grid, alpha, lambda);
+    if (verbose) {
+        std::cout << "smoothing finished" << std::endl;
+    }
     return alpha;
 }
 
@@ -341,6 +351,16 @@ float_t DensityRegressionMetaLearner::calculateMSE(base::Grid &grid, base::DataV
         testSubset.getRow(i, point);
         float_t approximation = opEval->eval(alpha, point);
         mse += (approximation - valuesTestSubset[i]) * (approximation - valuesTestSubset[i]);
+        if (i < 100) {
+            std::cout << "p: ";
+            for (size_t j = 0; j < dim; j++) {
+                if (j > 0) {
+                    std::cout << ", ";
+                }
+                std::cout << point[j];
+            }
+            std::cout << " value: " << approximation << " ref: " << valuesTestSubset[i] << std::endl;
+        }
     }
     return mse;
 }

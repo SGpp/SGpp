@@ -83,8 +83,10 @@ int main(int argc, char **argv) {
 //  }
 //  sampleFile.close();
 
+//    std::string fileName("parabel2d.arff");
 //    std::string fileName("chess_02D_tr.dat.arff");
-    std::string fileName("chess_02D_tr.dat.arff");
+//    std::string fileName("friedman_4d.arff");
+    std::string fileName("chess_05D_3fields_tr.dat.arff");
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset arffDataset = arffTools.readARFF(fileName);
@@ -129,9 +131,9 @@ int main(int argc, char **argv) {
 
 //  learner.optimizeLambdaCV(10, 0.0001, 0.001, 10);
 
-    float_t lambdaOpt = learner.optimizeLambdaCVGreedy(10, 1, 3.8147e-06, 1.9e-06);
+    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(2, 0, 0.00001, 0.05);
 
-    auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
+    auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(arffDataset.getDimension()));
 
     auto generator = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
     generator->regular(maxLevel);
@@ -139,7 +141,7 @@ int main(int argc, char **argv) {
 //    SGPP::base::DataVector alpha(grid->getSize());
     DataVector alpha = learner.train(*grid, dataset, values, lambdaOpt);
 
-    if (dim == 2) {
+    if (arffDataset.getDimension() == 2) {
 
         SGPP::base::OperationEval *linearEval = SGPP::op_factory::createOperationEval(*grid);
 
@@ -154,10 +156,10 @@ int main(int argc, char **argv) {
         for (SGPP::float_t testX = 0; testX <= 1.0; testX += pointIncrement) {
             for (SGPP::float_t testY = 0; testY <= 1.0; testY += pointIncrement) {
 //        std::vector<SGPP::float_t> point = { testX, testY };
-                DataVector point(dim);
+                DataVector point(arffDataset.getDimension());
                 point[0] = testX;
                 point[1] = testY;
-                for (size_t d = 0; d < dim; d++) {
+                for (size_t d = 0; d < arffDataset.getDimension(); d++) {
                     resultFileLinear << point[d] << ", ";
                 }
                 SGPP::float_t eval = linearEval->eval(alpha, point);

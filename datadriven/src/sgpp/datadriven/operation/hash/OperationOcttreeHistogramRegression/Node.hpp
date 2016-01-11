@@ -33,16 +33,23 @@ private:
     base::DataMatrix &dataset;
     base::DataVector &values;
 
+    size_t childCount;
+
     bool verbose;
 public:
+
+    static uint64_t integratedNodes;
+
+    static uint64_t hierarchizeMaxLevel;
+
     Node(std::vector<float_t> x, std::vector<float_t> h, std::vector<size_t> supportIndizes, base::DataMatrix &dataset,
             base::DataVector &values, bool verbose = false) :
             x(x), h(h), dim(x.size()), supportIndizes(supportIndizes), leftChild(nullptr), rightChild(nullptr), childDim(
-                    0), surplus(0.0), dataset(dataset), values(values), verbose(verbose) {
+                    0), surplus(0.0), dataset(dataset), values(values), childCount(0), verbose(verbose) {
     }
 
-    std::vector<size_t> getSupportIndizes(std::vector<float_t> x, std::vector<float_t> h,
-            std::vector<size_t> parentSupport) {
+    std::vector<size_t> getSupportIndizes(std::vector<float_t> &x, std::vector<float_t> &h,
+            std::vector<size_t> &parentSupport) {
         std::vector<size_t> supportIndizes;
 
         for (size_t i = 0; i < parentSupport.size(); i++) {
@@ -66,7 +73,7 @@ public:
         return supportIndizes;
     }
 
-    float_t getAverage(std::vector<size_t> supportIndizes, std::vector<float_t> x, std::vector<float_t> h) {
+    float_t getAverage(std::vector<size_t> &supportIndizes, std::vector<float_t> &x, std::vector<float_t> &h) {
         float_t sum = 0.0;
         size_t pointOnSupport = 0;
 
@@ -85,7 +92,7 @@ public:
         return average;
     }
 
-    float_t getMSE(std::vector<size_t> supportIndizes, std::vector<float_t> x, std::vector<float_t> h,
+    float_t getMSE(std::vector<size_t> &supportIndizes, std::vector<float_t> &x, std::vector<float_t> &h,
             float_t supportValue) {
 
         float_t sum = 0.0;
@@ -108,8 +115,8 @@ public:
         return mse;
     }
 
-    std::unique_ptr<Node> hierarchizeChild(std::vector<float_t> x, std::vector<float_t> h,
-            std::vector<size_t> parentSupport, float_t supportValue, float_t targetMSE, size_t targetMaxLevel,
+    std::unique_ptr<Node> hierarchizeChild(std::vector<float_t> &x, std::vector<float_t> &h,
+            std::vector<size_t> &parentSupport, float_t supportValue, float_t targetMSE, size_t targetMaxLevel,
             size_t nextDim, size_t levelLimit) {
         std::vector<size_t> support = getSupportIndizes(x, h, parentSupport);
 
@@ -142,6 +149,10 @@ public:
             return;
         }
 
+        if (levelLimit > hierarchizeMaxLevel) {
+            Node::hierarchizeMaxLevel = levelLimit;
+        }
+
         surplus = getAverage(supportIndizes, x, h) - parentValue;
         float_t supportValue = parentValue + surplus;
 
@@ -156,6 +167,7 @@ public:
                 (refineDim + 1) % dim, levelLimit + 1);
         if (leftChild.operator bool()) {
             refinedAnyChild = true;
+            childCount += 1 + leftChild->childCount;
         }
 
         std::vector<float_t> rightChildX = getRightChildX(refineDim);
@@ -163,6 +175,7 @@ public:
                 (refineDim + 1) % dim, levelLimit + 1);
         if (rightChild.operator bool()) {
             refinedAnyChild = true;
+            childCount += 1 + rightChild->childCount;
         }
 
         if (refinedAnyChild) {
@@ -191,7 +204,7 @@ public:
         return childH;
     }
 
-    float_t evaluate(std::vector<float_t> point) {
+    float_t evaluate(std::vector<float_t> &point) {
         float_t sum = 0.0;
 //        std::cout << "evaluate at x:";
 //        for(size_t d = 0; d < dim; d++) {
@@ -229,9 +242,15 @@ public:
 
     float_t integrate(SGPP::base::GridIndex &gridPoint, size_t levelLimit = 0) {
 
-        if (levelLimit > 2) {
-            return 0.0;
+        if (levelLimit == 0) {
+            Node::integratedNodes = 1;
+        } else {
+            Node::integratedNodes += 1;
         }
+
+//        if (levelLimit > 2) {
+//            return 0.0;
+//        }
         SGPP::base::SLinearBase basis;
 
         float_t sum = 0.0;
@@ -256,7 +275,7 @@ public:
 //            std::cout << "surplus: " << surplus << std::endl;
 //        }
 
-        float_t product = surplus;
+        float_t integral = 1.0;
         for (size_t d = 0; d < dim; d++) {
             //integrate left side of triangle
             float_t integral1D = 0.0;
@@ -324,22 +343,35 @@ public:
 //                }
             }
 
-            product *= integral1D;
+            integral *= integral1D;
+
 //            if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
 //                std::cout << "---dim---" << std::endl;
 //            }
         }
 
+        float_t product = surplus * integral;
+
 //        if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
 //            std::cout << "----------------------" << std::endl;
 //        }
-        if (leftChild.operator bool()) {
-            sum += leftChild->integrate(gridPoint, levelLimit);
-        }
-        if (rightChild.operator bool()) {
-            sum += rightChild->integrate(gridPoint, levelLimit);
+        if (integral > 0.0) {
+            if (leftChild.operator bool()) {
+                sum += leftChild->integrate(gridPoint, levelLimit + 1);
+            }
+            if (rightChild.operator bool()) {
+                sum += rightChild->integrate(gridPoint, levelLimit + 1);
+            }
         }
         return sum + product;
+    }
+
+    uint64_t getChildCount() {
+        return childCount;
+    }
+
+    uint64_t getHierarchizationMaxLevel() {
+        return hierarchizeMaxLevel;
     }
 
 };
