@@ -47,11 +47,15 @@ void DensityRegressionSystemMatrix::generateb(SGPP::base::DataVector& rhs) {
 
 //store result in rhs!
     SGPP::base::GridStorage *storage = grid.getStorage();
+    uint64_t totalIntegratedNodes = 0;
     for (size_t gridIndex = 0; gridIndex < storage->size(); gridIndex++) {
         SGPP::base::GridIndex *gridPoint = storage->get(gridIndex);
         rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint);
-//        std::cout << "rhs[" << gridIndex << "] = " << rhs[gridIndex] << std::endl;
+        totalIntegratedNodes += piecewiseRegressor.integratedNodes;
     }
+    std::cout << "totalIntegratedNodes: " << totalIntegratedNodes << std::endl;
+    std::cout << "integrated nodes per grid point: "
+            << (static_cast<float_t>(totalIntegratedNodes) / static_cast<float_t>(storage->size())) << std::endl;
 }
 
 DensityRegressionSystemMatrix::~DensityRegressionSystemMatrix() {
