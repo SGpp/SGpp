@@ -45,12 +45,11 @@ int main(int argc, char** argv) {
      std::cout << "internal precision: " << parameters.get("INTERNAL_PRECISION") << std::endl;*/
 
     //std::string fileName = "debugging_small.arff";
-    std::string fileName = "friedman_4d.arff";
+    //std::string fileName = "friedman_4d.arff";
     //std::string fileName = "friedman_10d.arff";
-    //std::string fileName = "DR5_train.arff";
+    std::string fileName = "DR5_train.arff";
     //std::string fileName = "debugging.arff";
 
-    std::cout << "Dataset: " << fileName << std::endl;
 
     SGPP::base::OCLOperationConfiguration parameters;
 	parameters.addIDAttr("OCL_MANAGER_VERBOSE", "true");
@@ -65,6 +64,15 @@ int main(int argc, char** argv) {
 	parameters.addIDAttr("ADAPTIVE_STREAMING_HARD_LIMIT", "10"); //absolute value
 	parameters.addIDAttr("ADAPTIVE_STREAMING_DENSITY", "5"); //In percent
 
+	if (argc >= 7)
+	{
+		parameters.set("ADAPTIVE_STREAMING_HARD_LIMIT", std::string(argv[6]));
+	}
+	if (argc >= 8)
+	{
+		parameters.set("ADAPTIVE_STREAMING_DENSITY", std::string(argv[7]));
+	}
+
     bool bCompare = true;
     bool bBoth = false;
 
@@ -72,14 +80,14 @@ int main(int argc, char** argv) {
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
-    adaptConfig.noPoints_ = 20;
+    adaptConfig.noPoints_ = 100;
     adaptConfig.numRefinements_ = 2;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::ADAPTIVE,
-    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
+    SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT, parameters);
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configurationTwo;
 
@@ -117,7 +125,13 @@ int main(int argc, char** argv) {
     {
         bCompare = static_cast<bool>(atoi(argv[4]));
     }
+    if (argc >= 6)
+    {
+    	fileName = std::string(argv[5]);
+    }
 
+
+    std::cout << "Dataset: " << fileName << std::endl;
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
@@ -177,13 +191,18 @@ int main(int argc, char** argv) {
     	evalTwo->mult(alpha, dataSizeVectorResult);
     }
 
-    std::cout << "durationSub: " << eval->getDuration() << std::endl;
+
 
     if ( bBoth )
     {
+    	std::cout << "durationSub: " << eval->getDuration() << std::endl;
     	std::cout << "durationStreaming: " << evalTwo->getDuration() << std::endl;
     	std::cout << "diff: " << eval->getDuration() - evalTwo->getDuration() << std::endl;
     	std::cout << "speedUp: " << evalTwo->getDuration()/eval->getDuration() << std::endl;
+    }
+    else
+    {
+    	std::cout << "duration: " << eval->getDuration() << std::endl;
     }
 
     if ( bCompare)
