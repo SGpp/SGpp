@@ -429,7 +429,7 @@ private:
 
         this->numSubspaces = 0;
 
-        //vector used to preserve subspace order as std::map silently re-arranges items
+        //vector used to preserve subspace order as std::map silently sorts item by key value
         std::vector<uint32_t> flatLevelOrder;
 
         uint32_t curLevel = 1;
@@ -507,7 +507,7 @@ private:
 
 
         //TODO: dont repeat the loop
-        //iterate our previously constructed contains and fill our arrays
+        //iterate our previously constructed map and fill our arrays
         typedef std::map<uint32_t, std::vector<uint32_t> >::iterator it_type;
         for (auto &flatLevel : flatLevelOrder) {
             //as mentioned above this preserves the initial order of appearance
