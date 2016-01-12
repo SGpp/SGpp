@@ -67,33 +67,28 @@ void DensityRegressionMetaLearner::optimizeLambdaCVGreedy_(size_t kFold, size_t 
         std::cout << "entering level=" << curLevel << " with lambda=" << middleLambda << std::endl;
     }
 
-    const float_t LAMBDA_MIN = 1E-10;
+    const float_t LAMBDA_MIN = 1E-18;
 
     bestLambda = middleLambda;
     bestMSE = middleMSE;
 
     std::vector<float_t> lambdaValues;
-//    lambdaValues.push_back(middleLambda / 10.0);
-//    if (middleLambda - lambdaStepSize > 0) {
-//        lambdaValues.push_back(middleLambda - lambdaStepSize);
-//    } else {
-//        lambdaValues.push_back(LAMBDA_MIN);
-//    }
-//    if (middleLambda + lambdaStepSize < 1.0) {
-//        lambdaValues.push_back(middleLambda + lambdaStepSize);
-//    } else {
-//        lambdaValues.push_back(1.0);
-//    }
+    if (middleLambda - lambdaStepSize > 0) {
+        lambdaValues.push_back(middleLambda - lambdaStepSize);
+    } else {
+        lambdaValues.push_back(LAMBDA_MIN);
+    }
+    if (middleLambda + lambdaStepSize < 1.0) {
+        lambdaValues.push_back(middleLambda + lambdaStepSize);
+    } else {
+        lambdaValues.push_back(1.0);
+    }
     if (curLevel == 0) {
         lambdaValues.push_back(middleLambda);
     }
 
     bool firstValue = true;
     for (float_t curLambda : lambdaValues) {
-        //compute current lambda
-//        if (verbose) {
-//            std::cout << "curLambda = " << curLambda << std::endl;
-//        }
 
 // cross-validation
         float_t curMeanMSE = 0.0;
@@ -305,7 +300,7 @@ base::DataVector DensityRegressionMetaLearner::train(base::Grid &grid, base::Dat
         std::cout << "creating piecewise-constant representation..." << std::endl;
     }
     std::unique_ptr<SGPP::datadriven::HistogramTree::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
-            0.0001, 12);
+            0.0001, 30);
     if (verbose) {
         std::cout << "piecewise-constant representation created, smoothing..." << std::endl;
     }
@@ -351,16 +346,16 @@ float_t DensityRegressionMetaLearner::calculateMSE(base::Grid &grid, base::DataV
         testSubset.getRow(i, point);
         float_t approximation = opEval->eval(alpha, point);
         mse += (approximation - valuesTestSubset[i]) * (approximation - valuesTestSubset[i]);
-        if (i < 100) {
-            std::cout << "p: ";
-            for (size_t j = 0; j < dim; j++) {
-                if (j > 0) {
-                    std::cout << ", ";
-                }
-                std::cout << point[j];
-            }
-            std::cout << " value: " << approximation << " ref: " << valuesTestSubset[i] << std::endl;
-        }
+//        if (i < 100) {
+//            std::cout << "p: ";
+//            for (size_t j = 0; j < dim; j++) {
+//                if (j > 0) {
+//                    std::cout << ", ";
+//                }
+//                std::cout << point[j];
+//            }
+//            std::cout << " value: " << approximation << " ref: " << valuesTestSubset[i] << std::endl;
+//        }
     }
     return mse;
 }
