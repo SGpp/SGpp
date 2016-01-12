@@ -77,13 +77,13 @@ int main(int argc, char **argv) {
     std::ofstream resultFile;
     resultFile.open("resultFile.csv");
 
-    for (double testX = 0; testX <= 1.0; testX += 0.01) {
-        for (double testY = 0; testY <= 1.0; testY += 0.01) {
-            vector<double> point = { testX, testY };
+    for (SGPP::float_t testX = 0; testX <= 1.0; testX += 0.01f) {
+        for (SGPP::float_t testY = 0; testY <= 1.0; testY += 0.01f) {
+            vector<SGPP::float_t> point = { testX, testY };
             for (size_t d = 0; d < dim; d++) {
                 resultFile << point[d] << ", ";
             }
-            double eval = node->evaluate(point);
+            SGPP::float_t eval = node->evaluate(point);
             resultFile << eval << std::endl;
         }
         resultFile << std::endl;
