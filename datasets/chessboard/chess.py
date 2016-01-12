@@ -3,7 +3,7 @@
 import random
 
 fileName = "chess_3d.arff"
-numElements = 10000
+numElements = 100000
 dim = 3
 fields = dim
 seed = 135
@@ -29,7 +29,7 @@ for n in range(numElements):
         else:
             b *= (-1.0)
              
-        point = point + str(r) + " "
+        point = point + str(r) + ", "
         
     point = point + str(b) + "\n"
     dat = dat + point

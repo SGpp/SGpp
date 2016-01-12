@@ -86,7 +86,8 @@ int main(int argc, char **argv) {
 //    std::string fileName("parabel2d.arff");
 //    std::string fileName("chess_02D_tr.dat.arff");
 //    std::string fileName("friedman_4d.arff");
-    std::string fileName("chess_05D_3fields_tr.dat.arff");
+//    std::string fileName("chess_05D_3fields_tr.dat.arff");
+    std::string fileName("chess_3d.arff");
 
     SGPP::datadriven::ARFFTools arffTools;
     SGPP::datadriven::Dataset arffDataset = arffTools.readARFF(fileName);
@@ -94,7 +95,7 @@ int main(int argc, char **argv) {
     SGPP::base::DataMatrix &dataset = arffDataset.getTrainingData();
     SGPP::base::DataVector &values = arffDataset.getClasses();
 
-    int maxLevel = 8;
+    int maxLevel = 9;
 
     SGPP::base::RegularGridConfiguration gridConfig;
     SGPP::solver::SLESolverConfiguration solverConfig;
@@ -131,7 +132,8 @@ int main(int argc, char **argv) {
 
 //  learner.optimizeLambdaCV(10, 0.0001, 0.001, 10);
 
-    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(2, 0, 0.00001, 0.05);
+//    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(10, 15, 0.25, 0.125);
+    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(10, 15, 1E-10, 1E-11);
 
     auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(arffDataset.getDimension()));
 
