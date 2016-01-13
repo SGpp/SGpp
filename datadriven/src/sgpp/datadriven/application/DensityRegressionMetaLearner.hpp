@@ -31,8 +31,8 @@ private:
 
     /**
      * generates a regular grid
-     * @param grid grid
-     * @param ndim number of dimensions
+     * @param dim number of dimensions
+     * @return grid
      */
     base::Grid *createRegularGrid(size_t dim);
 
@@ -62,8 +62,8 @@ public:
      * Does the learning step on a given grid, training set and regularization parameter lambda
      *
      * @param grid grid
-     * @param alpha coefficient vector
      * @param train sample set
+     * @param trainValues training values
      * @param lambdaReg regularization parameter
      */
     SGPP::base::DataVector train(base::Grid& grid,

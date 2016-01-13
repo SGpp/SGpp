@@ -39,13 +39,13 @@ int main(int argc, char **argv) {
 
     std::random_device rd;
     std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    std::uniform_real_distribution<SGPP::float_t> dist(0.0, 1.0);
 
     std::ofstream sampleFile;
     sampleFile.open("sampleFile.csv");
 
     for (size_t sample = 0; sample < samplePoints; sample++) {
-        vector<double> point(dim);
+        vector<SGPP::float_t> point(dim);
         for (size_t d = 0; d < dim; d++) {
             point[d] = dist(mt);
             sampleFile << point[d] << ", ";
@@ -64,12 +64,12 @@ int main(int argc, char **argv) {
 //    resultFile.open("resultFile.csv");
 //
 //    for (size_t sample = 0; sample < samplePoints; sample++) {
-//        vector<double> point(dim);
+//        vector<SGPP::float_t> point(dim);
 //        for (size_t d = 0; d < dim; d++) {
 //            point[d] = dist(mt);
 //            resultFile << point[d] << ", ";
 //        }
-//        double eval = node->evaluate(point);
+//        SGPP::float_t eval = node->evaluate(point);
 //        resultFile << eval << std::endl;
 //    }
 //    resultFile.close();
