@@ -6,6 +6,7 @@
  */
 
 #include <fstream>
+#include <random>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
