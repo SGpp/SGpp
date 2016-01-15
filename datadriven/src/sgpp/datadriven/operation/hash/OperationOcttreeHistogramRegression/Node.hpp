@@ -74,6 +74,17 @@ public:
 
     uint64_t getHierarchizationMaxLevel();
 
+    float_t getMSE() {
+        float_t mse = 0.0;
+        for (size_t i = 0; i < dataset.getNrows(); i++) {
+            std::vector<float_t> point;
+            dataset.getRow(i, point);
+            float_t eval = this->evaluate(point);
+            mse += (eval - values[i]) * (eval - values[i]);
+        }
+        return mse;
+    }
+
 };
 
 }

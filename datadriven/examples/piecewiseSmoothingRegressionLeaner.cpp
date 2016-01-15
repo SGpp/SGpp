@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     SGPP::base::DataMatrix &dataset = arffDataset.getTrainingData();
     SGPP::base::DataVector &values = arffDataset.getClasses();
 
-    int maxLevel = 9;
+    int maxLevel = 6;
 
     SGPP::base::RegularGridConfiguration gridConfig;
     SGPP::solver::SLESolverConfiguration solverConfig;
@@ -104,12 +104,12 @@ int main(int argc, char **argv) {
     // setup grid
     gridConfig.dim_ = arffDataset.getDimension();
     gridConfig.level_ = maxLevel;
-    gridConfig.type_ = SGPP::base::GridType::Linear;
+    gridConfig.type_ = SGPP::base::GridType::LinearBoundary;
 
     // Set Adaptivity
     adaptConfig.maxLevelType_ = false;
     adaptConfig.noPoints_ = 80;
-    adaptConfig.numRefinements_ = 0;
+    adaptConfig.numRefinements_ = 15;
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
@@ -133,7 +133,8 @@ int main(int argc, char **argv) {
 //  learner.optimizeLambdaCV(10, 0.0001, 0.001, 10);
 
 //    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(10, 15, 0.25, 0.125);
-    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(10, 15, 1E-10, 1E-11);
+    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(3, 10, 1E-3, 10.0);
+//    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(3, 0, 1.7425e-05, 10.0);
 
     auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(arffDataset.getDimension()));
 
@@ -168,6 +169,62 @@ int main(int argc, char **argv) {
                 resultFileLinear << eval << std::endl;
             }
             resultFileLinear << std::endl;
+        }
+        resultFileLinear.close();
+    } else if (arffDataset.getDimension() == 3) {
+
+        SGPP::base::OperationEval *linearEval = SGPP::op_factory::createOperationEval(*grid);
+
+#if USE_DOUBLE_PRECISION == 1
+        SGPP::float_t pointIncrement = 0.05;
+#else
+        SGPP::float_t pointIncrement = 0.05f;
+#endif
+        std::ofstream resultFileLinear;
+        resultFileLinear.open("resultFileLinear3d.csv");
+
+        for (SGPP::float_t testX = 0; testX <= 1.0; testX += pointIncrement) {
+            for (SGPP::float_t testY = 0; testY <= 1.0; testY += pointIncrement) {
+                for (SGPP::float_t testZ = 0; testZ <= 1.0; testZ += pointIncrement) {
+//        std::vector<SGPP::float_t> point = { testX, testY };
+                    DataVector point(arffDataset.getDimension());
+                    point[0] = testX;
+                    point[1] = testY;
+                    point[2] = testZ;
+                    for (size_t d = 0; d < arffDataset.getDimension(); d++) {
+                        resultFileLinear << point[d] << ", ";
+                    }
+                    SGPP::float_t eval = linearEval->eval(alpha, point);
+                    SGPP::float_t unscaledValue = eval;
+                    //scale for easier printing
+                    eval = eval + 1.0;
+                    eval *= 255.0;
+                    if (eval < 0.0)
+                        eval = 0.0;
+                    if (eval > 255.0)
+                        eval = 255.0;
+
+                    uint64_t asInteger = static_cast<uint64_t>(eval);
+                    std::stringstream valueStream;
+                    resultFileLinear << "0x";
+                    if (asInteger < 16)
+                        valueStream << "0";
+                    valueStream << std::hex << asInteger << std::dec << "0000";
+//                    std::cout << "valueStream: " << valueStream.str() << std::endl;
+//                    if (valueStream.str().size() != 6) {
+//                        std::cout << "original value: " << unscaledValue << std::endl;
+//                        std::cout << "scaled value: " << eval << std::endl;
+//                    }
+                    resultFileLinear << valueStream.str() << "," << unscaledValue << std::endl;
+//                    resultFileLinear << eval << std::endl;
+//                    if (eval >= 0.0) {
+//                        resultFileLinear << "0x0000FF" << std::endl;
+//                    } else {
+//                        resultFileLinear << "0x000000" << std::endl;
+//                    }
+                }
+            }
+//            resultFileLinear << std::endl;
         }
         resultFileLinear.close();
     }

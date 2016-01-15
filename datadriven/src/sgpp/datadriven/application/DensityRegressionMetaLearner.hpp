@@ -45,8 +45,8 @@ private:
 
     void optimizeLambdaCVGreedy_(size_t kFold, size_t maxLevel, std::vector<base::DataMatrix *> &trainingSets,
             std::vector<base::DataVector *> &trainingSetsValues, std::vector<base::DataMatrix *> &testSets,
-            std::vector<base::DataVector *> &testSetsValues, size_t curLevel, float_t middleLambda, float_t middleMSE,
-            float_t lambdaStepSize, float_t &bestLambda, float_t &bestMSE);
+            std::vector<base::DataVector *> &testSetsValues, size_t curLevel, float_t lambdaStepSize,
+            bool lambdaStepSizeChanged, float_t &bestLambda, float_t &bestMSE);
 
 public:
 

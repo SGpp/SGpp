@@ -20,14 +20,16 @@ for n in range(numElements):
     b = 1.0
     for i in range(dim):
         r = random.random()
-        rang = r/intervalsize
-        irang = int(rang+1.0)
         
-        # calcualte class
-        if (irang % 2) == 0:
-            b *= 1.0
-        else:
-            b *= (-1.0)
+        if i < 2:
+            rang = r/intervalsize
+            irang = int(rang+1.0)
+        
+            # calcualte class
+            if (irang % 2) == 0:
+                b *= 1.0
+            else:
+                b *= (-1.0)
              
         point = point + str(r) + ", "
         
