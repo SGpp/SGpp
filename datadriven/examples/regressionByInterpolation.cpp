@@ -17,11 +17,8 @@
 
 #include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/OperationOcttreeHistogramRegression.hpp>
 
-using namespace SGPP::base;
-using namespace std;
-
 // function to reconstruct
-SGPP::float_t f(std::vector<float_t> point) {
+SGPP::float_t f(std::vector<SGPP::float_t> point) {
     return 16.0 * (point[0] - 1) * point[0] * (point[1] - 1) * point[1];
 }
 
@@ -35,8 +32,8 @@ int main(int argc, char **argv) {
     size_t dim = 2;
     size_t samplePoints = 200;
 
-    DataMatrix dataset(0, dim);
-    DataVector values(samplePoints);
+    SGPP::base::DataMatrix dataset(0, dim);
+    SGPP::base::DataVector values(samplePoints);
 
     std::random_device rd;
     std::mt19937 mt(rd());
@@ -46,7 +43,7 @@ int main(int argc, char **argv) {
     sampleFile.open("sampleFile.csv");
 
     for (size_t sample = 0; sample < samplePoints; sample++) {
-        vector<SGPP::float_t> point(dim);
+        std::vector<SGPP::float_t> point(dim);
         for (size_t d = 0; d < dim; d++) {
             point[d] = dist(mt);
             sampleFile << point[d] << ", ";
@@ -80,7 +77,7 @@ int main(int argc, char **argv) {
 
     for (SGPP::float_t testX = 0; testX <= 1.0; testX += 0.01f) {
         for (SGPP::float_t testY = 0; testY <= 1.0; testY += 0.01f) {
-            vector<SGPP::float_t> point = { testX, testY };
+            std::vector<SGPP::float_t> point = { testX, testY };
             for (size_t d = 0; d < dim; d++) {
                 resultFile << point[d] << ", ";
             }

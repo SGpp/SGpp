@@ -40,7 +40,7 @@ float_t DensityRegressionMetaLearner::optimizeLambdaCVGreedy(size_t kFold, size_
     float_t bestMSE = 0.0;
 
     this->optimizeLambdaCVGreedy_(kFold, maxLevel, trainingSets, trainingSetsValues, testSets, testSetsValues, 0,
-            bestLambda, bestMSE, lambdaStepSize, bestLambda, bestMSE);
+            lambdaStepSize, true, bestLambda, bestMSE);
 
     if (verbose) {
         std::cout << "# -> bestLambda = " << bestLambda << std::endl;
@@ -61,31 +61,39 @@ float_t DensityRegressionMetaLearner::optimizeLambdaCVGreedy(size_t kFold, size_
 void DensityRegressionMetaLearner::optimizeLambdaCVGreedy_(size_t kFold, size_t maxLevel,
         std::vector<base::DataMatrix *> &trainingSets, std::vector<base::DataVector *> &trainingSetsValues,
         std::vector<base::DataMatrix *> &testSets, std::vector<base::DataVector *> &testSetsValues, size_t curLevel,
-        float_t middleLambda, float_t middleMSE, float_t lambdaStepSize, float_t &bestLambda, float_t &bestMSE) {
+        float_t lambdaStepSize, bool lambdaStepSizeChanged, float_t &bestLambda, float_t &bestMSE) {
 
     if (verbose) {
-        std::cout << "entering level=" << curLevel << " with lambda=" << middleLambda << std::endl;
+        std::cout << "entering level=" << curLevel << " with lambda=" << bestLambda << std::endl;
     }
 
-    const float_t LAMBDA_MIN = 1E-18;
+//    const float_t LAMBDA_MIN = 1E-18;
 
-    bestLambda = middleLambda;
-    bestMSE = middleMSE;
+//    bestLambda = middleLambda;
+//    bestMSE = middleMSE;
 
     std::vector<float_t> lambdaValues;
-    if (middleLambda - lambdaStepSize > 0) {
-        lambdaValues.push_back(middleLambda - lambdaStepSize);
-    } else {
-        lambdaValues.push_back(LAMBDA_MIN);
-    }
-    if (middleLambda + lambdaStepSize < 1.0) {
-        lambdaValues.push_back(middleLambda + lambdaStepSize);
-    } else {
-        lambdaValues.push_back(1.0);
+    /*    if (middleLambda - lambdaStepSize > 0) {
+     lambdaValues.push_back(middleLambda - lambdaStepSize);
+     } else {
+     lambdaValues.push_back(LAMBDA_MIN);
+     }
+     if (middleLambda + lambdaStepSize < 1.0) {
+     lambdaValues.push_back(middleLambda + lambdaStepSize);
+     } else {
+     lambdaValues.push_back(1.0);
+     }*/
+    if (curLevel > 0 && lambdaStepSizeChanged) {
+        lambdaValues.push_back(lambdaStepSize * bestLambda);
     }
     if (curLevel == 0) {
-        lambdaValues.push_back(middleLambda);
+        lambdaValues.push_back(bestLambda);
     }
+    if (curLevel > 0) {
+        lambdaValues.push_back(bestLambda / lambdaStepSize);
+    }
+
+    bool lambdaUpdated = false;
 
     bool firstValue = true;
     for (float_t curLambda : lambdaValues) {
@@ -110,20 +118,33 @@ void DensityRegressionMetaLearner::optimizeLambdaCVGreedy_(size_t kFold, size_t 
             bestMSE = curMeanMSE;
             bestLambda = curLambda;
             firstValue = false;
+            lambdaUpdated = true;
             if (verbose) {
                 std::cout << "new best lambda!" << std::endl;
             }
         }
 
         if (verbose) {
-            std::cout << "# lambda: " << curLambda << " bestLambda: " << bestLambda << " lambdaStepSize: "
-                    << lambdaStepSize << " curMeanMSE: " << curMeanMSE << std::endl;
+            std::cout << "# lambda: " << curLambda << " curMeanMSE: " << curMeanMSE << " bestLambda: " << bestLambda
+                    << " bestMSE: " << bestMSE << " lambdaStepSize: " << lambdaStepSize << std::endl;
         }
     }
 
     if (curLevel < maxLevel) {
-        this->optimizeLambdaCVGreedy_(kFold, maxLevel, trainingSets, trainingSetsValues, testSets, testSetsValues,
-                curLevel + 1, bestLambda, bestMSE, lambdaStepSize / 2.0, bestLambda, bestMSE);
+
+        if (!lambdaUpdated) {
+            std::cout << "same lambda encountered" << std::endl;
+            float_t newLambdaStepSize = (lambdaStepSize - 1.0) / 2.0 + 1.0;
+            if (newLambdaStepSize <= 1.0) {
+                std::cout << "minimum lambdaStepSizereached" << std::endl;
+                return;
+            }
+            this->optimizeLambdaCVGreedy_(kFold, maxLevel, trainingSets, trainingSetsValues, testSets, testSetsValues,
+                    curLevel + 1, newLambdaStepSize, true, bestLambda, bestMSE);
+        } else {
+            this->optimizeLambdaCVGreedy_(kFold, maxLevel, trainingSets, trainingSetsValues, testSets, testSetsValues,
+                    curLevel + 1, lambdaStepSize, false, bestLambda, bestMSE);
+        }
     }
 }
 
@@ -300,7 +321,12 @@ base::DataVector DensityRegressionMetaLearner::train(base::Grid &grid, base::Dat
         std::cout << "creating piecewise-constant representation..." << std::endl;
     }
     std::unique_ptr<SGPP::datadriven::HistogramTree::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
-            0.0001, 30);
+            0.0, 30);
+
+    if (verbose) {
+        std::cout << "piecewise-constant representation mse: " << piecewiseRegressor->getMSE() << std::endl;
+    }
+
     if (verbose) {
         std::cout << "piecewise-constant representation created, smoothing..." << std::endl;
     }
