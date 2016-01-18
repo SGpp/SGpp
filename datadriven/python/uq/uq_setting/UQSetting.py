@@ -37,6 +37,11 @@ import remote_worker as remote
 from multiprocessing import cpu_count
 
 
+class UQSampleType:
+    RAW = 1,
+    PREPROCESSED = 2
+
+
 class UQSetting(object):
     """
     UQSetting class
@@ -54,7 +59,7 @@ class UQSetting(object):
         self.__stats_simulation = {}
         self.__stats_postprocessor = {}
 
-        self._verbose = False
+        self._verbose = True
 
         # parallel stuff (taken from mcm/mc_berechnung)
         self.parallelprocesses = sum([props['cores'] for props in remote.hosts.values()])
@@ -316,6 +321,17 @@ class UQSetting(object):
         m = self.createMemento()
         UQSettingFormatter().serializeToFile(m, filename)
 
+    def runSimulations(self):
+        """
+        Run the simulations for all available pre-processor stats
+        """
+        acc = []
+        self.__stats_simulation = {}
+        for i, (_, q) in enumerate(self.__stats_preprocessor.items()):
+            print "run simulation %i/%i" % (i + 1, len(self.__stats_preprocessor.items()))
+            ans = self.__eval(q)
+        return acc
+
     def runPostprocessor(self):
         """
         Run the post-processing for all available simulation results.
@@ -324,7 +340,7 @@ class UQSetting(object):
         self.__stats_postprocessor = {}
         for i, (q, A) in enumerate(self.__stats_simulation.items()):
             print "run postprocessing %i/%i" % (i + 1, len(self.__stats_simulation.items()))
-            ans = self.__postprocessing(A, q)
+            self.__postprocessing(A, q)
             # if len(ans['time']) == 0:
             #     # invalid setting remove it
             #     p = self.__stats_preprocessor_reverse[q]
@@ -340,15 +356,18 @@ class UQSetting(object):
         # been evaluated
         samples.removeSet(self.__stats_samples.values())
         if len(samples) == 0:
-            return
+            return 0
 
         # do the distributed run
+        n = self.getSize("simulation")
         if dist is True:
             self.runSamples_dist(samples)
             self.waitForResults()
             self.loadResults()
         else:
             self.runSamples_withoutDistribution(samples)
+
+        return self.getSize("simulation") - n
 
     def runSamples_dist(self, samples, starti=0, *args, **kws):
         """
@@ -513,8 +532,11 @@ class UQSetting(object):
             if self._verbose:
                 print "-" * 60
                 print "Run: %i/%i (%i)" % (i + 1, len(samples), self.getSize())
+                ret = self.run(sample, *args, **kws)
 
-            self.run(sample, *args, **kws)
+                # check if run was successful
+                if ret == 1:
+                    print "Warning: invalid sample %s" % sample
 
         if self._verbose:
             print "-" * 60
@@ -529,32 +551,36 @@ class UQSetting(object):
         @param p: tuple input parameter in [0, 1]^d
         @return: simulation results
         """
-        n1 = len(self.getSimulationStats())
-
-        # pre processing
-        q = self.__preprocessing(sample, *args, **kws)
-
-        # do simulation run
-        A = self.__eval(q, *args, **kws)
-
-        n2 = len(self.getSimulationStats())
-
-        # serialize the UQSetting to file. As this is the expensive
-        # part, this step is important there is any error in the post
-        # processing part
-        if n2 > n1 and self.getSaveAfterEachRun():
-            self .writeToFile()
-
-        n1 = len(self.getPostprocessorStats())
-
-        self.__postprocessing(A, q, *args, **kws)
-
-        n2 = len(self.getPostprocessorStats())
-        # serialize once more after the post processing has been done
-        if n2 > n1 and self.getSaveAfterEachRun():
-            self.writeToFile()
-
-        return self
+        try:
+            n1 = len(self.getSimulationStats())
+    
+            # pre processing
+            q = self.__preprocessing(sample, *args, **kws)
+    
+            # do simulation run
+            A = self.__eval(q, *args, **kws)
+    
+            n2 = len(self.getSimulationStats())
+    
+            # serialize the UQSetting to file. As this is the expensive
+            # part, this step is important there is any error in the post
+            # processing part
+            if n2 > n1 and self.getSaveAfterEachRun():
+                self .writeToFile()
+    
+            n1 = len(self.getPostprocessorStats())
+    
+            self.__postprocessing(A, q, *args, **kws)
+    
+            n2 = len(self.getPostprocessorStats())
+            # serialize once more after the post processing has been done
+            if n2 > n1 and self.getSaveAfterEachRun():
+                self.writeToFile()
+    
+            return 0
+        except Exception as exception:
+            print str(exception)
+            return 1
 
     def sanityCheck(self):
         """
@@ -661,7 +687,7 @@ class UQSetting(object):
         results = self.__stats_postprocessor[q][qoi]
 
         # assert that both, results and time stamps have the same length
-        if len(results) != len(stats_ts):
+        if len(results) != len(stats_ts) and len(results) != len(ts):
             raise AttributeError('number of simulation runs (%i) differ from \
                                   number of time steps (%i) for %s' %
                                   (len(results), len(stats_ts), q))
@@ -676,7 +702,8 @@ class UQSetting(object):
         # sort it to search it faster
         stats_ixs = np.argsort(stats_ts)
         stats_ts = [stats_ts[ix] for ix in stats_ixs]
-        results = [results[ix] for ix in stats_ixs]
+        if len(results) == len(stats_ts):
+            results = [results[ix] for ix in stats_ixs]
 
         # split ts in inter/extrapolating time steps
         inter_ixs = [i for i, t in enumerate(ts)
@@ -733,7 +760,8 @@ class UQSetting(object):
                 return True
         return False
 
-    def getTimeDependentResults(self, ts, qoi='_', ps=None):
+    def getTimeDependentResults(self, ts, qoi='_', ps=None,
+                                sampleType=UQSampleType.RAW):
         """
         Collects the simulation results for the given time steps and a certain
         quantity of interest. If just a selection of parameters is needed, one
@@ -742,6 +770,7 @@ class UQSetting(object):
         @param ps: Samples, selection of parameters
         @param qoi: quantity of interest
         @param ps: list of samples to be loaded
+
         @return: dictionary {<time step>: {<Sample>: value}}
         """
         if qoi not in self.getAvailableQoI():
@@ -770,12 +799,26 @@ class UQSetting(object):
             B[t] = {}
 
         # run over all parameters
-        for p in ps:
+        for k, p in enumerate(ps):
+            if self._verbose:
+                print " %i/%i\r" % (k + 1, len(ps)),
+
             res = self.getResult(p, ts, qoi)
+            
+            # select the key
+            if sampleType == UQSampleType.PREPROCESSED:
+                key = self.__stats_preprocessor[tuple(p.getExpandedUnit())]
+            else:
+                # sampleType == UQSampleType.RAW
+                key = p
+            
             if res is not None:
                 # run over all time steps
                 for i, t in enumerate(ts):
-                    B[t][p] = res[i]
+                    B[t][key] = res[i]
+
+        if self._verbose:
+            print
 
         return B
 
@@ -969,11 +1012,17 @@ class UQSetting(object):
         """
         return self._verbose
 
-    def getSize(self):
+    def getSize(self, item="postprocessor"):
         """
+        @oaram item: string identifying the stage
         @return: int number of simulation results
         """
-        return len(self.__stats_postprocessor)
+        if item == "preprocessor":
+            return len(self.__stats_preprocessor)
+        elif item == "simulation":
+            return len(self.__stats_simulation)
+        elif item == "postprocessor":
+            return len(self.__stats_postprocessor)
 
     def mergeStats(self, newSetting):
         """
@@ -1380,26 +1429,39 @@ class UQSetting(object):
         return "{" + s + "}"
 
     def toDataMatrix(self, ts=[0], qoi='_',
-                     dtype=SampleType.ACTIVEUNIT):
+                     dtype=SampleType.ACTIVEUNIT,
+                     sampleType=UQSampleType.RAW,
+                     *args, **kws):
         """
         Write simulation results to file
         @param ts: numeric time steps
         @param qoi: string quantity of interest
         """
         ans = {}
-        res = self.getTimeDependentResults(ts, qoi)
+        res = self.getTimeDependentResults(ts, qoi,
+                                           sampleType=sampleType,
+                                           *args, **kws)
         for t, values in res.items():
             # if no number is specified here, just write all there is to file
             n = len(values)
             if n > 0:
-                dim = values.iterkeys().next().getDim(dtype)
+                if sampleType == UQSampleType.RAW:
+                    dim = values.iterkeys().next().getDim(dtype)
+                else:
+                    dim = len(values.iterkeys().next())
+
                 data = DataMatrix(n, dim + 1)
                 p = DataVector(dim + 1)
 
                 # collect results
                 for i, (key, res) in enumerate(values.items()):
-                    for j, key_value in enumerate(key.getValue(dtype)):
-                        p[j] = float(key_value)
+                    if sampleType == UQSampleType.RAW:
+                        key_value = key.getValue(dtype)
+                    else:
+                        key_value = key
+
+                    for j, key_value_j in enumerate(key_value):
+                        p[j] = float(key_value_j)
                     p[dim] = res
                     data.setRow(i, p)
                 ans[t] = data
@@ -1408,9 +1470,19 @@ class UQSetting(object):
     def __str__(self):
         return self.toJson()
 
+    def defineSamples(self, params):
+        """
+        add samples object to the UQ setting if they are missing
+        """
+        for i, (p, _) in enumerate(self.__stats_preprocessor.items()):
+            self.__stats_samples[p] = Sample(params, p, dtype=SampleType.EXPANDEDUNIT)
+
     def convert(self, params):
         # convert to new UQSetting
         # -> one needs to set the __stats_samples parameter
+        if self.getSize("samples") < self.getSize("preprocessor"):
+            self.defineSamples(params)
+
         for i, sample in enumerate(self.__stats_samples.values()):
             if params.getStochasticDim() != len(sample.getActiveUnit()):
                 if i == 0:
