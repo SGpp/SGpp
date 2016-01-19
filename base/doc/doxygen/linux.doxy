@@ -87,6 +87,13 @@ scons -j <number of cores>
 @endverbatim
 in the main folder. For configuration and optimization, see below.
 
+If SCons does not seem to find external dependencies
+even if they are installed,
+you might want to clear the SCons cache before trying again:
+@verbatim
+rm -r .sconf_temp .sconsign.dblite
+@endverbatim
+
 To obtain help on parameters for compilation, type
 @verbatim
 scons --help

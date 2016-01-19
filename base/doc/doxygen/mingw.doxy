@@ -159,6 +159,10 @@ b2 --with-test ^
    2. Run the installer.
    3. Prepend <tt>C:\\PATH_TO_JDK\\bin</tt> to the <tt>PATH</tt>
       environment variable.
+   4. If SCons does not seem to find the JDK in the right place,
+      try checking the <tt>JAVA_HOME</tt> environment variable
+      (either set it to the right path, e.g., <tt>C:\\PATH_TO_JDK</tt>
+      without <tt>bin</tt>, or unset it completely).
 9. Doxygen:
    1. Download <tt>doxygen-1.8.10-setup.exe</tt> or similar from the
       <a href="http://www.doxygen.org/" target="_blank">Doxygen page</a>.
