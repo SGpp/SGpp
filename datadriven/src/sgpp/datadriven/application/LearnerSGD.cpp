@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include "LearnerSGD.hpp"
+#include <sgpp/datadriven/application/LearnerSGD.hpp>
 #include <cmath>
 
 

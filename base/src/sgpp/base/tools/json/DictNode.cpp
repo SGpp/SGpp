@@ -5,14 +5,14 @@
  *      Author: pfandedd
  */
 
-#include "DictNode.hpp"
+#include <sgpp/base/tools/json/DictNode.hpp>
 
 #include <fstream>
 
-#include "IDNode.hpp"
-#include "json_exception.hpp"
-#include "ListNode.hpp"
-#include "TextNode.hpp"
+#include <sgpp/base/tools/json/IDNode.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
+#include <sgpp/base/tools/json/ListNode.hpp>
+#include <sgpp/base/tools/json/TextNode.hpp>
 
 namespace json {
 

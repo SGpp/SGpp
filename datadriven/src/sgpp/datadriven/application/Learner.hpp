@@ -7,7 +7,7 @@
 #define LEARNER_HPP
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
-#include "sgpp/pde/application/RegularizationConfiguration.hpp"
+#include <sgpp/pde/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "DatasetGenerator.hpp"
+#include <sgpp/datadriven/tools/DatasetGenerator.hpp>
 #include <cstdlib>
 #include <cmath>
 

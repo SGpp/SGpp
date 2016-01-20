@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OCLLaplaceInner.hpp"
+#include <sgpp/parallel/pde/basis/common/OCLLaplaceInner.hpp>
 
 using namespace SGPP::base;
 

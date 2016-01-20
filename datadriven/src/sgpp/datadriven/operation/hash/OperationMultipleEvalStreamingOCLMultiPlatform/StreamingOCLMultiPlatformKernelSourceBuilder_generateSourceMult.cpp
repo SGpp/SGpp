@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "StreamingOCLMultiPlatformKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/StreamingOCLMultiPlatformKernelSourceBuilder.hpp>
 
 #include <fstream>
 #include <sstream>

@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
-#include "../OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelImpl.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelImpl.hpp>
 
 namespace SGPP {
 namespace datadriven {

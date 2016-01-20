@@ -19,7 +19,7 @@
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 #include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
-#include "AdaptiveOCLKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLKernelSourceBuilder.hpp>
 
 namespace SGPP {
 namespace datadriven {

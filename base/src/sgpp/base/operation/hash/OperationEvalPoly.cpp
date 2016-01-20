@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationEvalPoly.hpp"
+#include <sgpp/base/operation/hash/OperationEvalPoly.hpp>
 
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>

@@ -14,7 +14,7 @@
 #include <deque>
 #include <algorithm>
 
-#include "BatchLearner.hpp"
+#include <sgpp/datadriven/application/BatchLearner.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>

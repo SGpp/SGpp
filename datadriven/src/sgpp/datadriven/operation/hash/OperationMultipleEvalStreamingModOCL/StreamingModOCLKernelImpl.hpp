@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "../OperationMultipleEvalStreamingModOCL/StreamingModOCLKernelImpl.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLKernelImpl.hpp>
 
 #include <CL/cl.h>
 
@@ -17,7 +17,7 @@
 #include <sgpp/base/opencl/OCLClonedBuffer.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
-#include "StreamingModOCLKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLKernelSourceBuilder.hpp>
 
 namespace SGPP {
 namespace datadriven {

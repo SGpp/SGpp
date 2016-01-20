@@ -6,7 +6,7 @@
 #ifndef OPERATORFG_HPP_
 #define OPERATORFG_HPP_
 
-#include "combigrid.hpp"
+#include <combigrid.hpp>
 #include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
 

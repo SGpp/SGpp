@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "OCLOperationConfiguration.hpp"
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
 namespace base {

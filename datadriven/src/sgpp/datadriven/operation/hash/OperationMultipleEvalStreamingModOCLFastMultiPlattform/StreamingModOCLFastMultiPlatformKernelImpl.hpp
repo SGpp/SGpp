@@ -17,7 +17,7 @@
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp>
 
-#include "StreamingModOCLFastMultiPlatformKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformKernelSourceBuilder.hpp>
 
 namespace SGPP {
 namespace datadriven {

@@ -6,7 +6,7 @@
 #ifndef TESTPOISSONPROBLEM_HPP_
 #define TESTPOISSONPROBLEM_HPP_
 
-#include "combigrid.hpp"
+#include <combigrid.hpp>
 #include <sgpp/combigrid/multigridFG/utils/RunPoisson.hpp>
 
 namespace combigrid {

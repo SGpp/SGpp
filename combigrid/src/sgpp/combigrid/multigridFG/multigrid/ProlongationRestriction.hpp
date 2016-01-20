@@ -6,7 +6,7 @@
 #ifndef PROLONGATIONRESTRICTION_HPP_
 #define PROLONGATIONRESTRICTION_HPP_
 
-#include "combigrid.hpp"
+#include <combigrid.hpp>
 #include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
 
 namespace combigrid {

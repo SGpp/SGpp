@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "LearnerDensityRegression.hpp"
+#include <sgpp/datadriven/application/LearnerDensityRegression.hpp>
 
 #include <stddef.h>
 #include <algorithm>

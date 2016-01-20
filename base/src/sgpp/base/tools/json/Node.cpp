@@ -5,9 +5,9 @@
  *      Author: pfandedd
  */
 
-#include "Node.hpp"
+#include <sgpp/base/tools/json/Node.hpp>
 
-#include "json_exception.hpp"
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 namespace json {
 

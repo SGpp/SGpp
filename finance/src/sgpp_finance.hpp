@@ -7,17 +7,17 @@
 #define FINANCE_HPP
 
 
-#include "sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp"
-#include "sgpp/finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp"
-#include "sgpp/finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp"
-#include "sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp"
-#include "sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp"
-#include "sgpp/finance/application/BlackScholesSolver.hpp"
-#include "sgpp/finance/application/BlackScholesSolverWithStretching.hpp"
-#include "sgpp/finance/application/HestonSolver.hpp"
-#include "sgpp/finance/application/HullWhiteSolver.hpp"
-#include "sgpp/finance/application/BlackScholesHullWhiteSolver.hpp"
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp>
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmer.hpp>
+#include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP.hpp>
+#include <sgpp/finance/application/BlackScholesSolver.hpp>
+#include <sgpp/finance/application/BlackScholesSolverWithStretching.hpp>
+#include <sgpp/finance/application/HestonSolver.hpp>
+#include <sgpp/finance/application/HullWhiteSolver.hpp>
+#include <sgpp/finance/application/BlackScholesHullWhiteSolver.hpp>
 
-#include "sgpp/finance/operation/FinanceOpFactory.hpp"
+#include <sgpp/finance/operation/FinanceOpFactory.hpp>
 
 #endif /* FINANCE_HPP */

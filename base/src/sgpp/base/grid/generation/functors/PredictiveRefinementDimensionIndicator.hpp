@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
-#include "RefinementFunctor.hpp"
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>

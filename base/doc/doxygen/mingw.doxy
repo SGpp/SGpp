@@ -158,15 +158,11 @@ b2 --with-test ^
    2. Run the installer.
    3. Prepend <tt>C:\\PATH_TO_JDK\\bin</tt> to the <tt>PATH</tt>
       environment variable.
-<<<<<<< .mine
-10. Doxygen:
-=======
    4. If SCons does not seem to find the JDK in the right place,
       try checking the <tt>JAVA_HOME</tt> environment variable
       (either set it to the right path, e.g., <tt>C:\\PATH_TO_JDK</tt>
       without <tt>bin</tt>, or unset it completely).
-9. Doxygen:
->>>>>>> .r5417
+10. Doxygen:
    1. Download <tt>doxygen-1.8.10-setup.exe</tt> or similar from the
       <a href="http://www.doxygen.org/" target="_blank">Doxygen page</a>.
    2. Run the installer.
@@ -371,9 +367,15 @@ use SG++ within MATLAB.
 set
   @endverbatim
   to display the values of all environment variables.
-- if you get an error of this type during compilation
+- If you get an error of this type during compilation
   @verbatim
 OperationMultipleEvalSubspaceCombined.hpp:82:121: fatal error: ../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined_calculateIndexCombined.hpp: No such file or directory
   @endverbatim
-  then a developer didn't read the developer How-Tos and did not know that relative include paths are not supported under Windows using MinGW. To solve this issue you either find out who it was and burn his house down or fix it by yourself. If you are using an official release of SG++ call our quality management team. Thanks. 
+  then a developer didn't read the @ref development_coding "developer How-Tos"
+  and did not know that relative include paths are not supported under Windows
+  using MinGW.
+  To solve this issue you either find out who it was and burn his house down
+  or fix it by yourself (preferable).
+  If you are using an official release of SG++, please report the bug to
+  the developers. Thanks!
 */

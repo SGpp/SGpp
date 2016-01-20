@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "Node.hpp"
+#include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/Node.hpp>
 
 namespace SGPP {
 namespace datadriven {

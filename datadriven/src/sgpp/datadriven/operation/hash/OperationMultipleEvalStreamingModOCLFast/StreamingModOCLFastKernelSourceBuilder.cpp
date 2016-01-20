@@ -10,7 +10,7 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-#include "StreamingModOCLFastKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastKernelSourceBuilder.hpp>
 
 namespace SGPP {
 namespace datadriven {

@@ -5,14 +5,14 @@
  *      Author: pfandedd
  */
 
-#include "StreamingOCLKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLKernelSourceBuilder.hpp>
 
 #include <fstream>
 #include <sstream>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-//#include "StreamingOCLParameters.hpp"
+//#include <StreamingOCLParameters.hpp>
 
 namespace SGPP {
 namespace datadriven {

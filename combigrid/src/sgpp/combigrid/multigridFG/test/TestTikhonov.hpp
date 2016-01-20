@@ -6,7 +6,7 @@
 #ifndef TESTTIKHONOVPROBLEM_HPP_
 #define TESTTIKHONOVPROBLEM_HPP_
 
-#include "combigrid.hpp"
+#include <combigrid.hpp>
 #include <sgpp/combigrid/multigridFG/utils/RunTikhonov.hpp>
 #include <sgpp/combigrid/plotter/GridPlotter.hpp>
 

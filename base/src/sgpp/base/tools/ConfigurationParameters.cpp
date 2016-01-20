@@ -10,7 +10,7 @@
 #include <sstream>
 #include <memory>
 
-#include "ConfigurationParameters.hpp"
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
