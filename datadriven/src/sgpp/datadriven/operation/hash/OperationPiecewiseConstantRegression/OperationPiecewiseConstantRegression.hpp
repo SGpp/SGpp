@@ -12,24 +12,23 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/Node.hpp>
+#include "Node.hpp"
 
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace datadriven {
 
-class OperationOcttreeHistogramRegression {
+class OperationPiecewiseConstantRegression {
     base::DataMatrix &dataset;
     base::DataVector &values;
     size_t dims;
 public:
-    OperationOcttreeHistogramRegression(base::DataMatrix& dataset, base::DataVector &values) :
+    OperationPiecewiseConstantRegression(base::DataMatrix& dataset, base::DataVector &values) :
             dataset(dataset), values(values), dims(dataset.getNcols()) {
-
     }
 
-    std::unique_ptr<HistogramTree::Node> hierarchize(float_t targetMSE, size_t targetMaxLevel) {
+    std::unique_ptr<PiecewiseConstantRegression::Node> hierarchize(float_t targetMSE, size_t targetMaxLevel) {
 
         std::vector<float_t> xRoot(dims);
         for (size_t d = 0; d < dims; d++) {
@@ -46,7 +45,8 @@ public:
             rootSupport[i] = i;
         }
 
-        std::unique_ptr<HistogramTree::Node> root = std::make_unique<HistogramTree::Node>(xRoot, hRoot, rootSupport, dataset, values);
+        std::unique_ptr<PiecewiseConstantRegression::Node> root = std::make_unique<PiecewiseConstantRegression::Node>(xRoot, hRoot, rootSupport,
+                dataset, values);
 
         root->hierarchize(targetMSE, targetMaxLevel);
 
@@ -55,7 +55,6 @@ public:
 
         return std::move(root);
     }
-
 };
 
 }

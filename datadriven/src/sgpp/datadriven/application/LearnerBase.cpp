@@ -430,11 +430,18 @@ namespace SGPP {
       return this->ExecTimeOnStep;
     }
 
-    SGPP::base::Grid &LearnerBase::getGrid() {
+    std::shared_ptr<base::Grid> LearnerBase::getGridCopy() {
         if (this->grid_ == nullptr) {
             throw;
         }
-        return *this->grid_;
+        return std::shared_ptr<base::Grid>(base::Grid::unserialize(this->grid_->serialize()));
+    }
+
+    std::shared_ptr<base::DataVector> LearnerBase::getAlphaCopy() {
+        if (this->alpha_ == nullptr) {
+            throw;
+        }
+        return std::shared_ptr<base::DataVector>(new base::DataVector(*this->alpha_));
     }
 
   }

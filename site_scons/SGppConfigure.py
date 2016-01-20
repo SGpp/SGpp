@@ -175,7 +175,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # TODO check
     if env['PLATFORM'] not in ['cygwin', 'win32']:
         if env['OPT'] == True:
-           env.Append(CPPFLAGS=['-O3'])
+           env.Append(CPPFLAGS=['-O3', '-g'])
         else:
            env.Append(CPPFLAGS=['-g', '-O0'])
 

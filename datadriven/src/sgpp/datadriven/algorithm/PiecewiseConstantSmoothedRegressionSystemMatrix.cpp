@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/algorithm/DensityRegressionSystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/PiecewiseConstantSmoothedRegressionSystemMatrix.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
@@ -18,7 +18,7 @@
 namespace SGPP {
 namespace datadriven {
 
-DensityRegressionSystemMatrix::DensityRegressionSystemMatrix(SGPP::datadriven::HistogramTree::Node &piecewiseRegressor,
+PiecewiseConstantSmoothedRegressionSystemMatrix::PiecewiseConstantSmoothedRegressionSystemMatrix(SGPP::datadriven::PiecewiseConstantRegression::Node &piecewiseRegressor,
 SGPP::base::Grid& grid, SGPP::base::OperationMatrix& C, float_t lambdaRegression) :
         piecewiseRegressor(piecewiseRegressor), grid(grid) {
     this->lambda = lambdaRegression;
@@ -28,7 +28,7 @@ SGPP::base::Grid& grid, SGPP::base::OperationMatrix& C, float_t lambdaRegression
     this->C = &C;
 }
 
-void DensityRegressionSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void PiecewiseConstantSmoothedRegressionSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
     result.setAll(0.0);
 
     // A * alpha
@@ -43,22 +43,25 @@ void DensityRegressionSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::ba
 }
 
 // Matrix-Multiplikation verwenden
-void DensityRegressionSystemMatrix::generateb(SGPP::base::DataVector& rhs) {
+void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(SGPP::base::DataVector& rhs) {
 
 //store result in rhs!
     SGPP::base::GridStorage *storage = grid.getStorage();
     uint64_t totalIntegratedNodes = 0;
+#pragma omp parallel for
     for (size_t gridIndex = 0; gridIndex < storage->size(); gridIndex++) {
         SGPP::base::GridIndex *gridPoint = storage->get(gridIndex);
-        rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint);
-        totalIntegratedNodes += piecewiseRegressor.integratedNodes;
+        size_t integratedNodes;
+        rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint, integratedNodes);
+#pragma omp atomic
+        totalIntegratedNodes += integratedNodes;
     }
     std::cout << "totalIntegratedNodes: " << totalIntegratedNodes << std::endl;
     std::cout << "integrated nodes per grid point: "
             << (static_cast<float_t>(totalIntegratedNodes) / static_cast<float_t>(storage->size())) << std::endl;
 }
 
-DensityRegressionSystemMatrix::~DensityRegressionSystemMatrix() {
+PiecewiseConstantSmoothedRegressionSystemMatrix::~PiecewiseConstantSmoothedRegressionSystemMatrix() {
     delete this->A;
 }
 

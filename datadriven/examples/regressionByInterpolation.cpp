@@ -15,7 +15,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/OperationOcttreeHistogramRegression.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/OperationPiecewiseConstantRegression.hpp>
 
 // function to reconstruct
 SGPP::float_t f(std::vector<SGPP::float_t> point) {
@@ -54,9 +54,9 @@ int main(int argc, char **argv) {
     }
     sampleFile.close();
 
-    SGPP::datadriven::OperationOcttreeHistogramRegression piecewiseRegressor(dataset, values);
+    SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressor(dataset, values);
 
-    std::unique_ptr<SGPP::datadriven::HistogramTree::Node> node = piecewiseRegressor.hierarchize(0.001, 10);
+    std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> node = piecewiseRegressor.hierarchize(0.001, 10);
 
 //    std::ofstream resultFile;
 //    resultFile.open("resultFile.csv");
