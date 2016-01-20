@@ -5,6 +5,8 @@
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 
+#include "OperationMultipleEvalSubspaceCombined.hpp"
+
 using namespace SGPP::base;
 
 #include <sgpp/globaldef.hpp>

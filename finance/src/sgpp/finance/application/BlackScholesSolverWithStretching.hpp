@@ -12,7 +12,7 @@
 #include <sgpp/base/tools/GridPrinterForStretching.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include <../../base/src/sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 
 
 namespace SGPP {
