@@ -9,7 +9,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "DensityRegressionMetaLearner.hpp"
+#include <sgpp/datadriven/application/DensityRegressionMetaLearner.hpp>
 
 #include <sgpp/datadriven/application/LearnerDensityRegression.hpp>
 #include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/OperationOcttreeHistogramRegression.hpp>

@@ -11,7 +11,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include "OperationMultiEvalStreamingModOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCL/OperationMultiEvalStreamingModOCL.hpp>
 
 namespace SGPP {
 namespace datadriven {

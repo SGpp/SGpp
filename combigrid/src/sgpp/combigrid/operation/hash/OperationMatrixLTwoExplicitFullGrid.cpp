@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationMatrixLTwoExplicitFullGrid.hpp"
+#include <sgpp/combigrid/operation/hash/OperationMatrixLTwoExplicitFullGrid.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <vector>
 #include <cmath>

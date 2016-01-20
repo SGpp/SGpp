@@ -11,7 +11,7 @@
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "BoundaryGridGenerator.hpp"
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
 namespace SGPP {

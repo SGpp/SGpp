@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "HierarchisationPoly.hpp"
+#include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPoly.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 

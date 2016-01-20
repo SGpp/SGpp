@@ -5,7 +5,7 @@
 
 #include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 
-#include "../algorithm/SystemMatrixLeastSquaresIdentity.hpp"
+#include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
 //#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>

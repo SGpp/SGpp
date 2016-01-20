@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombiTanStretching.hpp"
+#include <sgpp/combigrid/domain/CombiTanStretching.hpp>
 #include <cmath>
 
 using namespace std;

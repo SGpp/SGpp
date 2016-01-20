@@ -15,7 +15,7 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #ifdef _OPENMP
-#include "omp.h"
+#include <omp.h>
 #endif
 
 #include <sgpp/globaldef.hpp>

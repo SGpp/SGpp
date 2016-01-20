@@ -6,7 +6,7 @@
 #ifndef OPERATIONQUADRATUREPOLYBOUNDARY_HPP
 #define OPERATIONQUADRATUREPOLYBOUNDARY_HPP
 
-#include "OperationQuadrature.hpp"
+#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 

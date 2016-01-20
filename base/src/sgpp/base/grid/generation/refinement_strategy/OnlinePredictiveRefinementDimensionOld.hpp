@@ -6,7 +6,7 @@
 #ifndef ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_
 #define ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_
 
-#include "RefinementDecorator.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 #include <vector>

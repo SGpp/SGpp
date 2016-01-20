@@ -8,7 +8,7 @@
 #ifndef OPERATIONNAIVEEVALPOLYBOUNDARY_HPP_
 #define OPERATIONNAIVEEVALPOLYBOUNDARY_HPP_
 
-#include "OperationNaiveEval.hpp"
+#include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>

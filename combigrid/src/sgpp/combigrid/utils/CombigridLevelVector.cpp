@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombigridLevelVector.hpp"
+#include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
 
 
 namespace combigrid {

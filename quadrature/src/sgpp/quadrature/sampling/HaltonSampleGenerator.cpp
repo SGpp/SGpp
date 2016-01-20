@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "HaltonSampleGenerator.hpp"
+#include <sgpp/quadrature/sampling/HaltonSampleGenerator.hpp>
 
 #include <random>
 #include <sgpp/globaldef.hpp>

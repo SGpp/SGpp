@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "OperationConfiguration.hpp"
+#include <sgpp/base/tools/OperationConfiguration.hpp>
 
 namespace SGPP {
 namespace base {

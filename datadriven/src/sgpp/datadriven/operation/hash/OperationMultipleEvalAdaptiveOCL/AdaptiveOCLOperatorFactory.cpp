@@ -9,7 +9,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include "OperationMultiEvalAdaptiveOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalAdaptiveOCL/OperationMultiEvalAdaptiveOCL.hpp>
 
 namespace SGPP {
 namespace datadriven {

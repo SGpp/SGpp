@@ -10,7 +10,7 @@
 #include <sgpp/globaldef.hpp>
 #include <random>
 
-#include "SampleGenerator.hpp"
+#include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
 namespace SGPP {
   namespace quadrature {

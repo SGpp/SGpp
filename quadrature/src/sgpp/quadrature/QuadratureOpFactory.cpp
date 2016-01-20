@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "QuadratureOpFactory.hpp"
+#include <sgpp/quadrature/QuadratureOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 #include <random>
 

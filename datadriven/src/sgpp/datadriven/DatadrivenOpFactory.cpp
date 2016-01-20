@@ -49,12 +49,12 @@
 #ifdef USE_OCL
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLOperatorFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/StreamingOCLMultiPlatformOperatorFactory.hpp>
-#include "operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp>
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>

@@ -11,7 +11,7 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-//#include "AdaptiveOCLParameters.hpp"
+//#include <AdaptiveOCLParameters.hpp>
 
 namespace SGPP {
 namespace datadriven {

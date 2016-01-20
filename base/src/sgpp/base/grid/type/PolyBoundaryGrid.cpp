@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include "PolyBoundaryGrid.hpp"
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 

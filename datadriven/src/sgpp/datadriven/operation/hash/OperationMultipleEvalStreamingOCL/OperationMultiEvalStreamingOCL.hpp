@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
-#include "StreamingOCLKernelImpl.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLKernelImpl.hpp>
 
 namespace SGPP {
 namespace datadriven {

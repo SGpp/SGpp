@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "Token.hpp"
+#include <sgpp/base/tools/json/Token.hpp>
 
 namespace json {
 

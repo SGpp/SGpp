@@ -8,8 +8,8 @@
 #include <fstream>
 #include <sstream>
 
-#include "JSON.hpp"
-#include "json_exception.hpp"
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 namespace json {
 

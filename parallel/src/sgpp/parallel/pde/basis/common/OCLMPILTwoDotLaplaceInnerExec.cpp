@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OCLLTwoDotLaplaceInner.hpp"
+#include <sgpp/parallel/pde/basis/common/OCLLTwoDotLaplaceInner.hpp>
 
 #include <sgpp/globaldef.hpp>
 

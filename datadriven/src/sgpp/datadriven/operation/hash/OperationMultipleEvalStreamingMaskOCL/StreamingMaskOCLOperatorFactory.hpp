@@ -8,7 +8,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/opencl/OpenCLConfigurationParameters.hpp>
-#include "OperationMultiEvalStreamingMaskOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingMaskOCL/OperationMultiEvalStreamingMaskOCL.hpp>
 
 #include <sgpp/globaldef.hpp>
 
