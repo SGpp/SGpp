@@ -62,10 +62,13 @@ public:
     /**
      * Does the learning step on a given grid, training set and regularization parameter lambda
      *
-     * @param grid grid
      * @param train sample set
      * @param trainValues training values
      * @param lambdaReg regularization parameter
+     * @param fastApproximationMSE mse for stopping piecewise constant approximation tree creation
+     * @param fastApproximationMSE maximum level for stopping piecewise constant approximation tree creation
+     * @param grid grid
+     * @param grid grid coefficients
      */
     void train(base::DataMatrix &train, base::DataVector &trainValues, float_t lambda, float_t fastApproximationMSE,
             size_t fastApproximationMaxLevel, std::shared_ptr<base::Grid> &grid,
