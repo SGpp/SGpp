@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerDensityRegression.hpp>
+#include "LearnerPiecewiseConstantSmoothedRegression.hpp"
 
 #include <stddef.h>
 #include <algorithm>
@@ -24,7 +24,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/datadriven/algorithm/DensityRegressionSystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/PiecewiseConstantSmoothedRegressionSystemMatrix.hpp>
 
 using namespace std;
 using namespace SGPP::base;
@@ -32,7 +32,7 @@ using namespace SGPP::base;
 namespace SGPP {
 namespace datadriven {
 
-LearnerDensityRegression::LearnerDensityRegression(SGPP::base::RegularGridConfiguration& gridConfig,
+LearnerPiecewiseConstantSmoothedRegression::LearnerPiecewiseConstantSmoothedRegression(SGPP::base::RegularGridConfiguration& gridConfig,
 SGPP::base::AdpativityConfiguration& adaptivityConfig,
 SGPP::solver::SLESolverConfiguration& solverConfig,
 SGPP::pde::RegularizationConfiguration& regularizationConfig, bool verbose) :
@@ -42,7 +42,7 @@ SGPP::pde::RegularizationConfiguration& regularizationConfig, bool verbose) :
 
 // ---------------------------------------------------------------------------
 
-void LearnerDensityRegression::train(SGPP::datadriven::HistogramTree::Node &piecewiseRegressor, Grid& grid,
+void LearnerPiecewiseConstantSmoothedRegression::train(SGPP::datadriven::PiecewiseConstantRegression::Node &piecewiseRegressor, Grid& grid,
         DataVector& alpha, float_t lambda) {
     size_t dim = grid.getStorage()->dim();
 
@@ -59,7 +59,10 @@ void LearnerDensityRegression::train(SGPP::datadriven::HistogramTree::Node &piec
     for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
         OperationMatrix* C = computeRegularizationMatrix(grid);
 
-        SGPP::datadriven::DensityRegressionSystemMatrix SMatrix(piecewiseRegressor, grid, *C, lambda);
+        SGPP::datadriven::PiecewiseConstantSmoothedRegressionSystemMatrix SMatrix(piecewiseRegressor, grid, *C, lambda);
+        if (verbose) {
+            cout << "# integrating rhs" << std::endl;
+        }
         SMatrix.generateb(rhs);
 
         if (verbose) {
@@ -71,7 +74,7 @@ void LearnerDensityRegression::train(SGPP::datadriven::HistogramTree::Node &piec
 
         if (ref < adaptivityConfig.numRefinements_) {
             if (verbose) {
-                cout << "# LearnerDensityRegression: Refine grid ... ";
+                cout << "# LearnerDensityRegression: Refine grid ... " << std::endl;
             }
 
             //Weight surplus with function evaluation at grid points
@@ -109,7 +112,7 @@ void LearnerDensityRegression::train(SGPP::datadriven::HistogramTree::Node &piec
     return;
 }
 
-OperationMatrix* LearnerDensityRegression::computeRegularizationMatrix(
+OperationMatrix* LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
 SGPP::base::Grid& grid) {
     OperationMatrix* C = NULL;
 

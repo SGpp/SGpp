@@ -17,8 +17,8 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <sgpp/datadriven/application/LearnerDensityRegression.hpp>
-#include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/OperationOcttreeHistogramRegression.hpp>
+#include <sgpp/datadriven/application/LearnerPiecewiseConstantSmoothedRegression.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/OperationPiecewiseConstantRegression.hpp>
 
 using namespace SGPP::base;
 
@@ -85,9 +85,9 @@ int main(int argc, char **argv) {
   }
   sampleFile.close();
 
-  SGPP::datadriven::OperationOcttreeHistogramRegression piecewiseRegressorOperator(dataset, values);
+  SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressorOperator(dataset, values);
 
-  std::unique_ptr<SGPP::datadriven::HistogramTree::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
+  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
       0.0001, 30);
 
 //    std::ofstream resultFile;
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
 
   bool verbose = true;
 
-  SGPP::datadriven::LearnerDensityRegression learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
+  SGPP::datadriven::LearnerPiecewiseConstantSmoothedRegression learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
       verbose);
 
   DataVector alpha(grid->getSize());

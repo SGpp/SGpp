@@ -10,7 +10,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/Node.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -22,9 +22,9 @@ namespace datadriven {
  * application of classification for the Systemmatrix by using a
  * density function
  */
-class DensityRegressionSystemMatrix: public SGPP::base::OperationMatrix {
+class PiecewiseConstantSmoothedRegressionSystemMatrix: public SGPP::base::OperationMatrix {
 private:
-    SGPP::datadriven::HistogramTree::Node &piecewiseRegressor;SGPP::base::Grid &grid;
+    SGPP::datadriven::PiecewiseConstantRegression::Node &piecewiseRegressor;SGPP::base::Grid &grid;
     /// the lambda, the regularisation parameter
     float_t lambda;
     /// Operation A for calculating the data matrix
@@ -44,7 +44,7 @@ public:
      * @param C the regression functional
      * @param lambdaRegression the regression parameter
      */
-    DensityRegressionSystemMatrix(SGPP::datadriven::HistogramTree::Node &piecewiseRegressor, SGPP::base::Grid& grid,
+    PiecewiseConstantSmoothedRegressionSystemMatrix(SGPP::datadriven::PiecewiseConstantRegression::Node &piecewiseRegressor, SGPP::base::Grid& grid,
     SGPP::base::OperationMatrix& C, float_t lambdaRegression);
 
     /**
@@ -66,7 +66,7 @@ public:
     /**
      * Std-Destructor
      */
-    virtual ~DensityRegressionSystemMatrix();
+    virtual ~PiecewiseConstantSmoothedRegressionSystemMatrix();
 };
 
 }

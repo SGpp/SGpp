@@ -13,7 +13,7 @@
 
 namespace SGPP {
 namespace datadriven {
-namespace HistogramTree {
+namespace PiecewiseConstantRegression {
 
 class Node {
 private:
@@ -68,7 +68,7 @@ public:
 
     float_t evaluate(std::vector<float_t> &point);
 
-    float_t integrate(SGPP::base::GridIndex &gridPoint, size_t levelLimit = 0);
+    float_t integrate(SGPP::base::GridIndex &gridPoint, size_t &integratedNodes, size_t levelLimit = 0);
 
     uint64_t getChildCount();
 

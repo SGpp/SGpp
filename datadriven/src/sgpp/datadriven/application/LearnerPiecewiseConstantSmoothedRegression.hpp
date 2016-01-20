@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <sgpp/datadriven/application/DensityEstimator.hpp>
+#include "DensityEstimator.hpp"
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/datadriven/operation/hash/OperationOcttreeHistogramRegression/Node.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/pde/application/RegularizationConfiguration.hpp>
@@ -22,7 +22,7 @@ namespace datadriven {
 
 // --------------------------------------------------------------------------
 
-class LearnerDensityRegression {
+class LearnerPiecewiseConstantSmoothedRegression {
 private:
 
     SGPP::base::RegularGridConfiguration gridConfig;
@@ -45,7 +45,7 @@ public:
      * @param regularizationConfig config for regularization operator
      * @param verbose report additional information on the console
      */
-    LearnerDensityRegression(SGPP::base::RegularGridConfiguration& gridConfig,
+    LearnerPiecewiseConstantSmoothedRegression(SGPP::base::RegularGridConfiguration& gridConfig,
     SGPP::base::AdpativityConfiguration& adaptivityConfig,
     SGPP::solver::SLESolverConfiguration& solverConfig,
     SGPP::pde::RegularizationConfiguration& regularizationConfig, bool verbose);
@@ -58,7 +58,7 @@ public:
      * @param alpha coefficient vector
      * @param lambda regularization parameter
      */
-    void train(SGPP::datadriven::HistogramTree::Node &piecewiseRegressor, SGPP::base::Grid& grid,
+    void train(SGPP::datadriven::PiecewiseConstantRegression::Node &piecewiseRegressor, SGPP::base::Grid& grid,
     SGPP::base::DataVector& alpha, float_t lambda);
 
     /**

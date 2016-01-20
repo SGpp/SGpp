@@ -2,9 +2,9 @@
 
 import random
 
-fileName = "chess_3d.arff"
+fileName = "chess_4d.arff"
 numElements = 100000
-dim = 3
+dim = 4
 fields = dim
 seed = 135
 
