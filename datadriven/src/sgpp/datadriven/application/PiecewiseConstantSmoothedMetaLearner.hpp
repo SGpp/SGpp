@@ -64,7 +64,7 @@ public:
      *
      * @param train sample set
      * @param trainValues training values
-     * @param lambdaReg regularization parameter
+     * @param lambda regularization parameter
      * @param fastApproximationMSE mse for stopping piecewise constant approximation tree creation
      * @param fastApproximationMSE maximum level for stopping piecewise constant approximation tree creation
      * @param grid grid
