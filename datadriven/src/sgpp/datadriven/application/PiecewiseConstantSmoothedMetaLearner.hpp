@@ -66,9 +66,9 @@ public:
      * @param trainValues training values
      * @param lambda regularization parameter
      * @param fastApproximationMSE mse for stopping piecewise constant approximation tree creation
-     * @param fastApproximationMSE maximum level for stopping piecewise constant approximation tree creation
+     * @param fastApproximationMaxLevel maximum level for stopping piecewise constant approximation tree creation
      * @param grid grid
-     * @param grid grid coefficients
+     * @param alpha grid coefficients
      */
     void train(base::DataMatrix &train, base::DataVector &trainValues, float_t lambda, float_t fastApproximationMSE,
             size_t fastApproximationMaxLevel, std::shared_ptr<base::Grid> &grid,

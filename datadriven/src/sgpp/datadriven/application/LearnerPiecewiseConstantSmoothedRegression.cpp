@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "LearnerPiecewiseConstantSmoothedRegression.hpp"
+#include <sgpp/datadriven/application/LearnerPiecewiseConstantSmoothedRegression.hpp>
 
 #include <stddef.h>
 #include <algorithm>

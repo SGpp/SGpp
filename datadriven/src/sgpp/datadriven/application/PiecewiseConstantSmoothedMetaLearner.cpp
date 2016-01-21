@@ -9,7 +9,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "PiecewiseConstantSmoothedMetaLearner.hpp"
+#include <sgpp/datadriven/application/PiecewiseConstantSmoothedMetaLearner.hpp>
 
 #include <sgpp/datadriven/tools/DatasetTools.hpp>
 #include <sgpp/datadriven/application/LearnerPiecewiseConstantSmoothedRegression.hpp>
