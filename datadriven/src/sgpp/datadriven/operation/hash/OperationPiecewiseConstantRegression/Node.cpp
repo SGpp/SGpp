@@ -5,7 +5,7 @@
  *      Author: pfandedd
  */
 
-#include "Node.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
 
 namespace SGPP {
 namespace datadriven {
