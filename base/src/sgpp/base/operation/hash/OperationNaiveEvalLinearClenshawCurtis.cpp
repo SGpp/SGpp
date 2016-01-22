@@ -15,6 +15,8 @@ namespace SGPP {
       const size_t d = storage->dim();
       float_t result = 0.0;
 
+      #pragma omp parallel for shared(alpha, point, result) default(none)
+
       for (size_t i = 0; i < n; i++) {
         const GridIndex& gp = *(*storage)[i];
         float_t curVal = 1.0;
@@ -30,6 +32,7 @@ namespace SGPP {
           curVal *= val1d;
         }
 
+        #pragma omp atomic
         result += alpha[i] * curVal;
       }
 
