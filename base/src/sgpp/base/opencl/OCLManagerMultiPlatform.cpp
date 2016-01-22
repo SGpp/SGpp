@@ -377,7 +377,11 @@ void OCLManagerMultiPlatform::configureDevice(cl_device_id deviceId, json::Node 
                 countLimitMap[deviceName] += 1;
             }
         } else if (devicesNode[deviceName].contains("COUNT")) {
-            countLimitMap[deviceName] = 1;
+            if (countLimitMap[deviceName] >= devicesNode[deviceName]["COUNT"].getUInt()) {
+                return;
+            } else {
+                countLimitMap[deviceName] = 1;
+            }
         }
     } else {
         if (!devicesNode.contains(deviceName)) {
