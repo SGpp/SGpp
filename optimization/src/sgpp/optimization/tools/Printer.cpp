@@ -10,6 +10,7 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
+#include <iostream>
 #ifndef _WIN32
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -28,7 +29,7 @@ namespace SGPP {
       lastDuration(0.0),
       lineLengthLimit(0),
       indentation(INDENTATION_LENGTH, INDENTATION_CHAR),
-      stream(nullptr) {
+      stream(&std::cout) {
 
 #ifndef _WIN32
       struct winsize w;
@@ -47,11 +48,6 @@ namespace SGPP {
         // status printing disabled or verbose level too low
         statusLevel++;
         return;
-      }
-
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
       }
 
       // go to new line
@@ -81,11 +77,6 @@ namespace SGPP {
       if (!statusPrintingEnabled || (statusLevel > verbose)) {
         // status printing disabled or verbose level too low
         return;
-      }
-
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
       }
 
       std::string printMsg = msg;
@@ -124,11 +115,6 @@ namespace SGPP {
         return;
       }
 
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
-      }
-
       (*stream) << std::endl;
       lastMsgLength = 0;
       cursorInClearLine = true;
@@ -138,11 +124,6 @@ namespace SGPP {
       if (!statusPrintingEnabled || (statusLevel > verbose)) {
         // status printing disabled or verbose level too low
         return;
-      }
-
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
       }
 
       // print indentation
@@ -159,11 +140,6 @@ namespace SGPP {
       if (!statusPrintingEnabled || (statusLevel > verbose)) {
         // status printing disabled or verbose level too low
         return;
-      }
-
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
       }
 
       // go to new line
@@ -219,12 +195,7 @@ namespace SGPP {
       return mutex;
     }
 
-    std::ostream* Printer::getStream() {
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
-      }
-
+    std::ostream* Printer::getStream() const {
       return stream;
     }
 
@@ -241,15 +212,10 @@ namespace SGPP {
     }
 
     void Printer::printIterativeGridGenerator(
-      const IterativeGridGenerator& grid_gen) {
+      const IterativeGridGenerator& grid_gen) const {
       base::GridStorage& gridStorage = *grid_gen.getGrid().getStorage();
       const base::DataVector& functionValues =
         grid_gen.getFunctionValues();
-
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
-      }
 
       for (size_t i = 0; i < gridStorage.size(); i++) {
         if (i > 0) {
@@ -263,13 +229,8 @@ namespace SGPP {
       (*stream) << "\n";
     }
 
-    void Printer::printSLE(SLE& system) {
+    void Printer::printSLE(SLE& system) const {
       const size_t n = system.getDimension();
-
-      // initialize stream if necessary
-      if (stream == nullptr) {
-        stream = &std::cout;
-      }
 
       (*stream) << "A = [";
 

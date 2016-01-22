@@ -6,7 +6,6 @@
 #ifndef SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 #define SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 
-#include <iostream>
 #include <algorithm>
 #include <cstddef>
 #include <stack>
@@ -178,7 +177,7 @@ namespace SGPP {
         /**
          * @return stream used for printing (default std::cout)
          */
-        std::ostream* getStream();
+        std::ostream* getStream() const;
 
         /**
          * @param stream stream used for printing (default std::cout)
@@ -201,14 +200,14 @@ namespace SGPP {
          * @param gridGen       grid to be printed
          */
         void printIterativeGridGenerator(
-          const IterativeGridGenerator& gridGen);
+          const IterativeGridGenerator& gridGen) const;
 
         /**
          * Print a system of linear equations.
          *
          * @param system        system to be printed
          */
-        void printSLE(SLE& system);
+        void printSLE(SLE& system) const;
 
       protected:
         static const size_t INDENTATION_LENGTH = 4;
