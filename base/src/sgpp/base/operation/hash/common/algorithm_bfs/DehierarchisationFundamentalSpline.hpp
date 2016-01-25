@@ -47,9 +47,9 @@ namespace SGPP {
          * @param[out] result     result of the functor
          * @param      iterator   current grid point
          */
-        void operator()(const DataVector& source,
-                        DataVector& result,
-                        const grid_iterator& iterator);
+        virtual void operator()(const DataVector& source,
+                                DataVector& result,
+                                const grid_iterator& iterator);
 
         /**
          * Functor operator.
@@ -61,9 +61,9 @@ namespace SGPP {
          * @param[out] result     result of the functor
          * @param      iterator   current grid point
          */
-        void operator()(const DataMatrix& source,
-                        DataMatrix& result,
-                        const grid_iterator& iterator);
+        virtual void operator()(const DataMatrix& source,
+                                DataMatrix& result,
+                                const grid_iterator& iterator);
 
       protected:
         /// grid

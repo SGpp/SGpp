@@ -3,23 +3,31 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
-
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
+
 #include <sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp>
+
+#include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
+
+#include <sgpp/base/exception/factory_exception.hpp>
+
+
+#include <iostream>
+
+#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
   namespace base {
 
-    LinearL0BoundaryGrid::LinearL0BoundaryGrid(std::istream& istr) :
-      Grid(istr) {
+    LinearL0BoundaryGrid::LinearL0BoundaryGrid(std::istream& istr) : Grid(istr) {
 
     }
 
-    LinearL0BoundaryGrid::LinearL0BoundaryGrid(size_t dim) :
-      Grid(dim) {
+    LinearL0BoundaryGrid::LinearL0BoundaryGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
     LinearL0BoundaryGrid::~LinearL0BoundaryGrid() {

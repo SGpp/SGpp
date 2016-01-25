@@ -12,24 +12,23 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
-#include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
+#include "LinearStretchedBoundaryGrid.hpp"
+#include "../generation/StretchedBoundaryGridGenerator.hpp"
 
 
 namespace SGPP {
   namespace base {
 
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) :
-      Grid(istr) {
+    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) : Grid(istr) {
 
     }
 
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) :
-      Grid(dim) {
+    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(Stretching& BB) :
-      Grid(BB) {
+    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(Stretching& BB) {
+      this->storage = new GridStorage(BB);
     }
 
     LinearStretchedBoundaryGrid::~LinearStretchedBoundaryGrid() {

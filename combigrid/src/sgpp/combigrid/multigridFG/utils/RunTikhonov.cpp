@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#include <sgpp/combigrid/multigridFG/utils/RunTikhonov.hpp>
+#include "RunTikhonov.hpp"
 #include <sgpp/combigrid/multigridFG/operators/TikhonovOperator.hpp>
 #include <sgpp/combigrid/multigridFG/multigrid/Multigrid.hpp>
 

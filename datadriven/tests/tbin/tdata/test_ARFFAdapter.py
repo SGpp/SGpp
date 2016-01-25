@@ -78,8 +78,6 @@ class TestARFFAdapter(unittest.TestCase):
                     self.assertAlmostEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[rowIdx], testValues[rowIdx])
 
-        os.remove(filename)
-
 
     ##
     # Tests the function @link python.data.ARFFAdapter.ARFFAdapter.loadData() ARFFAdapter.loadData() @endlink

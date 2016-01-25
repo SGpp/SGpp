@@ -22,7 +22,7 @@ namespace SGPP {
       GetConsoleScreenBufferInfo(hCon, &info);
 
       if (!first_run) {
-        pos.Y = static_cast<SHORT>(info.dwCursorPosition.Y - 3);
+        pos.Y = info.dwCursorPosition.Y - 3;
         pos.X = 0;
         SetConsoleCursorPosition(hCon, pos);
       } else {

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include "LearnerSGDE.hpp"
 
 #include <stddef.h>
 #include <algorithm>

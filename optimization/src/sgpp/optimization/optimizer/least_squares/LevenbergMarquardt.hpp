@@ -78,12 +78,7 @@ namespace SGPP {
                              float_t effectivenessThreshold,
                              const sle_solver::SLESolver& sleSolver);
 
-          /**
-           * Destructor.
-           */
-          virtual ~LevenbergMarquardt() override;
-
-          virtual void optimize() override;
+          void optimize();
 
           /**
            * @return phi gradient
@@ -133,7 +128,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<LeastSquaresOptimizer>& clone) const override;
+          void clone(std::unique_ptr<LeastSquaresOptimizer>& clone) const;
 
         protected:
           /// phi gradient

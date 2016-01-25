@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/parallel/pde/basis/common/OCLPDEBound.hpp>
+#include "OCLPDEBound.hpp"
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 using namespace SGPP::base;
 

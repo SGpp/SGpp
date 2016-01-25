@@ -3,31 +3,32 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
+
+#include <sgpp/base/exception/factory_exception.hpp>
+
+
+#include <iostream>
+
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
 namespace SGPP {
   namespace base {
 
-    LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) :
-      Grid(istr),
-      boundaryLevel(0) {
-      istr >> boundaryLevel;
+    LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) : Grid(istr) {
+
     }
 
-    LinearBoundaryGrid::LinearBoundaryGrid(size_t dim, level_t boundaryLevel) :
-      Grid(dim),
-      boundaryLevel(boundaryLevel) {
+    LinearBoundaryGrid::LinearBoundaryGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
-    LinearBoundaryGrid::LinearBoundaryGrid(BoundingBox& BB,
-                                           level_t boundaryLevel) :
-      Grid(BB),
-      boundaryLevel(boundaryLevel) {
+    LinearBoundaryGrid::LinearBoundaryGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
     }
 
     LinearBoundaryGrid::~LinearBoundaryGrid() {
@@ -46,17 +47,12 @@ namespace SGPP {
       return new LinearBoundaryGrid(istr);
     }
 
-    void LinearBoundaryGrid::serialize(std::ostream& ostr) {
-      this->Grid::serialize(ostr);
-      ostr << boundaryLevel << std::endl;
-    }
-
     /**
      * Creates new GridGenerator
      * This must be changed if we add other storage types
      */
     GridGenerator* LinearBoundaryGrid::createGridGenerator() {
-      return new BoundaryGridGenerator(this->storage, boundaryLevel);
+      return new BoundaryGridGenerator(this->storage);
     }
 
 

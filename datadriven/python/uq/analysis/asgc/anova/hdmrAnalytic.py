@@ -19,12 +19,10 @@ from pysgpp.extensions.datadriven.uq.estimators import (AnalyticEstimationStrate
                                                         MarginalAnalyticEstimationStrategy)
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
                                                         isNumerical)
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
 from pysgpp import DataVector
 
 import itertools as it
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 class HDMRAnalytic(object):
@@ -109,9 +107,6 @@ class HDMRAnalytic(object):
         # init
         expec = {}
 
-        if self._verbose:
-            print "-" * 60
-
         # add higher order terms
         for k in xrange(self.__nk):
             perms = it.combinations(self.__U.getTupleIndices(), r=k + 1)
@@ -120,6 +115,7 @@ class HDMRAnalytic(object):
                 dd = [d for d in self.__U.getTupleIndices() if d not in perm]
 
                 if self._verbose:
+                    print "-" * 60
                     print "Explore %s, Integrate: %s" % (perm, dd),
 
                 # -----------------------------------------------
@@ -139,18 +135,10 @@ class HDMRAnalytic(object):
                 if self._verbose:
                     print "L2 err = %g" % err
 
-                # plot result
-#                 if len(perm) == 1:
-#                     plotSG1d(grid, alpha)
-#                     plt.show()
-
         # add highest order term
         if self.__has_highest_order_term:
             perm = tuple(range(self.__dim))
             expec[perm] = self.__grid, self.__alpha
-
-        if self._verbose:
-            print "-" * 60
 
         return expec
 
@@ -269,9 +257,6 @@ class HDMRAnalytic(object):
         vis = {}
         self.__variance_components = {}
 
-        if self._verbose:
-            print "-" * 60
-
         # run over all available permutations and compute the variance
         keys = self.__ap.keys()
         for perm in self.getSortedPermutations(self.__anova_components.keys()):
@@ -287,13 +272,13 @@ class HDMRAnalytic(object):
             U = params.getIndependentJointDistribution()
 
             # estimate variance
-            mean, _ = self.__estimation.mean(grid, alpha, U, T)
-            vi, err = self.__estimation.var(grid, alpha, U, T, mean)
+            vi, err = self.__estimation.var(grid, alpha, U, T, self.__E)
             # store the variance
             vis[perm] = vi
 
             if self._verbose:
                 print "Estimated V[%s]: %g, L2 err = %g" % (perm, vi, err)
+                print "-" * 60
 
             # add lower order components
             fi = self.__anova_components[perm]
@@ -302,9 +287,6 @@ class HDMRAnalytic(object):
                     vi += sign * vis[pperm]
 
             self.__variance_components[perm] = vi
-
-        if self._verbose:
-            print "-" * 60
 
         return self.__variance_components
 

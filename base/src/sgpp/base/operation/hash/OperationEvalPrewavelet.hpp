@@ -30,10 +30,10 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationEvalPrewavelet() override {}
+        virtual ~OperationEvalPrewavelet() {}
 
         virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point) override;
+                             const DataVector& point);
         virtual float_t test(const DataVector& alpha,
                              const DataVector& data,
                              const DataVector& classes);

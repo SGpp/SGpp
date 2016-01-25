@@ -44,7 +44,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        ~DehierarchisationPoly();
+        virtual ~DehierarchisationPoly();
 
         /**
          * Implements operator() needed by the sweep class during the grid traversal. This function
@@ -55,8 +55,8 @@ namespace SGPP {
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
          */
-        void operator()(DataVector& source, DataVector& result,
-                        grid_iterator& index, size_t dim);
+        virtual void operator()(DataVector& source, DataVector& result,
+                                grid_iterator& index, size_t dim);
 
       protected:
 

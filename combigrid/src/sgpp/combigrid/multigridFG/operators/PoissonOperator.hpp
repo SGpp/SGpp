@@ -6,7 +6,7 @@
 #ifndef POISSONOPERATOR_HPP_
 #define POISSONOPERATOR_HPP_
 
-#include <combigrid.hpp>
+#include "combigrid.hpp"
 #include <sgpp/combigrid/multigridFG/interface/OperatorFG.hpp>
 
 namespace combigrid {

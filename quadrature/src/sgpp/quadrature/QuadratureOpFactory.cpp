@@ -3,16 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/quadrature/QuadratureOpFactory.hpp>
+#include "QuadratureOpFactory.hpp"
 #include <sgpp/globaldef.hpp>
-#include <random>
 
 namespace SGPP {
   namespace op_factory {
 
-    quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples,
-        std::uint64_t seed) {
-      return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples, seed);
+    quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples) {
+      return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples);
     }
 
   } /* namespace op_factory */

@@ -13,7 +13,7 @@
 // Caution: Subspace-skipping is disabled by default for this kernel
 //////////////////////////////////////////////////////////////////////
 
-#include <omp.h>
+#include "omp.h"
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp>
@@ -51,10 +51,8 @@ namespace SGPP {
 
         void unflatten(base::DataVector& result);
 
-        // NOLINT
         size_t flattenIndex(size_t dim, std::vector<size_t>& maxIndices, std::vector<size_t>& index);
 
-        // NOLINT
         size_t flattenIndex(size_t* intermediates, size_t dim, size_t* maxIndicesPtr, size_t* indexPtr,
                             size_t toRecalc);
 

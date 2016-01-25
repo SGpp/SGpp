@@ -23,7 +23,7 @@
 #include <cmath>
 
 #include <sgpp/globaldef.hpp>
-#include <../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include "../../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
 
 
 namespace SGPP {

@@ -213,7 +213,7 @@ namespace SGPP {
          *
          * @param vec The DataVectorSP which is added to the current values
          */
-        void add(const DataVectorSP& vec);
+        void add(DataVectorSP& vec);
 
         /**
          * Subtracts the values from another DataVectorSP of the current values.
@@ -234,7 +234,7 @@ namespace SGPP {
          *
          * @param vec the DataVectorSP which is multiplied to current DataVectorSP
          */
-        void componentwise_mult(const DataVectorSP& vec);
+        void componentwise_mult(DataVectorSP& vec);
 
         /**
          * Divides the current DataVectorSP component-wise by another DataVectorSP.
@@ -248,7 +248,7 @@ namespace SGPP {
          *
          * @param vec the DataVectorSP which the current DataVectorSP is divided by
          */
-        void componentwise_div(const DataVectorSP& vec);
+        void componentwise_div(DataVectorSP& vec);
 
         /**
          * multiplies all elements by a constant factor
@@ -343,7 +343,7 @@ namespace SGPP {
          *
          * @return The dot-product
          */
-        float dotProduct(const DataVectorSP& vec) const;
+        float dotProduct(DataVectorSP& vec) const;
 
         /**
          * gets a pointer to the data array

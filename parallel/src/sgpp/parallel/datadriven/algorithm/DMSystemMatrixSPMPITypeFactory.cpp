@@ -17,7 +17,7 @@
 #endif
 #endif
 
-#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixSPMPITypeFactory.hpp>
+#include "DMSystemMatrixSPMPITypeFactory.hpp"
 
 #include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/impl/SPX86SimdLinear.hpp>
 

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/parallel/tools/StaticTwoPartitionAutoTuning.hpp>
+#include "StaticTwoPartitionAutoTuning.hpp"
 #include <algorithm>
 
 #include <sgpp/globaldef.hpp>

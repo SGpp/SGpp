@@ -6,7 +6,7 @@
 #ifndef GSGREFINEMENT_HPP_
 #define GSGREFINEMENT_HPP_
 
-#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
+#include "RefinementDecorator.hpp"
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
@@ -42,7 +42,7 @@ namespace SGPP {
          */
         virtual void collectRefinablePoints(GridStorage* storage,
                                             RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                            RefinementFunctor::value_type* max_values) override;
+                                            RefinementFunctor::value_type* max_values);
     };
 
   } /* namespace base */

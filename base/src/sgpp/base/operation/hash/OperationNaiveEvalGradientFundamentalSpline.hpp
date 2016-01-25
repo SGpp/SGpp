@@ -31,9 +31,9 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
+         * Virtual destructor.
          */
-        virtual ~OperationNaiveEvalGradientFundamentalSpline() override {
+        virtual ~OperationNaiveEvalGradientFundamentalSpline() {
         }
 
         /**

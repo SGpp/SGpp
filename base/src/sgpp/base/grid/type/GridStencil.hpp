@@ -48,7 +48,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~GridStencil() override;
+        virtual ~GridStencil();
 
         /**
          * Get the surplus stencil, in fact an array of unsigned ints.

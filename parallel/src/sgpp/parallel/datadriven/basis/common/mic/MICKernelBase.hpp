@@ -6,7 +6,7 @@
 #ifndef MICKERNELBASE_HPP
 #define MICKERNELBASE_HPP
 
-#include <sgpp/parallel/datadriven/basis/common/KernelBase.hpp>
+#include "../KernelBase.hpp"
 
 #ifdef USEMIC
 

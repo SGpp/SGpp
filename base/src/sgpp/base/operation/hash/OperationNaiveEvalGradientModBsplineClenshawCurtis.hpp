@@ -34,9 +34,9 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
+         * Virtual destructor.
          */
-        virtual ~OperationNaiveEvalGradientModBsplineClenshawCurtis() override {
+        virtual ~OperationNaiveEvalGradientModBsplineClenshawCurtis() {
         }
 
         /**

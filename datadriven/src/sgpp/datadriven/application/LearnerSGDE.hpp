@@ -6,7 +6,7 @@
 #ifndef LEARNERSGDE_HPP_
 #define LEARNERSGDE_HPP_
 
-#include <sgpp/datadriven/application/DensityEstimator.hpp>
+#include "DensityEstimator.hpp"
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>

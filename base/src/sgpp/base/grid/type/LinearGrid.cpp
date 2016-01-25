@@ -22,17 +22,16 @@
 namespace SGPP {
   namespace base {
 
-    LinearGrid::LinearGrid(std::istream& istr) :
-      Grid(istr) {
+    LinearGrid::LinearGrid(std::istream& istr) : Grid(istr) {
 
     }
 
-    LinearGrid::LinearGrid(size_t dim) :
-      Grid(dim) {
+    LinearGrid::LinearGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
-    LinearGrid::LinearGrid(BoundingBox& BB) :
-      Grid(BB) {
+    LinearGrid::LinearGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
     }
 
     LinearGrid::~LinearGrid() {

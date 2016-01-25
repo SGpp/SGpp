@@ -6,7 +6,7 @@
 #ifndef COMBIARBITRARYSCHEME_HPP_
 #define COMBIARBITRARYSCHEME_HPP_
 
-#include <sgpp/combigrid/combischeme/CombiSchemeBasis.hpp>
+#include "CombiSchemeBasis.hpp"
 #include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
 
 namespace combigrid {

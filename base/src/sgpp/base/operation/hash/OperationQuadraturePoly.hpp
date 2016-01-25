@@ -29,14 +29,14 @@ namespace SGPP {
          */
         OperationQuadraturePoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
-        virtual ~OperationQuadraturePoly() override {}
+        virtual ~OperationQuadraturePoly() {}
 
         /**
          * Quadrature for piecewise polynomial basis functions of max. degree 3
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual float_t doQuadrature(DataVector& alpha) override;
+        virtual float_t doQuadrature(DataVector& alpha);
 
       protected:
         // Pointer to the grid's GridStorage object

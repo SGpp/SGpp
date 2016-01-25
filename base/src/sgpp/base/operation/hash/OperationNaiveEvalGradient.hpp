@@ -25,7 +25,7 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
+         * Virtual destructor.
          */
         virtual ~OperationNaiveEvalGradient() {
         }

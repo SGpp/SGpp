@@ -64,9 +64,6 @@ namespace SGPP {
       }
     }
 
-    IterativeGridGeneratorLinearSurplus::~IterativeGridGeneratorLinearSurplus() {
-    }
-
     float_t IterativeGridGeneratorLinearSurplus::getAdaptivity() const {
       return gamma;
     }

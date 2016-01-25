@@ -22,12 +22,11 @@
 namespace SGPP {
   namespace base {
 
-    WaveletGrid::WaveletGrid(std::istream& istr) :
-      Grid(istr) {
+    WaveletGrid::WaveletGrid(std::istream& istr) : Grid(istr) {
     }
 
-    WaveletGrid::WaveletGrid(size_t dim) :
-      Grid(dim) {
+    WaveletGrid::WaveletGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
     WaveletGrid::~WaveletGrid() {

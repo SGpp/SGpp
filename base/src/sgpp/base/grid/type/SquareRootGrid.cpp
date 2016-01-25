@@ -21,17 +21,16 @@
 namespace SGPP {
   namespace base {
 
-    SquareRootGrid::SquareRootGrid(std::istream& istr) :
-      Grid(istr) {
+    SquareRootGrid::SquareRootGrid(std::istream& istr) : Grid(istr) {
 
     }
 
-    SquareRootGrid::SquareRootGrid(size_t dim) :
-      Grid(dim) {
+    SquareRootGrid::SquareRootGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
-    SquareRootGrid::SquareRootGrid(BoundingBox& BB) :
-      Grid(BB) {
+    SquareRootGrid::SquareRootGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
     }
 
     SquareRootGrid::~SquareRootGrid() {

@@ -41,12 +41,6 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
-         */
-        virtual ~BsplineClenshawCurtisBasis() override {
-        }
-
-        /**
          * @param x     evaluation point
          * @param p     B-spline degree
          * @param k     index of B-spline in the knot sequence
@@ -196,7 +190,7 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of Clenshaw-Curtis B-spline basis function
          */
-        inline virtual float_t eval(LT l, IT i, float_t x) override {
+        inline float_t eval(LT l, IT i, float_t x) {
           if (l == 0) {
             return bsplineBasis.uniformBSpline(
                      x - static_cast<float_t>(i)

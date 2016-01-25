@@ -5,7 +5,14 @@
 
 #ifndef RANDOM_HPP
 #define RANDOM_HPP
+
+#ifdef USETRONE
+#define USE_STD_RANDOM 1
+#endif
+
+#ifdef USE_STD_RANDOM
 #include <random>
+#endif
 
 #include <sgpp/globaldef.hpp>
 
@@ -24,24 +31,29 @@ namespace SGPP {
          * Manually seed the generator with a given seed.
          * @param seed_value the seed to use.
          */
-        static void seed(std::uint64_t seed_value = std::mt19937_64::default_seed);
+        static void seed(int seed_value);
 
         /**
-         * returns a random integer value in [0, RAND_MAX)
+         * returns a random integer value.
+         * @see rand()
          */
-        static std::uint64_t random_uint64();
+        static int random();
 
         /**
-         * returns a random float_t value in [0, 1)
+         * returns a random float_t value,
+         * like rand()/RAND_MAX
+         * @see rand()
          */
         static float_t random_double();
 
       protected:
+        // whether the RNG has aleredy been initialized.
         static bool is_seeded;
 
-        static std::mt19937_64 gen;
-        static std::uniform_int_distribution<std::uint64_t> distInt;
-        static std::uniform_real_distribution<float_t> distReal;
+#ifdef USE_STD_RANDOM
+        static std::mt19937 gen;
+        static std::uniform_int_distribution<int> dist;
+#endif
     };
   }
 }

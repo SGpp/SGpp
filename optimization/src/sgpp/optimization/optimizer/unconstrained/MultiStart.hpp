@@ -55,12 +55,7 @@ namespace SGPP {
                      size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
                      size_t populationSize = 0);
 
-          /**
-           * Destructor.
-           */
-          virtual ~MultiStart() override;
-
-          virtual void optimize() override;
+          void optimize();
 
           /**
            * @return                  number of individual points
@@ -82,7 +77,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// default optimization algorithm

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationHierarchisationPoly.hpp>
+#include "OperationHierarchisationPoly.hpp"
 
 #include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPoly.hpp>
 #include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPoly.hpp>

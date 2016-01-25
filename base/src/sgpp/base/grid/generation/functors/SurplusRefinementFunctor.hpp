@@ -34,11 +34,11 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~SurplusRefinementFunctor() override;
+        virtual ~SurplusRefinementFunctor();
 
-        virtual float_t operator()(GridStorage* storage, size_t seq) override;
+        virtual float_t operator()(GridStorage* storage, size_t seq);
 
-        virtual float_t start() override;
+        virtual float_t start();
 
         size_t getRefinementsNum();
 

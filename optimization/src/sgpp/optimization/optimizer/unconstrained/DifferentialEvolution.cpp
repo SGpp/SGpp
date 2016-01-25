@@ -33,9 +33,6 @@ namespace SGPP {
         maxDistanceThreshold(maxDistanceThreshold) {
       }
 
-      DifferentialEvolution::~DifferentialEvolution() {
-      }
-
       void DifferentialEvolution::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
 

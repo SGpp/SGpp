@@ -23,20 +23,14 @@ namespace SGPP {
       class UMFPACK : public SLESolver {
         public:
           /**
-           * Destructor.
-           */
-          virtual ~UMFPACK() override;
-
-          /**
            * @param       system  system to be solved
            * @param       b       right-hand side
            * @param[out]  x       solution to the system
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          virtual bool solve(SLE& system,
-                             base::DataVector& b,
-                             base::DataVector& x) const override;
+          bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const;
 
           /**
            * @param       system  system to be solved
@@ -45,9 +39,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          virtual bool solve(SLE& system,
-                             base::DataMatrix& B,
-                             base::DataMatrix& X) const override;
+          bool solve(SLE& system, base::DataMatrix& B,
+                     base::DataMatrix& X) const;
       };
 
     }

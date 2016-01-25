@@ -241,7 +241,7 @@ namespace SGPP {
       return *this;
     }
 
-    void DataVector::add(const DataVector& vec) {
+    void DataVector::add(DataVector& vec) {
       if (size != vec.size) {
         throw new SGPP::base::data_exception(
           "DataVector::add : Dimensions do not match");
@@ -263,7 +263,7 @@ namespace SGPP {
       }
     }
 
-    void DataVector::componentwise_mult(const DataVector& vec) {
+    void DataVector::componentwise_mult(DataVector& vec) {
       if (size != vec.size) {
         throw new SGPP::base::data_exception(
           "DataVector::componentwise_mult : Dimensions do not match");
@@ -274,7 +274,7 @@ namespace SGPP {
       }
     }
 
-    void DataVector::componentwise_div(const DataVector& vec) {
+    void DataVector::componentwise_div(DataVector& vec) {
       if (size != vec.size) {
         throw new SGPP::base::data_exception(
           "DataVector::componentwise_div : Dimensions do not match");

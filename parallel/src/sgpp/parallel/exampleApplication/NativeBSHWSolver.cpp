@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp_base.hpp>
-#include <sgpp_pde.hpp>
-#include <sgpp_finance.hpp>
-#include <sgpp_parallel.hpp>
-#include <sgpp_solver.hpp>
-#include <sgpp_datadriven.hpp>
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 #include <iostream>
 #include <string>
 #include <stdlib.h>

@@ -20,23 +20,13 @@
 namespace SGPP {
   namespace base {
 
-    BsplineBoundaryGrid::BsplineBoundaryGrid(std::istream& istr) :
-      Grid(istr),
-      degree(1 << 16),
-      basis_(NULL),
-      boundaryLevel(0) {
+    BsplineBoundaryGrid::BsplineBoundaryGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
       istr >> degree;
-      istr >> boundaryLevel;
     }
 
 
-    BsplineBoundaryGrid::BsplineBoundaryGrid(size_t dim,
-        size_t degree,
-        level_t boundaryLevel) :
-      Grid(dim),
-      degree(degree),
-      basis_(NULL),
-      boundaryLevel(boundaryLevel) {
+    BsplineBoundaryGrid::BsplineBoundaryGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
+      this->storage = new GridStorage(dim);
     }
 
     BsplineBoundaryGrid::~BsplineBoundaryGrid() {
@@ -68,7 +58,6 @@ namespace SGPP {
     void BsplineBoundaryGrid::serialize(std::ostream& ostr) {
       this->Grid::serialize(ostr);
       ostr << degree << std::endl;
-      ostr << boundaryLevel << std::endl;
     }
 
     /**
@@ -76,7 +65,7 @@ namespace SGPP {
      * This must be changed if we add other storage types
      */
     GridGenerator* BsplineBoundaryGrid::createGridGenerator() {
-      return new BoundaryGridGenerator(this->storage, boundaryLevel);
+      return new BoundaryGridGenerator(this->storage);
     }
 
   }

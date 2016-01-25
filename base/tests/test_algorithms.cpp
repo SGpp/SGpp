@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctions) {
 
   ga(b, y, x);
 
-  BOOST_CHECK_EQUAL(x[0].first, 0U);
+  BOOST_CHECK_EQUAL(x[0].first, 0);
   BOOST_CHECK_EQUAL(x[0].second, 0.5);
 }
 
@@ -490,13 +490,13 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsBoundary) {
 
   ga(b, y, x);
 
-  BOOST_CHECK_EQUAL(x[0].first, 0U);
+  BOOST_CHECK_EQUAL(x[0].first, 0);
   BOOST_CHECK_EQUAL(x[0].second, 0.5);
 
-  BOOST_CHECK_EQUAL(x[1].first, 1U);
+  BOOST_CHECK_EQUAL(x[1].first, 1);
   BOOST_CHECK_EQUAL(x[1].second, 0.5);
 
-  BOOST_CHECK_EQUAL(x[2].first, 2U);
+  BOOST_CHECK_EQUAL(x[2].first, 2);
   BOOST_CHECK_EQUAL(x[2].second, 1.0);
 }
 
@@ -530,6 +530,6 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsStretched) {
 
   ga(b, y, x);
 
-  BOOST_CHECK_EQUAL(x[0].first, 0U);
+  BOOST_CHECK_EQUAL(x[0].first, 0);
   BOOST_CHECK_CLOSE(x[0].second, 1.0384615384615385, 1e-5);
 }

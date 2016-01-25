@@ -8,10 +8,9 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-// disable warning on MSVC++
-#ifdef _MSC_VER
+#ifdef _WIN32
 #pragma warning(disable: 4267)
-#endif /* MSC_VER */
+#endif
 
 #include <sgpp/globaldef.hpp>
 

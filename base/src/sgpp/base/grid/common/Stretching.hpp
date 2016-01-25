@@ -10,7 +10,7 @@
 #define LOOKUPMAX 11
 
 #include <cstddef>
-#include <cmath>
+#include <math.h>
 #include <string>
 #include <iostream>
 #include <fstream>

@@ -6,7 +6,7 @@
 #include <limits>
 #include <cmath>
 
-#include <sgpp/datadriven/application/LearnerOnlineSGD.hpp>
+#include "LearnerOnlineSGD.hpp"
 
 // #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
 // #include <sgpp/parallel/tools/TypesParallel.hpp>

@@ -33,29 +33,29 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationStencilHierarchisationLinear() override {}
+        virtual ~OperationStencilHierarchisationLinear() {}
 
-        virtual void doHierarchisation(DataVector& node_values) override;
-        virtual void doDehierarchisation(DataVector& alpha) override;
+        virtual void doHierarchisation(DataVector& node_values);
+        virtual void doDehierarchisation(DataVector& alpha);
 
 
         virtual const IndexStencil&
-        getSurplusStencil() const override {
+        getSurplusStencil() const {
           return surplusStencil;
         };
 
         virtual const IndexStencil&
-        getNeighborStencil() const override {
+        getNeighborStencil() const {
           return neighborStencil;
         };
 
         virtual const WeightStencil&
-        getWeightStencil() const override {
+        getWeightStencil() const  {
           return weightStencil;
         };
 
         virtual size_t
-        getStencilSize() const override {
+        getStencilSize() const {
           return surplusStencil.size();
         };
 

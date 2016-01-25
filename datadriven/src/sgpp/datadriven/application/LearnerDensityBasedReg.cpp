@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerDensityBasedReg.hpp>
+#include "LearnerDensityBasedReg.hpp"
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>

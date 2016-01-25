@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/domain/CombiUniformStretching.hpp>
+#include "CombiUniformStretching.hpp"
 
 
 void combigrid::UniformStretching::get1DStretching(

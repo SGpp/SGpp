@@ -22,18 +22,12 @@ namespace SGPP {
     class LinearBoundaryBasis: public Basis<LT, IT> {
       public:
         /**
-         * Destructor.
-         */
-        virtual ~LinearBoundaryBasis() override {
-        }
-
-        /**
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
          * @return      value of boundary linear basis function
          */
-        inline virtual float_t eval(LT l, IT i, float_t x) override {
+        inline float_t eval(LT l, IT i, float_t x) {
           if (l == 0) {
             // first level
             if (i == 0) {
@@ -56,7 +50,7 @@ namespace SGPP {
          * @param q     scaling factor of basis function
          * @param t     offset of basis function
          */
-        inline virtual float_t eval(LT l, IT i, float_t x, float_t q, float_t t) {
+        inline float_t eval(LT l, IT i, float_t x, float_t q, float_t t) {
           return eval(l, i, (x - t) / q);
         }
     };

@@ -128,8 +128,7 @@ namespace SGPP {
          *                      main axis
          * @return grid
          */
-        static Grid* createLinearBoundaryGrid(size_t dim,
-                                              level_t boundaryLevel = 1);
+        static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel = 1);
 
         /**
          * creates a linearstretched truncated boundary grid
@@ -328,30 +327,6 @@ namespace SGPP {
          * Standard Constructor
          */
         Grid();
-
-        /**
-         * Constructor initializing the grid storage with the given
-         * dimensionality.
-         *
-         * @param dim dimensionality
-         */
-        Grid(size_t dim);
-
-        /**
-         * Constructor initializing the grid storage with the given
-         * BoundingBox.
-         *
-         * @param BB BoundingBox of the grid
-         */
-        Grid(BoundingBox& BB);
-
-        /**
-         * Constructor initializing the grid storage with the given
-         * Stretching.
-         *
-         * @param BB Stretching of the grid
-         */
-        Grid(Stretching& BB);
 
       public:
         /**

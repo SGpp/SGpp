@@ -35,9 +35,6 @@ namespace SGPP {
         initialize(populationSize);
       }
 
-      MultiStart::~MultiStart() {
-      }
-
       void MultiStart::initialize(size_t populationSize) {
         this->populationSize = (populationSize > 0) ? populationSize :
                                std::min(10 * f.getNumberOfParameters(),

@@ -31,13 +31,13 @@ namespace SGPP {
         /**
          * Destructor.
          */
-        virtual ~OperationHierarchisationFundamentalSpline() override;
+        virtual ~OperationHierarchisationFundamentalSpline();
 
-        virtual void doHierarchisation(DataVector& node_values) override;
-        virtual void doDehierarchisation(DataVector& alpha) override;
+        virtual void doHierarchisation(DataVector& node_values);
+        virtual void doDehierarchisation(DataVector& alpha);
 
-        void doHierarchisation(DataMatrix& node_values);
-        void doDehierarchisation(DataMatrix& alpha);
+        virtual void doHierarchisation(DataMatrix& node_values);
+        virtual void doDehierarchisation(DataMatrix& alpha);
 
       protected:
         /// grid

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/multigridFG/multigrid/MultigridFAS.hpp>
+#include "MultigridFAS.hpp"
 #include <sgpp/combigrid/multigridFG/multigrid/ProlongationRestriction.hpp>
 
 

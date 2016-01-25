@@ -10,7 +10,7 @@
 #include <utility>
 #include <iterator>
 
-#include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp>
+#include "OnlinePredictiveRefinementDimensionOld.hpp"
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 
 

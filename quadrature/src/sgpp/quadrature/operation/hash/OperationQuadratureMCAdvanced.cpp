@@ -20,56 +20,39 @@ namespace SGPP {
   namespace quadrature {
 
     OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(
-      SGPP::base::Grid& grid, size_t numberOfSamples, std::uint64_t seed) :
-      grid(&grid), numberOfSamples(numberOfSamples), seed(seed) {
-      dimensions = grid.getStorage()->dim();
-      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
+      SGPP::base::Grid& grid, size_t numberOfSamples) :
+      grid(&grid), numberOfSamples(numberOfSamples) {
+      this->dimensions = grid.getStorage()->dim();
+      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(this->dimensions);
     }
 
     OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(size_t dimensions,
-        size_t numberOfSamples, std::uint64_t seed) :
-      grid(NULL), numberOfSamples(numberOfSamples), dimensions(dimensions), seed(seed) {
-      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
+        size_t numberOfSamples) :
+      numberOfSamples(numberOfSamples) {
+      this->dimensions = dimensions;
+      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(this->dimensions);
+      grid = NULL;
     }
 
     OperationQuadratureMCAdvanced::~OperationQuadratureMCAdvanced() {
-      if (myGenerator != NULL) {
-        delete myGenerator;
-      }
     }
 
     void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
-      if (myGenerator != NULL) {
-        delete myGenerator;
-      }
-
-      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
+      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions);
     }
 
     void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(
       std::vector<size_t>& strataPerDimension) {
-      if (myGenerator != NULL) {
-        delete myGenerator;
-      }
-
       myGenerator = new SGPP::quadrature::StratifiedSampleGenerator(
-        strataPerDimension, seed);
+        strataPerDimension);
     }
 
     void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
-      if (myGenerator != NULL) {
-        delete myGenerator;
-      }
-
       myGenerator = new SGPP::quadrature::LatinHypercubeSampleGenerator(
-        dimensions, numberOfSamples, seed);
+        dimensions, numberOfSamples);
     }
 
     void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithHaltonSequences() {
-      if (myGenerator != NULL) {
-        delete myGenerator;
-      }
-
       myGenerator = new SGPP::quadrature::HaltonSampleGenerator(dimensions);
     }
 

@@ -41,22 +41,22 @@ namespace SGPP {
         /**
          * Destructor.
          */
-        virtual ~ModFundamentalSplineGrid() override;
+        virtual ~ModFundamentalSplineGrid();
 
         /**
          * @return string that identifies the grid type uniquely
          */
-        virtual SGPP::base::GridType getType() override;
+        virtual SGPP::base::GridType getType();
 
         /**
          * @return fundamental spline basis
          */
-        virtual const SBasis& getBasis() override;
+        virtual const SBasis& getBasis();
 
         /**
          * @return pointer to a GridGenerator object
          */
-        virtual GridGenerator* createGridGenerator() override;
+        virtual GridGenerator* createGridGenerator();
 
         /**
          * reads a grid out of a string
@@ -71,7 +71,7 @@ namespace SGPP {
          *
          * @param ostr stream to which the grid is written
          */
-        virtual void serialize(std::ostream& ostr) override;
+        virtual void serialize(std::ostream& ostr);
 
         /**
          * @return B-spline degree

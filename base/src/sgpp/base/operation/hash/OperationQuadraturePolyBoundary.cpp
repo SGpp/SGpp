@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
+#include "OperationQuadraturePolyBoundary.hpp"
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {

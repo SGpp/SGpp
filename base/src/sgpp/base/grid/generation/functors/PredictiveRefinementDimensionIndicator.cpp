@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
+#include "PredictiveRefinementDimensionIndicator.hpp"
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
@@ -41,7 +41,7 @@ namespace SGPP {
 
 
       //counter of contributions - for DEBUG purposes
-      counter_value_type counter = 0;
+      size_t counter = 0;
 
       SBasis& basis = const_cast<SBasis&>(grid_->getBasis());
       //go through the whole dataset. -> if data point on the support of the grid point in all dim then calculate error Indicator.

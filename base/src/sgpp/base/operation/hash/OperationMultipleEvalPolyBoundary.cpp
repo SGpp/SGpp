@@ -5,7 +5,7 @@
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 
-#include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
+#include "OperationMultipleEvalPolyBoundary.hpp"
 
 namespace SGPP {
   namespace base {

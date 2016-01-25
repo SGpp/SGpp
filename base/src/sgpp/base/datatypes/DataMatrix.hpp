@@ -275,7 +275,7 @@ namespace SGPP {
          *
          * @param matr The DataMatrix which is added to the current values
          */
-        void add(const DataMatrix& matr);
+        void add(DataMatrix& matr);
 
         /**
          * Subtracts the values from another DataMatrix of the current values.
@@ -322,7 +322,7 @@ namespace SGPP {
          *
          * @param matr the DataMatrix which is multiplied to current DataMatrix
          */
-        void componentwise_mult(const DataMatrix& matr);
+        void componentwise_mult(DataMatrix& matr);
 
         /**
          * Divides the current DataMatrix component-wise by another DataMatrix.
@@ -336,7 +336,7 @@ namespace SGPP {
          *
          * @param matr the DataMatrix which the current DataMatrix is divided by
          */
-        void componentwise_div(const DataMatrix& matr);
+        void componentwise_div(DataMatrix& matr);
 
         /**
          * Multiplies all elements by a constant factor

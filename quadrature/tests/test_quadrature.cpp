@@ -39,21 +39,21 @@ void testSampler(SampleGenerator& sampler, size_t dim, size_t numSamples,
 BOOST_AUTO_TEST_CASE(testSamplers) {
   size_t dim = 2;
   size_t numSamples = 100000;
+  int seed = 1234567;
   SGPP::float_t analyticResult = std::pow(2. / 3., dim);
-  uint64_t seed = 1234567;
 
   NaiveSampleGenerator pNSampler(dim, seed);
   HaltonSampleGenerator pHSampler(dim);
   LatinHypercubeSampleGenerator pLHSampler(dim, numSamples, seed);
-  std::vector<size_t> blockSize(dim, seed);
+  std::vector<size_t> blockSize(dim);
 
   for (size_t i = 0; i < dim; i++) {
     blockSize[i] = 10;
   }
 
-  StratifiedSampleGenerator pSSampler(blockSize);
+  StratifiedSampleGenerator pSSampler(blockSize, seed);
 
-  testSampler(pNSampler, dim, numSamples, analyticResult, 5e-2);
+  testSampler(pNSampler, dim, numSamples, analyticResult, 1e-2);
   testSampler(pHSampler, dim, numSamples, analyticResult, 1e-3);
   testSampler(pLHSampler, dim, numSamples, analyticResult, 1e-3);
   testSampler(pSSampler, dim, numSamples, analyticResult, 1e-3);
@@ -62,9 +62,9 @@ BOOST_AUTO_TEST_CASE(testSamplers) {
 void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
                                        SGPP::quadrature::SamplerTypes samplerType, size_t dim, size_t numSamples,
                                        std::vector<size_t>& blockSize, SGPP::float_t analyticResult,
-                                       double tol, uint64_t seed = 1234567) {
+                                       double tol) {
   SGPP::quadrature::OperationQuadratureMCAdvanced* opQuad =
-    SGPP::op_factory::createOperationQuadratureMCAdvanced(grid, numSamples, seed);
+    SGPP::op_factory::createOperationQuadratureMCAdvanced(grid, numSamples);
 
   switch (samplerType) {
     case SGPP::quadrature::SamplerTypes::Naive:
@@ -90,14 +90,15 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
   }
 
   SGPP::float_t resMC = opQuad->doQuadrature(alpha);
+
   BOOST_CHECK_CLOSE(resMC, analyticResult, tol * 1e2);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
   size_t dim = 2;
   size_t numSamples = 100000;
+  int seed = 1234567;
   SGPP::float_t analyticResult = std::pow(2. / 3., dim);
-  std::uint64_t seed = 1234567;
 
   // interpolate f on a sparse grid
   SGPP::base::Grid* grid = SGPP::base::Grid::createPolyGrid(dim, 2);
@@ -123,16 +124,18 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
     blockSize[i] = 10;
   }
 
+  StratifiedSampleGenerator pSSampler(blockSize, seed);
+
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::Naive, dim, numSamples, blockSize,
-                                    analyticResult, 5e-2, seed);
+                                    analyticResult, 1e-2);
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::Stratified, dim, numSamples, blockSize,
-                                    analyticResult, 1e-3, seed);
+                                    analyticResult, 1e-3);
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::LatinHypercube, dim, numSamples, blockSize,
-                                    analyticResult, 1e-3, seed);
+                                    analyticResult, 1e-3);
   testOperationQuadratureMCAdvanced(*grid, alpha,
                                     SGPP::quadrature::SamplerTypes::Halton, dim, numSamples, blockSize,
-                                    analyticResult, 1e-3, seed);
+                                    analyticResult, 1e-3);
 }

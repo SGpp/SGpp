@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/DensityEstimator.hpp>
+#include "DensityEstimator.hpp"
 #include <cmath>
 
 #include <sgpp/globaldef.hpp>

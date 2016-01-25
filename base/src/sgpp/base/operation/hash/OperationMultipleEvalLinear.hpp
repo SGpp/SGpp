@@ -34,11 +34,11 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationMultipleEvalLinear() override {
+        virtual ~OperationMultipleEvalLinear() {
         }
 
-        virtual void mult(DataVector& alpha, DataVector& result) override;
-        virtual void multTranspose(DataVector& source, DataVector& result) override;
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
       protected:
         /// Pointer to the grid's GridStorage object

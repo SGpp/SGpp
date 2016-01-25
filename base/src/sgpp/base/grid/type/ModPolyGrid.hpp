@@ -37,12 +37,12 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~ModPolyGrid() override;
+        virtual ~ModPolyGrid();
 
-        virtual SGPP::base::GridType getType() override;
-        virtual void serialize(std::ostream& ostr) override;
+        virtual SGPP::base::GridType getType();
+        virtual void serialize(std::ostream& ostr);
 
-        virtual const SBasis& getBasis() override;
+        virtual const SBasis& getBasis();
 
         virtual GridGenerator* createGridGenerator();
 

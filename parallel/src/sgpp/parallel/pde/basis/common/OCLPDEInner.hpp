@@ -8,7 +8,7 @@
 #include <mpi.h>
 #endif
 #endif
-#include <sgpp/parallel/pde/basis/common/OCLPDEKernels.hpp>
+#include "OCLPDEKernels.hpp"
 
 #include <sgpp/globaldef.hpp>
 

@@ -31,14 +31,12 @@ namespace SGPP {
 
       #pragma omp parallel
       {
-#ifndef _WIN32
 #ifdef _OPENMP
         unsigned int seedp = (unsigned int)(static_cast<float_t>(time(NULL)) *
                                             static_cast<float_t>(omp_get_thread_num() + 1));
 #else
         unsigned int seedp = (unsigned int)(static_cast<float_t>(time(NULL)) *
                                             static_cast<float_t>(1 + 1));
-#endif
 #endif
         #pragma omp for
 
@@ -64,12 +62,10 @@ namespace SGPP {
 
       #pragma omp parallel
       {
-#ifndef _WIN32
 #ifdef _OPENMP
         unsigned int seedp = (unsigned int)(time(NULL)) * (omp_get_thread_num() + 1);
 #else
         unsigned int seedp = (unsigned int)(time(NULL)) * (1 + 1);
-#endif
 #endif
         base::DataVector p(num_dims);
         float_t fhat = 0.0;

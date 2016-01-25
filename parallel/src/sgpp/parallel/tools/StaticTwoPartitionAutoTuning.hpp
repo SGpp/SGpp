@@ -6,7 +6,7 @@
 #ifndef STATICTWOPARTITIONAUTOTUNING_HPP
 #define STATICTWOPARTITIONAUTOTUNING_HPP
 
-#include <sgpp/parallel/tools/TwoPartitionAutoTuning.hpp>
+#include "TwoPartitionAutoTuning.hpp"
 #include <sgpp/globaldef.hpp>
 
 

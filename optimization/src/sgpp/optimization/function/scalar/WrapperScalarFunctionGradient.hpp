@@ -38,26 +38,20 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
-         */
-        virtual ~WrapperScalarFunctionGradient() override {
-        }
-
-        /**
          * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] gradient gradient
          *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
          * @return              \f$f(\vec{x})\f$
          */
-        inline virtual float_t eval(const base::DataVector& x,
-                                    base::DataVector& gradient) override {
+        inline float_t eval(const base::DataVector& x,
+                            base::DataVector& gradient) {
           return fGradient(x, gradient);
         }
 
         /**
          * @param[out] clone pointer to cloned object
          */
-        void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
+        void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
           clone = std::unique_ptr<ScalarFunctionGradient>(
                     new WrapperScalarFunctionGradient(d, fGradient));
         }

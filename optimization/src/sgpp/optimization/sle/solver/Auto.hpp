@@ -28,20 +28,14 @@ namespace SGPP {
           static constexpr float_t ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
 
           /**
-           * Destructor.
-           */
-          virtual ~Auto() override;
-
-          /**
            * @param       system  system to be solved
            * @param       b       right-hand side
            * @param[out]  x       solution to the system
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          virtual bool solve(SLE& system,
-                             base::DataVector& b,
-                             base::DataVector& x) const override;
+          bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const;
 
           /**
            * @param       system  system to be solved
@@ -50,9 +44,8 @@ namespace SGPP {
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          virtual bool solve(SLE& system,
-                             base::DataMatrix& B,
-                             base::DataMatrix& X) const override;
+          bool solve(SLE& system, base::DataMatrix& B,
+                     base::DataMatrix& X) const;
       };
 
     }

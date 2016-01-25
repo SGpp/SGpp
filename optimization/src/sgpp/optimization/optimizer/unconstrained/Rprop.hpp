@@ -51,12 +51,7 @@ namespace SGPP {
                 float_t stepSizeDecreaseFactor =
                   DEFAULT_STEP_SIZE_DECREASE_FACTOR);
 
-          /**
-           * Destructor.
-           */
-          virtual ~Rprop() override;
-
-          virtual void optimize() override;
+          void optimize();
 
           /**
            * @return objective function gradient
@@ -106,7 +101,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function gradient

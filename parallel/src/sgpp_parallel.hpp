@@ -7,13 +7,13 @@
 #define PARALLEL_HPP
 
 #ifndef _OPENMP
-#error <sgpp parallel module requires OpenMP support>
+#error "SGpp parallel module requires OpenMP support"
 #endif
 
-#include <sgpp/parallel/datadriven/application/LearnerVectorizedIdentity.hpp>
-#include <sgpp/parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp>
+#include "sgpp/parallel/datadriven/application/LearnerVectorizedIdentity.hpp"
+#include "sgpp/parallel/datadriven/application/LearnerVectorizedIdentitySP.hpp"
 
-#include <sgpp/parallel/operation/ParallelOpFactory.hpp>
-#include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
+#include "sgpp/parallel/operation/ParallelOpFactory.hpp"
+#include "sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp"
 
 #endif /* PARALLEL_HPP */
