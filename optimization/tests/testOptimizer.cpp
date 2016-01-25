@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
     std::vector<std::unique_ptr<optimizer::ConstrainedOptimizer>> optimizers;
 
     if (i == 0) {
-      d = 4;
+      d = 3;
       fOptReal = -1.0;
 
       x0.resize(d);
@@ -481,6 +481,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       EmptyVectorFunctionGradient::getInstance().clone(gGradient);
       h.reset(new G3ConstraintFunction(d));
       hGradient.reset(new G3ConstraintGradient(d));
+
+      optimizers.clear();
       optimizers.push_back(
         std::move(std::unique_ptr<optimizer::ConstrainedOptimizer>(
                     new optimizer::SquaredPenalty(
@@ -498,12 +500,15 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       xOptReal[0] = 1.2279713 / 10.0;
       xOptReal[1] = 4.2453733 / 10.0;
       fOptReal = -0.095825;
+
       f.reset(new G8ObjectiveFunction());
       fGradient.reset(new G8ObjectiveGradient());
       g.reset(new G8ConstraintFunction());
       gGradient.reset(new G8ConstraintGradient());
       EmptyVectorFunction::getInstance().clone(h);
       EmptyVectorFunctionGradient::getInstance().clone(hGradient);
+
+      optimizers.clear();
       optimizers.push_back(
         std::move(std::unique_ptr<optimizer::ConstrainedOptimizer>(
                     new optimizer::SquaredPenalty(
