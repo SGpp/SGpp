@@ -67,7 +67,7 @@ namespace SGPP {
 
         for (size_t i = oldGridSize; i < curGridSize; i++) {
           // convert grid point to coordinate vector
-          gp = gridStorage[i];
+          gp = gridStorage.get(i);
 
           for (size_t t = 0; t < d; t++) {
             x[t] = gp->getCoord(t);
