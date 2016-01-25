@@ -17,7 +17,7 @@ namespace SGPP {
   namespace optimization {
 
     IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(
-      ScalarFunction& f, base::Grid& grid, size_t N,
+      ObjectiveFunction& f, base::Grid& grid, size_t N,
       float_t adaptivity) :
       IterativeGridGenerator(f, grid, N) {
       setAdaptivity(adaptivity);
