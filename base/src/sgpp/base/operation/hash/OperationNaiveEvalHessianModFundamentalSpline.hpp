@@ -33,9 +33,9 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
-        virtual ~OperationNaiveEvalHessianModFundamentalSpline() {
+        virtual ~OperationNaiveEvalHessianModFundamentalSpline() override {
         }
 
         /**

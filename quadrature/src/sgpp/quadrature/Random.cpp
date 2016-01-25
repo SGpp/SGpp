@@ -24,6 +24,7 @@ namespace SGPP {
       if (!is_seeded) {
         Random::seed(std::mt19937_64::default_seed);
       }
+
       return distInt(gen);
     }
 
@@ -31,6 +32,7 @@ namespace SGPP {
       if (!is_seeded) {
         Random::seed(std::mt19937_64::default_seed);
       }
+
       return distReal(gen);
     }
 

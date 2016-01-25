@@ -36,9 +36,9 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
-        virtual ~OperationNaiveEvalHessianModBsplineClenshawCurtis() {
+        virtual ~OperationNaiveEvalHessianModBsplineClenshawCurtis() override {
         }
 
         /**

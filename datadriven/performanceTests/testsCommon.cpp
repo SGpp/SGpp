@@ -59,60 +59,60 @@ std::string uncompressFile(std::string fileName) {
 }
 
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
+                         SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
 
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(1, 100);
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_real_distribution<double> dist(1, 100);
 
-    SGPP::base::DataVector alphaRefine(grid.getSize());
+  SGPP::base::DataVector alphaRefine(grid.getSize());
 
-    for (size_t i = 0; i < alphaRefine.getSize(); i++) {
-        alphaRefine[i] = dist(mt);
+  for (size_t i = 0; i < alphaRefine.getSize(); i++) {
+    alphaRefine[i] = dist(mt);
+  }
+
+  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
+    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alphaRefine,
+        adaptConfig.noPoints_, adaptConfig.threshold_);
+    gridGen.refine(myRefineFunc);
+    size_t oldSize = alphaRefine.getSize();
+    alphaRefine.resize(grid.getSize());
+
+    for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
+      alphaRefine[j] = dist(mt);
     }
 
-    for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alphaRefine,
-                adaptConfig.noPoints_, adaptConfig.threshold_);
-        gridGen.refine(myRefineFunc);
-        size_t oldSize = alphaRefine.getSize();
-        alphaRefine.resize(grid.getSize());
-
-        for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
-            alphaRefine[j] = dist(mt);
-        }
-
-        delete myRefineFunc;
-    }
+    delete myRefineFunc;
+  }
 }
 
 void doDirectedRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
+                           SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
 
-    double dummySurplusValue = 1.0;
+  double dummySurplusValue = 1.0;
 
-    SGPP::base::DataVector alphaRefine(grid.getSize());
+  SGPP::base::DataVector alphaRefine(grid.getSize());
 
-    for (size_t i = 0; i < alphaRefine.getSize(); i++) {
-        alphaRefine[i] = dummySurplusValue;
-        dummySurplusValue += 1.0;
+  for (size_t i = 0; i < alphaRefine.getSize(); i++) {
+    alphaRefine[i] = dummySurplusValue;
+    dummySurplusValue += 1.0;
+  }
+
+  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
+    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alphaRefine,
+        adaptConfig.noPoints_, adaptConfig.threshold_);
+    gridGen.refine(myRefineFunc);
+    size_t oldSize = alphaRefine.getSize();
+    alphaRefine.resize(grid.getSize());
+
+    for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
+      alphaRefine[i] = dummySurplusValue;
+
     }
 
-    for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alphaRefine,
-                adaptConfig.noPoints_, adaptConfig.threshold_);
-        gridGen.refine(myRefineFunc);
-        size_t oldSize = alphaRefine.getSize();
-        alphaRefine.resize(grid.getSize());
+    //increment only once for added grid points
+    dummySurplusValue += 1.0;
 
-        for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
-            alphaRefine[i] = dummySurplusValue;
-
-        }
-
-        //increment only once for added grid points
-        dummySurplusValue += 1.0;
-
-        delete myRefineFunc;
-    }
+    delete myRefineFunc;
+  }
 }

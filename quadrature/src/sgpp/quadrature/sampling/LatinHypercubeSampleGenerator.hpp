@@ -37,7 +37,7 @@ namespace SGPP {
          */
 
         LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfStrata,
-            std::uint64_t seed = std::mt19937_64::default_seed);
+                                      std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * Destructor

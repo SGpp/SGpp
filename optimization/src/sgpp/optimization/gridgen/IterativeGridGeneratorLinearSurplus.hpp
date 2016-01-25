@@ -47,11 +47,16 @@ namespace SGPP {
           base::level_t initialLevel = DEFAULT_INITIAL_LEVEL);
 
         /**
+         * Destructor.
+         */
+        virtual ~IterativeGridGeneratorLinearSurplus() override;
+
+        /**
          * Generate the grid.
          *
          * @return true on success, otherwise false
          */
-        bool generate();
+        virtual bool generate() override;
 
         /**
          * @return            adaptivity between 0 and 1

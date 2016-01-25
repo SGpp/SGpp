@@ -11,25 +11,25 @@
 
 namespace json {
 
-class TextNode: public Node {
-private:
+  class TextNode: public Node {
+    private:
 
-  std::string value;
+      std::string value;
 
-public:
-  TextNode();
+    public:
+      TextNode();
 
-  virtual void parse(std::vector<Token> &stream) override;
+      virtual void parse(std::vector<Token>& stream) override;
 
-  virtual void serialize(std::ofstream &outFile, size_t indentWidth) override;
+      virtual void serialize(std::ofstream& outFile, size_t indentWidth) override;
 
-  virtual std::string &get() override;
+      virtual std::string& get() override;
 
-  virtual void set(const std::string &value) override;
+      virtual void set(const std::string& value) override;
 
-  virtual size_t size() override;
+      virtual size_t size() override;
 
-  virtual Node *clone() override;
-};
+      virtual Node* clone() override;
+  };
 
 }

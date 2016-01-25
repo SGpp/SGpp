@@ -80,7 +80,7 @@
 #define M_SQRT2     1.41421356237309504880
 // 1/sqrt(2)
 #undef  M_SQRT1_2
-#define M_SQRT1_2   0.70710678118654752440 
+#define M_SQRT1_2   0.70710678118654752440
 
 namespace SGPP {
 
@@ -99,12 +99,12 @@ namespace SGPP {
 #include <memory>
 
 namespace std {
-//Implementation for "make_unique" in c++11 as it doesn't contain this function.  (see std::make_shared)
-//This function is part of the C++14 (and newer) standard.
-template<typename T, typename ...Args>
-std::unique_ptr<T> make_unique(Args&& ...args) {
-return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
+  //Implementation for "make_unique" in c++11 as it doesn't contain this function.  (see std::make_shared)
+  //This function is part of the C++14 (and newer) standard.
+  template<typename T, typename ...Args>
+  std::unique_ptr<T> make_unique(Args&& ...args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+  }
 
 }
 #endif

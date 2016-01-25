@@ -120,7 +120,7 @@ namespace SGPP {
       //iterate over all found lines
       for (size_t i = 0; i < data.size() - 1; i++) {
         size_t classesHere = static_cast<size_t>(
-            count(data[i].begin(), data[i].end(), ','));
+                               count(data[i].begin(), data[i].end(), ','));
 
         // the first data entry ever found determines the number of dimensions of the data
         if (dimensions == 0) {

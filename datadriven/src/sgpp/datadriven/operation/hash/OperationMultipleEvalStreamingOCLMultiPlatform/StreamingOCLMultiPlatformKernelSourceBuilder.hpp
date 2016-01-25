@@ -13,65 +13,65 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-class StreamingOCLMultiPlatformKernelSourceBuilder {
-private:
-//    std::shared_ptr<base::OCLOperationConfiguration> parameters;
-    size_t dims;
+    class StreamingOCLMultiPlatformKernelSourceBuilder {
+      private:
+        //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
+        size_t dims;
 
-    size_t localWorkgroupSize;
-    bool useLocalMemory;
-    size_t dataBlockSize;
-    size_t transGridBlockSize;
-    uint64_t maxDimUnroll;
+        size_t localWorkgroupSize;
+        bool useLocalMemory;
+        size_t dataBlockSize;
+        size_t transGridBlockSize;
+        uint64_t maxDimUnroll;
 
-    std::string indent;
+        std::string indent;
 
-    std::string indent2;
+        std::string indent2;
 
-    std::string indent3;
+        std::string indent3;
 
-    std::string indent4;
+        std::string indent4;
 
-    std::string asString();
+        std::string asString();
 
-    std::string constSuffix();
+        std::string constSuffix();
 
-    std::string intAsString();
+        std::string intAsString();
 
-    std::string getData(std::string dim, size_t dataBlockingIndex);
+        std::string getData(std::string dim, size_t dataBlockingIndex);
 
-    std::string getData(size_t dim, size_t dataBlockingIndex);
+        std::string getData(size_t dim, size_t dataBlockingIndex);
 
-    std::string getDataTrans(std::string dim, size_t dataBlockingIndex);
+        std::string getDataTrans(std::string dim, size_t dataBlockingIndex);
 
-    std::string getLevelTrans(std::string dim, size_t gridBlockingIndex);
+        std::string getLevelTrans(std::string dim, size_t gridBlockingIndex);
 
-    std::string getIndexTrans(std::string dim, size_t gridBlockingIndex);
+        std::string getIndexTrans(std::string dim, size_t gridBlockingIndex);
 
-    json::Node &firstDeviceConfig;
-public:
-    StreamingOCLMultiPlatformKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters,
-            size_t dims, json::Node &firstDeviceConfig);
+        json::Node& firstDeviceConfig;
+      public:
+        StreamingOCLMultiPlatformKernelSourceBuilder(std::shared_ptr<base::OCLOperationConfiguration> parameters,
+            size_t dims, json::Node& firstDeviceConfig);
 
-    std::string generateSourceMult();
+        std::string generateSourceMult();
 
-    std::string generateSourceMultTrans();
+        std::string generateSourceMultTrans();
 
-    std::string reuseSource(std::string fileName);
+        std::string reuseSource(std::string fileName);
 
-    void writeSource(std::string fileName, std::string source);
+        void writeSource(std::string fileName, std::string source);
 
-    std::string unrolledBasisFunctionEvalulation(size_t dims, size_t startDim, size_t endDim,
+        std::string unrolledBasisFunctionEvalulation(size_t dims, size_t startDim, size_t endDim,
             std::string unrollVariable);
 
-    std::string unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim, size_t endDim,
+        std::string unrolledBasisFunctionEvalulationTrans(size_t dims, size_t startDim, size_t endDim,
             std::string unrollVariable);
 
-}
-;
+    }
+    ;
 
-}
+  }
 }
 

@@ -45,7 +45,7 @@ namespace SGPP {
         };
 
 
-        virtual ~OnlinePredictiveRefinementDimension() {
+        virtual ~OnlinePredictiveRefinementDimension() override {
           delete predictiveGrid_;
         }
 

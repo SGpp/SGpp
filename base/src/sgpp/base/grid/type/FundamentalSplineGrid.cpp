@@ -20,13 +20,18 @@
 namespace SGPP {
   namespace base {
 
-    FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
+    FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) :
+      Grid(istr),
+      degree(1 << 16),
+      basis_(NULL) {
       istr >> degree;
     }
 
 
-    FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
-      this->storage = new GridStorage(dim);
+    FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree) :
+      Grid(dim),
+      degree(degree),
+      basis_(NULL) {
     }
 
     FundamentalSplineGrid::~FundamentalSplineGrid() {

@@ -42,6 +42,7 @@ namespace SGPP {
       if (myGenerator != NULL) {
         delete myGenerator;
       }
+
       myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
     }
 
@@ -50,6 +51,7 @@ namespace SGPP {
       if (myGenerator != NULL) {
         delete myGenerator;
       }
+
       myGenerator = new SGPP::quadrature::StratifiedSampleGenerator(
         strataPerDimension, seed);
     }
@@ -58,6 +60,7 @@ namespace SGPP {
       if (myGenerator != NULL) {
         delete myGenerator;
       }
+
       myGenerator = new SGPP::quadrature::LatinHypercubeSampleGenerator(
         dimensions, numberOfSamples, seed);
     }
@@ -66,6 +69,7 @@ namespace SGPP {
       if (myGenerator != NULL) {
         delete myGenerator;
       }
+
       myGenerator = new SGPP::quadrature::HaltonSampleGenerator(dimensions);
     }
 

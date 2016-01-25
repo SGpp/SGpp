@@ -47,12 +47,17 @@ namespace SGPP {
         }
 
       public:
+        /**
+         * Destructor.
+         */
+        virtual ~PrewaveletBasis() override {
+        }
 
         /**
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
          */
-        float_t eval(LT level, IT index, float_t p) {
+        virtual float_t eval(LT level, IT index, float_t p) override {
           /* A prewavelet is simply the sum of neighboring hat functions with a certain
            * stamp. So we have to figure out, which of the 5 hat functions is the one
            * "hit" by p, modify the index and use the normal hat-function calculation.

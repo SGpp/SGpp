@@ -12,61 +12,61 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-class SubspaceNodeCombined {
-public:
-  enum SubspaceType {
-    NOT_SET, ARRAY, LIST
-  };
+    class SubspaceNodeCombined {
+      public:
+        enum SubspaceType {
+          NOT_SET, ARRAY, LIST
+        };
 
-  std::vector<uint32_t> level;
-  std::vector<uint32_t> hInverse;
-  uint32_t gridPointsOnLevel;
-  uint32_t existingGridPointsOnLevel;
-  SubspaceType type;
-  std::vector<uint32_t> indices; //for list representation (and future streaming subspaces
-  std::vector<std::pair<uint32_t, float_t> > indexFlatSurplusPairs;
-  std::vector<float_t> subspaceArray;
-  omp_lock_t subspaceLock;
+        std::vector<uint32_t> level;
+        std::vector<uint32_t> hInverse;
+        uint32_t gridPointsOnLevel;
+        uint32_t existingGridPointsOnLevel;
+        SubspaceType type;
+        std::vector<uint32_t> indices; //for list representation (and future streaming subspaces
+        std::vector<std::pair<uint32_t, float_t> > indexFlatSurplusPairs;
+        std::vector<float_t> subspaceArray;
+        omp_lock_t subspaceLock;
 
-  uint32_t jumpTargetIndex;
-  uint32_t flatLevel;
+        uint32_t jumpTargetIndex;
+        uint32_t flatLevel;
 
-  // every node that reaches this subspace has to calculate this diff
-  uint32_t arriveDiff;
+        // every node that reaches this subspace has to calculate this diff
+        uint32_t arriveDiff;
 
-  SubspaceNodeCombined(std::vector<uint32_t>& level, uint32_t flatLevel, std::vector<uint32_t>& hInverse,
-      std::vector<uint32_t>& index);
+        SubspaceNodeCombined(std::vector<uint32_t>& level, uint32_t flatLevel, std::vector<uint32_t>& hInverse,
+                             std::vector<uint32_t>& index);
 
-  SubspaceNodeCombined(size_t dim, uint32_t index);
+        SubspaceNodeCombined(size_t dim, uint32_t index);
 
-  void lockSubspace();
+        void lockSubspace();
 
-  void unlockSubspace();
+        void unlockSubspace();
 
-  //increases number of grid points on the subspace
-  void addGridPoint(std::vector<uint32_t>& index);
+        //increases number of grid points on the subspace
+        void addGridPoint(std::vector<uint32_t>& index);
 
-  void printLevel();
+        void printLevel();
 
-  // unpack has to be called when the subspace is set up (except for surplus valus)
-  // this method will decide how to best represent the subspace (list or array type)
-  // and prepare the subspace for its representation
-  void unpack();
+        // unpack has to be called when the subspace is set up (except for surplus valus)
+        // this method will decide how to best represent the subspace (list or array type)
+        // and prepare the subspace for its representation
+        void unpack();
 
-  // the first call initializes the array for ARRAY type subspaces
-  //
-  void setSurplus(size_t indexFlat, float_t surplus);
+        // the first call initializes the array for ARRAY type subspaces
+        //
+        void setSurplus(size_t indexFlat, float_t surplus);
 
-  // the first call initializes the array for ARRAY type subspaces
-  float_t getSurplus(size_t indexFlat);
+        // the first call initializes the array for ARRAY type subspaces
+        float_t getSurplus(size_t indexFlat);
 
-  static uint32_t compareLexicographically(SubspaceNodeCombined& current, SubspaceNodeCombined& last);
+        static uint32_t compareLexicographically(SubspaceNodeCombined& current, SubspaceNodeCombined& last);
 
-  static bool subspaceCompare(SubspaceNodeCombined left, SubspaceNodeCombined right);
+        static bool subspaceCompare(SubspaceNodeCombined left, SubspaceNodeCombined right);
 
-};
+    };
 
-}
+  }
 }

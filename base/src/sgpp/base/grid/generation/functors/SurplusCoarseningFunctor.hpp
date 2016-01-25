@@ -33,11 +33,11 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~SurplusCoarseningFunctor();
+        virtual ~SurplusCoarseningFunctor() override;
 
-        virtual float_t operator()(GridStorage* storage, size_t seq);
+        virtual float_t operator()(GridStorage* storage, size_t seq) override;
 
-        virtual float_t start();
+        virtual float_t start() override;
 
         size_t getRemovementsNum();
 

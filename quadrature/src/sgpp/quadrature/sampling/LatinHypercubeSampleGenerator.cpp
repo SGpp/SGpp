@@ -33,7 +33,7 @@ namespace SGPP {
         }
       }
 
-       shuffleStrataSequence();
+      shuffleStrataSequence();
     }
 
     LatinHypercubeSampleGenerator::~LatinHypercubeSampleGenerator() {

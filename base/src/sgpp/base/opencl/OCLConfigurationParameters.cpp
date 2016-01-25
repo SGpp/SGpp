@@ -62,8 +62,8 @@ namespace SGPP {
     }
 
     std::shared_ptr<ConfigurationParameters> OCLConfigurationParameters::clone() {
-        return std::make_shared<OCLConfigurationParameters>(*this);
-//        return std::shared_ptr<ConfigurationParameters>(new OCLConfigurationParameters(*this));
+      return std::make_shared<OCLConfigurationParameters>(*this);
+      //        return std::shared_ptr<ConfigurationParameters>(new OCLConfigurationParameters(*this));
     }
 
   }

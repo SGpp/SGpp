@@ -17,45 +17,48 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-class OperationPiecewiseConstantRegression {
-    base::DataMatrix &dataset;
-    base::DataVector &values;
-    size_t dims;
-public:
-    OperationPiecewiseConstantRegression(base::DataMatrix& dataset, base::DataVector &values) :
-            dataset(dataset), values(values), dims(dataset.getNcols()) {
-    }
+    class OperationPiecewiseConstantRegression {
+        base::DataMatrix& dataset;
+        base::DataVector& values;
+        size_t dims;
+      public:
+        OperationPiecewiseConstantRegression(base::DataMatrix& dataset, base::DataVector& values) :
+          dataset(dataset), values(values), dims(dataset.getNcols()) {
+        }
 
-    std::unique_ptr<PiecewiseConstantRegression::Node> hierarchize(float_t targetMSE, size_t targetMaxLevel) {
+        std::unique_ptr<PiecewiseConstantRegression::Node> hierarchize(float_t targetMSE, size_t targetMaxLevel) {
 
-        std::vector<float_t> xRoot(dims);
-        for (size_t d = 0; d < dims; d++) {
+          std::vector<float_t> xRoot(dims);
+
+          for (size_t d = 0; d < dims; d++) {
             xRoot[d] = 0.5;
-        }
+          }
 
-        std::vector<float_t> hRoot(dims);
-        for (size_t d = 0; d < dims; d++) {
+          std::vector<float_t> hRoot(dims);
+
+          for (size_t d = 0; d < dims; d++) {
             hRoot[d] = 0.5;
-        }
+          }
 
-        std::vector<size_t> rootSupport(dataset.getNrows());
-        for (size_t i = 0; i < dataset.getNrows(); i++) {
+          std::vector<size_t> rootSupport(dataset.getNrows());
+
+          for (size_t i = 0; i < dataset.getNrows(); i++) {
             rootSupport[i] = i;
+          }
+
+          std::unique_ptr<PiecewiseConstantRegression::Node> root = std::make_unique<PiecewiseConstantRegression::Node>(xRoot, hRoot, rootSupport,
+              dataset, values);
+
+          root->hierarchize(targetMSE, targetMaxLevel);
+
+          std::cout << "total node count: " << (root->getChildCount() + 1) << std::endl;
+          std::cout << "hierarchization max level: " << root->getHierarchizationMaxLevel() << std::endl;
+
+          return std::move(root);
         }
+    };
 
-        std::unique_ptr<PiecewiseConstantRegression::Node> root = std::make_unique<PiecewiseConstantRegression::Node>(xRoot, hRoot, rootSupport,
-                dataset, values);
-
-        root->hierarchize(targetMSE, targetMaxLevel);
-
-        std::cout << "total node count: " << (root->getChildCount() + 1) << std::endl;
-        std::cout << "hierarchization max level: " << root->getHierarchizationMaxLevel() << std::endl;
-
-        return std::move(root);
-    }
-};
-
-}
+  }
 }

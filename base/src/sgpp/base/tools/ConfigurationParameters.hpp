@@ -16,45 +16,45 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-class ConfigurationParameters {
-protected:
-    std::map<std::string, std::string> parameters;
-public:
-    ConfigurationParameters();
+    class ConfigurationParameters {
+      protected:
+        std::map<std::string, std::string> parameters;
+      public:
+        ConfigurationParameters();
 
-    ConfigurationParameters(std::string fileName,
-            std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
+        ConfigurationParameters(std::string fileName,
+                                std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
 
-    virtual ~ConfigurationParameters();
+        virtual ~ConfigurationParameters();
 
-    void set(const std::string key, std::string value);
+        void set(const std::string key, std::string value);
 
-    std::string &get(const std::string &key);
+        std::string& get(const std::string& key);
 
-    bool getAsBoolean(const std::string &key);
+        bool getAsBoolean(const std::string& key);
 
-    uint64_t getAsUnsigned(const std::string &key);
+        uint64_t getAsUnsigned(const std::string& key);
 
-    std::vector<std::string> getAsList(const std::string &key);
+        std::vector<std::string> getAsList(const std::string& key);
 
-    void readFromMap(std::map<std::string, std::string> &parametersMap);
+        void readFromMap(std::map<std::string, std::string>& parametersMap);
 
-    void readFromFile(std::string fileName);
+        void readFromFile(std::string fileName);
 
-    virtual std::shared_ptr<ConfigurationParameters> clone() = 0;
+        virtual std::shared_ptr<ConfigurationParameters> clone() = 0;
 
-    std::vector<std::string> getKeys();
+        std::vector<std::string> getKeys();
 
-    void writeToFile(std::string fileName);
+        void writeToFile(std::string fileName);
 
-    void clear();
+        void clear();
 
-private:
-    std::vector<std::string> split(const std::string& s, char delim);
-};
+      private:
+        std::vector<std::string> split(const std::string& s, char delim);
+    };
 
-}
+  }
 }
 

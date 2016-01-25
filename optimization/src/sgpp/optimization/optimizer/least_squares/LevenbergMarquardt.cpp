@@ -50,6 +50,9 @@ namespace SGPP {
         sleSolver(sleSolver) {
       }
 
+      LevenbergMarquardt::~LevenbergMarquardt() {
+      }
+
       void LevenbergMarquardt::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (Levenberg-Marquardt)...");
 

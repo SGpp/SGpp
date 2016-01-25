@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 
   cout << "# loading file: " << filename << endl;
   SGPP::datadriven::Dataset dataset = SGPP::datadriven::ARFFTools::readARFF(filename);
-  SGPP::base::DataMatrix &samples = dataset.getTrainingData();
+  SGPP::base::DataMatrix& samples = dataset.getTrainingData();
 
   // configure grid
   cout << "# create grid config" << endl;

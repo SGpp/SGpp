@@ -13,39 +13,39 @@
 
 namespace json {
 
-TextNode::TextNode() :
+  TextNode::TextNode() :
     value() {
-}
-
-void TextNode::parse(std::vector<Token> &stream) {
-//create new text node
-  if (stream[0].type == TokenType::STRING) {
-    this->value = stream[0].value;
-    stream.erase(stream.begin());
-  } else {
-    throw json_exception("expected string value");
   }
-}
 
-void TextNode::serialize(std::ofstream &outFile, size_t indentWidth) {
-  outFile << "\"" << this->value << "\"";
-}
+  void TextNode::parse(std::vector<Token>& stream) {
+    //create new text node
+    if (stream[0].type == TokenType::STRING) {
+      this->value = stream[0].value;
+      stream.erase(stream.begin());
+    } else {
+      throw json_exception("expected string value");
+    }
+  }
 
-std::string &TextNode::get() {
-  return this->value;
-}
+  void TextNode::serialize(std::ofstream& outFile, size_t indentWidth) {
+    outFile << "\"" << this->value << "\"";
+  }
 
-void TextNode::set(const std::string &value) {
-  this->value = value;
-}
+  std::string& TextNode::get() {
+    return this->value;
+  }
 
-size_t TextNode::size() {
-  return 1;
-}
+  void TextNode::set(const std::string& value) {
+    this->value = value;
+  }
 
-Node *TextNode::clone() {
-  TextNode *newNode = new TextNode(*this);
-  return newNode;
-}
+  size_t TextNode::size() {
+    return 1;
+  }
+
+  Node* TextNode::clone() {
+    TextNode* newNode = new TextNode(*this);
+    return newNode;
+  }
 
 }

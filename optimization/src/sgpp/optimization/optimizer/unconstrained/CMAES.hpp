@@ -34,12 +34,17 @@ namespace SGPP {
           CMAES(ScalarFunction& f,
                 size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
 
-          void optimize();
+          /**
+           * Destructor.
+           */
+          virtual ~CMAES() override;
+
+          virtual void optimize() override;
 
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
       };
 
     }

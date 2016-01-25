@@ -34,13 +34,13 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~PeriodicGrid();
+        virtual ~PeriodicGrid() override;
 
-        virtual SGPP::base::GridType getType();
+        virtual SGPP::base::GridType getType() override;
 
-        virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator() override;
 
-        virtual const SBasis& getBasis();
+        virtual const SBasis& getBasis() override;
 
         static Grid* unserialize(std::istream& istr);
 

@@ -13,26 +13,6 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp>
 
-#include <sgpp/optimization/function/scalar/test/Ackley.hpp>
-#include <sgpp/optimization/function/scalar/test/Beale.hpp>
-#include <sgpp/optimization/function/scalar/test/Branin.hpp>
-#include <sgpp/optimization/function/scalar/test/Easom.hpp>
-#include <sgpp/optimization/function/scalar/test/Eggholder.hpp>
-#include <sgpp/optimization/function/scalar/test/GoldsteinPrice.hpp>
-#include <sgpp/optimization/function/scalar/test/Griewank.hpp>
-#include <sgpp/optimization/function/scalar/test/Hartman3.hpp>
-#include <sgpp/optimization/function/scalar/test/Hartman6.hpp>
-#include <sgpp/optimization/function/scalar/test/Himmelblau.hpp>
-#include <sgpp/optimization/function/scalar/test/HoelderTable.hpp>
-#include <sgpp/optimization/function/scalar/test/Michalewicz.hpp>
-#include <sgpp/optimization/function/scalar/test/Mladineo.hpp>
-#include <sgpp/optimization/function/scalar/test/Rastrigin.hpp>
-#include <sgpp/optimization/function/scalar/test/Rosenbrock.hpp>
-#include <sgpp/optimization/function/scalar/test/SHCB.hpp>
-#include <sgpp/optimization/function/scalar/test/Schwefel.hpp>
-#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
-#include <sgpp/optimization/function/scalar/test/TestFunction.hpp>
-
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
@@ -50,11 +30,13 @@ class ScalarTestFunction : public ScalarFunction {
   public:
     ScalarTestFunction(size_t d) : ScalarFunction(d) {}
 
-    SGPP::float_t eval(const base::DataVector& x) {
+    virtual ~ScalarTestFunction() override {}
+
+    virtual SGPP::float_t eval(const base::DataVector& x) override {
       return x.sum();
     }
 
-    virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
+    virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override {
       clone = std::unique_ptr<ScalarFunction>(
                 new ScalarTestFunction(*this));
     }
@@ -64,8 +46,10 @@ class ScalarTestGradient : public ScalarFunctionGradient {
   public:
     ScalarTestGradient(size_t d) : ScalarFunctionGradient(d) {}
 
-    SGPP::float_t eval(const base::DataVector& x,
-                       base::DataVector& gradient) {
+    virtual ~ScalarTestGradient() override {}
+
+    virtual SGPP::float_t eval(const base::DataVector& x,
+                               base::DataVector& gradient) override {
       for (size_t t = 0; t < d; t++) {
         gradient[t] = static_cast<SGPP::float_t>(t) * x[t];
       }
@@ -73,7 +57,7 @@ class ScalarTestGradient : public ScalarFunctionGradient {
       return x.sum();
     }
 
-    virtual void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+    virtual void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
       clone = std::unique_ptr<ScalarFunctionGradient>(
                 new ScalarTestGradient(*this));
     }
@@ -83,9 +67,11 @@ class ScalarTestHessian : public ScalarFunctionHessian {
   public:
     ScalarTestHessian(size_t d) : ScalarFunctionHessian(d) {}
 
-    SGPP::float_t eval(const base::DataVector& x,
-                       base::DataVector& gradient,
-                       base::DataMatrix& hessian) {
+    virtual ~ScalarTestHessian() override {}
+
+    virtual SGPP::float_t eval(const base::DataVector& x,
+                               base::DataVector& gradient,
+                               base::DataMatrix& hessian) override {
       for (size_t t = 0; t < d; t++) {
         gradient[t] = static_cast<SGPP::float_t>(t) * x[t];
 
@@ -98,7 +84,7 @@ class ScalarTestHessian : public ScalarFunctionHessian {
       return x.sum();
     }
 
-    virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const {
+    virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const override {
       clone = std::unique_ptr<ScalarFunctionHessian>(
                 new ScalarTestHessian(*this));
     }
@@ -108,14 +94,16 @@ class VectorTestFunction : public VectorFunction {
   public:
     VectorTestFunction(size_t d, size_t m) : VectorFunction(d, m) {}
 
-    void eval(const base::DataVector& x,
-              base::DataVector& value) {
+    virtual ~VectorTestFunction() override {}
+
+    virtual void eval(const base::DataVector& x,
+                      base::DataVector& value) override {
       for (size_t i = 0; i < m; i++) {
         value[i] = static_cast<SGPP::float_t>(i) * x.sum();
       }
     }
 
-    virtual void clone(std::unique_ptr<VectorFunction>& clone) const {
+    virtual void clone(std::unique_ptr<VectorFunction>& clone) const override {
       clone = std::unique_ptr<VectorFunction>(
                 new VectorTestFunction(*this));
     }
@@ -125,9 +113,11 @@ class VectorTestGradient : public VectorFunctionGradient {
   public:
     VectorTestGradient(size_t d, size_t m) : VectorFunctionGradient(d, m) {}
 
-    void eval(const base::DataVector& x,
-              base::DataVector& value,
-              base::DataMatrix& gradient) {
+    virtual ~VectorTestGradient() override {}
+
+    virtual void eval(const base::DataVector& x,
+                      base::DataVector& value,
+                      base::DataMatrix& gradient) override {
       for (size_t i = 0; i < m; i++) {
         value[i] = static_cast<SGPP::float_t>(i) * x.sum();
 
@@ -138,7 +128,7 @@ class VectorTestGradient : public VectorFunctionGradient {
       }
     }
 
-    virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
+    virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const override {
       clone = std::unique_ptr<VectorFunctionGradient>(
                 new VectorTestGradient(*this));
     }
@@ -148,10 +138,12 @@ class VectorTestHessian : public VectorFunctionHessian {
   public:
     VectorTestHessian(size_t d, size_t m) : VectorFunctionHessian(d, m) {}
 
-    void eval(const base::DataVector& x,
-              base::DataVector& value,
-              base::DataMatrix& gradient,
-              std::vector<base::DataMatrix>& hessian) {
+    virtual ~VectorTestHessian() override {}
+
+    virtual void eval(const base::DataVector& x,
+                      base::DataVector& value,
+                      base::DataMatrix& gradient,
+                      std::vector<base::DataMatrix>& hessian) override {
       for (size_t i = 0; i < m; i++) {
         value[i] = static_cast<SGPP::float_t>(i) * x.sum();
 
@@ -168,7 +160,7 @@ class VectorTestHessian : public VectorFunctionHessian {
       }
     }
 
-    virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const {
+    virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const override {
       clone = std::unique_ptr<VectorFunctionHessian>(
                 new VectorTestHessian(*this));
     }
@@ -566,135 +558,6 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
           BOOST_CHECK_EQUAL(hessian1[j](t, t2), hessian2[j](t, t2));
         }
       }
-    }
-  }
-}
-
-BOOST_AUTO_TEST_CASE(TestTestFunctions) {
-  // Test SGPP::optimization::test_functions::TestFunction.
-  Printer::getInstance().setVerbosity(-1);
-  RandomNumberGenerator::getInstance().setSeed(42);
-
-  const size_t d = 10;
-  std::vector<std::unique_ptr<test_functions::TestFunction>> testFunctions;
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Ackley(d))));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Beale())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Branin())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Easom())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Eggholder())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::GoldsteinPrice())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Griewank(d))));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Hartman3())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Hartman6())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Himmelblau())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::HoelderTable())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Michalewicz())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Mladineo())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Rastrigin(d))));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Rosenbrock(d))));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Schwefel(d))));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::SHCB())));
-  testFunctions.push_back(
-    std::move(std::unique_ptr<test_functions::TestFunction>(
-                new test_functions::Sphere(d))));
-
-  for (const auto& fcn : testFunctions) {
-    const size_t d = fcn->getNumberOfParameters();
-
-    // test cloning
-    std::unique_ptr<ScalarFunction> fcn2(nullptr);
-    fcn->clone(fcn2);
-
-    // check displacement
-    const SGPP::float_t stdDev = 0.01;
-    fcn->generateDisplacement(stdDev);
-    BOOST_CHECK_EQUAL(fcn->getStandardDeviation(), stdDev);
-    base::DataVector displacement(0);
-    fcn->getDisplacement(displacement);
-
-    // displace function randomly
-    fcn->generateDisplacement();
-
-    // generate random point, displace and reverse
-    base::DataVector xl(d);
-
-    for (size_t t = 0; t < d; t++) {
-      xl[t] = RandomNumberGenerator::getInstance().getUniformRN();
-    }
-
-    base::DataVector x(xl);
-    fcn->displaceVector(x);
-    const SGPP::float_t f1 = fcn->evalUndisplaced(x);
-    fcn->reverseDisplaceVector(x);
-    const SGPP::float_t f2 = fcn->eval(x);
-
-    // test displaceVector/reverseDisplaceVector
-    for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_CLOSE(xl[t], x[t], (use_double_precision ? 1e-10 : 1e-5));
-    }
-
-    // test eval/evalUndisplaced
-    BOOST_CHECK_EQUAL(f1, f2);
-
-    base::DataVector xOpt(0);
-    const SGPP::float_t fOpt = fcn->getOptimalPoint(xOpt);
-
-    // test minimal point
-    BOOST_CHECK_EQUAL(xOpt.getSize(), d);
-
-    for (size_t t = 0; t < d; t++) {
-      BOOST_CHECK_GE(xOpt[t], 0.0);
-      BOOST_CHECK_LE(xOpt[t], 1.0);
-    }
-
-#if USE_DOUBLE_PRECISION
-    BOOST_CHECK_SMALL(fOpt - fcn->eval(xOpt), 1e-10);
-#else
-    BOOST_CHECK_SMALL(fOpt - fcn->eval(xOpt), 1e-6f);
-#endif /* USE_DOUBLE_PRECISION */
-
-    // test if xopt is minimal point for a sample of random points
-    for (size_t i = 0; i < 1000; i++) {
-      for (size_t t = 0; t < d; t++) {
-        x[t] = RandomNumberGenerator::getInstance().getUniformRN();
-      }
-
-      // use cloned function to test the cloning
-      BOOST_CHECK_GE(fcn2->eval(x), fOpt);
     }
   }
 }

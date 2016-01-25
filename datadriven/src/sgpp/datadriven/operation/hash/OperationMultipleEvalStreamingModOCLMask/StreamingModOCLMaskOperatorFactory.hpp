@@ -14,10 +14,10 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMask/OperationMultiEvalStreamingModOCLMask.hpp>
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-base::OperationMultipleEval* createStreamingModOCLMaskConfigured(base::Grid& grid, base::DataMatrix& dataset,
-SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
+    base::OperationMultipleEval* createStreamingModOCLMaskConfigured(base::Grid& grid, base::DataMatrix& dataset,
+        SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
-}
+  }
 }

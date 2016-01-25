@@ -19,76 +19,83 @@
 
 // function to reconstruct
 SGPP::float_t f(std::vector<SGPP::float_t> point) {
-    return 16.0 * (point[0] - 1) * point[0] * (point[1] - 1) * point[1];
+  return 16.0 * (point[0] - 1) * point[0] * (point[1] - 1) * point[1];
 }
 
 // function to reconstruct
 SGPP::float_t f(SGPP::base::DataVector point) {
-    return 16.0 * (point[0] - 1) * point[0] * (point[1] - 1) * point[1];
+  return 16.0 * (point[0] - 1) * point[0] * (point[1] - 1) * point[1];
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
-    size_t dim = 2;
-    size_t samplePoints = 200;
+  size_t dim = 2;
+  size_t samplePoints = 200;
 
-    SGPP::base::DataMatrix dataset(0, dim);
-    SGPP::base::DataVector values(samplePoints);
+  SGPP::base::DataMatrix dataset(0, dim);
+  SGPP::base::DataVector values(samplePoints);
 
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<SGPP::float_t> dist(0.0, 1.0);
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_real_distribution<SGPP::float_t> dist(0.0, 1.0);
 
-    std::ofstream sampleFile;
-    sampleFile.open("sampleFile.csv");
+  std::ofstream sampleFile;
+  sampleFile.open("sampleFile.csv");
 
-    for (size_t sample = 0; sample < samplePoints; sample++) {
-        std::vector<SGPP::float_t> point(dim);
-        for (size_t d = 0; d < dim; d++) {
-            point[d] = dist(mt);
-            sampleFile << point[d] << ", ";
-        }
-        dataset.appendRow(point);
-        values[sample] = f(point);
-        sampleFile << values[sample] << std::endl;
+  for (size_t sample = 0; sample < samplePoints; sample++) {
+    std::vector<SGPP::float_t> point(dim);
+
+    for (size_t d = 0; d < dim; d++) {
+      point[d] = dist(mt);
+      sampleFile << point[d] << ", ";
     }
-    sampleFile.close();
 
-    SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressor(dataset, values);
+    dataset.appendRow(point);
+    values[sample] = f(point);
+    sampleFile << values[sample] << std::endl;
+  }
 
-    std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> node = piecewiseRegressor.hierarchize(0.001, 10);
+  sampleFile.close();
 
-//    std::ofstream resultFile;
-//    resultFile.open("resultFile.csv");
-//
-//    for (size_t sample = 0; sample < samplePoints; sample++) {
-//        vector<SGPP::float_t> point(dim);
-//        for (size_t d = 0; d < dim; d++) {
-//            point[d] = dist(mt);
-//            resultFile << point[d] << ", ";
-//        }
-//        SGPP::float_t eval = node->evaluate(point);
-//        resultFile << eval << std::endl;
-//    }
-//    resultFile.close();
+  SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressor(dataset, values);
 
-    std::ofstream resultFile;
-    resultFile.open("resultFile.csv");
+  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> node = piecewiseRegressor.hierarchize(0.001, 10);
 
-    for (SGPP::float_t testX = 0; testX <= 1.0; testX += 0.01f) {
-        for (SGPP::float_t testY = 0; testY <= 1.0; testY += 0.01f) {
-            std::vector<SGPP::float_t> point = { testX, testY };
-            for (size_t d = 0; d < dim; d++) {
-                resultFile << point[d] << ", ";
-            }
-            SGPP::float_t eval = node->evaluate(point);
-            resultFile << eval << std::endl;
-        }
-        resultFile << std::endl;
+  //    std::ofstream resultFile;
+  //    resultFile.open("resultFile.csv");
+  //
+  //    for (size_t sample = 0; sample < samplePoints; sample++) {
+  //        vector<SGPP::float_t> point(dim);
+  //        for (size_t d = 0; d < dim; d++) {
+  //            point[d] = dist(mt);
+  //            resultFile << point[d] << ", ";
+  //        }
+  //        SGPP::float_t eval = node->evaluate(point);
+  //        resultFile << eval << std::endl;
+  //    }
+  //    resultFile.close();
+
+  std::ofstream resultFile;
+  resultFile.open("resultFile.csv");
+
+  for (SGPP::float_t testX = 0; testX <= 1.0; testX += 0.01f) {
+    for (SGPP::float_t testY = 0; testY <= 1.0; testY += 0.01f) {
+      std::vector<SGPP::float_t> point = { testX, testY };
+
+      for (size_t d = 0; d < dim; d++) {
+        resultFile << point[d] << ", ";
+      }
+
+      SGPP::float_t eval = node->evaluate(point);
+      resultFile << eval << std::endl;
     }
-    resultFile.close();
 
-    std::cout << "all done!" << std::endl;
-    return 0;
+    resultFile << std::endl;
+  }
+
+  resultFile.close();
+
+  std::cout << "all done!" << std::endl;
+  return 0;
 }
 
