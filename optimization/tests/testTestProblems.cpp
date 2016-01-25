@@ -28,13 +28,6 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
-const bool use_double_precision =
-#if USE_DOUBLE_PRECISION
-  true;
-#else
-  false;
-#endif /* USE_DOUBLE_PRECISION */
-
 using namespace SGPP;
 using namespace SGPP::optimization;
 
