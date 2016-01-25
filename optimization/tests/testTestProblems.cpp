@@ -28,13 +28,6 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
-const bool use_double_precision =
-#if USE_DOUBLE_PRECISION
-  true;
-#else
-  false;
-#endif /* USE_DOUBLE_PRECISION */
-
 using namespace SGPP;
 using namespace SGPP::optimization;
 
@@ -43,7 +36,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
-  const size_t d = 10;
+  const size_t d = 6;
   std::vector<std::unique_ptr<test_problems::UnconstrainedTestProblem>> testProblems;
   testProblems.push_back(
     std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
@@ -165,12 +158,12 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
       BOOST_CHECK_LE(xOpt[t], 1.0);
     }
 
-    if (use_double_precision) {
-      BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-12);
-    } else {
-      BOOST_CHECK_SMALL(fOpt - f.eval(xOpt),
-                        static_cast<SGPP::float_t>(1e-6));
-    }
+#if USE_DOUBLE_PRECISION
+    BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-12);
+#else
+    BOOST_CHECK_SMALL(fOpt - f.eval(xOpt),
+                      static_cast<SGPP::float_t>(1e-3));
+#endif
 
     // test if xopt is minimal point for a sample of random points
     for (size_t i = 0; i < 1000; i++) {
