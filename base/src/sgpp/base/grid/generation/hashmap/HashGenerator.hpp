@@ -115,32 +115,21 @@ namespace SGPP {
          *
          * @param storage Hashmap, that stores the grid points
          * @param level maximum level of the sparse grid (non-negative value)
-         * @param bTruncatedBoundaries true -> generate sparse grid with less points on the boundary, pentagon cut through subspace scheme
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted
          */
-        void regularWithBoundaries(GridStorage* storage, level_t level, bool bTruncatedBoundaries) {
+        void regularWithBoundaries(GridStorage* storage,
+                                   level_t level,
+                                   level_t boundaryLevel = 1) {
           if (storage->size() > 0) {
             throw generation_exception("storage not empty");
           }
 
           index_type index(storage->dim());
 
-          if (bTruncatedBoundaries == true) {
-            if (level == 0) {
-              for (size_t d = 0; d < storage->dim(); d++) {
-                index.push(d, 0, 0, false);
-              }
-
-              this->boundaries_rec(storage, index, storage->dim() - 1, 0, 0);
-            } else {
-              //        for(size_t d = 0; d < storage->dim(); d++)
-              //        {
-              //          index.push(d, 1, 1, false);
-              //        }
-              //
-              //        this->boundaries_truncated_rec(storage, index, storage->dim()-1, storage->dim(), level + storage->dim() - 1, false);
-
-              this->regular_boundary_truncated_iter(storage, level);
-            }
+          if (boundaryLevel >= 1) {
+            this->regular_boundary_truncated_iter(storage, level,
+                                                  boundaryLevel);
           } else {
             /* new grid generation
              *
@@ -397,36 +386,45 @@ namespace SGPP {
           }
         }
 
-
         /**
-         * Generate a regular sparse grid iteratively (much faster than recursively)
-         * with truncated boundary.
+         * Generate a regular sparse grid iteratively (much faster than
+         * recursively) with truncated boundary, i.e., the boundary grid points
+         * are inserted at a higher level > 0.
          *
-         * @param storage Pointer to storage object into which the grid points should be stored
-         * @param n Level of regular sparse grid
+         * @param storage       pointer to storage object into which
+         *                      the grid points should be stored
+         * @param n             level of regular sparse grid
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted; must be >= 1
          */
-        void regular_boundary_truncated_iter(GridStorage* storage, level_t n) {
-          if (storage->dim() == 0)
+        void regular_boundary_truncated_iter(GridStorage* storage,
+                                             level_t n,
+                                             level_t boundaryLevel = 1) {
+          const size_t dim = storage->dim();
+
+          if (dim == 0) {
             return;
+          }
 
-          index_type idx_1d(storage->dim());
+          index_type idx_1d(dim);
 
-          for (size_t d = 0; d < storage->dim(); d++) {
+          for (size_t d = 0; d < dim; d++) {
             idx_1d.push(d, 1, 1, false);
           }
 
-          // Generate 1D grid in first dimension
-          for (level_t l = 1; l <= n; l++) {
-            // generate boundary basis functions
-            if (l == 1) {
-              idx_1d.push(0, 0, 0, false);
-              storage->insert(idx_1d);
-              idx_1d.push(0, 0, 1, false);
-              storage->insert(idx_1d);
-            }
+          // generate boundary basis functions
+          if (boundaryLevel <= n) {
+            idx_1d.push(0, 0, 0, false);
+            storage->insert(idx_1d);
 
+            idx_1d.push(0, 0, 1, false);
+            storage->insert(idx_1d);
+          }
+
+          // generate 1D grid in first dimension
+          for (level_t l = 1; l <= n; l++) {
             // generate inner basis function
-            for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+            for (index_t i = 1; i < static_cast<index_t>(1) << l; i += 2) {
               if (l == n) {
                 idx_1d.push(0, l, i, true);
               } else {
@@ -438,54 +436,58 @@ namespace SGPP {
           }
 
           // Generate grid points in all other dimensions:
-          // loop dim times over intermediate grid, take all grid points and modify them
-          // in current dimension d
-          for (size_t d = 1; d < storage->dim(); d++) {
+          // loop dim times over intermediate grid,
+          // take all grid points and modify them in current dimension d
+          for (size_t d = 1; d < dim; d++) {
             // current size
-            size_t grid_size = storage->size();
+            const size_t gridSize = storage->size();
 
             // loop over all current grid points
-            for (size_t g = 0; g < grid_size; g++) {
-              // add missing Level 1
-              level_t level_sum = (level_t)((storage->dim() - 1) - d);
-              bool has_level_zero = false;
+            for (size_t g = 0; g < gridSize; g++) {
+              // add missing level 1
+              level_t levelSum = static_cast<level_t>((dim - 1) - d);
+              bool hasLevelZero = false;
               index_type idx(*storage->get(g));
+              bool firstPoint = true;
 
-              // Calculate level-sum
+              // calculate level sum
               for (size_t sd = 0; sd < d; sd++) {
                 level_t tmp = idx.getLevel(sd);
 
                 if (tmp == 0) {
-                  tmp = 1;
-                  has_level_zero = true;
+                  tmp = boundaryLevel;
+                  hasLevelZero = true;
                 }
 
-                level_sum += tmp;
+                levelSum += tmp;
               }
 
-              for (level_t l = 1; l + level_sum <= n + storage->dim() - 1; l++) {
-                // generate boundary basis functions
-                if (l == 1) {
-                  idx.push(d, 0, 0, false);
-                  storage->update(idx, g);
+              // generate boundary basis functions
+              if (boundaryLevel + levelSum <= n + dim - 1) {
+                idx.push(d, 0, 0, false);
+                storage->update(idx, g);
 
-                  idx.push(d, 0, 1, false);
-                  storage->insert(idx);
-                }
+                idx.push(d, 0, 1, false);
+                storage->insert(idx);
 
+                firstPoint = false;
+              }
+
+              for (level_t l = 1; l + levelSum <= n + dim - 1; l++) {
                 // generate inner basis functions
-                for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
-                  if ((l + level_sum) == n + storage->dim() - 1) {
-                    if (has_level_zero == false) {
-                      idx.push(d, l, i, true);
-                    } else {
-                      idx.push(d, l, i, false);
-                    }
+                for (index_t i = 1; i < static_cast<index_t>(1) << l; i += 2) {
+                  if ((l + levelSum) == n + dim - 1) {
+                    idx.push(d, l, i, !hasLevelZero);
                   } else {
                     idx.push(d, l, i, false);
                   }
 
-                  storage->insert(idx);
+                  if (firstPoint) {
+                    storage->update(idx, g);
+                    firstPoint = false;
+                  } else {
+                    storage->insert(idx);
+                  }
                 }
               }
             }

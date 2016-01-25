@@ -109,6 +109,12 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~ComponentScalarFunctionHessian() override {
+        }
+
+        /**
          * @param[in] x evaluation point \f$\vec{x} \in [0, 1]^n\f$
          * @param[out] gradient \f$\nabla_{\vec{x}} g(\vec{x})\f$
          * @param[out] hessian \f$\nabla_{\vec{x}}^2 g(\vec{x})\f$
@@ -116,9 +122,9 @@ namespace SGPP {
          *              where \f$(x_1, \dotsc, x_n) =
          *              (y_{i_1}, \dotsc, y_{i_n})\f$
          */
-        inline float_t eval(const base::DataVector& x,
-                            base::DataVector& gradient,
-                            base::DataMatrix& hessian) {
+        inline virtual float_t eval(const base::DataVector& x,
+                                    base::DataVector& gradient,
+                                    base::DataMatrix& hessian) override {
           size_t t2 = 0, t4;
 
           // select entries of x which correspond to NAN entries in
@@ -181,7 +187,7 @@ namespace SGPP {
          * @param[out] clone pointer to cloned object
          */
         virtual void clone(
-          std::unique_ptr<ScalarFunctionHessian>& clone) const {
+          std::unique_ptr<ScalarFunctionHessian>& clone) const override {
           clone = std::unique_ptr<ScalarFunctionHessian>(
                     new ComponentScalarFunctionHessian(*this));
         }

@@ -38,6 +38,12 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~BsplineModifiedBasis() override {
+        }
+
+        /**
          * @param x     evaluation point
          * @param p     B-spline degree
          * @return      value of modified uniform B-spline (e.g. index == 1)
@@ -1147,7 +1153,7 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of modified B-spline basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           if (l == 1) {
             return 1.0;
           }

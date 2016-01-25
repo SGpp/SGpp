@@ -39,7 +39,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~WeightedErrorRefinementFunctor();
+        virtual ~WeightedErrorRefinementFunctor() override;
 
 
         /*
@@ -59,9 +59,9 @@ namespace SGPP {
          *
          * n = number of data points
          */
-        virtual float_t operator()(GridStorage* storage, size_t seq);
+        virtual float_t operator()(GridStorage* storage, size_t seq) override;
 
-        virtual float_t start();
+        virtual float_t start() override;
 
         size_t getRefinementsNum();
 

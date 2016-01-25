@@ -36,7 +36,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~HierarchisationLinearStretchedBoundary();
+        virtual ~HierarchisationLinearStretchedBoundary() override;
 
         /**
          * Implements operator() needed by the sweep class during the grid traversal. This function
@@ -52,7 +52,7 @@ namespace SGPP {
          * @param index a iterator object of the grid
          * @param dim current fixed dimension of the 'execution direction'
          */
-        virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim);
+        virtual void operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) override;
     };
 
     // namespace detail

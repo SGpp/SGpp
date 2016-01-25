@@ -5,7 +5,7 @@
 
 #include <limits>
 
-#include "PredictiveRefinementDimension.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinementDimension.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 
 

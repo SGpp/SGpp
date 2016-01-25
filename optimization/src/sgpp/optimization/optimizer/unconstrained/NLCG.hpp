@@ -57,7 +57,12 @@ namespace SGPP {
                float_t epsilon = DEFAULT_EPSILON,
                float_t restartThreshold = DEFAULT_RESTART_THRESHOLD);
 
-          void optimize();
+          /**
+           * Destructor.
+           */
+          virtual ~NLCG() override;
+
+          virtual void optimize() override;
 
           /**
            * @return objective function gradient
@@ -117,7 +122,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
         protected:
           /// objective function gradient

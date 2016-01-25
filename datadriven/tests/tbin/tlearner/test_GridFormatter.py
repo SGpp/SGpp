@@ -63,6 +63,8 @@ class TestGridFormatter(unittest.TestCase):
         test_str = grid.serialize()
         self.assertEqual(test_str, self.correct_str)
 
+        os.remove(self.savefile)
+
 
 
 if __name__=="__main__":

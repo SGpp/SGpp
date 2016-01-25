@@ -102,7 +102,12 @@ namespace SGPP {
                  float_t p,
                  const sle_solver::SLESolver& sleSolver);
 
-          void optimize();
+          /**
+           * Destructor.
+           */
+          virtual ~Newton() override;
+
+          virtual void optimize() override;
 
           /**
            * @return objective function Hessian
@@ -182,7 +187,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
         protected:
           /// objective function Hessian

@@ -41,11 +41,16 @@ namespace SGPP {
                                   float_t adaptivity = DEFAULT_ADAPTIVITY);
 
         /**
+         * Destructor.
+         */
+        virtual ~IterativeGridGeneratorSOO() override;
+
+        /**
          * Generate the grid.
          *
          * @return true on success, otherwise false
          */
-        bool generate();
+        virtual bool generate() override;
 
         /*
          * @return            adaptivity (function of the form

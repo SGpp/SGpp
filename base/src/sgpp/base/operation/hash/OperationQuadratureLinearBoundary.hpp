@@ -27,7 +27,7 @@ namespace SGPP {
          */
         OperationQuadratureLinearBoundary(GridStorage* storage) : storage(storage) {}
 
-        virtual ~OperationQuadratureLinearBoundary() {}
+        virtual ~OperationQuadratureLinearBoundary() override {}
 
         /**
          * Quadrature for piecewise linear hat basis functions. Computes
@@ -35,7 +35,7 @@ namespace SGPP {
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual float_t doQuadrature(DataVector& alpha);
+        virtual float_t doQuadrature(DataVector& alpha) override;
 
       protected:
         // Pointer to the grid's GridStorage object

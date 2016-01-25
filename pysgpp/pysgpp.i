@@ -7,6 +7,12 @@
 // %feature("autodoc", "2");
 // %feature("docstring");
 
+// fix needed for MinGW: cmath has to be included before Python.h,
+// otherwise there are g++ errors like "Error: '::hypot' has not been declared"
+%begin %{
+    #include <cmath>
+%}
+
 %include "base/src/sgpp/globaldef.hpp"
 
 %include "stl.i"
@@ -39,7 +45,7 @@
 %}
 
 // -----------------------------------------------------------
-// needed for windows wrapper since swig does not understand
+// needed for MSVC++ wrapper since swig does not understand
 // that unsigned int is equal to size_t and generates
 // template specifications twice
 #ifdef SWIGWIN
@@ -89,37 +95,66 @@ import_array();
 #endif
 %}
 
+
 #ifdef PYDOC
-%include "doc.i"
+%include "base_doc.i"
 #endif
 
 %include "base/build/pysgpp/base.i"
 
 #ifdef SG_DATADRIVEN
+#ifdef PYDOC
+%include "datadriven_doc.i"
+#endif
+
 %include "datadriven/build/pysgpp/datadriven.i"
 #endif
 
 #ifdef SG_PDE
+#ifdef PYDOC
+%include "pde_doc.i"
+#endif
+
 %include "pde/build/pysgpp/pde.i"
 #endif
 
 #ifdef SG_FINANCE
+#ifdef PYDOC
+%include "finance_doc.i"
+#endif
+
 %include "finance/build/pysgpp/finance.i"
 #endif
 
 #ifdef SG_SOLVER
+#ifdef PYDOC
+%include "solver_doc.i"
+#endif
+
 %include "solver/build/pysgpp/solver.i"
 #endif
 
 #ifdef SG_QUADRATURE
+#ifdef PYDOC
+%include "quadrature_doc.i"
+#endif
+
 %include "quadrature/build/pysgpp/quadrature.i"
 #endif
 
 #ifdef SG_COMBIGRID
+#ifdef PYDOC
+%include "combigrid_doc.i"
+#endif
+
 %include "combigrid/build/pysgpp/combigrid.i"
 #endif
 
 #ifdef SG_OPTIMIZATION
+#ifdef PYDOC
+%include "optimization_doc.i"
+#endif
+
 %include "optimization/build/pysgpp/optimization.i"
 #endif
 

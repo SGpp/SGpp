@@ -34,7 +34,7 @@ namespace SGPP {
           ScalarFunction& f, base::Grid& grid, size_t N);
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
         virtual ~IterativeGridGenerator();
 

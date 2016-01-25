@@ -46,14 +46,14 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~operation_exception() throw() { }
+        virtual ~operation_exception() throw() override { }
 
         /**
          * throw method that have to be implemented
          *
          * @return returns the message specified in the constructor otherwise a general text
          */
-        virtual const char* what() const throw() {
+        virtual const char* what() const throw() override {
           if (msg) {
             return msg;
           } else {

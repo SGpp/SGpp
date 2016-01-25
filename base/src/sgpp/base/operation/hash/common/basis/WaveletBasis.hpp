@@ -21,12 +21,18 @@ namespace SGPP {
     class WaveletBasis: public Basis<LT, IT> {
       public:
         /**
+         * Destructor.
+         */
+        virtual ~WaveletBasis() override {
+        }
+
+        /**
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
          * @return      value of wavelet basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
           const float_t t = x * hInv - static_cast<float_t>(i);
 

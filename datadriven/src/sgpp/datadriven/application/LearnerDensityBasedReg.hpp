@@ -6,8 +6,8 @@
 #ifndef LEARNERDENSITYBASEDREG_HPP_
 #define LEARNERDENSITYBASEDREG_HPP_
 
-#include "LearnerBase.hpp"
-#include "Learner.hpp"
+#include <sgpp/datadriven/application/LearnerBase.hpp>
+#include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/pde/application/RegularizationConfiguration.hpp>
 
 #include <string>

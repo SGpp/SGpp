@@ -35,7 +35,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationHierarchisationModPoly() {}
+        virtual ~OperationHierarchisationModPoly() override {}
 
         /**
          * Implements the hierarchisation on a sprase grid with mod poly base functions
@@ -43,7 +43,7 @@ namespace SGPP {
          * @param node_values the functions values in the node base
          *
          */
-        virtual void doHierarchisation(DataVector& node_values);
+        virtual void doHierarchisation(DataVector& node_values) override;
 
         /**
          * Implements the dehierarchisation on a sprase grid with mod poly base functions
@@ -51,7 +51,7 @@ namespace SGPP {
          * @param alpha the coefficients of the sparse grid's base functions
          *
          */
-        virtual void doDehierarchisation(DataVector& alpha);
+        virtual void doDehierarchisation(DataVector& alpha) override;
 
       protected:
         /// Pointer to GridStorage object

@@ -6,7 +6,7 @@
 #ifndef OPERATIONQUADRATUREPOLYBOUNDARY_HPP
 #define OPERATIONQUADRATUREPOLYBOUNDARY_HPP
 
-#include "OperationQuadrature.hpp"
+#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 
@@ -28,14 +28,14 @@ namespace SGPP {
          */
         OperationQuadraturePolyBoundary(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
-        virtual ~OperationQuadraturePolyBoundary() {}
+        virtual ~OperationQuadraturePolyBoundary() override {}
 
         /**
          * Quadrature for piecewise polynomial basis functions of max. degree 3
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual float_t doQuadrature(DataVector& alpha);
+        virtual float_t doQuadrature(DataVector& alpha) override;
 
       protected:
         // Pointer to the grid's GridStorage object

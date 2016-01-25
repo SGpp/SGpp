@@ -182,6 +182,9 @@ namespace SGPP {
         kHist() {
       }
 
+      SquaredPenalty::~SquaredPenalty() {
+      }
+
       void SquaredPenalty::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (Squared Penalty)...");
 

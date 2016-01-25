@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombiGridDomain.hpp"
+#include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 
 combigrid::GridDomain::GridDomain(int dim , const std::vector<int>& levels,
                                   const std::vector<double>& min ,

@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "PoissonOperator.hpp"
-#include <math.h>
+#include <sgpp/combigrid/multigridFG/operators/PoissonOperator.hpp>
+#include <cmath>
 
 
 combigrid::PoissonOperator::PoissonOperator(const FullGridD* fg ,

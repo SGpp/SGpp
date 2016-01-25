@@ -30,6 +30,9 @@ namespace SGPP {
         eps(epsilon) {
       }
 
+      GradientDescent::~GradientDescent() {
+      }
+
       void GradientDescent::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (gradient descent)...");
 

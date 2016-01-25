@@ -5,7 +5,7 @@
 
 #include <iomanip>
 #include <algorithm>
-#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 
 #include <sgpp/globaldef.hpp>
 

@@ -25,6 +25,12 @@ namespace SGPP {
     class LinearStretchedBasis: public LinearBasis<LT, IT> {
       public:
         /**
+         * Destructor.
+         */
+        virtual ~LinearStretchedBasis() override {
+        }
+
+        /**
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
 

@@ -41,21 +41,27 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~WrapperVectorFunctionGradient() override {
+        }
+
+        /**
          * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] value    \f$g(\vec{x})\f$
          * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
          *                      \mathbb{R}^{m \times d}\f$
          */
-        inline void eval(const base::DataVector& x,
-                         base::DataVector& value,
-                         base::DataMatrix& gradient) {
+        inline virtual void eval(const base::DataVector& x,
+                                 base::DataVector& value,
+                                 base::DataMatrix& gradient) override {
           fGradient(x, value, gradient);
         }
 
         /**
          * @param[out] clone pointer to cloned object
          */
-        void clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
+        void clone(std::unique_ptr<VectorFunctionGradient>& clone) const override {
           clone = std::unique_ptr<VectorFunctionGradient>(
                     new WrapperVectorFunctionGradient(d, m, fGradient));
         }

@@ -43,6 +43,12 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~InterpolantScalarFunctionHessian() override {
+        }
+
+        /**
          * Evaluation of the function, its gradient and its Hessian.
          *
          * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
@@ -52,9 +58,9 @@ namespace SGPP {
          *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
          * @return              \f$f(\vec{x})\f$
          */
-        inline float_t eval(const base::DataVector& x,
-                            base::DataVector& gradient,
-                            base::DataMatrix& hessian) {
+        inline virtual float_t eval(const base::DataVector& x,
+                                    base::DataVector& gradient,
+                                    base::DataMatrix& hessian) override {
           for (size_t t = 0; t < d; t++) {
             if ((x[t] < 0.0) || (x[t] > 1.0)) {
               return INFINITY;
@@ -67,7 +73,7 @@ namespace SGPP {
         /**
          * @param[out] clone pointer to cloned object
          */
-        virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const {
+        virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const override {
           clone = std::unique_ptr<ScalarFunctionHessian>(
                     new InterpolantScalarFunctionHessian(grid, alpha));
         }
