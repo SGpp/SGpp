@@ -10,7 +10,7 @@
 #include <exception>
 #include <string>
 
-#include "Token.hpp"
+#include <sgpp/base/tools/json/Token.hpp>
 
 namespace json {
 

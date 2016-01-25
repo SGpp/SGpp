@@ -8,7 +8,7 @@
 #include <string>
 #include <sstream>
 
-#include "json_exception.hpp"
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 namespace json {
 

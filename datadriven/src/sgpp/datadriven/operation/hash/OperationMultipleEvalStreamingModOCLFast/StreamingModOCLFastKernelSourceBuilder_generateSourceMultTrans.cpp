@@ -5,9 +5,9 @@
  *      Author: pfandedd
  */
 
-#include "StreamingModOCLFastKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastKernelSourceBuilder.hpp>
 
-//#include "StreamingOCLParameters.hpp"
+//#include <StreamingOCLParameters.hpp>
 
 namespace SGPP {
   namespace datadriven {

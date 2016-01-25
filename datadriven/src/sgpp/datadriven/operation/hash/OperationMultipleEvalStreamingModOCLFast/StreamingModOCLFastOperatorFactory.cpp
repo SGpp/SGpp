@@ -8,7 +8,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include "StreamingModOCLFastOperatorFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastOperatorFactory.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {

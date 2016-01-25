@@ -15,7 +15,7 @@ On this page, we describe best coding practices for SG++.
 @section development_overview Overview
 - @ref development_testing
 - @ref development_doxygen
-- @ref development_styleguide
+- @ref development_coding
 
 
 
@@ -72,14 +72,9 @@ therefore, for modifications, please change <tt>Doxyfile_template</tt> instead.
 
 
 <!-- ############################################################# -->
-@section development_styleguide Style Guide
+@section development_coding Coding
 
-Compliance with the style guide is important to write good code.
-A style guide is more than a bunch of indentation rules;
-rather, it is the art of creating easily reusable, understandable, and
-refactorable code.
-
-@subsection development_styleguide_comments Comments
+@subsection development_coding_comments Comments
 
 The complete code has to be commented elaborately.
 The comments, together with the identifiers, have to enable others to
@@ -90,7 +85,12 @@ The comments have to be verbose enough so that one can understand what is
 going on without reading the code!
 Please use Doxygen-compatible comments for classes and methods.
 
-@subsection development_styleguide_style Style
+@subsection development_coding_style Style
+
+Compliance with the style guide is important to write good code.
+A style guide is more than a bunch of indentation rules;
+rather, it is the art of creating easily reusable, understandable, and
+refactorable code.
 
 We adhere mostly to the
 <a href="https://google.github.io/styleguide/cppguide.html" target="_blank">
@@ -102,7 +102,7 @@ The SG++ code style is defined by a set of
 parameters.
 It can be found in the file <tt>tools/astylerc</tt>.
 
-@subsection development_styleguide_naming Naming
+@subsection development_coding_naming Naming
 
 Naming:
 - Directories: all lowercase, underscore separated
@@ -115,9 +115,15 @@ Naming:
   (e.g., <tt>INITIAL_LEVEL</tt>)
 - Nothing starts with underscores (only system/builtin/compiler).
 
+@subsection development_coding_donts Don'ts
+
 Don't…
 - … include <tt>sgpp_MODULENAME.hpp</tt>.
   Only include the header files you require to avoid long building durations.
+- … use includes with quotation marks (<tt>include "Foo.hpp"</tt>);
+  use angle brackets instead (<tt>include &lt;Foo.hpp&gt;</tt>).
+- … use relative include paths (<tt>include &lt;../Foo.hpp&gt;</tt>).
+  Always use absolute paths (<tt>include &lt;sgpp/base/Foo.hpp&gt;</tt>).
 - … use <tt>using namespace</tt>.
 - … use tabs, use two spaces instead!
   Please configure your editor in order to do so!

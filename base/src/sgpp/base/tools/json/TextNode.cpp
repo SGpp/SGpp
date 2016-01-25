@@ -5,11 +5,11 @@
  *      Author: pfandedd
  */
 
-#include "TextNode.hpp"
+#include <sgpp/base/tools/json/TextNode.hpp>
 
 #include <fstream>
 
-#include "json_exception.hpp"
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 namespace json {
 

@@ -14,7 +14,7 @@
 
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
-//#include "StreamingOCLParameters.hpp"
+//#include <StreamingOCLParameters.hpp>
 
 namespace SGPP {
   namespace datadriven {

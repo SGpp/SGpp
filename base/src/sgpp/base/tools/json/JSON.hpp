@@ -13,8 +13,8 @@
 #include <memory>
 #include <iostream>
 
-#include "DictNode.hpp"
-#include "Token.hpp"
+#include <sgpp/base/tools/json/DictNode.hpp>
+#include <sgpp/base/tools/json/Token.hpp>
 
 namespace json {
 

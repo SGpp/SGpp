@@ -48,7 +48,10 @@ class GridDescriptor(object):
         Defines the polynomial base of the grid
         @param deg: degree of polynomial base as integer
         """
-        self.__deg = deg
+        if deg > 1:
+            self.__deg = deg
+        else:
+            print "Warning: GridDescriptor.withPolynomialBasis - deg < 2 ignored"
         return self
 
     def withBorder(self, border):

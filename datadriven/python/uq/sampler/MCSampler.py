@@ -18,12 +18,12 @@ class MCSampler(Sampler):
         self.__genObj = generator(self._dim, *args, **kws)
 
     @classmethod
-    def withNativeSampleGenerator(cls, params):
+    def withNaiveSampleGenerator(cls, params):
         return MCSampler(params, NaiveSampleGenerator)
 
-#     @classmethod
-#     def withStratifiedSampleGenerator(cls, params, strataPerDimension):
-#         return MCSampler(params, StratifiedSampleGenerator, strataPerDimension)
+    @classmethod
+    def withStratifiedSampleGenerator(cls, params, strataPerDimension):
+        return MCSampler(params, StratifiedSampleGenerator, strataPerDimension)
 
     @classmethod
     def withLatinHypercubeSampleGenerator(cls, params, nSamples):

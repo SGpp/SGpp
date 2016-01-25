@@ -291,6 +291,8 @@ if env['PYDOC'] and env['SG_PYTHON']:
   with open('moduleDoxy', 'r') as template:
     data = template.read()
     for module in moduleFolders:
+      if not env['SG_' + module.upper()]:
+        continue
       print module
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
         doxyFile.write(data.replace('$modname', module).replace('$quiet', 'NO' if env['VERBOSE'] else 'YES'))
@@ -300,7 +302,7 @@ if env['PYDOC'] and env['SG_PYTHON']:
       doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
 
       doxy2swig_command = "python pysgpp/doxy2swig.py -o -c " + ('' if env['VERBOSE'] else '-q') + " $SOURCE $TARGET"
-      doxy2swig = doxy_env.Command(os.path.join(module, 'doc/doc.i'), doxygen, doxy2swig_command)
+      doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
 
       for root, dirs, files in os.walk(os.path.join(module, 'src')):
         for file in files:

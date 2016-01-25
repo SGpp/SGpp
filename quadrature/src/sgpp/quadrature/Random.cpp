@@ -4,12 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/quadrature/Random.hpp>
-#include <cstdlib>
-#include <ctime>
-
-#ifdef USE_STD_RANDOM
-#include <random>
-#endif
 
 #include <sgpp/globaldef.hpp>
 
@@ -17,36 +11,29 @@ namespace SGPP {
   namespace quadrature {
 
     bool Random::is_seeded = false;
-#ifdef USE_STD_RANDOM
-    std::mt19937 Random::gen = std::mt19937();
-    std::uniform_int_distribution<int> Random::dist = std::uniform_int_distribution<int>(0, RAND_MAX);
-#endif
+    std::mt19937_64 Random::gen = std::mt19937_64();
+    std::uniform_int_distribution<std::uint64_t> Random::distInt = std::uniform_int_distribution<std::uint64_t>(0, RAND_MAX);
+    std::uniform_real_distribution<float_t> Random::distReal = std::uniform_real_distribution<float_t>(0, 1);
 
-    void Random::seed(int seed_value) {
-      if (seed_value >= 0) {
-#ifdef USE_STD_RANDOM
-        gen.seed(seed_value);
-#else
-        srand(seed_value);
-#endif
-        is_seeded = true;
-      }
+    void Random::seed(std::uint64_t seed_value) {
+      gen.seed(seed_value);
+      is_seeded = true;
     }
 
-    int Random::random() {
+    std::uint64_t Random::random_uint64() {
       if (!is_seeded) {
-        seed((int) std::time(NULL));
+        Random::seed(std::mt19937_64::default_seed);
       }
 
-#ifdef USE_STD_RANDOM
-      return dist(gen);
-#else
-      return rand();
-#endif
+      return distInt(gen);
     }
 
     float_t Random::random_double() {
-      return (float_t) (random()) / RAND_MAX;
+      if (!is_seeded) {
+        Random::seed(std::mt19937_64::default_seed);
+      }
+
+      return distReal(gen);
     }
 
   }

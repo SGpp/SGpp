@@ -47,10 +47,8 @@ int main(int argc, char** argv) {
                                 + " points: " + std::to_string((unsigned long long) adaptConfig.noPoints_) + " iterations: "
                                 + std::to_string((unsigned long long) SLESolverConfigRefine.maxIterations_);
 
-  double lambda = 0.000001;
-
   bool verbose = true;
-  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig, lambda,
+  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig,
                                         verbose);
 
   //learner.learn(kernelType, fileName);
@@ -82,7 +80,8 @@ int main(int argc, char** argv) {
     std::cout << "EvalType::STREAMING::OCLMP" << std::endl;
   }
 
-  learner.learn(configuration, fileName);
+  double lambda = 0.000001;
+  learner.learn(configuration, fileName, lambda);
   //learner.learnReference(fileName);
 
   //learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
