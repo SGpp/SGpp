@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
-  const size_t d = 10;
+  const size_t d = 6;
   std::vector<std::unique_ptr<test_problems::UnconstrainedTestProblem>> testProblems;
   testProblems.push_back(
     std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
     BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-12);
 #else
     BOOST_CHECK_SMALL(fOpt - f.eval(xOpt),
-                      static_cast<SGPP::float_t>(1e-6));
+                      static_cast<SGPP::float_t>(1e-3));
 #endif
 
     // test if xopt is minimal point for a sample of random points
