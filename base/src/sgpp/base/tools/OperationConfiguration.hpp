@@ -15,19 +15,19 @@
 #include <sgpp/base/tools/json/JSON.hpp>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-class OperationConfiguration: public json::JSON {
-public:
+    class OperationConfiguration: public json::JSON {
+      public:
 
-    OperationConfiguration();
+        OperationConfiguration();
 
-    OperationConfiguration(const std::string &fileName);
+        OperationConfiguration(const std::string& fileName);
 
-    virtual OperationConfiguration *clone();
+        virtual OperationConfiguration* clone();
 
-};
+    };
 
-}
+  }
 }
 

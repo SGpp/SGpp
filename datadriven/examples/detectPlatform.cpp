@@ -12,21 +12,21 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
-    SGPP::base::OCLManagerMultiPlatform manager;
+  SGPP::base::OCLManagerMultiPlatform manager;
 
-    auto configuration = manager.getConfiguration();
+  auto configuration = manager.getConfiguration();
 
-    configuration->serialize("detectedPlatform.cfg");
+  configuration->serialize("detectedPlatform.cfg");
 
-    std::cout << "done" << std::endl;
+  std::cout << "done" << std::endl;
 
-    return 0;
+  return 0;
 }
 #else
-int main(int argc, char **argv) {
-    std::cout << "no OpenCL support" << std::endl;
+int main(int argc, char** argv) {
+  std::cout << "no OpenCL support" << std::endl;
 }
 #endif
 

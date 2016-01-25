@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(testSamplers) {
 void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
                                        SGPP::quadrature::SamplerTypes samplerType, size_t dim, size_t numSamples,
                                        std::vector<size_t>& blockSize, SGPP::float_t analyticResult,
-                                       double tol, uint64_t seed=1234567) {
+                                       double tol, uint64_t seed = 1234567) {
   SGPP::quadrature::OperationQuadratureMCAdvanced* opQuad =
     SGPP::op_factory::createOperationQuadratureMCAdvanced(grid, numSamples, seed);
 

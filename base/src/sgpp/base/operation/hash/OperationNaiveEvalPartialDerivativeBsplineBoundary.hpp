@@ -33,9 +33,9 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
-        virtual ~OperationNaiveEvalPartialDerivativeBsplineBoundary() {
+        virtual ~OperationNaiveEvalPartialDerivativeBsplineBoundary() override {
         }
 
         /**
@@ -46,7 +46,7 @@ namespace SGPP {
          */
         virtual float_t evalPartialDerivative(const DataVector& alpha,
                                               const DataVector& point,
-                                              size_t derivDim);
+                                              size_t derivDim) override;
 
       protected:
         /// storage of the sparse grid

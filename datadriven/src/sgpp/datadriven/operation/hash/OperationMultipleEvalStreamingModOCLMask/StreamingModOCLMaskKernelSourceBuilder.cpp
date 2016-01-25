@@ -14,69 +14,69 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelSourceBuilder.hpp>
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-StreamingModOCLMaskKernelSourceBuilder::StreamingModOCLMaskKernelSourceBuilder(
-        std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims) :
-        parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
-                "                ") {
-    localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
-    useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
-//    maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
-}
+    StreamingModOCLMaskKernelSourceBuilder::StreamingModOCLMaskKernelSourceBuilder(
+      std::shared_ptr<base::OCLOperationConfiguration> parameters, size_t dims) :
+      parameters(parameters), dims(dims), indent("    "), indent2("        "), indent3("            "), indent4(
+        "                ") {
+      localWorkgroupSize = (*parameters)["LOCAL_SIZE"].getUInt();
+      useLocalMemory = (*parameters)["KERNEL_USE_LOCAL_MEMORY"].getBool();
+      //    maxDimUnroll = (*parameters)["KERNEL_MAX_DIM_UNROLL"].getUInt();
+    }
 
-std::string StreamingModOCLMaskKernelSourceBuilder::asString() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    std::string StreamingModOCLMaskKernelSourceBuilder::asString() {
+      if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "float";
-    } else {
+      } else {
         return "double";
+      }
     }
-}
 
-std::string StreamingModOCLMaskKernelSourceBuilder::constSuffix() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    std::string StreamingModOCLMaskKernelSourceBuilder::constSuffix() {
+      if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "f";
-    } else {
+      } else {
         return "";
+      }
     }
-}
 
-std::string StreamingModOCLMaskKernelSourceBuilder::intAsString() {
-    if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
+    std::string StreamingModOCLMaskKernelSourceBuilder::intAsString() {
+      if ((*parameters)["INTERNAL_PRECISION"].get() == "float") {
         return "uint";
-    } else {
+      } else {
         return "ulong";
+      }
     }
-}
 
-std::string StreamingModOCLMaskKernelSourceBuilder::reuseSource(std::string fileName) {
-    std::stringstream sourceStream;
-    std::ifstream file;
-    file.open(fileName);
+    std::string StreamingModOCLMaskKernelSourceBuilder::reuseSource(std::string fileName) {
+      std::stringstream sourceStream;
+      std::ifstream file;
+      file.open(fileName);
 
-    if (file.is_open()) {
+      if (file.is_open()) {
         std::string line;
 
         while (getline(file, line)) {
-            sourceStream << line << std::endl;
+          sourceStream << line << std::endl;
         }
 
         file.close();
-    } else {
+      } else {
         throw new base::operation_exception("OCL error: file to reuse not found\n");
+      }
+
+      return sourceStream.str();
     }
 
-    return sourceStream.str();
-}
+    void StreamingModOCLMaskKernelSourceBuilder::writeSource(std::string fileName, std::string source) {
+      //update file with kernel (for debugging)
+      std::ofstream sourceFile;
+      sourceFile.open(fileName);
+      sourceFile << source;
+      sourceFile.close();
+    }
 
-void StreamingModOCLMaskKernelSourceBuilder::writeSource(std::string fileName, std::string source) {
-    //update file with kernel (for debugging)
-    std::ofstream sourceFile;
-    sourceFile.open(fileName);
-    sourceFile << source;
-    sourceFile.close();
-}
-
-}
+  }
 }
 

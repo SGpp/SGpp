@@ -38,7 +38,7 @@ namespace SGPP {
          * @param seed Custom seed (defaults to default seed of mt19937_64)
          */
         OperationQuadratureMCAdvanced(SGPP::base::Grid& grid, size_t numberOfSamples,
-            std::uint64_t seed = std::mt19937_64::default_seed);
+                                      std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * @brief Constructor of OperationQuadratureMCAdvanced, specifying dimensions
@@ -49,7 +49,7 @@ namespace SGPP {
          * @param seed Custom seed (defaults to default seed of mt19937_64)
          */
         OperationQuadratureMCAdvanced(size_t dimensions, size_t numberOfSamples,
-            std::uint64_t seed = std::mt19937_64::default_seed);
+                                      std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * Descructor

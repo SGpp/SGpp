@@ -16,54 +16,56 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-PiecewiseConstantSmoothedRegressionSystemMatrix::PiecewiseConstantSmoothedRegressionSystemMatrix(SGPP::datadriven::PiecewiseConstantRegression::Node &piecewiseRegressor,
-SGPP::base::Grid& grid, SGPP::base::OperationMatrix& C, float_t lambdaRegression) :
-        piecewiseRegressor(piecewiseRegressor), grid(grid) {
-    this->lambda = lambdaRegression;
+    PiecewiseConstantSmoothedRegressionSystemMatrix::PiecewiseConstantSmoothedRegressionSystemMatrix(SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
+        SGPP::base::Grid& grid, SGPP::base::OperationMatrix& C, float_t lambdaRegression) :
+      piecewiseRegressor(piecewiseRegressor), grid(grid) {
+      this->lambda = lambdaRegression;
 
-    this->A = SGPP::op_factory::createOperationLTwoDotProduct(grid);
-//      this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->data));
-    this->C = &C;
-}
+      this->A = SGPP::op_factory::createOperationLTwoDotProduct(grid);
+      //      this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->data));
+      this->C = &C;
+    }
 
-void PiecewiseConstantSmoothedRegressionSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-    result.setAll(0.0);
+    void PiecewiseConstantSmoothedRegressionSystemMatrix::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+      result.setAll(0.0);
 
-    // A * alpha
-    this->A->mult(alpha, result);
+      // A * alpha
+      this->A->mult(alpha, result);
 
-    // C * alpha
-    base::DataVector tmp(result.getSize());
-    this->C->mult(alpha, tmp);
+      // C * alpha
+      base::DataVector tmp(result.getSize());
+      this->C->mult(alpha, tmp);
 
-    // A * alpha + lambda * C * alpha
-    result.axpy(this->lambda, tmp);
-}
+      // A * alpha + lambda * C * alpha
+      result.axpy(this->lambda, tmp);
+    }
 
-// Matrix-Multiplikation verwenden
-void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(SGPP::base::DataVector& rhs) {
+    // Matrix-Multiplikation verwenden
+    void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(SGPP::base::DataVector& rhs) {
 
-//store result in rhs!
-    SGPP::base::GridStorage *storage = grid.getStorage();
-    uint64_t totalIntegratedNodes = 0;
-#pragma omp parallel for
-    for (size_t gridIndex = 0; gridIndex < storage->size(); gridIndex++) {
-        SGPP::base::GridIndex *gridPoint = storage->get(gridIndex);
+      //store result in rhs!
+      SGPP::base::GridStorage* storage = grid.getStorage();
+      uint64_t totalIntegratedNodes = 0;
+      #pragma omp parallel for
+
+      for (size_t gridIndex = 0; gridIndex < storage->size(); gridIndex++) {
+        SGPP::base::GridIndex* gridPoint = storage->get(gridIndex);
         size_t integratedNodes;
         rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint, integratedNodes);
-#pragma omp atomic
+        #pragma omp atomic
         totalIntegratedNodes += integratedNodes;
+      }
+
+      std::cout << "totalIntegratedNodes: " << totalIntegratedNodes << std::endl;
+      std::cout << "integrated nodes per grid point: "
+                << (static_cast<float_t>(totalIntegratedNodes) / static_cast<float_t>(storage->size())) << std::endl;
     }
-    std::cout << "totalIntegratedNodes: " << totalIntegratedNodes << std::endl;
-    std::cout << "integrated nodes per grid point: "
-            << (static_cast<float_t>(totalIntegratedNodes) / static_cast<float_t>(storage->size())) << std::endl;
-}
 
-PiecewiseConstantSmoothedRegressionSystemMatrix::~PiecewiseConstantSmoothedRegressionSystemMatrix() {
-    delete this->A;
-}
+    PiecewiseConstantSmoothedRegressionSystemMatrix::~PiecewiseConstantSmoothedRegressionSystemMatrix() {
+      delete this->A;
+    }
 
-}
+  }
 }

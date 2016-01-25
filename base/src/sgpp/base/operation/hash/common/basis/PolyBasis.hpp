@@ -51,7 +51,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        ~PolyBasis() {
+        virtual ~PolyBasis() override {
           delete idxtable;
         }
 
@@ -98,7 +98,7 @@ namespace SGPP {
          * Due to limited polynomial degree, we compute the roots of the Lagrange
          * polynomial bottom up.
          */
-        float_t eval(LT level, IT index, float_t p) {
+        virtual float_t eval(LT level, IT index, float_t p) override {
           // degree of polynomial, limited with level of grid point
           size_t deg = std::min<size_t>(degree, level + 1);
           // get the position in units of h of the current maximum level

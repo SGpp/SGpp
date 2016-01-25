@@ -79,7 +79,7 @@ namespace SGPP {
 
       public:
 #include "OperationMultipleEvalSubspaceCombined_calculateIndexCombined.hpp"
-        
+
         OperationMultipleEvalSubspaceCombined(SGPP::base::Grid& grid, SGPP::base::DataMatrix& dataset);
 
         ~OperationMultipleEvalSubspaceCombined();

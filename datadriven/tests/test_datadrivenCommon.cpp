@@ -106,8 +106,8 @@ DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
 }
 
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
-SGPP::base::DataVector& alpha) {
+                         SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
+                         SGPP::base::DataVector& alpha) {
 
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -129,7 +129,7 @@ SGPP::base::DataVector& alpha) {
 }
 
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
+                         SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
 
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -156,7 +156,7 @@ SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen) {
   }
 }
 
-double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector &resultsCompare) {
+double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector& resultsCompare) {
   double mse = 0.0;
 
   bool anyDifferentValue = false;
@@ -166,6 +166,7 @@ double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector &r
 
   for (size_t i = 0; i < resultsCompare.getSize(); i++) {
     double diff = (results[i] - resultsCompare[i]) * (results[i] - resultsCompare[i]);
+
     if (diff > largestDifference) {
       anyDifferentValue = true;
       largestDifference = diff;
@@ -173,13 +174,13 @@ double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector &r
       valueReference = resultsCompare[i];
     }
 
-//        BOOST_TEST_MESSAGE("i: " << i << " mine: " << results[i] << " ref: " << resultsCompare[i]);
+    //        BOOST_TEST_MESSAGE("i: " << i << " mine: " << results[i] << " ref: " << resultsCompare[i]);
     mse += (results[i] - resultsCompare[i]) * (results[i] - resultsCompare[i]);
   }
 
   if (anyDifferentValue) {
     BOOST_TEST_MESSAGE(
-        "largestDifference: " << largestDifference << " value: " << value << " valueReference: " << valueReference);
+      "largestDifference: " << largestDifference << " value: " << value << " valueReference: " << valueReference);
   } else {
     BOOST_TEST_MESSAGE("every value matched exactly");
   }
@@ -189,7 +190,7 @@ double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector &r
 }
 
 double compareToReference(SGPP::base::GridType gridType, std::string fileName, size_t level,
-SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRefinements) {
+                          SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRefinements) {
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -203,16 +204,18 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRe
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-  SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix& trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
   std::shared_ptr<SGPP::base::Grid> grid;
+
   if (gridType == SGPP::base::GridType::Linear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
   } else if (gridType == SGPP::base::GridType::ModLinear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createModLinearGrid(dim));
   }
+
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
 
   auto gridGen = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
@@ -225,7 +228,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRe
   }
 
   auto eval = std::shared_ptr<SGPP::base::OperationMultipleEval>(
-  SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
+                SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   eval->prepare();
 
@@ -239,7 +242,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRe
   eval->mult(alpha, dataSizeVectorResult);
 
   auto evalCompare = std::shared_ptr<SGPP::base::OperationMultipleEval>(
-  SGPP::op_factory::createOperationMultipleEval(*grid, trainingData));
+                       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
   dataSizeVectorResultCompare.setAll(0.0);
@@ -253,7 +256,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRe
 }
 
 double compareToReferenceTranspose(SGPP::base::GridType gridType, std::string fileName, size_t level,
-SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
+                                   SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -267,18 +270,19 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-  SGPP::base::DataMatrix &trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix& trainingData = dataset.getTrainingData();
 
   size_t dim = dataset.getDimension();
 
   std::shared_ptr<SGPP::base::Grid> grid;
+
   if (gridType == SGPP::base::GridType::Linear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
   } else if (gridType == SGPP::base::GridType::ModLinear) {
     grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createModLinearGrid(dim));
   }
 
-  SGPP::base::GridStorage *gridStorage = grid->getStorage();
+  SGPP::base::GridStorage* gridStorage = grid->getStorage();
 
   auto gridGen = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
   gridGen->regular(level);
@@ -291,7 +295,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
   }
 
   auto eval = std::shared_ptr<SGPP::base::OperationMultipleEval>(
-  SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
+                SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   eval->prepare();
 
@@ -304,7 +308,7 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
   eval->multTranspose(dataSizeVector, alphaResult);
 
   auto evalCompare = std::shared_ptr<SGPP::base::OperationMultipleEval>(
-  SGPP::op_factory::createOperationMultipleEval(*grid, trainingData));
+                       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   SGPP::base::DataVector alphaResultCompare(gridStorage->size());
   alphaResultCompare.setAll(0.0);
@@ -318,30 +322,30 @@ SGPP::datadriven::OperationMultipleEvalConfiguration configuration) {
 }
 #if USE_OCL==1
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsSingleDevice() {
-    SGPP::base::OCLOperationConfiguration parameters;
-    parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
-    parameters.replaceIDAttr("VERBOSE", false);
-    parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
-    parameters.replaceTextAttr("PLATFORM", "first");
-    parameters.replaceIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
-    return parameters;
+  SGPP::base::OCLOperationConfiguration parameters;
+  parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
+  parameters.replaceIDAttr("VERBOSE", false);
+  parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
+  parameters.replaceTextAttr("PLATFORM", "first");
+  parameters.replaceIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
+  return parameters;
 }
 
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsMultiDevice() {
-    SGPP::base::OCLOperationConfiguration parameters;
-    parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
-    parameters.replaceIDAttr("VERBOSE", false);
-    parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
-    parameters.replaceTextAttr("PLATFORM", "first");
-    return parameters;
+  SGPP::base::OCLOperationConfiguration parameters;
+  parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
+  parameters.replaceIDAttr("VERBOSE", false);
+  parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
+  parameters.replaceTextAttr("PLATFORM", "first");
+  return parameters;
 }
 
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsMultiPlatform() {
-    SGPP::base::OCLOperationConfiguration parameters;
-    parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
-    parameters.replaceIDAttr("VERBOSE", false);
-    parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
-    parameters.replaceTextAttr("PLATFORM", "all");
-    return parameters;
+  SGPP::base::OCLOperationConfiguration parameters;
+  parameters.replaceIDAttr("OCL_MANAGER_VERBOSE", false);
+  parameters.replaceIDAttr("VERBOSE", false);
+  parameters.replaceIDAttr("ENABLE_OPTIMIZATIONS", true);
+  parameters.replaceTextAttr("PLATFORM", "all");
+  return parameters;
 }
 #endif

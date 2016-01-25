@@ -398,7 +398,8 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # setup the include base folder
     # env.Append(CPPPATH=['#/src/sgpp'])
     for moduleFolder in moduleFolders:
-      if moduleFolder in languageWrapperFolders:
+      if (moduleFolder in languageWrapperFolders) or \
+          (not env['SG_' + moduleFolder.upper()]):
         continue
       env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
 

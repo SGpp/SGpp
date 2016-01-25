@@ -23,12 +23,18 @@ namespace SGPP {
     class LinearBasis: public Basis<LT, IT> {
       public:
         /**
+         * Destructor.
+         */
+        virtual ~LinearBasis() override {
+        }
+
+        /**
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
          * @return      value of linear basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           return std::max(1.0 - std::abs(static_cast<float_t>(static_cast<IT>(1) << l) * x -
                                          static_cast<float_t>(i)), 0.0);
         }

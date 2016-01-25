@@ -28,28 +28,40 @@ namespace SGPP {
          * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
          *
          * @param dim the dimension of the grid
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted (default = 1: boundary has same level
+         *                      as main axes)
          */
-        LinearClenshawCurtisGrid(size_t dim);
+        LinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel = 1);
 
         /**
          * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
          *
          * @param BB the BoundingBox of the grid
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted (default = 1: boundary has same level
+         *                      as main axes)
          */
-        LinearClenshawCurtisGrid(BoundingBox& BB);
+        LinearClenshawCurtisGrid(BoundingBox& BB, level_t boundaryLevel = 1);
 
         /**
          * Destructor
          */
-        virtual ~LinearClenshawCurtisGrid();
+        virtual ~LinearClenshawCurtisGrid() override;
 
-        virtual SGPP::base::GridType getType();
+        virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis();
+        virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator() override;
 
         static Grid* unserialize(std::istream& istr);
+
+        virtual void serialize(std::ostream& ostr) override;
+
+      protected:
+        /// level at which the boundary points should be inserted
+        level_t boundaryLevel;
     };
 
   }

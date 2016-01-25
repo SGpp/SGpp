@@ -18,13 +18,16 @@ namespace SGPP {
   namespace base {
 
     PolyGrid::PolyGrid(std::istream& istr) :
-      Grid(istr), degree(1 << 16), basis_(NULL) {
+      Grid(istr),
+      degree(1 << 16),
+      basis_(NULL) {
       istr >> degree;
     }
 
     PolyGrid::PolyGrid(size_t dim, size_t degree) :
-      degree(degree), basis_(NULL) {
-      this->storage = new GridStorage(dim);
+      Grid(dim),
+      degree(degree),
+      basis_(NULL) {
     }
 
     PolyGrid::~PolyGrid() {

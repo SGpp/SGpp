@@ -28,22 +28,28 @@ namespace SGPP {
          * Constructor of grid with wavelet base functions with boundaries, pentagon cut
          *
          * @param dim the dimension of the grid
+         * @param boundaryLevel level at which the boundary points should be
+         *                      inserted (default = 1: boundary has same level
+         *                      as main axes)
          */
-        WaveletBoundaryGrid(size_t dim);
+        WaveletBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
         /**
          * Destructor
          */
-        virtual ~WaveletBoundaryGrid();
+        virtual ~WaveletBoundaryGrid() override;
 
-        virtual SGPP::base::GridType getType();
+        virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis();
+        virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator();
+        virtual GridGenerator* createGridGenerator() override;
 
         static Grid* unserialize(std::istream& istr);
 
+      protected:
+        /// level at which the boundary points should be inserted
+        level_t boundaryLevel;
     };
 
   }

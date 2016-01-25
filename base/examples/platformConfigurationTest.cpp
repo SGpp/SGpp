@@ -12,19 +12,19 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
-    std::shared_ptr<SGPP::base::OCLOperationConfiguration> configuration = std::make_shared<SGPP::base::OCLOperationConfiguration>("detectPlatform.cfg");
-    (*configuration).replaceIDAttr("VERBOSE", true);
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> configuration = std::make_shared<SGPP::base::OCLOperationConfiguration>("detectPlatform.cfg");
+  (*configuration).replaceIDAttr("VERBOSE", true);
 
-    SGPP::base::OCLManagerMultiPlatform manager(configuration);
+  SGPP::base::OCLManagerMultiPlatform manager(configuration);
 
-    configuration->serialize("detectPlatformOut.cfg");
+  configuration->serialize("detectPlatformOut.cfg");
 
-    return 0;
+  return 0;
 }
 #else
-int main(int argc, char **argv) {
-    std::cout << "no OpenCL support" << std::endl;
+int main(int argc, char** argv) {
+  std::cout << "no OpenCL support" << std::endl;
 }
 #endif

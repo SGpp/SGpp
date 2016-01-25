@@ -8,21 +8,21 @@
 #include <sgpp/base/tools/OperationConfiguration.hpp>
 
 namespace SGPP {
-namespace base {
+  namespace base {
 
-OperationConfiguration::OperationConfiguration(): json::JSON() {
+    OperationConfiguration::OperationConfiguration(): json::JSON() {
 
-}
+    }
 
-OperationConfiguration::OperationConfiguration(const std::string &fileName): json::JSON(fileName) {
+    OperationConfiguration::OperationConfiguration(const std::string& fileName): json::JSON(fileName) {
 
-}
+    }
 
-OperationConfiguration *OperationConfiguration::clone() {
-    OperationConfiguration *clone = new OperationConfiguration(*this);
-    return clone;
-}
+    OperationConfiguration* OperationConfiguration::clone() {
+      OperationConfiguration* clone = new OperationConfiguration(*this);
+      return clone;
+    }
 
-}
+  }
 }
 

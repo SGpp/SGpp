@@ -15,7 +15,7 @@ namespace SGPP {
     class GaussHermiteQuadRule1D : public QuadRule1D {
       public:
         GaussHermiteQuadRule1D();
-        virtual ~GaussHermiteQuadRule1D();
+        virtual ~GaussHermiteQuadRule1D() override;
 
         /**
          * load gauss quadrature points for standard normal weight function. The points

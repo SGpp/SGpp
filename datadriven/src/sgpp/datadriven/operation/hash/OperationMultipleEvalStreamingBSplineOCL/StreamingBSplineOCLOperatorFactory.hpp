@@ -14,10 +14,10 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/OperationMultipleEvalStreamingBSplineOCL.hpp>
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
-SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
+    base::OperationMultipleEval* createStreamingBSplineOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
+        SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
-}
+  }
 }

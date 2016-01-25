@@ -206,7 +206,7 @@ namespace SGPP {
 
     base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
         base::DataMatrix& dataset,
-        SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
+        SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
   }
 }

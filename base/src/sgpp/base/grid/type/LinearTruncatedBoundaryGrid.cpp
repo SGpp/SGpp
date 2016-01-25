@@ -17,16 +17,17 @@
 namespace SGPP {
   namespace base {
 
-    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(std::istream& istr) : Grid(istr) {
+    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(std::istream& istr) :
+      Grid(istr) {
 
     }
 
-    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(size_t dim) {
-      this->storage = new GridStorage(dim);
+    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(size_t dim) :
+      Grid(dim) {
     }
 
-    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(BoundingBox& BB) {
-      this->storage = new GridStorage(BB);
+    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(BoundingBox& BB) :
+      Grid(BB) {
     }
 
     LinearTruncatedBoundaryGrid::~LinearTruncatedBoundaryGrid() {

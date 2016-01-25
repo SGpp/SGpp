@@ -26,7 +26,7 @@ namespace SGPP {
         }
 
         /**
-         * Virtual destructor.
+         * Destructor.
          */
         virtual ~OperationNaiveEvalPartialDerivative() {
         }

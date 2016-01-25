@@ -10,13 +10,13 @@
 
 #include "../src/sgpp/base/tools/json/TextNode.hpp"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
   try {
     json::JSON configuration;
 
     configuration.addDictAttr("parent").addTextAttr("t1", "v1").addTextAttr("t2", "v2").addListAttr("list1").addTextValue(
-        "tv1").addIdValue(96.0).addTextValue("tv2");
+      "tv1").addIdValue(96.0).addTextValue("tv2");
     configuration.addTextAttr("textAttr1", "text1").addIDAttr("numVal1", 36.0);
 
     std::cout << "value: " << configuration["parent"]["list1"][1].get() << std::endl;
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     json::JSON reread("write.json");
 
     reread.serialize("write2.json");
-  } catch (json::json_exception &e) {
+  } catch (json::json_exception& e) {
     std::cout << e.what() << std::endl;
   }
 

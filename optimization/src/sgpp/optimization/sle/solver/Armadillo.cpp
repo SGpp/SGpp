@@ -29,6 +29,9 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
+      Armadillo::~Armadillo() {
+      }
+
       bool Armadillo::solve(SLE& system, base::DataVector& b,
                             base::DataVector& x) const {
         base::DataMatrix B(b.getPointer(), b.getSize(), 1);
@@ -128,7 +131,7 @@ namespace SGPP {
             Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
             return false;
           }
         } else {
@@ -158,7 +161,7 @@ namespace SGPP {
             Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
             return false;
           }
         }

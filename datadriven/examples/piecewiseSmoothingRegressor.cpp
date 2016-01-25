@@ -52,7 +52,7 @@ SGPP::float_t f1D(SGPP::base::DataVector point) {
 //    return 0.0;
 //}
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
   size_t dim = 2;
   size_t samplePoints = 1000;
@@ -69,11 +69,14 @@ int main(int argc, char **argv) {
 
   for (size_t sample = 0; sample < samplePoints; sample++) {
     DataVector point(dim);
+
     for (size_t d = 0; d < dim; d++) {
       point[d] = dist(mt);
       sampleFile << point[d] << ", ";
     }
+
     dataset.appendRow(point);
+
     if (dim == 1) {
       values[sample] = f1D(point);
     } else if (dim == 2) {
@@ -81,28 +84,30 @@ int main(int argc, char **argv) {
     } else {
       throw;
     }
+
     sampleFile << values[sample] << std::endl;
   }
+
   sampleFile.close();
 
   SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressorOperator(dataset, values);
 
   std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
-      0.0001, 30);
+        0.0001, 30);
 
-//    std::ofstream resultFile;
-//    resultFile.open("resultFile.csv");
-//
-//    for (size_t sample = 0; sample < samplePoints; sample++) {
-//        vector<SGPP::float_t> point(dim);
-//        for (size_t d = 0; d < dim; d++) {
-//            point[d] = dist(mt);
-//            resultFile << point[d] << ", ";
-//        }
-//        SGPP::float_t eval = node->evaluate(point);
-//        resultFile << eval << std::endl;
-//    }
-//    resultFile.close();
+  //    std::ofstream resultFile;
+  //    resultFile.open("resultFile.csv");
+  //
+  //    for (size_t sample = 0; sample < samplePoints; sample++) {
+  //        vector<SGPP::float_t> point(dim);
+  //        for (size_t d = 0; d < dim; d++) {
+  //            point[d] = dist(mt);
+  //            resultFile << point[d] << ", ";
+  //        }
+  //        SGPP::float_t eval = node->evaluate(point);
+  //        resultFile << eval << std::endl;
+  //    }
+  //    resultFile.close();
 
   if (dim == 2) {
     std::ofstream resultFile;
@@ -112,17 +117,22 @@ int main(int argc, char **argv) {
     SGPP::float_t pointIncrement = 0.05f;
 #endif
     resultFile.open("resultFilePiecewiseConstant.csv");
+
     for (SGPP::float_t testX = 0; testX <= 1.0; testX += pointIncrement) {
       for (SGPP::float_t testY = 0; testY <= 1.0; testY += pointIncrement) {
         std::vector<SGPP::float_t> point = { testX, testY };
+
         for (size_t d = 0; d < dim; d++) {
           resultFile << point[d] << ", ";
         }
+
         SGPP::float_t eval = piecewiseRegressor->evaluate(point);
         resultFile << eval << std::endl;
       }
+
       resultFile << std::endl;
     }
+
     resultFile.close();
   } else if (dim == 1) {
 #if USE_DOUBLE_PRECISION == 1
@@ -133,14 +143,18 @@ int main(int argc, char **argv) {
 
     std::ofstream resultFile;
     resultFile.open("resultFilePiecewiseConstant.csv");
+
     for (SGPP::float_t testX = 0; testX <= 1.0; testX += pointIncrement) {
       std::vector<SGPP::float_t> point = { testX };
+
       for (size_t d = 0; d < dim; d++) {
         resultFile << point[d] << ", ";
       }
+
       SGPP::float_t eval = piecewiseRegressor->evaluate(point);
       resultFile << eval << std::endl;
     }
+
     resultFile.close();
   } else {
     throw;
@@ -173,11 +187,11 @@ int main(int argc, char **argv) {
   SGPP::pde::RegularizationConfiguration regularizationConfig;
   regularizationConfig.regType_ = SGPP::pde::RegularizationType::Laplace;
 
-//  SGPP::float_t lambda = 0.1;
+  //  SGPP::float_t lambda = 0.1;
   SGPP::float_t lambda = 0.0005;
 
-//  SGPP::float_t lambda = 0.0001;
-//  SGPP::float_t lambda = 0.001;
+  //  SGPP::float_t lambda = 0.0001;
+  //  SGPP::float_t lambda = 0.001;
 
 
   auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
@@ -194,15 +208,18 @@ int main(int argc, char **argv) {
   learner.train(*piecewiseRegressor, *grid, alpha, lambda);
 
   std::cout << "alpha: ";
+
   for (size_t i = 0; i < alpha.getSize(); i++) {
     if (i > 0) {
       std::cout << ", ";
     }
+
     std::cout << alpha[i];
   }
+
   std::cout << std::endl;
 
-  SGPP::base::OperationEval *linearEval = SGPP::op_factory::createOperationEval(*grid);
+  SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(*grid);
 
   if (dim == 2) {
 #if USE_DOUBLE_PRECISION == 1
@@ -215,18 +232,22 @@ int main(int argc, char **argv) {
 
     for (SGPP::float_t testX = 0; testX <= 1.0; testX += pointIncrement) {
       for (SGPP::float_t testY = 0; testY <= 1.0; testY += pointIncrement) {
-//        std::vector<SGPP::float_t> point = { testX, testY };
+        //        std::vector<SGPP::float_t> point = { testX, testY };
         DataVector point(dim);
         point[0] = testX;
         point[1] = testY;
+
         for (size_t d = 0; d < dim; d++) {
           resultFileLinear << point[d] << ", ";
         }
+
         SGPP::float_t eval = linearEval->eval(alpha, point);
         resultFileLinear << eval << std::endl;
       }
+
       resultFileLinear << std::endl;
     }
+
     resultFileLinear.close();
   } else if (dim == 1) {
 #if USE_DOUBLE_PRECISION == 1
@@ -238,15 +259,18 @@ int main(int argc, char **argv) {
     resultFileLinear.open("resultFileLinear.csv");
 
     for (SGPP::float_t testX = 0; testX <= 1.0; testX += pointIncrement) {
-//      std::vector<SGPP::float_t> point = { testX };
+      //      std::vector<SGPP::float_t> point = { testX };
       DataVector point(dim);
       point[0] = testX;
+
       for (size_t d = 0; d < dim; d++) {
         resultFileLinear << point[d] << ", ";
       }
+
       SGPP::float_t eval = linearEval->eval(alpha, point);
       resultFileLinear << eval << std::endl;
     }
+
     resultFileLinear.close();
   } else {
     throw;

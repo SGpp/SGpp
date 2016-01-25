@@ -22,13 +22,18 @@
 namespace SGPP {
   namespace base {
 
-    ModPolyGrid::ModPolyGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
+    ModPolyGrid::ModPolyGrid(std::istream& istr) :
+      Grid(istr),
+      degree(1 << 16),
+      basis_(NULL) {
       istr >> degree;
     }
 
 
-    ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
-      this->storage = new GridStorage(dim);
+    ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) :
+      Grid(dim),
+      degree(degree),
+      basis_(NULL) {
     }
 
     ModPolyGrid::~ModPolyGrid() {

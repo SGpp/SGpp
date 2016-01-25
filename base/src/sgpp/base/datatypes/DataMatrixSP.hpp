@@ -268,7 +268,7 @@ namespace SGPP {
          *
          * @param matr The DataMatrixSP which is added to the current values
          */
-        void add(DataMatrixSP& matr);
+        void add(const DataMatrixSP& matr);
 
         /**
          * Subtracts the values from another DataMatrixSP of the current values.
@@ -315,7 +315,7 @@ namespace SGPP {
          *
          * @param matr the DataMatrixSP which is multiplied to current DataMatrixSP
          */
-        void componentwise_mult(DataMatrixSP& matr);
+        void componentwise_mult(const DataMatrixSP& matr);
 
         /**
          * Divides the current DataMatrixSP component-wise by another DataMatrixSP.
@@ -329,7 +329,7 @@ namespace SGPP {
          *
          * @param matr the DataMatrixSP which the current DataMatrixSP is divided by
          */
-        void componentwise_div(DataMatrixSP& matr);
+        void componentwise_div(const DataMatrixSP& matr);
 
         /**
          * Multiplies the matrix with a vector x and stores the result

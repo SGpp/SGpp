@@ -38,12 +38,18 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~BsplineBoundaryBasis() override {
+        }
+
+        /**
          * @param l     level of basis function
          * @param i     index of basis function
          * @param x     evaluation point
          * @return      value of boundary B-spline basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
           return bsplineBasis.uniformBSpline(

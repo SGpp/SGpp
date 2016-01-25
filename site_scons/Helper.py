@@ -60,29 +60,36 @@ def prepareDoxyfile(modules):
     with open('Doxyfile_template', 'r') as doxyFileTemplate:
         with open('Doxyfile', 'w') as doxyFile:
             inputPaths = 'INPUT ='
+            excludePaths = 'EXCLUDE ='
             examplePaths = 'EXAMPLE_PATH ='
             imagePaths = 'IMAGE_PATH ='
 
             for moduleName in modules:
                 inputPath = moduleName + '/'
                 examplePath = moduleName + '/examples'
+                testPath = moduleName + '/tests'
                 imagePath = moduleName + '/doc/doxygen/images'
 
                 #print os.path.join(os.getcwd(),inputPath)
-                if os.path.exists(os.path.join(os.getcwd(),inputPath)):
+                if os.path.exists(os.path.join(os.getcwd(), inputPath)):
                     inputPaths += " " + inputPath
-                if os.path.exists(os.path.join(os.getcwd(),examplePath)):
+                if os.path.exists(os.path.join(os.getcwd(), examplePath)):
                     examplePaths += " " + examplePath
-                if os.path.exists(os.path.join(os.getcwd(),imagePath)):
+                    excludePaths += " " + examplePath
+                if os.path.exists(os.path.join(os.getcwd(), testPath)):
+                    excludePaths += " " + testPath
+                if os.path.exists(os.path.join(os.getcwd(), imagePath)):
                     imagePaths += " " + imagePath
 
             for line in doxyFileTemplate.readlines():
-                if re.search(r'INPUT  .*', line):
-                    doxyFile.write(re.sub(r'INPUT.*', inputPaths, line))
-                elif re.search(r'EXAMPLE_PATH  .*', line):
-                    doxyFile.write(re.sub(r'EXAMPLE_PATH.*', examplePaths, line))
-                elif re.search(r'IMAGE_PATH  .*', line):
-                    doxyFile.write(re.sub(r'IMAGE_PATH.*', imagePaths, line))
+                if re.match(r'INPUT  .*', line):
+                    doxyFile.write(inputPaths + "\n")
+                elif re.match(r'EXCLUDE  .*', line):
+                    doxyFile.write(excludePaths + "\n")
+                elif re.match(r'EXAMPLE_PATH  .*', line):
+                    doxyFile.write(examplePaths + "\n")
+                elif re.match(r'IMAGE_PATH  .*', line):
+                    doxyFile.write(imagePaths + "\n")
                 else:
                     doxyFile.write(line)
 

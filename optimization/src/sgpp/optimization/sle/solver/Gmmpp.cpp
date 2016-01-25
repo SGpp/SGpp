@@ -96,19 +96,22 @@ namespace SGPP {
               return true;
             } else {
               Printer::getInstance().printStatusEnd(
-                "error: could not solve linear system, "
+                "error: Could not solve linear system, "
                 "method didn't converge");
               return false;
             }
           }
         } catch (std::exception& e) {
           Printer::getInstance().printStatusEnd(
-            "error: could not solve linear system, what(): " +
+            "error: Could not solve linear system, what(): " +
             std::string(e.what()));
           return false;
         }
       }
 #endif /* USE_GMMPP */
+
+      Gmmpp::~Gmmpp() {
+      }
 
       bool Gmmpp::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {

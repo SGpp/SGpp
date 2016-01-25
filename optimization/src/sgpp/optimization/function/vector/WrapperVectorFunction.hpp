@@ -37,18 +37,24 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~WrapperVectorFunction() override {
+        }
+
+        /**
          * @param[in]  x      evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] value  \f$g(\vec{x})\f$
          */
-        inline void eval(const base::DataVector& x,
-                         base::DataVector& value) {
+        inline virtual void eval(const base::DataVector& x,
+                                 base::DataVector& value) override {
           f(x, value);
         }
 
         /**
          * @param[out] clone pointer to cloned object
          */
-        void clone(std::unique_ptr<VectorFunction>& clone) const {
+        void clone(std::unique_ptr<VectorFunction>& clone) const override {
           clone = std::unique_ptr<VectorFunction>(
                     new WrapperVectorFunction(d, m, f));
         }

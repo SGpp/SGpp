@@ -34,7 +34,7 @@ namespace SGPP {
          */
 
         StratifiedSampleGenerator(std::vector<size_t>& strataPerDimension,
-            std::uint64_t seed = std::mt19937_64::default_seed);
+                                  std::uint64_t seed = std::mt19937_64::default_seed);
 
         /**
          * Destructor
