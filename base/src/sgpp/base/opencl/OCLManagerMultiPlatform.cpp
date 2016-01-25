@@ -334,16 +334,19 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
                 useConfiguration);
     }
 
-    OCLPlatformWrapper platformWrapper(platformId, platformName, filteredDeviceIds, filteredDeviceNames);
+    if (filteredDeviceIds.size() > 0) {
+        OCLPlatformWrapper platformWrapper(platformId, platformName, filteredDeviceIds, filteredDeviceNames);
+//        platforms.emplace_back(platformId, platformName, filteredDeviceIds, filteredDeviceNames);
+//        OCLPlatformWrapper &platformWrapper = *(platforms.end() - 1);
+        platforms.push_back(platformWrapper);
 
-    platforms.push_back(platformWrapper);
-
-    //create linear device list
-    for (size_t deviceIndex = 0; deviceIndex < filteredDeviceIds.size(); deviceIndex++) {
-        this->devices.push_back(
-                std::make_shared<OCLDevice>(platformWrapper.platformId, platformWrapper.deviceIds[deviceIndex],
-                        platformName, platformWrapper.deviceNames[deviceIndex], platformWrapper.context,
-                        platformWrapper.commandQueues[deviceIndex]));
+        //create linear device list
+        for (size_t deviceIndex = 0; deviceIndex < filteredDeviceIds.size(); deviceIndex++) {
+            this->devices.push_back(
+                    std::make_shared<OCLDevice>(platformWrapper.platformId, platformWrapper.deviceIds[deviceIndex],
+                            platformName, platformWrapper.deviceNames[deviceIndex], platformWrapper.context,
+                            platformWrapper.commandQueues[deviceIndex]));
+        }
     }
 }
 

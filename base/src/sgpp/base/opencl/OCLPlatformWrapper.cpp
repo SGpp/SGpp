@@ -1,6 +1,7 @@
 #include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
 
 #include <sstream>
+#include <iostream>
 
 #include <sgpp/globaldef.hpp>
 

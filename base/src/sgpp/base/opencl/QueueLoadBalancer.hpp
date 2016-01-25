@@ -41,7 +41,7 @@ public:
             throw SGPP::base::operation_exception("QueueLoadBalancer: queue load balancer not initialized!");
         } else if (blockSize == 0) {
             throw SGPP::base::operation_exception("QueueLoadBalancer: block size must not be zero!");
-        } else if (!scheduleSize % blockSize == 0) {
+        } else if (scheduleSize % blockSize != 0) {
             throw SGPP::base::operation_exception("QueueLoadBalancer: schedule size is not divisible by block size!");
         } else if (start % blockSize != 0) {
             throw SGPP::base::operation_exception("QueueLoadBalancer: start not divisible by block size");

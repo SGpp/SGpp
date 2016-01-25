@@ -60,10 +60,6 @@ protected:
     std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMult;
     std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
 
-    //TODO: remove those variables
-    size_t scheduleSize;
-    size_t scheduleSizeTranspose;
-
     size_t overallGridBlockingSize;
     size_t overallDataBlockingSize;
 public:
@@ -91,9 +87,6 @@ public:
         this->padDataset(this->preparedDataset);
         this->preparedDataset.transpose();
 
-        //TODO: should not necessarily be a global parameter!
-        scheduleSize = (*parameters)["SCHEDULE_SIZE"].getUInt();
-        scheduleSizeTranspose = (*parameters)["SCHEDULE_SIZE_TRANSPOSE"].getUInt();
         overallGridBlockingSize = calculateCommonGridPadding();
         overallDataBlockingSize = calculateCommonDatasetPadding();
 
@@ -147,11 +140,13 @@ public:
         size_t datasetTo = this->datasetSizePadded;
 
 //        if (omp_get_thread_num() == 0) {
-            queueLoadBalancerMult->initialize(scheduleSize, datasetFrom, datasetTo, overallDataBlockingSize);
+//            queueLoadBalancerMult->initialize(scheduleSize, datasetFrom, datasetTo, overallDataBlockingSize);
 //        }
 
         //TODO: not in a parallel region here?
 //#pragma omp barrier
+
+        queueLoadBalancerMult->initialize(datasetFrom, datasetTo);
 
         std::vector<T> alphaArray(this->gridSizePadded);
 
@@ -206,10 +201,12 @@ public:
         size_t datasetTo = this->datasetSizePadded;
 
 //        if (omp_get_thread_num() == 0) {
-            queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose, gridFrom, gridTo, overallGridBlockingSize);
+//        queueLoadBalancerMultTrans->initialize(scheduleSizeTranspose, gridFrom, gridTo, overallGridBlockingSize);
 //        }
 
 //#pragma omp barrier
+
+        queueLoadBalancerMultTrans->initialize(gridFrom, gridTo);
 
         std::vector<T> sourceArray(this->datasetSizePadded);
 
@@ -330,6 +327,7 @@ private:
 
         SGPP::base::HashGridIndex::level_type curLevel;
         SGPP::base::HashGridIndex::index_type curIndex;
+
 
         this->level = std::vector<T>(gridSizeBuffers * this->dims);
         this->index = std::vector<T>(gridSizeBuffers * this->dims);
