@@ -165,12 +165,12 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
       BOOST_CHECK_LE(xOpt[t], 1.0);
     }
 
-    if (use_double_precision) {
-      BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-12);
-    } else {
-      BOOST_CHECK_SMALL(fOpt - f.eval(xOpt),
-                        static_cast<SGPP::float_t>(1e-6));
-    }
+#if USE_DOUBLE_PRECISION
+    BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-12);
+#else
+    BOOST_CHECK_SMALL(fOpt - f.eval(xOpt),
+                      static_cast<SGPP::float_t>(1e-6));
+#endif
 
     // test if xopt is minimal point for a sample of random points
     for (size_t i = 0; i < 1000; i++) {
