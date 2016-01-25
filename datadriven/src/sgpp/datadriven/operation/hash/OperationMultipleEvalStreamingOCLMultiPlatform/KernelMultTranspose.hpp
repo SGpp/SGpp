@@ -52,6 +52,10 @@ private:
     std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
 
     bool verbose;
+
+    size_t localSize;
+    size_t gridBlockingSize;
+    size_t scheduleSize;
 public:
 
     KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
@@ -59,12 +63,24 @@ public:
             std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose) :
             device(device), dims(dims), err(CL_SUCCESS), deviceLevelTranspose(device), deviceIndexTranspose(device), deviceDataTranspose(
                     device), deviceSourceTranspose(device), deviceResultGridTranspose(device), kernelMultTranspose(
-                    nullptr), kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), kernelConfiguration(
+                    nullptr), deviceTimingMultTranspose(0.0), kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), kernelConfiguration(
                     kernelConfiguration), queueLoadBalancerMultTranspose(queueBalancerMultTranpose) {
 
-        //initialize with same timing to enforce equal problem sizes in the beginning
-        this->deviceTimingMultTranspose = 1.0;
         this->verbose = kernelConfiguration["VERBOSE"].getBool();
+
+        if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
+                && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
+            std::stringstream errorString;
+            errorString
+                    << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+            errorString << " to be greater than the dimension of the data set, was set to"
+                    << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \"" << device->deviceName << "\")" << std::endl;
+            throw base::operation_exception(errorString.str());
+        }
+
+        localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+        gridBlockingSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+        scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     }
 
     ~KernelMultTranspose() {
@@ -144,50 +160,50 @@ public:
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
                 err = clSetKernelArg(kernelMultTranspose, 1, sizeof(cl_mem), this->deviceIndexTranspose.getBuffer());
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
                 err = clSetKernelArg(kernelMultTranspose, 2, sizeof(cl_mem), this->deviceDataTranspose.getBuffer());
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
                 err = clSetKernelArg(kernelMultTranspose, 3, sizeof(cl_mem), this->deviceSourceTranspose.getBuffer());
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
                 err = clSetKernelArg(kernelMultTranspose, 4, sizeof(cl_mem),
                         this->deviceResultGridTranspose.getBuffer());
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
                 err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &sourceSize);
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
                 err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint), &kernelStartData);
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
                 err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelEndData);
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
 
                 cl_event clTiming;
@@ -198,7 +214,7 @@ public:
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
 
                 clFinish(device->commandQueue);
@@ -229,7 +245,7 @@ public:
                     errorString
                             << "OCL Error: Failed to read start-time from command queue (or crash in multTranspose)! Error code: "
                             << err << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
 
                 err = clGetEventProfilingInfo(clTiming,
@@ -239,7 +255,7 @@ public:
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to read end-time from command queue! Error code: " << err
                             << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
+                    throw base::operation_exception(errorString.str());
                 }
 
                 double time = 0.0;

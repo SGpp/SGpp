@@ -55,6 +55,10 @@ private:
 
     bool verbose;
 
+    size_t localSize;
+    size_t dataBlockingSize;
+    size_t scheduleSize;
+
 public:
 
     KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
@@ -68,6 +72,10 @@ public:
         //initialize with same timing to enforce equal problem sizes in the beginning
         this->deviceTimingMult = 1.0;
         this->verbose = kernelConfiguration["VERBOSE"].getBool();
+
+        localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+        dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+        scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     }
 
     ~KernelMult() {
@@ -117,12 +125,13 @@ public:
 
             //TODO: change after blocking is implemented
             //TODO: don't forget to set padding to DATA_BLOCKING * THREAD_BLOCK_SIZE
-            size_t dataBlockingSize = 1;
+//            size_t dataBlockingSize = 1;
 
             //TODO: start_index_data not considered!
-            size_t scheduleSize = 10000;
+//            size_t scheduleSize = 10000;
 
-            bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, dataBlockingSize, kernelStartData, kernelEndData);
+            bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, dataBlockingSize,
+                    kernelStartData, kernelEndData);
             if (!segmentAvailable) {
                 break;
             }
@@ -208,7 +217,7 @@ public:
                 cl_event clTiming = nullptr;
 
                 // enqueue kernel
-                size_t localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+//                size_t localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
 
 //                std::cout << "commandQueue: " << device->commandQueue << std::endl;
 
