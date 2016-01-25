@@ -32,10 +32,10 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationEvalLinearStretchedBoundary() {}
+        virtual ~OperationEvalLinearStretchedBoundary() override {}
 
         virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point);
+                             const DataVector& point) override;
 
       protected:
         /// Pointer to GridStorage object

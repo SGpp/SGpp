@@ -16,6 +16,9 @@ namespace SGPP {
   namespace optimization {
     namespace sle_solver {
 
+      GaussianElimination::~GaussianElimination() {
+      }
+
       bool GaussianElimination::solve(SLE& system,
                                       base::DataVector& b,
                                       base::DataVector& x) const {
@@ -69,7 +72,7 @@ namespace SGPP {
           // all entries are zero ==> matrices W and A are rank deficient
           if (maxEntry == 0) {
             Printer::getInstance().printStatusEnd(
-              "error: could not solve linear system!");
+              "error: Could not solve linear system!");
             return false;
           }
 

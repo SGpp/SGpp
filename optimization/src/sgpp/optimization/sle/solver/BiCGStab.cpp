@@ -28,6 +28,9 @@ namespace SGPP {
         x0(x0) {
       }
 
+      BiCGStab::~BiCGStab() {
+      }
+
       bool BiCGStab::solve(SLE& system, base::DataVector& b,
                            base::DataVector& x) const {
         Printer::getInstance().printStatusBegin("Solving linear system (BiCGStab)...");
@@ -44,7 +47,7 @@ namespace SGPP {
             Printer::getInstance().printStatusEnd();
             return true;
           } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
             return false;
           }
         }
@@ -94,7 +97,7 @@ namespace SGPP {
           omega = t.dotProduct(s) / t.dotProduct(t);
 
           if (std::isnan(omega)) {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
             return false;
           }
 

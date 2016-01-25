@@ -135,7 +135,6 @@ void OCLManagerMultiPlatform::buildKernel(const std::string &program_src, const 
             std::stringstream errorString;
             errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
             throw SGPP::base::operation_exception(errorString.str());
-
         }
 
         for (size_t i = 0; i < platform.deviceIds.size(); i++) {

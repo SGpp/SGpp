@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
       const SGPP::float_t fOpt = optimizer->getOptimalValue();
 
       // test xOpt and fOpt
-      BOOST_CHECK_EQUAL(xOpt.getSize(), 2);
+      BOOST_CHECK_EQUAL(xOpt.getSize(), 2U);
       BOOST_CHECK_CLOSE(xOpt[0], 3.0 / 16.0 * M_PI, 0.1);
       BOOST_CHECK_CLOSE(xOpt[1], 3.0 / 14.0 * M_PI, 0.1);
       BOOST_CHECK_CLOSE(fOpt, -2.0, 1e-4);
@@ -466,15 +466,14 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
     std::vector<std::unique_ptr<optimizer::ConstrainedOptimizer>> optimizers;
 
     if (i == 0) {
-      d = 5;
-      fOptReal = 1.0;
-      x0.resize(d);
-      xOptReal.resize(d);
+      d = 3;
+      fOptReal = -1.0;
 
-      for (size_t t = 0; t < d; t++) {
-        x0[t] = 0.5;
-        xOptReal[t] = 1.0 / std::sqrt(d);
-      }
+      x0.resize(d);
+      x0.setAll(0.5);
+
+      xOptReal.resize(d);
+      xOptReal.setAll(1.0 / std::sqrt(d));
 
       f.reset(new G3ObjectiveFunction(d));
       fGradient.reset(new G3ObjectiveGradient(d));
@@ -482,6 +481,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       EmptyVectorFunctionGradient::getInstance().clone(gGradient);
       h.reset(new G3ConstraintFunction(d));
       hGradient.reset(new G3ConstraintGradient(d));
+
+      optimizers.clear();
       optimizers.push_back(
         std::move(std::unique_ptr<optimizer::ConstrainedOptimizer>(
                     new optimizer::SquaredPenalty(
@@ -499,12 +500,15 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       xOptReal[0] = 1.2279713 / 10.0;
       xOptReal[1] = 4.2453733 / 10.0;
       fOptReal = -0.095825;
+
       f.reset(new G8ObjectiveFunction());
       fGradient.reset(new G8ObjectiveGradient());
       g.reset(new G8ConstraintFunction());
       gGradient.reset(new G8ConstraintGradient());
       EmptyVectorFunction::getInstance().clone(h);
       EmptyVectorFunctionGradient::getInstance().clone(hGradient);
+
+      optimizers.clear();
       optimizers.push_back(
         std::move(std::unique_ptr<optimizer::ConstrainedOptimizer>(
                     new optimizer::SquaredPenalty(

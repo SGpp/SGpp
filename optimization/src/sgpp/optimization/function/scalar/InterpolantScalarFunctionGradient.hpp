@@ -41,6 +41,12 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~InterpolantScalarFunctionGradient() override {
+        }
+
+        /**
          * Evaluation of the function and its gradient.
          *
          * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
@@ -48,8 +54,8 @@ namespace SGPP {
          *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
          * @return              \f$f(\vec{x})\f$
          */
-        inline float_t eval(const base::DataVector& x,
-                            base::DataVector& gradient) {
+        inline virtual float_t eval(const base::DataVector& x,
+                                    base::DataVector& gradient) override {
           for (size_t t = 0; t < d; t++) {
             if ((x[t] < 0.0) || (x[t] > 1.0)) {
               return INFINITY;
@@ -62,7 +68,7 @@ namespace SGPP {
         /**
          * @param[out] clone pointer to cloned object
          */
-        virtual void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+        virtual void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
           clone = std::unique_ptr<ScalarFunctionGradient>(
                     new InterpolantScalarFunctionGradient(grid, alpha));
         }

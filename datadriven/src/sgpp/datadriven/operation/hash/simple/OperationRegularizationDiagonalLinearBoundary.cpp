@@ -5,7 +5,7 @@
 
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <math.h>
+#include <cmath>
 //#include <iostream>
 
 #include <sgpp/globaldef.hpp>

@@ -7,6 +7,7 @@
 #define BSPLINE_BASE_HPP
 
 #include <cmath>
+#include <cstddef>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -23,7 +24,7 @@ namespace SGPP {
         /**
          * Default constructor.
          */
-        BsplineBasis(): degree(0) {
+        BsplineBasis() : degree(0) {
         }
 
         /**
@@ -38,6 +39,12 @@ namespace SGPP {
           } else if (degree % 2 == 0) {
             this->degree = degree - 1;
           }
+        }
+
+        /**
+         * Destructor.
+         */
+        virtual ~BsplineBasis() override {
         }
 
         /**
@@ -1590,7 +1597,7 @@ namespace SGPP {
          * @param x     evaluation point
          * @return      value of B-spline basis function
          */
-        inline float_t eval(LT l, IT i, float_t x) {
+        inline virtual float_t eval(LT l, IT i, float_t x) override {
           const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
 
           return uniformBSpline(

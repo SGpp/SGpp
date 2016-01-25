@@ -51,7 +51,12 @@ namespace SGPP {
                      float_t barrierDecreaseFactor =
                        DEFAULT_BARRIER_DECREASE_FACTOR);
 
-          void optimize();
+          /**
+           * Destructor.
+           */
+          virtual ~LogBarrier() override;
+
+          virtual void optimize() override;
 
           /**
            * @return objective function gradient
@@ -103,7 +108,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
         protected:
           /// objective function gradient

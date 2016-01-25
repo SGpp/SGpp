@@ -20,11 +20,12 @@
 namespace SGPP {
   namespace base {
 
-    PeriodicGrid::PeriodicGrid(std::istream& istr) : Grid(istr) {
+    PeriodicGrid::PeriodicGrid(std::istream& istr) :
+      Grid(istr) {
     }
 
-    PeriodicGrid::PeriodicGrid(size_t dim) {
-      this->storage = new GridStorage(dim);
+    PeriodicGrid::PeriodicGrid(size_t dim) :
+      Grid(dim) {
     }
 
     PeriodicGrid::~PeriodicGrid() {

@@ -52,6 +52,9 @@ namespace SGPP {
       powMethod(powMethod) {
     }
 
+    IterativeGridGeneratorRitterNovak::~IterativeGridGeneratorRitterNovak() {
+    }
+
     float_t IterativeGridGeneratorRitterNovak::getAdaptivity() const {
       return gamma;
     }

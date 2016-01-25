@@ -34,9 +34,9 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationMultipleEvalPeriodic() {}
+        virtual ~OperationMultipleEvalPeriodic() override {}
 
-        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void mult(DataVector& alpha, DataVector& result) override;
         virtual void multTranspose(DataVector& source, DataVector& result);
 
       protected:

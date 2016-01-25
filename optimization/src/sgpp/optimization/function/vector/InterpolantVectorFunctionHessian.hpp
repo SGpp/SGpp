@@ -46,6 +46,12 @@ namespace SGPP {
         }
 
         /**
+         * Destructor.
+         */
+        virtual ~InterpolantVectorFunctionHessian() override {
+        }
+
+        /**
          * Evaluation of the function and its gradient.
          *
          * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
@@ -56,10 +62,10 @@ namespace SGPP {
          *                      \f$\nabla^2 g_i(\vec{x}) \in
          *                      \mathbb{R}^{d \times d}\f$
          */
-        inline void eval(const base::DataVector& x,
-                         base::DataVector& value,
-                         base::DataMatrix& gradient,
-                         std::vector<base::DataMatrix>& hessian) {
+        inline virtual void eval(const base::DataVector& x,
+                                 base::DataVector& value,
+                                 base::DataMatrix& gradient,
+                                 std::vector<base::DataMatrix>& hessian) override {
           for (size_t t = 0; t < d; t++) {
             if ((x[t] < 0.0) || (x[t] > 1.0)) {
               for (size_t j = 0; j < m; j++) {
@@ -85,7 +91,7 @@ namespace SGPP {
         /**
          * @param[out] clone pointer to cloned object
          */
-        virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const {
+        virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const override {
           clone = std::unique_ptr<VectorFunctionHessian>(
                     new InterpolantVectorFunctionHessian(grid, alpha));
         }

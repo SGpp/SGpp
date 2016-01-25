@@ -30,10 +30,10 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationHierarchisationLinearStretched() {}
+        virtual ~OperationHierarchisationLinearStretched() override {}
 
-        virtual void doHierarchisation(DataVector& node_values);
-        virtual void doDehierarchisation(DataVector& alpha);
+        virtual void doHierarchisation(DataVector& node_values) override;
+        virtual void doDehierarchisation(DataVector& alpha) override;
 
       protected:
         /// Pointer to the grid's GridStorage object

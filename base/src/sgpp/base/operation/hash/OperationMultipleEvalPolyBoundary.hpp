@@ -6,7 +6,7 @@
 #ifndef OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP
 #define OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP
 
-#include "OperationMultipleEval.hpp"
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 
@@ -36,11 +36,11 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationMultipleEvalPolyBoundary() {
+        virtual ~OperationMultipleEvalPolyBoundary() override {
         }
 
-        virtual void mult(DataVector& alpha, DataVector& result);
-        virtual void multTranspose(DataVector& source, DataVector& result);
+        virtual void mult(DataVector& alpha, DataVector& result) override;
+        virtual void multTranspose(DataVector& source, DataVector& result) override;
 
       protected:
         /// Pointer to GridStorage object

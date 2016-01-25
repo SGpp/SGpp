@@ -421,6 +421,9 @@ namespace SGPP {
         kHist() {
       }
 
+      AugmentedLagrangian::~AugmentedLagrangian() {
+      }
+
       void AugmentedLagrangian::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (Augmented Lagrangian)...");
 

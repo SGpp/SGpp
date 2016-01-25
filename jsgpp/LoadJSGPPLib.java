@@ -8,6 +8,12 @@ package sgpp;
 public class LoadJSGPPLib {
   public static void loadJSGPPLib() {
     // load jsgpp library
-    System.loadLibrary("jsgpp");
+    try {
+      System.loadLibrary("jsgpp");
+    } catch (UnsatisfiedLinkError e) {
+      // under win32, loadLibrary looks after <NAME>.dll,
+      // so we have to add our "lib" prefix
+      System.loadLibrary("libjsgpp");
+    }
   }
 }

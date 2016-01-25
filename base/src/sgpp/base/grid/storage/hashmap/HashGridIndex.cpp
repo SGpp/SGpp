@@ -78,7 +78,7 @@ namespace SGPP {
         size_t temp_distr;
         istream >> temp_distr;
         distr = static_cast<PointDistribution>(temp_distr);
-      } else if (version == 7) {
+      } else if (version >= 7) {
         std::string temp_distr;
         istream >> temp_distr;
 

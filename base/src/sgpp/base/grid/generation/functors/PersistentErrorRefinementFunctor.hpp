@@ -38,7 +38,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~PersistentErrorRefinementFunctor();
+        virtual ~PersistentErrorRefinementFunctor() override;
 
 
         /*
@@ -53,9 +53,9 @@ namespace SGPP {
          *
          * @return refinement value
          */
-        virtual float_t operator()(GridStorage* storage, size_t seq);
+        virtual float_t operator()(GridStorage* storage, size_t seq) override;
 
-        virtual float_t start();
+        virtual float_t start() override;
 
         size_t getRefinementsNum();
 

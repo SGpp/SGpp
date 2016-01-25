@@ -41,6 +41,9 @@ namespace SGPP {
         }
       }
 
+      Auto::~Auto() {
+      }
+
       bool Auto::solve(SLE& system, base::DataVector& b,
                        base::DataVector& x) const {
         base::DataMatrix B(b.getPointer(), b.getSize(), 1);
@@ -168,7 +171,7 @@ namespace SGPP {
           }
         }
 
-        Printer::getInstance().printStatusEnd("error: could not solve linear system!");
+        Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
         return false;
       }
 

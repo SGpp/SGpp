@@ -24,6 +24,12 @@ namespace SGPP {
     template<class LT, class IT>
     class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
       public:
+        /**
+         * Destructor.
+         */
+        virtual ~LinearStretchedBoundaryBasis() override {
+        }
+
         /*  *
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
@@ -99,7 +105,7 @@ namespace SGPP {
          * Has a dependence on the position of two grid points with values 1 and 0 and the
          * support position
          */
-        float_t eval(LT level, IT index, float_t p, float_t pos0, float_t pos1) {
+        virtual float_t eval(LT level, IT index, float_t p, float_t pos0, float_t pos1) override {
           //    if(level == 0){
           //      if(index == 0){
           //

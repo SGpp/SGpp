@@ -6,7 +6,7 @@
 #ifndef TESTSGPPCONVERTER_HPP_
 #define TESTSGPPCONVERTER_HPP_
 
-#include "combigrid.hpp"
+#include <combigrid.hpp>
 
 namespace combigrid {
 

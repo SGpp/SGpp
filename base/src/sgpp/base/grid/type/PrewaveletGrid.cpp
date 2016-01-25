@@ -19,15 +19,20 @@
 namespace SGPP {
   namespace base {
 
-    PrewaveletGrid::PrewaveletGrid(std::istream& istr) : Grid(istr) {
+    PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
+      Grid(istr),
+      shadowStorage(NULL) {
     }
 
-    PrewaveletGrid::PrewaveletGrid(size_t dim) {
-      this->storage = new GridStorage(dim);
-      this->shadowStorage = new GridStorage(dim);
+    PrewaveletGrid::PrewaveletGrid(size_t dim) :
+      Grid(dim),
+      shadowStorage(new GridStorage(dim)) {
     }
 
     PrewaveletGrid::~PrewaveletGrid() {
+      if (shadowStorage != NULL) {
+        delete shadowStorage;
+      }
     }
 
     SGPP::base::GridType PrewaveletGrid::getType() {

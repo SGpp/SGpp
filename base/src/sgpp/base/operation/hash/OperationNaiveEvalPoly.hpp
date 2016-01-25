@@ -6,7 +6,7 @@
 #ifndef OPERATIONNAIVEEVALPOLY_HPP_
 #define OPERATIONNAIVEEVALPOLY_HPP_
 
-#include "OperationNaiveEval.hpp"
+#include <sgpp/base/operation/hash/OperationNaiveEval.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
@@ -29,7 +29,7 @@ namespace SGPP {
           storage(storage), base(degree) {
         }
 
-        virtual ~OperationNaiveEvalPoly() {
+        virtual ~OperationNaiveEvalPoly() override {
         }
 
         /**
@@ -37,7 +37,7 @@ namespace SGPP {
          * @param point     evaluation point
          * @return          value of linear combination
          */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point);
+        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
 
       protected:
         /// storage of the sparse grid

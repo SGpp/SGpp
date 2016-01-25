@@ -52,7 +52,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        ~PolyBoundaryBasis() {
+        virtual ~PolyBoundaryBasis() override {
           delete idxtable;
         }
 
@@ -94,7 +94,7 @@ namespace SGPP {
          * Due to limited polynomial degree, we compute the roots of the Lagrange
          * polynomial bottom up.
          */
-        float_t eval(LT level, IT index, float_t p) {
+        virtual float_t eval(LT level, IT index, float_t p) override {
           if (level == 0) {
             if (index == 0) {
               return 1 - p;

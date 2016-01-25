@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       // test function evaluation
       SGPP::float_t fx2 = opEval->eval(alpha, x);
 #if USE_DOUBLE_PRECISION
-      BOOST_CHECK_CLOSE(fx, fx2, 1e-10);
+      BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
 #else
       BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
 #endif
@@ -249,19 +249,19 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       // test function evaluation
 #if USE_DOUBLE_PRECISION
-      BOOST_CHECK_CLOSE(fx, fx2, 1e-10);
+      BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
 #else
       BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
 #endif
 
       for (size_t t = 0; t < d; t++) {
         // test gradient evaluation
-        BOOST_CHECK_CLOSE(fxGradient[t], fxGradient2[t], 1e-10);
+        BOOST_CHECK_CLOSE(fxGradient[t], fxGradient2[t], 1e-9);
 
         // test partial derivative evaluation
 #if USE_DOUBLE_PRECISION
         BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(
-                            alpha, x, t), fxGradient[t], 1e-10);
+                            alpha, x, t), fxGradient[t], 1e-9);
 #else
         BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(
                             alpha, x, t), fxGradient[t], 2e-3);
@@ -274,18 +274,18 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       // test function evaluation
 #if USE_DOUBLE_PRECISION
-      BOOST_CHECK_CLOSE(fx, fx2, 1e-10);
+      BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
 #else
       BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
 #endif
 
       for (size_t t1 = 0; t1 < d; t1++) {
         // test gradient evaluation
-        BOOST_CHECK_CLOSE(fxGradient[t1], fxGradient2[t1], 1e-10);
+        BOOST_CHECK_CLOSE(fxGradient[t1], fxGradient2[t1], 1e-9);
 
         for (size_t t2 = 0; t2 < d; t2++) {
           // test Hessian evaluation
-          BOOST_CHECK_CLOSE(fxHessian(t1, t2), fxHessian2(t1, t2), 1e-10);
+          BOOST_CHECK_CLOSE(fxHessian(t1, t2), fxHessian2(t1, t2), 1e-9);
         }
       }
     }

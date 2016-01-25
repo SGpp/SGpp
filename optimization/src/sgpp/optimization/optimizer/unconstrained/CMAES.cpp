@@ -21,6 +21,9 @@ namespace SGPP {
         UnconstrainedOptimizer(f, maxFcnEvalCount) {
       }
 
+      CMAES::~CMAES() {
+      }
+
       void CMAES::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (CMA-ES)...");
 

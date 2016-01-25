@@ -19,13 +19,19 @@
 namespace SGPP {
   namespace base {
 
-    ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) : Grid(istr), degree(1 << 16), basis_(NULL) {
+    ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) :
+      Grid(istr),
+      degree(1 << 16),
+      basis_(NULL) {
       istr >> degree;
     }
 
 
-    ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim, size_t degree) : degree(degree), basis_(NULL) {
-      this->storage = new GridStorage(dim);
+    ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim,
+        size_t degree) :
+      Grid(dim),
+      degree(degree),
+      basis_(NULL) {
     }
 
     ModBsplineClenshawCurtisGrid::~ModBsplineClenshawCurtisGrid() {

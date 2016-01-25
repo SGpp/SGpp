@@ -7,10 +7,10 @@
 
 #include <omp.h>
 
-#include "sgpp_mpi.hpp"
-#include "sgpp_base.hpp"
-#include "sgpp_parallel.hpp"
-#include "sgpp_datadriven.hpp"
+#include <sgpp_mpi.hpp>
+#include <sgpp_base.hpp>
+#include <sgpp_parallel.hpp>
+#include <sgpp_datadriven.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/tools/DatasetGenerator.hpp>
