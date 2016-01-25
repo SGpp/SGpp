@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "Node.hpp"
+#include <sgpp/base/tools/json/Node.hpp>
 
 namespace json {
 

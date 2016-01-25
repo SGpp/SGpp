@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
-#include "../OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelImpl.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelImpl.hpp>
 
 namespace SGPP {
   namespace datadriven {
@@ -225,11 +225,6 @@ namespace SGPP {
          * array won't contain the levels, it contains the level to the power of two.
          *
          * The returned format is only useful for a multi-evaluation of modlinear grids
-         *
-         * @param level DataMatrix to store the grid's level to the power of two
-         * @param index DataMatrix to store the grid's indices
-         * @param mask DataMatrix to store masks of operations
-         * @param offset DataMatrix to store offset for operations
          */
         void recalculateLevelIndexMask() {
 

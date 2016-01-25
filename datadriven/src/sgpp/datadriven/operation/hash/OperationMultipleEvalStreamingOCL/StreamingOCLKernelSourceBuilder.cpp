@@ -5,12 +5,12 @@
  *      Author: pfandedd
  */
 
-#include "StreamingOCLKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLKernelSourceBuilder.hpp>
 
 #include <fstream>
 #include <sstream>
 
-#include "StreamingOCLKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLKernelSourceBuilder.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 

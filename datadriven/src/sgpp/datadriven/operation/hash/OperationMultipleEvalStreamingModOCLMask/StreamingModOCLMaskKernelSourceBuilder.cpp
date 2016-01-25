@@ -11,7 +11,7 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 
-#include "StreamingModOCLMaskKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskKernelSourceBuilder.hpp>
 
 namespace SGPP {
   namespace datadriven {

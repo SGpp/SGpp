@@ -14,7 +14,7 @@
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
-#include "AdaptiveOCLKernelImpl.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLKernelImpl.hpp>
 
 namespace SGPP {
   namespace datadriven {

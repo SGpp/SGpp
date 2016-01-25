@@ -23,8 +23,8 @@
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 
-#include "sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
+#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>

@@ -10,7 +10,7 @@
 #include <map>
 #include <memory>
 
-#include "Node.hpp"
+#include <sgpp/base/tools/json/Node.hpp>
 
 namespace json {
 

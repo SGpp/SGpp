@@ -8,8 +8,8 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include "StreamingModOCLFastMultiPlatformOperatorFactory.hpp"
-#include "StreamingModOCLFastMultiPlatformConfiguration.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformConfiguration.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 

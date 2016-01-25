@@ -9,7 +9,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
-#include "../OperationMultipleEvalStreamingModOCLMask/OperationMultiEvalStreamingModOCLMask.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMask/OperationMultiEvalStreamingModOCLMask.hpp>
 
 namespace SGPP {
   namespace datadriven {

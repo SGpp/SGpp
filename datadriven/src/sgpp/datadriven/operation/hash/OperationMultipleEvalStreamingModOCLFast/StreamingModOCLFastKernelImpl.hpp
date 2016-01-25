@@ -17,7 +17,7 @@
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 
-#include "StreamingModOCLFastKernelSourceBuilder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastKernelSourceBuilder.hpp>
 
 namespace SGPP {
   namespace datadriven {

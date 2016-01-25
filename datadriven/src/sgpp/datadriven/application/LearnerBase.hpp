@@ -286,7 +286,9 @@ namespace SGPP {
 
         std::vector<std::pair<size_t, float_t> > getRefinementExecTimes();
 
-        SGPP::base::Grid& getGrid();
+        std::shared_ptr<base::Grid> getGridCopy();
+
+        std::shared_ptr<base::DataVector> getAlphaCopy();
     };
 
   }

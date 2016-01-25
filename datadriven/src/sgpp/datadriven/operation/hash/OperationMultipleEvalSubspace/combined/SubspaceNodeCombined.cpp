@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "SubspaceNodeCombined.hpp"
-#include "OperationMultipleEvalSubspaceCombinedParameters.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/SubspaceNodeCombined.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp>
 
 namespace SGPP {
   namespace datadriven {

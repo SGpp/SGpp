@@ -19,12 +19,13 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
 
-    # check C++11 support
-    if not config.CheckFlag("-std=c++11"):
-        sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-        sys.exit(1)  # TODO: exist undefined, fix
-    
-    config.env.AppendUnique(CPPFLAGS="-std=c++11")
+    if env['COMPILER'] != 'vcc':
+        # check C++11 support
+        if not config.CheckFlag("-std=c++11"):
+            sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
+            sys.exit(1)  # TODO: exist undefined, fix
+        
+        config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
     # boost library
     #TODO: add check and error
@@ -174,7 +175,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # TODO check
     if env['PLATFORM'] not in ['cygwin', 'win32']:
         if env['OPT'] == True:
-           env.Append(CPPFLAGS=['-O3'])
+           env.Append(CPPFLAGS=['-O3', '-g'])
         else:
            env.Append(CPPFLAGS=['-g', '-O0'])
 
