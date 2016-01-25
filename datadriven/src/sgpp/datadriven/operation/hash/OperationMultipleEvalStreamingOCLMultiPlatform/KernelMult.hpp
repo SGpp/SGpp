@@ -5,24 +5,23 @@
 
 #pragma once
 
+#include <CL/cl.h>
+
 #include <string.h>
 #include <limits>
-#include <chrono>
-#include <CL/cl.h>
-#include <omp.h>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
-#include "KernelSourceBuilderMult.hpp"
+#include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
+#include "SourceBuilderMult.hpp"
 
 namespace SGPP {
 namespace datadriven {
-namespace StreamingModOCLMaskMultiPlatform {
+namespace StreamingOCLMultiPlatform {
 
-template<typename real_type>
+template<typename T>
 class KernelMult {
 private:
 
@@ -32,63 +31,57 @@ private:
 
     cl_int err;
 
-    base::OCLClonedBufferSD<real_type> deviceLevel;
-    base::OCLClonedBufferSD<real_type> deviceIndex;
-    base::OCLClonedBufferSD<real_type> deviceMask;
-    base::OCLClonedBufferSD<real_type> deviceOffset;
-    base::OCLClonedBufferSD<real_type> deviceAlpha;
+    base::OCLClonedBufferSD<T> deviceData;
+    base::OCLClonedBufferSD<T> deviceLevel;
+    base::OCLClonedBufferSD<T> deviceIndex;
 
-    base::OCLClonedBufferSD<real_type> deviceData;
-
-    base::OCLClonedBufferSD<real_type> deviceResultData;
+    base::OCLClonedBufferSD<T> deviceAlpha;
+    base::OCLClonedBufferSD<T> deviceResultData;
 
     cl_kernel kernelMult;
 
+    SourceBuilderMult<T> kernelSourceBuilder;
+
+    std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+
     double deviceTimingMult;
 
-    KernelSourceBuilderMult<real_type> kernelSourceBuilder;
-    std::shared_ptr<base::OCLManagerMultiPlatform> manager;
-//    std::shared_ptr<base::OCLOperationConfiguration> parameters;
     json::Node &kernelConfiguration;
 
     std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMult;
 
     bool verbose;
-
 public:
 
     KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
             std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration,
             std::shared_ptr<base::QueueLoadBalancer> queueBalancerMult) :
-            device(device), dims(dims), err(CL_SUCCESS), deviceLevel(device), deviceIndex(device), deviceMask(device), deviceOffset(
-                    device), deviceAlpha(device), deviceData(device), deviceResultData(device), kernelMult(nullptr), kernelSourceBuilder(
-                    device, kernelConfiguration, dims), manager(manager), kernelConfiguration(kernelConfiguration), queueLoadBalancerMult(
+            device(device), deviceData(device), deviceLevel(device), deviceIndex(device), deviceAlpha(device), deviceResultData(
+                    device), kernelMult(nullptr), kernelSourceBuilder(device, kernelConfiguration, dims), manager(
+                    manager), deviceTimingMult(0.0), kernelConfiguration(kernelConfiguration), queueLoadBalancerMult(
                     queueBalancerMult) {
 
-        //initialize with same timing to enforce equal problem sizes in the beginning
-        this->deviceTimingMult = 1.0;
+        this->dims = dims;
+
+        this->err = CL_SUCCESS;
+
         this->verbose = kernelConfiguration["VERBOSE"].getBool();
     }
 
     ~KernelMult() {
-        if (this->kernelMult != nullptr) {
-            clReleaseKernel(this->kernelMult);
-            this->kernelMult = nullptr;
+        if (kernelMult != nullptr) {
+            clReleaseKernel(kernelMult);
         }
     }
 
     void resetKernel() {
-        //TODO: fix for splittedkernel -> currently won't work for multiple iterations
         //leads to a reallocation before next kernel execution
         releaseGridBuffers();
-        releaseDataBuffers();
-        releaseDatasetResultBuffer();
     }
 
-    double mult(std::vector<real_type> &level, std::vector<real_type> &index, std::vector<real_type> &mask,
-            std::vector<real_type> &offset, std::vector<real_type> &dataset, std::vector<real_type> &alpha,
-            std::vector<real_type> &result, const size_t start_index_grid, const size_t end_index_grid,
-            const size_t start_index_data, const size_t end_index_data) {
+    double mult(std::vector<T> &level, std::vector<T> &index, size_t gridSize, std::vector<T> &dataset,
+            size_t datasetSize, std::vector<T> &alpha, std::vector<T> &result, const size_t start_index_grid,
+            const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
 
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
@@ -97,14 +90,15 @@ public:
 
         if (this->kernelMult == nullptr) {
             std::string program_src = kernelSourceBuilder.generateSource();
-            this->kernelMult = manager->buildKernel(program_src, device, "multOCLMask");
+            this->kernelMult = manager->buildKernel(program_src, device, "multOCL");
         }
 
         if (!deviceLevel.isInitialized()) {
-            initGridBuffers(level, index, mask, offset, alpha, start_index_grid, end_index_grid);
+            initGridBuffers(level, index, alpha, start_index_grid, end_index_grid);
         }
 
         this->deviceTimingMult = 0.0;
+        size_t localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
 
         while (true) {
 
@@ -117,12 +111,13 @@ public:
 
             //TODO: change after blocking is implemented
             //TODO: don't forget to set padding to DATA_BLOCKING * THREAD_BLOCK_SIZE
-            size_t dataBlockingSize = 1;
+            size_t dataBlockingSize = 1 * localSize;
 
             //TODO: start_index_data not considered!
-            size_t scheduleSize = 10000;
+            size_t scheduleSize = 1024;
 
-            bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, dataBlockingSize, kernelStartData, kernelEndData);
+            bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, dataBlockingSize,
+                    kernelStartData, kernelEndData);
             if (!segmentAvailable) {
                 break;
             }
@@ -156,49 +151,37 @@ public:
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
-                err = clSetKernelArg(this->kernelMult, 2, sizeof(cl_mem), this->deviceMask.getBuffer());
+                err = clSetKernelArg(this->kernelMult, 2, sizeof(cl_mem), this->deviceData.getBuffer());
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
-                err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_mem), this->deviceOffset.getBuffer());
+                err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_mem), this->deviceAlpha.getBuffer());
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
-                err = clSetKernelArg(this->kernelMult, 4, sizeof(cl_mem), this->deviceData.getBuffer());
+                err = clSetKernelArg(this->kernelMult, 4, sizeof(cl_mem), this->deviceResultData.getBuffer());
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
-                err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_mem), this->deviceAlpha.getBuffer());
+                err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint), &rangeSizeUnblocked); // resultsize == number of entries in dataset
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
-                err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_mem), this->deviceResultData.getBuffer());
+                err = clSetKernelArg(this->kernelMult, 6, sizeof(cl_uint), &kernelStartGrid);
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
                     throw SGPP::base::operation_exception(errorString.str());
                 }
-                err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_uint), &rangeSizeUnblocked); // resultsize == number of entries in dataset
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
-                }
-                err = clSetKernelArg(this->kernelMult, 8, sizeof(cl_uint), &kernelStartGrid);
-                if (err != CL_SUCCESS) {
-                    std::stringstream errorString;
-                    errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-                    throw SGPP::base::operation_exception(errorString.str());
-                }
-                err = clSetKernelArg(this->kernelMult, 9, sizeof(cl_uint), &kernelEndGrid);
+                err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_uint), &kernelEndGrid);
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -208,7 +191,6 @@ public:
                 cl_event clTiming = nullptr;
 
                 // enqueue kernel
-                size_t localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
 
 //                std::cout << "commandQueue: " << device->commandQueue << std::endl;
 
@@ -244,10 +226,12 @@ public:
 //                std::cout << "read from device: " << device->deviceId << "" << std::endl;
                 clFinish(device->commandQueue);
 
-                std::vector<real_type> &hostTemp = deviceResultData.getHostPointer();
+                std::vector<T> &hostTemp = deviceResultData.getHostPointer();
                 size_t deviceIndex = 0;
                 for (size_t i = 0; i < rangeSizeUnblocked; i++) {
-//                    std::cout << "resultDevice[" << deviceIndex << "] = " << hostTemp[deviceIndex] << std::endl;
+                    if (kernelStartData + i >= datasetSize) {
+                        break;
+                    }
                     result[kernelStartData + i] = hostTemp[deviceIndex];
                     deviceIndex += 1;
                 }
@@ -298,8 +282,6 @@ private:
     void releaseGridBuffers() {
         this->deviceLevel.freeBuffer();
         this->deviceIndex.freeBuffer();
-        this->deviceMask.freeBuffer();
-        this->deviceOffset.freeBuffer();
         this->deviceAlpha.freeBuffer();
     }
 
@@ -312,18 +294,15 @@ private:
         this->deviceResultData.freeBuffer();
     }
 
-    void initGridBuffers(std::vector<real_type> &level, std::vector<real_type> &index, std::vector<real_type> &mask,
-            std::vector<real_type> &offset, std::vector<real_type> &alpha, size_t kernelStartGrid,
+    void initGridBuffers(std::vector<T> &level, std::vector<T> &index, std::vector<T> &alpha, size_t kernelStartGrid,
             size_t kernelEndGrid) {
 
         deviceLevel.intializeTo(level, dims, kernelStartGrid, kernelEndGrid);
         deviceIndex.intializeTo(index, dims, kernelStartGrid, kernelEndGrid);
-        deviceMask.intializeTo(mask, dims, kernelStartGrid, kernelEndGrid);
-        deviceOffset.intializeTo(offset, dims, kernelStartGrid, kernelEndGrid);
         deviceAlpha.intializeTo(alpha, 1, kernelStartGrid, kernelEndGrid);
     }
 
-    void initDatasetBuffers(std::vector<real_type> &dataset, size_t kernelStartData, size_t kernelEndData) {
+    void initDatasetBuffers(std::vector<T> &dataset, size_t kernelStartData, size_t kernelEndData) {
 
         deviceData.intializeTo(dataset, dims, kernelStartData, kernelEndData, true);
     }
@@ -332,13 +311,15 @@ private:
 
         size_t range = kernelEndData - kernelStartData;
 
-        std::vector<real_type> zeros(range);
+        //TODO: use result parameter in mult
+        std::vector<T> zeros(range);
         for (size_t i = 0; i < range; i++) {
             zeros[i] = 0.0;
         }
 
         deviceResultData.intializeTo(zeros, 1, 0, range);
     }
+
 }
 ;
 
