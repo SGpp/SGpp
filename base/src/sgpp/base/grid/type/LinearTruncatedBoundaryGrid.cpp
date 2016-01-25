@@ -10,24 +10,23 @@
 #include <iostream>
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
-#include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
+#include "LinearTruncatedBoundaryGrid.hpp"
+#include "../generation/GeneralizedBoundaryGridGenerator.hpp"
 
 
 namespace SGPP {
   namespace base {
 
-    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(std::istream& istr) :
-      Grid(istr) {
+    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(std::istream& istr) : Grid(istr) {
 
     }
 
-    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(size_t dim) :
-      Grid(dim) {
+    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
-    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(BoundingBox& BB) :
-      Grid(BB) {
+    LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(BoundingBox& BB) {
+      this->storage = new GridStorage(BB);
     }
 
     LinearTruncatedBoundaryGrid::~LinearTruncatedBoundaryGrid() {

@@ -8,11 +8,11 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
-#include <cmath>
+#include <math.h>
 #include <random>
 #include <algorithm>
 
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
+#include "OperationRosenblattTransformationKDE.hpp"
 
 #include <sgpp/globaldef.hpp>
 

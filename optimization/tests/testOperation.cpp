@@ -1,7 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
+#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
@@ -28,8 +28,7 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
   const size_t m = 4;
   const SGPP::float_t tol = (use_double_precision ? 1e-4 : 1e-1);
 
-  test_problems::Sphere testProblem(d);
-  ScalarFunction& f = testProblem.getObjectiveFunction();
+  test_functions::Sphere f(d);
 
   // Test All The Grids!
   std::vector<std::unique_ptr<base::Grid>> grids;
@@ -37,14 +36,14 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
 
   for (auto& grid : grids) {
     base::DataVector functionValues(0);
-    testProblem.generateDisplacement();
+    f.generateDisplacement();
     createSampleGrid(*grid, l, f, functionValues);
 
     base::DataMatrix functionValuesMatrix(grid->getSize(), m);
 
     for (size_t j = 0; j < m; j++) {
       base::DataVector column(0);
-      testProblem.generateDisplacement();
+      f.generateDisplacement();
       createSampleGrid(*grid, l, f, column);
       functionValuesMatrix.setColumn(j, column);
     }

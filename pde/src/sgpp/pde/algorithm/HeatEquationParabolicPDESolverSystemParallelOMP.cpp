@@ -13,7 +13,7 @@
 using namespace SGPP::op_factory;
 
 #ifdef _OPENMP
-#include <omp.h>
+#include "omp.h"
 #endif
 
 #include <sgpp/globaldef.hpp>

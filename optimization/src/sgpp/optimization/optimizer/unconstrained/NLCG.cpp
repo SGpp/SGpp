@@ -29,9 +29,6 @@ namespace SGPP {
         alpha(restartThreshold) {
       }
 
-      NLCG::~NLCG() {
-      }
-
       void NLCG::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
 

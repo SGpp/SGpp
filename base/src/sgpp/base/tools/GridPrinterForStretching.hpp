@@ -32,7 +32,7 @@ namespace SGPP {
         /**
          * Std-Destructor
          */
-        virtual ~GridPrinterForStretching() override;
+        virtual ~GridPrinterForStretching();
 
         /**
          * Print the grid with its function to a file; front end
@@ -41,14 +41,14 @@ namespace SGPP {
          * @param tFilename absolute path to the file the grid is written into
          * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
          */
-        virtual void printGrid(DataVector& alpha, std::string tFilename, size_t PointsPerDimension) override;
+        virtual void printGrid(DataVector& alpha, std::string tFilename, size_t PointsPerDimension);
 
 
         /**
          * This function is not used for stretching grid printing, use printGridDomainStretching instead
 
          */
-        virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, size_t PointsPerDimension) override;
+        virtual void printGridDomain(DataVector& alpha, std::string tFilename, BoundingBox& GridArea, size_t PointsPerDimension);
         /**
          * Print the grid with its function to a file; front end
          *
@@ -57,7 +57,7 @@ namespace SGPP {
          * @param GridArea The area in which the function should be plotted
          * @param PointsPerDimension specifies how many functions evaluations in every dimension should be calculated
          */
-        void printGridDomainStretching(DataVector& alpha, std::string tFilename, Stretching& GridArea, size_t PointsPerDimension);
+        virtual void printGridDomainStretching(DataVector& alpha, std::string tFilename, Stretching& GridArea, size_t PointsPerDimension);
 
         /**
          * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -67,7 +67,7 @@ namespace SGPP {
          * @param tFilename absoulte path to the file the grid is written into
          * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
          */
-        virtual void printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus) override;
+        virtual void printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus);
 
         /**
          * Prints the Grid Points of the Sparse Grid either with their node basis value
@@ -80,7 +80,7 @@ namespace SGPP {
          * @param tFilename absoulte path to the file the grid is written into
          * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
          */
-        virtual void printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus) override;
+        virtual void printSparseGridExpTransform(DataVector& alpha, std::string tFilename, bool bSurplus);
     };
 
   }

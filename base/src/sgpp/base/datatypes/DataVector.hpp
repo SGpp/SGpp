@@ -239,7 +239,7 @@ namespace SGPP {
          *
          * @param vec The DataVector which is added to the current values
          */
-        void add(const DataVector& vec);
+        void add(DataVector& vec);
 
         /**
          * Subtracts the values from another DataVector of the current values.
@@ -260,7 +260,7 @@ namespace SGPP {
          *
          * @param vec the DataVector which is multiplied to current DataVector
          */
-        void componentwise_mult(const DataVector& vec);
+        void componentwise_mult(DataVector& vec);
 
         /**
          * Divides the current DataVector component-wise by another DataVector.
@@ -274,7 +274,7 @@ namespace SGPP {
          *
          * @param vec the DataVector which the current DataVector is divided by
          */
-        void componentwise_div(const DataVector& vec);
+        void componentwise_div(DataVector& vec);
 
         /**
          * multiplies all elements by a constant factor

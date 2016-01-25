@@ -382,7 +382,7 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
             std::stringstream errorString;
             errorString << "OCL Error: Failed to create kernel! Error code: " << err << std::endl;
             throw SGPP::base::operation_exception(errorString.str());
-       }
+        }
     }
 
     if (program) {

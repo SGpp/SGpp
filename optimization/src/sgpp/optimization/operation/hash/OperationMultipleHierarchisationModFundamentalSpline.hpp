@@ -32,9 +32,9 @@ namespace SGPP {
           base::ModFundamentalSplineGrid& grid);
 
         /**
-         * Destructor.
+         * Virtual destructor.
          */
-        virtual ~OperationMultipleHierarchisationModFundamentalSpline() override;
+        virtual ~OperationMultipleHierarchisationModFundamentalSpline();
 
         /**
          * @param[in,out] nodeValues before: vector of function values at
@@ -42,14 +42,14 @@ namespace SGPP {
          *                           after: vector of hierarchical coefficients
          * @return                   whether hierarchisation was successful
          */
-        virtual bool doHierarchisation(base::DataVector& nodeValues) override;
+        virtual bool doHierarchisation(base::DataVector& nodeValues);
 
         /**
          * @param[in,out] alpha before: vector of hierarchical coefficients,
          *                      after: vector of function values at
          *                      the grid points
          */
-        virtual void doDehierarchisation(base::DataVector& alpha) override;
+        virtual void doDehierarchisation(base::DataVector& alpha);
 
         /**
          * @param[in,out] nodeValues before: matrix of function values at
@@ -57,14 +57,14 @@ namespace SGPP {
          *                           after: matrix of hierarchical coefficients
          * @return                   whether hierarchisation was successful
          */
-        virtual bool doHierarchisation(base::DataMatrix& nodeValues) override;
+        virtual bool doHierarchisation(base::DataMatrix& nodeValues);
 
         /**
          * @param[in,out] alpha before: matrix of hierarchical coefficients,
          *                      after: matrix of function values at
          *                      the grid points
          */
-        virtual void doDehierarchisation(base::DataMatrix& alpha) override;
+        virtual void doDehierarchisation(base::DataMatrix& alpha);
 
       protected:
         /// storage of the sparse grid

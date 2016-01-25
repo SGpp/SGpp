@@ -47,7 +47,7 @@ namespace SGPP {
           }
 
           /**
-           * Destructor.
+           * Virtual destructor.
            */
           virtual ~LeastSquaresOptimizer() {
           }

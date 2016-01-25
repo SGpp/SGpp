@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(testSerialize) {
   std::string str = s->serialize();
 
   BOOST_TEST_MESSAGE(str);
-  BOOST_CHECK_NE(str.length(), 0U);
+  BOOST_CHECK_NE(str.length(), 0);
 
   HashGridStorage* s2 = new HashGridStorage(str);
 
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
 
   std::string str = s->serialize();
 
-  BOOST_CHECK_NE(str.length(), 0U);
+  BOOST_CHECK_NE(str.length(), 0);
 
   HashGridStorage* s2 = new HashGridStorage(str);
 
@@ -93,8 +93,8 @@ BOOST_AUTO_TEST_CASE(testInsert) {
   i.set(0, 1, 1);
   size_t i2 = s->insert(i);
 
-  BOOST_CHECK_EQUAL(i2, 0U);
-  BOOST_CHECK_EQUAL(s->size(), 1U);
+  BOOST_CHECK_EQUAL(i2, 0);
+  BOOST_CHECK_EQUAL(s->size(), 1);
 
   delete s;
 }
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(testPeriodic1D) {
 
   g.regularWithPeriodicBoundaries(&s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 4U);
+  BOOST_CHECK_EQUAL(s.size(), 4);
 }
 
 BOOST_AUTO_TEST_CASE(testPeriodic2D) {
@@ -213,11 +213,11 @@ BOOST_AUTO_TEST_CASE(testPeriodic2D) {
 
   g.regularWithPeriodicBoundaries(&s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 12U);
+  BOOST_CHECK_EQUAL(s.size(), 12);
 
   HashGridStorage s2(2);
   g.regularWithPeriodicBoundaries(&s2, 3);
-  BOOST_CHECK_EQUAL(s2.size(), 32U);
+  BOOST_CHECK_EQUAL(s2.size(), 32);
 
   HashGridIndex i(2);
   i.set(0, 0, 0);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(testPeriodic3D) {
 
   g.regularWithPeriodicBoundaries(&s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 32U);
+  BOOST_CHECK_EQUAL(s.size(), 32);
 }
 
 BOOST_AUTO_TEST_CASE(testRegular1D) {
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(testRegular1D) {
 
   g.regular(&s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 3U);
+  BOOST_CHECK_EQUAL(s.size(), 3);
 }
 
 BOOST_AUTO_TEST_CASE(testRegular2D) {
@@ -280,12 +280,12 @@ BOOST_AUTO_TEST_CASE(testRegular2D) {
 
   g.regular(&s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 5U);
+  BOOST_CHECK_EQUAL(s.size(), 5);
 
   HashGridStorage s2(2);
   g.regular(&s2, 3);
 
-  BOOST_CHECK_EQUAL(s2.size(), 17U);
+  BOOST_CHECK_EQUAL(s2.size(), 17);
 
   HashGridIndex i(2);
   i.set(0, 1, 1);
@@ -312,7 +312,7 @@ BOOST_AUTO_TEST_CASE(testRegular3D) {
 
   g.regular(&s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 7U);
+  BOOST_CHECK_EQUAL(s.size(), 7);
 }
 
 BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries1D) {
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries1D) {
 
   g.regularWithBoundaries(&s, 2, true);
 
-  BOOST_CHECK_EQUAL(s.size(), 5U);
+  BOOST_CHECK_EQUAL(s.size(), 5);
 }
 
 BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
@@ -330,12 +330,12 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
 
   g.regularWithBoundaries(&s, 2, true);
 
-  BOOST_CHECK_EQUAL(s.size(), 21U);
+  BOOST_CHECK_EQUAL(s.size(), 21);
 
   HashGridStorage s2(2);
   g.regularWithBoundaries(&s2, 3, true);
 
-  BOOST_CHECK_EQUAL(s2.size(), 49U);
+  BOOST_CHECK_EQUAL(s2.size(), 49);
 
   HashGridIndex i(2);
   i.set(0, 1, 1);
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
   HashGenerator g;
 
   g.regularWithBoundaries(&s, 2, true);
-  BOOST_CHECK_EQUAL(s.size(), 81U);
+  BOOST_CHECK_EQUAL(s.size(), 81);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine) {
 
   r.free_refine(&s, &f);
 
-  BOOST_CHECK_EQUAL(s.size(), 5U);
+  BOOST_CHECK_EQUAL(s.size(), 5);
 }
 
 BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
@@ -413,7 +413,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
 
   r.free_refine(&s, &f);
 
-  BOOST_CHECK_EQUAL(s.size(), 21U);
+  BOOST_CHECK_EQUAL(s.size(), 21);
 
 }
 
@@ -436,7 +436,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
 
   r.free_refine(&s, &f);
 
-  BOOST_CHECK_EQUAL(s.size(), 21U);
+  BOOST_CHECK_EQUAL(s.size(), 21);
 }
 
 BOOST_AUTO_TEST_CASE(testSurplusFunctor) {

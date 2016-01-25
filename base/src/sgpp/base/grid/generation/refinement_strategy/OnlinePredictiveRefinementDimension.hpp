@@ -6,13 +6,13 @@
 #ifndef ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_
 #define ONLINEPREDICTIVEREFINEMENTDIMENSION_HPP_
 
-#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
+#include "RefinementDecorator.hpp"
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>
 #include <vector>
 #include <utility>
 
-//#include <sgpp_datadriven.hpp>
+//#include "sgpp_datadriven.hpp"
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -45,7 +45,7 @@ namespace SGPP {
         };
 
 
-        virtual ~OnlinePredictiveRefinementDimension() override {
+        virtual ~OnlinePredictiveRefinementDimension() {
           delete predictiveGrid_;
         }
 

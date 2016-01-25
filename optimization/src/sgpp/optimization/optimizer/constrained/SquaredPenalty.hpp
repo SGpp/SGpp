@@ -61,12 +61,7 @@ namespace SGPP {
                          float_t penaltyIncreaseFactor =
                            DEFAULT_PENALTY_INCREASE_FACTOR);
 
-          /**
-           * Destructor.
-           */
-          virtual ~SquaredPenalty() override;
-
-          virtual void optimize() override;
+          void optimize();
 
           /**
            * @return objective function gradient
@@ -133,7 +128,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function gradient

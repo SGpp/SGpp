@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
+#include "OperationMatrixLTwoDotExplicitLinearBoundary.hpp"
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/data_exception.hpp>

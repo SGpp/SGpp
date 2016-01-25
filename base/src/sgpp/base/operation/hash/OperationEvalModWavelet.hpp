@@ -30,10 +30,10 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationEvalModWavelet() override {}
+        virtual ~OperationEvalModWavelet() {}
 
         virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point) override;
+                             const DataVector& point);
 
       protected:
         /// Pointer to GridStorage object

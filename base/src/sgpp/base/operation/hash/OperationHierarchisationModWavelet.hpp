@@ -30,7 +30,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationHierarchisationModWavelet() override {}
+        virtual ~OperationHierarchisationModWavelet() {}
 
         /**
          * Implements the hierarchisation on a sprase grid with mod wavelets base functions
@@ -38,7 +38,7 @@ namespace SGPP {
          * @param node_values the functions values in the node base
          *
          */
-        virtual void doHierarchisation(DataVector& node_values) override;
+        virtual void doHierarchisation(DataVector& node_values);
 
         /**
          * Implements the dehierarchisation on a sprase grid with mod wavelets base functions
@@ -46,7 +46,7 @@ namespace SGPP {
          * @param alpha the coefficients of the sparse grid's base functions
          *
          */
-        virtual void doDehierarchisation(DataVector& alpha) override;
+        virtual void doDehierarchisation(DataVector& alpha);
 
       protected:
         /// Pointer to GridStorage object

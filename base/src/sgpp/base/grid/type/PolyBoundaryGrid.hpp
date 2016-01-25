@@ -28,22 +28,19 @@ namespace SGPP {
          *
          * @param dim the dimension of the grid
          * @param degree the max. polynom's degree
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
          */
-        PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
+        PolyBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * Destructor
          */
-        virtual ~PolyBoundaryGrid() override;
+        virtual ~PolyBoundaryGrid();
 
-        virtual const SBasis& getBasis() override;
-        virtual SGPP::base::GridType getType() override;
-        virtual void serialize(std::ostream& ostr) override;
+        virtual const SBasis& getBasis();
+        virtual SGPP::base::GridType getType();
+        virtual void serialize(std::ostream& ostr);
 
-        virtual GridGenerator* createGridGenerator() override;
+        virtual GridGenerator* createGridGenerator();
 
         static Grid* unserialize(std::istream& istr);
         size_t getDegree() const;
@@ -51,10 +48,7 @@ namespace SGPP {
       protected:
         /// max. polynom's degree
         size_t degree;
-        /// polynomial basis
         const SPolyBoundaryBase* basis_;
-        /// level at which the boundary points should be inserted
-        level_t boundaryLevel;
     };
 
   }

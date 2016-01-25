@@ -52,12 +52,7 @@ namespace SGPP {
                      float_t gamma = DEFAULT_GAMMA,
                      float_t delta = DEFAULT_DELTA);
 
-          /**
-           * Destructor.
-           */
-          virtual ~NelderMead() override;
-
-          virtual void optimize() override;
+          void optimize();
 
           /**
            * @return          reflection coefficient
@@ -102,7 +97,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// reflection coefficient

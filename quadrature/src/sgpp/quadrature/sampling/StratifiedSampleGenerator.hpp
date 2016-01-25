@@ -8,9 +8,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/globaldef.hpp>
-#include <random>
-
-#include <sgpp/quadrature/sampling/SampleGenerator.hpp>
+#include "SampleGenerator.hpp"
 
 namespace SGPP {
   namespace quadrature {
@@ -30,11 +28,11 @@ namespace SGPP {
          *
          * @param strataPerDimension array holding the number of strata used to
          * subdivide the specific dimension
-         * @param seed custom seed (defaults to default seed of mt19937_64)
+         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
          */
 
         StratifiedSampleGenerator(std::vector<size_t>& strataPerDimension,
-                                  std::uint64_t seed = std::mt19937_64::default_seed);
+                                  int seed = -1);
 
         /**
          * Destructor
@@ -71,9 +69,6 @@ namespace SGPP {
          * counts up the next dimension by 1.
          */
         void getNextStrata();
-
-        //
-        std::uniform_real_distribution<float_t> uniformRealDist;
 
     };
 

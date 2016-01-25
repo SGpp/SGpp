@@ -31,9 +31,9 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
+         * Virtual destructor.
          */
-        virtual ~FullSLE() override {
+        virtual ~FullSLE() {
         }
 
         /**
@@ -41,7 +41,7 @@ namespace SGPP {
          * @param j     column index
          * @return      whether the (i,j)-th entry of the matrix is non-zero
          */
-        inline virtual bool isMatrixEntryNonZero(size_t i, size_t j) override {
+        inline bool isMatrixEntryNonZero(size_t i, size_t j) {
           return (A(i, j) != 0.0);
         }
 
@@ -50,7 +50,7 @@ namespace SGPP {
          * @param j     column index
          * @return      (i,j)-th entry of the matrix
          */
-        inline virtual float_t getMatrixEntry(size_t i, size_t j) override {
+        inline float_t getMatrixEntry(size_t i, size_t j) {
           return A(i, j);
         }
 
@@ -61,7 +61,7 @@ namespace SGPP {
           return A;
         }
 
-        virtual size_t getDimension() const override {
+        size_t getDimension() const {
           return A.getNrows();
         }
 
@@ -71,7 +71,7 @@ namespace SGPP {
          *
          * @param[out] clone pointer to cloned object
          */
-        virtual void clone(std::unique_ptr<CloneableSLE>& clone) const override {
+        virtual void clone(std::unique_ptr<CloneableSLE>& clone) const {
           clone = std::unique_ptr<CloneableSLE>(new FullSLE(A));
         }
 

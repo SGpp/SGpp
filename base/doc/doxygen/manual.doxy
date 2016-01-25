@@ -4,11 +4,9 @@
 @image html SG++_XS_wcrop.png
 
 <!-- ############################################################# -->
-@section manual_overview Overview
-- @subpage installation
-  - @ref linux
-  - @ref mingw
-  - @ref msvc
+@section manual__overview Overview
+- @subpage installationLinux
+- @subpage installationWindows
 - @subpage modules
 - @subpage examples
 **/

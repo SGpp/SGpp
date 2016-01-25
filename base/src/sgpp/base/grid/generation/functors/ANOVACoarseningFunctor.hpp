@@ -36,7 +36,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~ANOVACoarseningFunctor() override;
+        virtual ~ANOVACoarseningFunctor();
 
 
         /**
@@ -48,14 +48,14 @@ namespace SGPP {
          *
          * @return refinement value
          */
-        virtual float_t operator()(GridStorage* storage, size_t seq) override;
+        virtual float_t operator()(GridStorage* storage, size_t seq);
 
         /**
          * This should return the initial value of coarsening criterion (e.g. alpha or error).
          *
          * @return the initial value
          */
-        virtual float_t start() override;
+        virtual float_t start();
 
 
         /**

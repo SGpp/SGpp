@@ -1,4 +1,4 @@
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
+#include "OperationDensityMarginalizeKDE.hpp"
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/data_exception.hpp>

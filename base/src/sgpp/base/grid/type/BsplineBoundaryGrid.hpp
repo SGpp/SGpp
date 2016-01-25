@@ -35,33 +35,28 @@ namespace SGPP {
          *
          * @param dim the dimension of the grid
          * @param degree the bspline's degree
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
          */
-        BsplineBoundaryGrid(size_t dim,
-                            size_t degree,
-                            level_t boundaryLevel = 1);
+        BsplineBoundaryGrid(size_t dim, size_t degree);
 
         /**
          * Destructor.
          */
-        virtual ~BsplineBoundaryGrid() override;
+        virtual ~BsplineBoundaryGrid();
 
         /**
          * @return string that identifies the grid type uniquely
          */
-        virtual SGPP::base::GridType getType() override;
+        virtual SGPP::base::GridType getType();
 
         /**
          * @return B-spline basis
          */
-        virtual const SBasis& getBasis() override;
+        virtual const SBasis& getBasis();
 
         /**
          * @return pointer to a GridGenerator object
          */
-        virtual GridGenerator* createGridGenerator() override;
+        virtual GridGenerator* createGridGenerator();
 
         /**
          * reads a grid out of a string
@@ -76,7 +71,7 @@ namespace SGPP {
          *
          * @param ostr stream to which the grid is written
          */
-        virtual void serialize(std::ostream& ostr) override;
+        virtual void serialize(std::ostream& ostr);
 
         /**
          * @return B-spline degree
@@ -88,8 +83,8 @@ namespace SGPP {
         size_t degree;
         /// B-spline basis
         const SBsplineBoundaryBase* basis_;
-        /// level at which the boundary points should be inserted
-        level_t boundaryLevel;
+
+
     };
 
   }

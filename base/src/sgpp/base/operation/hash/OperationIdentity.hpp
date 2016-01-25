@@ -30,9 +30,9 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationIdentity() override {}
+        virtual ~OperationIdentity() {}
 
-        void mult(DataVector& alpha, DataVector& result) override {
+        void mult(DataVector& alpha, DataVector& result) {
           result = alpha;
         }
     };

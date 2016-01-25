@@ -32,9 +32,9 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
+         * Virtual destructor.
          */
-        virtual ~OperationNaiveEvalPartialDerivativeModWavelet() override {
+        virtual ~OperationNaiveEvalPartialDerivativeModWavelet() {
         }
 
         /**
@@ -45,7 +45,7 @@ namespace SGPP {
          */
         virtual float_t evalPartialDerivative(const DataVector& alpha,
                                               const DataVector& point,
-                                              size_t derivDim) override;
+                                              size_t derivDim);
 
       protected:
         /// storage of the sparse grid

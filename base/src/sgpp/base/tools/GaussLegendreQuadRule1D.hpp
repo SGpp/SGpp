@@ -6,7 +6,7 @@
 #ifndef GAUSSLEGENDREQUADRULE1D_HPP_
 #define GAUSSLEGENDREQUADRULE1D_HPP_
 
-#include <sgpp/base/tools/QuadRule1D.hpp>
+#include "QuadRule1D.hpp"
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
@@ -20,7 +20,7 @@ namespace SGPP {
          * the weights are additionally normalized to 1.
          */
         GaussLegendreQuadRule1D();
-        virtual ~GaussLegendreQuadRule1D() override;
+        virtual ~GaussLegendreQuadRule1D();
 
         /**
          * the coordinates are normalized to [0, 1].

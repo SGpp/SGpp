@@ -61,12 +61,7 @@ namespace SGPP {
                               float_t penaltyIncreaseFactor =
                                 DEFAULT_PENALTY_INCREASE_FACTOR);
 
-          /**
-           * Destructor.
-           */
-          virtual ~AugmentedLagrangian() override;
-
-          virtual void optimize() override;
+          void optimize();
 
           /**
            * Try to find a feasible initial point by solving an auxiliary
@@ -144,7 +139,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// objective function gradient

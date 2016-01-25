@@ -7,7 +7,7 @@
 #define COMBIGRID_ULTILS_HPP_
 
 /** In this hpp file we define the utilities for the combination technique */
-#include <cmath>
+#include <math.h>
 #include <iostream>
 #include <stack>
 #include <functional>

@@ -334,7 +334,7 @@ namespace SGPP {
     }
 
 
-    void DataMatrix::add(const DataMatrix& matr) {
+    void DataMatrix::add(DataMatrix& matr) {
       if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrix::add : Dimensions do not match");
@@ -413,7 +413,7 @@ namespace SGPP {
       }
     }
 
-    void DataMatrix::componentwise_mult(const DataMatrix& matr) {
+    void DataMatrix::componentwise_mult(DataMatrix& matr) {
       if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrix::componentwise_mult : Dimensions do not match");
@@ -426,7 +426,7 @@ namespace SGPP {
       }
     }
 
-    void DataMatrix::componentwise_div(const DataMatrix& matr) {
+    void DataMatrix::componentwise_div(DataMatrix& matr) {
       if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
         throw new SGPP::base::data_exception(
           "DataMatrix::componentwise_div : Dimensions do not match");

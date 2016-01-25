@@ -41,20 +41,14 @@ namespace SGPP {
                    const base::DataVector& startingPoint);
 
           /**
-           * Destructor.
-           */
-          virtual ~BiCGStab() override;
-
-          /**
            * @param       system  system to be solved
            * @param       b       right-hand side
            * @param[out]  x       solution to the system
            * @return              whether all went well
            *                      (false if errors occurred)
            */
-          virtual bool solve(SLE& system,
-                             base::DataVector& b,
-                             base::DataVector& x) const override;
+          bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const;
 
           /**
            * @return              maximal number of iterations

@@ -8,7 +8,6 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <random>
 
 #include <sgpp/globaldef.hpp>
 
@@ -29,10 +28,10 @@ namespace SGPP {
          * Standard constructor
          *
          * @param dimensions number of dimensions used for sample generation
-         * @param seed custom seed (defaults to default seed of mt19937_64)
+         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
          */
 
-        SampleGenerator(size_t dimensions, std::uint64_t seed = std::mt19937_64::default_seed);
+        SampleGenerator(size_t dimensions, int seed = -1);
         virtual ~SampleGenerator();
 
         /**
@@ -79,10 +78,7 @@ namespace SGPP {
         size_t dimensions;
 
         // seed for random number generator
-        std::uint64_t seed;
-
-        // random number generator
-        std::mt19937_64 rng;
+        int seed;
     };
   }
 }

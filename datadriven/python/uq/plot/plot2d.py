@@ -24,8 +24,7 @@ def plotDensity2d(U, n=50, addContour=True):
                extent=[xlim[0], xlim[1], ylim[0], ylim[1]])
 
     plt.jet()
-    cbar = plt.colorbar()
-    cbar.ax.set_ylabel(r'$\hat{f}(\xi_1, \xi_2)$')
+    plt.colorbar()
 
     if addContour:
         cs = plt.contour(X, 1 - Y, Z, colors='black')

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 
-#include <sgpp/base/operation/hash/OperationEvalPolyBoundary.hpp>
+#include "OperationEvalPolyBoundary.hpp"
 
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>

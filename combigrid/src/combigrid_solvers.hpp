@@ -7,7 +7,7 @@
 #define COMBIGRID_SOLVERS_HPP_
 
 // ------ The regularization solvers --------
-#include <combigrid/multigridFG/utils/RunPoisson.hpp>
-#include <combigrid/multigridFG/utils/RunTikhonov.hpp>
+#include "combigrid/multigridFG/utils/RunPoisson.hpp"
+#include "combigrid/multigridFG/utils/RunTikhonov.hpp"
 
 #endif /* COMBIGRID_SOLVERS_HPP_ */

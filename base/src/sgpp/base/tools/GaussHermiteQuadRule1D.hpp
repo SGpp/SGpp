@@ -6,7 +6,7 @@
 #ifndef GAUSSHERMITEQUADRULE1D_HPP_
 #define GAUSSHERMITEQUADRULE1D_HPP_
 
-#include <sgpp/base/tools/QuadRule1D.hpp>
+#include "QuadRule1D.hpp"
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
@@ -15,7 +15,7 @@ namespace SGPP {
     class GaussHermiteQuadRule1D : public QuadRule1D {
       public:
         GaussHermiteQuadRule1D();
-        virtual ~GaussHermiteQuadRule1D() override;
+        virtual ~GaussHermiteQuadRule1D();
 
         /**
          * load gauss quadrature points for standard normal weight function. The points

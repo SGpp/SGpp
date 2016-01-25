@@ -5,8 +5,8 @@
 
 #include <sgpp/finance/operation/hash/OperationLELinear.hpp>
 
-//#include <basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp>
-//#include <basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp>
+//#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiDownBBLinear.hpp"
+//#include "basis/linear/noboundary/algorithm_sweep/DPhidPhiUpBBLinear.hpp"
 #include <sgpp/pde/basis/linear/noboundary/DowndPhidPhiBBIterativeLinear.hpp>
 #include <sgpp/base/algorithm/sweep.hpp>
 

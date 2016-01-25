@@ -44,7 +44,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationStencilHierarchisation() override {}
+        virtual ~OperationStencilHierarchisation() {}
 
         /**
          * Implements the abstract hierarchisation on a sparse grid.

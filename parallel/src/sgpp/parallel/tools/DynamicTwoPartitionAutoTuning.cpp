@@ -5,7 +5,7 @@
 
 #define INITIAL_SPEEDUP_PARTITION_2 20.0
 
-#include <sgpp/parallel/tools/DynamicTwoPartitionAutoTuning.hpp>
+#include "DynamicTwoPartitionAutoTuning.hpp"
 #include <sgpp/globaldef.hpp>
 
 

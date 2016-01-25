@@ -25,9 +25,6 @@ namespace SGPP {
         delta(delta) {
       }
 
-      NelderMead::~NelderMead() {
-      }
-
       void NelderMead::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (Nelder-Mead)...");
 

@@ -6,7 +6,7 @@
 #ifndef RUNTIKHONOV_HPP_
 #define RUNTIKHONOV_HPP_
 
-#include <combigrid.hpp>
+#include "combigrid.hpp"
 #include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include <sgpp/combigrid/combigrid/AbstractCombiGrid.hpp>
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>

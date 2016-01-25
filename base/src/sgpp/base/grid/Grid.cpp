@@ -61,11 +61,13 @@ namespace SGPP {
       return new LinearStretchedGrid(dim);
     }
 
-    Grid* Grid::createLinearBoundaryGrid(size_t dim, level_t boundaryLevel) {
-      if (boundaryLevel == 0) {
+    Grid* Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel) {
+      if (boundaryLevel == 1) {
+        return new LinearBoundaryGrid(dim);
+      } else if (boundaryLevel == 0) {
         return new LinearL0BoundaryGrid(dim);
       } else {
-        return new LinearBoundaryGrid(dim, boundaryLevel);
+        throw factory_exception("factory_exeception createLinearBoundaryGrid: unsupported value for boundaryLevel");
       }
     }
 
@@ -332,15 +334,6 @@ namespace SGPP {
     }
 
     Grid::Grid() : storage(NULL) {
-    }
-
-    Grid::Grid(size_t dim) : storage(new GridStorage(dim)) {
-    }
-
-    Grid::Grid(BoundingBox& BB) : storage(new GridStorage(BB)) {
-    }
-
-    Grid::Grid(Stretching& BB) : storage(new GridStorage(BB)) {
     }
 
     Grid::~Grid() {

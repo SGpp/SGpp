@@ -12,12 +12,12 @@
 #include <algorithm>
 #include <string>
 
-#include <sgpp_base.hpp>
-#include <sgpp_pde.hpp>
-#include <sgpp_finance.hpp>
-#include <sgpp_parallel.hpp>
-#include <sgpp_solver.hpp>
-#include <sgpp_datadriven.hpp>
+#include "sgpp_base.hpp"
+#include "sgpp_pde.hpp"
+#include "sgpp_finance.hpp"
+#include "sgpp_parallel.hpp"
+#include "sgpp_solver.hpp"
+#include "sgpp_datadriven.hpp"
 
 /**
  * Calls the writeHelp method in the BlackScholesSolver Object

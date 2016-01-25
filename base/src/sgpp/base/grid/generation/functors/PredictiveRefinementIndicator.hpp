@@ -7,7 +7,7 @@
 #define PREDICTIVEREFINEMENTINDICATOR_HPP_
 
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
-#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include "RefinementFunctor.hpp"
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -63,7 +63,7 @@ namespace SGPP {
          * @param storage pointer to the grids storage object
          * @param seq number of data point fot which the squared residual should be returned.
          */
-        virtual float_t operator()(GridStorage* storage, size_t seq) override;
+        virtual float_t operator()(GridStorage* storage, size_t seq);
 
         /**
          * Returns the maximal number of points that should be refined.
@@ -72,7 +72,7 @@ namespace SGPP {
          *
          * @return number of points that should refined. Default value: 1.
          */
-        virtual size_t getRefinementsNum() override;
+        virtual size_t getRefinementsNum();
 
         /**
          * Returns the threshold for refinement.
@@ -82,7 +82,7 @@ namespace SGPP {
          *
          * @return threshold value for refinement. Default value: 0.
          */
-        virtual float_t getRefinementThreshold() override;
+        virtual float_t getRefinementThreshold();
 
         /**
          * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
@@ -90,7 +90,7 @@ namespace SGPP {
          *
          * @return lower bound
          */
-        virtual float_t start() override;
+        virtual float_t start();
 
       protected:
 

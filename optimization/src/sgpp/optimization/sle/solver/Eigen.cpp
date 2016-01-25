@@ -63,9 +63,6 @@ namespace SGPP {
       }
 #endif /* USE_EIGEN */
 
-      Eigen::~Eigen() {
-      }
-
       bool Eigen::solve(SLE& system, base::DataVector& b,
                         base::DataVector& x) const {
         base::DataMatrix B(b.getPointer(), b.getSize(), 1);
@@ -174,7 +171,7 @@ namespace SGPP {
           if (solveInternal(A, A_QR, b, x)) {
             X.setColumn(i, x);
           } else {
-            Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
+            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
             return false;
           }
         }

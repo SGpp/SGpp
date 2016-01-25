@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/multigridFG/utils/RunPoisson.hpp>
+#include "RunPoisson.hpp"
 #include <sgpp/combigrid/multigridFG/multigrid/Multigrid.hpp>
 #include <sgpp/combigrid/multigridFG/multigrid/MultigridFAS.hpp>
 

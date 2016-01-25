@@ -33,10 +33,10 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationMultipleEvalModWavelet() override {}
+        virtual ~OperationMultipleEvalModWavelet() {}
 
-        virtual void mult(DataVector& alpha, DataVector& result) override;
-        virtual void multTranspose(DataVector& source, DataVector& result) override;
+        virtual void mult(DataVector& alpha, DataVector& result);
+        virtual void multTranspose(DataVector& source, DataVector& result);
 
       protected:
         /// Pointer to GridStorage object

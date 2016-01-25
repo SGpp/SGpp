@@ -7,11 +7,6 @@
 //This file does not require a header as the overloaded functions are implicitly defined.
 //The "overload" happens at link time of the library.
 
-// TODO: On MinGW, using aligned memory with _mm_malloc
-// leads to crashes (e.g., in the Boost tests). posix_memalign isn't defined
-// on MinGW. Somebody should enable aligned memory for MinGW...
-#ifndef __MINGW64__
-
 #include <new>
 #include <exception>
 
@@ -31,7 +26,7 @@
 #define POSIX_MEMALIGN
 #define aligned_malloc(p, size, alignment) int success = posix_memalign(&p, SGPPMEMALIGNMENT, size);
 #define aligned_free(addr) free(addr)
-#endif /* _WIN32 */
+#endif
 
 void* operator new(size_t size) {
   void* p;
@@ -57,13 +52,13 @@ void* operator new(size_t size) {
     throw std::bad_alloc();
   }
 
-#else /* POSIX_MEMALIGN */
+#else
 
   if (p == 0) {
     throw std::bad_alloc();
   }
 
-#endif /* POSIX_MEMALIGN */
+#endif
 
   return p;
 }
@@ -87,7 +82,7 @@ throw (std::bad_alloc)
     size = 64;
   }
 
-#endif /* __APPLE__ */
+#endif
 
   //p = aligned_malloc(size, SGPPMEMALIGNMENT);
   aligned_malloc(p, size, SGPPMEMALIGNMENT);
@@ -98,13 +93,13 @@ throw (std::bad_alloc)
     throw std::bad_alloc();
   }
 
-#else /* POSIX_MEMALIGN */
+#else
 
   if (p == 0) {
     throw std::bad_alloc();
   }
 
-#endif /* POSIX_MEMALIGN */
+#endif
 
   return p;
 }
@@ -117,4 +112,3 @@ void operator delete[](void* p) throw () {
   aligned_free(p);
 }
 
-#endif /* __MINGW64__ */

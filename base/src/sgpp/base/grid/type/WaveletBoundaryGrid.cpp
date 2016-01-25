@@ -22,16 +22,11 @@
 namespace SGPP {
   namespace base {
 
-    WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) :
-      Grid(istr),
-      boundaryLevel(0) {
-      istr >> boundaryLevel;
+    WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) : Grid(istr) {
     }
 
-    WaveletBoundaryGrid::WaveletBoundaryGrid(size_t dim,
-        level_t boundaryLevel) :
-      Grid(dim),
-      boundaryLevel(boundaryLevel) {
+    WaveletBoundaryGrid::WaveletBoundaryGrid(size_t dim) {
+      this->storage = new GridStorage(dim);
     }
 
     WaveletBoundaryGrid::~WaveletBoundaryGrid() {
@@ -55,7 +50,7 @@ namespace SGPP {
      * This must be changed if we add other storage types
      */
     GridGenerator* WaveletBoundaryGrid::createGridGenerator() {
-      return new BoundaryGridGenerator(this->storage, boundaryLevel);
+      return new BoundaryGridGenerator(this->storage);
     }
 
 

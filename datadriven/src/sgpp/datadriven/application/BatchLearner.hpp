@@ -23,7 +23,7 @@
 
 #include <deque>
 #include <map>
-#include <sgpp/datadriven/application/BatchConfiguration.hpp>
+#include "BatchConfiguration.hpp"
 
 using namespace SGPP::base;
 using namespace std;

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerDensityBased.hpp>
+#include "LearnerDensityBased.hpp"
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>

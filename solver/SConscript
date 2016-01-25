@@ -1,6 +1,6 @@
-# Copyright (C) 2008-today The SG++ Project
+﻿# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at
+# use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
 import os
@@ -43,9 +43,9 @@ if env['USE_STATICLIB']:
                             source=objs,
                             LIBS=moduleDependencies)
 else:
-    # building of shared libraries differs
+    # building shared libraries differ
     libsuffix = env['SHLIBSUFFIX']
-    if (env['PLATFORM'] == 'cygwin') or (env['COMPILER'] == 'vcc'):
+    if env['PLATFORM'] in ['cygwin', 'win32']:
         # remove old moduleDependencies if they exist already
         for ext in ['lib', 'exp', 'dll', 'def']:
             newlibFilename = "%s.%s" % (libname, ext)
@@ -69,7 +69,7 @@ else:
                                 LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
         env.Depends(cmd, objs)
         env.Depends(lib, cmd)
-    else:
+    else:    
         lib = env.SharedLibrary(target=libname,
                                 source=objs,
                                 LIBPATH=BUILD_DIR,
@@ -86,8 +86,8 @@ libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  py_test_env = env.Clone()
-  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
+  env.Requires(moduleTest, libInstall)
   testTargetList.append(moduleTest)
 
 for fileName in os.listdir("examples"):

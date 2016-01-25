@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/plotter/GridPlotter.hpp>
+#include "GridPlotter.hpp"
 
 #include <iostream>
 #include <fstream>

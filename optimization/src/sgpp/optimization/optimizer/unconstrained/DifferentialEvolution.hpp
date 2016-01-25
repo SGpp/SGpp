@@ -60,12 +60,7 @@ namespace SGPP {
                                 float_t maxDistanceThreshold =
                                   DEFAULT_MAX_DISTANCE_THRESHOLD);
 
-          /**
-           * Destructor.
-           */
-          virtual ~DifferentialEvolution() override;
-
-          virtual void optimize() override;
+          void optimize();
 
           /**
            * @return                  number of individuals
@@ -80,7 +75,7 @@ namespace SGPP {
           /**
            * @param[out] clone pointer to cloned object
            */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
 
         protected:
           /// number of individuals

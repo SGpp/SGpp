@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/combigrid/multigridFG/operators/TikhonovOperator.hpp>
+#include "TikhonovOperator.hpp"
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <cmath>
+#include <math.h>
 
 
 combigrid::TikhonovOperator::TikhonovOperator(const FullGridD* fg ,

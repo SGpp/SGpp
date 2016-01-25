@@ -30,9 +30,9 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
+         * Virtual destructor.
          */
-        virtual ~CloneableSLE() override {
+        virtual ~CloneableSLE() {
         }
 
         /**
@@ -48,7 +48,7 @@ namespace SGPP {
         /**
          * @return whether this system derives from CloneableSLE or not (true)
          */
-        virtual bool isCloneable() const override {
+        bool isCloneableSLE() const {
           return true;
         }
     };

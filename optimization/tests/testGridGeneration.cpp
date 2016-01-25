@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
+#include <sgpp/optimization/function/scalar/test/Rosenbrock.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
@@ -24,9 +24,8 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
   const size_t p = 3;
   const size_t N = 200;
 
-  test_problems::Rosenbrock testProblem(d);
-  testProblem.generateDisplacement();
-  ScalarFunction& f = testProblem.getObjectiveFunction();
+  test_functions::Rosenbrock f(d);
+  f.generateDisplacement();
 
   // Test All The Grids!
   std::vector<std::unique_ptr<base::Grid>> grids;
@@ -75,8 +74,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
       return n * n;
     };
     gridGen.setAdaptivity(adaptivityFunction);
-    BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42),
-                      static_cast<size_t>(42 * 42));
+    BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42), 42 * 42);
   }
 
   for (auto& grid : grids) {

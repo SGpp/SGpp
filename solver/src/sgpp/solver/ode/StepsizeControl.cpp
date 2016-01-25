@@ -70,8 +70,8 @@ namespace SGPP {
           //   std::cout << "YK" << ((p->first)->toString() == (q->first)->toString() ) << " " << (p->first)->toString() << " YKold" << ((q->first)->equals(*p->first)) << " "<< (q->first)->toString() << std::endl;
           if ((q->first)->equals(*p->first)) {
 
-            auto i = p->second;
-            auto j = q->second;
+            long unsigned int i = p->second;
+            long unsigned int j = q->second;
             //  std::cout <<time<< " "<< (p->first)->toString() << " "<<i<<" " << Data[i]<< " " << (q->first)->toString() <<" "<<j<< " "<< OldData[j] << std::endl;
             float_t t2 = std::max(fabs(Data[i]), fabs(OldData[j]));
             float_t tmpData = fabs(Data[i] - OldData[j]) / std::max(sc, t2);

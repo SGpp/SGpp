@@ -169,6 +169,7 @@ void DictNode::serialize(std::ofstream &outFile, size_t indentWidth) {
         }
         outFile << attrIndentation << "\"" << key << "\": ";
         this->attributes[key]->serialize(outFile, indentWidth + Node::SERIALIZE_INDENT);
+
     }
 
     outFile << std::endl << indentation << "}";
@@ -379,4 +380,5 @@ std::unique_ptr<Node> DictNode::erase(Node &node) {
 std::vector<std::string> &DictNode::keys() {
     return this->keyOrder;
 }
+
 }

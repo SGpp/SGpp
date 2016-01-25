@@ -42,12 +42,6 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
-         */
-        virtual ~WrapperVectorFunctionHessian() override {
-        }
-
-        /**
          * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @param[out] value    \f$g(\vec{x})\f$
          * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
@@ -56,17 +50,17 @@ namespace SGPP {
          *                      \f$\nabla^2 g_i(\vec{x}) \in
          *                      \mathbb{R}^{d \times d}\f$
          */
-        inline virtual void eval(const base::DataVector& x,
-                                 base::DataVector& value,
-                                 base::DataMatrix& gradient,
-                                 std::vector<base::DataMatrix>& hessian) override {
+        inline void eval(const base::DataVector& x,
+                         base::DataVector& value,
+                         base::DataMatrix& gradient,
+                         std::vector<base::DataMatrix>& hessian) {
           fHessian(x, value, gradient, hessian);
         }
 
         /**
          * @param[out] clone pointer to cloned object
          */
-        void clone(std::unique_ptr<VectorFunctionHessian>& clone) const override {
+        void clone(std::unique_ptr<VectorFunctionHessian>& clone) const {
           clone = std::unique_ptr<VectorFunctionHessian>(
                     new WrapperVectorFunctionHessian(d, m, fHessian));
         }

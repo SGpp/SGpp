@@ -57,7 +57,7 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~PolyModifiedBasis() override {
+        ~PolyModifiedBasis() {
           if (polynoms) {
             delete [] polynoms;
           }
@@ -67,7 +67,7 @@ namespace SGPP {
          * Evaluate a basis function.
          * Has a dependence on the absolute position of grid point and support.
          */
-        virtual float_t eval(LT level, IT index, float_t p) override {
+        float_t eval(LT level, IT index, float_t p) {
           size_t deg = degree + 1 < level ? degree + 1 : level;
 
           size_t idMask = (1 << deg) - 1;

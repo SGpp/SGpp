@@ -28,9 +28,6 @@ namespace SGPP {
         rhoAlphaMinus(stepSizeDecreaseFactor) {
       }
 
-      Rprop::~Rprop() {
-      }
-
       void Rprop::optimize() {
         Printer::getInstance().printStatusBegin("Optimizing (Rprop)...");
 

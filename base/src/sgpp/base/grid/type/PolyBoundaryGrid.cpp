@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include "PolyBoundaryGrid.hpp"
 
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
@@ -16,21 +16,14 @@ namespace SGPP {
   namespace base {
 
     PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr) :
-      Grid(istr),
-      degree(1 << 16),
-      basis_(NULL),
-      boundaryLevel(0) {
+      Grid(istr), degree(1 << 16), basis_(NULL) {
       istr >> degree;
-      istr >> boundaryLevel;
     }
 
     PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
-                                       size_t degree,
-                                       level_t boundaryLevel) :
-      Grid(dim),
-      degree(degree),
-      basis_(NULL),
-      boundaryLevel(boundaryLevel) {
+                                       size_t degree) :
+      degree(degree), basis_(NULL) {
+      this->storage = new GridStorage(dim);
     }
 
     PolyBoundaryGrid::~PolyBoundaryGrid() {
@@ -62,7 +55,6 @@ namespace SGPP {
     void PolyBoundaryGrid::serialize(std::ostream& ostr) {
       this->Grid::serialize(ostr);
       ostr << degree << std::endl;
-      ostr << boundaryLevel << std::endl;
     }
 
     /**
@@ -70,7 +62,7 @@ namespace SGPP {
      * This must be changed if we add other storage types
      */
     GridGenerator* PolyBoundaryGrid::createGridGenerator() {
-      return new BoundaryGridGenerator(this->storage, boundaryLevel);
+      return new BoundaryGridGenerator(this->storage);
     }
 
   }

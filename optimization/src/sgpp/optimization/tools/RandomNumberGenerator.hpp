@@ -19,7 +19,7 @@ namespace SGPP {
     class RandomNumberGenerator {
       public:
         /// type of the seed
-        typedef std::mt19937::result_type SeedType;
+        typedef size_t SeedType;
 
         /**
          * @return singleton instance
@@ -59,7 +59,7 @@ namespace SGPP {
         /**
          * @return      seed
          */
-        SeedType getSeed() const;
+        size_t getSeed() const;
 
         /**
          * Reseeds with time-dependent seed.
@@ -71,7 +71,7 @@ namespace SGPP {
          *
          * @param seed  seed to be used
          */
-        void setSeed(SeedType seed);
+        void setSeed(size_t seed);
 
       protected:
         /// random number generator

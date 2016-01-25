@@ -18,8 +18,8 @@
 #endif
 
 #ifdef USEOCL
-#include <CL/cl.h>
-#include <CL/cl_ext.h>
+#include "CL/cl.h"
+#include "CL/cl_ext.h"
 #endif
 #include <string.h>
 #include <malloc.h>

@@ -6,7 +6,7 @@
 #ifndef X86SIMDKERNELBASE_HPP
 #define X86SIMDKERNELBASE_HPP
 
-#include <sgpp/parallel/datadriven/basis/common/CommonX86SimdKernelBase.hpp>
+#include "CommonX86SimdKernelBase.hpp"
 
 #include <sgpp/globaldef.hpp>
 

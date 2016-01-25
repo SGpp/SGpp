@@ -11,7 +11,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #ifdef __SSE3__
-#include <immintrin.h>
+#include "immintrin.h"
 #endif
 
 #include <sgpp/globaldef.hpp>

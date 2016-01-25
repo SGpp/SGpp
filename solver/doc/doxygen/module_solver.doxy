@@ -1,6 +1,8 @@
 /**
 @page module_solver Module SGPP::solver
 
-- solver (CG, …)
+- solver (CG, ...)
 - time-stepping schemes
-*/
+
+
+**/

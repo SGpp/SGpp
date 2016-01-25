@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationNaiveEvalPoly.hpp>
+#include "OperationNaiveEvalPoly.hpp"
 
 namespace SGPP {
   namespace base {

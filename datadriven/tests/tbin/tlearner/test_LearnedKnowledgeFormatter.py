@@ -73,7 +73,6 @@ class TestLearnedKnowledgeFormatter(unittest.TestCase):
             self.assertAlmostEqual(row, a)
             a = a + 0.1
 
-        os.remove(self.filename_save)
 
 
 if __name__=="__main__":

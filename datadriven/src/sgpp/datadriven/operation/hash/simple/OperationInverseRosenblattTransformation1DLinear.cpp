@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
+#include "OperationInverseRosenblattTransformation1DLinear.hpp"
 
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>

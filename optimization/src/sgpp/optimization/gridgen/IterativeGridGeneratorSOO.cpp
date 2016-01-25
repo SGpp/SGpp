@@ -23,9 +23,6 @@ namespace SGPP {
       setAdaptivity(adaptivity);
     }
 
-    IterativeGridGeneratorSOO::~IterativeGridGeneratorSOO() {
-    }
-
     IterativeGridGeneratorSOO::AdaptivityFunction
     IterativeGridGeneratorSOO::getAdaptivity() const {
       return hMax;

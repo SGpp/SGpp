@@ -6,7 +6,7 @@
 #ifndef TESTSERIALS_CTGRID_HPP_
 #define TESTSERIALS_CTGRID_HPP_
 
-#include <combigrid.hpp>
+#include "combigrid.hpp"
 
 namespace combigrid {
 

@@ -27,41 +27,29 @@ namespace SGPP {
         /**
          * Constructor Linear Truncated Boundary Grid
          *
-         * @param dim           the dimension of the grid
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
+         * @param dim the dimension of the grid
          */
-        LinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+        LinearBoundaryGrid(size_t dim);
 
         /**
          * Constructor Linear Truncated Boundary Grid
          *
          * @param BB the BoundingBox of the grid
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
          */
-        LinearBoundaryGrid(BoundingBox& BB, level_t boundaryLevel = 1);
+        LinearBoundaryGrid(BoundingBox& BB);
 
         /**
          * Destructor
          */
-        virtual ~LinearBoundaryGrid() override;
+        virtual ~LinearBoundaryGrid();
 
-        virtual SGPP::base::GridType getType() override;
+        virtual SGPP::base::GridType getType();
 
-        virtual const SBasis& getBasis() override;
+        virtual const SBasis& getBasis();
 
-        virtual GridGenerator* createGridGenerator() override;
+        virtual GridGenerator* createGridGenerator();
 
         static Grid* unserialize(std::istream& istr);
-
-        virtual void serialize(std::ostream& ostr) override;
-
-      protected:
-        /// level at which the boundary points should be inserted
-        level_t boundaryLevel;
     };
 
   }

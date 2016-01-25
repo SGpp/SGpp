@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp>
+#include "../sampling/StratifiedSampleGenerator.hpp"
 
 #include <cmath>
 #include <sgpp/quadrature/Random.hpp>
@@ -15,14 +15,13 @@ using namespace std;
 namespace SGPP {
   namespace quadrature {
 
-    StratifiedSampleGenerator::StratifiedSampleGenerator(vector<size_t>& strataPerDimension, uint64_t seed) :
+    StratifiedSampleGenerator::StratifiedSampleGenerator(vector<size_t>& strataPerDimension, int seed) :
       SampleGenerator(strataPerDimension.size(), seed),
       numberOfStrata(strataPerDimension),
       currentStrata(strataPerDimension.size()),
       numberOfSamples(0),
       numberOfCurrentSample(0),
-      sizeOfStrata(strataPerDimension.size()),
-      uniformRealDist(0, 1) {
+      sizeOfStrata(strataPerDimension.size()) {
       // set counter to the first strata for each dimension
       // compute size of strata per dimension
       for (size_t i = 0; i < dimensions; i++) {
@@ -46,7 +45,7 @@ namespace SGPP {
 
       // Choose a random number inside the stratum selected for this dimension
       for (size_t i = 0; i < dimensions; i++) {
-        dv[i] = (static_cast<float_t>(currentStrata[i]) + uniformRealDist(rng))
+        dv[i] = (static_cast<float_t>(currentStrata[i]) + Random::random_double())
                 * sizeOfStrata[i];
       }
 

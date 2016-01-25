@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/parallel/pde/basis/common/OCLLaplaceBound.hpp>
+#include "OCLLaplaceBound.hpp"
 
 #include <sgpp/globaldef.hpp>
 

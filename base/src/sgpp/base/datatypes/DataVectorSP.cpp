@@ -197,7 +197,7 @@ namespace SGPP {
       return *this;
     }
 
-    void DataVectorSP::add(const DataVectorSP& vec) {
+    void DataVectorSP::add(DataVectorSP& vec) {
       if (size != vec.size) {
         throw new SGPP::base::data_exception(
           "DataVectorSP::add : Dimensions do not match");
@@ -219,7 +219,7 @@ namespace SGPP {
       }
     }
 
-    void DataVectorSP::componentwise_mult(const DataVectorSP& vec) {
+    void DataVectorSP::componentwise_mult(DataVectorSP& vec) {
       if (size != vec.size) {
         throw new SGPP::base::data_exception(
           "DataVectorSP::componentwise_mult : Dimensions do not match");
@@ -230,7 +230,7 @@ namespace SGPP {
       }
     }
 
-    void DataVectorSP::componentwise_div(const DataVectorSP& vec) {
+    void DataVectorSP::componentwise_div(DataVectorSP& vec) {
       if (size != vec.size) {
         throw new SGPP::base::data_exception(
           "DataVectorSP::componentwise_div : Dimensions do not match");
@@ -241,7 +241,7 @@ namespace SGPP {
       }
     }
 
-    float DataVectorSP::dotProduct(const DataVectorSP& vec) const {
+    float DataVectorSP::dotProduct(DataVectorSP& vec) const {
       float sum = 0.0;
 
       for (size_t i = 0; i < size; i++) {

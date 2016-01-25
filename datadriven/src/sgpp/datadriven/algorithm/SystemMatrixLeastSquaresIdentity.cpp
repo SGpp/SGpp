@@ -8,7 +8,7 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
+#include "SystemMatrixLeastSquaresIdentity.hpp"
 
 using namespace std;
 

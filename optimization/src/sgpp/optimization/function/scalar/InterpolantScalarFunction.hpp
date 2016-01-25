@@ -52,18 +52,12 @@ namespace SGPP {
         }
 
         /**
-         * Destructor.
-         */
-        virtual ~InterpolantScalarFunction() override {
-        }
-
-        /**
          * Evaluation of the function.
          *
          * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
          * @return      \f$f(\vec{x})\f$
          */
-        inline virtual float_t eval(const base::DataVector& x) override {
+        inline float_t eval(const base::DataVector& x) {
           for (size_t t = 0; t < d; t++) {
             if ((x[t] < 0.0) || (x[t] > 1.0)) {
               return INFINITY;
@@ -76,7 +70,7 @@ namespace SGPP {
         /**
          * @param[out] clone pointer to cloned object
          */
-        virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override {
+        virtual void clone(std::unique_ptr<ScalarFunction>& clone) const {
           clone = std::unique_ptr<ScalarFunction>(
                     new InterpolantScalarFunction(grid, alpha));
         }

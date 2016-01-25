@@ -27,7 +27,7 @@ namespace SGPP {
          */
         OperationSecondMomentLinear(GridStorage* storage) : storage(storage) {}
 
-        virtual ~OperationSecondMomentLinear() override {}
+        virtual ~OperationSecondMomentLinear() {}
 
         /**
          * Compute second moment of the function
@@ -35,7 +35,7 @@ namespace SGPP {
          *
          * @param alpha Coefficient vector for current grid
          */
-        virtual float_t doQuadrature(DataVector& alpha) override;
+        virtual float_t doQuadrature(DataVector& alpha);
 
       protected:
         // Pointer to the grid's GridStorage object

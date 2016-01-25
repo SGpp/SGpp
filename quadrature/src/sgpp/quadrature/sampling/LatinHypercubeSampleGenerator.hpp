@@ -9,10 +9,9 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <list>
 #include <vector>
-#include <random>
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/quadrature/sampling/SampleGenerator.hpp>
+#include "SampleGenerator.hpp"
 
 
 namespace SGPP {
@@ -32,12 +31,12 @@ namespace SGPP {
          * Standard constructor
          *
          * @param dimensions number of dimensions used for sample generation
-         * @param numberOfStrata number of strata
-         * @param seed custom seed (defaults to default seed of mt19937_64)
+         * @param numberOfSamples number of samples to be drawn
+         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
          */
 
-        LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfStrata,
-                                      std::uint64_t seed = std::mt19937_64::default_seed);
+        LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfSamples,
+                                      int seed = -1);
 
         /**
          * Destructor
@@ -69,13 +68,14 @@ namespace SGPP {
         size_t numberOfCurrentSample;
 
         //
+        size_t numberOfSamples;
+
+        //
         float_t sizeOfStrata;
 
         //
         std::vector< std::vector<size_t> > currentStrata;
 
-        //
-        std::uniform_real_distribution<float_t> uniformRealDist;
     };
 
   }

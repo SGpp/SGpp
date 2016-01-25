@@ -14,20 +14,18 @@ from time import sleep
 import random
 
 # username
-username = "franzefn"
-# username = "leichtdk"
+#username = "franzefn"
+username = "leichtdk"
 
 # hostname: number of workers
-hosts = {
-#          'localhost': {'cores': 4,
-#                        'free_cores': 2,
-#                        'scratch': '/data2/scratch/Fabian/localhost'},
-#         'helium': {'cores': 36,  # actually 42 cores, but I don't use all of them
-#                    'free_cores' : 4,
-#                    'scratch': '/data2/scratch/%s/helium' % username},
-         'kepler': {'cores': 24,
-                    'free_cores' : 24,
-                    'scratch': '/scratch/sgs/%s' % username}
+hosts = {#'localhost': {'cores': 4,
+         #              'scratch': '/data2/scratch/Fabian/localhost'},
+         'helium': {'cores': 36,  # actually 42 cores, but I don't use all of them
+                    'free_cores' : 36,
+                    'scratch': '/data2/scratch/%s/helium' % username}
+         #'kepler': {'cores': 24,
+         #           'free_cores' : 24,
+         #           'scratch': '/scratch/sgs/%s' % username},
          #'vgpu1':  {'cores': 12,
          #           'free_cores' : 12,
          #           'scratch': '/home/%s/data2/scratch/%s/vgpu1' % (username, username)}

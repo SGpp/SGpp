@@ -27,11 +27,11 @@ namespace SGPP {
       public:
         ClassificationRefinementFunctor(DataVector* alpha, Grid* grid, size_t refinements_num = 1, float_t threshold = 0.0);
 
-        virtual ~ClassificationRefinementFunctor() override;
+        virtual ~ClassificationRefinementFunctor();
 
-        virtual float_t operator()(GridStorage* storage, size_t seq) override;
+        virtual float_t operator()(GridStorage* storage, size_t seq);
 
-        virtual float_t start() override;
+        virtual float_t start();
 
         size_t getRefinementsNum();
 

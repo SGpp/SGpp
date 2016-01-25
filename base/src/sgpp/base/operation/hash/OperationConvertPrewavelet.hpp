@@ -38,11 +38,11 @@ namespace SGPP {
         /**
          * Destructor
          */
-        virtual ~OperationConvertPrewavelet() override {
+        virtual ~OperationConvertPrewavelet() {
         }
 
-        virtual void doConvertToLinear(DataVector& alpha) override;
-        virtual void doConvertFromLinear(DataVector& alpha) override;
+        virtual void doConvertToLinear(DataVector& alpha);
+        virtual void doConvertFromLinear(DataVector& alpha);
 
       protected:
         /// Pointer to the grid's GridStorage object
