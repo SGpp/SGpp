@@ -240,12 +240,7 @@ tutorial
 
 @subsection mingw_using_python Python
 
-The Python bindings pysgpp can be used either by setting the
-@c PYTHONPATH environment variable to include the @c lib directory, i.e.
-@verbatim
-set PYTHONPATH=C:\PATH_TO_SGPP\lib;%$PYTHONPATH%
-@endverbatim
-or by installing pysgpp in the local @c site-packages folder:
+The Python bindings pysgpp can be used by installing pysgpp in the local @c site-packages folder:
 @verbatim
 python setup.py install --user
 @endverbatim
