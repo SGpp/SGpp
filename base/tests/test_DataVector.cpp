@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 
 BOOST_AUTO_TEST_CASE(testOps) {
   //sum
-  BOOST_CHECK_EQUAL(d_rand.sum(), sum);
+  BOOST_CHECK_CLOSE(d_rand.sum(), sum, 1e-12);
   //square
   DataVector d = d_rand;
   d.sqr();
