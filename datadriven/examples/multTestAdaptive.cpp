@@ -66,11 +66,11 @@ int main(int argc, char** argv) {
 
 	if (argc >= 7)
 	{
-		parameters.set("ADAPTIVE_STREAMING_HARD_LIMIT", std::string(argv[6]));
+		parameters.addIDAttr("ADAPTIVE_STREAMING_HARD_LIMIT", std::string(argv[6]));
 	}
 	if (argc >= 8)
 	{
-		parameters.set("ADAPTIVE_STREAMING_DENSITY", std::string(argv[7]));
+		parameters.addIDAttr("ADAPTIVE_STREAMING_DENSITY", std::string(argv[7]));
 	}
 
     bool bCompare = true;
