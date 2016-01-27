@@ -110,11 +110,6 @@ int main(int argc, char** argv) {
 
     std::cout << "duration: " << eval->getDuration() << std::endl;
 
-    SGPP::base::DataVector alpha2(gridStorage->size());
-    alpha2.setAll(0.0);
-
-    eval->multTranspose(dataSizeVectorResult, alpha2);
-
     std::cout << "calculating comparison values..." << std::endl;
 
     SGPP::base::OperationMultipleEval* evalCompare =
