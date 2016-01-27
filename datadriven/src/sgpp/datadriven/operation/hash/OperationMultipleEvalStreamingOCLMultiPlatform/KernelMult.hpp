@@ -55,6 +55,7 @@ private:
     size_t localSize;
     size_t dataBlockingSize;
     size_t scheduleSize;
+    size_t totalBlockSize;
 public:
 
     KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
@@ -80,6 +81,7 @@ public:
         localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
         dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
         scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
+        totalBlockSize = dataBlockingSize * localSize;
     }
 
     ~KernelMult() {
@@ -98,6 +100,14 @@ public:
             size_t datasetSize, std::vector<T> &alpha, std::vector<T> &result, const size_t start_index_grid,
             const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
 
+        if (verbose) {
+#pragma omp critical (StreamingOCLMultiPlatformKernelMultTranspose)
+            {
+                std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId << ")"
+                        << std::endl;
+            }
+        }
+
         // check if there is something to do at all
         if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
             return 0.0;
@@ -113,7 +123,9 @@ public:
         }
 
         this->deviceTimingMult = 0.0;
-        size_t localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+
+//for slow devices to catch up
+#pragma omp barrier
 
         while (true) {
 
@@ -124,23 +136,22 @@ public:
             size_t kernelStartGrid = start_index_grid;
             size_t kernelEndGrid = end_index_grid;
 
-//            //TODO: change after blocking is implemented
-//            //TODO: don't forget to set padding to DATA_BLOCKING * THREAD_BLOCK_SIZE
-//            size_t dataBlockingSize = 1 * localSize;
-//            //TODO: start_index_data not considered!
-//            size_t scheduleSize = 1024;
-
-            bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, dataBlockingSize,
-                    kernelStartData, kernelEndData);
+            bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, totalBlockSize, kernelStartData,
+                    kernelEndData);
             if (!segmentAvailable) {
                 break;
             }
 
-            size_t rangeSizeUnblocked = kernelEndData - kernelStartData;
+            size_t rangeSize = kernelEndData - kernelStartData;
+            size_t rangeSizeAfterBlocking = (kernelEndData / dataBlockingSize) - (kernelStartData / dataBlockingSize);
 
             if (verbose) {
-                std::cout << "device: " << device->deviceId << " kernel from: " << kernelStartData << " to: "
-                        << kernelEndData << " -> range: " << rangeSizeUnblocked << std::endl;
+#pragma omp critical (StreamingOCLMultiPlatformKernelMult)
+                {
+                    std::cout << "device: " << device->deviceName << " (" << device->deviceId << ") "
+                            << " kernel from: " << kernelStartData << " to: " << kernelEndData << " -> range: "
+                            << rangeSize << " (with blocking: " << rangeSizeAfterBlocking << ")" << std::endl;
+                }
             }
 
             initDatasetBuffers(dataset, kernelStartData, kernelEndData);
@@ -149,9 +160,7 @@ public:
             clFinish(device->commandQueue);
 //            std::cout << "wrote to device: " << device->deviceId << "" << std::endl;
 
-            size_t rangeSizeBlocked = (kernelEndData / dataBlockingSize) - (kernelStartData / dataBlockingSize);
-
-            if (rangeSizeBlocked > 0) {
+            if (rangeSize > 0) {
 
                 err = clSetKernelArg(this->kernelMult, 0, sizeof(cl_mem), this->deviceLevel.getBuffer());
                 if (err != CL_SUCCESS) {
@@ -183,7 +192,7 @@ public:
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
                     throw base::operation_exception(errorString.str());
                 }
-                err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint), &rangeSizeUnblocked); // resultsize == number of entries in dataset
+                err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_uint), &rangeSize); // resultsize == number of entries in dataset
                 if (err != CL_SUCCESS) {
                     std::stringstream errorString;
                     errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -222,7 +231,7 @@ public:
 
 //                std::cout << "OCL Info: detected device, name: \"" << deviceName << "\"" << std::endl;
 
-                err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0, &rangeSizeUnblocked,
+                err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0, &rangeSizeAfterBlocking,
                         &localSize, 0, nullptr, &clTiming);
 
                 if (err != CL_SUCCESS) {
@@ -234,7 +243,6 @@ public:
                 clFinish(device->commandQueue);
 //                std::cout << "executed kernel: " << device->deviceId << "" << std::endl;
 
-                //TODO: implement treatment of start_index_data in queueLoadBalancer!
                 deviceResultData.readFromBuffer();
 
 //                std::cout << "read from device: " << device->deviceId << "" << std::endl;
@@ -242,7 +250,7 @@ public:
 
                 std::vector<T> &hostTemp = deviceResultData.getHostPointer();
                 size_t deviceIndex = 0;
-                for (size_t i = 0; i < rangeSizeUnblocked; i++) {
+                for (size_t i = 0; i < rangeSize; i++) {
                     if (kernelStartData + i >= datasetSize) {
                         break;
                     }
@@ -282,7 +290,11 @@ public:
                 time *= 1e-9;
 
                 if (verbose) {
-                    std::cout << "device: " << device->deviceId << " duration: " << time << std::endl;
+#pragma omp critical (StreamingOCLMultiPlatformKernelMult)
+                    {
+                        std::cout << "device: " << device->deviceName << " (" << device->deviceId << ") "
+                                << "duration: " << time << std::endl;
+                    }
                 }
 
                 this->deviceTimingMult += time;

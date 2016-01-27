@@ -181,7 +181,7 @@ public:
         std::chrono::duration<double> elapsed_seconds = end - start;
 
         if (verbose) {
-            std::cout << "duration mult ocl mod: " << elapsed_seconds.count() << std::endl;
+            std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
         }
 
         for (size_t i = 0; i < result.getSize(); i++) {
@@ -233,7 +233,7 @@ public:
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
         if (verbose) {
-            std::cout << "duration multTranspose ocl mod: " << elapsed_seconds.count() << std::endl;
+            std::cout << "duration multTranspose ocl: " << elapsed_seconds.count() << std::endl;
         }
 
         for (size_t i = 0; i < result.getSize(); i++) {

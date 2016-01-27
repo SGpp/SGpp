@@ -38,15 +38,15 @@ public:
     bool getNextSegment(const size_t scheduleSize, const size_t blockSize, size_t &segmentStart, size_t &segmentEnd) {
 
         if (!this->isInitialized) {
-            throw SGPP::base::operation_exception("QueueLoadBalancer: queue load balancer not initialized!");
+            throw base::operation_exception("QueueLoadBalancer: queue load balancer not initialized!");
         } else if (blockSize == 0) {
-            throw SGPP::base::operation_exception("QueueLoadBalancer: block size must not be zero!");
+            throw base::operation_exception("QueueLoadBalancer: block size must not be zero!");
         } else if (scheduleSize % blockSize != 0) {
-            throw SGPP::base::operation_exception("QueueLoadBalancer: schedule size is not divisible by block size!");
+            throw base::operation_exception("QueueLoadBalancer: schedule size is not divisible by block size!");
         } else if (start % blockSize != 0) {
-            throw SGPP::base::operation_exception("QueueLoadBalancer: start not divisible by block size");
+            throw base::operation_exception("QueueLoadBalancer: start not divisible by block size");
         } else if (end % blockSize != 0) {
-            throw SGPP::base::operation_exception("QueueLoadBalancer: end not divisible by block size");
+            throw base::operation_exception("QueueLoadBalancer: end not divisible by block size");
         }
 
         bool segmentAvailable = true;

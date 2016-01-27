@@ -8,11 +8,11 @@
 int main(int argc, char** argv) {
 
     //  int maxLevel = 9;
-    int maxLevel = 9;
+    int maxLevel = 10;
 
     //std::string fileName = "debugging.arff";
 //    std::string fileName = "DR5_train.arff";
-        std::string fileName = "friedman_4d.arff";
+    std::string fileName = "friedman_4d.arff";
     //  std::string fileName = "friedman2_90000.arff";
     //  std::string fileName = "bigger.arff";
 
@@ -35,13 +35,13 @@ int main(int argc, char** argv) {
 
     // Set solver during refinement
     SLESolverConfigRefine.eps_ = 0;
-    SLESolverConfigRefine.maxIterations_ = 5;
+    SLESolverConfigRefine.maxIterations_ = 10;
     SLESolverConfigRefine.threshold_ = -1.0;
     SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = 0;
-    SLESolverConfigFinal.maxIterations_ = 5;
+    SLESolverConfigFinal.maxIterations_ = 10;
     SLESolverConfigFinal.threshold_ = -1.0;
     SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
@@ -64,27 +64,13 @@ int main(int argc, char** argv) {
     //streaming default - 1600 (13 without avx)
     //streaming ocl - 13
 
-    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
+//    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
+    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
-    if (argc == 2) {
-        if (strcmp(argv[1], "streamingCPU") == 0) {
-            configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
-            SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-            SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
-            std::cout << "EvalType::STREAMING (CPU)" << std::endl;
-        } else if (strcmp(argv[1], "subspaceCPU") == 0) {
-            configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
-            SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
-            SGPP::datadriven::OperationMultipleEvalSubType::COMBINED);
-            std::cout << "EvalType::SUBSPACE (CPU)" << std::endl;
-        }
-    } else {
-        std::cout << "EvalType::STREAMING::OCLMP" << std::endl;
-    }
 
     learner.learn(configuration, fileName);
     //learner.learnReference(fileName);

@@ -35,8 +35,7 @@ int main(int argc, char **argv) {
             "output file for optimized parameters")("collectStatistics",
             boost::program_options::value<bool>(&collectStatistics),
             "collect statistics for each device and kernel optimized and write them to csv files")("useDoublePrecision",
-            boost::program_options::value<bool>(&useDoublePrecision),
-            "tune for double precision")
+            boost::program_options::value<bool>(&useDoublePrecision), "tune for double precision")
 //            ("devices",
 //            boost::program_options::value<std::vector<std::string> >(&devices)->multitoken(),
 //            "specify comma-separated list of devices or \"all\" for all devices found")
@@ -79,19 +78,20 @@ int main(int argc, char **argv) {
         staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
         staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
         staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
-        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "1", "4", }); // "8", "16"
+        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "4", "1" }); // "8", "16"
     } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
         staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "false", "true" }); //
         staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
         staticParameterTuner.addParameter("KERNEL_TRANS_DATA_BLOCK_SIZE", { "1", "2", "4", "8" }); //
         staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", { "1", "4", "2", "4", "8" }); //
         staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
-        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "1", "4", }); // "8", "16"
+        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "4", "1" }); // "8", "16"
     } else {
         throw;
     }
 
-    SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName, useDoublePrecision);
+    SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName,
+            useDoublePrecision);
 
     bestParameters.serialize(outputFileName);
 
