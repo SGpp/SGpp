@@ -86,10 +86,7 @@ namespace SGPP {
         /**
          * @return singleton instance
          */
-        inline static Printer& getInstance() {
-          static Printer printer;
-          return printer;
-        }
+        static Printer& getInstance();
 
         /**
          * Call at the beginning of a time-consuming operation.

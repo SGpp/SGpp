@@ -29,10 +29,7 @@ namespace SGPP {
         /// default number of intervals
         static const level_type DEFAULT_MAX_LEVEL = 16;
 
-        inline static ClenshawCurtisTable& getInstance() {
-          static ClenshawCurtisTable clenshawCurtisTable;
-          return clenshawCurtisTable;
-        }
+        static ClenshawCurtisTable& getInstance();
 
         /**
          * @param l       level of the grid point

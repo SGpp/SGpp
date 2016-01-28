@@ -24,10 +24,7 @@ namespace SGPP {
         /**
          * @return singleton instance
          */
-        inline static RandomNumberGenerator& getInstance() {
-          static RandomNumberGenerator rng;
-          return rng;
-        }
+        static RandomNumberGenerator& getInstance();
 
         /**
          * Generate a uniform pseudo-random number.

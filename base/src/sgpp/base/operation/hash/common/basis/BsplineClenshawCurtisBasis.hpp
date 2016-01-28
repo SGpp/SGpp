@@ -26,7 +26,7 @@ namespace SGPP {
          * Default constructor.
          */
         BsplineClenshawCurtisBasis()
-          : bsplineBasis(BsplineBasis<LT, IT>()) {
+          : BsplineClenshawCurtisBasis(0) {
         }
 
         /**
@@ -37,7 +37,8 @@ namespace SGPP {
          */
         BsplineClenshawCurtisBasis(size_t degree)
           : bsplineBasis(BsplineBasis<LT, IT>(degree)),
-            xi(std::vector<float_t>(degree + 2, 0.0)) {
+            xi(std::vector<float_t>(degree + 2, 0.0)),
+            clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {
         }
 
         /**
@@ -127,7 +128,7 @@ namespace SGPP {
          * @return      i-th Clenshaw-Curtis grid point with level l
          */
         inline float_t clenshawCurtisPoint(LT l, IT i) const {
-          return ClenshawCurtisTable::getInstance().getPoint(l, i);
+          return clenshawCurtisTable.getPoint(l, i);
         }
 
         /**
@@ -141,7 +142,7 @@ namespace SGPP {
           const IT hInv = static_cast<IT>(1) << l;
           const size_t& p = bsplineBasis.getDegree();
 
-          xi[(p + 1) / 2] = ClenshawCurtisTable::getInstance().getPoint(l, i);
+          xi[(p + 1) / 2] = clenshawCurtisTable.getPoint(l, i);
 
           if (i < (p + 1) / 2) {
             // grid point index is too far on the left
@@ -149,7 +150,7 @@ namespace SGPP {
             size_t a = (p + 1) / 2 - i;
 
             for (size_t j = a; j < (p + 1) / 2; j++) {
-              xi[j] = ClenshawCurtisTable::getInstance().getPoint(l, static_cast<IT>(j - a));
+              xi[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(j - a));
             }
 
             float_t h = xi[a + 1] - xi[a];
@@ -161,7 +162,7 @@ namespace SGPP {
           } else {
             // all grid points on the left can be calculated
             for (size_t j = 0; j < (p + 1) / 2; j++) {
-              xi[j] = ClenshawCurtisTable::getInstance().getPoint(
+              xi[j] = clenshawCurtisTable.getPoint(
                         l, static_cast<IT>(i - (p + 1) / 2 + j));
             }
           }
@@ -172,7 +173,7 @@ namespace SGPP {
             size_t b = hInv + (p + 1) / 2 - i;
 
             for (size_t j = (p + 1) / 2 + 1; j <= b; j++) {
-              xi[j] = ClenshawCurtisTable::getInstance().getPoint(
+              xi[j] = clenshawCurtisTable.getPoint(
                         l, static_cast<IT>(i - (p + 1) / 2 + j));
             }
 
@@ -184,7 +185,7 @@ namespace SGPP {
           } else {
             // all grid points on the right can be calculated
             for (size_t j = (p + 1) / 2 + 1; j < p + 2; j++) {
-              xi[j] = ClenshawCurtisTable::getInstance().getPoint(
+              xi[j] = clenshawCurtisTable.getPoint(
                         l, static_cast<IT>(i - (p + 1) / 2 + j));
             }
           }
@@ -258,6 +259,8 @@ namespace SGPP {
         BsplineBasis<LT, IT> bsplineBasis;
         /// temporary helper vector of fixed size p+2 containing B-spline knots
         std::vector<float_t> xi;
+        /// reference to the Clenshaw-Curtis cache table
+        ClenshawCurtisTable& clenshawCurtisTable;
     };
 
     // default type-def (unsigned int for level and index)

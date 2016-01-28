@@ -21,6 +21,10 @@ namespace SGPP {
     template<class LT, class IT>
     class LinearClenshawCurtisBasis: public Basis<LT, IT> {
       public:
+        LinearClenshawCurtisBasis() :
+          clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {
+        }
+
         /**
          * Destructor.
          */
@@ -43,8 +47,8 @@ namespace SGPP {
             }
           } else {
             // endpoints of support
-            const float_t x0 = ClenshawCurtisTable::getInstance().getPoint(l, i - 1);
-            const float_t x2 = ClenshawCurtisTable::getInstance().getPoint(l, i + 1);
+            const float_t x0 = clenshawCurtisTable.getPoint(l, i - 1);
+            const float_t x2 = clenshawCurtisTable.getPoint(l, i + 1);
 
             if ((x <= x0) || (x >= x2)) {
               // point out of support
@@ -52,7 +56,7 @@ namespace SGPP {
             }
 
             // peak of basis function
-            const float_t x1 = ClenshawCurtisTable::getInstance().getPoint(l, i);
+            const float_t x1 = clenshawCurtisTable.getPoint(l, i);
 
             // linear interpolation between (x0, x1, x2), (0, 1, 0)
             if (x < x1) {
@@ -62,6 +66,10 @@ namespace SGPP {
             }
           }
         }
+
+      protected:
+        /// reference to the Clenshaw-Curtis cache table
+        ClenshawCurtisTable& clenshawCurtisTable;
     };
 
     // default type-def (unsigned int for level and index)
