@@ -41,6 +41,11 @@ namespace SGPP {
 #endif
     }
 
+    Printer& Printer::getInstance() {
+      static Printer printer;
+      return printer;
+    }
+
     void Printer::printStatusBegin(const std::string& msg) {
       ScopedLock lock(mutex);
 

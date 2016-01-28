@@ -28,5 +28,10 @@ namespace SGPP {
       }
     }
 
+    ClenshawCurtisTable& ClenshawCurtisTable::getInstance() {
+      static ClenshawCurtisTable clenshawCurtisTable;
+      return clenshawCurtisTable;
+    }
+
   }
 }

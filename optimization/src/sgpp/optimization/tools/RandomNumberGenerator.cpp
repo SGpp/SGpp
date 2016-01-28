@@ -15,6 +15,11 @@ namespace SGPP {
       setSeed();
     }
 
+    RandomNumberGenerator& RandomNumberGenerator::getInstance() {
+      static RandomNumberGenerator rng;
+      return rng;
+    }
+
     float_t RandomNumberGenerator::getUniformRN(float_t a, float_t b) {
       std::uniform_real_distribution<float_t> distr(a, b);
       return distr(generator);
