@@ -37,11 +37,18 @@ DictNode& DictNode::operator=(const DictNode &right) {
     this->orderedKeyIndex = right.orderedKeyIndex;
     this->parent = nullptr;
 
+    this->attributes.clear();
     for (auto &tuple : right.attributes) {
         std::unique_ptr<Node> clonedValue(tuple.second->clone());
         clonedValue->parent = this;
         this->attributes[tuple.first] = std::move(clonedValue);
     }
+    return *this;
+}
+
+Node &DictNode::operator=(const Node& right) {
+    const DictNode &dictNode = dynamic_cast<const DictNode &>(right);
+    this->operator =(dictNode);
     return *this;
 }
 
@@ -155,13 +162,13 @@ Node &DictNode::operator[](const std::string &key) {
     return *(this->attributes[key]);
 }
 
-void DictNode::serialize(std::ofstream &outFile, size_t indentWidth) {
+void DictNode::serialize(std::ostream &outFile, size_t indentWidth) {
     std::string indentation(indentWidth, ' ');
     std::string attrIndentation(indentWidth + Node::SERIALIZE_INDENT, ' ');
 
     outFile << "{" << std::endl;
     bool first = true;
-    for (std::string &key : this->keyOrder) {
+    for (const std::string &key : this->keyOrder) {
         if (first) {
             first = false;
         } else {

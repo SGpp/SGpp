@@ -38,7 +38,7 @@ void StaticParameterTuner::addParameter(const std::string &name, const std::vect
 }
 
 SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
-SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName, bool useDoublePrecision) {
+SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName) {
     std::vector<std::string> platformsCopy = this->fixedParameters["PLATFORMS"].keys();
     for (const std::string &platformName : platformsCopy) {
         json::Node &platformNode = this->fixedParameters["PLATFORMS"][platformName];
@@ -96,11 +96,11 @@ SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName, bool
                 deviceNode["KERNELS"][kernelName].addIDAttr("WRITE_SOURCE", false);
             }
 
-            if (useDoublePrecision) {
-                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION", "double");
-            } else {
-                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION", "float");
-            }
+//            if (useDoublePrecision) {
+//                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION", "double");
+//            } else {
+//                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION", "float");
+//            }
 
             this->tuneParameters(scenario, platformName, deviceName, kernelName);
 
@@ -132,6 +132,10 @@ SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName, bool
             this->fixedParameters["PLATFORMS"].addAttribute(otherPlatformsName[i], std::move(otherPlatforms[i]));
         }
     }
+
+    std::cout << "after tuning: " << std::endl;
+    std::cout << this->fixedParameters << std::endl;
+
     return this->fixedParameters;
 }
 
@@ -142,23 +146,23 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
         this->statistics.clear();
     }
 
-    SGPP::base::OCLOperationConfiguration &currentParameters = fixedParameters;
+//    SGPP::base::OCLOperationConfiguration &currentParameters = fixedParameters;
 
-    for (std::string &platformKey : currentParameters["PLATFORMS"].keys()) {
+    for (std::string &platformKey : fixedParameters["PLATFORMS"].keys()) {
         if (platformName.compare(platformKey) != 0) {
             throw;
         }
-        for (std::string &deviceKey : currentParameters["PLATFORMS"][platformKey]["DEVICES"].keys()) {
+        for (std::string &deviceKey : fixedParameters["PLATFORMS"][platformKey]["DEVICES"].keys()) {
             if (deviceName.compare(deviceKey) != 0) {
                 throw;
             }
-            if (!currentParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"].contains(kernelName)) {
+            if (!fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"].contains(kernelName)) {
                 throw;
             }
         }
     }
 
-    json::Node &kernelNode = currentParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
+    json::Node &kernelNode = fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
 
     //create initial parameter combination
     std::vector<size_t> valueIndices(tunableParameters.size());
@@ -174,9 +178,9 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
     }
 
     // evaluate initial parameter combination
-    double shortestDuration = evaluateSetup(scenario, currentParameters, kernelName);
+    double shortestDuration = evaluateSetup(scenario, fixedParameters, kernelName);
     if (collectStatistics) {
-        this->statistics.push_back(std::make_pair(currentParameters, shortestDuration));
+        this->statistics.push_back(std::make_pair(fixedParameters, shortestDuration));
     }
 
     std::unique_ptr<json::Node> bestParameters(kernelNode.clone());
@@ -204,20 +208,30 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
             }
 
             // evaluate current parameter combination
-            double duration = evaluateSetup(scenario, currentParameters, kernelName);
+            double duration = evaluateSetup(scenario, fixedParameters, kernelName);
             if (duration < shortestDuration) {
+                std::cout << "new best combination! old: " << shortestDuration << " new: " << duration << std::endl;
                 shortestDuration = duration;
                 bestParameters = std::unique_ptr<json::Node>(kernelNode.clone());
+                std::cout << *bestParameters << std::endl;
             }
             if (collectStatistics) {
-                this->statistics.push_back(std::make_pair(currentParameters, duration));
+                this->statistics.push_back(std::make_pair(fixedParameters, duration));
             }
         } else {
             parameterIndex += 1;
         }
     }
 
-    this->fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName] = *bestParameters;
+    std::cout << "overall best parameters:" << std::endl;
+    std::cout << *bestParameters << std::endl;
+
+
+//    this->fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName] = *bestParameters;
+    kernelNode = *bestParameters;
+
+    std::cout << "written parameters:" << std::endl;
+    std::cout << this->fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName] << std::endl;
 }
 
 double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,

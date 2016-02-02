@@ -19,9 +19,13 @@ private:
 public:
   TextNode();
 
+  TextNode& operator=(const TextNode &right) = default;
+
+  virtual Node &operator=(const Node& right) override;
+
   virtual void parse(std::vector<Token> &stream) override;
 
-  virtual void serialize(std::ofstream &outFile, size_t indentWidth) override;
+  virtual void serialize(std::ostream &outFile, size_t indentWidth) override;
 
   virtual std::string &get() override;
 

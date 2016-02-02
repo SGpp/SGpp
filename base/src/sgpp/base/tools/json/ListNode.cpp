@@ -31,6 +31,7 @@ ListNode::ListNode(const ListNode &original) {
 }
 
 ListNode &ListNode::operator=(const ListNode &right) {
+    this->list.clear();
     for (auto &element : right.list) {
         std::unique_ptr<Node> cloned(element->clone());
         cloned->parent = this;
@@ -38,6 +39,12 @@ ListNode &ListNode::operator=(const ListNode &right) {
     }
     this->orderedKeyIndex = right.orderedKeyIndex;
     this->parent = nullptr;
+    return *this;
+}
+
+Node &ListNode::operator=(const Node& right) {
+    const ListNode &listNode = dynamic_cast<const ListNode &>(right);
+    this->operator =(listNode);
     return *this;
 }
 
@@ -110,7 +117,7 @@ Node &ListNode::operator[](size_t index) {
     return *this->list[index];
 }
 
-void ListNode::serialize(std::ofstream &outFile, size_t indentWidth) {
+void ListNode::serialize(std::ostream &outFile, size_t indentWidth) {
     outFile << "[";
     bool first = true;
     for (const std::unique_ptr<Node> &node : this->list) {
