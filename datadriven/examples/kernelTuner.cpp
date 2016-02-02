@@ -34,59 +34,53 @@ int main(int argc, char **argv) {
             "outputFileName", boost::program_options::value<std::string>(&outputFileName),
             "output file for optimized parameters")("collectStatistics",
             boost::program_options::value<bool>(&collectStatistics),
-<<<<<<< .mine
             "collect statistics for each device and kernel optimized and write them to csv files")
 //            ("useDoublePrecision",
 //            boost::program_options::value<bool>(&useDoublePrecision), "tune for double precision")
-=======
-            "collect statistics for each device and kernel optimized and write them to csv files")("useDoublePrecision",
-            boost::program_options::value<bool>(&useDoublePrecision), "tune for double precision")
->>>>>>> .r5471
 //            ("devices",
 //            boost::program_options::value<std::vector<std::string> >(&devices)->multitoken(),
 //            "specify comma-separated list of devices or \"all\" for all devices found")
             ;
 
-            boost::program_options::variables_map variables_map;
+    boost::program_options::variables_map variables_map;
 
-            boost::program_options::parsed_options options = parse_command_line(argc, argv, description);
-            boost::program_options::store(options, variables_map);
-            boost::program_options::notify(variables_map);
+    boost::program_options::parsed_options options = parse_command_line(argc, argv, description);
+    boost::program_options::store(options, variables_map);
+    boost::program_options::notify(variables_map);
 
-            if (variables_map.count("help")) {
-                std::cout << description << std::endl;
-                return 0;
-            }
+    if (variables_map.count("help")) {
+        std::cout << description << std::endl;
+        return 0;
+    }
 
-            //check whether all files exist
-            std::ifstream scenarioFile(scenarioFileName);
-            if (!scenarioFile.good()) {
-                std::cout << "scenario file not found" << std::endl;
-                return 1;
-            }
-            scenarioFile.close();
-            std::ifstream parameterConfigurationFile(parameterConfigurationFileName);
-            if (!parameterConfigurationFile.good()) {
-                std::cout << "parameter file not found" << std::endl;
-                return 1;
-            }
-            parameterConfigurationFile.close();
+    //check whether all files exist
+    std::ifstream scenarioFile(scenarioFileName);
+    if (!scenarioFile.good()) {
+        std::cout << "scenario file not found" << std::endl;
+        return 1;
+    }
+    scenarioFile.close();
+    std::ifstream parameterConfigurationFile(parameterConfigurationFileName);
+    if (!parameterConfigurationFile.good()) {
+        std::cout << "parameter file not found" << std::endl;
+        return 1;
+    }
+    parameterConfigurationFile.close();
 
-            SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
+    SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
 
-            SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+    SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
 
-            SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+    SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
-<<<<<<< .mine
-            //TODO: LOCAL_SIZE should be added
-            if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
-                staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "true", "false" }); //
-                staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //, "8"
-                staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
-                staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
-                staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "4" }); // "1", "8", "16"
-                staticParameterTuner.addParameter("LOCAL_SIZE", { "128", "256" }); // "1", "8", "16"
+    //TODO: LOCAL_SIZE should be added
+    if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
+        staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "true", "false" }); //
+        staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //, "8"
+        staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
+        staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
+        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "4" }); // "1", "8", "16"
+        staticParameterTuner.addParameter("LOCAL_SIZE", { "128", "256" }); // "1", "8", "16"
 //    } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
 //        staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "false", "true" }); //
 //        staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
@@ -94,45 +88,20 @@ int main(int argc, char **argv) {
 //        staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", { "1", "4", "2", "4", "8" }); //
 //        staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
 //        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "4", "1" }); // "8", "16"
-            } else {
-                throw;
-            }
-=======
-    //TODO: LOCAL_SIZE should be added
-    if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
-        staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "false", "true" }); //
-        staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
-        staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
-        staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
-        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "4", "1" }); // "8", "16"
-    } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
-        staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", { "false", "true" }); //
-        staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", { "1", "2", "4", "8" }); //
-        staticParameterTuner.addParameter("KERNEL_TRANS_DATA_BLOCK_SIZE", { "1", "2", "4", "8" }); //
-        staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", { "1", "4", "2", "4", "8" }); //
-        staticParameterTuner.addParameter("KERNEL_STORE_DATA", { "register", "array" }); //
-        staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", { "4", "1" }); // "8", "16"
     } else {
         throw;
     }
->>>>>>> .r5471
 
-<<<<<<< .mine
-            SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario,
-                    kernelName);
-=======
-    SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName,
-            useDoublePrecision);
->>>>>>> .r5471
+    SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName);
 
-            bestParameters.serialize(outputFileName);
+    bestParameters.serialize(outputFileName);
 
-            std::cout << "-------------- all done! --------------" << std::endl;
-            return 0;
-        }
+    std::cout << "-------------- all done! --------------" << std::endl;
+    return 0;
+}
 #else
-        int main(int argc, char **argv) {
-            std::cout << "no OpenCL support" << std::endl;
-        }
+int main(int argc, char **argv) {
+    std::cout << "no OpenCL support" << std::endl;
+}
 #endif
 
