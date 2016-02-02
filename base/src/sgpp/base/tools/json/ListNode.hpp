@@ -26,11 +26,13 @@ public:
 
   ListNode &operator=(const ListNode &right);
 
+  virtual Node &operator=(const Node& right) override;
+
   void parse(std::vector<Token> &stream) override;
 
-  virtual void serialize(std::ofstream &outFile, size_t indentWidth) override;
+  virtual void serialize(std::ostream &outFile, size_t indentWidth) override;
 
-  virtual Node &operator[](size_t index) override;
+  virtual Node &operator[](const size_t index) override;
 
   virtual size_t size() override;
 

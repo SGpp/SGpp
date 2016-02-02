@@ -11,8 +11,9 @@ int main(int argc, char** argv) {
     int maxLevel = 10;
 
     //std::string fileName = "debugging.arff";
-//    std::string fileName = "DR5_train.arff";
-    std::string fileName = "friedman_4d.arff";
+    std::string fileName = "DR5_train_larger.arff";
+//    std::string fileName = "friedman_4d.arff";
+//    std::string fileName = "friedman_4d_large.arff";
     //  std::string fileName = "friedman2_90000.arff";
     //  std::string fileName = "bigger.arff";
 
@@ -65,12 +66,11 @@ int main(int argc, char** argv) {
     //streaming ocl - 13
 
 //    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
-    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
+    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
     SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
-
 
     learner.learn(configuration, fileName);
     //learner.learnReference(fileName);

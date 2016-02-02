@@ -82,9 +82,9 @@ int main(int argc, char **argv) {
 //
 //    SGPP::datadriven::StaticParameterTuner readStaticParameterTuner("testOut.tuner");
 
-    bool useDoublePrecision = true;
+//    bool useDoublePrecision = true;
 
-    SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName, useDoublePrecision);
+    SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName);
 
 //    json::Node &kernelNode = parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
 //    std::vector<std::string> keys = kernelNode.keys();

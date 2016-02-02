@@ -54,16 +54,15 @@ public:
 
     void addParameter(const std::string &name, const std::vector<std::string> &valueRange);
 
-    SGPP::base::OCLOperationConfiguration tuneEverything(SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName, bool useDoublePrecision);
+    SGPP::base::OCLOperationConfiguration tuneEverything(SGPP::datadriven::LearnerScenario &scenario,
+            const std::string &kernelName);
 
-    void tuneParameters(SGPP::datadriven::LearnerScenario &scenario,
-            const std::string &platformName, const std::string &deviceName, const std::string &kernelName);
+    void tuneParameters(SGPP::datadriven::LearnerScenario &scenario, const std::string &platformName,
+            const std::string &deviceName, const std::string &kernelName);
 
 //    void writeToFile(const std::string &fileName);
 //
 //    void readFromFile(const std::string &fileName);
-
-
 
 };
 

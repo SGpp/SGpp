@@ -173,6 +173,7 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source, std::s
 
     std::string build_opts;
 
+    //TODO: add kernel specific parameters
     if (!(*parameters).contains("ENABLE_OPTIMIZATIONS") || (*parameters)["ENABLE_OPTIMIZATIONS"].getBool()) {
         //TODO: user should be able to change
         std::string optimizationFlags = "";
@@ -188,22 +189,21 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source, std::s
     err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
 
     if (err != CL_SUCCESS) {
-        // get the build log
-        size_t len;
-        clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0,
-        NULL, &len);
-        std::string buffer(len, '\0');
-        clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
-        buffer = buffer.substr(0, buffer.find('\0'));
-
-        if (verbose) {
-            std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
-        }
-
         std::stringstream errorString;
         errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
         throw SGPP::base::operation_exception(errorString.str());
+    }
 
+    // get the build log
+    size_t len;
+    clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0,
+    NULL, &len);
+    std::string buffer(len, '\0');
+    clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
+    buffer = buffer.substr(0, buffer.find('\0'));
+
+    if (verbose) {
+        std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
     }
 
     cl_kernel kernel = clCreateKernel(program, kernelName.c_str(), &err);

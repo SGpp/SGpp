@@ -17,6 +17,12 @@ TextNode::TextNode() :
     value() {
 }
 
+Node &TextNode::operator=(const Node& right) {
+    const TextNode &textNode = dynamic_cast<const TextNode &>(right);
+    this->operator =(textNode);
+    return *this;
+}
+
 void TextNode::parse(std::vector<Token> &stream) {
 //create new text node
   if (stream[0].type == TokenType::STRING) {
@@ -27,7 +33,7 @@ void TextNode::parse(std::vector<Token> &stream) {
   }
 }
 
-void TextNode::serialize(std::ofstream &outFile, size_t indentWidth) {
+void TextNode::serialize(std::ostream &outFile, size_t indentWidth) {
   outFile << "\"" << this->value << "\"";
 }
 

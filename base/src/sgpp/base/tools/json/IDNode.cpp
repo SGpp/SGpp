@@ -22,6 +22,12 @@ IDNode::IDNode() :
                 false), boolValue(false) {
 }
 
+Node &IDNode::operator=(const Node& right) {
+    const IDNode &idNode = dynamic_cast<const IDNode &>(right);
+    this->operator =(idNode);
+    return *this;
+}
+
 void IDNode::parse(std::vector<Token> &stream) {
 //create new text node
     if (stream[0].type == TokenType::ID) {
@@ -174,7 +180,7 @@ void IDNode::setBool(bool boolValue) {
     this->setupInternalType();
 }
 
-void IDNode::serialize(std::ofstream &outFile, size_t indentWidth) {
+void IDNode::serialize(std::ostream &outFile, size_t indentWidth) {
     outFile << this->value;
 }
 

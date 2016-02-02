@@ -33,6 +33,8 @@ SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
         parameters = manager->getConfiguration();
     }
 
+    //TODO: filter devices that are disabled (COUNT=0)
+
     StreamingOCLMultiPlatform::Configuration::augmentDefaultParameters(*parameters);
 
 //    std::string &firstPlatformName = (*parameters)["PLATFORMS"].keys()[0];
