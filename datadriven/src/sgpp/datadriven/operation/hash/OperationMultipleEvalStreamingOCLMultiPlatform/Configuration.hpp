@@ -39,6 +39,14 @@ public:
                     kernelNode.addIDAttr("VERBOSE", false);
                 }
 
+                if (kernelNode.contains("REUSE_SOURCE") == false) {
+                    kernelNode.addIDAttr("REUSE_SOURCE", false);
+                }
+
+                if (kernelNode.contains("WRITE_SOURCE") == false) {
+                    kernelNode.addIDAttr("WRITE_SOURCE", false);
+                }
+
                 if (kernelNode.contains("LOCAL_SIZE") == false) {
                     kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
                 }
