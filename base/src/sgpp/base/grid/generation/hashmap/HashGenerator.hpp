@@ -115,8 +115,10 @@ namespace SGPP {
          *
          * @param storage Hashmap, that stores the grid points
          * @param level maximum level of the sparse grid (non-negative value)
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted
+         * @param boundaryLevel 1 + how much levels the boundary is coarser than
+         *                      the main axes, 0 means one level finer,
+         *                      1 means same level,
+         *                      2 means one level coarser, etc.
          */
         void regularWithBoundaries(GridStorage* storage,
                                    level_t level,
@@ -388,14 +390,42 @@ namespace SGPP {
 
         /**
          * Generate a regular sparse grid iteratively (much faster than
-         * recursively) with truncated boundary, i.e., the boundary grid points
-         * are inserted at a higher level > 0.
+         * recursively) with truncated boundary, i.e.,
+         * the sparse grid on the \f$(d-1)\f$-dimensional faces of
+         * \f$[0, 1]^d\f$ has a coarser level than the main axes
+         * \f$x_t = 0.5, t = 1, ..., d\f$.
+         *
+         * The function adds all hierarchical subspaces \f$W_{\vec{\ell}}\f$
+         * where
+         * * \f$\norm{\vec{\ell}}_1 \le n + d - 1\f$ with
+         *   \f$\forall_t\; \ell_t \ge 1\f$,
+         * * \f$\norm{\vec{\ell}}_1 \le n + d - b - N_{\vec{\ell}}\f$ with
+         *   \f$N_{\vec{\ell}} := |\{t \mid \ell_t = 0\}| \ge 1\f$, or
+         * * \f$\vec{\ell} = \vec{0}\f$.
+         *
+         * The previous implementation inserted the 1D boundary grid points
+         * at higher levels (e.g., at boundaryLevel = 2), which
+         * led to the effect that corner points were missing in
+         * higher-dimensional grids: For example, if \f$d = 2\f$,
+         * \f$n = 3\f$, and \f$\mathtt{boundaryLevel} = 3\f$,
+         * then the four corners had level sum
+         * \f$2 \cdot \mathtt{boundaryLevel} = 6\f$ (which is greater than
+         * \f$n + d - 1 = 4\f$), thus they were missing in the sparse grid.
+         * The midpoints of the four edges, however, had level sum
+         * \f$\mathtt{boundaryLevel} + 1 = 4 \le n + d - 1\f$
+         * and were thus included in the grid. To get the corners into the
+         * grid, too, one would have to choose \f$n \ge 4\f$.
+         *
+         * In contrast, the new implementation makes sure that the corners
+         * will always appear first in the grid when increasing the level
+         * \f$n = 1, 2, 3, \dotsc\f$ of the regular grid.
          *
          * @param storage       pointer to storage object into which
          *                      the grid points should be stored
          * @param n             level of regular sparse grid
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted; must be >= 1
+         * @param boundaryLevel 1 + how much levels the boundary is coarser than
+         *                      the main axes, 1 means same level,
+         *                      2 means one level coarser, etc.; must be >= 1
          */
         void regular_boundary_truncated_iter(GridStorage* storage,
                                              level_t n,
@@ -413,7 +443,7 @@ namespace SGPP {
           }
 
           // generate boundary basis functions
-          if (boundaryLevel <= n) {
+          {
             idx_1d.push(0, 0, 0, false);
             storage->insert(idx_1d);
 
@@ -444,26 +474,31 @@ namespace SGPP {
 
             // loop over all current grid points
             for (size_t g = 0; g < gridSize; g++) {
-              // add missing level 1
-              level_t levelSum = static_cast<level_t>((dim - 1) - d);
-              bool hasLevelZero = false;
+              // curDim is new dimension of the grid points to be inserted
+              const level_t curDim = static_cast<level_t>(d + 1);
+              level_t levelSum = 0;
+              level_t numberOfZeroLevels = 0;
               index_type idx(*storage->get(g));
               bool firstPoint = true;
 
-              // calculate level sum
+              // calculate level sum and count number of zero levels
               for (size_t sd = 0; sd < d; sd++) {
                 level_t tmp = idx.getLevel(sd);
 
                 if (tmp == 0) {
-                  tmp = boundaryLevel;
-                  hasLevelZero = true;
+                  numberOfZeroLevels++;
                 }
 
                 levelSum += tmp;
               }
 
-              // generate boundary basis functions
-              if (boundaryLevel + levelSum <= n + dim - 1) {
+              // generate boundary basis functions,
+              // but only if levelSum <=
+              // n + curDim - boundaryLevel - (numberOfZeroLevels + 1)
+              // (the +1 comes from the fact that the newly generated functions
+              // will have an additional zero in the d-th dimension)
+              if ((levelSum + boundaryLevel + numberOfZeroLevels + 1 <=
+                   n + curDim) || (numberOfZeroLevels == curDim - 1)) {
                 idx.push(d, 0, 0, false);
                 storage->update(idx, g);
 
@@ -473,11 +508,31 @@ namespace SGPP {
                 firstPoint = false;
               }
 
-              for (level_t l = 1; l + levelSum <= n + dim - 1; l++) {
+              level_t upperBound;
+
+              // choose upper bound of level sum according whether
+              // the new basis function is an interior or a boundary function
+              // (the loop below skips l = 0 as the boundary points
+              // have been inserted a few lines above)
+              if (numberOfZeroLevels > 0) {
+                // check if upperBound would be negative
+                // (we're working with unsigned integers here)
+                if (n + curDim < boundaryLevel + numberOfZeroLevels) {
+                  continue;
+                } else {
+                  // upper bound for boundary basis functions
+                  upperBound = n + curDim - numberOfZeroLevels - boundaryLevel;
+                }
+              } else {
+                // upper bound for interior basis functions
+                upperBound = n + curDim - 1;
+              }
+
+              for (level_t l = 1; l + levelSum <= upperBound; l++) {
                 // generate inner basis functions
                 for (index_t i = 1; i < static_cast<index_t>(1) << l; i += 2) {
                   if ((l + levelSum) == n + dim - 1) {
-                    idx.push(d, l, i, !hasLevelZero);
+                    idx.push(d, l, i, (numberOfZeroLevels == 0));
                   } else {
                     idx.push(d, l, i, false);
                   }
