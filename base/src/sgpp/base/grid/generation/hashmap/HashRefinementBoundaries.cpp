@@ -125,10 +125,6 @@ void HashRefinementBoundaries::free_refine(GridStorage* storage, RefinementFunct
         throw generation_exception("storage empty");
     }
 
-    //Algorithm should be able to look for several points in grid to refine
-    //So we store an array with refinements_num maximal points
-    size_t refinements_num = functor->getRefinementsNum();
-
     AbstractRefinement::refinement_container_type collection;
     collectRefinablePoints(storage, functor, collection);
     //can refine grid on several points
