@@ -130,7 +130,7 @@ namespace SGPP {
 		 */
         virtual void addElementToCollection(
           const GridStorage::grid_map_iterator& iter,
-          AbstractRefinement::refinement_list_type current_value, size_t refinements_num,
+          AbstractRefinement::refinement_list_type current_value_list, size_t refinements_num,
           AbstractRefinement::refinement_container_type& collection);
 
         /**
