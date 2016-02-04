@@ -108,12 +108,8 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-%rename(operatorParentheses) SGPP::base::ClassificationRefinementFunctor::operator();
-%include "base/src/sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp"
 %rename(operatorParentheses) SGPP::base::SurplusVolumeRefinementFunctor::operator();
 %include "base/src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
-%rename(operatorParentheses) SGPP::base::ANOVACoarseningFunctor::operator();
-%include "base/src/sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp"
 %rename(operatorParentheses) SGPP::base::SurplusCoarseningFunctor::operator();
 %include "base/src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
