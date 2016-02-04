@@ -12,11 +12,16 @@ from LearnedKnowledge import LearnedKnowledge
 from Learner import Learner, LearnerEvents
 from LearnerBuilder import LearnerBuilder
 from Regressor import Regressor
+from ForwardBackwardRegressor import ForwardBackwardRegressor
+from PathCodingFISTARegressor import PathCodingFISTARegressor
+from PathCodingActiveSetRegressor import PathCodingActiveSetRegressor
+from CoordinateDescentRegressor import CoordinateDescentRegressor
 from TrainingSpecification import TrainingSpecification
 from TrainingStopPolicy import TrainingStopPolicy
 import Types
 from Types import BorderTypes, SolverTypes
 from Classifier import Classifier
+import kernel
 
 __all__ = ['folding'
            'formatter',

@@ -47,7 +47,7 @@ namespace SGPP {
          *
          * @return the initial value
          */
-        virtual float_t start() = 0;
+        virtual float_t start() const = 0;
 
         /**
          * Returns the maximal number of points that should be removed.
@@ -56,7 +56,7 @@ namespace SGPP {
          *
          * @return number of points that should removed. Default value: 1.
          */
-        virtual size_t getRemovementsNum() {
+        virtual size_t getRemovementsNum() const {
           return 1;
         }
 
@@ -68,7 +68,7 @@ namespace SGPP {
          *
          * @return threshold value for refinement. Default value: 0.
          */
-        virtual float_t getCoarseningThreshold() = 0;
+        virtual float_t getCoarseningThreshold() const = 0;
     };
 
   }

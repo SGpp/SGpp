@@ -37,6 +37,7 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
 
+
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:
     libname += "static"

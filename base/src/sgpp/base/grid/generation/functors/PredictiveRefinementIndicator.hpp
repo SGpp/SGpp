@@ -6,6 +6,11 @@
 #ifndef PREDICTIVEREFINEMENTINDICATOR_HPP_
 #define PREDICTIVEREFINEMENTINDICATOR_HPP_
 
+
+#include <unordered_map>
+#include <utility>
+
+
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -31,20 +36,32 @@ namespace SGPP {
 
     class PredictiveRefinementIndicator: public RefinementFunctor {
       public:
+        typedef std::pair<size_t, float_t> value_type;
+
+        typedef AbstractRefinement::index_type counter_key_type;
+        typedef long unsigned int counter_value_type;
 
         /**
          * Constructor.
          *
          * @param grid DataVector that is basis for refinement decisions. The i-th entry corresponds to the i-th grid point.
          * @param dataSet contains all points of the source data set. Each row contains coordinates of a single grid point,
-         * without the function evaluation (meansing only data from omega).
+         * without the function evaluation (meaning only data from omega).
          * @param errorVector a DataVector containing the squared absolute error
          * (given value of data point - evaluation of sparse grid at the data point position) for each grid point in dataSet.
          * @param refinements_num the amount of grid points to maximally be refined or created, depending on refinement strategy.
          * @param threshold The absolute value of the entries have to be greater or equal than the threshold
+         * @param minSupportPoints The minimal number of data points that have to be within the support of a basis function
+         * for refinement.
          */
         PredictiveRefinementIndicator(Grid* grid, DataMatrix* dataSet, DataVector* errorVector,
-                                      size_t refinements_num = 1, float_t threshold = 0.0);
+                                      size_t refinements_num = 1, float_t threshold = 0.0, long unsigned int minSupportPoints = 0);
+
+
+        /**
+         * Destructor
+         */
+        virtual ~PredictiveRefinementIndicator() {}
 
 
         /**
@@ -54,16 +71,10 @@ namespace SGPP {
          * @param gridPoint for which to calculate an indicator value
          * @return refinement value
          */
-        float_t operator()(AbstractRefinement::index_type* gridPoint);
+        virtual float_t operator()(AbstractRefinement::index_type* gridPoint) const;
 
+        float_t runOperator(GridStorage* storage, size_t seq);
 
-        /**
-         * Returns the squared residual for each point in the dataset
-         *
-         * @param storage pointer to the grids storage object
-         * @param seq number of data point fot which the squared residual should be returned.
-         */
-        virtual float_t operator()(GridStorage* storage, size_t seq) override;
 
         /**
          * Returns the maximal number of points that should be refined.
@@ -72,7 +83,7 @@ namespace SGPP {
          *
          * @return number of points that should refined. Default value: 1.
          */
-        virtual size_t getRefinementsNum() override;
+        virtual size_t getRefinementsNum() const override;
 
         /**
          * Returns the threshold for refinement.
@@ -82,15 +93,32 @@ namespace SGPP {
          *
          * @return threshold value for refinement. Default value: 0.
          */
-        virtual float_t getRefinementThreshold() override;
+        virtual float_t getRefinementThreshold() const override;
+
+
+        virtual float_t start() const override;
 
         /**
-         * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
-         * The refinement value of grid points to be refined have to be larger than this value
-         *
-         * @return lower bound
+         * Returns the lower bound of refinement criterion (e.g., alpha or error
          */
-        virtual float_t start() override;
+        long int getMinSupportPoints() const {
+          return minSupportPoints_;
+        }
+
+        void setMinSupportPoints(unsigned long int minSupportPoints) {
+          minSupportPoints_ = minSupportPoints;
+        }
+
+        /**
+        * This should be returning a refinement value for every grid point.
+        * The point with the highest value will be refined first.
+        *
+        * @param storage pointer to the grids storage object
+        * @param seq sequence number in the coefficients array
+        *
+        * @return refinement value
+        */
+        virtual float_t operator()(GridStorage* storage, size_t seq) const override;
 
       protected:
 
@@ -140,6 +168,12 @@ namespace SGPP {
          * integer representation of the grid type needed for evaluation of basis functions.
          */
         SGPP::base::GridType gridType;
+
+        Grid* grid_;
+
+        long unsigned int minSupportPoints_;
+
+
     };
 
   } /* namespace base */

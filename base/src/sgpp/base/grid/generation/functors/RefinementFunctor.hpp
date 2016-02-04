@@ -40,7 +40,7 @@ namespace SGPP {
          *
          * @return refinement value
          */
-        virtual float_t operator()(GridStorage* storage, size_t seq) = 0;
+        virtual float_t operator()(GridStorage* storage, size_t seq) const = 0;
 
         /**
          * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
@@ -48,7 +48,7 @@ namespace SGPP {
          *
          * @return lower bound
          */
-        virtual float_t start() = 0;
+        virtual float_t start() const = 0;
 
         /**
          * Returns the maximal number of points that should be refined.
@@ -57,7 +57,7 @@ namespace SGPP {
          *
          * @return number of points that should refined. Default value: 1.
          */
-        virtual size_t getRefinementsNum() {
+        virtual size_t getRefinementsNum() const {
           return 1;
         }
 
@@ -69,7 +69,7 @@ namespace SGPP {
          *
          * @return threshold value for refinement. Default value: 0.
          */
-        virtual float_t getRefinementThreshold() = 0;
+        virtual float_t getRefinementThreshold() const = 0;
 
         /**
          * Returns the total sum of local (error) indicators used for refinement
@@ -77,7 +77,7 @@ namespace SGPP {
          * @param storage pointer to the grids storage object
          * @return total sum of local (error) indicators used for refinement
          */
-        virtual float_t getTotalRefinementValue(GridStorage* storage) {
+        virtual float_t getTotalRefinementValue(GridStorage* storage) const {
           float_t sum = 0;
           GridStorage::grid_map_iterator end_iter = storage->end();
 

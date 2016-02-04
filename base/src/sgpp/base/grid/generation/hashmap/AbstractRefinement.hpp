@@ -3,18 +3,88 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef HASHREFINEMENTABSTRACT_HPP
-#define HASHREFINEMENTABSTRACT_HPP
+#ifndef ABSTRACTREFINEMENT_HPP
+#define ABSTRACTREFINEMENT_HPP
 
-#include <sgpp/base/grid/GridStorage.hpp>
+#include <forward_list>
+#include <iosfwd>
+#include <vector>
+#include <unordered_map>
+#include <utility>
+#include <memory>
+
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
-//#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
   namespace base {
+
+    /***
+     * Utility class for keys of the refinement containers.
+     */
+    class AbstractRefinement_refinement_key {
+      public:
+
+        /***
+         * Constructor
+         *
+         * @param index The index of the grid point in the HashGridStorage
+         * @param seq The sequential number of the grid points in the HashGridStorage
+         */
+        AbstractRefinement_refinement_key(const HashGridIndex& index, size_t seq) :
+          index(index), seq(seq), level_vector() {
+        }
+
+
+        /***
+         * Destructor
+         */
+        virtual ~AbstractRefinement_refinement_key() {};
+
+
+        /***
+         * Gets the level vector of the grid point
+         *
+         * @return level vector
+         */
+        const std::vector<level_t> getLevelVector() {
+          if (level_vector.empty()) {
+            for (size_t d = 0; d < index.dim(); d++) {
+              level_vector.push_back(index.getLevel(d));
+            }
+          }
+
+          return level_vector;
+        }
+
+
+        /***
+         * Gets the index of the grid point
+         *
+         * @return index
+         */
+        HashGridIndex& getIndex() {
+          return index;
+        }
+
+
+        /***
+         * Gets the sequential number of the grid point
+         * @return sequential number
+         */
+        size_t getSeq() const {
+          return seq;
+        }
+
+      private:
+        HashGridIndex index;
+        size_t seq;
+        std::vector<level_t> level_vector;
+    };
+
 
     /**
      * Abstract refinement class for sparse grids
@@ -25,6 +95,45 @@ namespace SGPP {
         typedef HashGridStorage::index_pointer index_pointer;
         typedef HashGridIndex::index_type index_t;
         typedef HashGridIndex::level_type level_t;
+
+
+
+        /**
+        * Type of the identifier of the refinement atom (e.g. a grid point or a subspace)
+        */
+        typedef AbstractRefinement_refinement_key refinement_key_type;
+        //typedef std::pair<size_t, size_t> refinement_key_type;
+
+
+        /**
+         * Type of functor value assigned to each refinement atom
+         */
+        typedef float_t refinement_value_type; // refinement functor value
+
+
+        /**
+        * Pair for the refinement key and value
+        */
+        typedef std::pair<std::shared_ptr<refinement_key_type>, refinement_value_type> refinement_pair_type;
+
+        typedef typename std::forward_list<AbstractRefinement::refinement_pair_type> refinement_list_type;
+
+
+        /**
+         * Comparison of the refinement_pair_type. This way the priority queue
+         * has the elements with the smallest refinement_value_type on top
+         */
+        static bool compare_pairs(const refinement_pair_type& lhs, const refinement_pair_type& rhs)  {
+          return (lhs.second > rhs.second);
+        }
+
+
+        /**
+        * Container for the collection of the refinement atoms and the corresponding
+        * value
+        */
+        typedef std::vector<refinement_pair_type> refinement_container_type;
+
 
         /**
          * Refines a grid according to a RefinementFunctor provided.
@@ -56,6 +165,13 @@ namespace SGPP {
          */
         virtual void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d) = 0;
 
+
+        /**
+        * Refine one grid point along a single direction
+        * @param storage hashmap that stores the grid points
+        * @param seq sequential number of the grid point
+        * @param d direction
+        */
         virtual void refineGridpoint1D(GridStorage* storage, size_t seq, size_t d);
 
 
@@ -140,38 +256,56 @@ namespace SGPP {
                                        size_t d, GridStorage* storage,
                                        index_t& source_index, level_t& source_level);
 
+
         /**
-         * Examines the grid points and stores the indices those that can be refined
-         * and have maximal indicator values.
+         * Identifies the sparse grid refinement atoms (points or subspaces) with
+         * the largest indicator values.
          *
          * @param storage hashmap that stores the grid points
          * @param functor a RefinementFunctor specifying the refinement criteria
-         * @param refinements_num number of points to refine
-         * @param max_indices the array where the point indices should be stored
-         * @param max_values the array where the corresponding indicator values
-         * should be stored
+         * @param collection container with grid element identifiers (e.g. sequence number, grid index)
+         *  and corresponding refinement values (usually empty)
          */
         virtual void collectRefinablePoints(GridStorage* storage,
-                                            RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                            RefinementFunctor::value_type* max_values) = 0;
+                                            RefinementFunctor* functor,
+                                            refinement_container_type& collection) = 0;
+
 
         /**
          * Refines the collection of points.
          *
          * @param storage hashmap that stores the grid points
          * @param functor a RefinementFunctor specifying the refinement criteria
-         * @param refinements_num number of points to refine
-         * @param max_indices the array with the indices of points that should be refined
-         * @param max_values the array with the corresponding indicator values
+         * @param collection container with grid element identifiers (e.g. sequence number, grid index)
+         *  and corresponding refinement values
          */
         virtual void refineGridpointsCollection(GridStorage* storage,
-                                                RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                                RefinementFunctor::value_type* max_values) = 0;
+                                                RefinementFunctor* functor,
+                                                refinement_container_type& collection) = 0;
+
+
+        /***
+         * Gets a list of the elements with corresponding refinement indicators.
+         *
+         * The list usually contains only one element for refinement in all
+         * direction and refinement indicators for individual direction for 1d
+         * refinement
+         *
+         * @param storage hashmap that stores the grid points
+         * @param iter grid_map iterator to the current grid point
+         * @param functor refinement functor
+         * @return
+         */
+        virtual refinement_list_type getIndicator(
+          GridStorage* storage,
+          const GridStorage::grid_map_iterator& iter,
+          const RefinementFunctor* functor) const = 0;
 
         friend class RefinementDecorator; //need to be a friend since it delegates the calls to protected class methods
     };
 
+
   }
 }
 
-#endif /* HASHREFINEMENTABSTRACT_HPP */
+#endif /* ABSTRACTREFINEMENT_HPP */

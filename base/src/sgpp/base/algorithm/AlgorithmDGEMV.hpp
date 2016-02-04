@@ -48,18 +48,21 @@ namespace SGPP {
           typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
           result.setAll(0.0);
+		  #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
+		initializer	( omp_priv = DataVector(omp_orig.getSize(), 0))
+
 
           #pragma omp parallel
           {
             size_t source_size = source.getSize();
-            DataVector privateResult(result);
+//            DataVector privateResult(result);
             DataVector line(x.getNcols());
             IndexValVector vec;
             GetAffectedBasisFunctions<BASIS> ga(storage);
 
-            privateResult.setAll(0.0);
+//            privateResult.setAll(0.0);
 
-            #pragma omp for schedule(static)
+            #pragma omp for reduction(accumulate:result) schedule(static)
 
             for (size_t i = 0; i < source_size; i++) {
               vec.clear();
@@ -69,14 +72,14 @@ namespace SGPP {
               ga(basis, line, vec);
 
               for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
-                privateResult[iter->first] += iter->second * source[i];
+                result[iter->first] += iter->second * source[i];
               }
             }
 
-            #pragma omp critical
+            /*#pragma omp critical
             {
               result.add(privateResult);
-            }
+            }*/
           }
         }
 
@@ -114,7 +117,6 @@ namespace SGPP {
               x.getRow(i, line);
 
               ga(basis, line, vec);
-
               for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
                 result[i] += iter->second * source[iter->first];
               }
