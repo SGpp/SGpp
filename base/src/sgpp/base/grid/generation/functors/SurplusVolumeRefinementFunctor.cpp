@@ -19,19 +19,19 @@ namespace SGPP {
     SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor() {
     }
 
-    float_t SurplusVolumeRefinementFunctor::operator()(GridStorage* storage, size_t seq) {
+    float_t SurplusVolumeRefinementFunctor::operator()(GridStorage* storage, size_t seq) const {
       return pow(2, static_cast<float_t>(-((int)storage->get(seq)->getLevelSum()))) * fabs(alpha->get(seq));
     }
 
-    float_t SurplusVolumeRefinementFunctor::start() {
+    float_t SurplusVolumeRefinementFunctor::start() const{
       return 0.0;
     }
 
-    size_t SurplusVolumeRefinementFunctor::getRefinementsNum() {
+    size_t SurplusVolumeRefinementFunctor::getRefinementsNum() const{
       return this->refinements_num;
     }
 
-    float_t SurplusVolumeRefinementFunctor::getRefinementThreshold() {
+    float_t SurplusVolumeRefinementFunctor::getRefinementThreshold() const{
       return this->threshold;
     }
 

@@ -4,16 +4,16 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sstream>
-#include <cmath>
-#include <algorithm>
-#include <cstring>
-#include <cstdlib>
-//#include <sgpp/base/tools/AlignedMemory.hpp>
 
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
+#include <sstream>
+
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,7 +21,7 @@ namespace SGPP {
   namespace base {
 
     DataVector::DataVector(size_t size) :
-      size(size), unused(0), inc_elems(100) {
+      correction(NULL), size(size), unused(0), inc_elems(100) {
       // create new vector
       this->data = new float_t[size];
     }
@@ -109,8 +109,16 @@ namespace SGPP {
       std::memcpy(newdata, this->data, std::min(this->size, size)
                   * sizeof(float_t));
       delete[] this->data;
-
       this->data = newdata;
+
+      if (this->correction != NULL) {
+        float_t* newcorrection = new float_t[size];
+        std::memcpy(newcorrection, this->correction, std::min(this->size, size)
+                    * sizeof(float_t));
+        delete[] this->correction;
+        this->correction = newcorrection;
+      }
+
       this->size = size;
       this->unused = 0;
     }
@@ -250,6 +258,23 @@ namespace SGPP {
       for (size_t i = 0; i < size; i++) {
         data[i] += vec.data[i];
       }
+    }
+
+    void DataVector::accumulate(const DataVector& vec) {
+      if (this->correction == NULL) {
+        this->correction = new float_t[size];
+        std::memset(this->correction, 0, size * sizeof(float_t));
+      }
+
+      float_t y, t;
+
+      for (size_t i = 0; i < size; i++) {
+        y = vec[i] - this->correction[i];
+        t = data[i] + y;
+        this->correction[i] = (t - data[i]) - y;
+        data[i] = t;
+      }
+
     }
 
     void DataVector::sub(const DataVector& vec) {
@@ -472,6 +497,10 @@ namespace SGPP {
     }
 
     DataVector::~DataVector() {
+      if (this->correction != NULL) {
+        delete[] correction;
+      }
+
       delete[] data;
     }
 

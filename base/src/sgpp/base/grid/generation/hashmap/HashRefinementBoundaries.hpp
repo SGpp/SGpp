@@ -96,34 +96,55 @@ namespace SGPP {
                                index_t& source_index, level_t& source_level);
 
         /**
-               * Examines the grid points and stores the indices those that can be refined
-               * and have maximal indicator values.
-               *
-               * @param storage hashmap that stores the grid points
-               * @param functor a RefinementFunctor specifying the refinement criteria
-               * @param refinements_num number of points to refine
-               * @param max_indices the array where the point indices should be stored
-               * @param max_values the array where the corresponding indicator values
-               * should be stored
-               */
+		 * Examines the grid points and stores the indices those that can be refined
+		 * and have maximal indicator values.
+		 *
+		 * @param storage hashmap that stores the grid points
+		 * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+		 * @param collection container that contains elements to refine (empty initially)
+		 */
         virtual void collectRefinablePoints(GridStorage* storage,
-                                            RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                            RefinementFunctor::value_type* max_values) override;
-
+                                            RefinementFunctor* functor,
+                                            AbstractRefinement::refinement_container_type& collection) override;
 
         /**
-         * Refines the collection of points.
-         *
-         * @param storage hashmap that stores the grid points
-         * @param functor a RefinementFunctor specifying the refinement criteria
-         * @param refinements_num number of points to refine
-         * @param max_indices the array with the indices of points that should be refined
-         * @param max_values the array with the corresponding indicator values
-         */
+		 * Extends the grid adding elements defined in collection
+		 *
+		 * @param storage hashmap that stores the grid points
+		 * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+		 * @param collection container that contains elements to refine (empty initially)
+		 */
         virtual void refineGridpointsCollection(GridStorage* storage,
-                                                RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                                RefinementFunctor::value_type* max_values) override;
+                                                RefinementFunctor* functor,
+                                                AbstractRefinement::refinement_container_type& collection) override;
 
+        /**
+		 * Adds elements to the collection. This method is responsible for selection
+		 * the elements with most important indicators and to limit the size of collection
+		 * to refinements_num elements.
+		 *
+		 * @param iter storage iterator
+		 * @param current_value_list list with elements that contain keys and values that specify refinement
+		 * @param refinements_num number of elements to refine
+		 * @param collection container where element pairs for refinement need to be stored
+		 */
+        virtual void addElementToCollection(
+          const GridStorage::grid_map_iterator& iter,
+          AbstractRefinement::refinement_list_type current_value, size_t refinements_num,
+          AbstractRefinement::refinement_container_type& collection);
+
+        /**
+		 * Generates a list with indicator elements
+		 *
+		 * @param storage grid storage
+		 * @param iter iterator
+		 * @param functor refinement functor
+		 * @return list with indicator elements
+		 */
+        AbstractRefinement::refinement_list_type getIndicator(
+          GridStorage* storage,
+          const GridStorage::grid_map_iterator& iter,
+          const RefinementFunctor* functor) const;
     };
 
   }

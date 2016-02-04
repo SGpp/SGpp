@@ -33,12 +33,12 @@ namespace SGPP {
       this->decorated_refinement_->createGridpoint(storage, index);
     }
 
-    void RefinementDecorator::collectRefinablePoints(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
-      this->decorated_refinement_->collectRefinablePoints(storage, functor, refinements_num, max_indices, max_values);
+    void RefinementDecorator::collectRefinablePoints(GridStorage* storage, RefinementFunctor* functor, AbstractRefinement::refinement_container_type& collection) {
+      this->decorated_refinement_->collectRefinablePoints(storage, functor, collection);
     }
 
-    void RefinementDecorator::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
-      this->decorated_refinement_->refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
+    void RefinementDecorator::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor,  AbstractRefinement::refinement_container_type& collection) {
+      this->decorated_refinement_->refineGridpointsCollection(storage, functor, collection);
     }
 
     bool RefinementDecorator::checkAdmissibility(GridStorage* storage, index_type& index) {
@@ -70,6 +70,14 @@ namespace SGPP {
 
       return isAdmissible;
 
+    }
+
+
+    AbstractRefinement::refinement_list_type RefinementDecorator::getIndicator(
+                    GridStorage* storage,
+                    const GridStorage::grid_map_iterator& iter,
+                    const RefinementFunctor* functor) const {
+        return this->decorated_refinement_->getIndicator(storage, iter, functor);
     }
 
   }

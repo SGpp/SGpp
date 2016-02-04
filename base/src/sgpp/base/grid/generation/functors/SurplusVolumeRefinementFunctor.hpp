@@ -36,13 +36,15 @@ namespace SGPP {
          */
         virtual ~SurplusVolumeRefinementFunctor() override;
 
-        virtual float_t operator()(GridStorage* storage, size_t seq) override;
+        virtual float_t operator()(GridStorage* storage, size_t seq) const override;
 
-        virtual float_t start() override;
 
-        size_t getRefinementsNum();
+        virtual float_t start() const override;
 
-        float_t getRefinementThreshold();
+
+        size_t getRefinementsNum() const;
+
+        float_t getRefinementThreshold() const;
 
       protected:
         /// pointer to the vector that stores the alpha values

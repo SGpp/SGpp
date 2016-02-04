@@ -37,11 +37,11 @@ namespace SGPP {
 
         virtual float_t operator()(GridStorage* storage, size_t seq) override;
 
-        virtual float_t start() override;
+        virtual float_t start() const override;
 
-        size_t getRemovementsNum();
+        size_t getRemovementsNum() const;
 
-        float_t getCoarseningThreshold();
+        float_t getCoarseningThreshold() const;
 
       protected:
         /// pointer to the vector that stores the alpha values

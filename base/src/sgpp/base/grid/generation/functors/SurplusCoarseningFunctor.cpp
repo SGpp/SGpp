@@ -21,15 +21,15 @@ namespace SGPP {
       return fabs(alpha->get(seq));
     }
 
-    float_t SurplusCoarseningFunctor::start() {
+    float_t SurplusCoarseningFunctor::start() const {
       return 1.0;
     }
 
-    size_t SurplusCoarseningFunctor::getRemovementsNum() {
+    size_t SurplusCoarseningFunctor::getRemovementsNum() const {
       return this->removements_num;
     }
 
-    float_t SurplusCoarseningFunctor::getCoarseningThreshold() {
+    float_t SurplusCoarseningFunctor::getCoarseningThreshold() const {
       return this->threshold;
     }
 

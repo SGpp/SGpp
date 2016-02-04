@@ -18,21 +18,21 @@ namespace SGPP {
     SurplusRefinementFunctor::~SurplusRefinementFunctor() {
     }
 
-    float_t SurplusRefinementFunctor::operator()(GridStorage* storage, size_t seq) {
+    float_t SurplusRefinementFunctor::operator()(GridStorage* storage, size_t seq) const {
       float_t val = fabs(alpha->get(seq));
       // std::cout << seq << ", ";
       return val;
     }
 
-    float_t SurplusRefinementFunctor::start() {
+    float_t SurplusRefinementFunctor::start() const {
       return 0.0;
     }
 
-    size_t SurplusRefinementFunctor::getRefinementsNum() {
+    size_t SurplusRefinementFunctor::getRefinementsNum() const {
       return this->refinements_num;
     }
 
-    float_t SurplusRefinementFunctor::getRefinementThreshold() {
+    float_t SurplusRefinementFunctor::getRefinementThreshold() const {
       return this->threshold;
     }
 

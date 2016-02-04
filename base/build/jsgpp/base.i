@@ -89,6 +89,8 @@ namespace std {
 
 %include "base/src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
+%rename(operatorParentheses) SGPP::base::PairSizeTSizeTHashFunctor::operator();
+%rename(operatorParentheses) SGPP::base::PairSizeTSizeTEqualityFunctor::operator();
 %include "base/src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
@@ -96,16 +98,7 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
 %rename(operatorParentheses) SGPP::base::PredictiveRefinementIndicator::operator();
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
-%rename(operatorParentheses) SGPP::base::PredictiveRefinementDimensionIndicator::operator();
-%include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp"
-//%include "base/src/sgpp/base/grid/generation/refinement_strategy/ANOVARefinement.hpp"
-//%include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
-//%include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceGSGRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
-//%include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp"
-//%include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp"
-%include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp"
-%include "base/src/sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp"
 %include "base/src/sgpp/base/grid/generation/StandardGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
@@ -115,10 +108,6 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/SquareRootGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/PrewaveletGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-%rename(operatorParentheses) SGPP::base::WeightedErrorRefinementFunctor::operator();
-%include "base/src/sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp"
-%rename(operatorParentheses) SGPP::base::PersistentErrorRefinementFunctor::operator();
-%include "base/src/sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp"
 %rename(operatorParentheses) SGPP::base::ClassificationRefinementFunctor::operator();
 %include "base/src/sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp"
 %rename(operatorParentheses) SGPP::base::SurplusVolumeRefinementFunctor::operator();

@@ -65,15 +65,25 @@ class TrainingStopPolicy(object):
     # @return: boolean value, true if learning has to stop, false otherwise
     def isTrainingComplete(self, learner):
         ans = self.hasLimitReached(learner) or not self.hasGridSizeChanged(learner)
-        self.__oldGridSize = learner.grid.getSize()
+        self.__oldGridSize = self.getGridSize(learner)
         return ans
 
+    
     def hasGridSizeChanged(self, learner):
-        return self.__oldGridSize != learner.grid.getSize()
+        return self.__oldGridSize != self.getGridSize(learner)
+    
+    
+    def getGridSize(self, learner):
+        try:
+            grid_size = learner.grid_size
+        except AttributeError:
+            grid_size = learner.grid.getSize()
+        return grid_size
+
 
     def hasLimitReached(self, learner):
         ans = (self.__adaptiveIterationLimit is None or
-               self.__adaptiveIterationLimit < learner.getCurrentIterationNumber()) \
+               self.__adaptiveIterationLimit <= learner.getCurrentIterationNumber()) \
                and (self.getGridSizeLimit() is None or
                     self.getGridSizeLimit() <= learner.grid.getSize()) \
                and (self.getMSELimit() is None or

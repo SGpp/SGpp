@@ -50,29 +50,33 @@ namespace SGPP {
           result.setAll(0.0);
           size_t source_size = source.getSize();
 
+		  #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
+		initializer	( omp_priv = DataVector(omp_orig.getSize(), 0))
+
           #pragma omp parallel
           {
-            DataVector privateResult(result.getSize());
-            privateResult.setAll(0.0);
+//            DataVector privateResult(result.getSize());
+//            privateResult.setAll(0.0);
 
             DataVector line(x.getNcols());
             AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
 
-            privateResult.setAll(0.0);
+//            privateResult.setAll(0.0);
 
 
-            #pragma omp for schedule(static)
+            #pragma omp for reduction(accumulate:result) schedule(static)
 
             for (size_t i = 0; i < source_size; i++) {
               x.getRow(i, line);
 
-              AlgoEvalTrans(basis, line, source[i], privateResult);
+              AlgoEvalTrans(basis, line, source[i], result);
             }
 
-            #pragma omp critical
+            /*#pragma omp critical
             {
-              result.add(privateResult);
-            }
+              //result.add(privateResult);
+              result.accumulate(privateResult);
+            }*/
 
           }
 
@@ -92,12 +96,13 @@ namespace SGPP {
           result.setAll(0.0);
           size_t result_size = result.getSize();
 
+
           #pragma omp parallel
           {
-            DataVector line(x.getNcols());
-            AlgorithmEvaluation<BASIS> AlgoEval(storage);
+              DataVector line(x.getNcols());
+              AlgorithmEvaluation<BASIS> AlgoEval(storage);
 
-            #pragma omp for schedule (static)
+            #pragma omp for schedule(static)
 
             for (size_t i = 0; i < result_size; i++) {
               x.getRow(i, line);

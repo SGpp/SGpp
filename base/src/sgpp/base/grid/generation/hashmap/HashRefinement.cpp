@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <limits>
+#include <algorithm>
+#include <memory>
 
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
@@ -15,12 +16,31 @@
 namespace SGPP {
   namespace base {
 
+    void HashRefinement::addElementToCollection(
+      const GridStorage::grid_map_iterator& iter,
+      AbstractRefinement::refinement_list_type current_value_list, size_t refinements_num,
+      AbstractRefinement::refinement_container_type& collection) {
 
-    void HashRefinement::collectRefinablePoints(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
-      size_t min_idx = 0;
+      for (AbstractRefinement::refinement_list_type::iterator it = current_value_list.begin();
+           it != current_value_list.end(); it++) {
+        collection.push_back(*it);
+        std::push_heap(collection.begin(), collection.end(), AbstractRefinement::compare_pairs);
+
+
+        if (collection.size() > refinements_num) {
+          // remove the top (smallest) element
+          std::pop_heap(collection.begin(), collection.end(), AbstractRefinement::compare_pairs);
+          collection.pop_back();
+        }
+      }
+    }
+
+
+    void HashRefinement::collectRefinablePoints(GridStorage* storage,
+        RefinementFunctor* functor, AbstractRefinement::refinement_container_type& collection) {
+      size_t refinements_num = functor->getRefinementsNum();
 
       // max value equals min value
-      RefinementFunctor::value_type max_value = -std::numeric_limits<float_t>::infinity();
 
       index_type index;
       GridStorage::grid_map_iterator end_iter = storage->end();
@@ -40,39 +60,22 @@ namespace SGPP {
 
           // test existence of left child
           index.set(d, source_level + 1, 2 * source_index - 1);
-          //std::cout << "testing existence of left child " << index.toString() << "\n";
           child_iter = storage->find(&index);
 
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
-            RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-
-            if (current_value > max_value) {
-              // replace the minimal point in result array, find the new  minimal point
-              max_values[min_idx] = current_value;
-              max_indices[min_idx] = iter->second;
-              min_idx = getIndexOfMin(max_values, refinements_num);
-              max_value = max_values[min_idx];
-            }
-
+            AbstractRefinement::refinement_list_type current_value_list = getIndicator(storage, iter, functor);
+            addElementToCollection(iter, current_value_list, refinements_num, collection);
             break;
           }
 
-          // test existance of right child
+          // test existence of right child
           index.set(d, source_level + 1, 2 * source_index + 1);
           child_iter = storage->find(&index);
 
           if (child_iter == end_iter) {
-            RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
-
-            if (current_value > max_value) {
-              // replace the minimal point in result array, find the new minimal point
-              max_values[min_idx] = current_value;
-              max_indices[min_idx] = iter->second;
-              min_idx = getIndexOfMin(max_values, refinements_num);
-              max_value = max_values[min_idx];
-            }
-
+            AbstractRefinement::refinement_list_type current_value_list = getIndicator(storage, iter, functor);
+            addElementToCollection(iter, current_value_list, refinements_num, collection);
             break;
           }
 
@@ -82,20 +85,27 @@ namespace SGPP {
       }
     }
 
+    AbstractRefinement::refinement_list_type HashRefinement::getIndicator(
+      GridStorage* storage,
+      const GridStorage::grid_map_iterator& iter,
+      const RefinementFunctor* functor) const {
+      AbstractRefinement::refinement_list_type list;
+      list.emplace_front(std::make_shared<AbstractRefinement::refinement_key_type>(*(iter->first), iter->second),
+                         (*functor)(storage, iter->second));
+      return list;
+    }
 
-    void HashRefinement::refineGridpointsCollection(GridStorage* storage, RefinementFunctor* functor, size_t refinements_num, size_t* max_indices, RefinementFunctor::value_type* max_values) {
-      RefinementFunctor::value_type max_value;
-      size_t max_index;
-      // now refine all grid points which satisfy the refinement criteria
+
+
+    void HashRefinement::refineGridpointsCollection(GridStorage* storage,
+        RefinementFunctor* functor,
+        AbstractRefinement::refinement_container_type& collection) {
+
       float_t threshold = functor->getRefinementThreshold();
 
-      for (size_t i = 0; i < refinements_num; i++) {
-        max_value = max_values[i];
-        max_index = max_indices[i];
-
-        if (max_value > functor->start() && max_value >= threshold) {
-          //std::cout << "Refining grid point " << max_index << ": " << max_value << std::endl;
-          refineGridpoint(storage, max_index);
+      for (AbstractRefinement::refinement_pair_type& pair : collection) {
+        if (pair.second >= threshold) {
+          refineGridpoint(storage, pair.first->getSeq());
         }
       }
     }
@@ -105,26 +115,10 @@ namespace SGPP {
         throw generation_exception("storage empty");
       }
 
-      // the functor->getRefinementsNum() largest grid points should be refined.
-      // gather them in an array max_values
-      size_t refinements_num = functor->getRefinementsNum();
-      // values
-      RefinementFunctor::value_type* max_values = new RefinementFunctor::value_type[refinements_num];
-      // indices
-      size_t* max_indices = new size_t [refinements_num];
-
-      // initialization
-      for (size_t i = 0; i < refinements_num; i++) {
-        max_values[i] = -std::numeric_limits<float_t>::infinity();
-        max_indices[i] = 0;
-      }
-
-      collectRefinablePoints(storage, functor, refinements_num, max_indices, max_values);
+      AbstractRefinement::refinement_container_type collection;
+      collectRefinablePoints(storage, functor, collection);
       // now refine all grid points which satisfy the refinement criteria
-      refineGridpointsCollection(storage, functor, refinements_num, max_indices, max_values);
-      delete [] max_values;
-      delete [] max_indices;
-
+      refineGridpointsCollection(storage, functor, collection);
     }
 
     size_t HashRefinement::getNumberOfRefinablePoints(GridStorage* storage) {
@@ -149,7 +143,7 @@ namespace SGPP {
           level_t source_level;
           index.get(d, source_level, source_index);
 
-          // test existance of left child
+          // test existence of the left child
           index.set(d, source_level + 1, 2 * source_index - 1);
           child_iter = storage->find(&index);
 
@@ -159,7 +153,7 @@ namespace SGPP {
             break;
           }
 
-          // test existance of right child
+          // test existence of the right child
           index.set(d, source_level + 1, 2 * source_index + 1);
           child_iter = storage->find(&index);
 

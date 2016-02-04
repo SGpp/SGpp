@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+
 #include <sgpp/base/datatypes/DataVectorDefinition.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -241,6 +242,17 @@ namespace SGPP {
          */
         void add(const DataVector& vec);
 
+        /***
+         * Accumulation (summation) of vectors using Kahan's summation formula
+         * for better precision.
+         *
+         * All vectors need to be added to one for the summation formula to work. It
+         * will not work in a tree-like summation pattern.
+         *
+         * @param vec The DataVector that will be added to the current one
+         */
+        void accumulate(const DataVector& vec);
+
         /**
          * Subtracts the values from another DataVector of the current values.
          * Modifies the current values.
@@ -465,6 +477,7 @@ namespace SGPP {
          */
         std::string toString() const;
 
+
         /**
          * Destructor
          */
@@ -473,6 +486,10 @@ namespace SGPP {
       private:
         /// Array to store the data
         float_t* data;
+
+        /// Array of  correction for Kahan's summation in accumulate()
+        float_t* correction;
+
         /// Number of elements of the data vector
         size_t size;
         /// Number of additional rows for which memory has already been reserved
