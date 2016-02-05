@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 //  std::string fileName = "DR5_train.arff";
     //std::string fileName = "debugging_small.arff";
 
-    uint32_t level = 9;
+    uint32_t level = 5;
 
     SGPP::base::AdpativityConfiguration adaptConfig;
     adaptConfig.maxLevelType_ = false;
@@ -58,7 +58,8 @@ int main(int argc, char** argv) {
     adaptConfig.percent_ = 200.0;
     adaptConfig.threshold_ = 0.0;
 
-    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
+//    SGPP::base::OCLOperationConfiguration parameters("demo.cfg");
+    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
 
     SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
     SGPP::datadriven::OperationMultipleEvalType::STREAMING,
@@ -119,7 +120,7 @@ int main(int argc, char** argv) {
 
     double mse = 0.0;
     for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
-//    std::cout << "mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i] << std::endl;
+//        std::cout << "mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i] << std::endl;
         mse += (alphaResult[i] - alphaResultCompare[i]) * (alphaResult[i] - alphaResultCompare[i]);
     }
 
