@@ -7,7 +7,7 @@
 
 #include "SubspaceGenerator.hpp"
 
-namespace sg {
+namespace SGPP {
   namespace base {
 
     SubspaceGenerator::SubspaceGenerator (unsigned int dim, unsigned int max_level) :

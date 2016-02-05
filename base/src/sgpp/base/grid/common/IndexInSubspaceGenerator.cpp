@@ -2,7 +2,7 @@
 
 #include "IndexInSubspaceGenerator.hpp"
 
-namespace sg {
+namespace SGPP {
   namespace base {
 
     IndexInSubspaceGenerator::IndexInSubspaceGenerator (const value_type& level_vector) :
