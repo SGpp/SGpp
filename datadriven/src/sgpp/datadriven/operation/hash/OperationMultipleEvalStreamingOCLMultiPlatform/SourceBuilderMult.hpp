@@ -91,11 +91,11 @@ private:
             std::string levelAccess = levelAccessStream.str();
             std::string indexAccess = indexAccessStream.str();
 
-            output << this->indent3 << "dimLevelIndex = " << "(k * " << dims << ") + " << pointerAccess << ";"
+            output << this->indent[2] << "dimLevelIndex = " << "(k * " << dims << ") + " << pointerAccess << ";"
                     << std::endl;
 
             for (size_t i = 0; i < dataBlockSize; i++) {
-                output << this->indent3 << "curSupport_" << i << " *= fmax(1.0" << this->constSuffix() << " - fabs((";
+                output << this->indent[2] << "curSupport_" << i << " *= fmax(1.0" << this->constSuffix() << " - fabs((";
                 output << levelAccess << " * " << getData(dString, i) << ") - " << indexAccess << "), 0.0"
                         << this->constSuffix() << ");" << std::endl;
             }
@@ -137,111 +137,119 @@ public:
         sourceStream << "             __global const " << this->floatType() << "* ptrData," << std::endl;
         sourceStream << "             __global const " << this->floatType() << "* ptrAlpha," << std::endl;
         sourceStream << "             __global       " << this->floatType() << "* ptrResult," << std::endl;
-        sourceStream << "             uint resultSize," << std::endl;
-        sourceStream << "             uint start_grid," << std::endl;
-        sourceStream << "             uint end_grid) {" << std::endl;
-        sourceStream << this->indent << "int globalIdx = get_global_id(0);" << std::endl;
-        sourceStream << this->indent << "int localIdx = get_local_id(0);" << std::endl;
+        sourceStream << "             int resultSize," << std::endl;
+        sourceStream << "             int start_grid," << std::endl;
+        sourceStream << "             int end_grid) {" << std::endl;
+        sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
+        sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
+        sourceStream << this->indent[0] << "int groupSize = get_local_size(0);" << std::endl;
+        sourceStream << this->indent[0] << "int globalSize = get_global_size(0);" << std::endl;
 
         sourceStream << std::endl;
 
         if (useLocalMemory) {
-            sourceStream << this->indent << "__local " << this->floatType() << " locLevel[" << dims * localWorkgroupSize
-                    << "];" << std::endl;
-            sourceStream << this->indent << "__local " << this->floatType() << " locIndex[" << dims * localWorkgroupSize
-                    << "];" << std::endl;
-            sourceStream << this->indent << "__local " << this->floatType() << " locAlpha[" << localWorkgroupSize
+            sourceStream << this->indent[0] << "__local " << this->floatType() << " locLevel["
+                    << dims * localWorkgroupSize << "];" << std::endl;
+            sourceStream << this->indent[0] << "__local " << this->floatType() << " locIndex["
+                    << dims * localWorkgroupSize << "];" << std::endl;
+            sourceStream << this->indent[0] << "__local " << this->floatType() << " locAlpha[" << localWorkgroupSize
                     << "];" << std::endl;
             sourceStream << std::endl;
         }
 
-        //    sourceStream << " " << this->floatType() << " eval, index_calc, abs, last, localSupport, curSupport;" << std::endl
-        //            << std::endl;
-
         for (size_t i = 0; i < dataBlockSize; i++) {
-            sourceStream << this->indent << this->floatType() << " myResult_" << i << " = 0.0;" << std::endl;
+            sourceStream << this->indent[0] << this->floatType() << " myResult_" << i << " = 0.0;" << std::endl;
         }
         sourceStream << std::endl;
 
         //caching data in register array, this also requires loading the data into the registers (in contrast using pointers to data directly)
         if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
             for (size_t i = 0; i < dataBlockSize; i++) {
-                sourceStream << this->indent << this->floatType() << " data_" << i << "[" << dims << "];" << std::endl;
+                sourceStream << this->indent[0] << this->floatType() << " data_" << i << "[" << dims << "];"
+                        << std::endl;
             }
             sourceStream << std::endl;
             for (size_t i = 0; i < dataBlockSize; i++) {
                 for (size_t d = 0; d < dims; d++) {
-                    sourceStream << this->indent << getData(d, i) << " = ptrData[" << i << " + (" << dataBlockSize
-                            << " * globalIdx) + (resultSize * " << d << ")];" << std::endl;
+                    sourceStream << this->indent[0] << getData(d, i) << " = ptrData[(resultSize * " << d
+                            << ") + (globalSize * " << i << ") + globalIdx" << "];" << std::endl;
                 }
                 sourceStream << std::endl;
             }
         } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
             for (size_t i = 0; i < dataBlockSize; i++) {
                 for (size_t d = 0; d < dims; d++) {
-                    sourceStream << this->indent << this->floatType() << " " << getData(d, i) << " = ptrData[" << i
-                            << " + (" << dataBlockSize << " * globalIdx) + (resultSize * " << d << ")];" << std::endl;
+                    sourceStream << this->indent[0] << this->floatType() << " " << getData(d, i)
+                            << " = ptrData[(resultSize * " << d << ") + (globalSize * " << i << ") + globalIdx" << "];"
+                            << std::endl;
                 }
                 sourceStream << std::endl;
             }
         }
 
-        sourceStream << this->indent << "size_t dimLevelIndex;" << std::endl;
+        sourceStream << this->indent[0] << "size_t dimLevelIndex;" << std::endl;
 
         sourceStream << std::endl;
 
         if (useLocalMemory) {
             sourceStream << " // Iterate over all grid points (fast ones, with cache)" << std::endl;
-            sourceStream << this->indent << "uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
-            sourceStream << this->indent << "uint fastChunkSizeGrid = (chunkSizeGrid / " << localWorkgroupSize << ") * "
-                    << localWorkgroupSize << ";" << std::endl;
-            sourceStream << this->indent << "for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+="
+            sourceStream << this->indent[0] << "int chunkSizeGrid = end_grid - start_grid;" << std::endl;
+            sourceStream << this->indent[0] << "int fastChunkSizeGrid = (chunkSizeGrid / " << localWorkgroupSize
+                    << ") * " << localWorkgroupSize << ";" << std::endl;
+            sourceStream << std::endl;
+            sourceStream << this->indent[0]
+                    << "for(int gridBlockStart = start_grid; gridBlockStart < start_grid + fastChunkSizeGrid; gridBlockStart += "
                     << localWorkgroupSize << ") {" << std::endl;
 
             if (dims > maxDimUnroll) {
-                sourceStream << this->indent2 << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
-                sourceStream << this->indent3 << "locLevel[(localIdx*" << dims << ")+ d] = ptrLevel[((j+localIdx)*"
-                        << dims << ")+ d];" << std::endl;
-                sourceStream << this->indent3 << "locIndex[(localIdx*" << dims << ")+ d] = ptrIndex[((j+localIdx)*"
-                        << dims << ")+ d];" << std::endl;
-                sourceStream << this->indent2 << "}" << std::endl;
+                sourceStream << this->indent[1] << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
+                sourceStream << this->indent[2] << "locLevel[d * groupSize + localIdx] = ptrLevel[gridBlockStart * "
+                        << dims << " +  (groupSize * d) + localIdx];" << std::endl;
+                sourceStream << this->indent[1] << "}" << std::endl;
+
+                sourceStream << this->indent[1] << "for (size_t d = 0; d < " << dims << "; d++) {" << std::endl;
+                sourceStream << this->indent[2] << "locIndex[d * groupSize + localIdx] = ptrIndex[gridBlockStart * "
+                        << dims << " +  (groupSize * d) + localIdx];" << std::endl;
+                sourceStream << this->indent[1] << "}" << std::endl;
             } else {
                 for (size_t d = 0; d < dims; d++) {
-                    sourceStream << this->indent2 << "locLevel[(localIdx*" << dims << ")+" << d
-                            << "] = ptrLevel[((j+localIdx)*" << dims << ")+" << d << "];" << std::endl;
-                    sourceStream << this->indent2 << "locIndex[(localIdx*" << dims << ")+" << d
-                            << "] = ptrIndex[((j+localIdx)*" << dims << ")+" << d << "];" << std::endl;
+                    sourceStream << this->indent[1] << "locLevel[" << d
+                            << " * groupSize + localIdx] = ptrLevel[gridBlockStart * " << dims << " +  (groupSize * "
+                            << d << ") + localIdx];" << std::endl;
+                }
+                sourceStream << this->indent[1] << std::endl;
+                for (size_t d = 0; d < dims; d++) {
+                    sourceStream << this->indent[1] << "locIndex[" << d
+                            << " * groupSize + localIdx] = ptrIndex[gridBlockStart * " << dims << " +  (groupSize * "
+                            << d << ") + localIdx];" << std::endl;
                 }
             }
 
-            sourceStream << this->indent2 << "locAlpha[localIdx] = ptrAlpha[j+localIdx];" << std::endl;
-            sourceStream << this->indent2 << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+            sourceStream << this->indent[1] << std::endl;
+            sourceStream << this->indent[1] << "locAlpha[localIdx] = ptrAlpha[gridBlockStart + localIdx];" << std::endl;
+            sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
             sourceStream << std::endl;
-            sourceStream << this->indent2 << "for(int k = 0; k < " << localWorkgroupSize << "; k++) {" << std::endl;
+            sourceStream << this->indent[1] << "for(int k = 0; k < " << localWorkgroupSize << "; k++) {" << std::endl;
             for (size_t i = 0; i < dataBlockSize; i++) {
-                sourceStream << this->indent3 << this->floatType() << " curSupport_" << i << " = locAlpha[k];"
+                sourceStream << this->indent[2] << this->floatType() << " curSupport_" << i << " = locAlpha[k];"
                         << std::endl;
             }
             sourceStream << std::endl;
         } else {
-            sourceStream << this->indent << "for(int k = start_grid; k < end_grid; k++) {" << std::endl;
+            sourceStream << this->indent[0] << "for(int k = start_grid; k < end_grid; k++) {" << std::endl;
             for (size_t i = 0; i < dataBlockSize; i++) {
-                sourceStream << this->indent2 << this->floatType() << " curSupport_" << i << " = ptrAlpha[k];"
+                sourceStream << this->indent[1] << this->floatType() << " curSupport_" << i << " = ptrAlpha[k];"
                         << std::endl;
             }
             sourceStream << std::endl;
         }
 
-        //    size_t evenDimensions = (dims / dataBlockSize) * dataBlockSize;
-        //    size_t remainingDimensions = evenDimensions - remainingDimensions;
-        //    sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, dims, "");
-
         if (dims > maxDimUnroll) {
-            sourceStream << this->indent2 << "for (size_t unrollDim = 0; unrollDim < "
+            sourceStream << this->indent[1] << "for (size_t unrollDim = 0; unrollDim < "
                     << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll << ") {"
                     << std::endl;
             sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, std::min(maxDimUnroll, dims), "unrollDim");
-            sourceStream << this->indent2 << "}" << std::endl;
+            sourceStream << this->indent[1] << "}" << std::endl;
 
             if (dims % maxDimUnroll != 0) {
                 sourceStream
@@ -252,20 +260,20 @@ public:
         }
 
         for (size_t i = 0; i < dataBlockSize; i++) {
-            sourceStream << this->indent2 << "myResult_" << i << " += curSupport_" << i << ";" << std::endl;
+            sourceStream << this->indent[1] << "myResult_" << i << " += curSupport_" << i << ";" << std::endl;
         }
-        sourceStream << this->indent << "}" << std::endl;
+        sourceStream << this->indent[0] << "}" << std::endl;
         sourceStream << std::endl;
 
         if (useLocalMemory) {
-            sourceStream << "  barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
-            sourceStream << " }" << std::endl;
+            sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+            sourceStream << this->indent[0] << "}" << std::endl;
         }
 
         sourceStream << std::endl;
         for (size_t i = 0; i < dataBlockSize; i++) {
-            sourceStream << this->indent << "ptrResult[(" << dataBlockSize << " * globalIdx) + " << i << "] = myResult_"
-                    << i << ";" << std::endl;
+            sourceStream << this->indent[0] << "ptrResult[(globalSize * " << i << ") + globalIdx] = myResult_" << i
+                    << ";" << std::endl;
         }
         sourceStream << "}" << std::endl;
 
