@@ -11,6 +11,8 @@
 #include <queue>
 #include <numeric>
 
+#include <sgpp/globaldef.hpp>
+
 #ifndef SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_
 #define SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_
 

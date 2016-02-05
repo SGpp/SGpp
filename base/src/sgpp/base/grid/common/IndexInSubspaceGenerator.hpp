@@ -14,6 +14,7 @@
 #include <utility> // std::pair
 #include <vector> //std::vector
 
+#include <sgpp/globaldef.hpp>
 
 #ifndef SRC_SGPP_BASE_GRID_COMMON_INDEXINSUBSPACEGENERATOR_HPP_
 #define SRC_SGPP_BASE_GRID_COMMON_INDEXINSUBSPACEGENERATOR_HPP_

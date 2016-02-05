@@ -6,6 +6,7 @@
  */
 
 #include <sgpp/base/grid/common/SubspaceGenerator.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace SGPP {
   namespace base {
