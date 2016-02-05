@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#include "RefinementDecorator.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
