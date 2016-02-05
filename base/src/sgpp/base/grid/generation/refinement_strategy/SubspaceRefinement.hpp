@@ -79,15 +79,15 @@ namespace SGPP {
 
 
         /**
-		 * Adds elements to the collection. This method is responsible for selection
-		 * the elements with most important indicators and to limit the size of collection
-		 * to refinements_num elements.
-		 *
-		 * @param iter storage iterator
-		 * @param current_value_list list with elements that contain keys and values that specify refinement
-		 * @param refinement_num number of elements to refine
-		 * @param collection container where element pairs for refinement need to be stored
-		 */
+        * Adds elements to the collection. This method is responsible for selection
+        * the elements with most important indicators and to limit the size of collection
+        * to refinements_num elements.
+        *
+        * @param iter storage iterator
+        * @param current_value_list list with elements that contain keys and values that specify refinement
+        * @param refinement_num number of elements to refine
+        * @param collection container where element pairs for refinement need to be stored
+        */
         virtual void addElementToCollection(
           const GridStorage::grid_map_iterator& iter,
           AbstractRefinement::refinement_list_type current_value_list, size_t refinement_num,

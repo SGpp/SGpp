@@ -15,80 +15,79 @@
 #define SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_
 
 namespace sg {
-namespace base {
+  namespace base {
 
-class SubspaceGenerator {
+    class SubspaceGenerator {
 
-public:
-    typedef std::vector<unsigned int> value_type;
-    typedef value_type* pointer_type;
+      public:
+        typedef std::vector<unsigned int> value_type;
+        typedef value_type* pointer_type;
 
-    typedef std::pair<pointer_type, unsigned int> queue_value_type;
-
-
-    SubspaceGenerator (unsigned int dim, unsigned int max_level) ;
+        typedef std::pair<pointer_type, unsigned int> queue_value_type;
 
 
-    class iterator
-        : std::iterator<std::forward_iterator_tag, pointer_type>
-    {
-    public:
-        explicit iterator (SubspaceGenerator* p = 0) : ptr_(p) {}
-        // implicit copy constructor, copy assignment and destructor
+        SubspaceGenerator (unsigned int dim, unsigned int max_level) ;
 
-        reference operator* () {
-            return ptr_->val_;
-        }
 
-        iterator& operator++ () {
-            if(!ptr_->queue_.empty()) {
-                ptr_ = ptr_->next_();
+        class iterator
+          : std::iterator<std::forward_iterator_tag, pointer_type> {
+          public:
+            explicit iterator (SubspaceGenerator* p = 0) : ptr_(p) {}
+            // implicit copy constructor, copy assignment and destructor
+
+            reference operator* () {
+              return ptr_->val_;
             }
-            else {
+
+            iterator& operator++ () {
+              if (!ptr_->queue_.empty()) {
+                ptr_ = ptr_->next_();
+              } else {
                 ptr_ = NULL;
 
+              }
+
+              return *this;
             }
-            return *this;
+            iterator operator++ (int) {
+              iterator tmp = *this;
+              ++*this;
+              return tmp;
+            }
+
+            bool operator== (const iterator& other) const {
+              return ptr_ == other.ptr_;
+            }
+            bool operator!= (const iterator& other) const {
+              return ptr_ != other.ptr_;
+            }
+
+          private:
+            SubspaceGenerator* ptr_;
+        };
+
+
+
+
+        iterator begin() {
+          return iterator(this);
         }
-        iterator operator++ (int) {
-            iterator tmp = *this;
-            ++*this;
-            return tmp;
+        iterator end()   {
+          return iterator(0);
         }
 
-        bool operator== (const iterator& other) const {
-            return ptr_ == other.ptr_;
-        }
-        bool operator!= (const iterator& other) const {
-            return ptr_ != other.ptr_;
-        }
+      private:
+        pointer_type val_;
+        unsigned int dim_;
+        unsigned int max_sum_;
+        std::queue <queue_value_type> queue_;
 
-    private:
-        SubspaceGenerator* ptr_;
+        SubspaceGenerator* next_();
+
+
     };
 
-
-
-
-    iterator begin() {
-        return iterator(this);
-    }
-    iterator end()   {
-        return iterator(0);
-    }
-
-private:
-    pointer_type val_;
-    unsigned int dim_;
-    unsigned int max_sum_;
-    std::queue <queue_value_type> queue_;
-
-    SubspaceGenerator* next_();
-
-
-};
-
-} /* namespace base */
+  } /* namespace base */
 } /* namespace sg */
 
 #endif /* SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_ */

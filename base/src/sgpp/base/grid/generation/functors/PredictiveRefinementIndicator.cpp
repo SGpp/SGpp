@@ -125,7 +125,7 @@ namespace SGPP {
     }
 
     float_t PredictiveRefinementIndicator::operator()(GridStorage* storage, size_t seq) const {
-    	throw std::logic_error("This form of the operator() is not implemented for predictive indicators.");
+      throw std::logic_error("This form of the operator() is not implemented for predictive indicators.");
     }
 
 

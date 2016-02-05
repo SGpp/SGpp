@@ -49,10 +49,10 @@ namespace SGPP {
                             DataMatrix& x, DataVector& result) {
           result.setAll(0.0);
           size_t source_size = source.getSize();
-/*//REQUIRES OMP 4.0 Support
-		  #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
-		initializer	( omp_priv = DataVector(omp_orig.getSize(), 0))
-*/
+          /*//REQUIRES OMP 4.0 Support
+                #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
+              initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
+          */
           #pragma omp parallel
           {
             DataVector privateResult(result.getSize());
@@ -63,10 +63,11 @@ namespace SGPP {
 
             privateResult.setAll(0.0);
 
-/*//REQUIRES OMP 4.0 Support
-		#pragma omp for reduction(accumulate:result) schedule(static)
-*/
-			#pragma omp for  schedule(static)
+            /*//REQUIRES OMP 4.0 Support
+                #pragma omp for reduction(accumulate:result) schedule(static)
+            */
+            #pragma omp for  schedule(static)
+
             for (size_t i = 0; i < source_size; i++) {
               x.getRow(i, line);
 
@@ -101,8 +102,8 @@ namespace SGPP {
 
           #pragma omp parallel
           {
-              DataVector line(x.getNcols());
-              AlgorithmEvaluation<BASIS> AlgoEval(storage);
+            DataVector line(x.getNcols());
+            AlgorithmEvaluation<BASIS> AlgoEval(storage);
 
             #pragma omp for schedule(static)
 

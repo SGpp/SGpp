@@ -19,121 +19,120 @@
 #define SRC_SGPP_BASE_GRID_COMMON_INDEXINSUBSPACEGENERATOR_HPP_
 
 namespace sg {
-namespace base {
-
-
-/**
- * Container for the index_vectors of a subspace.
- * The subclass iterator implements the STL forward iterator
- *
- * The indices are generated on the fly and hence only one iterator instance can
- * be possible (second call to begin() will empty the working queue)
- */
-class IndexInSubspaceGenerator {
-public:
-    typedef std::vector<unsigned int> value_type;
-    typedef std::shared_ptr<value_type> pointer_type;
-    typedef std::pair<pointer_type, unsigned int> queue_value_type;
-
-    /**
-     * Constructor
-     * @param level_vector std::vector<int> with the level vector of the subspace
-     */
-    IndexInSubspaceGenerator (const value_type& level_vector);
+  namespace base {
 
 
     /**
-     * Destructor
+     * Container for the index_vectors of a subspace.
+     * The subclass iterator implements the STL forward iterator
+     *
+     * The indices are generated on the fly and hence only one iterator instance can
+     * be possible (second call to begin() will empty the working queue)
      */
-    ~IndexInSubspaceGenerator() {
-        this->queue_.empty();
-    }
+    class IndexInSubspaceGenerator {
+      public:
+        typedef std::vector<unsigned int> value_type;
+        typedef std::shared_ptr<value_type> pointer_type;
+        typedef std::pair<pointer_type, unsigned int> queue_value_type;
+
+        /**
+         * Constructor
+         * @param level_vector std::vector<int> with the level vector of the subspace
+         */
+        IndexInSubspaceGenerator (const value_type& level_vector);
 
 
-    /**
-     * Iterator class compatible with STL forward iterator (no const iterator)
-     */
-    class iterator
-        : std::iterator<std::forward_iterator_tag, value_type>
-    {
-    public:
-        explicit iterator (IndexInSubspaceGenerator* p = 0) : ptr_(p) {}
-        // implicit copy constructor, copy assignment and destructor
-
-        reference operator* () {
-            return *(ptr_->val_);
+        /**
+         * Destructor
+         */
+        ~IndexInSubspaceGenerator() {
+          this->queue_.empty();
         }
 
-        iterator& operator++ () {
-            if(!ptr_->queue_.empty()) {
-                ptr_ = ptr_->next_();
+
+        /**
+         * Iterator class compatible with STL forward iterator (no const iterator)
+         */
+        class iterator
+          : std::iterator<std::forward_iterator_tag, value_type> {
+          public:
+            explicit iterator (IndexInSubspaceGenerator* p = 0) : ptr_(p) {}
+            // implicit copy constructor, copy assignment and destructor
+
+            reference operator* () {
+              return *(ptr_->val_);
             }
-            else {
+
+            iterator& operator++ () {
+              if (!ptr_->queue_.empty()) {
+                ptr_ = ptr_->next_();
+              } else {
                 ptr_ = NULL;
 
+              }
+
+              return *this;
             }
-            return *this;
-        }
-        iterator operator++ (int) {
-            iterator tmp = *this;
-            ++*this;
-            return tmp;
+            iterator operator++ (int) {
+              iterator tmp = *this;
+              ++*this;
+              return tmp;
+            }
+
+            bool operator== (const iterator& other) const {
+              return ptr_ == other.ptr_;
+            }
+            bool operator!= (const iterator& other) const {
+              return ptr_ != other.ptr_;
+            }
+
+          private:
+            IndexInSubspaceGenerator* ptr_;
+        };
+
+
+
+        /**
+         * returns an iterator to the beginning
+         *
+         * @return iterator to the beginning
+         */
+        iterator begin();
+
+        /**
+         * returns an iterator to the end;
+         *
+         * @return iterator to the end
+         */
+        iterator end()   {
+          return iterator(NULL);
         }
 
-        bool operator== (const iterator& other) const {
-            return ptr_ == other.ptr_;
-        }
-        bool operator!= (const iterator& other) const {
-            return ptr_ != other.ptr_;
-        }
+      private:
+        value_type level_vector;
+        value_type max_index_vector;
+        pointer_type val_;
+        size_t dim_;
+        std::queue <queue_value_type> queue_;
 
-    private:
-        IndexInSubspaceGenerator* ptr_;
+        /**
+         * Assures that the vectors are of the same size and vec1 is not larger than vec2
+         * @param vec1 first vector to compare
+         * @param vec2 second vector to compare
+         * @return true if vec1 components-wise smaller or equal to vec2
+         */
+        bool compareVectors(value_type& vec1, value_type& vec2);
+
+
+        /**
+         * Move to the next element in the queue
+         * @return pointer to self
+         */
+        IndexInSubspaceGenerator* next_();
+
     };
 
-
-
-    /**
-     * returns an iterator to the beginning
-     *
-     * @return iterator to the beginning
-     */
-    iterator begin();
-
-    /**
-     * returns an iterator to the end;
-     *
-     * @return iterator to the end
-     */
-    iterator end()   {
-        return iterator(NULL);
-    }
-
-private:
-    value_type level_vector;
-    value_type max_index_vector;
-    pointer_type val_;
-    size_t dim_;
-    std::queue <queue_value_type> queue_;
-
-    /**
-     * Assures that the vectors are of the same size and vec1 is not larger than vec2
-     * @param vec1 first vector to compare
-     * @param vec2 second vector to compare
-     * @return true if vec1 components-wise smaller or equal to vec2
-     */
-    bool compareVectors(value_type& vec1, value_type& vec2);
-
-
-    /**
-     * Move to the next element in the queue
-     * @return pointer to self
-     */
-    IndexInSubspaceGenerator* next_();
-
-};
-
-} /* namespace base */
+  } /* namespace base */
 } /* namespace sg */
 
 #endif /* SRC_SGPP_BASE_GRID_COMMON_INDEXINSUBSPACEGENERATOR_HPP_ */

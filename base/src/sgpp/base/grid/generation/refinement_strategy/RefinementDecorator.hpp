@@ -117,16 +117,16 @@ namespace SGPP {
         virtual void createGridpoint(GridStorage* storage, index_type& index);
 
         /**
-		 * Examines the grid points and stores the indices those that can be refined
-		 * and have maximal indicator values.
-		 *
-		 * @param storage hashmap that stores the grid points
-		 * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
-		 * @param collection container that contains elements to refine (empty initially)
-		 */
+        * Examines the grid points and stores the indices those that can be refined
+        * and have maximal indicator values.
+        *
+        * @param storage hashmap that stores the grid points
+        * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+        * @param collection container that contains elements to refine (empty initially)
+        */
         virtual void collectRefinablePoints(GridStorage* storage,
                                             RefinementFunctor* functor,
-											AbstractRefinement::refinement_container_type& collection);
+                                            AbstractRefinement::refinement_container_type& collection);
 
 
         /**
@@ -138,7 +138,7 @@ namespace SGPP {
          */
         virtual void refineGridpointsCollection(GridStorage* storage,
                                                 RefinementFunctor* functor,
-												AbstractRefinement::refinement_container_type& collection);
+                                                AbstractRefinement::refinement_container_type& collection);
 
 
 
@@ -151,9 +151,9 @@ namespace SGPP {
          * @return list with indicator elements
          */
         virtual AbstractRefinement::refinement_list_type getIndicator(
-                        GridStorage* storage,
-                        const GridStorage::grid_map_iterator& iter,
-                        const RefinementFunctor* functor) const;
+          GridStorage* storage,
+          const GridStorage::grid_map_iterator& iter,
+          const RefinementFunctor* functor) const;
 
       private:
         AbstractRefinement* decorated_refinement_;
