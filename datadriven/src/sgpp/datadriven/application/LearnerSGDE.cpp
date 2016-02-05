@@ -128,6 +128,13 @@ namespace SGPP {
       return samples->getNrows();
     }
 
+    DataVector LearnerSGDE::getSurpluses(){
+        return alpha;
+    }
+
+    GridStorage* LearnerSGDE::getGridStorage(){
+        return grid->getStorage();
+    }
     // ---------------------------------------------------------------------------
 
     void LearnerSGDE::createRegularGrid(Grid*& grid, size_t ndim) {
