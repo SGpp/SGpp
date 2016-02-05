@@ -5,7 +5,7 @@
  *      Author: perun
  */
 
-#include "SubspaceGenerator.hpp"
+#include <sgpp/base/grid/common/SubspaceGenerator.hpp>
 
 namespace SGPP {
   namespace base {

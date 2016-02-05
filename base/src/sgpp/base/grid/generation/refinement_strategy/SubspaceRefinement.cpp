@@ -6,9 +6,9 @@
 #include <algorithm>
 #include <iostream>
 
-#include "SubspaceRefinement.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
-#include "sgpp/base/grid/common/IndexInSubspaceGenerator.hpp"
+#include <sgpp/base/grid/common/IndexInSubspaceGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 

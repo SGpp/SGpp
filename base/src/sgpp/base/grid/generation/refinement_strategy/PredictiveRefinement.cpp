@@ -13,7 +13,7 @@
 #include <iterator>
 
 #include <sgpp/globaldef.hpp>
-#include "../functors/PredictiveRefinementIndicator.hpp"
+#include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
 
 namespace SGPP {

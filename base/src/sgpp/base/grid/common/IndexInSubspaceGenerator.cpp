@@ -1,6 +1,6 @@
 
 
-#include "IndexInSubspaceGenerator.hpp"
+#include <sgpp/base/grid/common/IndexInSubspaceGenerator.hpp>
 
 namespace SGPP {
   namespace base {
