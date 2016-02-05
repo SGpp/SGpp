@@ -113,7 +113,7 @@ private:
     value_type level_vector;
     value_type max_index_vector;
     pointer_type val_;
-    unsigned int dim_;
+    size_t dim_;
     std::queue <queue_value_type> queue_;
 
     /**
