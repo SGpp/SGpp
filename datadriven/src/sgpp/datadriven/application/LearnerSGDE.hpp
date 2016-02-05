@@ -116,6 +116,16 @@ namespace SGPP {
 
         virtual SGPP::base::Grid* getGrid();
         virtual SGPP::base::DataVector* getAlpha();
+	
+	/**
+         * returns the surpluses
+         */
+        virtual SGPP::base::DataVector getSurpluses();
+
+        /**
+         * returns the grid storage
+         */
+        virtual SGPP::base::GridStorage* getGridStorage();
 
       protected:
 
