@@ -14,7 +14,7 @@
 #ifndef SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_
 #define SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_
 
-namespace sg {
+namespace SGPP {
   namespace base {
 
     class SubspaceGenerator {
