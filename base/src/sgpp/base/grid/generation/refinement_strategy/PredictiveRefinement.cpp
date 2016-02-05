@@ -127,12 +127,15 @@ namespace SGPP {
       // now refine all grid points which satisfy the refinement criteria
       float_t threshold = functor->getRefinementThreshold();
       refinement_key_type* key;
+
       for (AbstractRefinement::refinement_pair_type& pair : collection) {
-    	  key = dynamic_cast<refinement_key_type*>(pair.first.get());
+        key = dynamic_cast<refinement_key_type*>(pair.first.get());
+
         if (pair.second > functor->start() && pair.second >= threshold) {
           this->refineGridpoint1D(storage, key->getIndex(), key->getDim());
           key->getIndex().setLeaf(false);
         }
+
         //delete key;
       }
 

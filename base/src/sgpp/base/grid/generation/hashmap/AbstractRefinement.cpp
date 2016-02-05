@@ -18,7 +18,7 @@ namespace SGPP {
                                const AbstractRefinement::refinement_pair_type& element2) {
             return element1.second > element2.second;
     }
-*/
+    */
 
     size_t AbstractRefinement::getIndexOfMin(RefinementFunctor::value_type* array, size_t length) {
       size_t min_idx = 0;

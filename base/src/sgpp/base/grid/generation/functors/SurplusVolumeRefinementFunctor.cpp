@@ -23,15 +23,15 @@ namespace SGPP {
       return pow(2, static_cast<float_t>(-((int)storage->get(seq)->getLevelSum()))) * fabs(alpha->get(seq));
     }
 
-    float_t SurplusVolumeRefinementFunctor::start() const{
+    float_t SurplusVolumeRefinementFunctor::start() const {
       return 0.0;
     }
 
-    size_t SurplusVolumeRefinementFunctor::getRefinementsNum() const{
+    size_t SurplusVolumeRefinementFunctor::getRefinementsNum() const {
       return this->refinements_num;
     }
 
-    float_t SurplusVolumeRefinementFunctor::getRefinementThreshold() const{
+    float_t SurplusVolumeRefinementFunctor::getRefinementThreshold() const {
       return this->threshold;
     }
 

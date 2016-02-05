@@ -69,7 +69,8 @@ namespace SGPP {
             //THIS HAS TO WAIT UNTIL THE SUPPORT OF OMP 4.0 IS BETTER ON OLD SYSTEMS
             #pragma omp for reduction(accumulate:result) schedule(static)
             */
-			#pragma omp for schedule(static)
+            #pragma omp for schedule(static)
+
             for (size_t i = 0; i < source_size; i++) {
               vec.clear();
 

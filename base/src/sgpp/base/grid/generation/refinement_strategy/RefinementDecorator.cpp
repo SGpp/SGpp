@@ -74,10 +74,10 @@ namespace SGPP {
 
 
     AbstractRefinement::refinement_list_type RefinementDecorator::getIndicator(
-                    GridStorage* storage,
-                    const GridStorage::grid_map_iterator& iter,
-                    const RefinementFunctor* functor) const {
-        return this->decorated_refinement_->getIndicator(storage, iter, functor);
+      GridStorage* storage,
+      const GridStorage::grid_map_iterator& iter,
+      const RefinementFunctor* functor) const {
+      return this->decorated_refinement_->getIndicator(storage, iter, functor);
     }
 
   }
