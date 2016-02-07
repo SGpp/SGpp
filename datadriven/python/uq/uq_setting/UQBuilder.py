@@ -133,9 +133,12 @@ class UQBuilder(object):
 
         # restore simulation results if there are any
         filename = self.__specification.getFilename()
-        if filename is not None and os.path.exists(filename):
-            m = UQSettingFormatter().deserializeFromFile(filename)
-            n_setting = UQSetting.fromJson(m)
-            ans.mergeStats(n_setting)
+        if filename is not None:
+            if os.path.exists(filename):
+                m = UQSettingFormatter().deserializeFromFile(filename)
+                n_setting = UQSetting.fromJson(m)
+                ans.mergeStats(n_setting)
+            else:
+                print "WARNING: the specified file does not exist ('%s') in cwd '%s'" % (filename, os.getcwd())
 
         return ans
