@@ -251,6 +251,8 @@ class ASGCKnowledge(object):
                     # undo the hack that made it json compatible
                     gridString = gridString.replace('__', '\n')\
                                            .encode('utf8')
+                    # compatibility with older poly basis type
+                    gridString = gridString.replace('myPoly', 'poly')
                     # deserialize ...
                     grid = Grid.unserialize(gridString)
                     # ... and store it
