@@ -171,9 +171,9 @@ void GridDataBase::save(std::string filename, char ftype) {
 
     // dump contents to file
     // write binary information
-    fout.write(static_cast<char*>(&ftype), sizeof(ftype));
+    fout.write(reinterpret_cast<char*>(&ftype), sizeof(ftype));
     // write dimensionality
-    fout.write(static_cast<char*>(&_dim), sizeof(_dim));
+    fout.write(reinterpret_cast<char*>(&_dim), sizeof(_dim));
     // iterate over hashmap
     grid_map_const_iterator git;
     level_t lev;
@@ -182,8 +182,8 @@ void GridDataBase::save(std::string filename, char ftype) {
     for (git = _map.begin(); git != _map.end(); git++) {
       for (int d = 0; d < _dim; d++) {
         git->first->get(d, lev, ind);
-        fout.write(static_cast<char*>(&lev), sizeof(lev));
-        fout.write(static_cast<char*>(&ind), sizeof(ind));
+        fout.write(reinterpret_cast<char*>(&lev), sizeof(lev));
+        fout.write(reinterpret_cast<char*>(&ind), sizeof(ind));
       }
 
       fout.write((const char*) & (git->second), sizeof(git->second));
@@ -221,12 +221,12 @@ void GridDataBase::_loadTypeDim(const std::string filename, char& ftype,
     throw new file_exception(msg.c_str());
   }
 
-  fin.read(static_cast<char*>(&dim)&ftype, sizeof(ftype));
+  fin.read(reinterpret_cast<char*>(&ftype), sizeof(ftype));
 
   // we're in binary mode
   if (ftype == binary) {
     std::cout << filename << " is binary" << std::endl;
-    fin.read(static_cast<char*>(&dim), sizeof(dim));
+    fin.read(reinterpret_cast<char*>(&dim), sizeof(dim));
   } else {  // we're in ASCII mode
     fin.close();
     fin.open(filename.c_str());
@@ -270,12 +270,12 @@ void GridDataBase::_loadData(std::ifstream& fin, char& ftype) {
   } else {  // binary data
     while (!fin.eof()) {
       for (int d = 0; d < _dim; d++) {
-        fin.read(static_cast<char*>(&lev), sizeof(lev));
-        fin.read(static_cast<char*>(&ind), sizeof(ind));
+        fin.read(reinterpret_cast<char*>(&lev), sizeof(lev));
+        fin.read(reinterpret_cast<char*>(&ind), sizeof(ind));
         gi.set(d, lev, ind);
       }
 
-      fin.read(static_cast<char*>(&val), sizeof(val));
+      fin.read(reinterpret_cast<char*>(&val), sizeof(val));
       set(&gi, val);
     }
   }
