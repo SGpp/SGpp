@@ -1,12 +1,11 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * ConfigurationParser.hpp
+ *
+ *  Created on: Mar 25, 2015
+ *      Author: pfandedd
+ */
 
 #pragma once
-
-#include <sgpp/base/tools/json/DictNode.hpp>
-#include <sgpp/base/tools/json/Token.hpp>
 
 #include <vector>
 #include <map>
@@ -14,28 +13,34 @@
 #include <memory>
 #include <iostream>
 
+#include "DictNode.hpp"
+#include "Token.hpp"
+
 namespace json {
 
 class JSON: public DictNode {
- private:
+private:
+
   std::string fileName;
 
-  std::vector<Token> tokenize(std::string& input);
+  std::vector<Token> tokenize(std::string &input);
 
- public:
-  explicit JSON(const std::string& fileName);
+public:
+
+  JSON(const std::string &fileName);
 
   JSON();
 
-  JSON(const JSON& original);
+  JSON(const JSON &original);
 
-  virtual JSON* clone();
+  virtual JSON *clone();
 
   void clear();
 
-  void serialize(const std::string& outFileName);
+  void serialize(const std::string &outFileName);
 
   using DictNode::serialize;
+
 };
 
-}  // namespace json
+}

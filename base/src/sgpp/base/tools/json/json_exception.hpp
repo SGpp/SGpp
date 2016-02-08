@@ -1,27 +1,30 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * JSONException.hpp
+ *
+ *  Created on: Nov 9, 2015
+ *      Author: pfandedd
+ */
 
 #pragma once
-
-#include <sgpp/base/tools/json/Token.hpp>
 
 #include <exception>
 #include <string>
 
+#include "Token.hpp"
+
 namespace json {
 
 class json_exception: public std::exception {
- private:
+private:
+
   std::string message;
 
- public:
-  json_exception(Token& token, const std::string& message);
+public:
+  json_exception(Token &token, const std::string &message);
 
-  explicit json_exception(const std::string& message);
+  json_exception(const std::string &message);
 
-  const char* what() const throw() override;
+  virtual const char* what() const throw () override;
 };
 
-}  // namespace json
+}

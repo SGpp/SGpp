@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
     std::cout << "value: " << configuration["parent"]["list1"][1].get() <<
               std::endl;
 
+
     std::cout << "value: " << configuration["parent"]["list1"][1].getDouble() <<
               std::endl;
 
