@@ -31,15 +31,15 @@ DataMiningConfigurationDensityEstimation::DataMiningConfigurationDensityEstimati
   regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
 
   // configure learner
-  learnerSGDEConfig.doCrossValidation_ = false;
-  learnerSGDEConfig.kfold_ = 10;
-  learnerSGDEConfig.lambdaStart_ = 1e-1;
-  learnerSGDEConfig.lambdaEnd_ = 1e-10;
-  learnerSGDEConfig.lambdaSteps_ = 10;
-  learnerSGDEConfig.logScale_ = true;
-  learnerSGDEConfig.shuffle_ = true;
-  learnerSGDEConfig.seed_ = 1234567;
-  learnerSGDEConfig.silent_ = true;
+  sgdeConfig.doCrossValidation_ = false;
+  sgdeConfig.kfold_ = 10;
+  sgdeConfig.lambdaStart_ = 1e-1;
+  sgdeConfig.lambdaEnd_ = 1e-10;
+  sgdeConfig.lambdaSteps_ = 10;
+  sgdeConfig.logScale_ = true;
+  sgdeConfig.shuffle_ = true;
+  sgdeConfig.seed_ = 1234567;
+  sgdeConfig.silent_ = true;
 }
 
 DataMiningConfigurationDensityEstimation::DataMiningConfigurationDensityEstimation(const std::string& fileName):
@@ -65,15 +65,15 @@ DataMiningConfigurationDensityEstimation::DataMiningConfigurationDensityEstimati
     regularizationConfig.regType_ = stringToRegularizationType((*this)["regularization"]["type"].get());
 
     // configure learner
-    learnerSGDEConfig.doCrossValidation_ = (*this)["crossValidation"]["doCrossValidation"].getBool();
-    learnerSGDEConfig.kfold_ = (*this)["crossValidation"]["kfold"].getUInt();
-    learnerSGDEConfig.lambdaStart_ = (*this)["crossValidation"]["lambdaStart"].getDouble();
-    learnerSGDEConfig.lambdaEnd_ = (*this)["crossValidation"]["lambdaEnd"].getDouble();
-    learnerSGDEConfig.lambdaSteps_ = (*this)["crossValidation"]["lambdaSteps"].getUInt();
-    learnerSGDEConfig.logScale_ = (*this)["crossValidation"]["logScale"].getBool();
-    learnerSGDEConfig.shuffle_ = (*this)["crossValidation"]["shuffle"].getBool();
-    learnerSGDEConfig.seed_ = (*this)["crossValidation"]["seed"].getUInt();
-    learnerSGDEConfig.silent_ = (*this)["crossValidation"]["verbose"].getBool();
+    sgdeConfig.doCrossValidation_ = (*this)["crossValidation"]["doCrossValidation"].getBool();
+    sgdeConfig.kfold_ = (*this)["crossValidation"]["kfold"].getUInt();
+    sgdeConfig.lambdaStart_ = (*this)["crossValidation"]["lambdaStart"].getDouble();
+    sgdeConfig.lambdaEnd_ = (*this)["crossValidation"]["lambdaEnd"].getDouble();
+    sgdeConfig.lambdaSteps_ = (*this)["crossValidation"]["lambdaSteps"].getUInt();
+    sgdeConfig.logScale_ = (*this)["crossValidation"]["logScale"].getBool();
+    sgdeConfig.shuffle_ = (*this)["crossValidation"]["shuffle"].getBool();
+    sgdeConfig.seed_ = (*this)["crossValidation"]["seed"].getUInt();
+    sgdeConfig.silent_ = (*this)["crossValidation"]["verbose"].getBool();
   } catch (SGPP::base::application_exception& e) {
     std::cout << e.what() << std::endl;
   }
