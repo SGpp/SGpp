@@ -20,8 +20,8 @@ namespace datadriven {
 
 class SampleProvider {
 public:
-	SampleProvider();
-	virtual ~SampleProvider();
+	SampleProvider(){};
+	virtual ~SampleProvider(){};
 
 	/**
 	 * Selects a certain number of samples
