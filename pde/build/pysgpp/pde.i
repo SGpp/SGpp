@@ -22,11 +22,9 @@
 %include "pde/src/sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp"
 
-%include "pde/src/sgpp/pde/application/RegularizationConfiguration.hpp"
-
 %apply std::string *INPUT { std::string& istr };
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
 %apply std::vector<std::pair<size_t, float_t> > *OUTPUT { std::vector<std::pair<size_t, float_t> >& result };
-%apply std::vector<float_t> *INPUT { std::vector<float_t>& point }; 
+%apply std::vector<float_t> *INPUT { std::vector<float_t>& point };

@@ -16,13 +16,13 @@
 namespace SGPP {
 namespace datadriven {
 
-Learner::Learner(SGPP::pde::RegularizationType& regularization,
+Learner::Learner(SGPP::datadriven::RegularizationType& regularization,
                  const bool isRegression, const bool verbose)
   : LearnerBase(isRegression, verbose), CMode_(regularization), C_(NULL) {
 }
 
 Learner::Learner(const std::string tGridFilename,
-                 const std::string tAlphaFilename, SGPP::pde::RegularizationType& regularization,
+                 const std::string tAlphaFilename, SGPP::datadriven::RegularizationType& regularization,
                  const bool isRegression, const bool verbose)
   : LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
     CMode_(regularization), C_(NULL) {
@@ -42,9 +42,9 @@ SGPP::datadriven::DMSystemMatrixBase* Learner::createDMSystem(
   if (C_ != NULL)
     delete C_;
 
-  if (this->CMode_ == pde::RegularizationType::Laplace) {
+  if (this->CMode_ == datadriven::RegularizationType::Laplace) {
     C_ = SGPP::op_factory::createOperationLaplace(*this->grid_);
-  } else if (this->CMode_ == pde::RegularizationType::Identity) {
+  } else if (this->CMode_ == datadriven::RegularizationType::Identity) {
     C_ = SGPP::op_factory::createOperationIdentity(*this->grid_);
   } else {
     // should not happen

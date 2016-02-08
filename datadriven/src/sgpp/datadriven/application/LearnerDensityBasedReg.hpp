@@ -8,7 +8,7 @@
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/datadriven/application/Learner.hpp>
-#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
 #include <string>
 
@@ -33,7 +33,7 @@ class LearnerDensityBasedReg: public LearnerBase {
    * @param border offset for the normalization of the class data
    */
   LearnerDensityBasedReg(
-    SGPP::pde::RegularizationType& regularization,
+    SGPP::datadriven::RegularizationType& regularization,
     float_t border = 0.);
 
   /**
@@ -83,7 +83,7 @@ class LearnerDensityBasedReg: public LearnerBase {
 
  protected:
   /// regularization mode
-  SGPP::pde::RegularizationType CMode_;
+  SGPP::datadriven::RegularizationType CMode_;
   /// regularization operator
   SGPP::base::OperationMatrix* C_;
   /// maximum value (used for de-normalization)

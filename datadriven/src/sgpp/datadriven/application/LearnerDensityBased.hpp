@@ -10,7 +10,7 @@
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
-#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
@@ -28,7 +28,7 @@ class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
   //Stores the coefficients for every class
   std::vector<SGPP::base::DataVector> alphaVec_;
   /// regularization mode
-  SGPP::pde::RegularizationType CMode_;
+  SGPP::datadriven::RegularizationType CMode_;
   //with prior
   bool withPrior;
   //number of classes
@@ -40,7 +40,7 @@ class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
   // vector of regterms
   std::vector<SGPP::base::OperationMatrix*> CVec_;
  public:
-  LearnerDensityBased(SGPP::pde::RegularizationType&, const bool isRegression,
+  LearnerDensityBased(SGPP::datadriven::RegularizationType&, const bool isRegression,
                       const bool isVerbose = true);
   virtual ~LearnerDensityBased();
 

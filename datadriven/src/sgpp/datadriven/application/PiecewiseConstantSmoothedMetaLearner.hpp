@@ -11,7 +11,7 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
@@ -27,7 +27,7 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
   base::RegularGridConfiguration gridConfig;
   base::AdpativityConfiguration adaptConfig;
   solver::SLESolverConfiguration solverConfig;
-  pde::RegularizationConfiguration regularizationConfig;
+  datadriven::RegularizationConfiguration regularizationConfig;
 
   /**
    * generates a regular grid
@@ -56,7 +56,7 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
       base::RegularGridConfiguration gridConfig,
       base::AdpativityConfiguration adaptConfig,
       solver::SLESolverConfiguration solverConfig,
-      pde::RegularizationConfiguration regularizationConfig);
+      datadriven::RegularizationConfiguration regularizationConfig);
 
   float_t optimizeLambdaLog(size_t kFold, size_t maxLevel,
                             float_t fastApproximationMSE,

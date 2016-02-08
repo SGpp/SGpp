@@ -65,8 +65,8 @@ int main(int argc, char** argv) {
   solverConfig.threshold_ = -1.0;
   solverConfig.type_ = SGPP::solver::SLESolverType::CG;
 
-  SGPP::pde::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = SGPP::pde::RegularizationType::Laplace;
+  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
 
   bool verbose = true;
 

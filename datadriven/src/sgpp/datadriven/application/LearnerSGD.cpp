@@ -15,7 +15,7 @@ namespace SGPP {
 
 namespace datadriven {
 
-LearnerSGD::LearnerSGD(SGPP::pde::RegularizationType& regularization,
+LearnerSGD::LearnerSGD(SGPP::datadriven::RegularizationType& regularization,
                        const bool isRegression, const bool isVerbose) : Learner(regularization,
                              isRegression, isVerbose) {
 }
