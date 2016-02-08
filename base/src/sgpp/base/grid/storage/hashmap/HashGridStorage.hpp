@@ -6,6 +6,22 @@
 #ifndef HASHGRIDSTORAGE_HPP
 #define HASHGRIDSTORAGE_HPP
 
+#include <sgpp/base/exception/generation_exception.hpp>
+
+#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
+#include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
+
+#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/base/grid/common/Stretching.hpp>
+
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
+
+#include <sgpp/globaldef.hpp>
+
+#include <stdint.h>
+
 #include <unordered_map>
 
 #include <memory>
@@ -15,24 +31,6 @@
 #include <exception>
 #include <list>
 #include <typeinfo>
-#include <stdint.h>
-
-#include <sgpp/globaldef.hpp>
-
-
-#include <sgpp/base/exception/generation_exception.hpp>
-
-#include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
-#include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
-
-#include <sgpp/base/grid/common/BoundingBox.hpp>
-#include <sgpp/base/grid/common/Stretching.hpp>
-
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/datatypes/DataMatrixSP.hpp>
-
-
-
 
 namespace SGPP {
 namespace base {
@@ -51,8 +49,10 @@ class HashGridStorage {
   /// pointer to constant index_type
   typedef const HashGridIndex* index_const_pointer;
   /// unordered_map of index_pointers
-  typedef std::unordered_map<index_pointer, size_t, HashGridIndexPointerHashFunctor, HashGridIndexPointerEqualityFunctor >
-  grid_map;
+  typedef std::unordered_map<index_pointer, size_t,
+          HashGridIndexPointerHashFunctor,
+          HashGridIndexPointerEqualityFunctor >
+          grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
   /// const_iterator of grid_map
@@ -73,7 +73,7 @@ class HashGridStorage {
    *
    * @param dim the dimension of the sparse grid
    */
-  HashGridStorage(size_t dim);
+  explicit HashGridStorage(size_t dim);
 
   /**
    * Constructor
@@ -82,7 +82,7 @@ class HashGridStorage {
    *
    * @param creationBoundingBox reference to bounding box object that describes the grid boundaries
    */
-  HashGridStorage(BoundingBox& creationBoundingBox);
+  explicit HashGridStorage(BoundingBox& creationBoundingBox);
 
   /**
    * Constructor
@@ -91,26 +91,26 @@ class HashGridStorage {
    *
    * @param creationStretching reference to stretching object that describes the grid boundaries and the stretching
    */
-  HashGridStorage(Stretching& creationStretching);
+  explicit HashGridStorage(Stretching& creationStretching);
 
   /**
    * Constructor that reads the data from a string
    *
    * @param istr the string that contains the data
    */
-  HashGridStorage(std::string& istr);
+  explicit HashGridStorage(std::string& istr);
 
   /**
    * Constructor that reads the data from an input stream
    *
    * @param istream the inputstream that contains the data
    */
-  HashGridStorage(std::istream& istream);
+  explicit HashGridStorage(std::istream& istream);
 
   /**
    * Copy Constructor
    */
-  HashGridStorage(HashGridStorage& copyFrom);
+  explicit HashGridStorage(HashGridStorage& copyFrom);
 
   /**
    * Destructor
@@ -471,8 +471,10 @@ class HashGridStorage {
    * @param mask DataMatrixSP to store masks of operations
    * @param offset DataMatrixSP to store offset for operations
    */
-  void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
-                                         DataMatrixSP& mask, DataMatrixSP& offset);
+  void getLevelIndexMaskArraysForModEval(DataMatrixSP& level,
+                                         DataMatrixSP& index,
+                                         DataMatrixSP& mask,
+                                         DataMatrixSP& offset);
 
  protected:
   /**
@@ -483,7 +485,6 @@ class HashGridStorage {
   size_t seq() const;
 
  private:
-
   /// the dimension of the grid
   size_t DIM;
 
@@ -510,7 +511,6 @@ class HashGridStorage {
    * @param istream the string stream that contains the information
    */
   void parseGridDescription(std::istream& istream);
-
 };
 
 
@@ -530,8 +530,8 @@ inline HashGridStorage::destroy(index_pointer index) {
 unsigned int
 inline HashGridStorage::store(index_pointer index) {
   list.push_back(index);
-  return static_cast<unsigned int>(map[index] =
-                                     static_cast<unsigned int>(this->seq() - 1));
+  return static_cast<unsigned int>(
+      map[index] = static_cast<unsigned int>(this->seq() - 1));
 }
 
 HashGridStorage::grid_map_iterator
@@ -619,13 +619,7 @@ inline HashGridStorage::seq() const {
   return list.size();
 }
 
-
-
-
-} // namespace base
-} // namespace SGPP
-
-#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
-
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HASHGRIDSTORAGE_HPP */

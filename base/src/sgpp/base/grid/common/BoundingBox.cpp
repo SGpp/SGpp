@@ -4,9 +4,11 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
-#include <sstream>
 
 #include <sgpp/globaldef.hpp>
+
+#include <sstream>
+#include <string>
 
 
 namespace SGPP {
@@ -68,7 +70,6 @@ void BoundingBox::setBoundary(size_t dimension,
       || dimensionBoundaries[dimension].rightBoundary != 1.0) {
     bTrivialCube = false;
   }
-
 }
 
 DimensionBoundary BoundingBox::getBoundary(size_t dimension) {
@@ -104,7 +105,7 @@ bool BoundingBox::hasDirichletBoundaryRight(size_t dimension) {
 void BoundingBox::toString(std::string& text) {
   std::stringstream str;
 
-  for (size_t d = 0; d < nDim; d++ ) {
+  for (size_t d = 0; d < nDim; d++) {
     str << "Dimensions " << d << "(" << dimensionBoundaries[d].leftBoundary
         << "," <<  dimensionBoundaries[d].rightBoundary << ")\n";
   }
@@ -118,5 +119,5 @@ std::string BoundingBox::toString() {
   return str;
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

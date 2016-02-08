@@ -11,15 +11,16 @@
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sgpp/base/grid/common/Stretching.hpp>
 
+#include <sgpp/globaldef.hpp>
+
+#include <sys/types.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <sys/types.h>
 #include <cmath>
 #include <algorithm>
 #include <map>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -51,7 +52,7 @@ class HashGridIndex {
    *
    * @param dim the dimension of the gridpoint
    */
-  HashGridIndex(size_t dim);
+  explicit HashGridIndex(size_t dim);
 
   /**
    * Standard-Constructor
@@ -417,7 +418,6 @@ class HashGridIndex {
   friend class HashGridIndexPointerEqualityFunctor;
   friend class HashGridIndexHashFunctor;
   friend class HashGridIndexEqualityFunctor;
-
 };
 
 struct HashGridIndexPointerHashFunctor {

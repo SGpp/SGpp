@@ -1,14 +1,19 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+
+#include <sgpp/base/exception/generation_exception.hpp>
 
 #include <memory>
 #include <exception>
 #include <typeinfo>
 #include <unordered_map>
-
-#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
-
-
-#include <sgpp/base/exception/generation_exception.hpp>
-
+#include <string>
+#include <list>
+#include <vector>
 
 namespace SGPP {
 namespace base {
@@ -36,7 +41,7 @@ HashGridStorage::HashGridStorage(BoundingBox& creationBoundingBox) :
   , boundingBox(new BoundingBox(creationBoundingBox))
   , stretching(nullptr)
   , bUseStretching(false) {
-  //this look like a bug, creationBoundingBox not used
+  // this look like a bug, creationBoundingBox not used
   for (size_t i = 0; i < DIM; i++) {
     algoDims.push_back(i);
   }
@@ -139,13 +144,14 @@ HashGridStorage::deletePoints(std::list<size_t>& removePoints) {
   // sort list
   removePoints.sort();
 
-  //DEBUG : print list points to delete, sorted
-  //std::cout << std::endl << "List of points to delete, sorted" << std::endl;
-  //for(std::list<size_t>::iterator iter = removePoints.begin(); iter != removePoints.end(); iter++)
-  //{
-  //  std::cout << " " << *iter << " ";
-  //}
-  //std::cout << std::endl;
+  // DEBUG : print list points to delete, sorted
+  // std::cout << std::endl << "List of points to delete, sorted" << std::endl;
+  // for(std::list<size_t>::iterator iter = removePoints.begin();
+  // iter != removePoints.end(); iter++)
+  // {
+  //   std::cout << " " << *iter << " ";
+  // }
+  // std::cout << std::endl;
 
   // Remove points with given indices for index vector and hashmap
   for (std::list<size_t>::iterator iter = removePoints.begin();
@@ -206,7 +212,7 @@ HashGridStorage::serialize(std::ostream& ostream) {
   ostream << DIM << " ";
   ostream << list.size() << std::endl;
 
-  //If BoundingBox used, write zero
+  // If BoundingBox used, write zero
   if (!bUseStretching) {
     ostream << std::scientific << 0 << std::endl;
 
@@ -214,13 +220,14 @@ HashGridStorage::serialize(std::ostream& ostream) {
     for (size_t i = 0; i < DIM; i++) {
       tempBound = boundingBox->getBoundary(i);
       ostream << std::scientific << tempBound.leftBoundary << " "
-              << tempBound.rightBoundary << " " << tempBound.bDirichletLeft << " "
+              << tempBound.rightBoundary << " "
+              << tempBound.bDirichletLeft << " "
               << tempBound.bDirichletRight << " ";
     }
 
     ostream << std::endl;
   } else {
-    //If analytic stretching, print the stretching type
+    // If analytic stretching, print the stretching type
     if (*(stretching->getStretchingMode()) == "analytic") {
       ostream << std::scientific << 1 << std::endl;
 
@@ -255,11 +262,9 @@ HashGridStorage::serialize(std::ostream& ostream) {
 
         ostream << std::scientific << stretchingType << " " << str1d.x_0
                 << " " << str1d.xsi << std::endl;
-
       }
-    }
-    //If discrete stretching, print the grid vector
-    else if (*(stretching->getStretchingMode()) == "discrete") {
+    } else if (*(stretching->getStretchingMode()) == "discrete") {
+      // If discrete stretching, print the grid vector
       ostream << std::scientific << 2 << std::endl;
 
       // Print the bounding box
@@ -581,8 +586,8 @@ HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level,
 #endif
         mask.set(i, current_dim, *reinterpret_cast<float_t*>(&intmask));
         offset.set(i, current_dim, 2.0);
-      } else if (curIndex
-                 == static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
+      } else if (curIndex ==
+                 static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<float_t>(1 << curLevel));
         index.set(i, current_dim, static_cast<float_t>(curIndex));
 #if USE_DOUBLE_PRECISION
@@ -631,8 +636,8 @@ HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level,
         uint32_t intmask = 0x00000000;
         mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
         offset.set(i, current_dim, 2.0);
-      } else if (curIndex
-                 == static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
+      } else if (curIndex ==
+                 static_cast<index_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<float>(1 << curLevel));
         index.set(i, current_dim, static_cast<float>(curIndex));
         uint32_t intmask = 0x00000000;
@@ -670,14 +675,12 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
     }
   }
 
-  //no bounding box, generate a trivial one
+  // no bounding box, generate a trivial one
   if (version == 1 || version == 2) {
     // create a standard bounding box
     boundingBox = new BoundingBox(DIM);
-  }
-
-  // read the bounding box
-  else if (version == 3 || version == 4) {
+  }  else if (version == 3 || version == 4) {
+    // read the bounding box
     // create a standard bounding box
     boundingBox = new BoundingBox(DIM);
     stretching = NULL;
@@ -700,7 +703,7 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
     istream >> useStretching;
 
     if (useStretching == 0) {
-      //BoundingBox
+      // BoundingBox
 
       // create a standard bounding box
       boundingBox = new BoundingBox(DIM);
@@ -717,7 +720,7 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
         boundingBox->setBoundary(i, tempBound);
       }
     } else if (useStretching == 1) {
-      //Stretching with analytic mode
+      // Stretching with analytic mode
       boundingBox = NULL;
       bUseStretching = true;
       Stretching1D* str1ds = new Stretching1D[DIM];
@@ -733,7 +736,7 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
 
       int stretchingType = 0;
 
-      //Reads the 1D stretching data
+      // Reads the 1D stretching data
       for (size_t i = 0; i < DIM; i++) {
         istream >> stretchingType;
 
@@ -763,7 +766,7 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
       delete[] tempBounds;
       delete[] str1ds;
     } else if (useStretching == 2) {
-      //Stretching with discrete Mode
+      // Stretching with discrete Mode
 
       boundingBox = NULL;
       bUseStretching = true;
@@ -809,9 +812,6 @@ HashGridStorage::parseGridDescription(std::istream& istream) {
   }
 }
 
-
-
-
-} // namespace base
-} // namespace SGPP
+}  // namespace base
+}  // namespace SGPP
 

@@ -1,9 +1,7 @@
-/*
- * SubspaceGenerator.cpp
- *
- *  Created on: Nov 9, 2015
- *      Author: perun
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/common/SubspaceGenerator.hpp>
 #include <sgpp/globaldef.hpp>
@@ -11,8 +9,8 @@
 namespace SGPP {
 namespace base {
 
-SubspaceGenerator::SubspaceGenerator (unsigned int dim,
-                                      unsigned int max_level) :
+SubspaceGenerator::SubspaceGenerator(unsigned int dim,
+                                     unsigned int max_level) :
   val_(NULL), dim_(dim), max_sum_(max_level + dim - 1) {
   pointer_type root_subspace = new value_type(dim, 1);
   queue_value_type pair(root_subspace, 0);
@@ -41,4 +39,4 @@ SubspaceGenerator* SubspaceGenerator::next_() {
 }
 
 }  // namespace base
-}  // namespace sg
+}  // namespace SGPP

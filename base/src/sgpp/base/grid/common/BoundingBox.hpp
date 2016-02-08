@@ -6,10 +6,10 @@
 #ifndef BOUNDINGBOX_HPP
 #define BOUNDINGBOX_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <cstddef>
 #include <string>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -53,7 +53,7 @@ class BoundingBox {
    *
    * @param dim number of the dimensions used with the grid
    */
-  BoundingBox(size_t dim);
+  explicit BoundingBox(size_t dim);
 
   /**
    * Constructor for BoundingBox

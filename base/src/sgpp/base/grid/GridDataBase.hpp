@@ -6,15 +6,14 @@
 #ifndef GRIDDATABASE_HPP
 #define GRIDDATABASE_HPP
 
-//#include <sgpp/base/tools/hash_map_config.hpp>
-#include <unordered_map>
-
+// #include <sgpp/base/tools/hash_map_config.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
+
+#include <string>
+#include <unordered_map>
 
 
 namespace SGPP {
@@ -46,8 +45,10 @@ class GridDataBase {
   #endif
   */
   //        typedef HashGridStorage::grid_map grid_map;
-  typedef std::unordered_map<index_pointer, float_t, HashGridIndexPointerHashFunctor, HashGridIndexPointerEqualityFunctor >
-  grid_map;
+  typedef std::unordered_map<index_pointer, float_t,
+          HashGridIndexPointerHashFunctor,
+          HashGridIndexPointerEqualityFunctor >
+          grid_map;
 
   // the hash_map
   grid_map _map;
@@ -80,10 +81,7 @@ class GridDataBase {
    */
   void _loadData(std::ifstream& fin, char& ftype);
 
-
-
  public:
-
   typedef grid_map::iterator grid_map_iterator;
   typedef grid_map::const_iterator grid_map_const_iterator;
 
@@ -94,7 +92,7 @@ class GridDataBase {
    * Standard Constructor, creating an empty database with dimensionality dim.
    * @param dim the dimensionality of the grid points
    */
-  GridDataBase(size_t dim);
+  explicit GridDataBase(size_t dim);
 
   /**
    * Constructor, copying from existing grid and values.
@@ -107,7 +105,7 @@ class GridDataBase {
    * Constructor, reading from existing database.
    * @param filename filename of database file
    */
-  GridDataBase(const std::string& filename);
+  explicit GridDataBase(const std::string& filename);
 
   /**
    * Destructor
@@ -154,7 +152,7 @@ class GridDataBase {
    */
   size_t size() const {
     return _map.size();
-  };
+  }
 
   /**
    * Returns the dimensionality of the grid points.
@@ -163,7 +161,7 @@ class GridDataBase {
    */
   size_t dim() const {
     return _dim;
-  };
+  }
 
   /**
    * Get value for grid point from database. Return NULL if not existant.
@@ -205,7 +203,6 @@ class GridDataBase {
    * @return iterator to end.
    */
   grid_map_iterator end();
-
 };
 
 }  // namespace base
