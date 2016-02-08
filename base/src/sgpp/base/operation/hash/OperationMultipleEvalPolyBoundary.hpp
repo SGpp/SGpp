@@ -36,7 +36,7 @@ class OperationMultipleEvalPolyBoundary: public OperationMultipleEval {
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalPolyBoundary() override {
+  ~OperationMultipleEvalPolyBoundary() override {
   }
 
   void mult(DataVector& alpha, DataVector& result) override;

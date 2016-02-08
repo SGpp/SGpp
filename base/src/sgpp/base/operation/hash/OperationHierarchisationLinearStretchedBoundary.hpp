@@ -27,13 +27,13 @@ class OperationHierarchisationLinearStretchedBoundary : public
    *
    * @param storage the grid's GridStorage object
    */
-  OperationHierarchisationLinearStretchedBoundary(GridStorage* storage) : storage(
-      storage) {}
+  explicit OperationHierarchisationLinearStretchedBoundary(
+      GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationHierarchisationLinearStretchedBoundary() override {}
+  ~OperationHierarchisationLinearStretchedBoundary() override {}
 
   void doHierarchisation(DataVector& node_values) override;
   void doDehierarchisation(DataVector& alpha) override;

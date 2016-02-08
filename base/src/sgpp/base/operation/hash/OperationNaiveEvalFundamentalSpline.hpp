@@ -33,7 +33,7 @@ class OperationNaiveEvalFundamentalSpline : public OperationNaiveEval {
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalFundamentalSpline() override {
+  ~OperationNaiveEvalFundamentalSpline() override {
   }
 
   /**

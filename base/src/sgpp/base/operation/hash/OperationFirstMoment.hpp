@@ -35,7 +35,6 @@ class OperationFirstMoment {
    * @param alpha the function's values in the nodal basis
    */
   virtual float_t doQuadrature(const DataVector& alpha) = 0;
-
 };
 
 }  // namespace base

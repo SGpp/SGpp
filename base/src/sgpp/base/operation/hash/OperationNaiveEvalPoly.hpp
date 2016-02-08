@@ -29,7 +29,7 @@ class OperationNaiveEvalPoly: public OperationNaiveEval {
     storage(storage), base(degree) {
   }
 
-  virtual ~OperationNaiveEvalPoly() override {
+  ~OperationNaiveEvalPoly() override {
   }
 
   /**

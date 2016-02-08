@@ -19,7 +19,8 @@ namespace base {
 float_t OperationEvalLinear::eval(const DataVector& alpha,
                                   const DataVector& point) {
   LinearBasis<unsigned int, unsigned int> base;
-  AlgorithmEvaluation<LinearBasis<unsigned int, unsigned int> > AlgoEval(storage);
+  AlgorithmEvaluation<
+  LinearBasis<unsigned int, unsigned int> > AlgoEval(storage);
 
   return AlgoEval(base, point, alpha);
 }

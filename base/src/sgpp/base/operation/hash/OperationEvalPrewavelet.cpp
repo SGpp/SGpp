@@ -12,6 +12,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <vector>
+
 
 namespace SGPP {
 namespace base {
@@ -61,7 +64,6 @@ float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
       } else {
         temp_result *= 0.4 * (1.0 / (1 << level));
       }
-
     }
 
     result += alpha[i] * temp_result;

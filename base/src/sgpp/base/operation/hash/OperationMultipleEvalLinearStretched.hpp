@@ -26,15 +26,15 @@ class OperationMultipleEvalLinearStretched : public OperationMultipleEval {
    * @param grid grid
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalLinearStretched(Grid& grid,
-                                       DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+  OperationMultipleEvalLinearStretched(Grid& grid, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalLinearStretched() override {}
+  ~OperationMultipleEvalLinearStretched() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;

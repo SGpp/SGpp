@@ -30,7 +30,7 @@ class OperationNaiveEvalLinearClenshawCurtis : public OperationNaiveEval {
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalLinearClenshawCurtis() override {
+  ~OperationNaiveEvalLinearClenshawCurtis() override {
   }
 
   /**

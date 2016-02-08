@@ -26,20 +26,19 @@ class OperationEvalPeriodic : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  OperationEvalPeriodic(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalPeriodic(GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalPeriodic() override {}
+  ~OperationEvalPeriodic() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object
   GridStorage* storage;
-
 };
 
 }  // namespace base

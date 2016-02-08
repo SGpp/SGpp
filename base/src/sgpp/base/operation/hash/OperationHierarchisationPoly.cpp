@@ -16,7 +16,6 @@ namespace SGPP {
 namespace base {
 
 void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values) {
-
   HierarchisationPoly func(this->storage, &this->base);
   sweep<HierarchisationPoly> s(func, this->storage);
 

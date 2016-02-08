@@ -29,14 +29,16 @@ class OperationMultipleEvalPoly : public OperationMultipleEval {
    * @param dataset Dataset
    */
   OperationMultipleEvalPoly(Grid& grid, size_t degree,
-                            DataMatrix& dataset) : OperationMultipleEval(grid, dataset), base(degree) {
+                            DataMatrix& dataset) :
+                              OperationMultipleEval(grid, dataset),
+                              base(degree) {
     this->storage = grid.getStorage();
   }
 
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalPoly() override {}
+  ~OperationMultipleEvalPoly() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;

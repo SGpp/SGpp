@@ -12,6 +12,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <vector>
+
 
 namespace SGPP {
 namespace base {
@@ -23,8 +26,8 @@ float_t OperationEvalPeriodic::eval(const DataVector& alpha,
 
   IndexValVector vec;
   LinearPeriodicBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> > ga(
-    storage);
+  GetAffectedBasisFunctions<
+  LinearPeriodicBasis<unsigned int, unsigned int> > ga(storage);
 
   ga(base, point, vec);
 

@@ -26,9 +26,7 @@ void OperationHierarchisationLinearBoundary::doHierarchisation(
     for (size_t i = 0; i < this->storage->dim(); i++) {
       s.sweep1D_Boundary(node_values, node_values, i);
     }
-  }
-  // 1 D case
-  else {
+  } else {  // 1 D case
     s.sweep1D(node_values, node_values, 0);
   }
 }
@@ -43,12 +41,10 @@ void OperationHierarchisationLinearBoundary::doDehierarchisation(
     for (size_t i = 0; i < this->storage->dim(); i++) {
       s.sweep1D_Boundary(alpha, alpha, i);
     }
-  }
-  // 1 D case
-  else {
+  } else {  // 1 D case
     s.sweep1D(alpha, alpha, 0);
   }
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

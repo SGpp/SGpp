@@ -11,6 +11,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <vector>
+
 
 namespace SGPP {
 namespace base {
@@ -21,8 +24,8 @@ float_t OperationEvalLinearBoundary::eval(const DataVector& alpha,
 
   IndexValVector vec;
   LinearBoundaryBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> > ga(
-    storage);
+  GetAffectedBasisFunctions<
+  LinearBoundaryBasis<unsigned int, unsigned int> > ga(storage);
 
   ga(base, point, vec);
 

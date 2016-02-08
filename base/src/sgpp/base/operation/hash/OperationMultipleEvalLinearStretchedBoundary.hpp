@@ -37,7 +37,7 @@ class OperationMultipleEvalLinearStretchedBoundary : public
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalLinearStretchedBoundary() override {}
+  ~OperationMultipleEvalLinearStretchedBoundary() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;

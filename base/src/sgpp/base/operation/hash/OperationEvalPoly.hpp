@@ -35,10 +35,10 @@ class OperationEvalPoly : public OperationEval {
   /**
    * Destructor
    */
-  virtual ~OperationEvalPoly() override {}
+  ~OperationEvalPoly() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object

@@ -3,7 +3,7 @@
  * This file is part of the SG++ project. For conditions of distribution and   *
  * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
  ******************************************************************************/
-// @author Jörg Blank (blankj@in.tum.de), Alexander Heinecke (Alexander.Heinecke@mytum.de)
+
 #include <sgpp/base/operation/hash/OperationHierarchisationPolyBoundary.hpp>
 
 #include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationPolyBoundary.hpp>
@@ -16,7 +16,6 @@ namespace base {
 
 void OperationHierarchisationPolyBoundary::doHierarchisation(
   DataVector& node_values) {
-
   HierarchisationPolyBoundary func(this->storage, &this->base);
   sweep<HierarchisationPolyBoundary> s(func, this->storage);
 

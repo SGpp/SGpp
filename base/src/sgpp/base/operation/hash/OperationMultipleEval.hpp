@@ -12,6 +12,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 
 namespace SGPP {
 namespace base {
@@ -81,7 +83,8 @@ class OperationMultipleEval {
 
   virtual float_t getDuration() {
     throw new SGPP::base::operation_exception(
-      "error: OperationMultipleEval::getDuration(): not implemented for this kernel");
+      "error: OperationMultipleEval::getDuration(): "
+        "not implemented for this kernel");
   }
 
   /**
@@ -89,7 +92,8 @@ class OperationMultipleEval {
    */
   virtual std::string getImplementationName() {
     throw new SGPP::base::operation_exception(
-      "error: OperationMultipleEval::getImplementationName(): not implemented for this kernel");
+      "error: OperationMultipleEval::getImplementationName(): "
+        "not implemented for this kernel");
   }
 };
 

@@ -30,7 +30,7 @@ class OperationQuadraturePoly : public OperationQuadrature {
   OperationQuadraturePoly(GridStorage* storage, size_t degree) : storage(storage),
     base(degree) {}
 
-  virtual ~OperationQuadraturePoly() override {}
+  ~OperationQuadraturePoly() override {}
 
   /**
    * Quadrature for piecewise polynomial basis functions of max. degree 3

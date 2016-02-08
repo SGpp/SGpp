@@ -22,13 +22,13 @@ class OperationNaiveEvalLinearBoundary : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  OperationNaiveEvalLinearBoundary(GridStorage* storage) : storage(storage) {
+  explicit OperationNaiveEvalLinearBoundary(GridStorage* storage) : storage(storage) {
   }
 
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalLinearBoundary() override {
+  ~OperationNaiveEvalLinearBoundary() override {
   }
 
   /**

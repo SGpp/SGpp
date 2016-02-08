@@ -26,12 +26,13 @@ class OperationHierarchisationModLinear : public OperationHierarchisation {
    *
    * @param storage the grid's GridStorage object
    */
-  OperationHierarchisationModLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationHierarchisationModLinear(GridStorage* storage) :
+  storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationHierarchisationModLinear() override {}
+  ~OperationHierarchisationModLinear() override {}
 
   void doHierarchisation(DataVector& node_values) override;
   void doDehierarchisation(DataVector& alpha) override;

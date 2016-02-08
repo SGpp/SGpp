@@ -25,9 +25,10 @@ class OperationFirstMomentLinear : public OperationFirstMoment {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  OperationFirstMomentLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationFirstMomentLinear(GridStorage* storage) :
+  storage(storage) {}
 
-  virtual ~OperationFirstMomentLinear() override {}
+  ~OperationFirstMomentLinear() override {}
 
   /**
    * Compute first moment of the function

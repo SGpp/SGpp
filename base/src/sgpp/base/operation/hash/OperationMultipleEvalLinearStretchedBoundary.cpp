@@ -31,5 +31,5 @@ void OperationMultipleEvalLinearStretchedBoundary::multTranspose(
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

@@ -54,5 +54,6 @@ void OperationHierarchisationFundamentalSpline::doDehierarchisation(
   DataMatrix alphaCopy(alpha);
   bfs.execute(alphaCopy, alpha);
 }
-}
-}
+
+}  // namespace base
+}  // namespace SGPP

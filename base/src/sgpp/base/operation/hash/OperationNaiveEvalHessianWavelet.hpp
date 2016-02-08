@@ -27,13 +27,13 @@ class OperationNaiveEvalHessianWavelet : public OperationNaiveEvalHessian {
    *
    * @param storage   storage of the sparse grid
    */
-  OperationNaiveEvalHessianWavelet(GridStorage* storage) : storage(storage) {
+  explicit OperationNaiveEvalHessianWavelet(GridStorage* storage) : storage(storage) {
   }
 
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalHessianWavelet() override {
+  ~OperationNaiveEvalHessianWavelet() override {
   }
 
   /**
@@ -43,7 +43,7 @@ class OperationNaiveEvalHessianWavelet : public OperationNaiveEvalHessian {
    * @param[out]  hessian     Hessian matrix of linear combination
    * @return                  value of linear combination
    */
-  virtual float_t evalHessian(const DataVector& alpha,
+  float_t evalHessian(const DataVector& alpha,
                               const DataVector& point,
                               DataVector& gradient,
                               DataMatrix& hessian) override;

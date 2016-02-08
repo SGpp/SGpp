@@ -29,12 +29,13 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
    * @param degree the polynom's max. degree
    */
   OperationHierarchisationPoly(GridStorage* storage,
-                               size_t degree) : storage(storage), base(degree) {}
+                               size_t degree) :
+                                 storage(storage), base(degree) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationHierarchisationPoly() override {}
+  ~OperationHierarchisationPoly() override {}
 
   /**
    * Implements the hierarchisation on a sprase grid with poly base functions

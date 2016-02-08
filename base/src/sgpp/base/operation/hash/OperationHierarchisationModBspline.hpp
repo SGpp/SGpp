@@ -30,13 +30,13 @@ class OperationHierarchisationModBspline : public OperationHierarchisation {
    * @param storage the grid's GridStorage object
    * @param degree the bsplinenom's max. degree
    */
-  OperationHierarchisationModBspline(GridStorage* storage,
-                                     size_t degree) : storage(storage), base(degree) {}
+  explicit OperationHierarchisationModBspline(
+      GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationHierarchisationModBspline() override {}
+  ~OperationHierarchisationModBspline() override {}
 
   /**
    * Implements the hierarchisation on a sprase grid with mod bspline base functions

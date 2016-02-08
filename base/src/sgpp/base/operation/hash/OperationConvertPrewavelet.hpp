@@ -38,7 +38,7 @@ class OperationConvertPrewavelet : public OperationConvert {
   /**
    * Destructor
    */
-  virtual ~OperationConvertPrewavelet() override {
+  ~OperationConvertPrewavelet() override {
   }
 
   void doConvertToLinear(DataVector& alpha) override;
