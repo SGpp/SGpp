@@ -12,11 +12,13 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-#include "ModelFittingDensityEstimation.hpp"
+//#include "ModelFittingDensityEstimation.hpp"
 
 
 namespace SGPP {
   namespace datadriven {
+
+  class ModelFittingDensityEstimation;
 
     struct DataMiningConfigurationDensityEstimationType {
       // parameters for cross-validation
@@ -37,7 +39,7 @@ namespace SGPP {
 
     class DataMiningConfigurationDensityEstimation: public SGPP::datadriven::DataMiningConfiguration {
 
-        friend class SGPP::datadriven::ModelFittingDensityEstimation;
+        friend class ModelFittingDensityEstimation;
 
       public:
         DataMiningConfigurationDensityEstimation();

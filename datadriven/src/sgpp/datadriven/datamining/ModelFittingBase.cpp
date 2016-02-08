@@ -12,7 +12,7 @@ using namespace SGPP::base;
 namespace SGPP {
   namespace datadriven {
 
-    ModelFittingBase::ModelFittingBase(SGPP::datadriven::DataMiningConfiguration config) : grid(nullptr), alpha(0) {
+    ModelFittingBase::ModelFittingBase(DataMiningConfiguration config) : config(config), grid(nullptr), alpha(0) {
     }
 
     ModelFittingBase::~ModelFittingBase() {
