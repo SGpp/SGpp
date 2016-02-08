@@ -66,11 +66,8 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 }
 
 BOOST_AUTO_TEST_CASE(testOps) {
-#if USE_DOUBLE_PRECISION == 1
-	float_t tol = 1e-12;
-#else
-    float_t tol = 1e-5;
-#endif
+
+  float_t tol = 1e-5;
 
   DataVector d = d_rand;
   DataVector d2 = DataVector(N);
