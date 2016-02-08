@@ -10,32 +10,28 @@
 using namespace SGPP::base;
 
 namespace SGPP {
-namespace datadriven {
+  namespace datadriven {
 
-ModelFittingBase::ModelFittingBase() : grid(nullptr), alpha(0) {
-}
+    ModelFittingBase::ModelFittingBase(SGPP::datadriven::DataMiningConfiguration& config) : config(config), grid(nullptr), alpha(0) {
+    }
 
-ModelFittingBase::~ModelFittingBase() {
-}
+    ModelFittingBase::~ModelFittingBase() {
+    }
 
-void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& result) {
-  uint32_t numSamples = samples.getNrows();
-  uint32_t numDims = samples.getNcols();
+    SGPP::float_t ModelFittingBase::evaluate(DataVector& sample) {
+      return 0.0;
+    }
 
-  DataVector sample(numDims);
-  for (size_t i = 0; i < numSamples; i++) {
-    samples.getRow(i, sample);
-    result[i] = evaluate(sample);
-  }
-}
+    void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& result) {
+    }
 
-std::shared_ptr<SGPP::base::Grid> ModelFittingBase::getGrid() {
-  return grid;
-}
+    std::shared_ptr<SGPP::base::Grid> ModelFittingBase::getGrid() {
+      return grid;
+    }
 
-std::shared_ptr<SGPP::base::DataVector> ModelFittingBase::getSurpluses() {
-  return alpha;
-}
+    std::shared_ptr<SGPP::base::DataVector> ModelFittingBase::getSurpluses() {
+      return alpha;
+    }
 
-} /* namespace datadriven */
+  } /* namespace datadriven */
 } /* namespace SGPP */

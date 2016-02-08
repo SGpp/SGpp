@@ -17,7 +17,7 @@ namespace SGPP {
 
     class ModelFittingBase {
       public:
-        ModelFittingBase();
+        ModelFittingBase(SGPP::datadriven::DataMiningConfiguration& config);
         virtual ~ModelFittingBase();
 
         /**
@@ -30,7 +30,7 @@ namespace SGPP {
          * @param sample
          * @return
          */
-        virtual SGPP::float_t evaluate(SGPP::base::DataVector& sample) = 0;
+        virtual SGPP::float_t evaluate(SGPP::base::DataVector& sample);
 
         /**
          *
@@ -43,6 +43,7 @@ namespace SGPP {
         virtual std::shared_ptr<SGPP::base::DataVector> getSurpluses();
 
       protected:
+        SGPP::datadriven::DataMiningConfiguration config;
         std::shared_ptr<SGPP::base::Grid> grid;
         std::shared_ptr<SGPP::base::DataVector> alpha;
     };
