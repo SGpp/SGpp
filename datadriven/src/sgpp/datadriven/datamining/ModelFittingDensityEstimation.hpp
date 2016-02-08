@@ -27,7 +27,7 @@ namespace SGPP {
         void fit() override;
 
       private:
-        SGPP::datadriven::DataMiningConfigurationDensityEstimation config;
+        DataMiningConfigurationDensityEstimation config;
     };
 
   } /* namespace datadriven */
