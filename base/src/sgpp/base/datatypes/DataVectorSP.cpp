@@ -6,13 +6,15 @@
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <sstream>
 #include <cmath>
 #include <algorithm>
 #include <cstring>
+#include <string>
+#include <vector>
 #include <cstdlib>
-//#include <sgpp/base/tools/AlignedMemory.hpp>
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -442,5 +444,6 @@ size_t DataVectorSP::getNumberNonZero() const {
 
   return nonZero;
 }
-}
-}
+
+}  // namespace base
+}  // namespace SGPP

@@ -6,11 +6,13 @@
 #ifndef DATAMATRIXSP_HPP
 #define DATAMATRIXSP_HPP
 
-#include <string>
-#include <vector>
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <string>
+#include <vector>
+#include <algorithm>
 
 
 namespace SGPP {
@@ -294,7 +296,8 @@ class DataMatrixSP {
    * @param beta vector with length of number of columns beta[i] is multiplied to each element row[j][i]
    * @param start_beta where to start using the beta coefficients
    */
-  void addReduce(DataVectorSP& reduction, DataVectorSP& beta, size_t start_beta);
+  void addReduce(DataVectorSP& reduction, DataVectorSP& beta,
+                 size_t start_beta);
 
   /**
    * expands a given DataVectorSP into a
@@ -544,10 +547,14 @@ class DataMatrixSP {
   size_t ncols;
   /// Number of additional rows for which memory has already been reserved
   size_t unused;
-  /// Number of rows by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
+  /**
+   * Number of rows by which the reserved memory is increased,
+   * if adding a row would exceed the storage reserved so far.
+   */
   size_t inc_rows;
 };
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DATAMATRIXSP_HPP */

@@ -6,11 +6,13 @@
 #ifndef DATAMATRIX_H_
 #define DATAMATRIX_H_
 
-#include <string>
-#include <vector>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <string>
+#include <vector>
+#include <algorithm>
 
 
 namespace SGPP {
@@ -193,7 +195,7 @@ class DataMatrix {
    */
   inline float_t& operator[](size_t i) {
     return data[i];
-  };
+  }
 
   /**
    * Returns the value of the element at position [row,col]
@@ -551,10 +553,14 @@ class DataMatrix {
   size_t ncols;
   /// Number of additional rows for which memory has already been reserved
   size_t unused;
-  /// Number of rows by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
+  /**
+   * Number of rows by which the reserved memory is increased, if
+   * adding a row would exceed the storage reserved so far.
+   */
   size_t inc_rows;
 };
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /*DATAMATRIX_H_*/

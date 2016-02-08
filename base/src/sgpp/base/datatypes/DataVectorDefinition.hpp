@@ -27,11 +27,14 @@ struct DataVectorDefinition {
   size_t size;
   /// Number of additional rows for which memory has already been reserved
   size_t unused;
-  /// Number of elements by which the reserved memory is increased, if adding an element would exceed the storage reserved so far.
+  /**
+   * Number of elements by which the reserved memory is increased,
+   * if adding an element would exceed the storage reserved so far.
+   */
   size_t inc_elems;
-
 };
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DATAVECTORDEFINITION_HPP */

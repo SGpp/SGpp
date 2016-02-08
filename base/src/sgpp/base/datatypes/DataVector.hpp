@@ -6,12 +6,12 @@
 #ifndef DATAVECTOR_HPP
 #define DATAVECTOR_HPP
 
-#include <string>
-#include <vector>
-
 #include <sgpp/base/datatypes/DataVectorDefinition.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <string>
+#include <vector>
 
 
 namespace SGPP {
@@ -31,7 +31,7 @@ class DataVector {
    *
    * @param size Number of elements
    */
-  DataVector(size_t size);
+  explicit DataVector(size_t size);
 
   /**
    * Create a DataVector with @em size elements and initializes
@@ -62,21 +62,21 @@ class DataVector {
    *
    * @param input std::vector<float_t> that contains the data
    */
-  DataVector(std::vector<float_t> input);
+  explicit DataVector(std::vector<float_t> input);
 
   /**
    * Create a new DataVector from a std::vector<int>.
    *
    * @param input std::vector<int> that contains the data
    */
-  DataVector(std::vector<int> input);
+  explicit DataVector(std::vector<int> input);
 
   /**
    * Constructor that constructs a DataVector from a DataVectorDefinition structure
    *
    * @param DataVectorDef reference to a DataVectorDefinition structure
    */
-  DataVector(DataVectorDefinition& DataVectorDef);
+  explicit DataVector(DataVectorDefinition& DataVectorDef);
 
   /**
    * Fill DataVectorDefintion with data from the current DataVector
@@ -494,7 +494,10 @@ class DataVector {
   size_t size;
   /// Number of additional rows for which memory has already been reserved
   size_t unused;
-  /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
+  /**
+   * Number of elements by which the reserved memory is increased,
+   * if adding a row would exceed the storage reserved so far.
+   */
   size_t inc_elems;
 };
 
