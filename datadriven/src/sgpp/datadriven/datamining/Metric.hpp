@@ -25,8 +25,8 @@ namespace datadriven {
  */
 class Metric {
 public:
-	Metric();
-	virtual ~Metric();
+	Metric(){};
+	virtual ~Metric(){};
 	virtual double operator()(DataVector& predictedValues, DataVector& trueValues) = 0;
 };
 

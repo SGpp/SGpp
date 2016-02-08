@@ -21,7 +21,7 @@ namespace datadriven {
 class DataWrapper : public SampleProvider {
 public:
 	DataWrapper(std::string filename): filename(filename){}
-	virtual ~DataWrapper();
+	virtual ~DataWrapper(){};
 
 protected:
 	std::string filename;
