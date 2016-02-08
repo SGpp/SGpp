@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "DataMiningConfiguration.hpp"
+#include "../datamining/DataMiningConfiguration.hpp"
 
 #include <string>
 

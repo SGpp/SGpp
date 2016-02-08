@@ -5,7 +5,7 @@
  *      Author: franzefn
  */
 
-#include <sgpp/datadriven/dataMining/ModelFittingBase.hpp>
+#include "../datamining/ModelFittingBase.hpp"
 
 using namespace SGPP::base;
 
