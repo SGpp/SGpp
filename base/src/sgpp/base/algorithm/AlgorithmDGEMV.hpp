@@ -85,8 +85,8 @@ class AlgorithmDGEMV {
   //          typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
   //
   //          result.setAll(0.0);
-  //          #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
-            initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
+  //          #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in))
+  // ... initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
   //
   //
   //          #pragma omp parallel
