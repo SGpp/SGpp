@@ -19,13 +19,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
 
-    if env['COMPILER'] != 'vcc':
-        # check C++11 support
-        if not config.CheckFlag("-std=c++11"):
-            sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-            sys.exit(1)  # TODO: exist undefined, fix
-        
-        config.env.AppendUnique(CPPFLAGS="-std=c++11")
+    # check C++11 support
+    if not config.CheckFlag("-std=c++11"):
+        sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
+        sys.exit(1)  # TODO: exist undefined, fix
+
+    config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
     # boost library
     #TODO: add check and error
@@ -355,17 +354,9 @@ Please install the corresponding package, e.g. using command on Ubuntu
             sys.exit(1)
 
         env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
-    elif env['COMPILER'] == 'vcc':
-        print "Using vcc"
-        env.AppendUnique(CPPFLAGS=['/EHsc'])
-        env.AppendUnique(CPPFLAGS=['/DNOMINMAX'])
-        if env['USE_STATICLIB']:
-            env.AppendUnique(CPPFLAGS=['/D_USE_STATICLIB'])
-        # env.Append(CPPFLAGS=['/openmp']) -> does not work due to missing openMP3 support
-        env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for Compiler."
-        print "Available configurations are: gnu, clang, vcc and intel"
+        print "Available configurations are: gnu, clang, and intel"
         sys.exit(1)
 
     # special treatment for different platforms

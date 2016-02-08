@@ -86,7 +86,6 @@ vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only r
 vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
-vars.Add('MSVC_USE_SCRIPT', 'Sets the script to initialize the environment for the Visual Studio compiler and linker.', '')
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
 
 # create temporary environment to check which system and compiler we should use
@@ -179,7 +178,7 @@ if not env.GetOption('clean'):
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
-if (env['PLATFORM'] == 'win32') and (env['COMPILER'] != 'vcc'):
+if env['PLATFORM'] == 'win32':
     set_win32_spawn(env)
 
 # add #/lib/sgpp to LIBPATH
