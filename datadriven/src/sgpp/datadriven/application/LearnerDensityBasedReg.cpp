@@ -11,12 +11,12 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace datadriven {
@@ -26,7 +26,6 @@ LearnerDensityBasedReg::LearnerDensityBasedReg(
   float_t border) :
   LearnerBase(true), CMode_(regularization), C_(NULL), maxValue_(0.), minValue_(
     0.), border_(border) {
-
 }
 
 LearnerDensityBasedReg::~LearnerDensityBasedReg() {
@@ -91,7 +90,8 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
   if (isVerbose_)
     std::cout << "Starting Learning...." << std::endl;
 
-  //Normalize "class" vector and append it to the train data matrix to create a m x (n+1) matrix for estimation of Pr[x, t]:
+  // Normalize "class" vector and append it to the train data matrix to create a m x (n+1) matrix
+  // for estimation of Pr[x, t]:
   SGPP::base::DataVector classes_copy(classes);
   classes_copy.minmax(&minValue_, &maxValue_);
   classes_copy.normalize(border_);
@@ -112,7 +112,7 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
     acc += dim;
   }
 
-  //Adjust grid configuration to the higher dimension:
+  // Adjust grid configuration to the higher dimension:
   SGPP::base::RegularGridConfiguration config_adap;
   config_adap.dim_ = GridConfig.dim_ + 1;
   config_adap.level_ = GridConfig.level_;
@@ -150,7 +150,7 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
 
       alpha_->resize(grid_->getSize());
 
-      //DMSystem->rebuildLevelAndIndex();   not implemented
+      // DMSystem->rebuildLevelAndIndex();   not implemented
 
       if (isVerbose_)
         std::cout << "New Grid Size: " << grid_->getSize() << std::endl;
@@ -253,7 +253,7 @@ SGPP::base::DataVector LearnerDensityBasedReg::predict(
     SGPP::base::Grid* lastGrid = NULL;
     SGPP::base::DataVector* lastAlpha = alpha_;
 
-    //Conditionalize for all dimensions, but the last one:
+    // Conditionalize for all dimensions, but the last one:
     for (size_t j = 0; j < dim; j++) {
       OperationDensityConditional* cond =
         SGPP::op_factory::createOperationDensityConditional(
@@ -274,7 +274,7 @@ SGPP::base::DataVector LearnerDensityBasedReg::predict(
       lastAlpha = tempAlpha;
     }
 
-    //Compute conditional expectation:
+    // Compute conditional expectation:
     SGPP::base::OperationFirstMoment* fm =
       SGPP::op_factory::createOperationFirstMoment(*lastGrid);
 
@@ -292,13 +292,12 @@ SGPP::base::DataVector LearnerDensityBasedReg::predict(
 
 void LearnerDensityBasedReg::dumpDensityAtPoint(SGPP::base::DataVector& point,
     std::string fileName, unsigned int resolution) {
-
   size_t dim = point.getSize();
   SGPP::base::Grid* tempGrid = grid_;
   SGPP::base::Grid* lastGrid = NULL;
   SGPP::base::DataVector* lastAlpha = alpha_;
 
-  //Conditionalize for all dimensions, but the last one:
+  // Conditionalize for all dimensions, but the last one:
   for (size_t j = 0; j < dim; j++) {
     OperationDensityConditional* cond =
       SGPP::op_factory::createOperationDensityConditional(*tempGrid);
@@ -323,3 +322,4 @@ void LearnerDensityBasedReg::dumpDensityAtPoint(SGPP::base::DataVector& point,
 
 }  // namespace datadriven
 }  // namespace SGPP
+

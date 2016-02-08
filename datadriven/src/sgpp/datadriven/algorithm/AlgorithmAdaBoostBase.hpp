@@ -21,13 +21,13 @@
 
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <cmath>
 #include <string>
 #include <utility>
 #include <iostream>
 #include <cstdlib>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -35,11 +35,13 @@ namespace datadriven {
 
 /*
  * Algorithm for Adaboosting
- * This algorithm is to train Train base learner according to sample distribution and obtain hypothesis
+ * This algorithm is to train Train base learner according to sample distribution and obtain
+ * hypothesis
  * get the hypothesis weight
  * Then combine hypothesis linearly
  *
- * The main idea behind the algorithm is to get a better accuracy in classify dateset according to the training dataset
+ * The main idea behind the algorithm is to get a better accuracy in classify dateset according
+ * to the training dataset
  *
  */
 class AlgorithmAdaBoostBase {
@@ -49,25 +51,26 @@ class AlgorithmAdaBoostBase {
   /// the size of the grid
   size_t numData;
   /// Pointer to the data matrix
-  SGPP::base::DataMatrix* data;
+  base::DataMatrix* data;
   /// DataSet Dimension
   size_t dim;
   /// Pointer to the class(real value in regression) of the data vector
-  SGPP::base::DataVector* classes;
+  base::DataVector* classes;
   /// Number of base learner for Adaboosting
   size_t numBaseLearners;
   /// the grid
-  SGPP::base::Grid* grid;
-  /// type of grid possible value are 1, 2 or 3(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid);
+  base::Grid* grid;
+  /// type of grid possible value are 1, 2 or 3(1 = Linear Grid, 2 = LinearL0Boundary Grid,
+  /// 3 = ModLinear Grid);
   size_t type;
   /// Number of grid points
   size_t gridPoint;
   /// Number of the maximum grid points used in the algorithm
-  SGPP::base::DataVector* maxGridPoint;
+  base::DataVector* maxGridPoint;
   /// Number of the sum grid points used in the algorithm
-  SGPP::base::DataVector* sumGridPoint;
+  base::DataVector* sumGridPoint;
   /// grid level
-  SGPP::base::HashGenerator::level_t level;
+  base::HashGenerator::level_t level;
   /// Parameter for CG solver(during the refinement)
   size_t imax;
   /// Parameter for CG solver(during the refinement)
@@ -111,16 +114,16 @@ class AlgorithmAdaBoostBase {
   * @param alpha output the coefficients of the sparse grid's basis functions
   * @param final judgement the final step of this base learner
   */
-  virtual void alphaSolver(float_t& lambda, SGPP::base::DataVector& weight,
-                           SGPP::base::DataVector& alpha, bool final) = 0;
+  virtual void alphaSolver(float_t& lambda, base::DataVector& weight,
+                           base::DataVector& alpha, bool final) = 0;
 
  public:
-
   /**
    * Std-Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)
+   * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid,
+   *   3 = ModLinear Grid)
    * @param gridLevel reference to the level of grid
    * @param trainData reference to the training dataset
    * @param trainDataClass reference to the class(real value in regression) of training dataset
@@ -143,13 +146,13 @@ class AlgorithmAdaBoostBase {
   * @param percentOfAda the percentage of Grid points to refine
   * @param mode the adaboost type to choose
    */
-  AlgorithmAdaBoostBase(SGPP::base::Grid& SparseGrid, size_t gridType,
-                        SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData,
-                        SGPP::base::DataVector& trainDataClass, size_t NUM, float_t lambda, size_t IMAX,
+  AlgorithmAdaBoostBase(base::Grid& SparseGrid, size_t gridType,
+                        base::HashGenerator::level_t gridLevel, base::DataMatrix& trainData,
+                        base::DataVector& trainDataClass, size_t NUM, float_t lambda, size_t IMAX,
                         float_t eps, size_t IMAX_final, float_t eps_final, float_t firstLabel,
-                        float_t secondLabel, float_t threshold, float_t maxLambda, float_t minLambda,
-                        size_t searchNum, bool refine, size_t refineMode, size_t refineNum,
-                        size_t numberOfAda, float_t percentOfAda, size_t mode);
+                        float_t secondLabel, float_t threshold, float_t maxLambda,
+                        float_t minLambda, size_t searchNum, bool refine, size_t refineMode,
+                        size_t refineNum, size_t numberOfAda, float_t percentOfAda, size_t mode);
 
 
   /**
@@ -159,86 +162,99 @@ class AlgorithmAdaBoostBase {
 
   /**
    * Performs the Discrete Adaboost
-  *
+   *
   * @param hypoWeight the vector to store hypothesis weights(Alpha-t)
   * @param weightError the vector to store the weight error of each iteration
   * @param weights the matrix to store weights of every training date for every weak learner
   * @param decision the matrix to store the decision right or not according to the true class
   * @param testData reference to the testing dataset
-  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
-  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from
+  *   the algorithm with diff base learners
+  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the
+  *   algorithm with diff base learners
    */
-  void doDiscreteAdaBoost(SGPP::base::DataVector& hypoWeight,
-                          SGPP::base::DataVector& weightError, SGPP::base::DataMatrix& weights,
-                          SGPP::base::DataMatrix& decision, SGPP::base::DataMatrix& testData,
-                          SGPP::base::DataMatrix& algorithmValueTrain,
-                          SGPP::base::DataMatrix& algorithmValueTest);
+  void doDiscreteAdaBoost(base::DataVector& hypoWeight,
+                          base::DataVector& weightError, base::DataMatrix& weights,
+                          base::DataMatrix& decision, base::DataMatrix& testData,
+                          base::DataMatrix& algorithmValueTrain,
+                          base::DataMatrix& algorithmValueTest);
 
   /**
    * Performs the Real Adaboost
   *
   * @param weights the matrix to store weights of every training date for every weak learner
   * @param testData reference to the testing dataset
-  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
-  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from
+  *   the algorithm with diff base learners
+  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the
+  *   algorithm with diff base learners
    */
-  void doRealAdaBoost(SGPP::base::DataMatrix& weights,
-                      SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain,
-                      SGPP::base::DataMatrix& algorithmValueTest);
+  void doRealAdaBoost(base::DataMatrix& weights,
+                      base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
+                      base::DataMatrix& algorithmValueTest);
 
   /**
    * Performs the Adaboost.R2(a regression algorithm)
   *
   * @param weights the matrix to store weights of every training date for every weak learner
   * @param testData reference to the testing dataset
-  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
-  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from
+  *   the algorithm with diff base learners
+  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the
+  *   algorithm with diff base learners
   * @param lossFucType the loss function type(linear, square or exponential)
    */
-  void doAdaBoostR2(SGPP::base::DataMatrix& weights,
-                    SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain,
-                    SGPP::base::DataMatrix& algorithmValueTest, std::string lossFucType);
+  void doAdaBoostR2(base::DataMatrix& weights,
+                    base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
+                    base::DataMatrix& algorithmValueTest, std::string lossFucType);
 
   /**
    * Performs the Adaboost.RT(a regression algorithm)
   *
   * @param weights the matrix to store weights of every training date for every weak learner
   * @param testData reference to the testing dataset
-  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
-  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from
+  *   the algorithm with diff base learners
+  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the
+  *   algorithm with diff base learners
   * @param Tvalue the threshold to demarcate the prediction correctness(only from 0 to 1)
   * @param powerType the error rate power coefficient(linear, square or cubic)
    */
-  void doAdaBoostRT(SGPP::base::DataMatrix& weights,
-                    SGPP::base::DataMatrix& testData, SGPP::base::DataMatrix& algorithmValueTrain,
-                    SGPP::base::DataMatrix& algorithmValueTest, float_t Tvalue,
+  void doAdaBoostRT(base::DataMatrix& weights,
+                    base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
+                    base::DataMatrix& algorithmValueTest, float_t Tvalue,
                     std::string powerType);
 
   /**
    * Performs a real value calculate for the testing dataset
    *
    * @param testData reference to the testing dataset
-  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
-  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+   * @param algorithmValueTrain the matrix reference to the real value of training dataset got from
+   *   the algorithm with diff base learners
+   * @param algorithmValueTest the matrix reference to the real value of testing dataset got from
+   *   the algorithm with diff base learners
    */
-  void eval(SGPP::base::DataMatrix& testData,
-            SGPP::base::DataMatrix& algorithmValueTrain,
-            SGPP::base::DataMatrix& algorithmValueTest);
+  void eval(base::DataMatrix& testData,
+            base::DataMatrix& algorithmValueTrain,
+            base::DataMatrix& algorithmValueTest);
 
   /**
-   * Performs a classify for the testing dataset according to the baselearners get from the algorithm
+   * Performs a classify for the testing dataset according to the baselearners get from the
+   * algorithm
    *
    * @param testData reference to the testing dataset
-  * @param algorithmClassTrain reference to the class of training dataset got from the algorithm
-  * @param algorithmClassTest reference to the class of testing dataset got from the algorithm
-  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
-  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+   * @param algorithmClassTrain reference to the class of training dataset got from the algorithm
+   * @param algorithmClassTest reference to the class of testing dataset got from the algorithm
+   * @param algorithmValueTrain the matrix reference to the real value of training dataset got from
+   *   the algorithm with diff base learners
+   * @param algorithmValueTest the matrix reference to the real value of testing dataset got from
+   *   the algorithm with diff base learners
    */
-  void classif(SGPP::base::DataMatrix& testData,
-               SGPP::base::DataVector& algorithmClassTrain,
-               SGPP::base::DataVector& algorithmClassTest,
-               SGPP::base::DataMatrix& algorithmValueTrain,
-               SGPP::base::DataMatrix& algorithmValueTest);
+  void classif(base::DataMatrix& testData,
+               base::DataVector& algorithmClassTrain,
+               base::DataVector& algorithmClassTest,
+               base::DataMatrix& algorithmValueTrain,
+               base::DataMatrix& algorithmValueTest);
 
   /**
    * Performs an accuracy evaluation for the testing dataset
@@ -246,10 +262,10 @@ class AlgorithmAdaBoostBase {
    * @param testData reference to the testing dataset
    * @param testDataClass reference to the class of testing dataset
    * @param accuracy_train reference to the accuracy for the training dataset
-  * @param accuracy_test reference to the accuracy for the testing dataset
+   * @param accuracy_test reference to the accuracy for the testing dataset
    */
-  void getAccuracy(SGPP::base::DataMatrix& testData,
-                   SGPP::base::DataVector& testDataClass, float_t* accuracy_train,
+  void getAccuracy(base::DataMatrix& testData,
+                   base::DataVector& testDataClass, float_t* accuracy_train,
                    float_t* accuracy_test);
 
   /**
@@ -257,15 +273,15 @@ class AlgorithmAdaBoostBase {
    *
    * @param validationData reference to the validation dataset
    * @param validationDataClass reference to the class of validation dataset
-  * @param acc reference to the accuracy for the validation dataset
-  * @param sensitivity reference to the sensitivity for the validation dataset
-  * @param specificity reference to the specificity for the validation dataset
-  * @param precision reference to the precision for the validation dataset
-  * @param recall reference to the recall for the validation dataset
-  * @param fOneScore reference to the specificity for the validation dataset
+   * @param acc reference to the accuracy for the validation dataset
+   * @param sensitivity reference to the sensitivity for the validation dataset
+   * @param specificity reference to the specificity for the validation dataset
+   * @param precision reference to the precision for the validation dataset
+   * @param recall reference to the recall for the validation dataset
+   * @param fOneScore reference to the specificity for the validation dataset
    */
-  void getROC(SGPP::base::DataMatrix& validationData,
-              SGPP::base::DataVector& validationDataClass, float_t* acc, float_t* sensitivity,
+  void getROC(base::DataMatrix& validationData,
+              base::DataVector& validationDataClass, float_t* acc, float_t* sensitivity,
               float_t* specificity, float_t* precision, float_t* recall, float_t* fOneScore);
 
   /**
@@ -273,16 +289,18 @@ class AlgorithmAdaBoostBase {
    *
    * @param testData reference to the testing dataset
    * @param testDataClass reference to the class of testing dataset
-  * @param algorithmValueTrain the matrix reference to the real value of training dataset got from the algorithm with diff base learners
-  * @param algorithmValueTest the matrix reference to the real value of testing dataset got from the algorithm with diff base learners
+   * @param algorithmValueTrain the matrix reference to the real value of training dataset got from
+   *   the algorithm with diff base learners
+   * @param algorithmValueTest the matrix reference to the real value of testing dataset got from
+   *   the algorithm with diff base learners
    * @param accuracy_train reference to the accuracy for the training dataset
-  * @param accuracy_test reference to the accuracy for the testing dataset
-  * @param yourBaseLearner the number of base learner specified
+   * @param accuracy_test reference to the accuracy for the testing dataset
+   * @param yourBaseLearner the number of base learner specified
    */
-  void getAccuracyBL(SGPP::base::DataMatrix& testData,
-                     SGPP::base::DataVector& testDataClass,
-                     SGPP::base::DataMatrix& algorithmValueTrain,
-                     SGPP::base::DataMatrix& algorithmValueTest, float_t* accuracy_train,
+  void getAccuracyBL(base::DataMatrix& testData,
+                     base::DataVector& testDataClass,
+                     base::DataMatrix& algorithmValueTrain,
+                     base::DataMatrix& algorithmValueTest, float_t* accuracy_train,
                      float_t* accuracy_test, size_t yourBaseLearner);
 
   /**
@@ -292,8 +310,8 @@ class AlgorithmAdaBoostBase {
   * @param weight_ada the weights of examples
   * @param curBaseLearner the current base learner
   */
-  void doRefinement(SGPP::base::DataVector& alpha_ada,
-                    SGPP::base::DataVector& weight_ada, size_t curBaseLearner);
+  void doRefinement(base::DataVector& alpha_ada,
+                    base::DataVector& weight_ada, size_t curBaseLearner);
 
   /**
        * Get the actual base learners after doing adaboosting
@@ -329,8 +347,9 @@ class AlgorithmAdaBoostBase {
    */
   float_t hValue(float_t realValue);
 };
-}
-}
-#endif
 
+}  // namespace datadriven
+}  // namespace SGPP
+
+#endif
 

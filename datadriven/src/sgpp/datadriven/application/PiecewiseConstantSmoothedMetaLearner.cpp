@@ -1,3 +1,7 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 /*
  * DensityRegressionMetaLearner.cpp
  *
@@ -14,6 +18,8 @@
 #include <sgpp/datadriven/tools/DatasetTools.hpp>
 #include <sgpp/datadriven/application/LearnerPiecewiseConstantSmoothedRegression.hpp>
 #include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/OperationPiecewiseConstantRegression.hpp>
+
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -42,9 +48,8 @@ void PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog(
 }
 
 float_t PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog(
-  size_t kFold, size_t maxLevel, float_t fastApproximationMSE,
-  size_t fastApproximationMaxLevel) {
-
+    size_t kFold, size_t maxLevel, float_t fastApproximationMSE,
+    size_t fastApproximationMaxLevel) {
   std::vector<base::DataMatrix> trainingSets;
   std::vector<base::DataVector> trainingSetsValues;
   std::vector<base::DataMatrix> testSets;
@@ -54,13 +59,14 @@ float_t PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog(
                          trainingSetsValues, testSets,
                          testSetsValues);
 
-  //initial values are pure dummy values
+  // initial values are pure dummy values
   float_t bestLambda = 0.0;
   float_t bestMSE = 0.0;
 
   this->optimizeLambdaLog_(kFold, maxLevel, fastApproximationMSE,
                            fastApproximationMaxLevel, trainingSets,
-                           trainingSetsValues, testSets, testSetsValues, 0, 1.0, bestLambda, bestMSE);
+                           trainingSetsValues, testSets, testSetsValues, 0, 1.0,
+                           bestLambda, bestMSE);
   bestLambda = pow(10.0, -bestLambda);
 
   if (verbose) {
@@ -71,15 +77,14 @@ float_t PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog(
   return bestLambda;
 }
 
-void PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog_
-(size_t kFold, size_t maxLevel, float_t fastApproximationMSE,
- size_t fastApproximationMaxLevel, std::vector<base::DataMatrix>& trainingSets,
- std::vector<base::DataVector>& trainingSetsValues,
- std::vector<base::DataMatrix>& testSets,
- std::vector<base::DataVector>& testSetsValues, size_t curLevel,
- float_t lambdaLogStepSize,
- float_t& bestLogLambda, float_t& bestMSE) {
-
+void PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog_(size_t kFold,
+    size_t maxLevel, float_t fastApproximationMSE,
+    size_t fastApproximationMaxLevel, std::vector<base::DataMatrix>& trainingSets,
+    std::vector<base::DataVector>& trainingSetsValues,
+    std::vector<base::DataMatrix>& testSets,
+    std::vector<base::DataVector>& testSetsValues, size_t curLevel,
+    float_t lambdaLogStepSize,
+    float_t& bestLogLambda, float_t& bestMSE) {
   if (verbose) {
     std::cout << "entering level=" << curLevel << " with lambda=" << pow(10.0,
               -bestLogLambda) << std::endl;
@@ -111,10 +116,9 @@ void PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog_
     float_t curMeanMSE = 0.0;
 
     for (size_t j = 0; j < kFold; j++) {
-
       std::shared_ptr<base::Grid> grid;
       std::shared_ptr<base::DataVector> alpha;
-      //compute density
+      // compute density
       train(trainingSets[j], trainingSetsValues[j], curLambda, fastApproximationMSE,
             fastApproximationMaxLevel,
             grid, alpha);
@@ -158,11 +162,10 @@ void PiecewiseConstantSmoothedRegressionMetaLearner::optimizeLambdaLog_
 }
 
 void PiecewiseConstantSmoothedRegressionMetaLearner::train(
-  base::DataMatrix& train, base::DataVector& trainValues, float_t lambda,
-  float_t fastApproximationMSE, size_t fastApproximationMaxLevel,
-  std::shared_ptr<base::Grid>& grid,
-  std::shared_ptr<base::DataVector>& alpha) {
-
+    base::DataMatrix& train, base::DataVector& trainValues, float_t lambda,
+    float_t fastApproximationMSE, size_t fastApproximationMaxLevel,
+    std::shared_ptr<base::Grid>& grid,
+    std::shared_ptr<base::DataVector>& alpha) {
   SGPP::datadriven::OperationPiecewiseConstantRegression
   piecewiseRegressorOperator(train, trainValues);
 
@@ -170,7 +173,8 @@ void PiecewiseConstantSmoothedRegressionMetaLearner::train(
     std::cout << "creating piecewise-constant representation..." << std::endl;
   }
 
-  //    std::unique_ptr<SGPP::datadriven::HistogramTree::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
+  //    std::unique_ptr<SGPP::datadriven::HistogramTree::Node> piecewiseRegressor =
+  //   piecewiseRegressorOperator.hierarchize(
   //            0.0, 30);
   std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node>
   piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
@@ -213,7 +217,8 @@ base::Grid* PiecewiseConstantSmoothedRegressionMetaLearner::createRegularGrid(
   } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
     grid = base::Grid::createLinearBoundaryGrid(dim);
   } else {
-    throw base::application_exception("DensityRegressionMetaLearner::initialize : grid type is not supported");
+    throw base::application_exception("DensityRegressionMetaLearner::initialize : grid type is "
+      "not supported");
   }
 
   base::GridGenerator* gridGen = grid->createGridGenerator();
@@ -246,5 +251,6 @@ float_t PiecewiseConstantSmoothedRegressionMetaLearner::calculateMSE(
   return mse;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

@@ -20,7 +20,7 @@ struct RegularizationConfiguration {
   RegularizationType regType_;
 };
 
-} // datadriven
-} // SGPP
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* REGULARIZATIONCONFIGURATION_HPP_ */

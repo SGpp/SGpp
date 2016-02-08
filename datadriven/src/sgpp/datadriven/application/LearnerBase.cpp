@@ -16,14 +16,16 @@
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 
+#include <iostream>
+#include <utility>
+#include <string>
+#include <vector>
+
 
 namespace SGPP {
-
 namespace datadriven {
 
 LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose) :
@@ -40,7 +42,8 @@ LearnerBase::LearnerBase(const std::string tGridFilename,
   isTrained_(false), execTime_(
     0.0), stepExecTime_(0.0), GFlop_(0.0), stepGFlop_(0.0), GByte_(0.0),
   stepGByte_(0.0), currentRefinementStep(0) {
-  throw base::application_exception("LearnerBase::LearnerBase: This construct isn't implemented, yet!");
+  throw base::application_exception("LearnerBase::LearnerBase: This construct isn't implemented, "
+    "yet!");
 }
 
 LearnerBase::LearnerBase(const LearnerBase& copyMe) {
@@ -85,7 +88,8 @@ void LearnerBase::InitializeGrid(const SGPP::base::RegularGridConfiguration&
     grid_ = new SGPP::base::LinearGrid(GridConfig.dim_);
   } else {
     grid_ = NULL;
-    throw base::application_exception("LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
+    throw base::application_exception("LearnerBase::InitializeGrid: An unsupported grid type was "
+      "chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
@@ -117,11 +121,13 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
                                  const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                                  const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
                                  const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                                 const bool testAccDuringAdapt, const float_t lambdaRegularization) {
+                                 const bool testAccDuringAdapt,
+                                 const float_t lambdaRegularization) {
   LearnerTiming result;
 
   if (trainDataset.getNrows() != classes.getSize()) {
-    throw base::application_exception("LearnerBase::train: length of classes vector does not match to dataset!");
+    throw base::application_exception("LearnerBase::train: length of classes vector does not match "
+      "to dataset!");
   }
 
   result.timeComplete_ = 0.0;
@@ -172,7 +178,8 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
     myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
                                       SolverConfigRefine.eps_);
   } else {
-    throw base::application_exception("LearnerBase::train: An unsupported SLE solver type was chosen!");
+    throw base::application_exception("LearnerBase::train: An unsupported SLE solver type was "
+      "chosen!");
   }
 
   // Pre-Procession
@@ -204,7 +211,7 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
       grid_->createGridGenerator()->refine(myRefineFunc);
       delete myRefineFunc;
 
-      //tell the SLE manager that the grid changed (for interal data structures)
+      // tell the SLE manager that the grid changed (for interal data structures)
       DMSystem->prepareGrid();
 
       alpha_->resizeZero(grid_->getSize());
@@ -351,11 +358,13 @@ float_t LearnerBase::getAccuracy(SGPP::base::DataMatrix& testDataset,
 }
 
 float_t LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
-                                 const SGPP::base::DataVector& classesReference, const float_t threshold) {
+                                 const SGPP::base::DataVector& classesReference,
+                                 const float_t threshold) {
   float_t result = -1.0;
 
   if (classesComputed.getSize() != classesReference.getSize()) {
-    throw base::application_exception("LearnerBase::getAccuracy: lengths of classes vectors do not match!");
+    throw base::application_exception("LearnerBase::getAccuracy: lengths of classes vectors do not "
+      "match!");
   }
 
   if (isRegression_) {
@@ -420,7 +429,7 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(
     } else if ((classesComputed.get(i) >= threshold
                 && classesReference.get(i) < 0.0)) {
       result.falsePositive_++;
-    } else { // ( (classesComputed.get(i) < threshold && classesReference.get(i) >= 0) )
+    } else {  // ( (classesComputed.get(i) < threshold && classesReference.get(i) >= 0) )
       result.falseNegative_++;
     }
   }
@@ -475,6 +484,6 @@ std::shared_ptr<base::DataVector> LearnerBase::getAlphaCopy() {
   return std::shared_ptr<base::DataVector>(new base::DataVector(*this->alpha_));
 }
 
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
-}

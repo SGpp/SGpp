@@ -73,5 +73,6 @@ class PiecewiseConstantSmoothedRegressionSystemMatrix: public
   virtual ~PiecewiseConstantSmoothedRegressionSystemMatrix();
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

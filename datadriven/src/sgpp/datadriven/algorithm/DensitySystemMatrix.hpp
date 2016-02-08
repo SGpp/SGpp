@@ -71,7 +71,7 @@ class DensitySystemMatrix : public SGPP::base::OperationMatrix {
   virtual ~DensitySystemMatrix();
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* DENSITYSYSTEMMATRIX_HPP */

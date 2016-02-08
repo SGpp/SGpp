@@ -18,13 +18,13 @@ namespace SGPP {
 namespace datadriven {
 
 /**
- * Abstract class that defines the virtual class SGPP::base::OperationMatrix for
+ * Abstract class that defines the virtual class base::OperationMatrix for
  * classification and regression problems
  */
-class DMSystemMatrixBase : public SGPP::base::OperationMatrix {
+class DMSystemMatrixBase : public base::OperationMatrix {
  protected:
   /// the dataset
-  SGPP::base::DataMatrix* dataset_;
+  base::DataMatrix* dataset_;
   /// the lambda, the regularisation parameter
   float_t lambda_;
   /// time needed for Mult
@@ -36,7 +36,7 @@ class DMSystemMatrixBase : public SGPP::base::OperationMatrix {
   /// time needed only for the computation of mult transposed, interesting on accelerator boards
   float_t computeTimeMultTrans_;
   /// Stopwatch needed to determine the durations of mult and mult transposed
-  SGPP::base::SGppStopwatch* myTimer_;
+  base::SGppStopwatch* myTimer_;
 
  public:
   /**
@@ -45,15 +45,15 @@ class DMSystemMatrixBase : public SGPP::base::OperationMatrix {
    * @param trainData matrix with training data
    * @param lambda the lambda, the regression parameter
    */
-  DMSystemMatrixBase(SGPP::base::DataMatrix& trainData, float_t lambda);
+  DMSystemMatrixBase(base::DataMatrix& trainData, float_t lambda);
 
   /**
    * Std-Destructor
    */
   virtual ~DMSystemMatrixBase();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result) = 0;
+  virtual void mult(base::DataVector& alpha,
+                    base::DataVector& result) = 0;
 
   /**
    * Generates the right hand side of the classification equation
@@ -61,13 +61,13 @@ class DMSystemMatrixBase : public SGPP::base::OperationMatrix {
    * @param classes the class information of the training data
    * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
    */
-  virtual void generateb(SGPP::base::DataVector& classes,
-                         SGPP::base::DataVector& b) = 0;
+  virtual void generateb(base::DataVector& classes,
+                         base::DataVector& b) = 0;
 
   /**
    * forward declaration
    *
-   * rebuilds the SGPP::base::DataMatrix for Level and Index
+   * rebuilds the base::DataMatrix for Level and Index
    * this routine is needed for supporting adaptiva grids
    * with vectorized high performance kernels
    */
@@ -90,7 +90,7 @@ class DMSystemMatrixBase : public SGPP::base::OperationMatrix {
                          float_t& timeMultTrans, float_t& computeMultTrans);
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* DMSYSTEMMATRIXBASE_HPP */

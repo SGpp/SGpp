@@ -5,14 +5,6 @@
 
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 
-#include <stddef.h>
-#include <algorithm>
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <vector>
-
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
@@ -26,8 +18,34 @@
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
-using namespace std;
-using namespace SGPP::base;
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <vector>
+
+// using namespace std;
+// using namespace SGPP::base;
+
+using SGPP::base::DataVector;
+using SGPP::base::DataMatrix;
+using SGPP::base::Grid;
+using SGPP::base::GridStorage;
+using SGPP::base::OperationMatrix;
+using SGPP::base::SurplusRefinementFunctor;
+using SGPP::base::GridIndex;
+using SGPP::base::OperationEval;
+using SGPP::base::GridGenerator;
+using SGPP::base::GridType;
+using SGPP::base::OperationSecondMoment;
+using SGPP::base::OperationFirstMoment;
+using SGPP::base::OperationMultipleEval;
+
+using std::vector;
+using std::cout;
+using std::endl;
 
 namespace SGPP {
 namespace datadriven {
@@ -146,8 +164,7 @@ void LearnerSGDE::createRegularGrid(Grid*& grid, size_t ndim) {
   } else if (gridConfig.type_ == GridType::LinearBoundary) {
     grid = Grid::createLinearBoundaryGrid(ndim);
   } else {
-    throw application_exception(
-      "LeanerSGDE::initialize : grid type is not supported");
+    throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
   }
 
   GridGenerator* gridGen = grid->createGridGenerator();
@@ -179,7 +196,7 @@ float_t LearnerSGDE::optimizeLambdaCV() {
   }
 
   for (size_t i = 0; i < learnerSGDEConfig.lambdaSteps_; i++) {
-    //compute current lambda
+    // compute current lambda
     curLambda = lambdaStart
                 + static_cast<float_t>(i) * (lambdaEnd - lambdaStart)
                 / static_cast<float_t>(learnerSGDEConfig.lambdaSteps_
@@ -207,9 +224,9 @@ float_t LearnerSGDE::optimizeLambdaCV() {
       // initialize standard grid and alpha vector
       createRegularGrid(grid, getDim());
       alpha = new DataVector(getNsamples());
-      //compute density
+      // compute density
       train(*grid, *alpha, *(kfold_train[j]), curLambda);
-      //get L2 norm of residual for test set
+      // get L2 norm of residual for test set
       curMean = computeResidual(*grid, *alpha, *(kfold_test[j]), 0.0);
       curMeanAcc += curMean;
 
@@ -282,7 +299,7 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
         cout << "# LearnerSGDE: Refine grid ... ";
       }
 
-      //Weight surplus with function evaluation at grid points
+      // Weight surplus with function evaluation at grid points
       OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
       GridIndex* gp;
       DataVector p(dim);
@@ -348,8 +365,7 @@ OperationMatrix* LearnerSGDE::computeRegularizationMatrix(
              == SGPP::datadriven::RegularizationType::Laplace) {
     C = SGPP::op_factory::createOperationLaplace(grid);
   } else {
-    throw application_exception(
-      "LearnerSGDE::train : unknown regularization type");
+    throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }
 
   return C;
@@ -363,9 +379,9 @@ void LearnerSGDE::splitset(vector<DataMatrix*>& strain,
 
   size_t kfold = learnerSGDEConfig.kfold_;
 
-  vector<size_t> s(kfold); // size of partition
-  vector<size_t> ind(kfold + 1); //index of partition
-  size_t n = mydata->getNrows(); //size of data
+  vector<size_t> s(kfold);  // size of partition
+  vector<size_t> ind(kfold + 1);  // index of partition
+  size_t n = mydata->getNrows();  // size of data
 
   if (learnerSGDEConfig.shuffle_) {
     if (learnerSGDEConfig.seed_ == -1)
@@ -383,7 +399,7 @@ void LearnerSGDE::splitset(vector<DataMatrix*>& strain,
     }
   }
 
-  //set size of partitions
+  // set size of partitions
   if (!learnerSGDEConfig.silent_)
     cout << "# kfold: ";
 
@@ -412,9 +428,9 @@ void LearnerSGDE::splitset(vector<DataMatrix*>& strain,
     cout << endl;
   }
 
-  //fill data
+  // fill data
   for (size_t i = 0; i < kfold; i++) {
-    //allocate memory
+    // allocate memory
     strain[i] = new DataMatrix(mydata->getNrows() - s[i],
                                mydata->getNcols());
     stest[i] = new DataMatrix(s[i], mydata->getNcols());
@@ -448,3 +464,4 @@ base::DataVector* LearnerSGDE::getAlpha() {
 
 }  // namespace datadriven
 }  // namespace SGPP
+

@@ -60,5 +60,6 @@ DensitySystemMatrix::~DensitySystemMatrix() {
   delete this->B;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

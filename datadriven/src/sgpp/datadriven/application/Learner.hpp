@@ -10,9 +10,9 @@
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
-
 namespace datadriven {
 
 /**
@@ -61,8 +61,7 @@ class Learner : public LearnerBase {
   virtual ~Learner();
 };
 
-}
-
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* LEARNER_HPP */

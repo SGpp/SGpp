@@ -12,13 +12,16 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <limits>
 
 #include <sgpp/globaldef.hpp>
 
+#include <limits>
+#include <map>
+#include <utility>
+#include <vector>
+
 
 namespace SGPP {
-
 namespace datadriven {
 
 LearnerDensityBased::LearnerDensityBased(SGPP::datadriven::RegularizationType&
@@ -55,7 +58,8 @@ SGPP::datadriven::DMSystemMatrixBase* LearnerDensityBased::createDMSystem(
 void LearnerDensityBased::InitializeGrid(const
     SGPP::base::RegularGridConfiguration& GridConfig) {
   if (this->nrClasses == 0) {
-    throw base::application_exception("LearnerDensityBased::InitializeGrid: Number of classes not set!");
+    throw base::application_exception("LearnerDensityBased::InitializeGrid: Number of classes not "
+      "set!");
   }
 
   if (!gridVec_.empty()) {
@@ -78,7 +82,8 @@ void LearnerDensityBased::InitializeGrid(const
       gridVec_.push_back(new SGPP::base::LinearGrid(GridConfig.dim_));
     } else {
       gridVec_.push_back(NULL);
-      throw base::application_exception("LearnerDensityBased::InitializeGrid: An unsupported grid type was chosen!");
+      throw base::application_exception("LearnerDensityBased::InitializeGrid: An unsupported grid "
+        "type was chosen!");
     }
 
     // Generate regular Grid with LEVELS Levels
@@ -100,7 +105,8 @@ void LearnerDensityBased::InitializeGrid(const
 //    const SGPP::base::AdpativityConfiguration& AdaptConfig,
 //    const bool testAccDuringAdapt, const float_t lambda)
 // {
-//   return train(trainDataset, classes, GridConfig, SolverConfigRefine, SolverConfigFinal, AdaptConfig, testAccDuringAdapt, lambda, true);
+//   return train(trainDataset, classes, GridConfig, SolverConfigRefine, SolverConfigFinal,
+//     AdaptConfig, testAccDuringAdapt, lambda, true);
 // }
 
 
@@ -147,16 +153,16 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
   }
 
   // Pre-Procession
-  //preProcessing();
+  // preProcessing();
 
   if (isVerbose_)
     std::cout << "Starting Learning...." << std::endl;
 
   SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
 
-  int dim = (int)trainDataset.getNcols();
+  int dim = static_cast<int>(trainDataset.getNcols());
 
-  //Compute all occurring class labels and how many data points exist per label:
+  // Compute all occurring class labels and how many data points exist per label:
   std::map<float_t, int> entriesPerClass;
 
   for (unsigned int i = 0; i < classes.getSize(); i++) {
@@ -169,9 +175,9 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     }
   }
 
-  //Create an empty matrix for every class:
+  // Create an empty matrix for every class:
   std::vector<SGPP::base::DataMatrix> trainDataClasses;
-  std::map<float_t, int> class_indeces; //Maps class numbers to indices
+  std::map<float_t, int> class_indeces;  // Maps class numbers to indices
 
   std::map<float_t, int>::iterator it;
   int index = 0;
@@ -182,7 +188,7 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     class_indeces[(*it).first] = index;
     index_to_class_.insert(std::pair<int, float_t>(index, (*it).first));
 
-    //compute prior
+    // compute prior
     if (this->withPrior) {
       prior.push_back(static_cast<float_t>((*it).second) /
                       static_cast<float_t>(classes.getSize()));
@@ -193,7 +199,7 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     index++;
   }
 
-  //Split the data into the different classes:
+  // Split the data into the different classes:
   for (unsigned int i = 0; i < trainDataset.getNrows(); i++) {
     float_t classLabel = classes[i];
     SGPP::base::DataVector vec(dim);
@@ -233,7 +239,7 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
         gridVec_[ii]->createGridGenerator()->refine(myRefineFunc);
         delete myRefineFunc;
 
-        //DMSystem->rebuildLevelAndIndex();   not implemented
+        // DMSystem->rebuildLevelAndIndex();   not implemented
 
         if (isVerbose_)
           std::cout << "New Grid Size[" << ii << "]: " << gridVec_[ii]->getSize() <<
@@ -248,7 +254,7 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     }
 
 
-    //Create regularization operator
+    // Create regularization operator
     if (!CVec_.empty()) {
       for (size_t ii = 0; ii < CVec_.size(); ii++)
         delete CVec_[ii];
@@ -262,11 +268,12 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
       } else if (this->CMode_ == SGPP::datadriven::RegularizationType::Identity) {
         CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]));
       } else {
-        throw base::application_exception("LearnerDensityBased::train: Unknown regularization operator");
+        throw base::application_exception("LearnerDensityBased::train: Unknown regularization "
+          "operator");
       }
     }
 
-    //Solve the system for every class and store coefficients:
+    // Solve the system for every class and store coefficients:
     for (size_t ii = 0; ii < trainDataClasses.size(); ii++) {
       SGPP::datadriven::DensitySystemMatrix DMatrix(*gridVec_[ii],
           trainDataClasses[ii], *(CVec_[ii]), lambda);
@@ -360,7 +367,7 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
 
   delete myStopwatch;
   delete myCG;
-  //delete DMSystem;
+  // delete DMSystem;
 
   return result;
 }
@@ -374,7 +381,7 @@ SGPP::base::DataVector LearnerDensityBased::predict(
       SGPP::base::DataVector p(testDataset.getNcols());
       testDataset.getRow(i, p);
 
-      //Compute maximum of all density functions:
+      // Compute maximum of all density functions:
       std::vector<SGPP::base::DataVector>::iterator it;
       int max_index = -1;
       float_t max = std::numeric_limits<float_t>::min();
@@ -384,7 +391,7 @@ SGPP::base::DataVector LearnerDensityBased::predict(
         SGPP::base::OperationEval* Eval = SGPP::op_factory::createOperationEval(
                                             *gridVec_[class_index]);
         SGPP::base::DataVector alpha = *it;
-        //posterior = likelihood*prior
+        // posterior = likelihood*prior
         float_t res = Eval->eval(alpha, p) * this->prior[class_index];
 
         if (res > max) {
@@ -401,9 +408,8 @@ SGPP::base::DataVector LearnerDensityBased::predict(
 
     return result;
   } else {
-    throw base::data_exception ("Cannot predict. Learner has to be trained first!");
+    throw base::data_exception("Cannot predict. Learner has to be trained first!");
   }
-
 }
 
 time_t LearnerDensityBased::getExecTime() {
@@ -421,6 +427,6 @@ size_t LearnerDensityBased::getNrGridPoints() {
   return maxGrid;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 

@@ -11,4 +11,4 @@
 --align-reference=type
 --mode=c
 --indent=spaces=2
---max-code-length=80
+--max-code-length=100

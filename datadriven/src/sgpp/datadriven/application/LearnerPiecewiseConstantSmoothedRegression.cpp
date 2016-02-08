@@ -5,14 +5,6 @@
 
 #include <sgpp/datadriven/application/LearnerPiecewiseConstantSmoothedRegression.hpp>
 
-#include <stddef.h>
-#include <algorithm>
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
-#include <iostream>
-#include <vector>
-
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
@@ -26,8 +18,26 @@
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/datadriven/algorithm/PiecewiseConstantSmoothedRegressionSystemMatrix.hpp>
 
-using namespace std;
-using namespace SGPP::base;
+#include <stddef.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <vector>
+
+using SGPP::base::GridStorage;
+using SGPP::base::GridGenerator;
+using SGPP::base::DataVector;
+using SGPP::base::OperationMatrix;
+using SGPP::base::Grid;
+using SGPP::base::SurplusRefinementFunctor;
+using SGPP::base::GridIndex;
+using SGPP::base::OperationEval;
+using SGPP::base::application_exception;
+
+using std::endl;
+using std::cout;
 
 namespace SGPP {
 namespace datadriven {
@@ -86,7 +96,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
         cout << "# LearnerDensityRegression: Refine grid ... " << std::endl;
       }
 
-      //Weight surplus with function evaluation at grid points
+      // Weight surplus with function evaluation at grid points
       OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
       GridIndex* gp;
       DataVector p(dim);

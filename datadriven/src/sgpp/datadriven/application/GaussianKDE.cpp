@@ -11,6 +11,8 @@
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <map>
 #include <cstdlib>
 #include <fstream>
@@ -18,12 +20,13 @@
 #include <limits>
 #include <cmath>
 #include <random>
+#include <vector>
 
-#include <sgpp/globaldef.hpp>
-
-using namespace std;
-using namespace SGPP::base;
-using namespace SGPP::datadriven;
+// using namespace std;
+// using namespace base;
+using SGPP::base::DataVector;
+using SGPP::base::DataMatrix;
+// using namespace datadriven;
 
 namespace SGPP {
 namespace datadriven {
@@ -86,11 +89,11 @@ void GaussianKDE::initialize(base::DataMatrix& samples) {
       cond.setAll(1.0);
       sumCond = static_cast<float_t>(nsamples);
     } else {
-      throw new SGPP::base::data_exception(
+      throw new base::data_exception(
         "GaussianKDE::GaussianKDE: KDE needs at least two samples to estimate the bandwidth");
     }
   } else {
-    throw new SGPP::base::data_exception(
+    throw new base::data_exception(
       "GaussianKDE::GaussianKDE: KDE needs at least one dimensional data");
   }
 
@@ -108,7 +111,7 @@ void GaussianKDE::initialize(std::vector<base::DataVector*>& samples) {
       samplesVec.resize(ndim);
 
       for (size_t idim = 0; idim < ndim; idim++) {
-        samplesVec[idim] = new DataVector(*(samples[idim])); // copy
+        samplesVec[idim] = new DataVector(*(samples[idim]));  // copy
       }
 
       // init the bandwidths
@@ -127,11 +130,11 @@ void GaussianKDE::initialize(std::vector<base::DataVector*>& samples) {
       cond.setAll(1.0);
       sumCond = static_cast<float_t>(nsamples);
     } else {
-      throw new data_exception(
+      throw new base::data_exception(
         "GaussianKDE::GaussianKDE : KDE needs at least two samples to estimate the bandwidth");
     }
   } else {
-    throw data_exception(
+    throw base::data_exception(
       "GaussianKDE::GaussianKDE : KDE needs at least one dimensional data");
   }
 }
@@ -157,7 +160,7 @@ DataMatrix* GaussianKDE::getSamples() {
 
 DataVector* GaussianKDE::getSamples(size_t dim) {
   if (dim >= samplesVec.size()) {
-    throw new data_exception("GaussianKDE::getSamples : dim out of range");
+    throw new base::data_exception("GaussianKDE::getSamples : dim out of range");
   }
 
   return samplesVec[dim];
@@ -216,7 +219,7 @@ float_t GaussianKDE::pdf(DataVector& x) {
 void GaussianKDE::cov(DataMatrix& cov) {
   if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
     // throw error -> covariance matrix has wrong size
-    throw new data_exception(
+    throw new base::data_exception(
       "GaussianKDE::cov : covariance matrix has the wrong size");
   }
 
@@ -310,7 +313,7 @@ float_t GaussianKDE::std_deviation() {
 
 void GaussianKDE::computeOptKDEbdwth() {
   if (ndim != bandwidths.getSize()) {
-    throw new data_exception(
+    throw new base::data_exception(
       "GaussianKDE::computeOptKDEbdwth : KDEBdwth dimension error");
   }
 
@@ -426,11 +429,12 @@ void GaussianKDE::updateConditionalizationFactors(base::DataVector& x,
         pcond[isample] *= norm[idim] * std::exp(-(xi * xi) / 2.);
       }
     } else {
-      throw new data_exception(
-        "GaussianKDE::updateConditionalizationFactors : can not conditionalize in non existing dimension");
+      throw new base::data_exception(
+        "GaussianKDE::updateConditionalizationFactors : can not conditionalize in non existing "
+          "dimension");
     }
   }
 }
 
 }  // namespace datadriven
-}  // namespace sg
+}  // namespace SGPP

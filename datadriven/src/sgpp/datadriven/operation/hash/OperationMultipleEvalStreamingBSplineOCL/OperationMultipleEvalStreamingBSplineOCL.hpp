@@ -44,17 +44,15 @@ class OperationMultiEvalStreamingBSplineOCL: public
   std::shared_ptr<base::OCLManager> manager;
   std::unique_ptr<StreamingBSplineOCLKernelImpl<T>> kernel;
  public:
-
   OperationMultiEvalStreamingBSplineOCL(base::Grid& grid,
                                         base::DataMatrix& dataset,
                                         std::shared_ptr<base::OCLOperationConfiguration> parameters) :
     OperationMultipleEval(grid, dataset), preparedDataset(dataset),
-    parameters(parameters), myTimer(
-      SGPP::base::SGppStopwatch()), duration(-1.0) {
-
+    parameters(parameters), myTimer(SGPP::base::SGppStopwatch()), duration(-1.0) {
+    
     this->manager = std::make_shared<base::OCLManager>(parameters);
 
-    this->dims = dataset.getNcols(); //be aware of transpose!
+    this->dims = dataset.getNcols(); // be aware of transpose!
     this->kernel = std::unique_ptr<StreamingBSplineOCLKernelImpl<T>>(
                      new StreamingBSplineOCLKernelImpl<T>(dims,
                          dynamic_cast<base::BsplineGrid&>(grid).getDegree(),
@@ -75,7 +73,7 @@ class OperationMultiEvalStreamingBSplineOCL: public
       this->kernelDataset[i] = (T) this->preparedDataset[i];
     }
 
-    //create the kernel specific data structures
+    // create the kernel specific data structures
     this->prepare();
   }
 

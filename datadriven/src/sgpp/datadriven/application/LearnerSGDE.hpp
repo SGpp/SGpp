@@ -17,30 +17,33 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace SGPP {
 namespace datadriven {
 
 struct LearnerSGDEConfiguration {
   // parameters for cross-validation
-  bool doCrossValidation_; // enables cross-validation
-  size_t kfold_; // number of batches for cross validation
-  int seed_; // seed for randomized k-fold
-  bool shuffle_; // randomized/sequential k-fold
-  bool silent_; // verbosity
+  bool doCrossValidation_;  // enables cross-validation
+  size_t kfold_;  // number of batches for cross validation
+  int seed_;  // seed for randomized k-fold
+  bool shuffle_;  // randomized/sequential k-fold
+  bool silent_;  // verbosity
 
   // regularization parameter optimization
-  float_t lambda_; // regularization parameter
+  float_t lambda_;  // regularization parameter
   float_t lambdaStart_;  // lower bound for lambda search range
-  float_t lambdaEnd_; // upper bound for lambda search range
-  size_t lambdaSteps_; // number of lambdas to be tested within the range defined by lambdaStart and lambdaEdns; must be > 1
-  bool logScale_; // search the optimization interval on a log-scale
+  float_t lambdaEnd_;  // upper bound for lambda search range
+  // number of lambdas to be tested within the range defined by lambdaStart and lambdaEdns;
+  // must be > 1
+  size_t lambdaSteps_;
+  bool logScale_;  // search the optimization interval on a log-scale
 };
 
 // --------------------------------------------------------------------------
 
 class LearnerSGDE: public datadriven::DensityEstimator {
  public:
-
   /**
    * Constructor
    *
@@ -128,7 +131,6 @@ class LearnerSGDE: public datadriven::DensityEstimator {
   virtual SGPP::base::GridStorage* getGridStorage();
 
  protected:
-
   /**
    * Does the learning step on a given grid, training set and regularization parameter lambda
    *
@@ -200,3 +202,4 @@ class LearnerSGDE: public datadriven::DensityEstimator {
 }  // namespace SGPP
 
 #endif /* LEARNERSGDE_HPP_ */
+

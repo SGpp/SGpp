@@ -20,7 +20,7 @@ DMWeightMatrix::DMWeightMatrix(SGPP::base::Grid& SparseGrid,
   this->C = &C;
   this->lamb = lambda;
   this->data = &trainData;
-  //this->B = SparseGrid.createOperationMultipleEval(this->data);
+  // this->B = SparseGrid.createOperationMultipleEval(this->data);
   this->B = SGPP::op_factory::createOperationMultipleEval(SparseGrid,
             *(this->data));
   this->weight = &w;
@@ -34,7 +34,7 @@ DMWeightMatrix::~DMWeightMatrix() {
 void DMWeightMatrix::mult(SGPP::base::DataVector& alpha,
                           SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp((*data).getNrows());
-  //size_t M = (*data).getNrows();
+  // size_t M = (*data).getNrows();
   //// Operation B
   this->B->mult(alpha, temp);
   temp.componentwise_mult(*weight);
@@ -53,5 +53,5 @@ void DMWeightMatrix::generateb(SGPP::base::DataVector& classes,
   this->B->multTranspose(myClassesWithWeights, b);
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
