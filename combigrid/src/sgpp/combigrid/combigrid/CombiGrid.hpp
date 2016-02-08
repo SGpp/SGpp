@@ -268,7 +268,7 @@ class CombiGrid {
                                    std::vector<double> max,
                                    combigrid::AbstractStretchingMaker* stretching) {
 
-    for (int g = 0; g < this->getNrFullGrids(); g++) {
+    for (unsigned int g = 0; g < this->getNrFullGrids(); g++) {
       if (getFullGrid(g)->isActive()) {
         FullGrid<_Tp>* fg = getFullGrid(g)->fg();
         GridDomain* domain = fg->getDomain();
