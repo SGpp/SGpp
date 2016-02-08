@@ -18,72 +18,75 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 
-    class LearnerPiecewiseConstantSmoothedRegression {
-      private:
+class LearnerPiecewiseConstantSmoothedRegression {
+ private:
 
-        SGPP::base::RegularGridConfiguration gridConfig;
+  SGPP::base::RegularGridConfiguration gridConfig;
 
-        SGPP::base::AdpativityConfiguration adaptivityConfig;
+  SGPP::base::AdpativityConfiguration adaptivityConfig;
 
-        SGPP::solver::SLESolverConfiguration solverConfig;
+  SGPP::solver::SLESolverConfiguration solverConfig;
 
-        SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
 
-        bool verbose;
-      public:
+  bool verbose;
+ public:
 
-        /**
-         * Constructor
-         *
-         * @param gridConfig grid configuration
-         * @param adaptivityConfig adaptive refinement configuration
-         * @param solverConfig solver configuration (CG)
-         * @param regularizationConfig config for regularization operator
-         * @param verbose report additional information on the console
-         */
-        LearnerPiecewiseConstantSmoothedRegression(SGPP::base::RegularGridConfiguration& gridConfig,
-            SGPP::base::AdpativityConfiguration& adaptivityConfig,
-            SGPP::solver::SLESolverConfiguration& solverConfig,
-            SGPP::datadriven::RegularizationConfiguration& regularizationConfig, bool verbose);
+  /**
+   * Constructor
+   *
+   * @param gridConfig grid configuration
+   * @param adaptivityConfig adaptive refinement configuration
+   * @param solverConfig solver configuration (CG)
+   * @param regularizationConfig config for regularization operator
+   * @param verbose report additional information on the console
+   */
+  LearnerPiecewiseConstantSmoothedRegression(SGPP::base::RegularGridConfiguration&
+      gridConfig,
+      SGPP::base::AdpativityConfiguration& adaptivityConfig,
+      SGPP::solver::SLESolverConfiguration& solverConfig,
+      SGPP::datadriven::RegularizationConfiguration& regularizationConfig,
+      bool verbose);
 
-        /**
-         * Does the learning step on a given grid, training set and regularization parameter lambda
-         *
-         * @param piecewiseRegressor
-         * @param grid grid
-         * @param alpha coefficient vector
-         * @param lambda regularization parameter
-         */
-        void train(SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor, SGPP::base::Grid& grid,
-                   SGPP::base::DataVector& alpha, float_t lambda);
+  /**
+   * Does the learning step on a given grid, training set and regularization parameter lambda
+   *
+   * @param piecewiseRegressor
+   * @param grid grid
+   * @param alpha coefficient vector
+   * @param lambda regularization parameter
+   */
+  void train(SGPP::datadriven::PiecewiseConstantRegression::Node&
+             piecewiseRegressor, SGPP::base::Grid& grid,
+             SGPP::base::DataVector& alpha, float_t lambda);
 
-        /**
-         * generates the regularization matrix
-         * @param grid grid
-         */
-        SGPP::base::OperationMatrix* computeRegularizationMatrix(
-          SGPP::base::Grid& grid);
+  /**
+   * generates the regularization matrix
+   * @param grid grid
+   */
+  SGPP::base::OperationMatrix* computeRegularizationMatrix(
+    SGPP::base::Grid& grid);
 
-        /**
-         * Does cross-validation to obtain a suitable regularization parameter
-         */
-        float_t optimizeLambdaCV(size_t kFold);
+  /**
+   * Does cross-validation to obtain a suitable regularization parameter
+   */
+  float_t optimizeLambdaCV(size_t kFold);
 
-        /**
-         * splits the complete sample set in a set of smaller training and test
-         * samples for cross-validation.
-         *
-         * @param strain vector containing the training samples for cv
-         * @param stest vector containing the test samples for cv
-         */
-        void splitset(std::vector<SGPP::base::DataMatrix*>& strain,
-                      std::vector<SGPP::base::DataMatrix*>& stest);
+  /**
+   * splits the complete sample set in a set of smaller training and test
+   * samples for cross-validation.
+   *
+   * @param strain vector containing the training samples for cv
+   * @param stest vector containing the test samples for cv
+   */
+  void splitset(std::vector<SGPP::base::DataMatrix*>& strain,
+                std::vector<SGPP::base::DataMatrix*>& stest);
 
-    };
+};
 
-  } /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP

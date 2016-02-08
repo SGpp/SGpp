@@ -62,5 +62,5 @@ IndexInSubspaceGenerator* IndexInSubspaceGenerator::next_() {
 
 
 
-} /* namespace base */
-} /* namespace sg */
+}  // namespace base
+}  // namespace sg

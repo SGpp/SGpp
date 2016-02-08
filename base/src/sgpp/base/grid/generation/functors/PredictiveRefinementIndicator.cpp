@@ -137,5 +137,5 @@ float_t PredictiveRefinementIndicator::operator()(GridStorage* storage,
 
 
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP

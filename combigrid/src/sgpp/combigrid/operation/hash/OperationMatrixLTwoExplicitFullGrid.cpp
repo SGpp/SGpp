@@ -95,4 +95,4 @@ void OperationMatrixLTwoExplicitFullGrid::mult(SGPP::base::DataVector& alpha,
   }
 }
 
-} /* namespace combigrid */
+}  // namespace combigrid

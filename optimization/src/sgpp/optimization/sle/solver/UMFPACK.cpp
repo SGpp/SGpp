@@ -41,7 +41,8 @@ bool solveInternal(void* numeric, const std::vector<sslong>& Ap,
   const size_t n = b.getSize();
 
 #if USE_DOUBLE_PRECISION
-  x = std::vector<double>(n, 0.0);
+  x.resize(n);
+  x.setAll(0.0);
 
   sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0],
                                    &Ax[0], x.getPointer(), b.getPointer(),

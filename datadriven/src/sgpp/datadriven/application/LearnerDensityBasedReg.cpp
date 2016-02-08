@@ -321,5 +321,5 @@ void LearnerDensityBasedReg::dumpDensityAtPoint(SGPP::base::DataVector& point,
   myPlotter.printGrid(*lastAlpha, fileName, resolution);
 }
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP

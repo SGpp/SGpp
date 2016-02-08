@@ -1,15 +1,15 @@
-/*
- * ConfigurationParameterParser.cpp
- *
- *  Created on: Mar 25, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <map>
+#include <string>
 
 namespace SGPP {
 namespace base {
@@ -58,12 +58,12 @@ OCLConfigurationParameters::OCLConfigurationParameters() {
 }
 
 OCLConfigurationParameters::~OCLConfigurationParameters() {
-
 }
 
 std::shared_ptr<ConfigurationParameters> OCLConfigurationParameters::clone() {
   return std::make_shared<OCLConfigurationParameters>(*this);
-  //        return std::shared_ptr<ConfigurationParameters>(new OCLConfigurationParameters(*this));
+  // return std::shared_ptr<ConfigurationParameters>(
+  // new OCLConfigurationParameters(*this));
 }
 
 }  // namespace base

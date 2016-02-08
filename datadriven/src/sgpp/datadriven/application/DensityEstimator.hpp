@@ -42,7 +42,7 @@ class DensityEstimator {
   base::DataMatrix samples;
 };
 
-} /* namespace datadriven */
-} /* namespace sg */
+}  // namespace datadriven
+}  // namespace sg
 
 #endif /* DENSITYESTIMATOR_HPP_ */

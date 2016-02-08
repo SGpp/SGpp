@@ -36,5 +36,5 @@ float_t OperationNaiveEvalPoly::eval(const DataVector& alpha,
   return result;
 }
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP

@@ -156,6 +156,6 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   DataVector* alpha_;
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 #endif /* ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_ */

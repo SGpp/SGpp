@@ -87,5 +87,5 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::mult(
   }
 }
 
-} /* namespace pde */
-} /* namespace SGPP */
+}  // namespace pde
+}  // namespace SGPP

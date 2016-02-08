@@ -89,7 +89,7 @@ class SubspaceGenerator {
 
 };
 
-} /* namespace base */
-} /* namespace sg */
+}  // namespace base
+}  // namespace sg
 
 #endif /* SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_ */

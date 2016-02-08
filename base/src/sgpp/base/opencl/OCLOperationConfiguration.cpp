@@ -1,18 +1,17 @@
-/*
- * ConfigurationParser.hpp
- *
- *  Created on: Mar 25, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+
+#include <string>
 
 namespace SGPP {
 namespace base {
 
 OCLOperationConfiguration::OCLOperationConfiguration():
   OperationConfiguration() {
-
   // augment default values to configuration
   //        this->addIDAttr("LOCAL_SIZE", 64ul);
   //        this->addIDAttr("ENABLE_OPTIMIZATIONS", true);
@@ -28,7 +27,6 @@ OCLOperationConfiguration::OCLOperationConfiguration():
   //        this->addIDAttr("OCL_MANAGER_VERBOSE", false);
   ////        this->addIDAttr("LOAD_BALANCING_VERBOSE", false);
   //        this->addIDAttr("SHOW_BUILD_LOG", false);
-
 }
 
 OCLOperationConfiguration::OCLOperationConfiguration(const std::string&

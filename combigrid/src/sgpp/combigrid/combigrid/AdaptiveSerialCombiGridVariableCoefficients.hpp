@@ -26,5 +26,5 @@ class AdaptiveSerialCombiGridVariableCoefficients: public
   void changeCoefficients(int i, double newCoef);
 };
 
-} /* namespace combigrid */
+}  // namespace combigrid
 #endif /* ADAPTIVESERIALCOMBIGRIDVARIABLECOEFFICIENTS_HPP_ */

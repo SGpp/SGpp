@@ -1,9 +1,7 @@
-/*
- * LinearLoadBalancer.hpp
- *
- *  Created on: Mar 30, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -20,15 +18,18 @@ class LinearLoadBalancer {
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
   double* weights;
   double* partition;
+
  public:
-  LinearLoadBalancer(std::shared_ptr<OCLManager> manager,
-                     std::shared_ptr<base::OCLOperationConfiguration> parameters) :
+  LinearLoadBalancer(
+    std::shared_ptr<OCLManager> manager,
+    std::shared_ptr<base::OCLOperationConfiguration> parameters) :
     deviceCount(manager->num_devices), parameters(parameters) {
     this->weights = new double[manager->num_devices];
     this->partition = new double[manager->num_devices];
 
     for (size_t i = 0; i < manager->num_devices; i++) {
-      //initialize with same timing to enforce equal problem sizes in the beginning
+      // initialize with same timing to
+      // enforce equal problem sizes in the beginning
       this->partition[i] = 1.0 / static_cast<double>(manager->num_devices);
     }
   }
@@ -51,7 +52,8 @@ class LinearLoadBalancer {
 
     if (totalSize % blockSize != 0) {
       throw SGPP::base::operation_exception(
-        "totalSize must be divisible by blockSize without remainder, but it is not!");
+        "totalSize must be divisible by blockSize without remainder, "
+        "but it is not!");
     }
 
     size_t currentStartIndex = start;
@@ -64,12 +66,13 @@ class LinearLoadBalancer {
         partitionElements = 1;
       }
 
-      //last device has to ensure that all data is in one partition
-      if (currentStartIndex + partitionElements > end || i == this->deviceCount - 1) {
+      // last device has to ensure that all data is in one partition
+      if (currentStartIndex + partitionElements > end ||
+          i == this->deviceCount - 1) {
         partitionElements = end - currentStartIndex;
       }
 
-      //employ padding
+      // employ padding
       size_t remainder = partitionElements % blockSize;
       size_t padding = 0;
 
@@ -83,25 +86,25 @@ class LinearLoadBalancer {
       segmentEnd[i] = currentStartIndex + partitionElements;
 
       if (setVerboseLoadBalancing) {
-        std::cout << "device: " << i << " from: " << segmentStart[i] << " to: " <<
-                  segmentEnd[i] << std::endl;
+        std::cout << "device: " << i << " from: " << segmentStart[i] <<
+                  " to: " << segmentEnd[i] << std::endl;
       }
 
       currentStartIndex += partitionElements;
     }
   }
 
-  //TODO: consider inactive device due to nothing to do?
+  // TODO(pfandedd): consider inactive device due to nothing to do?
   void update(double* timings) {
     bool setVerboseLoadBalancing =
       (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
 
-    //recalculate weights
+    // recalculate weights
     for (size_t i = 0; i < this->deviceCount; i++) {
       weights[i] = timings[i] / partition[i];
     }
 
-    //calculate the optimal duration
+    // calculate the optimal duration
     double t = 0.0;
 
     for (size_t i = 0; i < this->deviceCount; i++) {
@@ -114,7 +117,7 @@ class LinearLoadBalancer {
       std::cout << "t: " << t << std::endl;
     }
 
-    //calculate optimal partition
+    // calculate optimal partition
     for (size_t i = 0; i < this->deviceCount; i++) {
       if (t == 0.0) {
         partition[i] = 1.0 / static_cast<double>(this->deviceCount);
@@ -128,7 +131,6 @@ class LinearLoadBalancer {
       }
     }
   }
-
 };
 
 }  // namespace base

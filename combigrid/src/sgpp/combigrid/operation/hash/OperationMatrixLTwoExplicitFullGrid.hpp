@@ -58,4 +58,4 @@ class OperationMatrixLTwoExplicitFullGrid: public SGPP::base::OperationMatrix {
   bool ownsMatrix_;
 };
 
-} /* namespace combigrid */
+}  // namespace combigrid

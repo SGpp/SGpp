@@ -67,7 +67,7 @@ class OperationDensityConditionalKDE {
   datadriven::GaussianKDE* kde;
 };
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* OPERATIONDENSITYCONDITIONALKDE_HPP_ */

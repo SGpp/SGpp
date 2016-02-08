@@ -75,7 +75,7 @@ class GaussianKDE: public DensityEstimator {
   float_t getSampleStd(base::DataVector& data);
 };
 
-} /* namespace datadriven */
-} /* namespace sg */
+}  // namespace datadriven
+}  // namespace sg
 
 #endif /* GAUSSIANGAUSSIANKDE_HPP_ */

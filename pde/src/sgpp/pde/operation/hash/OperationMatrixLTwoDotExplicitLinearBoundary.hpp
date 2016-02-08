@@ -63,6 +63,6 @@ class OperationMatrixLTwoDotExplicitLinearBoundary: public
   bool ownsMatrix_;
 };
 
-} /* namespace pde */
-} /* namespace SGPP */
+}  // namespace pde
+}  // namespace SGPP
 #endif /* OperationMatrixLTwoDotExplicitLinearBoundary_HPP_ */

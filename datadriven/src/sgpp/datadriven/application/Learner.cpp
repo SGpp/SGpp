@@ -22,7 +22,8 @@ Learner::Learner(SGPP::datadriven::RegularizationType& regularization,
 }
 
 Learner::Learner(const std::string tGridFilename,
-                 const std::string tAlphaFilename, SGPP::datadriven::RegularizationType& regularization,
+                 const std::string tAlphaFilename,
+                 SGPP::datadriven::RegularizationType& regularization,
                  const bool isRegression, const bool verbose)
   : LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
     CMode_(regularization), C_(NULL) {

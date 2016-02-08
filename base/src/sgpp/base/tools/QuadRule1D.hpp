@@ -29,7 +29,7 @@ class QuadRule1D {
   std::vector<DataVector*> weights;
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* QUADRULE1D_HPP_ */

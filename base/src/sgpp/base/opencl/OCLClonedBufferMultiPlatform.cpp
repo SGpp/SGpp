@@ -1,17 +1,16 @@
-/*
- * OCLMemory.cpp
- *
- *  Created on: Mar 30, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
-
-#include <sstream>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
+
+#include <sstream>
+#include <map>
 
 namespace SGPP {
 namespace base {
@@ -37,42 +36,46 @@ cl_mem* OCLClonedBufferMultiPlatform::getBuffer(cl_platform_id platformId,
   return &(this->platformBufferList[platformId][deviceIndex]);
 }
 
-//TODO: current multidevice strategy: allocate everything everywere, use only range specified for device
+// TODO(pfandedd): current multidevice strategy:
+// allocate everything everywere, use only range specified for device
 
 void OCLClonedBufferMultiPlatform::writeToBuffer(void* hostData,
     size_t* offsets) {
   cl_int err;
 
   std::map<cl_platform_id, cl_event*> platformActionEvents;
-  //cl_event* actionDone = new cl_event[this->manager->overallDeviceCount];
+  // cl_event* actionDone = new cl_event[this->manager->overallDeviceCount];
 
-  //size_t actionIndex = 0;
+  // size_t actionIndex = 0;
   for (OCLPlatformWrapper& platform : this->manager->platforms) {
     platformActionEvents[platform.platformId] = new
     cl_event[platform.getDeviceCount()];
 
     for (size_t i = 0; i < platform.getDeviceCount(); i++) {
       if (offsets == nullptr) {
-        err = clEnqueueWriteBuffer(platform.commandQueues[i],
-                                   this->platformBufferList[platform.platformId][i],
-                                   CL_FALSE, 0, this->sizeofType * this->elements, hostData, 0, nullptr,
-                                   &(platformActionEvents[platform.platformId][i]));
+        err = clEnqueueWriteBuffer(
+                platform.commandQueues[i],
+                this->platformBufferList[platform.platformId][i],
+                CL_FALSE, 0, this->sizeofType * this->elements, hostData,
+                0, nullptr, &(platformActionEvents[platform.platformId][i]));
       } else {
-        err = clEnqueueWriteBuffer(platform.commandQueues[i],
-                                   this->platformBufferList[platform.platformId][i],
-                                   CL_FALSE, this->sizeofType * offsets[i], this->sizeofType * this->elements,
-                                   hostData, 0, nullptr,
-                                   &(platformActionEvents[platform.platformId][i]));
+        err = clEnqueueWriteBuffer(
+                platform.commandQueues[i],
+                this->platformBufferList[platform.platformId][i],
+                CL_FALSE, this->sizeofType * offsets[i],
+                this->sizeofType * this->elements, hostData, 0, nullptr,
+                &(platformActionEvents[platform.platformId][i]));
       }
 
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to enqueue write buffer command! Error code: "
+        errorString << "OCL Error: Failed to enqueue write buffer command! "
+                    "Error code: "
                     << err << std::endl;
         throw SGPP::base::operation_exception(errorString.str());
       }
 
-      //actionIndex += 1;
+      // actionIndex += 1;
     }
   }
 
@@ -106,21 +109,26 @@ void OCLClonedBufferMultiPlatform::readFromBuffer(void* hostData,
     // read data back
     for (size_t i = 0; i < platform.getDeviceCount(); i++) {
       if (offsets == nullptr) {
-        err = clEnqueueReadBuffer(platform.commandQueues[i],
-                                  this->platformBufferList[platform.platformId][i],
-                                  CL_FALSE, 0, this->sizeofType * this->elements, hostData, 0, nullptr,
-                                  &(platformActionEvents[platform.platformId][i]));
+        err = clEnqueueReadBuffer(
+                platform.commandQueues[i],
+                this->platformBufferList[platform.platformId][i],
+                CL_FALSE, 0, this->sizeofType * this->elements, hostData, 0,
+                nullptr, &(platformActionEvents[platform.platformId][i]));
       } else {
-        err = clEnqueueReadBuffer(platform.commandQueues[i],
-                                  this->platformBufferList[platform.platformId][i],
-                                  CL_FALSE, this->sizeofType * offsets[i], this->sizeofType * ranges[i],
-                                  static_cast<char*>(hostData) + (this->sizeofType * offsets[i]), 0, nullptr,
-                                  &(platformActionEvents[platform.platformId][i]));
+        err = clEnqueueReadBuffer(
+                platform.commandQueues[i],
+                this->platformBufferList[platform.platformId][i],
+                CL_FALSE, this->sizeofType * offsets[i],
+                this->sizeofType * ranges[i],
+                static_cast<char*>(hostData) +
+                (this->sizeofType * offsets[i]), 0,
+                nullptr, &(platformActionEvents[platform.platformId][i]));
       }
 
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to enqueue read buffer command! Error code: "
+        errorString << "OCL Error: Failed to enqueue read buffer command! "
+                    "Error code: "
                     << err << std::endl;
         throw SGPP::base::operation_exception(errorString.str());
       }
@@ -143,7 +151,7 @@ void OCLClonedBufferMultiPlatform::readFromBuffer(void* hostData,
   }
 }
 
-//TODO: read/write-flags
+// TODO(pfandedd): read/write-flags
 
 void OCLClonedBufferMultiPlatform::initializeBuffer(void* initialValues,
     size_t sizeofType, size_t elements) {
@@ -155,16 +163,19 @@ void OCLClonedBufferMultiPlatform::initializeBuffer(void* initialValues,
     for (size_t i = 0; i < platform.getDeviceCount(); i++) {
       if (initialValues != nullptr) {
         bufferList[i] = clCreateBuffer(platform.context,
-                                       CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeofType * elements, initialValues,
+                                       CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+                                       sizeofType * elements, initialValues,
                                        &err);
       } else {
         bufferList[i] = clCreateBuffer(platform.context,
-                                       CL_MEM_READ_ONLY, sizeofType * elements, nullptr, &err);
+                                       CL_MEM_READ_ONLY, sizeofType * elements,
+                                       nullptr, &err);
       }
 
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Could not allocate buffer! Error code: " << err <<
+        errorString << "OCL Error: Could not allocate buffer! "
+                    "Error code: " << err <<
                     std::endl;
         throw SGPP::base::operation_exception(errorString.str());
       }
@@ -180,7 +191,7 @@ void OCLClonedBufferMultiPlatform::initializeBuffer(void* initialValues,
 
 void OCLClonedBufferMultiPlatform::freeBuffer() {
   if (!this->initialized) {
-    //permitted to allow for easy kernel resets
+    // permitted to allow for easy kernel resets
     return;
   }
 
@@ -188,7 +199,8 @@ void OCLClonedBufferMultiPlatform::freeBuffer() {
     if (this->platformBufferList[platform.platformId] == nullptr) {
       std::stringstream errorString;
       errorString <<
-                  "OCL Error: OCLClonedBufferMultiPlatform in partially initialized state: platform buffer list is null"
+                  "OCL Error: OCLClonedBufferMultiPlatform in partially "
+                  "initialized state: platform buffer list is null"
                   << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
@@ -202,7 +214,8 @@ void OCLClonedBufferMultiPlatform::freeBuffer() {
       } else {
         std::stringstream errorString;
         errorString <<
-                    "OCL Error: OCLClonedBufferMultiPlatform in partially initialized state: device buffer is null"
+                    "OCL Error: OCLClonedBufferMultiPlatform in partially "
+                    "initialized state: device buffer is null"
                     << std::endl;
         throw SGPP::base::operation_exception(errorString.str());
       }

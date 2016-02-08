@@ -1,17 +1,15 @@
-/*
- * OCLReadOnlyBuffer.cpp
- *
- *  Created on: Oct 9, 2015
- *      Author: leiterrl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
-
-#include <sstream>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
+
+#include <sstream>
 #include <cstring>
 
 namespace SGPP {
@@ -19,7 +17,6 @@ namespace base {
 
 OCLZeroCopyBuffer::OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager) :
   m_manager(manager) {
-
   m_initialized = false;
   m_mappedHostBuffer = nullptr;
   m_sizeofType = 0;
@@ -38,33 +35,38 @@ cl_mem* OCLZeroCopyBuffer::getBuffer(size_t deviceNumber) {
   return &(m_hostBuffer);
 }
 
-//TODO: current multidevice strategy: allocate everything everywere, use only range specified for device
+// TODO(pfandedd): current multidevice strategy:
+// allocate everything everywere, use only range specified for device
 
 void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
   cl_int err;
 
   m_mappedHostBuffer = clEnqueueMapBuffer(m_manager->command_queue[0],
                                           m_hostBuffer, CL_TRUE,
-                                          CL_MAP_WRITE, 0, m_sizeofType * m_elements, 0, nullptr, nullptr, &err);
+                                          CL_MAP_WRITE, 0,
+                                          m_sizeofType * m_elements, 0,
+                                          nullptr, nullptr, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString <<
-                "OCL Error: Failed to enqueue map buffer command when trying to write! Error code: "
+                "OCL Error: Failed to enqueue map buffer command when "
+                "trying to write! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if ( m_mappedHostBuffer == nullptr )
-    throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
+    throw std::runtime_error(
+      "OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
 
   /*for ( int i = 0; i < m_elements; i++)
   {
       printf("hostData[%i]: %i \n", i, *((uint32_t*)hostData + 0x4*i));
   }*/
 
-  //uint32_t* testArray = new uint32_t[m_elements];
-  //memcpy(m_mappedHostBuffer, testArray, m_sizeofType*m_elements);
+  // uint32_t* testArray = new uint32_t[m_elements];
+  // memcpy(m_mappedHostBuffer, testArray, m_sizeofType*m_elements);
 
   memcpy(m_mappedHostBuffer, hostData, m_sizeofType * m_elements);
 
@@ -75,11 +77,11 @@ void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString <<
-                "OCL Error: Failed to enqueue unmap memobject command when trying to write! Error code: "
+                "OCL Error: Failed to enqueue unmap memobject command "
+                "when trying to write! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
-
 }
 
 void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
@@ -87,18 +89,22 @@ void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
 
   m_mappedHostBuffer = clEnqueueMapBuffer(m_manager->command_queue[0],
                                           m_hostBuffer, CL_TRUE,
-                                          CL_MAP_READ, 0, m_sizeofType * m_elements, 0, nullptr, nullptr, &err);
+                                          CL_MAP_READ, 0,
+                                          m_sizeofType * m_elements, 0,
+                                          nullptr, nullptr, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString <<
-                "OCL Error: Failed to enqueue map buffer command when trying to read! Error code: "
+                "OCL Error: Failed to enqueue map buffer command "
+                "when trying to read! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if ( m_mappedHostBuffer == nullptr )
-    throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
+    throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer "
+                             "mappedHostBuffer == NULL");
 
   memcpy(hostData, m_mappedHostBuffer, m_sizeofType * m_elements);
 
@@ -109,18 +115,19 @@ void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString <<
-                "OCL Error: Failed to enqueue unmap memobject command when trying to read! Error code: "
+                "OCL Error: Failed to enqueue unmap memobject command "
+                "when trying to read! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 }
 
-//read/write-flags are missing
+// read/write-flags are missing
 void OCLZeroCopyBuffer::initializeBuffer(void* initialValues, size_t sizeofType,
     size_t elements, bool readOnly) {
   cl_int err;
 
-  unsigned long int flags = CL_MEM_ALLOC_HOST_PTR;
+  cl_mem_flags flags = CL_MEM_ALLOC_HOST_PTR;
 
   if (readOnly) {
     flags |= CL_MEM_READ_ONLY;
@@ -128,13 +135,15 @@ void OCLZeroCopyBuffer::initializeBuffer(void* initialValues, size_t sizeofType,
     flags |= CL_MEM_READ_WRITE;
   }
 
-  m_hostBuffer = clCreateBuffer(m_manager->context, flags, sizeofType * elements,
+  m_hostBuffer = clCreateBuffer(m_manager->context, flags,
+                                sizeofType * elements,
                                 nullptr, &err);
 
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Could not allocate buffer! Error code: " << err <<
+    errorString << "OCL Error: Could not allocate buffer! "
+                "Error code: " << err <<
                 std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
@@ -154,7 +163,7 @@ void OCLZeroCopyBuffer::freeBuffer() {
     return;
   }
 
-  if ( m_hostBuffer != nullptr) {
+  if (m_hostBuffer != nullptr) {
     clReleaseMemObject(m_hostBuffer);
     m_hostBuffer = nullptr;
   }

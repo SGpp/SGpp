@@ -48,7 +48,7 @@ class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
   SPolyBoundaryBase base;
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALPOLYBOUNDARY_HPP_ */

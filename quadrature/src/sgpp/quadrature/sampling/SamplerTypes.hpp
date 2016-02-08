@@ -18,7 +18,7 @@ enum class SamplerTypes {
   Halton
 };
 
-} /* namespace quadrature */
-} /* namespace SGPP */
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* SAMPLERTYPES_HPP_ */

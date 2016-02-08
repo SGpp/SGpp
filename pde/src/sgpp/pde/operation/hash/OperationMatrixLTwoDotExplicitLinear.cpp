@@ -125,5 +125,5 @@ void OperationMatrixLTwoDotExplicitLinear::mult(SGPP::base::DataVector& alpha,
   }
 }
 
-} /* namespace pde */
-} /* namespace SGPP */
+}  // namespace pde
+}  // namespace SGPP

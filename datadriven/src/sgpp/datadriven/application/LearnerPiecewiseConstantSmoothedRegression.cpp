@@ -36,7 +36,8 @@ LearnerPiecewiseConstantSmoothedRegression::LearnerPiecewiseConstantSmoothedRegr
   SGPP::base::RegularGridConfiguration& gridConfig,
   SGPP::base::AdpativityConfiguration& adaptivityConfig,
   SGPP::solver::SLESolverConfiguration& solverConfig,
-  SGPP::datadriven::RegularizationConfiguration& regularizationConfig, bool verbose) :
+  SGPP::datadriven::RegularizationConfiguration& regularizationConfig,
+  bool verbose) :
   gridConfig(gridConfig), adaptivityConfig(adaptivityConfig),
   solverConfig(solverConfig), regularizationConfig(
     regularizationConfig), verbose(verbose) {
@@ -127,7 +128,8 @@ LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
   SGPP::base::Grid& grid) {
   OperationMatrix* C = NULL;
 
-  if (regularizationConfig.regType_ == SGPP::datadriven::RegularizationType::Identity) {
+  if (regularizationConfig.regType_ ==
+      SGPP::datadriven::RegularizationType::Identity) {
     C = SGPP::op_factory::createOperationIdentity(grid);
   } else if (regularizationConfig.regType_ ==
              SGPP::datadriven::RegularizationType::Laplace) {
@@ -139,5 +141,5 @@ LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
   return C;
 }
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP

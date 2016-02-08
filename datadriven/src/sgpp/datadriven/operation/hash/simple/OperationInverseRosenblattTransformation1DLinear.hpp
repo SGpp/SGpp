@@ -31,7 +31,7 @@ class OperationInverseRosenblattTransformation1DLinear : public
   float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d);
 };
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR1D_HPP */

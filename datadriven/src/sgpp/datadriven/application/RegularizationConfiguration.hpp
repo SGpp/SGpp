@@ -9,18 +9,18 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    enum class RegularizationType {
-      Identity,
-      Laplace
-    };
+enum class RegularizationType {
+  Identity,
+  Laplace
+};
 
-    struct RegularizationConfiguration {
-      RegularizationType regType_;
-    };
+struct RegularizationConfiguration {
+  RegularizationType regType_;
+};
 
-  } // datadriven
+} // datadriven
 } // SGPP
 
 #endif /* REGULARIZATIONCONFIGURATION_HPP_ */

@@ -98,6 +98,6 @@ class SubspaceRefinement: public RefinementDecorator {
     AbstractRefinement::refinement_container_type& collection);
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 #endif /* SUBSPACEREFINEMENT_HPP_ */

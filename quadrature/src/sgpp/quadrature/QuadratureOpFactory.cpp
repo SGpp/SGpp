@@ -17,5 +17,5 @@ quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(
          seed);
 }
 
-} /* namespace op_factory */
-} /* namespace SGPP */
+}  // namespace op_factory
+}  // namespace SGPP

@@ -1,19 +1,20 @@
-/*
- * OCLManager.hpp
- *
- *  Created on: Mar 12, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
 #include <sgpp/globaldef.hpp>
 
-//define required for clCreateCommandQueue on platforms that don't support OCL2.0 yet
+// define required for clCreateCommandQueue on platforms
+// that don't support OCL2.0 yet
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
 
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+
+#include <string>
 
 namespace SGPP {
 namespace base {
@@ -31,7 +32,8 @@ class OCLManager {
   bool verbose;
 
  public:
-  OCLManager(std::shared_ptr<base::OCLOperationConfiguration> parameters);
+  explicit OCLManager(
+    std::shared_ptr<base::OCLOperationConfiguration> parameters);
 
   ~OCLManager();
 
@@ -50,7 +52,6 @@ class OCLManager {
   void buildKernel(const std::string& program_src, const char* kernel_name,
                    cl_context context, size_t num_devices,
                    cl_device_id* device_ids, cl_kernel* kernel);
-
 };
 
 }  // namespace base

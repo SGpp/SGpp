@@ -60,5 +60,5 @@ void DensityEstimator::corrcoef(DataMatrix& corr) {
   }
 }
 
-} /* namespace datadriven */
-} /* namespace sg */
+}  // namespace datadriven
+}  // namespace sg

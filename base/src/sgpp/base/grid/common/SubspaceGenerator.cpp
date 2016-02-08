@@ -40,5 +40,5 @@ SubspaceGenerator* SubspaceGenerator::next_() {
   return this;
 }
 
-} /* namespace base */
-} /* namespace sg */
+}  // namespace base
+}  // namespace sg
