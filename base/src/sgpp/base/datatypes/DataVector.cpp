@@ -5,17 +5,19 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <algorithm>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <sstream>
-
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <sstream>
 
 namespace SGPP {
 namespace base {
@@ -274,7 +276,6 @@ void DataVector::accumulate(const DataVector& vec) {
     this->correction[i] = (t - data[i]) - y;
     data[i] = t;
   }
-
 }
 
 void DataVector::sub(const DataVector& vec) {
@@ -515,5 +516,6 @@ size_t DataVector::getNumberNonZero() const {
 
   return nonZero;
 }
-}
-}
+
+}  // namespace base
+}  // namespace SGPP

@@ -6,16 +6,15 @@
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
 #include <sgpp/base/datatypes/DataMatrixSP.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <sstream>
 #include <cmath>
 #include <algorithm>
 #include <cstring>
-
+#include <string>
+#include <vector>
 #include <iostream>
-
-//#include <sgpp/base/tools/AlignedMemory.hpp>
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -317,7 +316,7 @@ void DataMatrixSP::sub(const DataMatrixSP& matr) {
 }
 
 void DataMatrixSP::addReduce(DataVectorSP& reduction) {
-  if (this->nrows != reduction.getSize() ) {
+  if (this->nrows != reduction.getSize()) {
     throw new SGPP::base::data_exception(
       "DataMatrixSP::addReduce : Dimensions do not match");
   }
@@ -335,12 +334,12 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction) {
 
 void DataMatrixSP::addReduce(DataVectorSP& reduction, DataVectorSP& beta,
                              size_t start_beta) {
-  if (this->nrows != reduction.getSize() ) {
+  if (this->nrows != reduction.getSize()) {
     throw new SGPP::base::data_exception(
       "DataMatrixSP::addReduce : Dimensions do not match (reduction)");
   }
 
-  if (this->ncols + start_beta > beta.getSize() ) {
+  if (this->ncols + start_beta > beta.getSize()) {
     throw new SGPP::base::data_exception(
       "DataMatrixSP::addReduce : Dimensions do not match (beta)");
   }
@@ -357,7 +356,7 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction, DataVectorSP& beta,
 }
 
 void DataMatrixSP::expand(const DataVectorSP& expand) {
-  if (this->nrows != expand.getSize() ) {
+  if (this->nrows != expand.getSize()) {
     throw new SGPP::base::data_exception(
       "DataMatrixSP::expand : Dimensions do not match");
   }
@@ -643,5 +642,6 @@ size_t DataMatrixSP::getNumberNonZero() const {
 
   return nonZero;
 }
-}
-}
+
+}  // namespace base
+}  // namespace SGPP

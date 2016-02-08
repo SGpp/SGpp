@@ -6,10 +6,10 @@
 #ifndef DATAVECTORSP_HPP
 #define DATAVECTORSP_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <string>
 #include <vector>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -33,7 +33,7 @@ class DataVectorSP {
    *
    * @param size Number of elements
    */
-  DataVectorSP(size_t size);
+  explicit DataVectorSP(size_t size);
 
   /**
    * Create a DataVectorSP with @em size elements and initializes
@@ -64,14 +64,14 @@ class DataVectorSP {
    *
    * @param input std::vector<float> that contains the data
    */
-  DataVectorSP(std::vector<float> input);
+  explicit DataVectorSP(std::vector<float> input);
 
   /**
    * Create a new DataVectorSP from a std::vector<int>.
    *
    * @param input std::vector<int> that contains the data
    */
-  DataVectorSP(std::vector<int> input);
+  explicit DataVectorSP(std::vector<int> input);
 
   /**
    * Resizes the DataVectorSP to size elements.
@@ -451,7 +451,10 @@ class DataVectorSP {
   size_t size;
   /// Number of additional rows for which memory has already been reserved
   size_t unused;
-  /// Number of elements by which the reserved memory is increased, if adding a row would exceed the storage reserved so far.
+  /**
+   * Number of elements by which the reserved memory is increased,
+   * if adding a row would exceed the storage reserved so far.
+   */
   size_t inc_elems;
 };
 
