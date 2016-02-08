@@ -9,6 +9,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/datamining/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/DataMiningConfigurationDensityEstimation.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -17,10 +19,10 @@
 namespace SGPP {
   namespace datadriven {
 
-    class ModelFitterDensityEstimation: public sg::datadriven::ModelFittingBase {
+    class ModelFittingDensityEstimation: public SGPP::datadriven::ModelFittingBase {
       public:
-        ModelFitterDensityEstimation(SGPP::datadriven::DataMiningConfiguration config);
-        virtual ~ModelFitterDensityEstimation();
+        ModelFittingDensityEstimation(SGPP::datadriven::DataMiningConfiguration config);
+        virtual ~ModelFittingDensityEstimation();
 
         void fit() override;
 

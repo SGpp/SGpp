@@ -7,7 +7,13 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
+
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include "ModelFittingDensityEstimation.hpp"
+
 
 namespace SGPP {
   namespace datadriven {
@@ -29,7 +35,10 @@ namespace SGPP {
     };
 
 
-    class DataMiningConfigurationDensityEstimation: public DataMiningConfiguration {
+    class DataMiningConfigurationDensityEstimation: public SGPP::datadriven::DataMiningConfiguration {
+
+        friend class SGPP::datadriven::ModelFittingDensityEstimation;
+
       public:
         DataMiningConfigurationDensityEstimation();
 
@@ -42,7 +51,7 @@ namespace SGPP {
         SGPP::base::AdpativityConfiguration adaptivityConfig;
         SGPP::solver::SLESolverConfiguration solverConfig;
         SGPP::datadriven::RegularizationConfiguration regularizationConfig;
-        DataMiningConfigurationDensityEstimationType learnerSGDEConfig;
+        SGPP::datadriven::DataMiningConfigurationDensityEstimationType sgdeConfig;
     };
 
   } /* namespace datadriven */
