@@ -6,9 +6,9 @@
 #ifndef TYPESDATADRIVEN_HPP
 #define TYPESDATADRIVEN_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cstddef>
 
 
 namespace SGPP {
@@ -53,8 +53,8 @@ struct LearnerTiming {
   float_t GByte_;
 };
 
-}
-
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* TYPESDATADRIVEN_HPP */
+

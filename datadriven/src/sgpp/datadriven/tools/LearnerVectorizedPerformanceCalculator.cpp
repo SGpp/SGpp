@@ -5,17 +5,18 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cstring>
 
 
 namespace SGPP {
 namespace datadriven {
 
 LearnerVectorizedPerformance
-LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& grid,
-    size_t numInstances, SGPP::solver::SLESolverType solver, size_t numIterations,
+LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(base::Grid& grid,
+    size_t numInstances, solver::SLESolverType solver, size_t numIterations,
     size_t sizeDatatype) {
   LearnerVectorizedPerformance result;
 
@@ -27,11 +28,11 @@ LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& grid,
 
   if (grid.getType() == base::GridType::ModLinear) {
     for (size_t g = 0; g < grid.getSize(); g++) {
-      SGPP::base::GridIndex* curPoint = grid.getStorage()->get(g);
+      base::GridIndex* curPoint = grid.getStorage()->get(g);
 
       for (size_t h = 0; h < nDim; h++) {
-        SGPP::base::GridStorage::index_type::level_type level;
-        SGPP::base::GridStorage::index_type::index_type index;
+        base::GridStorage::index_type::level_type level;
+        base::GridStorage::index_type::index_type index;
 
         curPoint->get(h, level, index);
 
@@ -43,8 +44,8 @@ LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& grid,
                            static_cast<float_t>(sizeDatatype)
                            * static_cast<float_t>(numInstances);
         } else if (index
-                   == static_cast<SGPP::base::GridStorage::index_type::index_type>((1
-                       << static_cast<SGPP::base::GridStorage::index_type::index_type>(level)) - 1)) {
+                   == static_cast<base::GridStorage::index_type::index_type>((1
+                       << static_cast<base::GridStorage::index_type::index_type>(level)) - 1)) {
           result.GFlop_ += 1e-9 * 10.0 * (static_cast<float_t>(numIterations) + 3.5)
                            * static_cast<float_t>(numInstances);
           result.GByte_ += 1e-9 * 6.0 * (static_cast<float_t>(numIterations) + 3.5) *
@@ -79,7 +80,7 @@ LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& grid,
     // GBytes
     result.GByte_ += 2.0 * 1e-9 * static_cast<float_t>(nGridsize) *
                      static_cast<float_t>(numInstances)
-                     * static_cast<float_t>(nDim) * 3.0 * (static_cast<float_t>(numIterations) + 3.5)
+                     * static_cast<float_t>(nDim) * 3.0*(static_cast<float_t>(numIterations) + 3.5)
                      * static_cast<float_t>(sizeDatatype);
 
     // GBytes for EvalTrans (coefficients)
@@ -93,7 +94,7 @@ LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& grid,
                          * static_cast<float_t>(sizeDatatype)));
   }
 
-  if (solver == SGPP::solver::SLESolverType::BiCGSTAB) {
+  if (solver == solver::SLESolverType::BiCGSTAB) {
     result.GFlop_ = result.GFlop_ * 2.0;
     result.GByte_ = result.GByte_ * 2.0;
   }
@@ -101,5 +102,6 @@ LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(SGPP::base::Grid& grid,
   return result;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

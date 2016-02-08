@@ -49,13 +49,14 @@ void PartitioningTool::getPartitionSegment(size_t start, size_t end,
   size_t totalSize = end - start;
 
   // check for valid input
-  if (blockSize == 0 ) {
+  if (blockSize == 0) {
     throw SGPP::base::operation_exception("blockSize must not be zero!");
   }
 
-  if (totalSize % blockSize != 0 ) {
-    //std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
-    throw SGPP::base::operation_exception("totalSize must be divisible by blockSize without remainder, but it is not!");
+  if (totalSize % blockSize != 0) {
+    // std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
+    throw SGPP::base::operation_exception("totalSize must be divisible by blockSize without "
+      "remainder, but it is not!");
   }
 
   // do all further calculations with complete blocks
@@ -127,8 +128,8 @@ void PartitioningTool::calcDistribution(size_t totalSize, size_t numChunks,
     size_t size;
     size_t offset;
     getPartitionSegment(totalSize, numChunks, chunkID, &size, &offset, blocksize);
-    sizes[chunkID] = (int)size;
-    offsets[chunkID] = (int)offset;
+    sizes[chunkID] = static_cast<int>(size);
+    offsets[chunkID] = static_cast<int>(offset);
   }
 }
 
@@ -149,10 +150,12 @@ void PartitioningTool::calcMPIChunkedDistribution(size_t totalSize,
                      &offsets[numChunksPerProc * proc], blocksize);
 
     for (size_t i = 0; i < numChunksPerProc; i++) {
-      offsets[numChunksPerProc * proc + i] += (int)(procOffset);
+      offsets[numChunksPerProc * proc + i] += static_cast<int>(procOffset);
     }
   }
 }
 #endif
-}
-}
+
+}  // namespace datadriven
+}  // namespace SGPP
+

@@ -5,12 +5,14 @@
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
+
+#include <sgpp/globaldef.hpp>
+
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <sstream>
-
-#include <sgpp/globaldef.hpp>
+#include <string>
 
 namespace SGPP {
 namespace datadriven {
@@ -63,9 +65,7 @@ void ARFFTools::readARFFSize(const std::string& filename,
     std::transform(line.begin(), line.end(), line.begin(), toupper);
 
     if (line.find("@ATTRIBUTE class", 0) != line.npos) {
-      ;
     } else if (line.find("@ATTRIBUTE CLASS", 0) != line.npos) {
-      ;
     } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
       dimension++;
     } else if (line.find("@DATA", 0) != line.npos) {
@@ -91,9 +91,7 @@ void ARFFTools::readARFFSizeFromString(const std::string& content,
     std::transform(line.begin(), line.end(), line.begin(), toupper);
 
     if (line.find("@ATTRIBUTE class", 0) != line.npos) {
-      ;
     } else if (line.find("@ATTRIBUTE CLASS", 0) != line.npos) {
-      ;
     } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
       dimension++;
     } else if (line.find("@DATA", 0) != line.npos) {
@@ -102,7 +100,6 @@ void ARFFTools::readARFFSizeFromString(const std::string& content,
       numberInstances++;
     }
   }
-
 }
 
 Dataset ARFFTools::readARFFFromString(const std::string& content) {
@@ -161,15 +158,16 @@ void ARFFTools::writeNewClass(const std::string& arffLine,
   destination.set(instanceNo, dbl_cur_value);
 }
 
-//void ARFFTools::writeAlpha(std::string tfilename, SGPP::base::DataVector& source)
-//{
+// void ARFFTools::writeAlpha(std::string tfilename, SGPP::base::DataVector& source)
+// {
 //
-//}
+// }
 
-//void ARFFTools::readAlpha(std::string tfilename, SGPP::base::DataVector& destination)
-//{
+// void ARFFTools::readAlpha(std::string tfilename, SGPP::base::DataVector& destination)
+// {
 //
-//}
+// }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

@@ -51,7 +51,7 @@ class LearnerVectorizedPerformanceCalculator {
       SGPP::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype);
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* LEARNERVECTORIZEDPERFORMANCECALCULATOR_HPP */

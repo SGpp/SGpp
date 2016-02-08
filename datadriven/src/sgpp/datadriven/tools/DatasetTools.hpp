@@ -1,3 +1,7 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 /*
  * DatasetTools.hpp
  *
@@ -9,6 +13,8 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -22,8 +28,8 @@ class DatasetTools {
                        std::vector<base::DataMatrix>& testSets,
                        std::vector<base::DataVector>& testSetValues,
                        bool verbose = false);
-
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

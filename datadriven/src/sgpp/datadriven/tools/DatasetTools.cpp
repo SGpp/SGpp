@@ -1,3 +1,7 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 /*
  * DatasetTools.hpp
  *
@@ -5,11 +9,12 @@
  *      Author: pfandedd
  */
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/tools/DatasetTools.hpp>
+
+#include <iostream>
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -20,7 +25,6 @@ void DatasetTools::splitset(base::DataMatrix& dataset,
                             std::vector<base::DataVector>& trainingSetValues,
                             std::vector<base::DataMatrix>& testSets,
                             std::vector<base::DataVector>& testSetValues, bool verbose) {
-
   trainingSets.clear();
   trainingSetValues.clear();
   testSets.clear();
@@ -31,11 +35,11 @@ void DatasetTools::splitset(base::DataMatrix& dataset,
   base::DataVector p(dim);
   base::DataVector tmp(dim);
 
-  std::vector<size_t> partitionSizes(kFold); // size of partition
-  std::vector<size_t> partitionStartIndices(kFold + 1); //index of partition
-  size_t datasetSize = dataset.getNrows(); //size of data
+  std::vector<size_t> partitionSizes(kFold);  // size of partition
+  std::vector<size_t> partitionStartIndices(kFold + 1);  // index of partition
+  size_t datasetSize = dataset.getNrows();  // size of data
 
-  //set size of partitions
+  // set size of partitions
   if (verbose) {
     std::cout << "kfold partitions: ";
   }
@@ -68,7 +72,7 @@ void DatasetTools::splitset(base::DataMatrix& dataset,
     std::cout << std::endl;
   }
 
-  //fill data
+  // fill data
   for (size_t i = 0; i < kFold; i++) {
     trainingSets.emplace_back(dataset.getNrows() - partitionSizes[i],
                               dataset.getNcols());
@@ -95,5 +99,6 @@ void DatasetTools::splitset(base::DataMatrix& dataset,
   }
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+
