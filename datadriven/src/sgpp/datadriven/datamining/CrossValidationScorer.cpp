@@ -5,13 +5,17 @@
  *      Author: perun
  */
 
+#include <iostream>
+
 #include "CrossValidationScorer.hpp"
+
+#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
 namespace datadriven {
 
-CrossValidationScorer::CrossValidationScorer(Dataset& dataset, Metric& metric, size_t kFold):Scorer(metric),
+CrossValidationScorer::CrossValidationScorer(Dataset& dataset, Metric* metric, size_t kFold):Scorer(metric),
 		kFold(kFold) {
 
 
