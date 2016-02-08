@@ -7,11 +7,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if defined(__SSE3__) && !defined(__AVX__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && !defined(__AVX__) && USE_DOUBLE_PRECISION == 1
 #include <pmmintrin.h>
 #endif
 
-#if defined(__SSE3__) && defined(__AVX__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && defined(__AVX__) && USE_DOUBLE_PRECISION == 1
 #include <immintrin.h>
 #endif
 
@@ -19,17 +19,19 @@
 #include <immintrin.h>
 #endif
 
+#include <algorithm>
+#include <vector>
+
 namespace SGPP {
 namespace datadriven {
 
 void OperationMultiEvalModMaskStreaming::multTransposeImpl(
-  std::vector<double>& level, std::vector<double>& index,
-  std::vector<double>& mask, std::vector<double>& offset,
-  SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-  SGPP::base::DataVector& result, const size_t start_index_grid,
-  const size_t end_index_grid, const size_t start_index_data,
-  const size_t end_index_data) {
-
+    std::vector<double>& level, std::vector<double>& index,
+    std::vector<double>& mask, std::vector<double>& offset,
+    SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
+    SGPP::base::DataVector& result, const size_t start_index_grid,
+    const size_t end_index_grid, const size_t start_index_data,
+    const size_t end_index_data) {
   double* ptrLevel = level.data();
   double* ptrIndex = index.data();
   double* ptrMask = mask.data();
@@ -262,7 +264,8 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 
 #if defined(__MIC__) || defined(__AVX512F__)
 #if defined(__MIC__)
-#define _mm512_broadcast_sd(A) _mm512_extload_pd(A, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE)
+#define _mm512_broadcast_sd(A) _mm512_extload_pd(A, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, \
+  _MM_HINT_NONE)
 #define _mm512_max_pd(A, B) _mm512_gmax_pd(A, B)
 #define _mm512_set1_epi64(A) _mm512_set_1to8_epi64(A)
 #define _mm512_set1_pd(A) _mm512_set_1to8_pd(A)
@@ -356,40 +359,40 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
         __m512d mask = _mm512_broadcast_sd(&(ptrMask[(j * dims) + d]));
         __m512d offset = _mm512_broadcast_sd(&(ptrOffset[(j * dims) + d]));
 
-        eval_0 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_0 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_0)));
-        eval_1 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_1 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_1)));
-        eval_2 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_2 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_2)));
 #if  ( STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH >  24 )
-        eval_3 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_3 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_3)));
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH >  32 )
-        eval_4 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_4 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_4)));
-        eval_5 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_5 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_5)));
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH >  48 )
-        eval_6 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_6 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_6)));
-        eval_7 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_7 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_7)));
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH >  64 )
-        eval_8 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_8 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_8)));
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH >  72 )
-        eval_9 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_9 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                      _mm512_castpd_si512(eval_9)));
 #endif
 #if  ( STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH >  80 )
-        eval_10 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_10 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                       _mm512_castpd_si512(eval_10)));
-        eval_11 = _mm512_castsi512_pd(_mm512_or_epi64( _mm512_castpd_si512(mask),
+        eval_11 = _mm512_castsi512_pd(_mm512_or_epi64(_mm512_castpd_si512(mask),
                                       _mm512_castpd_si512(eval_11)));
 #endif
 
@@ -511,7 +514,8 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
 #ifndef _WIN32
-#warning "warning: using fallback implementation for OperationMultiEvalModMaskStreaming multTranspose kernel"
+#warning "warning: using fallback implementation for OperationMultiEvalModMaskStreaming \
+  multTranspose kernel"
 #endif
 
 
@@ -530,7 +534,7 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
                         (ptrIndex[(j * dims) + d]);
           uint64_t maskresult = *reinterpret_cast<uint64_t*>(&eval) |
                                 *reinterpret_cast<uint64_t*>(&(ptrMask[(j * dims) + d]));
-          double masking = *reinterpret_cast<double*>( &maskresult );
+          double masking = *reinterpret_cast<double*>(&maskresult);
           double last = masking + ptrOffset[(j * dims) + d];
           double localSupport = std::max<double>(last, 0.0);
           curSupport *= localSupport;
@@ -544,5 +548,6 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 #endif
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

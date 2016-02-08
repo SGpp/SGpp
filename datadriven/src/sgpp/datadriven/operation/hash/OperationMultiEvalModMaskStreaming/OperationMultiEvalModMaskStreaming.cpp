@@ -7,6 +7,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace SGPP {
 namespace datadriven {
 
@@ -18,7 +20,7 @@ OperationMultiEvalModMaskStreaming::OperationMultiEvalModMaskStreaming(
   this->padDataset(this->preparedDataset);
   this->preparedDataset.transpose();
 
-  //create the kernel specific data structures for the current grid
+  // create the kernel specific data structures for the current grid
   this->prepare();
 }
 
@@ -37,7 +39,7 @@ void OperationMultiEvalModMaskStreaming::getPartitionSegment(size_t start,
   }
 
   if (totalSize % blockSize != 0) {
-    //std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
+    // std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
     throw SGPP::base::operation_exception(
       "totalSize must be divisible by blockSize without remainder, but it is not!");
   }
@@ -71,14 +73,14 @@ void OperationMultiEvalModMaskStreaming::getOpenMPPartitionSegment(size_t start,
 }
 
 size_t OperationMultiEvalModMaskStreaming::getChunkGridPoints() {
-  //not used by the MIC-implementation
+  // not used by the MIC-implementation
   return 12;
 }
 size_t OperationMultiEvalModMaskStreaming::getChunkDataPoints() {
 #if defined(__MIC__) || defined(__AVX512F__)
   return STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH;
 # else
-  return 24; // must be divisible by 24
+  return 24;  // must be divisible by 24
 #endif
 }
 
@@ -116,7 +118,7 @@ void OperationMultiEvalModMaskStreaming::multTranspose(SGPP::base::DataVector&
 
   source.resize(this->preparedDataset.getNcols());
 
-  //set padding area to zero
+  // set padding area to zero
   for (size_t i = originalSize; i < this->preparedDataset.getNcols(); i++) {
     source[i] = 0.0;
   }
@@ -140,7 +142,6 @@ void OperationMultiEvalModMaskStreaming::multTranspose(SGPP::base::DataVector&
 
 size_t OperationMultiEvalModMaskStreaming::padDataset(
   SGPP::base::DataMatrix& dataset) {
-
   size_t vecWidth = this->getChunkDataPoints();
 
   // Assure that data has a even number of instances -> padding might be needed
@@ -177,8 +178,7 @@ void OperationMultiEvalModMaskStreaming::prepare() {
  * The returned format is only useful for a multi-evaluation of modlinear grids
  */
 void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
-
-  //TODO: does the padding work? test
+  // TODO(someone): does the padding work? test
   //    size_t localWorkSize = 24;
   size_t localWorkSize = this->getChunkGridPoints();
 
@@ -195,7 +195,7 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   SGPP::base::HashGridIndex::level_type curLevel;
   SGPP::base::HashGridIndex::index_type curIndex;
 
-  //TODO: update the other kernels with this style
+  // TODO(someone): update the other kernels with this style
 
   this->level = std::vector<double>(gridSize * dims);
   this->index = std::vector<double>(gridSize * dims);
@@ -257,5 +257,5 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   }
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

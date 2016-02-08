@@ -13,8 +13,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 #ifndef STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH
-//#define STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH 24
+// #define STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH 24
 #define STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH 96
 #endif
 
@@ -37,8 +39,8 @@ class OperationMultiEvalModMaskStreaming: public base::OperationMultipleEval {
   base::GridStorage* storage;
 
   float_t duration;
- public:
 
+ public:
   OperationMultiEvalModMaskStreaming(base::Grid& grid, base::DataMatrix& dataset);
 
   ~OperationMultiEvalModMaskStreaming();
@@ -89,5 +91,6 @@ class OperationMultiEvalModMaskStreaming: public base::OperationMultipleEval {
   void recalculateLevelIndexMask();
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+
