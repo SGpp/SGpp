@@ -1,21 +1,21 @@
-/*
- * OCLManager.hpp
- *
- *  Created on: Mar 12, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
-//define required for clCreateCommandQueue on platforms that don't support OCL2.0 yet
+// define required for clCreateCommandQueue on platforms
+// that don't support OCL2.0 yet
 #define CL_USE_DEPRECATED_OPENCL_2_0_APIS
 #include <CL/cl.h>
 
-#include <map>
-#include <vector>
-
 #include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+
+#include <map>
+#include <vector>
+#include <string>
 
 namespace SGPP {
 namespace base {
@@ -26,20 +26,20 @@ class OCLManagerMultiPlatform {
 
   std::vector<OCLPlatformWrapper> platforms;
   //        cl_uint platformCount;
-  //
-  //        std::map<cl_platform_id, size_t> platformDeviceCount; //devices on the individual platforms
+  //        // devices on the individual platforms
+  //        std::map<cl_platform_id, size_t> platformDeviceCount;
   //        cl_platform_id *platformIds;
-  //
-  //        std::map<cl_platform_id, cl_device_id *> platformDeviceIds; // device ids over all platforms
-  cl_uint overallDeviceCount; //devices over all platforms
-
+  //        // device ids over all platforms
+  //        std::map<cl_platform_id, cl_device_id *> platformDeviceIds;
+  cl_uint overallDeviceCount;  // devices over all platforms
   //        //platforms -> (deviceId -> command_queue)
-  //        std::map<cl_uint, std::map<cl_uint, cl_command_queue> > commandQueues;
+  //        std::map<cl_uint, std::map<cl_uint, cl_command_queue> >
+  //        commandQueues;
   //        std::vector<cl_context> platformContext;
   bool verbose;
 
  public:
-  OCLManagerMultiPlatform(bool verbose = false);
+  explicit OCLManagerMultiPlatform(bool verbose = false);
 
   OCLManagerMultiPlatform(std::shared_ptr<base::OCLOperationConfiguration>
                           parameters);
@@ -79,10 +79,10 @@ class OCLManagerMultiPlatform {
 
   void configureDevice(cl_device_id deviceId, json::Node& devicesNode,
                        std::vector<cl_device_id>& filteredDeviceIds,
-                       std::map<std::string, size_t>& countLimitMap, bool useConfiguration);
+                       std::map<std::string, size_t>& countLimitMap,
+                       bool useConfiguration);
 
   std::shared_ptr<base::OCLOperationConfiguration> getConfiguration();
-
 };
 
 }  // namespace base

@@ -163,5 +163,5 @@ void PredictiveRefinement::free_refine(GridStorage* storage,
   collection.clear();
 }
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP

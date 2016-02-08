@@ -173,5 +173,5 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage* storage,
   }
 }
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP

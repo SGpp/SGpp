@@ -117,5 +117,5 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   return y;
 }
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP

@@ -38,7 +38,8 @@ class Learner : public LearnerBase {
    * @param isRegression flag for regression
    * @param isVerbose flag for verbose output
    */
-  Learner(SGPP::datadriven::RegularizationType& regularization, const bool isRegression,
+  Learner(SGPP::datadriven::RegularizationType& regularization,
+          const bool isRegression,
           const bool isVerbose = true);
 
   /**

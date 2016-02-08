@@ -1,9 +1,7 @@
-/*
- * OCLStretchedBufferMultiPlatform.hpp
- *
- *  Created on: Mar 31, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -13,10 +11,13 @@
 
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 
+#include <map>
+
 namespace SGPP {
 namespace base {
 
-//copies the whole buffer on all devices, retrieves only the part that was worked on on a specific device
+// copies the whole buffer on all devices, retrieves only the part
+// that was worked on on a specific device
 
 class OCLStretchedBufferMultiPlatform {
  private:
@@ -29,8 +30,8 @@ class OCLStretchedBufferMultiPlatform {
   bool isMappedMemory;
   std::map<cl_platform_id, cl_mem> hostBuffer;
   std::map<cl_platform_id, void*> mappedHostBuffer;
- public:
 
+ public:
   OCLStretchedBufferMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform>
                                   manager);
 
@@ -40,7 +41,7 @@ class OCLStretchedBufferMultiPlatform {
 
   cl_mem* getBuffer(cl_platform_id platformId, size_t deviceNumber);
 
-  //only for mapped buffer
+  // only for mapped buffer
   void* getMappedHostBuffer(cl_platform_id platformId);
 
   void copyToOtherHostBuffers(cl_platform_id originPlatformId);

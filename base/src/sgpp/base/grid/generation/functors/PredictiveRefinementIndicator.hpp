@@ -180,6 +180,6 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
 
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 #endif /* PREDICTIVEREFINEMENTINDICATOR_HPP_ */

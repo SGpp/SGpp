@@ -34,7 +34,7 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
                                           base::DataVector& weights);
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* GAUSSLEGENDREQUADRULE1D_HPP_ */

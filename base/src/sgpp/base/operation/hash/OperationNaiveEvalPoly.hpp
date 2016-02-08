@@ -46,7 +46,7 @@ class OperationNaiveEvalPoly: public OperationNaiveEval {
   SPolyBase base;
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* BASE_SRC_SGPP_BASE_OPERATION_HASH_OPERATIONNAIVEEVALPOLY_HPP_ */

@@ -62,6 +62,6 @@ class OperationMatrixLTwoDotExplicitLinear: public SGPP::base::OperationMatrix {
   bool ownsMatrix_;
 };
 
-} /* namespace pde */
-} /* namespace SGPP */
+}  // namespace pde
+}  // namespace SGPP
 #endif /* OperationMatrixLTwoDotExplicitLinear_HPP_ */

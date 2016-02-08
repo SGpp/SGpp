@@ -113,5 +113,5 @@ void OperationDensityConditionalKDE::condToDimXs(std::vector<size_t>& mdims,
     "OperationDensityConditionalKDE::condToDimXs is not implemented");
 }
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP

@@ -432,5 +432,5 @@ void GaussianKDE::updateConditionalizationFactors(base::DataVector& x,
   }
 }
 
-} /* namespace datadriven */
-} /* namespace sg */
+}  // namespace datadriven
+}  // namespace sg

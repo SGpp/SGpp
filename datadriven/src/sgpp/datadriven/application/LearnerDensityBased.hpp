@@ -40,7 +40,8 @@ class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
   // vector of regterms
   std::vector<SGPP::base::OperationMatrix*> CVec_;
  public:
-  LearnerDensityBased(SGPP::datadriven::RegularizationType&, const bool isRegression,
+  LearnerDensityBased(SGPP::datadriven::RegularizationType&,
+                      const bool isRegression,
                       const bool isVerbose = true);
   virtual ~LearnerDensityBased();
 

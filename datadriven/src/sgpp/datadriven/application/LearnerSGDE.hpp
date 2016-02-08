@@ -196,7 +196,7 @@ class LearnerSGDE: public datadriven::DensityEstimator {
   LearnerSGDEConfiguration learnerSGDEConfig;
 };
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* LEARNERSGDE_HPP_ */

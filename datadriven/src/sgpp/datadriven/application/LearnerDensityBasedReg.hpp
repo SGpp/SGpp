@@ -101,6 +101,6 @@ class LearnerDensityBasedReg: public LearnerBase {
 
 };
 
-} /* namespace datadriven */
-} /* namespace SGPP */
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* LEARNERDENSITYBASEDREG_HPP_ */

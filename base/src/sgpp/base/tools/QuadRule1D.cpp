@@ -37,6 +37,6 @@ void QuadRule1D::getLevelPointsAndWeights(size_t level,
   pweights = *weights[level - 1];
 }
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 

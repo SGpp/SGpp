@@ -1,32 +1,41 @@
-#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include <sstream>
+#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
+#include <sstream>
+#include <vector>
+
 namespace SGPP {
 namespace base {
 
-OCLPlatformWrapper::OCLPlatformWrapper(cl_platform_id platformId,
-                                       char (&platformName)[128], std::vector<cl_device_id>& deviceIds) :
+OCLPlatformWrapper::OCLPlatformWrapper(
+  cl_platform_id platformId,
+  char (&platformName)[128], std::vector<cl_device_id>& deviceIds) :
   platformId(platformId), deviceIds(deviceIds) {
-
   for (size_t i = 0; i < 128; i++) {
     this->platformName[i] = platformName[i];
   }
 
   cl_int err;
   // Create OpenCL context
-  cl_context_properties properties[3] = { CL_CONTEXT_PLATFORM, (cl_context_properties) platformId, 0 };
+  cl_context_properties properties[3] =
+  { CL_CONTEXT_PLATFORM, (cl_context_properties) platformId, 0 };
 
   this->context = clCreateContext(properties, (cl_uint) this->deviceIds.size(),
-                                  this->deviceIds.data(), nullptr, nullptr, &err);
+                                  this->deviceIds.data(), nullptr, nullptr,
+                                  &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Failed to create OpenCL context! Error Code: " << err
+    errorString << "OCL Error: Failed to create OpenCL context! "
+                "Error Code: " << err
                 << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
@@ -39,7 +48,8 @@ OCLPlatformWrapper::OCLPlatformWrapper(cl_platform_id platformId,
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to create command queue! Error Code: " << err
+      errorString << "OCL Error: Failed to create command queue! "
+                  "Error Code: " << err
                   << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }

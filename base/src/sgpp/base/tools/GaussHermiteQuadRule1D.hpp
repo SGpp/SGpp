@@ -41,7 +41,7 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
                                           float_t stdd = 1.0f);
 };
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* GAUSSHERMITEQUADRULE1D_HPP_ */

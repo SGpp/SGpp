@@ -552,5 +552,5 @@ void GaussHermiteQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
   }
 }
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP

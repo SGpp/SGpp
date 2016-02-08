@@ -1,9 +1,7 @@
-/*
- * OCLMemory.hpp
- *
- *  Created on: Mar 27, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -25,8 +23,7 @@ class OCLClonedBuffer {
   size_t elements;
 
  public:
-
-  OCLClonedBuffer(std::shared_ptr<OCLManager> manager);
+  explicit OCLClonedBuffer(std::shared_ptr<OCLManager> manager);
 
   ~OCLClonedBuffer();
 
@@ -39,10 +36,10 @@ class OCLClonedBuffer {
   void readFromBuffer(void* hostData, size_t* offsets = nullptr,
                       size_t* ranges = nullptr);
 
-  void initializeBuffer(void* initialValues, size_t sizeofType, size_t elements);
+  void initializeBuffer(void* initialValues, size_t sizeofType,
+                        size_t elements);
 
   void freeBuffer();
-
 };
 
 }  // namespace base

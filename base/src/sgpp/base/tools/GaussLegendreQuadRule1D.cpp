@@ -557,5 +557,5 @@ void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
   pweights.mult(0.5f);
 }
 
-} /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
