@@ -81,8 +81,8 @@ class AlgorithmMultipleEvaluation {
   //          result.setAll(0.0);
   //          size_t source_size = source.getSize();
   //
-  //          #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
-  //          initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
+  //          #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in))
+  // ...      initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
   //
   //          #pragma omp parallel
   //          {
