@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataVector(d_rand);
   border = 3.64;
   d.normalize(border);
-  float_t delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
+  delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
   for (int i = 0; i < N; i++){
 	  BOOST_CHECK_EQUAL(d[i], (d_rand[i] - d_rand.min())/delta + border);
   }
