@@ -1,179 +1,176 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * JSONNode.hpp
+ *
+ *  Created on: Nov 7, 2015
+ *      Author: pfandedd
+ */
 
 #pragma once
 
-#include <sgpp/base/tools/json/Token.hpp>
-
 #include <memory>
 #include <vector>
-#include <string>
+
+#include "Token.hpp"
 
 namespace json {
 
 class Node {
- protected:
-  static const int SERIALIZE_INDENT = 3;
+protected:
 
- public:
-  // only relevant if the parent is a DictNode, managed by the DictNode
-  size_t orderedKeyIndex;
+    static const int SERIALIZE_INDENT = 3;
 
-  // managed by the parent, i.e. DictNode or ListNode
-  Node* parent;
+public:
+    //only relevant if the parent is a DictNode, managed by the DictNode
+    size_t orderedKeyIndex;
 
-  Node();
+    //managed by the parent, i.e. DictNode or ListNode
+    Node *parent;
 
-  virtual ~Node() = default;
+    Node();
 
-  virtual void parse(std::vector<Token>& stream) = 0;
+    virtual ~Node() = default;
 
-  virtual void serialize(std::ofstream& outFile, size_t indentWidth) = 0;
+    virtual Node &operator=(const Node& right);
 
-  virtual Node& operator[](const std::string& key);
+    virtual void parse(std::vector<Token> &stream) = 0;
 
-  virtual Node& operator[](size_t index);
+    virtual void serialize(std::ostream &outFile, size_t indentWidth) = 0;
 
-  virtual std::string& get();
+    virtual Node &operator[](const std::string &key);
 
-  virtual void set(const std::string& value);
+    virtual Node &operator[](const size_t index);
 
-  virtual double getDouble();
+    virtual std::string &get();
 
-  virtual void setDouble(double doubleValue);
+    virtual void set(const std::string &value);
 
-  virtual uint64_t getUInt();
+    virtual double getDouble();
 
-  virtual void setUInt(uint64_t uintValue);
+    virtual void setDouble(double doubleValue);
 
-  virtual int64_t getInt();
+    virtual uint64_t getUInt();
 
-  virtual void setInt(int64_t intValue);
+    virtual void setUInt(uint64_t uintValue);
 
-  virtual bool getBool();
+    virtual int64_t getInt();
 
-  virtual void setBool(bool boolValue);
+    virtual void setInt(int64_t intValue);
 
-  //  virtual JSONNode &getItem(size_t index);
+    virtual bool getBool();
 
-  virtual size_t size() = 0;
+    virtual void setBool(bool boolValue);
 
-  virtual void addValue(std::unique_ptr<Node> node);
+//  virtual JSONNode &getItem(size_t index);
 
-  virtual void addAttribute(const std::string& name,
-                            std::unique_ptr<Node> node);
+    virtual size_t size() = 0;
 
-  virtual std::unique_ptr<Node> removeValue(size_t index);
+    virtual void addValue(std::unique_ptr<Node> node);
 
-  virtual std::unique_ptr<Node> removeAttribute(const std::string& name);
+    virtual void addAttribute(const std::string &name, std::unique_ptr<Node> node);
 
-  virtual Node* clone() = 0;
+    virtual std::unique_ptr<Node> removeValue(size_t index);
 
-  // returns the node to which the attribute was added
-  virtual Node& addTextAttr(const std::string& name, const std::string& value);
+    virtual std::unique_ptr<Node> removeAttribute(const std::string &name);
 
-  // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const char* value);
+    virtual Node *clone() = 0;
 
-  // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const std::string& value);
+    // returns the node to which the attribute was added
+    virtual Node &addTextAttr(const std::string &name, const std::string &value);
 
-  // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const double& value);
+    // returns the node to which the attribute was added
+    virtual Node &addIDAttr(const std::string &name, const char *value);
 
-  // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const uint64_t& value);
+    // returns the node to which the attribute was added
+    virtual Node &addIDAttr(const std::string &name, const std::string &value);
 
-  // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const int64_t& value);
+    // returns the node to which the attribute was added
+    virtual Node &addIDAttr(const std::string &name, const double &value);
 
-  // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const bool& value);
+    // returns the node to which the attribute was added
+    virtual Node &addIDAttr(const std::string &name, const uint64_t &value);
 
-  // returns created dict node
-  virtual Node& addDictAttr(const std::string& name);
+    // returns the node to which the attribute was added
+    virtual Node &addIDAttr(const std::string &name, const int64_t &value);
 
-  // returns created list node
-  virtual Node& addListAttr(const std::string& name);
+    // returns the node to which the attribute was added
+    virtual Node &addIDAttr(const std::string &name, const bool &value);
 
-  // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceTextAttr(const std::string& name,
-                                const std::string& value);
+    // returns created dict node
+    virtual Node &addDictAttr(const std::string &name);
 
-  // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name,
-                              const std::string& value);
+    // returns created list node
+    virtual Node &addListAttr(const std::string &name);
 
-  // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name, const double& value);
+    // returns the node to which the attribute was added
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceTextAttr(const std::string &name, const std::string &value);
 
-  // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name, const uint64_t& value);
+    // returns the node to which the attribute was added
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceIDAttr(const std::string &name, const std::string &value);
 
-  // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name, const int64_t& value);
+    // returns the node to which the attribute was added
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceIDAttr(const std::string &name, const double &value);
 
-  // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name, const bool& value);
+    // returns the node to which the attribute was added
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceIDAttr(const std::string &name, const uint64_t &value);
 
-  // returns created dict node
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceDictAttr(const std::string& name);
+    // returns the node to which the attribute was added
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceIDAttr(const std::string &name, const int64_t &value);
 
-  // returns created list node
-  // replaces a node, adds a new node, if the node does not exist,
-  // the old node is deleted
-  virtual Node& replaceListAttr(const std::string& name);
+    // returns the node to which the attribute was added
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceIDAttr(const std::string &name, const bool &value);
 
-  // returns created dict node
-  virtual Node& addDictValue();
+    // returns created dict node
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceDictAttr(const std::string &name);
 
-  // returns created dict node
-  virtual Node& addListValue();
+    // returns created list node
+    // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+    virtual Node &replaceListAttr(const std::string &name);
 
-  // returns the list node to which the value was added
-  virtual Node& addTextValue(const std::string& value);
+    // returns created dict node
+    virtual Node &addDictValue();
 
-  // returns the list node to which the value was added
-  virtual Node& addIdValue(const std::string& value);
+    // returns created dict node
+    virtual Node &addListValue();
 
-  // returns the list node to which the value was added
-  virtual Node& addIdValue(const char* value);
+    // returns the list node to which the value was added
+    virtual Node &addTextValue(const std::string &value);
 
-  // returns the list node to which the value was added
-  virtual Node& addIdValue(const double& value);
+    // returns the list node to which the value was added
+    virtual Node &addIdValue(const std::string &value);
 
-  // returns the list node to which the value was added
-  virtual Node& addIdValue(const uint64_t& value);
+    // returns the list node to which the value was added
+    virtual Node &addIdValue(const char *value);
 
-  // returns the list node to which the value was added
-  virtual Node& addIdValue(const int64_t& value);
+    // returns the list node to which the value was added
+    virtual Node &addIdValue(const double &value);
 
-  // returns the list node to which the value was added
-  virtual Node& addIdValue(const bool& value);
+    // returns the list node to which the value was added
+    virtual Node &addIdValue(const uint64_t &value);
 
-  virtual bool contains(const std::string& key);
+    // returns the list node to which the value was added
+    virtual Node &addIdValue(const int64_t &value);
 
-  virtual std::unique_ptr<Node> erase(Node& node);
+    // returns the list node to which the value was added
+    virtual Node &addIdValue(const bool &value);
 
-  virtual std::unique_ptr<Node> erase();
+    virtual bool contains(const std::string &key);
 
-  virtual std::vector<std::string>& keys();
+    virtual std::unique_ptr<Node> erase(Node &node);
+
+    virtual std::unique_ptr<Node> erase();
+
+    virtual std::vector<std::string> &keys();
+
 };
 
-}  // namespace json
+}
+
+std::ostream& operator<<(std::ostream& stream, json::Node& node);
+

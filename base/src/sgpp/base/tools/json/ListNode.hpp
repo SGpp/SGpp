@@ -1,71 +1,76 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * JSONListNode.hpp
+ *
+ *  Created on: Nov 7, 2015
+ *      Author: pfandedd
+ */
 
 #pragma once
 
-#include <sgpp/base/tools/json/Node.hpp>
-
 #include <memory>
 #include <vector>
-#include <string>
+
+#include "Node.hpp"
 
 namespace json {
 
 class ListNode: public Node {
- private:
+private:
+
   std::vector<std::unique_ptr<Node>> list;
 
- public:
+public:
   ListNode();
 
-  ListNode(const ListNode& original);
+  ListNode(const ListNode &original);
 
-  ListNode& operator=(const ListNode& right);
+  ListNode &operator=(const ListNode &right);
 
-  void parse(std::vector<Token>& stream) override;
+  virtual Node &operator=(const Node& right) override;
 
-  void serialize(std::ofstream& outFile, size_t indentWidth) override;
+  void parse(std::vector<Token> &stream) override;
 
-  Node& operator[](size_t index) override;
+  virtual void serialize(std::ostream &outFile, size_t indentWidth) override;
 
-  size_t size() override;
+  virtual Node &operator[](const size_t index) override;
 
-  void addValue(std::unique_ptr<Node> node) override;
+  virtual size_t size() override;
 
-  std::unique_ptr<Node> removeValue(size_t index) override;
+  virtual void addValue(std::unique_ptr<Node> node) override;
 
-  Node* clone() override;
+  virtual std::unique_ptr<Node> removeValue(size_t index) override;
+
+  virtual Node *clone() override;
 
   // returns created dict node
-  Node& addDictValue() override;
+  virtual Node &addDictValue() override;
 
   // returns created dict node
-  Node& addListValue() override;
+  virtual Node &addListValue() override;
 
   // returns the list node to which the value was added
-  Node& addTextValue(const std::string& value) override;
+  virtual Node &addTextValue(const std::string &value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const std::string& value) override;
+  virtual Node &addIdValue(const std::string &value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const char* value) override;
+  virtual Node &addIdValue(const char *value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const double& value) override;
+  virtual Node &addIdValue(const double &value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const uint64_t& value) override;
+  virtual Node &addIdValue(const uint64_t &value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const int64_t& value) override;
+  virtual Node &addIdValue(const int64_t &value) override;
 
   // returns the list node to which the value was added
-  Node& addIdValue(const bool& value) override;
+  virtual Node &addIdValue(const bool &value) override;
 
-  std::unique_ptr<Node> erase(Node& node) override;
+  virtual std::unique_ptr<Node> erase(Node &node) override;
+
 };
 
-}  // namespace json
+}

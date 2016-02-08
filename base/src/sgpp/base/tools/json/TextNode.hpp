@@ -1,35 +1,39 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * JSONStringNode.hpp
+ *
+ *  Created on: Nov 7, 2015
+ *      Author: pfandedd
+ */
 
 #pragma once
 
-#include <sgpp/base/tools/json/Node.hpp>
-
-#include <string>
-#include <vector>
+#include "Node.hpp"
 
 namespace json {
 
 class TextNode: public Node {
- private:
+private:
+
   std::string value;
 
- public:
+public:
   TextNode();
 
-  void parse(std::vector<Token>& stream) override;
+  TextNode& operator=(const TextNode &right) = default;
 
-  void serialize(std::ofstream& outFile, size_t indentWidth) override;
+  virtual Node &operator=(const Node& right) override;
 
-  std::string& get() override;
+  virtual void parse(std::vector<Token> &stream) override;
 
-  void set(const std::string& value) override;
+  virtual void serialize(std::ostream &outFile, size_t indentWidth) override;
 
-  size_t size() override;
+  virtual std::string &get() override;
 
-  Node* clone() override;
+  virtual void set(const std::string &value) override;
+
+  virtual size_t size() override;
+
+  virtual Node *clone() override;
 };
 
-}  // namespace json
+}
