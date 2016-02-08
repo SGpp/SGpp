@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "DataMiningConfiguration.hpp"
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -43,7 +45,7 @@ namespace SGPP {
         virtual std::shared_ptr<SGPP::base::DataVector> getSurpluses();
 
       protected:
-        SGPP::datadriven::DataMiningConfiguration config;
+        SGPP::datadriven::DataMiningConfiguration &config;
         std::shared_ptr<SGPP::base::Grid> grid;
         std::shared_ptr<SGPP::base::DataVector> alpha;
     };
