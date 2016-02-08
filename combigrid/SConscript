@@ -16,7 +16,8 @@ Import('libraryTargetList')
 Import('installTargetList')
 Import('exampleTargetList')
 
-moduleDependencies = ['sgppbase']
+#moduleDependencies = ['sgppbase']
+moduleDependencies = []
 Export('moduleDependencies')
 
 if env['COMPILER'] == 'vcc':
@@ -37,7 +38,9 @@ for currentFolder, subdirNames, fileNames in os.walk("src"):
        currentFolder.startswith(os.path.join(
           "src", "sgpp", "combigrid", "tests")) or \
        currentFolder.startswith(os.path.join(
-          "src", "sgpp", "combigrid", "multigridFG", "test")):
+          "src", "sgpp", "combigrid", "multigridFG", "test")) or \
+       currentFolder.startswith(os.path.join(
+       "src","sgpp","combigrid_old")):
         continue
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
         sourceFile = os.path.join(currentFolder, fileName)
