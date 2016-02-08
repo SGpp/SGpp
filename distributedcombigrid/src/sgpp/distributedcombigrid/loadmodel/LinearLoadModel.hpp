@@ -18,11 +18,13 @@ namespace combigrid {
 
 class LinearLoadModel: public LoadModel {
 public:
-  LinearLoadModel();
+  LinearLoadModel(){
+  }
 
   inline real eval(const LevelVector &l) const;
 
-  virtual ~LinearLoadModel();
+  virtual ~LinearLoadModel(){
+  }
 };
 
 inline real LinearLoadModel::eval(const LevelVector &l) const {

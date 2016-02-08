@@ -15,7 +15,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "../../distributedcombigrid/utils/StatsContainerID.hpp"
+#include "sgpp/distributedcombigrid/utils/StatsContainerID.hpp"
 
 #define TIMING
 
@@ -46,14 +46,18 @@ public:
 
   inline double getValue(const std::string &valueName) const;
 
-  virtual ~StatsContainer();
+  virtual ~StatsContainer(){
+
+  };
 
   inline void save(const std::string& filename) const;
 
 private:
   friend StatsContainerID theStatsContainer();
 
-  explicit StatsContainer();
+  explicit StatsContainer(){
+
+  }
 
   std::map<std::string, std::chrono::high_resolution_clock::time_point> startTimes_;
 
