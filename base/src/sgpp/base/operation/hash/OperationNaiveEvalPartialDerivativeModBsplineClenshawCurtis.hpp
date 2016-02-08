@@ -13,51 +13,52 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating partial derivatives of
-     * modified Clenshaw-Curtis B-spline
-     * linear combinations on Noboundary grids.
-     */
-    class OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis :
-      public OperationNaiveEvalPartialDerivative {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    B-spline degree
-         */
-        OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis(
-          GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
-
-        /**
-         * Destructor.
-         */
-        virtual ~OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis() override {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @param derivDim  dimension in which the partial derivative should be taken
-         * @return          value of the partial derivative of the linear combination
-         */
-        virtual float_t evalPartialDerivative(const DataVector& alpha,
-                                              const DataVector& point,
-                                              size_t derivDim) override;
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SBsplineModifiedClenshawCurtisBase base;
-    };
-
+/**
+ * Operation for evaluating partial derivatives of
+ * modified Clenshaw-Curtis B-spline
+ * linear combinations on Noboundary grids.
+ */
+class OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis :
+  public OperationNaiveEvalPartialDerivative {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    B-spline degree
+   */
+  OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis(
+    GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  virtual ~OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis()
+  override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @param derivDim  dimension in which the partial derivative should be taken
+   * @return          value of the partial derivative of the linear combination
+   */
+  virtual float_t evalPartialDerivative(const DataVector& alpha,
+                                        const DataVector& point,
+                                        size_t derivDim) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SBsplineModifiedClenshawCurtisBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONEVALPARTIALDERIVATIVEMODBSPLINECLENSHAWCURTIS_HPP */

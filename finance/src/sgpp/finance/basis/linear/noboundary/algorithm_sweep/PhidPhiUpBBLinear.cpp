@@ -9,66 +9,70 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
 
 
-    PhidPhiUpBBLinear::PhidPhiUpBBLinear(SGPP::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+PhidPhiUpBBLinear::PhidPhiUpBBLinear(SGPP::base::GridStorage* storage) :
+  storage(storage), boundingBox(storage->getBoundingBox()) {
+}
+
+PhidPhiUpBBLinear::~PhidPhiUpBBLinear() {
+}
+
+void PhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
+                                   SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+  // get boundary values
+  float_t fl = 0.0;
+  float_t fr = 0.0;
+
+  rec(source, result, index, dim, fl, fr);
+}
+
+void PhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
+                            SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
+                            float_t& fr) {
+  size_t seq = index.seq();
+
+  fl = fr = 0.0;
+  float_t fml = 0.0;
+  float_t fmr = 0.0;
+
+  SGPP::base::GridStorage::index_type::level_type current_level;
+  SGPP::base::GridStorage::index_type::index_type current_index;
+
+  if (!index.hint()) {
+    index.leftChild(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fml);
     }
 
-    PhidPhiUpBBLinear::~PhidPhiUpBBLinear() {
+    index.stepRight(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fmr, fr);
     }
 
-    void PhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      // get boundary values
-      float_t fl = 0.0;
-      float_t fr = 0.0;
+    index.up(dim);
+  }
 
-      rec(source, result, index, dim, fl, fr);
-    }
+  index.get(dim, current_level, current_index);
 
-    void PhidPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
-      size_t seq = index.seq();
+  float_t fm = fml + fmr;
 
-      fl = fr = 0.0;
-      float_t fml = 0.0;
-      float_t fmr = 0.0;
+  float_t alpha_value = source[seq];
 
-      SGPP::base::GridStorage::index_type::level_type current_level;
-      SGPP::base::GridStorage::index_type::index_type current_index;
+  float_t helper = 0.5;
 
-      if (!index.hint()) {
-        index.leftChild(dim);
+  // transposed operations:
+  result[seq] = fm;
 
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fml);
-        }
+  fl = (fm / 2.0) + ((alpha_value * ((-1.0) * helper)) + fl);
+  fr = (fm / 2.0) + ((alpha_value * helper) + fr);
+}
 
-        index.stepRight(dim);
+// namespace detail
 
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fmr, fr);
-        }
-
-        index.up(dim);
-      }
-
-      index.get(dim, current_level, current_index);
-
-      float_t fm = fml + fmr;
-
-      float_t alpha_value = source[seq];
-
-      float_t helper = 0.5;
-
-      // transposed operations:
-      result[seq] = fm;
-
-      fl = (fm / 2.0) + ((alpha_value * ((-1.0) * helper)) + fl);
-      fr = (fm / 2.0) + ((alpha_value * helper) + fr);
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+} // namespace SGPP
 }

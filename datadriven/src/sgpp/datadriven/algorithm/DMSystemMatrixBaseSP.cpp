@@ -9,35 +9,38 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    DMSystemMatrixBaseSP::DMSystemMatrixBaseSP(SGPP::base::DataMatrixSP& trainData, float lambda)
-      : dataset_(&trainData), lambda_(lambda), completeTimeMult_(0.0), computeTimeMult_(0.0),
-        completeTimeMultTrans_(0.0), computeTimeMultTrans_(0.0) {
-      myTimer_ = new SGPP::base::SGppStopwatch();
-    }
+DMSystemMatrixBaseSP::DMSystemMatrixBaseSP(SGPP::base::DataMatrixSP& trainData,
+    float lambda)
+  : dataset_(&trainData), lambda_(lambda), completeTimeMult_(0.0),
+    computeTimeMult_(0.0),
+    completeTimeMultTrans_(0.0), computeTimeMultTrans_(0.0) {
+  myTimer_ = new SGPP::base::SGppStopwatch();
+}
 
-    DMSystemMatrixBaseSP::~DMSystemMatrixBaseSP() {
-      delete myTimer_;
-    }
+DMSystemMatrixBaseSP::~DMSystemMatrixBaseSP() {
+  delete myTimer_;
+}
 
-    void DMSystemMatrixBaseSP::rebuildLevelAndIndex() {
-    }
+void DMSystemMatrixBaseSP::rebuildLevelAndIndex() {
+}
 
-    void DMSystemMatrixBaseSP::resetTimers() {
-      completeTimeMult_ = 0.0;
-      computeTimeMult_ = 0.0;
-      completeTimeMultTrans_ = 0.0;
-      computeTimeMultTrans_ = 0.0;
-    }
+void DMSystemMatrixBaseSP::resetTimers() {
+  completeTimeMult_ = 0.0;
+  computeTimeMult_ = 0.0;
+  completeTimeMultTrans_ = 0.0;
+  computeTimeMultTrans_ = 0.0;
+}
 
-    void DMSystemMatrixBaseSP::getTimers(float_t& timeMult, float_t& computeMult, float_t& timeMultTrans, float_t& computeMultTrans) {
-      timeMult = completeTimeMult_;
-      computeMult = computeTimeMult_;
-      timeMultTrans = completeTimeMultTrans_;
-      computeMultTrans = computeTimeMultTrans_;
-    }
+void DMSystemMatrixBaseSP::getTimers(float_t& timeMult, float_t& computeMult,
+                                     float_t& timeMultTrans, float_t& computeMultTrans) {
+  timeMult = completeTimeMult_;
+  computeMult = computeTimeMult_;
+  timeMultTrans = completeTimeMultTrans_;
+  computeMultTrans = computeTimeMultTrans_;
+}
 
-  }
+}
 
 }

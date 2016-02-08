@@ -9,7 +9,8 @@
 using namespace std;
 
 
-combigrid::S_CT::S_CT( int dim , int level ) : combigrid::CombiSchemeBasis(dim, level) {
+combigrid::S_CT::S_CT( int dim , int level ) : combigrid::CombiSchemeBasis(dim,
+      level) {
 
   std::vector< int > levels( dim_ , level);
   // the rations for the dimension adaptive case
@@ -22,7 +23,8 @@ combigrid::S_CT::S_CT( int dim , int level ) : combigrid::CombiSchemeBasis(dim, 
 }
 
 
-combigrid::S_CT::S_CT( int dim , int level , int level_truncation) : combigrid::CombiSchemeBasis(dim, level) {
+combigrid::S_CT::S_CT( int dim , int level ,
+                       int level_truncation) : combigrid::CombiSchemeBasis(dim, level) {
 
   std::vector< int > levels( dim_ , level);
   // the rations for the dimension adaptive case
@@ -36,7 +38,8 @@ combigrid::S_CT::S_CT( int dim , int level , int level_truncation) : combigrid::
 
 
 
-combigrid::S_CT::S_CT( int dim , const std::vector< int >& levels ) : combigrid::CombiSchemeBasis(dim, levels) {
+combigrid::S_CT::S_CT( int dim ,
+                       const std::vector< int >& levels ) : combigrid::CombiSchemeBasis(dim, levels) {
 
   std::vector< int > levels_tmp = levels;
   // the rations for the dimension adaptive case
@@ -50,7 +53,9 @@ combigrid::S_CT::S_CT( int dim , const std::vector< int >& levels ) : combigrid:
 
 
 
-combigrid::S_CT::S_CT( int dim , int level , const std::vector< int >& levels_trunk ) : combigrid::CombiSchemeBasis(dim, level) {
+combigrid::S_CT::S_CT( int dim , int level ,
+                       const std::vector< int >& levels_trunk ) : combigrid::CombiSchemeBasis(dim,
+                             level) {
 
   std::vector< int > levels( dim_ , level );
   // the rations for the dimension adaptive case
@@ -67,7 +72,9 @@ combigrid::S_CT::S_CT( int dim , int level , const std::vector< int >& levels_tr
 
 
 
-combigrid::S_CT::S_CT( int dim , const std::vector< int >& levels , const std::vector< int >& levels_trunk ) : combigrid::CombiSchemeBasis(dim, levels) {
+combigrid::S_CT::S_CT( int dim , const std::vector< int >& levels ,
+                       const std::vector< int >& levels_trunk ) : combigrid::CombiSchemeBasis(dim,
+                             levels) {
 
   std::vector< int > levels_tmp = levels;
   // the rations for the dimension adaptive case
@@ -80,7 +87,8 @@ combigrid::S_CT::S_CT( int dim , const std::vector< int >& levels , const std::v
 }
 
 
-void combigrid::S_CT::init( std::vector< int >& levels , std::vector< double >& ratio_ ,  std::vector< int >& l_user_ ) {
+void combigrid::S_CT::init( std::vector< int >& levels ,
+                            std::vector< double >& ratio_ ,  std::vector< int >& l_user_ ) {
 
   std::vector< int > v(0);
 
@@ -126,7 +134,8 @@ void combigrid::S_CT::init( std::vector< int >& levels , std::vector< double >& 
 
 
 
-void combigrid::S_CT::getTrapezoidsums(std::vector<int>& v , size_t dim , int sum , std::vector< double >& ratio_ , std::vector< int >& l_user_) {
+void combigrid::S_CT::getTrapezoidsums(std::vector<int>& v , size_t dim ,
+                                       int sum , std::vector< double >& ratio_ , std::vector< int >& l_user_) {
   /* Takes recursively every possible combination of numbers which add up to sum creating a linear boundary grid for each one
    * The levels of the full grids must be greater than l_user*/
   // code from Aliz

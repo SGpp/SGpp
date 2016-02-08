@@ -13,40 +13,40 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * Implements the standard L 2 scalar product on periodic grids
-     *
-     */
-    class OperationMatrixLTwoDotPeriodic: public SGPP::base::OperationMatrix {
-      public:
-        /**
-         * Constructor
-         *
-         * @param gridStorage pointer to the GridStorage of the grid
-         */
-        OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage);
+/**
+ * Implements the standard L 2 scalar product on periodic grids
+ *
+ */
+class OperationMatrixLTwoDotPeriodic: public SGPP::base::OperationMatrix {
+ public:
+  /**
+   * Constructor
+   *
+   * @param gridStorage pointer to the GridStorage of the grid
+   */
+  OperationMatrixLTwoDotPeriodic(SGPP::base::GridStorage* gridStorage);
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationMatrixLTwoDotPeriodic();
+  /**
+   * Destructor
+   */
+  virtual ~OperationMatrixLTwoDotPeriodic();
 
-        /**
-        * Implementation of standard matrix multiplication
-        *
-        * @param alpha DataVector that is multiplied to the matrix
-        * @param result DataVector into which the result of multiplication is stored
-        */
-        virtual void mult(SGPP::base::DataVector& alpha,
-                          SGPP::base::DataVector& result);
-      protected:
+  /**
+  * Implementation of standard matrix multiplication
+  *
+  * @param alpha DataVector that is multiplied to the matrix
+  * @param result DataVector into which the result of multiplication is stored
+  */
+  virtual void mult(SGPP::base::DataVector& alpha,
+                    SGPP::base::DataVector& result);
+ protected:
 
-        SGPP::base::GridStorage* gridStorage;
-    };
+  SGPP::base::GridStorage* gridStorage;
+};
 
-  }
+}
 }
 
 

@@ -15,68 +15,68 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with linear base functions
-     */
-    class GridStencil : public Grid {
-      protected:
-        GridStencil(std::istream& istr);
+/**
+ * grid with linear base functions
+ */
+class GridStencil : public Grid {
+ protected:
+  GridStencil(std::istream& istr);
 
-      public:
+ public:
 
-        typedef std::vector<unsigned int> IndexStencil;
+  typedef std::vector<unsigned int> IndexStencil;
 
-        typedef std::vector<float>      WeightStencil;
-
-
-        /**
-         * Constructor Linear Grid without boundaries
-         *
-         * @param dim the dimension of the grid
-         */
-        GridStencil(size_t dim);
-
-        /**
-         * Constructor Linear Grid
-         *
-         * @param BB the BoundingBox of the grid
-         */
-        GridStencil(BoundingBox& BB);
-
-        /**
-         * Destructor
-         */
-        virtual ~GridStencil() override;
-
-        /**
-         * Get the surplus stencil, in fact an array of unsigned ints.
-         */
-        virtual const IndexStencil&
-        getSurplusStencil() const;
-
-        /**
-         * Get the neighbor stencil, in fact an array of unsigned ints.
-         */
-        virtual const IndexStencil&
-        getNeighborStencil() const;
-
-        /**
-         * Get the weight stencil, in fact an array of floats.
-         */
-        virtual const WeightStencil&
-        getWeightStencil() const;
+  typedef std::vector<float>      WeightStencil;
 
 
-      protected:
+  /**
+   * Constructor Linear Grid without boundaries
+   *
+   * @param dim the dimension of the grid
+   */
+  GridStencil(size_t dim);
 
-        IndexStencil surplusStencil;
-        IndexStencil neighborStencil;
-        WeightStencil weightStencil;
-    };
+  /**
+   * Constructor Linear Grid
+   *
+   * @param BB the BoundingBox of the grid
+   */
+  GridStencil(BoundingBox& BB);
 
-  }
-}
+  /**
+   * Destructor
+   */
+  virtual ~GridStencil() override;
+
+  /**
+   * Get the surplus stencil, in fact an array of unsigned ints.
+   */
+  virtual const IndexStencil&
+  getSurplusStencil() const;
+
+  /**
+   * Get the neighbor stencil, in fact an array of unsigned ints.
+   */
+  virtual const IndexStencil&
+  getNeighborStencil() const;
+
+  /**
+   * Get the weight stencil, in fact an array of floats.
+   */
+  virtual const WeightStencil&
+  getWeightStencil() const;
+
+
+ protected:
+
+  IndexStencil surplusStencil;
+  IndexStencil neighborStencil;
+  WeightStencil weightStencil;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* GRIDSTENCIL_HPP */

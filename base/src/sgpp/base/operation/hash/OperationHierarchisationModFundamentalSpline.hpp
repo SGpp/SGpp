@@ -13,39 +13,39 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Hierarchisation on sparse grid, modified fundamental spline basis
-     */
-    class OperationHierarchisationModFundamentalSpline :
-      public OperationHierarchisation {
-      public:
-        /**
-         * Constructor of OperationHierarchisationModFundamentalSpline
-         *
-         * @param grid Pointer to the grid
-         */
-        OperationHierarchisationModFundamentalSpline(
-          ModFundamentalSplineGrid* grid);
+/**
+ * Hierarchisation on sparse grid, modified fundamental spline basis
+ */
+class OperationHierarchisationModFundamentalSpline :
+  public OperationHierarchisation {
+ public:
+  /**
+   * Constructor of OperationHierarchisationModFundamentalSpline
+   *
+   * @param grid Pointer to the grid
+   */
+  OperationHierarchisationModFundamentalSpline(
+    ModFundamentalSplineGrid* grid);
 
-        /**
-         * Destructor.
-         */
-        virtual ~OperationHierarchisationModFundamentalSpline() override;
+  /**
+   * Destructor.
+   */
+  virtual ~OperationHierarchisationModFundamentalSpline() override;
 
-        virtual void doHierarchisation(DataVector& node_values) override;
-        virtual void doDehierarchisation(DataVector& alpha) override;
+  virtual void doHierarchisation(DataVector& node_values) override;
+  virtual void doDehierarchisation(DataVector& alpha) override;
 
-        void doHierarchisation(DataMatrix& node_values);
-        void doDehierarchisation(DataMatrix& alpha);
+  void doHierarchisation(DataMatrix& node_values);
+  void doDehierarchisation(DataMatrix& alpha);
 
-      protected:
-        /// grid
-        ModFundamentalSplineGrid* grid;
-    };
+ protected:
+  /// grid
+  ModFundamentalSplineGrid* grid;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONHIERARCHISATIONMODFUNDAMENTALSPLINE_HPP */

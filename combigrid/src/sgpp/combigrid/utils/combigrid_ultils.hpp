@@ -75,132 +75,139 @@ typedef std::vector<int> IVector;
 
 namespace combigrid {
 
-  /** vector with power two */
-  const int powerOfTwo[30] = { 1 , 2 , 4 , 8 , 16 , 32 , 64 , 128 , 256 , 512 , 1024 , 2048 , 4096 ,
-                               8192 , 16384 , 32768 , 65536 , 131072 , 262144 , 524288 , 1048576 , 2097152 ,
-                               4194304 , 8388608 , 16777216 , 33554432 , 67108864 , 134217728 , 268435456
-                             };
+/** vector with power two */
+const int powerOfTwo[30] = { 1 , 2 , 4 , 8 , 16 , 32 , 64 , 128 , 256 , 512 , 1024 , 2048 , 4096 ,
+                             8192 , 16384 , 32768 , 65536 , 131072 , 262144 , 524288 , 1048576 , 2097152 ,
+                             4194304 , 8388608 , 16777216 , 33554432 , 67108864 , 134217728 , 268435456
+                           };
 
-  /** vector with one over power two */
-  const double oneOverPowOfTwo[30] = { 1.0 / 1.0 , 1.0 / 2.0 , 1.0 / 4.0 , 1.0 / 8.0 , 1.0 / 16.0 , 1.0 / 32.0 ,
-                                       1.0 / 64.0 , 1.0 / 128.0 , 1.0 / 256.0 , 1.0 / 512.0 , 1.0 / 1024.0 , 1.0 / 2048.0 , 1.0 / 4096.0 ,
-                                       1.0 / 8192.0 , 1.0 / 16384.0 , 1.0 / 32768.0 , 1.0 / 65536.0 , 1.0 / 131072.0 , 1.0 / 262144.0 ,
-                                       1.0 / 524288.0 , 1.0 / 1048576.0 , 1.0 / 2097152.0 , 1.0 / 4194304.0 , 1.0 / 8388608.0 , 1.0 / 16777216.0 ,
-                                       1.0 / 33554432.0 , 1.0 / 67108864.0 , 1.0 / 134217728.0 , 1.0 / 268435456.0
-                                     };
+/** vector with one over power two */
+const double oneOverPowOfTwo[30] = { 1.0 / 1.0 , 1.0 / 2.0 , 1.0 / 4.0 , 1.0 / 8.0 , 1.0 / 16.0 , 1.0 / 32.0 ,
+                                     1.0 / 64.0 , 1.0 / 128.0 , 1.0 / 256.0 , 1.0 / 512.0 , 1.0 / 1024.0 , 1.0 / 2048.0 , 1.0 / 4096.0 ,
+                                     1.0 / 8192.0 , 1.0 / 16384.0 , 1.0 / 32768.0 , 1.0 / 65536.0 , 1.0 / 131072.0 , 1.0 / 262144.0 ,
+                                     1.0 / 524288.0 , 1.0 / 1048576.0 , 1.0 / 2097152.0 , 1.0 / 4194304.0 , 1.0 / 8388608.0 , 1.0 / 16777216.0 ,
+                                     1.0 / 33554432.0 , 1.0 / 67108864.0 , 1.0 / 134217728.0 , 1.0 / 268435456.0
+                                   };
 
-  /** the maximum double value */
-  inline double COMBIGRID_DMAX(double v1 , double v2)   {
-    return (v1 < v2) ? v2 : v1;
+/** the maximum double value */
+inline double COMBIGRID_DMAX(double v1 , double v2)   {
+  return (v1 < v2) ? v2 : v1;
+}
+
+/** the maximum int value */
+inline int COMBIGRID_IMAX(int v1 , int v2)   {
+  return (v1 < v2) ? v2 : v1;
+}
+
+/** the minimum double value */
+inline double COMBIGRID_DMIN(double v1 , double v2)   {
+  return (v1 > v2) ? v2 : v1;
+}
+
+/** the minimum int value */
+inline int COMBIGRID_IMIN(int v1 , int v2)   {
+  return (v1 > v2) ? v2 : v1;
+}
+
+/** the function C_{N}^K , combination of N,K*/
+static int combination(int n, int k) {
+  if ((k == 0) || (n == k)) return 1;
+  else if ((k == 1) || (n == k + 1)) return n;
+  else if ((k == 2) || (n == k + 2)) return n * (n - 1) / 2;
+  else
+    return combination(n - 1, k) + combination(n - 1, k - 1);
+}
+
+/** calculates the L2 norm of one vector*/
+inline double l2_norm(std::vector<double>* v1) {
+  double diff = 0.0;
+
+  for (unsigned int i = 0; i < v1->size() ; i++) {
+    diff = diff + v1->at(i) * v1->at(i);
   }
 
-  /** the maximum int value */
-  inline int COMBIGRID_IMAX(int v1 , int v2)   {
-    return (v1 < v2) ? v2 : v1;
+  return sqrt(diff / double(v1->size()));
+}
+
+/** calculates the Inf norm of one vector*/
+inline double inf_norm(std::vector<double>* v1 ) {
+  double diff = 0.0 , tmp;
+
+  for (unsigned int i = 0; i < v1->size() ; i++) {
+    tmp = fabs(v1->at(i));
+    diff = (tmp > diff) ? tmp : diff;
   }
 
-  /** the minimum double value */
-  inline double COMBIGRID_DMIN(double v1 , double v2)   {
-    return (v1 > v2) ? v2 : v1;
+  return diff;
+}
+
+/** multiply two vectors, result will be in the first vector */
+inline void vect_mul(std::vector<double>* v1 , std::vector<double>* v2) {
+  COMBIGRID_ERROR_TEST( v1->size() == v2->size() ,
+                        " vect_mul , size do not match v1->size():"
+                        << v1->size() << " , v2->size():" << v2->size());
+
+  for (unsigned int i = 0; i < v1->size() ; i++) {
+    v1->at(i) = v1->at(i) * v2->at(i);
   }
+}
 
-  /** the minimum int value */
-  inline int COMBIGRID_IMIN(int v1 , int v2)   {
-    return (v1 > v2) ? v2 : v1;
+/** difference of two vectors, result will be in the first vector */
+inline void vect_diff(std::vector<double>* v1 , std::vector<double>* v2) {
+  COMBIGRID_ERROR_TEST( v1->size() == v2->size() ,
+                        " vect_diff , size do not match v1->size():"
+                        << v1->size() << " , v2->size():" << v2->size());
+
+  for (unsigned int i = 0; i < v1->size() ; i++) {
+    v1->at(i) = v1->at(i) - v2->at(i);
   }
+}
 
-  /** the function C_{N}^K , combination of N,K*/
-  static int combination(int n, int k) {
-    if ((k == 0) || (n == k)) return 1;
-    else if ((k == 1) || (n == k + 1)) return n;
-    else if ((k == 2) || (n == k + 2)) return n * (n - 1) / 2;
-    else
-      return combination(n - 1, k) + combination(n - 1, k - 1);
+/** v1 = coefv1*v1 + coefv2 * v2 */
+inline void vect_add_mul(double coefv1 , std::vector<double>* v1 ,
+                         double coefv2 , std::vector<double>* v2) {
+  COMBIGRID_ERROR_TEST( v1->size() == v2->size() ,
+                        " vect_add_mul , size do not match v1->size():"
+                        << v1->size() << " , v2->size():" << v2->size());
+
+  for (unsigned int i = 0; i < v1->size() ; i++) {
+    v1->at(i) = coefv1 * v1->at(i) + coefv2 * v2->at(i);
   }
+}
 
-  /** calculates the L2 norm of one vector*/
-  inline double l2_norm(std::vector<double>* v1) {
-    double diff = 0.0;
+/** computes the scalar product of two vectors */
+inline void scalar_product(std::vector<double>* v1 , std::vector<double>* v2 ,
+                           double& result ) {
+  COMBIGRID_ERROR_TEST( v1->size() == v2->size() ,
+                        " vect_add_mul , size do not match v1->size():"
+                        << v1->size() << " , v2->size():" << v2->size());
+  result = 0.0;
 
-    for (unsigned int i = 0; i < v1->size() ; i++) {
-      diff = diff + v1->at(i) * v1->at(i);
+  for (unsigned int i = 0; i < v1->size() ; i++) {
+    result = result + v1->at(i) * v2->at(i);
+  }
+}
+
+/** sets the values of the vector to a given value */
+inline void vect_setvalue(std::vector<double>* v1 , double newValue ) {
+  for (unsigned int i = 0; i < v1->size() ; i++) {
+    v1->at(i) = newValue;
+  }
+}
+
+/** plot one vector */
+inline void plot_vect(int level , int verb , std::vector<double>* v1 ,
+                      const char* stri) {
+  if (verb > level ) {
+    std::cout << stri << "=[" << v1->at(0);
+
+    for (unsigned int i = 1; i < v1->size() ; i++) {
+      std::cout << "," << v1->at(i);
     }
 
-    return sqrt(diff / double(v1->size()));
+    std::cout << "];" << std::endl;
   }
-
-  /** calculates the Inf norm of one vector*/
-  inline double inf_norm(std::vector<double>* v1 ) {
-    double diff = 0.0 , tmp;
-
-    for (unsigned int i = 0; i < v1->size() ; i++) {
-      tmp = fabs(v1->at(i));
-      diff = (tmp > diff) ? tmp : diff;
-    }
-
-    return diff;
-  }
-
-  /** multiply two vectors, result will be in the first vector */
-  inline void vect_mul(std::vector<double>* v1 , std::vector<double>* v2) {
-    COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_mul , size do not match v1->size():"
-                          << v1->size() << " , v2->size():" << v2->size());
-
-    for (unsigned int i = 0; i < v1->size() ; i++) {
-      v1->at(i) = v1->at(i) * v2->at(i);
-    }
-  }
-
-  /** difference of two vectors, result will be in the first vector */
-  inline void vect_diff(std::vector<double>* v1 , std::vector<double>* v2) {
-    COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_diff , size do not match v1->size():"
-                          << v1->size() << " , v2->size():" << v2->size());
-
-    for (unsigned int i = 0; i < v1->size() ; i++) {
-      v1->at(i) = v1->at(i) - v2->at(i);
-    }
-  }
-
-  /** v1 = coefv1*v1 + coefv2 * v2 */
-  inline void vect_add_mul(double coefv1 , std::vector<double>* v1 , double coefv2 , std::vector<double>* v2) {
-    COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_add_mul , size do not match v1->size():"
-                          << v1->size() << " , v2->size():" << v2->size());
-
-    for (unsigned int i = 0; i < v1->size() ; i++) {
-      v1->at(i) = coefv1 * v1->at(i) + coefv2 * v2->at(i);
-    }
-  }
-
-  /** computes the scalar product of two vectors */
-  inline void scalar_product(std::vector<double>* v1 , std::vector<double>* v2 , double& result ) {
-    COMBIGRID_ERROR_TEST( v1->size() == v2->size() , " vect_add_mul , size do not match v1->size():"
-                          << v1->size() << " , v2->size():" << v2->size());
-    result = 0.0;
-
-    for (unsigned int i = 0; i < v1->size() ; i++) {
-      result = result + v1->at(i) * v2->at(i);
-    }
-  }
-
-  /** sets the values of the vector to a given value */
-  inline void vect_setvalue(std::vector<double>* v1 , double newValue ) {
-    for (unsigned int i = 0; i < v1->size() ; i++) {
-      v1->at(i) = newValue;
-    }
-  }
-
-  /** plot one vector */
-  inline void plot_vect(int level , int verb , std::vector<double>* v1 , const char* stri) {
-    if (verb > level ) {
-      std::cout << stri << "=[" << v1->at(0);
-
-      for (unsigned int i = 1; i < v1->size() ; i++) {
-        std::cout << "," << v1->at(i);
-      }
-
-      std::cout << "];" << std::endl;
-    }
-  }
+}
 }
 
 #endif /* COMBIGRID_ULTILS_HPP_ */

@@ -14,60 +14,60 @@
 #include <functional>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Implementation of ScalarFunctionGradient that
-     * wraps a std::function object.
-     */
-    class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
-      public:
-        typedef std::function<float_t(const base::DataVector&,
-                                      base::DataVector&)>
-        FunctionGradientEvalType;
+/**
+ * Implementation of ScalarFunctionGradient that
+ * wraps a std::function object.
+ */
+class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
+ public:
+  typedef std::function<float_t(const base::DataVector&,
+                                base::DataVector&)>
+  FunctionGradientEvalType;
 
-        /**
-         * Constructor.
-         *
-         * @param d         dimension of the domain
-         * @param fGradient function gradient to be wrapped
-         */
-        WrapperScalarFunctionGradient(size_t d,
-                                      FunctionGradientEvalType fGradient) :
-          ScalarFunctionGradient(d), fGradient(fGradient) {
-        }
-
-        /**
-         * Destructor.
-         */
-        virtual ~WrapperScalarFunctionGradient() override {
-        }
-
-        /**
-         * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
-         * @param[out] gradient gradient
-         *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
-         * @return              \f$f(\vec{x})\f$
-         */
-        inline virtual float_t eval(const base::DataVector& x,
-                                    base::DataVector& gradient) override {
-          return fGradient(x, gradient);
-        }
-
-        /**
-         * @param[out] clone pointer to cloned object
-         */
-        void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
-          clone = std::unique_ptr<ScalarFunctionGradient>(
-                    new WrapperScalarFunctionGradient(d, fGradient));
-        }
-
-      protected:
-        /// function gradient to be wrapped
-        FunctionGradientEvalType fGradient;
-    };
-
+  /**
+   * Constructor.
+   *
+   * @param d         dimension of the domain
+   * @param fGradient function gradient to be wrapped
+   */
+  WrapperScalarFunctionGradient(size_t d,
+                                FunctionGradientEvalType fGradient) :
+    ScalarFunctionGradient(d), fGradient(fGradient) {
   }
+
+  /**
+   * Destructor.
+   */
+  virtual ~WrapperScalarFunctionGradient() override {
+  }
+
+  /**
+   * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
+   * @param[out] gradient gradient
+   *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
+   * @return              \f$f(\vec{x})\f$
+   */
+  inline virtual float_t eval(const base::DataVector& x,
+                              base::DataVector& gradient) override {
+    return fGradient(x, gradient);
+  }
+
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
+    clone = std::unique_ptr<ScalarFunctionGradient>(
+              new WrapperScalarFunctionGradient(d, fGradient));
+  }
+
+ protected:
+  /// function gradient to be wrapped
+  FunctionGradientEvalType fGradient;
+};
+
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_WRAPPERSCALARFUNCTIONGRADIENT_HPP */

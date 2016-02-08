@@ -10,26 +10,28 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    StaticTwoPartitionAutoTuning::StaticTwoPartitionAutoTuning(size_t problemSize, double percentPartion1, size_t partition2Divider, size_t OutputFreq):
-      TwoPartitionAutoTuning(problemSize, partition2Divider, OutputFreq),
-      _percentPartion1(percentPartion1) {
-      doTune();
-    }
+StaticTwoPartitionAutoTuning::StaticTwoPartitionAutoTuning(size_t problemSize,
+    double percentPartion1, size_t partition2Divider, size_t OutputFreq):
+  TwoPartitionAutoTuning(problemSize, partition2Divider, OutputFreq),
+  _percentPartion1(percentPartion1) {
+  doTune();
+}
 
-    void StaticTwoPartitionAutoTuning::autoTune() {
-      size_t partition1 = (size_t)std::min<double>(((double)_problemSize) * _percentPartion1, (double)_problemSize);
-      size_t partition2 = _problemSize - partition1;
+void StaticTwoPartitionAutoTuning::autoTune() {
+  size_t partition1 = (size_t)std::min<double>(((double)_problemSize) *
+                      _percentPartion1, (double)_problemSize);
+  size_t partition2 = _problemSize - partition1;
 
-      size_t partition2_remainder = partition2 % _partition2Divider;
-      partition2 -=  partition2_remainder;
-      partition1 = _problemSize - partition2;
+  size_t partition2_remainder = partition2 % _partition2Divider;
+  partition2 -=  partition2_remainder;
+  partition1 = _problemSize - partition2;
 
-      _sizePartition1 = partition1;
-    }
+  _sizePartition1 = partition1;
+}
 
 
 
-  }
+}
 }

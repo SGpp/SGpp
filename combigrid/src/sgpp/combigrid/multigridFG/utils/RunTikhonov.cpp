@@ -113,24 +113,29 @@ FullGridD* combigrid::RunTikhonov::computeFGTikhonov(
   FullGridD* fg;
   // first read in the results
   COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... read INPUT");
-  combigrid::RunTikhonov::readInInput(Xfile , YFile , dimensions , nrPoints , XCoords, YPoint);
+  combigrid::RunTikhonov::readInInput(Xfile , YFile , dimensions , nrPoints ,
+                                      XCoords, YPoint);
 
   // create the full grid
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create Full Grid");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... create Full Grid");
   fg = new FullGridD( dimensions , levels );
   fg->createFullGrid();
   fg->setDomain( &domain );
 
   // create the Tikhonov operator
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create combigrid::TikhonovOperator");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... create combigrid::TikhonovOperator");
   combigrid::TikhonovOperator op( fg , nrPoints, lambda , &XCoords , &YPoint );
 
   // create the multigrid method
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create combigrid::Multigrid");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... create combigrid::Multigrid");
   combigrid::Multigrid multigrid( &(op) , fg );
 
   // solve using only the smoother
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... solve multigird");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... solve multigird");
   unknowns.resize(fg->getNrElements(), 0.0);
   multigrid.solveCS( unknowns , 1e-8 , false );
   //multigrid.solveSmoothing( unknowns , 1e-8);
@@ -138,7 +143,8 @@ FullGridD* combigrid::RunTikhonov::computeFGTikhonov(
   //multigridFAS.solveFAS( unknowns , 1e-8 );
 
   // copy the solution back
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... write solution back and return");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... write solution back and return");
 
   for (int i = 0 ; i < fg->getNrElements() ; i++) {
     fg->getElementVector()[i] = unknowns[i];
@@ -161,22 +167,26 @@ void combigrid::RunTikhonov::computeFGTikhonov_FG(
   int verb = 6;
 
   // create the Tikhonov operator
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create combigrid::TikhonovOperator");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... create combigrid::TikhonovOperator");
   combigrid::TikhonovOperator op( fg , nrPoints, lambda , &XCoords , &YPoint );
 
   // create the multigrid method
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... create combigrid::Multigrid");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... create combigrid::Multigrid");
   combigrid::Multigrid multigrid( &(op) , fg );
 
   // solve using only the smoother
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... solve multigird");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... solve multigird");
   multigrid.solveCS( unknowns , 1e-8 , false );
   //multigrid.solveSmoothing( unknowns , 1e-8);
   //multigrid.solveCG( unknowns , 1e-6 );
   //multigridFAS.solveFAS( unknowns , 1e-8 );
 
   // copy the solution back
-  COMBIGRID_OUT_LEVEL2( verb , "RunTikhonov::computeFGTikhonov ... write solution back and return");
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "RunTikhonov::computeFGTikhonov ... write solution back and return");
 
   for (int i = 0 ; i < fg->getNrElements() ; i++) {
     fg->getElementVector()[i] = unknowns[i];
@@ -210,7 +220,8 @@ void combigrid::RunTikhonov::computeTikhonov_FG_crossvalidation(
   int testPointNr = static_cast<int>( YPoint.size() ) - trainPointNr;
   int dim = (int)::round((double)XCoords.size() / (double)YPoint.size());
 
-  COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_FG_crossvalidation    , trainPointNr="
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "computeTikhonov_FG_crossvalidation    , trainPointNr="
                         << trainPointNr << " , testPointNr=" << testPointNr);
 
   std::vector<double> XCoordsTrain(trainPointNr * dim);
@@ -223,7 +234,8 @@ void combigrid::RunTikhonov::computeTikhonov_FG_crossvalidation(
     XCoordsTrain[mp] = XCoords[mp];
   }
 
-  for (int mp = trainPointNr * dim ; mp < (testPointNr + trainPointNr)*dim ; mp ++) {
+  for (int mp = trainPointNr * dim ; mp < (testPointNr + trainPointNr)*dim ;
+       mp ++) {
     XCoordsTest[mp - trainPointNr * dim] = XCoords[mp];
   }
 
@@ -239,11 +251,13 @@ void combigrid::RunTikhonov::computeTikhonov_FG_crossvalidation(
   int direction = 1 , iterNr = 0;
   lamdba1 = lamdba2;
   // we compute the initial error
-  computeFGTikhonov_FG( fg, fg->getElementVector() , lamdba1 , XCoordsTrain, YPointTrain);
+  computeFGTikhonov_FG( fg, fg->getElementVector() , lamdba1 , XCoordsTrain,
+                        YPointTrain);
   err1 = measureErrorFG( fg, dim  , XCoordsTest, YPointTest );
   err2 = err1;
   lamdba2 = lamdba1;
-  COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_FG_crossvalidation    , initial error="
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "computeTikhonov_FG_crossvalidation    , initial error="
                         << err1 << " , lamdba=" << lamdba1 << " , step = " << step);
 
   // iterate till we find the solution , this is a simple minimum search algorithm
@@ -251,9 +265,11 @@ void combigrid::RunTikhonov::computeTikhonov_FG_crossvalidation(
   while ( (iterNr < 15) && (step > 1e-8) ) {
     //
     lamdba1 = lamdba1 - ((double)direction) * step;
-    computeFGTikhonov_FG( fg, fg->getElementVector() , lamdba1 , XCoordsTrain, YPointTrain);
+    computeFGTikhonov_FG( fg, fg->getElementVector() , lamdba1 , XCoordsTrain,
+                          YPointTrain);
     err1 = measureErrorFG( fg, dim  , XCoordsTest, YPointTest );
-    COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_FG_crossvalidation   try step lambda=" << lamdba1 <<
+    COMBIGRID_OUT_LEVEL2( verb ,
+                          "computeTikhonov_FG_crossvalidation   try step lambda=" << lamdba1 <<
                           "  error=" << err1 << " , step=" << step);
 
     // the step was successful
@@ -285,7 +301,8 @@ void combigrid::RunTikhonov::computeTikhonov_FG_crossvalidation(
     iterNr = iterNr + 1;
   }
 
-  COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_FG_crossvalidation    Final initial error="
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "computeTikhonov_FG_crossvalidation    Final initial error="
                         << err1 << " , lamdba=" << lamdba1 << " , step=" << step);
 }
 
@@ -300,7 +317,8 @@ void combigrid::RunTikhonov::computeTikhonov_CG_crossvalidation(
   int testPointNr = static_cast<int>( YPoint.size() ) - trainPointNr;
   int dim = (int)::round((double)XCoords.size() / (double)YPoint.size());
 
-  COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_CG_crossvalidation    , trainPointNr="
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "computeTikhonov_CG_crossvalidation    , trainPointNr="
                         << trainPointNr << " , testPointNr=" << testPointNr);
 
   std::vector<double> XCoordsTrain(trainPointNr * dim);
@@ -313,7 +331,8 @@ void combigrid::RunTikhonov::computeTikhonov_CG_crossvalidation(
     XCoordsTrain[mp] = XCoords[mp];
   }
 
-  for (int mp = trainPointNr * dim ; mp < (testPointNr + trainPointNr)*dim ; mp ++) {
+  for (int mp = trainPointNr * dim ; mp < (testPointNr + trainPointNr)*dim ;
+       mp ++) {
     XCoordsTest[mp - trainPointNr * dim] = XCoords[mp];
   }
 
@@ -333,7 +352,8 @@ void combigrid::RunTikhonov::computeTikhonov_CG_crossvalidation(
   err1 = measureErrorCG( combiG, dim  , XCoordsTest, YPointTest );
   err2 = err1;
   lamdba2 = lamdba1;
-  COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_CG_crossvalidation    , initial error="
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "computeTikhonov_CG_crossvalidation    , initial error="
                         << err1 << " , lamdba=" << lamdba1);
 
   // iterate till we find the solution , this is a simple minimum search algorithm
@@ -343,7 +363,8 @@ void combigrid::RunTikhonov::computeTikhonov_CG_crossvalidation(
     lamdba1 = lamdba1 - ((double)direction) * step;
     computeTikhonov_CG( combiG , lamdba1 , XCoordsTrain, YPointTrain);
     err1 = measureErrorCG( combiG, dim  , XCoordsTest, YPointTest );
-    COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_CG_crossvalidation   try step lambda=" << lamdba1 <<
+    COMBIGRID_OUT_LEVEL2( verb ,
+                          "computeTikhonov_CG_crossvalidation   try step lambda=" << lamdba1 <<
                           "  error=" << err1 << " , step=" << step);
 
     // the step was successful
@@ -375,7 +396,8 @@ void combigrid::RunTikhonov::computeTikhonov_CG_crossvalidation(
     iterNr = iterNr + 1;
   }
 
-  COMBIGRID_OUT_LEVEL2( verb , "computeTikhonov_CG_crossvalidation    Final initial error="
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "computeTikhonov_CG_crossvalidation    Final initial error="
                         << err1 << " , lamdba=" << lamdba1);
 }
 
@@ -388,7 +410,9 @@ double combigrid::RunTikhonov::measureErrorFG(FullGridD* fg,
   double err = 0.0 , fg_val;
   int verb = 6;
   std::vector<double> coord( dim , 0.0 );
-  COMBIGRID_OUT_LEVEL2( verb , "measureErrorFG  , dim=" << dim << " , YPoint.size()=" << YPoint.size() << " , XCoords.size()=" << XCoords.size() );
+  COMBIGRID_OUT_LEVEL2( verb ,
+                        "measureErrorFG  , dim=" << dim << " , YPoint.size()=" << YPoint.size() <<
+                        " , XCoords.size()=" << XCoords.size() );
 
   // for each point, we measure point wise difference
   for (int p = 0 ; p < (int)YPoint.size() ; p++ ) {

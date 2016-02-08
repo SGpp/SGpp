@@ -14,23 +14,26 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
-    OperationLELinear::OperationLELinear(SGPP::base::GridStorage* storage) : SGPP::pde::StdUpDown(storage) {
-    }
+OperationLELinear::OperationLELinear(SGPP::base::GridStorage* storage) :
+  SGPP::pde::StdUpDown(storage) {
+}
 
-    OperationLELinear::~OperationLELinear() {
-    }
+OperationLELinear::~OperationLELinear() {
+}
 
-    void OperationLELinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+void OperationLELinear::up(SGPP::base::DataVector& alpha,
+                           SGPP::base::DataVector& result, size_t dim) {
 
-    }
+}
 
-    void OperationLELinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // Dphi * dphi
-      SGPP::pde::DowndPhidPhiBBIterativeLinear myDown(this->storage);
-      myDown(alpha, result, dim);
-    }
+void OperationLELinear::down(SGPP::base::DataVector& alpha,
+                             SGPP::base::DataVector& result, size_t dim) {
+  // Dphi * dphi
+  SGPP::pde::DowndPhidPhiBBIterativeLinear myDown(this->storage);
+  myDown(alpha, result, dim);
+}
 
-  }
+}
 }

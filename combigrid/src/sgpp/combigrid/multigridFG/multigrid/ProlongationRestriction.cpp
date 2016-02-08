@@ -16,12 +16,16 @@ void combigrid::ProlongationRestriction::prolongation(
   int nrSpace) {
 
   // consistency check
-  COMBIGRID_ERROR_TEST((int)vectFine.size() == (int)nrSpace * fgFine->getNrElements(), "ProlongationRestriction::prolongation "
+  COMBIGRID_ERROR_TEST((int)vectFine.size() == (int)nrSpace *
+                       fgFine->getNrElements(), "ProlongationRestriction::prolongation "
                        << " SIZE MUST MATCH vectFine.size():" << vectFine.size() <<
-                       " nrSpace:" << nrSpace << " fgFine->getNrElements():" << fgFine->getNrElements() );
-  COMBIGRID_ERROR_TEST((int)vectCoarse.size() == (int)nrSpace * fgCoarse->getNrElements(), "ProlongationRestriction::prolongation "
+                       " nrSpace:" << nrSpace << " fgFine->getNrElements():" <<
+                       fgFine->getNrElements() );
+  COMBIGRID_ERROR_TEST((int)vectCoarse.size() == (int)nrSpace *
+                       fgCoarse->getNrElements(), "ProlongationRestriction::prolongation "
                        << " SIZE MUST MATCH vectCoarse.size():" << vectCoarse.size() <<
-                       " nrSpace:" << nrSpace << " fgCoarse->getNrElements():" << fgCoarse->getNrElements() );
+                       " nrSpace:" << nrSpace << " fgCoarse->getNrElements():" <<
+                       fgCoarse->getNrElements() );
 
   const int dim = fgFine->getDimension();
   const int nrFinePoints = fgFine->getNrElements();
@@ -76,13 +80,16 @@ void combigrid::ProlongationRestriction::prolongation(
       // locate the lower corner point of the coarse grid
       if (fgCoarse->getLevels()[i] == fgFine->getLevels()[i]) {
         // NO LEVEL reduction
-        axisIndexC[i] = (axisIndexF[i] >= (fgCoarse->length(i) - 1)) ? (fgCoarse->length(i) - 2) : (axisIndexF[i]) ;
+        axisIndexC[i] = (axisIndexF[i] >= (fgCoarse->length(i) - 1)) ?
+                        (fgCoarse->length(i) - 2) : (axisIndexF[i]) ;
       } else {
         // LEVEL reduction , we subtract 1 because of the boundary
         if (boundaryFlag[i]) {
-          axisIndexC[i] = (axisIndexF[i] / 2 >= (fgCoarse->length(i) - 1)) ? (fgCoarse->length(i) - 2) : (axisIndexF[i] / 2) ;
+          axisIndexC[i] = (axisIndexF[i] / 2 >= (fgCoarse->length(i) - 1)) ?
+                          (fgCoarse->length(i) - 2) : (axisIndexF[i] / 2) ;
         } else {
-          axisIndexC[i] = (axisIndexF[i] / 2 >= (fgCoarse->length(i) - 1)) ? (fgCoarse->length(i) - 2) : ( COMBIGRID_IMAX(axisIndexF[i] - 1, 0) / 2);
+          axisIndexC[i] = (axisIndexF[i] / 2 >= (fgCoarse->length(i) - 1)) ?
+                          (fgCoarse->length(i) - 2) : ( COMBIGRID_IMAX(axisIndexF[i] - 1, 0) / 2);
         }
       }
 
@@ -99,20 +106,26 @@ void combigrid::ProlongationRestriction::prolongation(
         // get the scaling vector
         const std::vector<double>& scalingAxis = domain->get1DDomain(i).axisScaling();
         // multiplicator for the scaling, the domain has potentially higher resolution
-        mulScalingF[i] = combigrid::powerOfTwo[domain->get1DDomain(i).getLevel() - fgFine->getLevels()[i]];
-        mulScalingC[i] = combigrid::powerOfTwo[domain->get1DDomain(i).getLevel() - fgCoarse->getLevels()[i]];
+        mulScalingF[i] = combigrid::powerOfTwo[domain->get1DDomain(
+            i).getLevel() - fgFine->getLevels()[i]];
+        mulScalingC[i] = combigrid::powerOfTwo[domain->get1DDomain(
+            i).getLevel() - fgCoarse->getLevels()[i]];
 
         if (boundaryFlag[i]) {
-          axisDiv[i] = scalingAxis[mulScalingF[i] * axisIndexF[i]] - scalingAxis[mulScalingC[i] * axisIndexC[i]];
+          axisDiv[i] = scalingAxis[mulScalingF[i] * axisIndexF[i]] -
+                       scalingAxis[mulScalingC[i] * axisIndexC[i]];
           //COMBIGRID_OUT_LEVEL2( verb , "makeLinearProlongation INT i:" << i << " F:" << gFine->axisScaling(i)[axisIndexF[i]]
           //          << " C1:" << gCoarse->axisScaling(i)[axisIndexC[i]] << " C2:" << gCoarse->axisScaling(i)[axisIndexC[i]+1]);
-          axisDiv[i] = axisDiv[i] / (scalingAxis[mulScalingC[i] * (axisIndexC[i] + 1)] - scalingAxis[mulScalingC[i] * axisIndexC[i]]);
+          axisDiv[i] = axisDiv[i] / (scalingAxis[mulScalingC[i] *
+                                                 (axisIndexC[i] + 1)] - scalingAxis[mulScalingC[i] * axisIndexC[i]]);
         } else {
           // the scaling starts at position 1 not at position 0
-          axisDiv[i] = scalingAxis[mulScalingF[i] * (1 + axisIndexF[i])] - scalingAxis[mulScalingC[i] * (1 + axisIndexC[i])];
+          axisDiv[i] = scalingAxis[mulScalingF[i] * (1 + axisIndexF[i])] -
+                       scalingAxis[mulScalingC[i] * (1 + axisIndexC[i])];
           //COMBIGRID_OUT_LEVEL2( verb , "makeLinearProlongation INT i:" << i << " F:" << gFine->axisScaling(i)[1+axisIndexF[i]]
           //            << " C1:" << gCoarse->axisScaling(i)[1+axisIndexC[i]] << " C2:" << gCoarse->axisScaling(i)[1+axisIndexC[i]+1]);
-          axisDiv[i] = axisDiv[i] / (scalingAxis[mulScalingC[i] * (2 + axisIndexC[i])] - scalingAxis[mulScalingC[i] * (1 + axisIndexC[i])]);
+          axisDiv[i] = axisDiv[i] / (scalingAxis[mulScalingC[i] *
+                                                 (2 + axisIndexC[i])] - scalingAxis[mulScalingC[i] * (1 + axisIndexC[i])]);
           // since the finer grid boundary points can be outside the cell
           axisDiv[i] = COMBIGRID_DMAX( COMBIGRID_DMIN(axisDiv[i], 1.0) , 0.0);
         }
@@ -163,7 +176,8 @@ void combigrid::ProlongationRestriction::prolongation(
         // calculate the index on this axis
         tmp_I2 = (i / combigrid::powerOfTwo[axis]) % 2;
         // N-linear basis function
-        tmp_D =  tmp_D * ((double)(tmp_I2) * axisDiv[axis] + (double)(1 - tmp_I2) * (1.0 - axisDiv[axis]));
+        tmp_D =  tmp_D * ((double)(tmp_I2) * axisDiv[axis] + (double)(1 - tmp_I2) *
+                          (1.0 - axisDiv[axis]));
         tOffs = tOffs + tmp_I2 * fgCoarse->getOffset(axis);
         //COMBIGRID_OUT_LEVEL2( verb , " Calc basis function, axis:"<< axis << " , tmp_I2:" << tmp_I2 << ",tmp_D:"<<tmp_D);
       }
@@ -177,7 +191,8 @@ void combigrid::ProlongationRestriction::prolongation(
 
     // set the values
     for (i = 0 ; i < nrSpace ; i++ ) {
-      vectFine[ nrSpace * pInd + i ] = coefFine * vectFine[ nrSpace * pInd + i ] + coefCoarse * val[i];
+      vectFine[ nrSpace * pInd + i ] = coefFine * vectFine[ nrSpace * pInd + i ] +
+                                       coefCoarse * val[i];
     }
 
     //COMBIGRID_OUT_LEVEL2( verb , " combigrid::ProlongationRestriction::makeLinearProlongation , indexFine:"
@@ -197,12 +212,16 @@ void combigrid::ProlongationRestriction::restriction( const FullGridD* fgFine ,
     int nrSpace) {
 
   // consistency check
-  COMBIGRID_ERROR_TEST((int)vectFine.size() == (int)nrSpace * fgFine->getNrElements(), "ProlongationRestriction::restriction "
+  COMBIGRID_ERROR_TEST((int)vectFine.size() == (int)nrSpace *
+                       fgFine->getNrElements(), "ProlongationRestriction::restriction "
                        << " SIZE MUST MATCH vectFine.size():" << vectFine.size() <<
-                       " nrSpace:" << nrSpace << " fgFine->getNrElements():" << fgFine->getNrElements() );
-  COMBIGRID_ERROR_TEST((int)vectCoarse.size() == (int)nrSpace * fgCoarse->getNrElements(), "ProlongationRestriction::restriction "
+                       " nrSpace:" << nrSpace << " fgFine->getNrElements():" <<
+                       fgFine->getNrElements() );
+  COMBIGRID_ERROR_TEST((int)vectCoarse.size() == (int)nrSpace *
+                       fgCoarse->getNrElements(), "ProlongationRestriction::restriction "
                        << " SIZE MUST MATCH vectCoarse.size():" << vectCoarse.size() <<
-                       " nrSpace:" << nrSpace << " fgCoarse->getNrElements():" << fgCoarse->getNrElements() );
+                       " nrSpace:" << nrSpace << " fgCoarse->getNrElements():" <<
+                       fgCoarse->getNrElements() );
 
   // variable declaration
   const int verb = 0;
@@ -218,14 +237,17 @@ void combigrid::ProlongationRestriction::restriction( const FullGridD* fgFine ,
 
   // first see which axis index (on the fine mesh) have to be multiplied by two
   for (i = 0 ; i < dim ; i++) {
-    mulFactors[i] = (fgFine->length(i) + 1) / fgCoarse->length(i); // this is either 1 or 2
+    mulFactors[i] = (fgFine->length(i) + 1) / fgCoarse->length(
+                      i); // this is either 1 or 2
     start_offs[i] = 0;
 
     if (!boundaryFlag[i]) {
       start_offs[i] = (mulFactors[i] > 1) ? 1 : 0;
     }
 
-    COMBIGRID_OUT_LEVEL2( verb , " combigrid::ProlongationRestriction::makeDirectRestriction , mulFactors[i]:" << mulFactors[i] );
+    COMBIGRID_OUT_LEVEL2( verb ,
+                          " combigrid::ProlongationRestriction::makeDirectRestriction , mulFactors[i]:" <<
+                          mulFactors[i] );
   }
 
   //COMBIGRID_OUT_LEVEL2( verb , " nrCoarsePoints:" << nrCoarsePoints );
@@ -240,7 +262,8 @@ void combigrid::ProlongationRestriction::restriction( const FullGridD* fgFine ,
       axisIndex[i] = (tmp_I / (fgCoarse->getOffset(i)));
       tmp_I = tmp_I % fgCoarse->getOffset(i);
       // calculate the corresponding fine grid point index , restriction starts with point 1
-      linearIndexF = linearIndexF + (start_offs[i] + mulFactors[i] * axisIndex[i]) * fgFine->getOffset(i);
+      linearIndexF = linearIndexF + (start_offs[i] + mulFactors[i] * axisIndex[i]) *
+                     fgFine->getOffset(i);
       //COMBIGRID_OUT_LEVEL2( verb , " i:" << i << " axisIndex[i]:" << axisIndex[i] << " , mulFactors[i]:" << mulFactors[i] );
       //COMBIGRID_OUT_LEVEL2( verb , " i:" << i << " linearIndexF:" << linearIndexF << " , gFine->offset()[i]:" << gFine->offset()[i] );
     }
@@ -250,7 +273,8 @@ void combigrid::ProlongationRestriction::restriction( const FullGridD* fgFine ,
     linearIndexC = pInd;
 
     for (s = 0 ; s < nrSpace ; s++) {
-      vectCoarse[nrSpace * linearIndexC + s] = coefCoarse * vectCoarse[nrSpace * linearIndexC + s] + coefFine * vectFine[nrSpace * linearIndexF + s];
+      vectCoarse[nrSpace * linearIndexC + s] = coefCoarse * vectCoarse[nrSpace *
+          linearIndexC + s] + coefFine * vectFine[nrSpace * linearIndexF + s];
     }
 
     //COMBIGRID_OUT_LEVEL2( verb , " combigrid::ProlongationRestriction::makeDirectRestriction , linearIndexC:"

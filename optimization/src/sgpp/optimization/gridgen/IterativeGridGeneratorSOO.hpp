@@ -13,68 +13,68 @@
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Iterative grid generator using simultaneous optimistic
-     * optimization (SOO).
-     */
-    class IterativeGridGeneratorSOO : public IterativeGridGenerator {
-      public:
-        typedef std::function<size_t(size_t)> AdaptivityFunction;
+/**
+ * Iterative grid generator using simultaneous optimistic
+ * optimization (SOO).
+ */
+class IterativeGridGeneratorSOO : public IterativeGridGenerator {
+ public:
+  typedef std::function<size_t(size_t)> AdaptivityFunction;
 
-        /// default adaptivity
-        static constexpr float_t DEFAULT_ADAPTIVITY = 0.5;
+  /// default adaptivity
+  static constexpr float_t DEFAULT_ADAPTIVITY = 0.5;
 
-        /**
-         * Constructor.
-         * Do not destruct the grid before this object!
-         *
-         * @param f             objective function
-         * @param grid          grid (should be empty)
-         * @param N             maximal number of grid points
-         * @param adaptivity    adaptivity (positive number)
-         */
-        IterativeGridGeneratorSOO(ScalarFunction& f,
-                                  base::Grid& grid,
-                                  size_t N,
-                                  float_t adaptivity = DEFAULT_ADAPTIVITY);
+  /**
+   * Constructor.
+   * Do not destruct the grid before this object!
+   *
+   * @param f             objective function
+   * @param grid          grid (should be empty)
+   * @param N             maximal number of grid points
+   * @param adaptivity    adaptivity (positive number)
+   */
+  IterativeGridGeneratorSOO(ScalarFunction& f,
+                            base::Grid& grid,
+                            size_t N,
+                            float_t adaptivity = DEFAULT_ADAPTIVITY);
 
-        /**
-         * Destructor.
-         */
-        virtual ~IterativeGridGeneratorSOO() override;
+  /**
+   * Destructor.
+   */
+  virtual ~IterativeGridGeneratorSOO() override;
 
-        /**
-         * Generate the grid.
-         *
-         * @return true on success, otherwise false
-         */
-        virtual bool generate() override;
+  /**
+   * Generate the grid.
+   *
+   * @return true on success, otherwise false
+   */
+  virtual bool generate() override;
 
-        /*
-         * @return            adaptivity (function of the form
-         *                    "iteration number --> maximal refinement depth")
-         */
-        AdaptivityFunction getAdaptivity() const;
+  /*
+   * @return            adaptivity (function of the form
+   *                    "iteration number --> maximal refinement depth")
+   */
+  AdaptivityFunction getAdaptivity() const;
 
-        /*
-         * @param adaptivity  adaptivity (positive number)
-         */
-        void setAdaptivity(float_t adaptivity);
+  /*
+   * @param adaptivity  adaptivity (positive number)
+   */
+  void setAdaptivity(float_t adaptivity);
 
-        /*
-         * @param adaptivity  adaptivity (function of the form
-         *                    "iteration number --> maximal refinement depth")
-         */
-        void setAdaptivity(AdaptivityFunction adaptivity);
+  /*
+   * @param adaptivity  adaptivity (function of the form
+   *                    "iteration number --> maximal refinement depth")
+   */
+  void setAdaptivity(AdaptivityFunction adaptivity);
 
-      protected:
-        /// adaptivity
-        AdaptivityFunction hMax;
-    };
+ protected:
+  /// adaptivity
+  AdaptivityFunction hMax;
+};
 
-  }
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORSOO_HPP */

@@ -11,44 +11,45 @@
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace optimizer {
+namespace optimization {
+namespace optimizer {
 
-      /**
-       * Gradient-free CMA-ES method.
-       */
-      class CMAES : public UnconstrainedOptimizer {
-        public:
-          /// default maximal number of function evaluations
-          static const size_t DEFAULT_MAX_FCN_EVAL_COUNT = 1000;
+/**
+ * Gradient-free CMA-ES method.
+ */
+class CMAES : public UnconstrainedOptimizer {
+ public:
+  /// default maximal number of function evaluations
+  static const size_t DEFAULT_MAX_FCN_EVAL_COUNT = 1000;
 
-          /**
-           * Constructor.
-           * The starting point is set to
-           * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
-           *
-           * @param f                     objective function
-           * @param maxFcnEvalCount       maximal number of
-           *                              function evaluations
-           */
-          CMAES(ScalarFunction& f,
-                size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
+  /**
+   * Constructor.
+   * The starting point is set to
+   * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
+   *
+   * @param f                     objective function
+   * @param maxFcnEvalCount       maximal number of
+   *                              function evaluations
+   */
+  CMAES(ScalarFunction& f,
+        size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
 
-          /**
-           * Destructor.
-           */
-          virtual ~CMAES() override;
+  /**
+   * Destructor.
+   */
+  virtual ~CMAES() override;
 
-          virtual void optimize() override;
+  virtual void optimize() override;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
+};
 
-    }
-  }
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_CMAES_HPP */

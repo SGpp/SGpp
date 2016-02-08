@@ -20,87 +20,92 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * Implements a standard Up/Down Schema without any operation dim.
-     *
-     */
-    class StdUpDown: public SGPP::base::OperationMatrix {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's SGPP::base::GridStorage object
-         */
-        StdUpDown(SGPP::base::GridStorage* storage);
+/**
+ * Implements a standard Up/Down Schema without any operation dim.
+ *
+ */
+class StdUpDown: public SGPP::base::OperationMatrix {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's SGPP::base::GridStorage object
+   */
+  StdUpDown(SGPP::base::GridStorage* storage);
 
-        /**
-         * Destructor
-         */
-        virtual ~StdUpDown();
-
-
-        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
-
-        /**
-         * this functions provides the same functionality as the normal mult routine.
-         * However, it doesn't set up an OpenMP task initialization as the mult routine.
-         * This method has to be called within a OpenMP task parallelized region.
-         *
-         * Using this function is useful in following case: Assuming the solver of a certain
-         * requires several operators in the space discretization (e.g. Black Scholes Equations)
-         * this method can be used to parallelize their calculation which might results results
-         * in a better parallel efficiency on systems with 4 or more cores hence fewer barriers
-         * are needed.
-         *
-         * @param alpha vector of coefficients
-         * @param result vector to store the results in
-         */
-        void multParallelBuildingBlock(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  /**
+   * Destructor
+   */
+  virtual ~StdUpDown();
 
 
-      protected:
-        typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
+  virtual void mult(SGPP::base::DataVector& alpha,
+                    SGPP::base::DataVector& result);
 
-        /// Pointer to the grid's storage object
-        SGPP::base::GridStorage* storage;
-        /// algorithmic dimensions, operator is applied in this dimensions
-        const std::vector<size_t> algoDims;
-        /// number of algorithmic dimensions
-        const size_t numAlgoDims_;
-        /// max number of parallel stages (dimension recursive calls)
-        static const size_t maxParallelDims_ = TASKS_PARALLEL_UPDOWN;
+  /**
+   * this functions provides the same functionality as the normal mult routine.
+   * However, it doesn't set up an OpenMP task initialization as the mult routine.
+   * This method has to be called within a OpenMP task parallelized region.
+   *
+   * Using this function is useful in following case: Assuming the solver of a certain
+   * requires several operators in the space discretization (e.g. Black Scholes Equations)
+   * this method can be used to parallelize their calculation which might results results
+   * in a better parallel efficiency on systems with 4 or more cores hence fewer barriers
+   * are needed.
+   *
+   * @param alpha vector of coefficients
+   * @param result vector to store the results in
+   */
+  void multParallelBuildingBlock(SGPP::base::DataVector& alpha,
+                                 SGPP::base::DataVector& result);
 
-        /**
-         * Recursive procedure for updown
-         *
-         * @param dim the current dimension
-         * @param alpha vector of coefficients
-         * @param result vector to store the results in
-         */
-        void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-        /**
-         * 1D up Operation
-         *
-         * @param dim dimension in which to apply the up-part
-         * @param alpha vector of coefficients
-         * @param result vector to store the results in
-         */
-        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
+ protected:
+  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
 
-        /**
-         * 1D down Operation
-         *
-         * @param dim dimension in which to apply the down-part
-         * @param alpha vector of coefficients
-         * @param result vector to store the results in
-         */
-        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
-    };
+  /// Pointer to the grid's storage object
+  SGPP::base::GridStorage* storage;
+  /// algorithmic dimensions, operator is applied in this dimensions
+  const std::vector<size_t> algoDims;
+  /// number of algorithmic dimensions
+  const size_t numAlgoDims_;
+  /// max number of parallel stages (dimension recursive calls)
+  static const size_t maxParallelDims_ = TASKS_PARALLEL_UPDOWN;
 
-  }
+  /**
+   * Recursive procedure for updown
+   *
+   * @param dim the current dimension
+   * @param alpha vector of coefficients
+   * @param result vector to store the results in
+   */
+  void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+              size_t dim);
+
+  /**
+   * 1D up Operation
+   *
+   * @param dim dimension in which to apply the up-part
+   * @param alpha vector of coefficients
+   * @param result vector to store the results in
+   */
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                  size_t dim) = 0;
+
+  /**
+   * 1D down Operation
+   *
+   * @param dim dimension in which to apply the down-part
+   * @param alpha vector of coefficients
+   * @param result vector to store the results in
+   */
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                    size_t dim) = 0;
+};
+
+}
 }
 
 #endif /* STDUPDOWN_HPP */

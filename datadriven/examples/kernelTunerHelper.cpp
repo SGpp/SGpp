@@ -55,7 +55,8 @@ int main(int argc, char** argv) {
 
   double lambda = 0.000001;
 
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
+  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig,
+      SLESolverConfigRefine,
       SLESolverConfigFinal, adaptConfig);
 
   //TODO: kernel is set inside "StreamingOCLMultiPlatform", currently no parameter to set it from here
@@ -65,7 +66,8 @@ int main(int argc, char** argv) {
   SGPP::base::OCLOperationConfiguration parameter("skeleton.cfg");
   //    json::Node &kernelNode = parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS]"][kernelName];
 
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true,
+      true);
 
   //    staticParameterTuner.addFixedParameter("OCL_MANAGER_VERBOSE", "false", SGPP::datadriven::ParameterType::ID);
   //    staticParameterTuner.addFixedParameter("VERBOSE", "false", SGPP::datadriven::ParameterType::ID);
@@ -84,7 +86,8 @@ int main(int argc, char** argv) {
 
   bool useDoublePrecision = true;
 
-  SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName, useDoublePrecision);
+  SGPP::base::OCLOperationConfiguration bestParameters =
+    staticParameterTuner.tuneEverything(scenario, kernelName, useDoublePrecision);
 
   //    json::Node &kernelNode = parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
   //    std::vector<std::string> keys = kernelNode.keys();

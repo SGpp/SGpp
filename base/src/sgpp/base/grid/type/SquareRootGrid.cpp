@@ -19,56 +19,56 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    SquareRootGrid::SquareRootGrid(std::istream& istr) :
-      Grid(istr) {
+SquareRootGrid::SquareRootGrid(std::istream& istr) :
+  Grid(istr) {
 
-    }
-
-    SquareRootGrid::SquareRootGrid(size_t dim) :
-      Grid(dim) {
-    }
-
-    SquareRootGrid::SquareRootGrid(BoundingBox& BB) :
-      Grid(BB) {
-    }
-
-    SquareRootGrid::~SquareRootGrid() {
-    }
-
-    SGPP::base::GridType SquareRootGrid::getType() {
-      return SGPP::base::GridType::SquareRoot;
-    }
-
-    const SBasis& SquareRootGrid::getBasis() {
-      static SLinearBoundaryBase basis;
-      return basis;
-    }
-
-    Grid* SquareRootGrid::unserialize(std::istream& istr) {
-      return new SquareRootGrid(istr);
-    }
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* SquareRootGrid::createGridGenerator() {
-      return new SquareRootGridGenerator(this->storage);
-    }
-    //OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
-    //{
-    //  return new OperationHierarchisationLinearBoundary(this->storage);
-    //}
-    //OperationEval* SquareRootGrid::createOperationEval()
-    //{
-    //  return new OperationEvalLinearBoundary(this->storage);
-    //}
-
-    //OperationConvert* SquareRootGrid::createOperationConvert()
-    //{
-    //  throw factory_exception("Unsupported operation");
-    //}
-
-  }
 }
+
+SquareRootGrid::SquareRootGrid(size_t dim) :
+  Grid(dim) {
+}
+
+SquareRootGrid::SquareRootGrid(BoundingBox& BB) :
+  Grid(BB) {
+}
+
+SquareRootGrid::~SquareRootGrid() {
+}
+
+SGPP::base::GridType SquareRootGrid::getType() {
+  return SGPP::base::GridType::SquareRoot;
+}
+
+const SBasis& SquareRootGrid::getBasis() {
+  static SLinearBoundaryBase basis;
+  return basis;
+}
+
+Grid* SquareRootGrid::unserialize(std::istream& istr) {
+  return new SquareRootGrid(istr);
+}
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* SquareRootGrid::createGridGenerator() {
+  return new SquareRootGridGenerator(this->storage);
+}
+//OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
+//{
+//  return new OperationHierarchisationLinearBoundary(this->storage);
+//}
+//OperationEval* SquareRootGrid::createOperationEval()
+//{
+//  return new OperationEvalLinearBoundary(this->storage);
+//}
+
+//OperationConvert* SquareRootGrid::createOperationConvert()
+//{
+//  throw factory_exception("Unsupported operation");
+//}
+
+}  // namespace base
+}  // namespace SGPP

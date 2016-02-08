@@ -19,38 +19,45 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(SGPP::base::GridStorage* storage) : UpDownOneOpDim(storage) {
-    }
+OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(
+  SGPP::base::GridStorage* storage) : UpDownOneOpDim(storage) {
+}
 
-    OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef) : UpDownOneOpDim(storage, coef) {
-    }
+OperationLaplaceLinearBoundary::OperationLaplaceLinearBoundary(
+  SGPP::base::GridStorage* storage,
+  SGPP::base::DataVector& coef) : UpDownOneOpDim(storage, coef) {
+}
 
-    OperationLaplaceLinearBoundary::~OperationLaplaceLinearBoundary() {
-    }
+OperationLaplaceLinearBoundary::~OperationLaplaceLinearBoundary() {
+}
 
-    void OperationLaplaceLinearBoundary::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      PhiPhiUpBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<PhiPhiUpBBLinearBoundary> s(func, this->storage);
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+void OperationLaplaceLinearBoundary::up(SGPP::base::DataVector& alpha,
+                                        SGPP::base::DataVector& result, size_t dim) {
+  PhiPhiUpBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<PhiPhiUpBBLinearBoundary> s(func, this->storage);
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationLaplaceLinearBoundary::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      PhiPhiDownBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<PhiPhiDownBBLinearBoundary> s(func, this->storage);
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+void OperationLaplaceLinearBoundary::down(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  PhiPhiDownBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<PhiPhiDownBBLinearBoundary> s(func, this->storage);
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationLaplaceLinearBoundary::downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
-      myDown(alpha, result, dim);
-    }
+void OperationLaplaceLinearBoundary::downOpDim(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+  myDown(alpha, result, dim);
+}
 
-    void OperationLaplaceLinearBoundary::upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
-      myUp(alpha, result, dim);
-    }
+void OperationLaplaceLinearBoundary::upOpDim(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+  myUp(alpha, result, dim);
+}
 
-  }
+}
 }

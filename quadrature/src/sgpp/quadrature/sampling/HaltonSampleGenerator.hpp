@@ -12,47 +12,48 @@
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    /**
-     *
-     */
-    class HaltonSampleGenerator : public SampleGenerator {
+/**
+ *
+ */
+class HaltonSampleGenerator : public SampleGenerator {
 
-      public:
+ public:
 
-        /**
-         * Standard constructor
-         *
-         * @param dimension number of dimensions used for sample generation
-         * @param seed custom seed (defaults to default seed of mt19937_64)
-         */
-        HaltonSampleGenerator(size_t dimension, std::uint64_t seed = std::mt19937_64::default_seed);
+  /**
+   * Standard constructor
+   *
+   * @param dimension number of dimensions used for sample generation
+   * @param seed custom seed (defaults to default seed of mt19937_64)
+   */
+  HaltonSampleGenerator(size_t dimension,
+                        std::uint64_t seed = std::mt19937_64::default_seed);
 
-        /**
-         * Destructor
-         */
-        ~HaltonSampleGenerator();
+  /**
+   * Destructor
+   */
+  ~HaltonSampleGenerator();
 
-        /**
-         * This method generates one sample .
-         * Implementation of the abstract Method getSample from SampelGenerator.
-         *
-         * @param sample DataVector storing the new generated sample vector.
-         */
-        virtual void getSample(SGPP::base::DataVector& sample);
+  /**
+   * This method generates one sample .
+   * Implementation of the abstract Method getSample from SampelGenerator.
+   *
+   * @param sample DataVector storing the new generated sample vector.
+   */
+  virtual void getSample(SGPP::base::DataVector& sample);
 
-      private:
-        size_t index;
-        std::vector<size_t> baseVector;
-        std::vector<float_t> iVector;
-        std::vector<float_t> fVector;
-        std::vector<float_t> resultVector;
-        //
-        std::uniform_int_distribution<std::uint64_t> distInt;
-    };
+ private:
+  size_t index;
+  std::vector<size_t> baseVector;
+  std::vector<float_t> iVector;
+  std::vector<float_t> fVector;
+  std::vector<float_t> resultVector;
+  //
+  std::uniform_int_distribution<std::uint64_t> distInt;
+};
 
-  }
+}
 }
 
 #endif /* HALTONSAMPLEGENERATOR_HPP */

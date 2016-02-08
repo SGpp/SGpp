@@ -14,57 +14,57 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with linear base functions with boundaries, pentagon cut
-     */
-    class LinearBoundaryGrid : public Grid {
-      protected:
-        LinearBoundaryGrid(std::istream& istr);
+/**
+ * grid with linear base functions with boundaries, pentagon cut
+ */
+class LinearBoundaryGrid : public Grid {
+ protected:
+  LinearBoundaryGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor Linear Truncated Boundary Grid
-         *
-         * @param dim           the dimension of the grid
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
-         */
-        LinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+ public:
+  /**
+   * Constructor Linear Truncated Boundary Grid
+   *
+   * @param dim           the dimension of the grid
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted (default = 1: boundary has same level
+   *                      as main axes)
+   */
+  LinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
-        /**
-         * Constructor Linear Truncated Boundary Grid
-         *
-         * @param BB the BoundingBox of the grid
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
-         */
-        LinearBoundaryGrid(BoundingBox& BB, level_t boundaryLevel = 1);
+  /**
+   * Constructor Linear Truncated Boundary Grid
+   *
+   * @param BB the BoundingBox of the grid
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted (default = 1: boundary has same level
+   *                      as main axes)
+   */
+  LinearBoundaryGrid(BoundingBox& BB, level_t boundaryLevel = 1);
 
-        /**
-         * Destructor
-         */
-        virtual ~LinearBoundaryGrid() override;
+  /**
+   * Destructor
+   */
+  virtual ~LinearBoundaryGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
+  virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis() override;
+  virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  virtual GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
-        virtual void serialize(std::ostream& ostr) override;
+  virtual void serialize(std::ostream& ostr) override;
 
-      protected:
-        /// level at which the boundary points should be inserted
-        level_t boundaryLevel;
-    };
+ protected:
+  /// level at which the boundary points should be inserted
+  level_t boundaryLevel;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARTRUNCATEDBOUNDARYGRID_HPP */

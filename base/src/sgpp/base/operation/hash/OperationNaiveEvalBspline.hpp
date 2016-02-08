@@ -13,44 +13,44 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating B-spline linear combinations on Noboundary grids.
-     */
-    class OperationNaiveEvalBspline : public OperationNaiveEval {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    B-spline degree
-         */
-        OperationNaiveEvalBspline(GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
-
-        /**
-         * Destructor.
-         */
-        virtual ~OperationNaiveEvalBspline() override {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @return          value of linear combination
-         */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SBsplineBase base;
-    };
-
+/**
+ * Operation for evaluating B-spline linear combinations on Noboundary grids.
+ */
+class OperationNaiveEvalBspline : public OperationNaiveEval {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    B-spline degree
+   */
+  OperationNaiveEvalBspline(GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  virtual ~OperationNaiveEvalBspline() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of linear combination
+   */
+  virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SBsplineBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALBSPLINE_HPP */

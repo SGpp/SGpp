@@ -85,11 +85,11 @@
 namespace SGPP {
 
 #if USE_DOUBLE_PRECISION
-  /// the library uses 64 bit floating point numbers
-  typedef double float_t;
+/// the library uses 64 bit floating point numbers
+typedef double float_t;
 #else
-  /// the library uses 32 bit floating point numbers
-  typedef float float_t;
+/// the library uses 32 bit floating point numbers
+typedef float float_t;
 #endif
 
 }
@@ -99,12 +99,12 @@ namespace SGPP {
 #include <memory>
 
 namespace std {
-  //Implementation for "make_unique" in c++11 as it doesn't contain this function.  (see std::make_shared)
-  //This function is part of the C++14 (and newer) standard.
-  template<typename T, typename ...Args>
-  std::unique_ptr<T> make_unique(Args&& ...args) {
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-  }
+//Implementation for "make_unique" in c++11 as it doesn't contain this function.  (see std::make_shared)
+//This function is part of the C++14 (and newer) standard.
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique(Args&& ...args) {
+  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 
 }
 #endif

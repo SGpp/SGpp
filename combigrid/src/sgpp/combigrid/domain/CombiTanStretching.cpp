@@ -17,7 +17,8 @@ void combigrid::TanStretching::get1DStretching(
   std::vector<double> tmpPoints(nrPoints);
 
   for (int ii = 0 ; ii < nrPoints; ii++)
-    tmpPoints[ii] = (double)(2 * ii - combigrid::powerOfTwo[level]) / (double)(combigrid::powerOfTwo[level]);
+    tmpPoints[ii] = (double)(2 * ii - combigrid::powerOfTwo[level]) / (double)(
+                      combigrid::powerOfTwo[level]);
 
   for (int ii = 0 ; ii < nrPoints; ii++)
     // pi/2 = 1.57079632679490
@@ -25,5 +26,6 @@ void combigrid::TanStretching::get1DStretching(
 
   // do the scaling
   for (int ii = 0 ; ii < nrPoints; ii++)
-    stretching[ii] = min + (max - min) * 0.5 * ( 1 + (stretching[ii] / stretching[nrPoints - 1]));
+    stretching[ii] = min + (max - min) * 0.5 * ( 1 + (stretching[ii] /
+                     stretching[nrPoints - 1]));
 }

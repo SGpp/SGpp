@@ -17,55 +17,55 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr) :
-      Grid(istr),
-      boundaryLevel(0) {
-      istr >> boundaryLevel;
-    }
-
-    LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(size_t dim,
-        level_t boundaryLevel) :
-      Grid(dim),
-      boundaryLevel(boundaryLevel) {
-    }
-
-    LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(BoundingBox& BB,
-        level_t boundaryLevel) :
-      Grid(BB),
-      boundaryLevel(boundaryLevel) {
-    }
-
-    LinearClenshawCurtisGrid::~LinearClenshawCurtisGrid() {
-    }
-
-    SGPP::base::GridType LinearClenshawCurtisGrid::getType() {
-      return SGPP::base::GridType::LinearClenshawCurtis;
-    }
-
-    const SBasis& LinearClenshawCurtisGrid::getBasis() {
-      static SLinearClenshawCurtisBase basis;
-      return basis;
-    }
-
-    Grid* LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
-      return new LinearClenshawCurtisGrid(istr);
-    }
-
-    void LinearClenshawCurtisGrid::serialize(std::ostream& ostr) {
-      this->Grid::serialize(ostr);
-      ostr << boundaryLevel << std::endl;
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* LinearClenshawCurtisGrid::createGridGenerator() {
-      return new BoundaryGridGenerator(this->storage, boundaryLevel);
-    }
-
-
-  }
+LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr) :
+  Grid(istr),
+  boundaryLevel(0) {
+  istr >> boundaryLevel;
 }
+
+LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(size_t dim,
+    level_t boundaryLevel) :
+  Grid(dim),
+  boundaryLevel(boundaryLevel) {
+}
+
+LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(BoundingBox& BB,
+    level_t boundaryLevel) :
+  Grid(BB),
+  boundaryLevel(boundaryLevel) {
+}
+
+LinearClenshawCurtisGrid::~LinearClenshawCurtisGrid() {
+}
+
+SGPP::base::GridType LinearClenshawCurtisGrid::getType() {
+  return SGPP::base::GridType::LinearClenshawCurtis;
+}
+
+const SBasis& LinearClenshawCurtisGrid::getBasis() {
+  static SLinearClenshawCurtisBase basis;
+  return basis;
+}
+
+Grid* LinearClenshawCurtisGrid::unserialize(std::istream& istr) {
+  return new LinearClenshawCurtisGrid(istr);
+}
+
+void LinearClenshawCurtisGrid::serialize(std::ostream& ostr) {
+  this->Grid::serialize(ostr);
+  ostr << boundaryLevel << std::endl;
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* LinearClenshawCurtisGrid::createGridGenerator() {
+  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+}
+
+
+}  // namespace base
+}  // namespace SGPP

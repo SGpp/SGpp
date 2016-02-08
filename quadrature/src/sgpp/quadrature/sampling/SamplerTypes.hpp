@@ -9,16 +9,16 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    enum class SamplerTypes {
-      Naive,
-      Stratified,
-      LatinHypercube,
-      Halton
-    };
+enum class SamplerTypes {
+  Naive,
+  Stratified,
+  LatinHypercube,
+  Halton
+};
 
-  } /* namespace quadrature */
+} /* namespace quadrature */
 } /* namespace SGPP */
 
 #endif /* SAMPLERTYPES_HPP_ */

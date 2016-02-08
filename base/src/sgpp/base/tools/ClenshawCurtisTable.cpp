@@ -8,25 +8,25 @@
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    ClenshawCurtisTable::ClenshawCurtisTable(level_type maxLevel)
-      : table((1 << (maxLevel + 1)) + maxLevel),
-        maxLevel(maxLevel) {
-      size_t k = 0;
-      index_type hInv = 1;
+ClenshawCurtisTable::ClenshawCurtisTable(level_type maxLevel)
+  : table((1 << (maxLevel + 1)) + maxLevel),
+    maxLevel(maxLevel) {
+  size_t k = 0;
+  index_type hInv = 1;
 
-      for (level_type l = 0; l <= maxLevel; l++) {
-        const float_t h = 1.0 / static_cast<float_t>(hInv);
+  for (level_type l = 0; l <= maxLevel; l++) {
+    const float_t h = 1.0 / static_cast<float_t>(hInv);
 
-        for (index_type i = 0; i <= hInv; i++) {
-          table[k] = calculatePoint(h, i);
-          k++;
-        }
-
-        hInv *= 2;
-      }
+    for (index_type i = 0; i <= hInv; i++) {
+      table[k] = calculatePoint(h, i);
+      k++;
     }
 
+    hInv *= 2;
   }
 }
+
+}  // namespace base
+}  // namespace SGPP

@@ -15,19 +15,19 @@
 #include <sgpp/base/tools/OperationConfiguration.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    class OCLOperationConfiguration: public OperationConfiguration {
-      public:
+class OCLOperationConfiguration: public OperationConfiguration {
+ public:
 
-        OCLOperationConfiguration();
+  OCLOperationConfiguration();
 
-        OCLOperationConfiguration(const std::string& fileName);
+  OCLOperationConfiguration(const std::string& fileName);
 
-        virtual OperationConfiguration* clone() override;
+  virtual OperationConfiguration* clone() override;
 
-    };
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 

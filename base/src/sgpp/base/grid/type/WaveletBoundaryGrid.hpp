@@ -14,45 +14,45 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with wavelet base functions with boundaries, pentagon cut
-     */
-    class WaveletBoundaryGrid : public Grid {
-      protected:
-        WaveletBoundaryGrid(std::istream& istr);
+/**
+ * grid with wavelet base functions with boundaries, pentagon cut
+ */
+class WaveletBoundaryGrid : public Grid {
+ protected:
+  WaveletBoundaryGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor of grid with wavelet base functions with boundaries, pentagon cut
-         *
-         * @param dim the dimension of the grid
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
-         */
-        WaveletBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+ public:
+  /**
+   * Constructor of grid with wavelet base functions with boundaries, pentagon cut
+   *
+   * @param dim the dimension of the grid
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted (default = 1: boundary has same level
+   *                      as main axes)
+   */
+  WaveletBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
-        /**
-         * Destructor
-         */
-        virtual ~WaveletBoundaryGrid() override;
+  /**
+   * Destructor
+   */
+  virtual ~WaveletBoundaryGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
+  virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis() override;
+  virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  virtual GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
-      protected:
-        /// level at which the boundary points should be inserted
-        level_t boundaryLevel;
-    };
+ protected:
+  /// level at which the boundary points should be inserted
+  level_t boundaryLevel;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* WAVELETTRUNCATEDBOUNDARYGRID_HPP */

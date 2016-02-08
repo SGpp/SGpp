@@ -12,20 +12,20 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    class SPX86SimdKernelBase {
-      public:
-        static inline size_t getChunkGridPoints() {
-          return 12;
-        }
-        static inline size_t getChunkDataPoints() {
-          return 48; //must be divisible by 48
-        }
-        static inline void resetKernel() {}
-    };
-
+class SPX86SimdKernelBase {
+ public:
+  static inline size_t getChunkGridPoints() {
+    return 12;
   }
+  static inline size_t getChunkDataPoints() {
+    return 48; //must be divisible by 48
+  }
+  static inline void resetKernel() {}
+};
+
+}
 }
 
 #endif // SPX86SIMDKERNELBASE_HPP

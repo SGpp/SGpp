@@ -9,55 +9,55 @@
 #include <cmath>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      AbsoluteValue::AbsoluteValue(size_t d) :
-        UnconstrainedTestProblem(d),
-        f(d) {
-      }
+AbsoluteValue::AbsoluteValue(size_t d) :
+  UnconstrainedTestProblem(d),
+  f(d) {
+}
 
-      AbsoluteValue::~AbsoluteValue() {
-      }
+AbsoluteValue::~AbsoluteValue() {
+}
 
-      TestScalarFunction& AbsoluteValue::getObjectiveFunction() {
-        return f;
-      }
+TestScalarFunction& AbsoluteValue::getObjectiveFunction() {
+  return f;
+}
 
-      float_t AbsoluteValue::getOptimalPointUndisplaced(base::DataVector& x) {
-        x.resize(d);
+float_t AbsoluteValue::getOptimalPointUndisplaced(base::DataVector& x) {
+  x.resize(d);
 
-        for (size_t t = 0; t < d; t++) {
-          x[t] = 1.0 / std::pow(2.0, t + 1);
-        }
-
-        return 0.0;
-      }
-
-      AbsoluteValueObjective::AbsoluteValueObjective(size_t d) :
-        TestScalarFunction(d) {
-      }
-
-      AbsoluteValueObjective::~AbsoluteValueObjective() {
-      }
-
-      float_t AbsoluteValueObjective::evalUndisplaced(
-        const base::DataVector& x) {
-        float_t result = 0.0;
-
-        for (size_t t = 0; t < d; t++) {
-          result += std::abs(x[t] - 1.0 / std::pow(2.0, t + 1));
-        }
-
-        return result;
-      }
-
-      void AbsoluteValueObjective::clone(
-        std::unique_ptr<ScalarFunction>& clone) const {
-        clone = std::unique_ptr<ScalarFunction>(
-                  new AbsoluteValueObjective(*this));
-      }
-
-    }
+  for (size_t t = 0; t < d; t++) {
+    x[t] = 1.0 / std::pow(2.0, t + 1);
   }
+
+  return 0.0;
+}
+
+AbsoluteValueObjective::AbsoluteValueObjective(size_t d) :
+  TestScalarFunction(d) {
+}
+
+AbsoluteValueObjective::~AbsoluteValueObjective() {
+}
+
+float_t AbsoluteValueObjective::evalUndisplaced(
+  const base::DataVector& x) {
+  float_t result = 0.0;
+
+  for (size_t t = 0; t < d; t++) {
+    result += std::abs(x[t] - 1.0 / std::pow(2.0, t + 1));
+  }
+
+  return result;
+}
+
+void AbsoluteValueObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new AbsoluteValueObjective(*this));
+}
+
+}
+}
 }

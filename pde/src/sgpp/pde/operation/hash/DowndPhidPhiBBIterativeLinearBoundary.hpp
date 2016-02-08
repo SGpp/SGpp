@@ -13,50 +13,51 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * This class is helper class to implement the complete Down
-     * of following bilinearform \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
-     * for a given dimension by an iterative algorithms on adaptive
-     * Sparse Grids with linear ansatzfunctions with boundaries.
-     *
-     * This is possible due to the fact that the operator's
-     * matrix has only entries on the diagonal.
-     *
-     * -> the Up/Down can be implemented by iterating over
-     * all ansatzfunctions
-     */
-    class DowndPhidPhiBBIterativeLinearBoundary {
-      private:
-        /// Pointer to the grid's storage object
-        SGPP::base::GridStorage* storage;
+/**
+ * This class is helper class to implement the complete Down
+ * of following bilinearform \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
+ * for a given dimension by an iterative algorithms on adaptive
+ * Sparse Grids with linear ansatzfunctions with boundaries.
+ *
+ * This is possible due to the fact that the operator's
+ * matrix has only entries on the diagonal.
+ *
+ * -> the Up/Down can be implemented by iterating over
+ * all ansatzfunctions
+ */
+class DowndPhidPhiBBIterativeLinearBoundary {
+ private:
+  /// Pointer to the grid's storage object
+  SGPP::base::GridStorage* storage;
 
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage Pointer to the grid's storage object
-         */
-        DowndPhidPhiBBIterativeLinearBoundary(SGPP::base::GridStorage* storage);
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage Pointer to the grid's storage object
+   */
+  DowndPhidPhiBBIterativeLinearBoundary(SGPP::base::GridStorage* storage);
 
-        /**
-         * Destructor
-         */
-        ~DowndPhidPhiBBIterativeLinearBoundary();
+  /**
+   * Destructor
+   */
+  ~DowndPhidPhiBBIterativeLinearBoundary();
 
-        /**
-         * This operations performs the calculation of Down in the direction of dimension <i>dim</i>
-         * of following bilinearform: \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
-         *
-         * @param alpha SGPP::base::DataVector that contains the gridpoint's coefficients
-         * @param result SGPP::base::DataVector that contains the result of the down operation
-         * @param dim current fixed dimension of the 'execution direction'
-         */
-        virtual void operator()(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
-    };
+  /**
+   * This operations performs the calculation of Down in the direction of dimension <i>dim</i>
+   * of following bilinearform: \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
+   *
+   * @param alpha SGPP::base::DataVector that contains the gridpoint's coefficients
+   * @param result SGPP::base::DataVector that contains the result of the down operation
+   * @param dim current fixed dimension of the 'execution direction'
+   */
+  virtual void operator()(SGPP::base::DataVector& alpha,
+                          SGPP::base::DataVector& result, size_t dim);
+};
 
-  }
+}
 }
 
 #endif /* DOWNDPHIDPHIDOWNBBITERATIVELINEARBOUNDARY_HPP */

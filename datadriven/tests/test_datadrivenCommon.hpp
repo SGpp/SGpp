@@ -18,7 +18,8 @@
 
 std::string uncompressFile(std::string fileName);
 
-SGPP::base::DataMatrix* readReferenceMatrix(SGPP::base::GridStorage* storage, std::string fileName);
+SGPP::base::DataMatrix* readReferenceMatrix(SGPP::base::GridStorage* storage,
+    std::string fileName);
 
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
                          SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
@@ -27,12 +28,16 @@ void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
                          SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen);
 
-double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector& resultsCompare);
+double compareVectors(SGPP::base::DataVector& results,
+                      SGPP::base::DataVector& resultsCompare);
 
-double compareToReference(SGPP::base::GridType gridType, std::string fileName, size_t level,
-                          SGPP::datadriven::OperationMultipleEvalConfiguration configuration, size_t numRefinements = 1);
+double compareToReference(SGPP::base::GridType gridType, std::string fileName,
+                          size_t level,
+                          SGPP::datadriven::OperationMultipleEvalConfiguration configuration,
+                          size_t numRefinements = 1);
 
-double compareToReferenceTranspose(SGPP::base::GridType gridType, std::string fileName, size_t level,
+double compareToReferenceTranspose(SGPP::base::GridType gridType,
+                                   std::string fileName, size_t level,
                                    SGPP::datadriven::OperationMultipleEvalConfiguration configuration);
 #if USE_OCL==1
 SGPP::base::OCLOperationConfiguration getConfigurationDefaultsSingleDevice();

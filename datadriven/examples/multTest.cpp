@@ -20,10 +20,12 @@
 
 void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
                       SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
-                      SGPP::base::DataVector& alpha, std::mt19937 mt, std::uniform_real_distribution<double>& dist) {
+                      SGPP::base::DataVector& alpha, std::mt19937 mt,
+                      std::uniform_real_distribution<double>& dist) {
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alpha,
-        adaptConfig.noPoints_, adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
+    SGPP::base::SurplusRefinementFunctor(&alpha,
+                                         adaptConfig.noPoints_, adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -78,7 +80,8 @@ int main(int argc, char** argv) {
   SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << std::endl;
-  std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
+  std::cout << "number of data points: " << dataset.getNumberInstances() <<
+            std::endl;
 
   //  std::random_device rd;
   //  std::mt19937 mt(rd());
@@ -93,11 +96,13 @@ int main(int argc, char** argv) {
 
   std::cout << "creating operation with unrefined grid" << std::endl;
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
+        configuration);
 
   //  doAllRefinements(adaptConfig, *grid, *gridGen, alpha, mt, dist);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->size() << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage->size()
+            << std::endl;
   std::cout << "grid set up" << std::endl;
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
@@ -125,7 +130,8 @@ int main(int argc, char** argv) {
   SGPP::base::OperationMultipleEval* evalCompare =
     SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
 
-  SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
+  SGPP::base::DataVector dataSizeVectorResultCompare(
+    dataset.getNumberInstances());
   dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
@@ -144,7 +150,9 @@ int main(int argc, char** argv) {
 #else
 #include <iostream>
 int main(int argc, char** argv) {
-  std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
+  std::cout <<
+            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
+            std::endl;
   return 0;
 }
 #endif

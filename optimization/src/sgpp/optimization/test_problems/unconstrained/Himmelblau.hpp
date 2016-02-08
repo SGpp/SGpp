@@ -11,86 +11,86 @@
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      /**
-       * Himmelblau objective function.
-       *
-       * Definition:
-       * \f[\bar{f}(\bar{\vec{x}}) :=
-       * (\bar{x}_1^2 + \bar{x}_2 - 11)^2 + (\bar{x}_1 + \bar{x}_2^2 - 7)^2\f]
-       */
-      class HimmelblauObjective : public TestScalarFunction {
-        public:
-          /**
-           * Constructor.
-           */
-          HimmelblauObjective();
+/**
+ * Himmelblau objective function.
+ *
+ * Definition:
+ * \f[\bar{f}(\bar{\vec{x}}) :=
+ * (\bar{x}_1^2 + \bar{x}_2 - 11)^2 + (\bar{x}_1 + \bar{x}_2^2 - 7)^2\f]
+ */
+class HimmelblauObjective : public TestScalarFunction {
+ public:
+  /**
+   * Constructor.
+   */
+  HimmelblauObjective();
 
-          /**
-           * Destructor.
-           */
-          virtual ~HimmelblauObjective() override;
+  /**
+   * Destructor.
+   */
+  virtual ~HimmelblauObjective() override;
 
-          /**
-           * @param x     point \f$\vec{x} \in [0, 1]^d\f$
-           * @return      \f$f(\vec{x})\f$
-           */
-          virtual float_t evalUndisplaced(const base::DataVector& x)
-          override;
+  /**
+   * @param x     point \f$\vec{x} \in [0, 1]^d\f$
+   * @return      \f$f(\vec{x})\f$
+   */
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-          const override;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
+};
 
-      /**
-       * Himmelblau unconstrained test problem.
-       *
-       * * Number of parameters: 2
-       * * Domain: \f$\bar{\vec{x}} \in [-5, 5]^2\f$
-       * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} \in
-       *   \{(3, 2), (-2.805118, 3.131313), (-3.779310, -3.283186),
-       *   (3.584428, -1.848127)\}\f$
-       * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
-       *   0\f$
-       */
-      class Himmelblau : public UnconstrainedTestProblem {
-        public:
-          /**
-           * Constructor.
-           */
-          Himmelblau();
+/**
+ * Himmelblau unconstrained test problem.
+ *
+ * * Number of parameters: 2
+ * * Domain: \f$\bar{\vec{x}} \in [-5, 5]^2\f$
+ * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} \in
+ *   \{(3, 2), (-2.805118, 3.131313), (-3.779310, -3.283186),
+ *   (3.584428, -1.848127)\}\f$
+ * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
+ *   0\f$
+ */
+class Himmelblau : public UnconstrainedTestProblem {
+ public:
+  /**
+   * Constructor.
+   */
+  Himmelblau();
 
-          /**
-           * Destructor.
-           */
-          virtual ~Himmelblau() override;
+  /**
+   * Destructor.
+   */
+  virtual ~Himmelblau() override;
 
-          /**
-           * @return  objective function of the test problem
-           */
-          virtual TestScalarFunction& getObjectiveFunction() override;
+  /**
+   * @return  objective function of the test problem
+   */
+  virtual TestScalarFunction& getObjectiveFunction() override;
 
-          /**
-           * @param[out] x minimal point
-           *               \f$\vec{x}_\opt \in [0, 1]^d\f$
-           * @return       minimal function value
-           *               \f$f(\vec{x}_\opt)\f$
-           */
-          virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-          override;
+  /**
+   * @param[out] x minimal point
+   *               \f$\vec{x}_\opt \in [0, 1]^d\f$
+   * @return       minimal function value
+   *               \f$f(\vec{x}_\opt)\f$
+   */
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
-        protected:
-          /// objective function
-          HimmelblauObjective f;
-      };
+ protected:
+  /// objective function
+  HimmelblauObjective f;
+};
 
-    }
-  }
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_HIMMELBLAU_HPP */

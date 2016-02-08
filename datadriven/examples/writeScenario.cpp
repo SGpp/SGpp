@@ -51,7 +51,8 @@ int main(int argc, char** argv) {
 
   double lambda = 0.000001;
 
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
+  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig,
+      SLESolverConfigRefine,
       SLESolverConfigFinal, adaptConfig);
 
   scenario.writeToFile("DR5_modlinear.scenario");

@@ -14,7 +14,8 @@
 
 int main(int argc, char** argv) {
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> configuration = std::make_shared<SGPP::base::OCLOperationConfiguration>("detectPlatform.cfg");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> configuration =
+    std::make_shared<SGPP::base::OCLOperationConfiguration>("detectPlatform.cfg");
   (*configuration).replaceIDAttr("VERBOSE", true);
 
   SGPP::base::OCLManagerMultiPlatform manager(configuration);

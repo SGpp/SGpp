@@ -3,8 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-static inline void calculateIndexCombined(size_t dim, size_t nextIterationToRecalc,
-    const SGPP::float_t* const (&dataTuplePtr)[4], std::vector<uint32_t>& hInversePtr, uint32_t* (&intermediates)[4],
+static inline void calculateIndexCombined(size_t dim,
+    size_t nextIterationToRecalc,
+    const SGPP::float_t* const (&dataTuplePtr)[4],
+    std::vector<uint32_t>& hInversePtr, uint32_t* (&intermediates)[4],
     SGPP::float_t* (&evalIndexValues)[4],
     //uint32_t *(&indexPtr)[4],
     uint32_t (&indexFlat)[4], SGPP::float_t (&phiEval)[4]) {
@@ -21,7 +23,8 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
 
   // flatten only
   __m128i indexFlatReg = _mm_set_epi32(intermediates[3][nextIterationToRecalc],
-                                       intermediates[2][nextIterationToRecalc], intermediates[1][nextIterationToRecalc],
+                                       intermediates[2][nextIterationToRecalc],
+                                       intermediates[1][nextIterationToRecalc],
                                        intermediates[0][nextIterationToRecalc]);
 
   // evaluate only
@@ -37,7 +40,8 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
   //__m256d zero = _mm256_set1_pd(0.0);
 
   __m256d phiEvalReg = _mm256_set_pd(evalIndexValues[3][nextIterationToRecalc],
-                                     evalIndexValues[2][nextIterationToRecalc], evalIndexValues[1][nextIterationToRecalc],
+                                     evalIndexValues[2][nextIterationToRecalc],
+                                     evalIndexValues[1][nextIterationToRecalc],
                                      evalIndexValues[0][nextIterationToRecalc]);
 
   for (size_t i = nextIterationToRecalc; i < dim; i += 1) {
@@ -62,7 +66,8 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
     // size_t dataVectorIndex = 0;
 
     //for (size_t i = outer; i < min(outer + 4, dim); i++) {
-    __m256d dataTupleReg = _mm256_set_pd(dataTuplePtr[3][i], dataTuplePtr[2][i], dataTuplePtr[1][i],
+    __m256d dataTupleReg = _mm256_set_pd(dataTuplePtr[3][i], dataTuplePtr[2][i],
+                                         dataTuplePtr[1][i],
                                          dataTuplePtr[0][i]);
 
     // __m256d dataTupleReg = allData[dataVectorIndex];
@@ -80,7 +85,8 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
     //flatten index
     uint32_t actualDirectionGridPoints = hInversePtr[i];
     actualDirectionGridPoints >>= 1;
-    __m128i actualDirectionGridPointsReg = _mm_set1_epi32(actualDirectionGridPoints);
+    __m128i actualDirectionGridPointsReg = _mm_set1_epi32(
+        actualDirectionGridPoints);
 
     indexFlatReg = _mm_mullo_epi32(indexFlatReg, actualDirectionGridPointsReg);
 
@@ -120,9 +126,11 @@ static inline void calculateIndexCombined(size_t dim, size_t nextIterationToReca
 #endif
 }
 
-static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRecalc,
+static inline void calculateIndexCombined2(size_t dim,
+    size_t nextIterationToRecalc,
     //rep
-    const SGPP::float_t* const (&dataTuplePtr)[4], const SGPP::float_t* const (&dataTuplePtr2)[4],
+    const SGPP::float_t* const (&dataTuplePtr)[4],
+    const SGPP::float_t* const (&dataTuplePtr2)[4],
     std::vector<uint32_t>& hInversePtr,
     //rep
     uint32_t* (&intermediates)[4], uint32_t* (&intermediates2)[4],
@@ -145,10 +153,12 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
 
   // flatten only
   __m128i indexFlatReg = _mm_set_epi32(intermediates[3][nextIterationToRecalc],
-                                       intermediates[2][nextIterationToRecalc], intermediates[1][nextIterationToRecalc],
+                                       intermediates[2][nextIterationToRecalc],
+                                       intermediates[1][nextIterationToRecalc],
                                        intermediates[0][nextIterationToRecalc]);
   __m128i indexFlatReg2 = _mm_set_epi32(intermediates2[3][nextIterationToRecalc],
-                                        intermediates2[2][nextIterationToRecalc], intermediates2[1][nextIterationToRecalc],
+                                        intermediates2[2][nextIterationToRecalc],
+                                        intermediates2[1][nextIterationToRecalc],
                                         intermediates2[0][nextIterationToRecalc]);
 
   // evaluate only
@@ -164,17 +174,21 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
   __m256d zero = _mm256_set1_pd(0.0);
 
   __m256d phiEvalReg = _mm256_set_pd(evalIndexValues[3][nextIterationToRecalc],
-                                     evalIndexValues[2][nextIterationToRecalc], evalIndexValues[1][nextIterationToRecalc],
+                                     evalIndexValues[2][nextIterationToRecalc],
+                                     evalIndexValues[1][nextIterationToRecalc],
                                      evalIndexValues[0][nextIterationToRecalc]);
   __m256d phiEvalReg2 = _mm256_set_pd(evalIndexValues2[3][nextIterationToRecalc],
-                                      evalIndexValues2[2][nextIterationToRecalc], evalIndexValues2[1][nextIterationToRecalc],
+                                      evalIndexValues2[2][nextIterationToRecalc],
+                                      evalIndexValues2[1][nextIterationToRecalc],
                                       evalIndexValues2[0][nextIterationToRecalc]);
 
   for (size_t i = nextIterationToRecalc; i < dim; i += 1) {
 
-    __m256d dataTupleReg = _mm256_set_pd(dataTuplePtr[3][i], dataTuplePtr[2][i], dataTuplePtr[1][i],
+    __m256d dataTupleReg = _mm256_set_pd(dataTuplePtr[3][i], dataTuplePtr[2][i],
+                                         dataTuplePtr[1][i],
                                          dataTuplePtr[0][i]);
-    __m256d dataTupleReg2 = _mm256_set_pd(dataTuplePtr2[3][i], dataTuplePtr2[2][i], dataTuplePtr2[1][i],
+    __m256d dataTupleReg2 = _mm256_set_pd(dataTuplePtr2[3][i], dataTuplePtr2[2][i],
+                                          dataTuplePtr2[1][i],
                                           dataTuplePtr2[0][i]);
 
     __m256d hInverseReg = _mm256_set1_pd((SGPP::float_t) hInversePtr[i]);
@@ -198,7 +212,8 @@ static inline void calculateIndexCombined2(size_t dim, size_t nextIterationToRec
     //flatten index
     uint32_t actualDirectionGridPoints = hInversePtr[i];
     actualDirectionGridPoints >>= 1;
-    __m128i actualDirectionGridPointsReg = _mm_set1_epi32(actualDirectionGridPoints);
+    __m128i actualDirectionGridPointsReg = _mm_set1_epi32(
+        actualDirectionGridPoints);
 
     indexFlatReg = _mm_mullo_epi32(indexFlatReg, actualDirectionGridPointsReg);
     indexFlatReg2 = _mm_mullo_epi32(indexFlatReg2, actualDirectionGridPointsReg);

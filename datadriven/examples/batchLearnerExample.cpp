@@ -63,7 +63,8 @@ int main (int argc, char** args) {
   gridConfig.level_ = 4;
 
   //init the learner
-  SGPP::datadriven::BatchLearner learner(batchConfig, gridConfig, solverConfig, adaptConfig);
+  SGPP::datadriven::BatchLearner learner(batchConfig, gridConfig, solverConfig,
+                                         adaptConfig);
 
 
   int i = 0;
@@ -73,12 +74,14 @@ int main (int argc, char** args) {
     long int start_l = clock();
     learner.trainBatch();
     long int stop_l = clock();
-    cout << "trainBatch() took: " << double(stop_l - start_l) / double(CLOCKS_PER_SEC) * 1000 << endl;
+    cout << "trainBatch() took: " << double(stop_l - start_l) / double(
+           CLOCKS_PER_SEC) * 1000 << endl;
 
     //If testsize > 0, the learner will test on testsize items following the batch; in the next batch these items will be included and the batch is filled with new items until batchsize is reached. This will be done after every batch.
     //AC = accuracy of the current batch
     //AG = accuracy over all predictions
-    cout << "AC: " << i << ", " << learner.getAccCurrent() << "\nAG: " << i << ", " << learner.getAccGlobal() << endl;
+    cout << "AC: " << i << ", " << learner.getAccCurrent() << "\nAG: " << i << ", "
+         << learner.getAccGlobal() << endl;
     i++;
   }
 
@@ -91,7 +94,9 @@ int main (int argc, char** args) {
 #else
 #include <iostream>
 int main(int argc, char** argv) {
-  std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
+  std::cout <<
+            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
+            std::endl;
   return 0;
 }
 #endif

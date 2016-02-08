@@ -1,8 +1,7 @@
---brackets=attach
---indent-classes
+--style=attach
 --indent-switches
+--indent-modifiers
 --indent-col1-comments
---indent-namespaces
 --min-conditional-indent=0
 --break-blocks
 --pad-oper
@@ -12,3 +11,4 @@
 --align-reference=type
 --mode=c
 --indent=spaces=2
+--max-code-length=80

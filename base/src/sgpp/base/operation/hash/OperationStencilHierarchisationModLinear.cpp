@@ -14,33 +14,37 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationStencilHierarchisationModLinear::doHierarchisation(DataVector& node_values) {
-      surplusStencil.clear();
-      neighborStencil.clear();
-      weightStencil.clear();
-      StencilHierarchisationModLinear func(this->storage, surplusStencil, neighborStencil, weightStencil);
-      sweep<StencilHierarchisationModLinear> s(func, this->storage);
+void OperationStencilHierarchisationModLinear::doHierarchisation(
+  DataVector& node_values) {
+  surplusStencil.clear();
+  neighborStencil.clear();
+  weightStencil.clear();
+  StencilHierarchisationModLinear func(this->storage, surplusStencil,
+                                       neighborStencil, weightStencil);
+  sweep<StencilHierarchisationModLinear> s(func, this->storage);
 
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(node_values, node_values, i);
-      }
-    }
-
-    void OperationStencilHierarchisationModLinear::doDehierarchisation(DataVector& alpha) {
-      surplusStencil.clear();
-      neighborStencil.clear();
-      weightStencil.clear();
-      StencilDehierarchisationModLinear func(this->storage, surplusStencil, neighborStencil, weightStencil);
-      sweep<StencilDehierarchisationModLinear> s(func, this->storage);
-
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
-      }
-    }
-
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(node_values, node_values, i);
   }
+}
+
+void OperationStencilHierarchisationModLinear::doDehierarchisation(
+  DataVector& alpha) {
+  surplusStencil.clear();
+  neighborStencil.clear();
+  weightStencil.clear();
+  StencilDehierarchisationModLinear func(this->storage, surplusStencil,
+                                         neighborStencil, weightStencil);
+  sweep<StencilDehierarchisationModLinear> s(func, this->storage);
+
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(alpha, alpha, i);
+  }
+}
+
+}
 }

@@ -22,42 +22,47 @@ using namespace SGPP::base;
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * Implementation for linear functions of Laplace Operation, prewavelet grids without boundaries.
-     * With prewavelets the calculation of the gradient part of the up down algorithm is the more complicated
-     * one whereas the normal part is eased. For details on the implementation please refer to the documentation
-     * of the detail-classes LaplaceDownGradientPrewavelet.hpp, LaplaceUpGradientPrewavelet.hpp and
-     * LaplaceDownPrewavelet.hpp.
-     */
-    class OperationLaplacePrewavelet : public UpDownOneOpDimWithShadow {
-      public:
-        /**
-         * Constructor of OperationLaplacePrewavelet
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         * @param shadowstorage shadow storage fuer prewavelets
-         */
-        OperationLaplacePrewavelet(SGPP::base::GridStorage* storage, SGPP::base::GridStorage* shadowstorage);
+/**
+ * Implementation for linear functions of Laplace Operation, prewavelet grids without boundaries.
+ * With prewavelets the calculation of the gradient part of the up down algorithm is the more complicated
+ * one whereas the normal part is eased. For details on the implementation please refer to the documentation
+ * of the detail-classes LaplaceDownGradientPrewavelet.hpp, LaplaceUpGradientPrewavelet.hpp and
+ * LaplaceDownPrewavelet.hpp.
+ */
+class OperationLaplacePrewavelet : public UpDownOneOpDimWithShadow {
+ public:
+  /**
+   * Constructor of OperationLaplacePrewavelet
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   * @param shadowstorage shadow storage fuer prewavelets
+   */
+  OperationLaplacePrewavelet(SGPP::base::GridStorage* storage,
+                             SGPP::base::GridStorage* shadowstorage);
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationLaplacePrewavelet();
+  /**
+   * Destructor
+   */
+  virtual ~OperationLaplacePrewavelet();
 
-      protected:
+ protected:
 
-        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                  size_t dim);
 
-        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                    size_t dim);
 
-        virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(SGPP::base::DataVector& alpha,
+                         SGPP::base::DataVector& result, size_t dim);
 
-        virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
-    };
+  virtual void upOpDim(SGPP::base::DataVector& alpha,
+                       SGPP::base::DataVector& result, size_t dim);
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONLAPLACEPREWAVELET_HPP */

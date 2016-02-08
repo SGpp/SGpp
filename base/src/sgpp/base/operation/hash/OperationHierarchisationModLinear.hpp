@@ -13,35 +13,35 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Hierarchisation on sparse grid, mod linear case
-     *
-     */
-    class OperationHierarchisationModLinear : public OperationHierarchisation {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         */
-        OperationHierarchisationModLinear(GridStorage* storage) : storage(storage) {}
+/**
+ * Hierarchisation on sparse grid, mod linear case
+ *
+ */
+class OperationHierarchisationModLinear : public OperationHierarchisation {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's GridStorage object
+   */
+  OperationHierarchisationModLinear(GridStorage* storage) : storage(storage) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationHierarchisationModLinear() override {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationHierarchisationModLinear() override {}
 
-        virtual void doHierarchisation(DataVector& node_values) override;
-        virtual void doDehierarchisation(DataVector& alpha) override;
+  virtual void doHierarchisation(DataVector& node_values) override;
+  virtual void doDehierarchisation(DataVector& alpha) override;
 
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-    };
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONHIERARCHISATIONMODLINEAR_HPP */

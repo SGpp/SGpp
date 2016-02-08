@@ -9,68 +9,71 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
 
 
-    SqXdPhidPhiUpBBLinearStretchedBoundary::SqXdPhidPhiUpBBLinearStretchedBoundary(SGPP::base::GridStorage* storage) : SqXdPhidPhiUpBBLinearStretched(storage) {
+SqXdPhidPhiUpBBLinearStretchedBoundary::SqXdPhidPhiUpBBLinearStretchedBoundary(
+  SGPP::base::GridStorage* storage) : SqXdPhidPhiUpBBLinearStretched(storage) {
+}
+
+SqXdPhidPhiUpBBLinearStretchedBoundary::~SqXdPhidPhiUpBBLinearStretchedBoundary() {
+}
+
+void SqXdPhidPhiUpBBLinearStretchedBoundary::operator()(
+  SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+  grid_iterator& index, size_t dim) {
+  float_t q = this->stretching->getIntervalWidth(dim);
+  float_t t = this->stretching->getIntervalOffset(dim);
+
+  // get boundary values
+  float_t fl = 0.0;
+  float_t fr = 0.0;
+
+
+  if (!index.hint()) {
+    index.resetToLevelOne(dim);
+
+    if (!this->storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fr);
     }
 
-    SqXdPhidPhiUpBBLinearStretchedBoundary::~SqXdPhidPhiUpBBLinearStretchedBoundary() {
-    }
+    index.resetToLeftLevelZero(dim);
+  }
 
-    void SqXdPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      float_t q = this->stretching->getIntervalWidth(dim);
-      float_t t = this->stretching->getIntervalOffset(dim);
+  size_t seq_left;
+  size_t seq_right;
 
-      // get boundary values
-      float_t fl = 0.0;
-      float_t fr = 0.0;
+  // left boundary
+  seq_left = index.seq();
 
+  // right boundary
+  index.resetToRightLevelZero(dim);
+  seq_right = index.seq();
 
-      if (!index.hint()) {
-        index.resetToLevelOne(dim);
+  // up
+  //////////////////////////////////////
+  // check boundary conditions
+  if (this->stretching->hasDirichletBoundaryLeft(dim)) {
+    result[seq_left] = 0.0; // source[seq_left];
+  } else {
+    result[seq_left] = fl;
+    float_t bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
+    result[seq_left] -= (1.0 / 3.0) * source[seq_right] * bbFactor;
+  }
 
-        if (!this->storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fr);
-        }
+  if (this->stretching->hasDirichletBoundaryRight(dim)) {
+    result[seq_right] = 0.0; //source[seq_right];
+  } else {
+    result[seq_right] = fr;
+  }
 
-        index.resetToLeftLevelZero(dim);
-      }
-
-      size_t seq_left;
-      size_t seq_right;
-
-      // left boundary
-      seq_left = index.seq();
-
-      // right boundary
-      index.resetToRightLevelZero(dim);
-      seq_right = index.seq();
-
-      // up
-      //////////////////////////////////////
-      // check boundary conditions
-      if (this->stretching->hasDirichletBoundaryLeft(dim)) {
-        result[seq_left] = 0.0; // source[seq_left];
-      } else {
-        result[seq_left] = fl;
-        float_t bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
-        result[seq_left] -= (1.0 / 3.0) * source[seq_right] * bbFactor;
-      }
-
-      if (this->stretching->hasDirichletBoundaryRight(dim)) {
-        result[seq_right] = 0.0; //source[seq_right];
-      } else {
-        result[seq_right] = fr;
-      }
-
-      index.resetToLeftLevelZero(dim);
+  index.resetToLeftLevelZero(dim);
 
 
-    }
+}
 
-    // namespace detail
+// namespace detail
 
-  } // namespace SGPP
+} // namespace SGPP
 }

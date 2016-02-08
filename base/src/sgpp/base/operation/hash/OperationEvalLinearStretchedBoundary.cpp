@@ -13,26 +13,27 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    float_t OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
-        const DataVector& point) {
-      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+float_t OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
+    const DataVector& point) {
+  typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
-      IndexValVector vec;
-      LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
-      GetAffectedBasisFunctions<LinearStretchedBoundaryBasis<unsigned int, unsigned int> > ga(storage);
+  IndexValVector vec;
+  LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
+  GetAffectedBasisFunctions<LinearStretchedBoundaryBasis<unsigned int, unsigned int> >
+  ga(storage);
 
-      ga(base, point, vec);
+  ga(base, point, vec);
 
-      float_t result = 0.0;
+  float_t result = 0.0;
 
-      for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
-        result += iter->second * alpha[iter->first];
-      }
-
-      return result;
-    }
-
+  for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
+    result += iter->second * alpha[iter->first];
   }
+
+  return result;
 }
+
+}  // namespace base
+}  // namespace SGPP

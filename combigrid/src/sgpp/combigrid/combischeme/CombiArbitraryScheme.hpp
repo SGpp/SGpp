@@ -10,17 +10,17 @@
 #include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
 
 namespace combigrid {
-  /** Combischeme created with from an arbitrary active set of full grids. Missing
-   * subgrids for the creation of a valid combi solution are automatically added.
-   */
-  class CombiArbitraryScheme: public combigrid::CombiSchemeBasis {
-    public:
-      /** Initializes the arbitrary scheme from a set of active set level vectors*/
-      CombiArbitraryScheme(std::vector<std::vector<int> > level_vectors);
-      /** Initializes the arbitrary scheme from a CombigridLevelVector as acitve set.*/
-      CombiArbitraryScheme(CombigridLevelVector input);
+/** Combischeme created with from an arbitrary active set of full grids. Missing
+ * subgrids for the creation of a valid combi solution are automatically added.
+ */
+class CombiArbitraryScheme: public combigrid::CombiSchemeBasis {
+ public:
+  /** Initializes the arbitrary scheme from a set of active set level vectors*/
+  CombiArbitraryScheme(std::vector<std::vector<int> > level_vectors);
+  /** Initializes the arbitrary scheme from a CombigridLevelVector as acitve set.*/
+  CombiArbitraryScheme(CombigridLevelVector input);
 
-  };
+};
 
 }
 

@@ -18,65 +18,66 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationHierarchisationPrewavelet::doHierarchisation(
-      DataVector& node_values) {
-      /*
-       * Hierarchisation on prewavelets require a hierarchisation on a normal
-       * linear grid, afterwards they are converted into a prewavelet basis
-       */
+void OperationHierarchisationPrewavelet::doHierarchisation(
+  DataVector& node_values) {
+  /*
+   * Hierarchisation on prewavelets require a hierarchisation on a normal
+   * linear grid, afterwards they are converted into a prewavelet basis
+   */
 
-      HierarchisationLinear func(this->storage);
-      sweep<HierarchisationLinear> s(func, this->storage);
+  HierarchisationLinear func(this->storage);
+  sweep<HierarchisationLinear> s(func, this->storage);
 
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(node_values, node_values, i);
-      }
-
-      ConvertLinearToPrewavelet func2(this->storage, this->shadowStorage);
-      sweep<ConvertLinearToPrewavelet> s2(func2, this->storage);
-
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s2.sweep1D(node_values, node_values, i);
-      }
-
-    }
-
-    void OperationHierarchisationPrewavelet::doDehierarchisation(DataVector& alpha) {
-      ConvertPrewaveletToLinear func(this->storage);
-      sweep<ConvertPrewaveletToLinear> s(func, this->storage);
-
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
-      }
-
-      DehierarchisationLinear func2(this->storage);
-      sweep<DehierarchisationLinear> s2(func2, this->storage);
-
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s2.sweep1D(alpha, alpha, (this->storage->dim() - (i + 1)));
-      }
-
-    }
-
-    void OperationHierarchisationPrewavelet::expandGrid() {
-      for (size_t i = 0; i < shadowStorage->size(); i++) {
-        (*shadowStorage->get(i)).toString(std::cout);
-        this->storage->insert(*shadowStorage->get(i));
-
-        if ((*shadowStorage->get(i)).isLeaf())
-          std::cout << "is Leaf : " << std::endl;
-        else
-          std::cout << "nööö" << std::endl;
-      }
-    }
-
-    void OperationHierarchisationPrewavelet::shrinkGrid() {
-      for (size_t i = 0; i < shadowStorage->size(); i++) {
-        this->storage->deleteLast();
-      }
-    }
-
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(node_values, node_values, i);
   }
+
+  ConvertLinearToPrewavelet func2(this->storage, this->shadowStorage);
+  sweep<ConvertLinearToPrewavelet> s2(func2, this->storage);
+
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s2.sweep1D(node_values, node_values, i);
+  }
+
+}
+
+void OperationHierarchisationPrewavelet::doDehierarchisation(
+  DataVector& alpha) {
+  ConvertPrewaveletToLinear func(this->storage);
+  sweep<ConvertPrewaveletToLinear> s(func, this->storage);
+
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(alpha, alpha, i);
+  }
+
+  DehierarchisationLinear func2(this->storage);
+  sweep<DehierarchisationLinear> s2(func2, this->storage);
+
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s2.sweep1D(alpha, alpha, (this->storage->dim() - (i + 1)));
+  }
+
+}
+
+void OperationHierarchisationPrewavelet::expandGrid() {
+  for (size_t i = 0; i < shadowStorage->size(); i++) {
+    (*shadowStorage->get(i)).toString(std::cout);
+    this->storage->insert(*shadowStorage->get(i));
+
+    if ((*shadowStorage->get(i)).isLeaf())
+      std::cout << "is Leaf : " << std::endl;
+    else
+      std::cout << "nööö" << std::endl;
+  }
+}
+
+void OperationHierarchisationPrewavelet::shrinkGrid() {
+  for (size_t i = 0; i < shadowStorage->size(); i++) {
+    this->storage->deleteLast();
+  }
+}
+
+}
 }

@@ -27,16 +27,20 @@ int main(int argc, char** argv) {
   boost::program_options::options_description description("Allowed options");
   description.add_options()("help", "display help")("scenario",
       boost::program_options::value<std::string>(&scenarioFileName),
-      "the scenario file to be used (serialized LearnerScenario)")("parameterConfiguration",
-          boost::program_options::value<std::string>(&parameterConfigurationFileName),
-          "the parameter configuration file to be used (serialized StaticParameterTuner)")("kernel",
-              boost::program_options::value<std::string>(&kernelName), "name of the kernel to be tuned for")(
-                "outputFileName", boost::program_options::value<std::string>(&outputFileName),
-                "output file for optimized parameters")("collectStatistics",
-                    boost::program_options::value<bool>(&collectStatistics),
-                    "collect statistics for each device and kernel optimized and write them to csv files")("useDoublePrecision",
-                        boost::program_options::value<bool>(&useDoublePrecision),
-                        "tune for double precision")
+      "the scenario file to be used (serialized LearnerScenario)")
+  ("parameterConfiguration",
+   boost::program_options::value<std::string>(&parameterConfigurationFileName),
+   "the parameter configuration file to be used (serialized StaticParameterTuner)")
+  ("kernel",
+   boost::program_options::value<std::string>(&kernelName),
+   "name of the kernel to be tuned for")(
+     "outputFileName", boost::program_options::value<std::string>(&outputFileName),
+     "output file for optimized parameters")("collectStatistics",
+         boost::program_options::value<bool>(&collectStatistics),
+         "collect statistics for each device and kernel optimized and write them to csv files")
+  ("useDoublePrecision",
+   boost::program_options::value<bool>(&useDoublePrecision),
+   "tune for double precision")
   //            ("devices",
   //            boost::program_options::value<std::vector<std::string> >(&devices)->multitoken(),
   //            "specify comma-separated list of devices or \"all\" for all devices found")
@@ -44,7 +48,8 @@ int main(int argc, char** argv) {
 
   boost::program_options::variables_map variables_map;
 
-  boost::program_options::parsed_options options = parse_command_line(argc, argv, description);
+  boost::program_options::parsed_options options = parse_command_line(argc, argv,
+      description);
   boost::program_options::store(options, variables_map);
   boost::program_options::notify(variables_map);
 
@@ -75,7 +80,8 @@ int main(int argc, char** argv) {
 
   SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
 
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true,
+      true);
 
   //TODO: LOCAL_SIZE should be added
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
@@ -95,7 +101,8 @@ int main(int argc, char** argv) {
     throw;
   }
 
-  SGPP::base::OCLOperationConfiguration bestParameters = staticParameterTuner.tuneEverything(scenario, kernelName, useDoublePrecision);
+  SGPP::base::OCLOperationConfiguration bestParameters =
+    staticParameterTuner.tuneEverything(scenario, kernelName, useDoublePrecision);
 
   bestParameters.serialize(outputFileName);
 

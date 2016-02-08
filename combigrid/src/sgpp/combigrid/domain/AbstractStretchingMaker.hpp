@@ -9,19 +9,19 @@
 #include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 
 namespace combigrid {
-  /** class to create stretching in 1D*/
-  class AbstractStretchingMaker {
-    public:
-      /**
-       * @param level [IN] level of the array
-       * @param min [IN] minimum value of the domain
-       * @param max [IN] maximum value of the domain
-       * @param stretching [OUT] 2^level + 1 elements */
-      virtual void get1DStretching(
-        int level , double min, double max,
-        std::vector<double>& stretching) const = 0;
+/** class to create stretching in 1D*/
+class AbstractStretchingMaker {
+ public:
+  /**
+   * @param level [IN] level of the array
+   * @param min [IN] minimum value of the domain
+   * @param max [IN] maximum value of the domain
+   * @param stretching [OUT] 2^level + 1 elements */
+  virtual void get1DStretching(
+    int level , double min, double max,
+    std::vector<double>& stretching) const = 0;
 
-  };
+};
 }
 
 #endif /* ABSTRACTSTRETCHINGMAKER_HPP_ */

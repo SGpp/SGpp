@@ -17,75 +17,75 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     *  This is used to implement the output on the command line
-     *
-     */
-    class ScreenOutput {
-      public:
-        /**
-         * Standard constructor
-         */
-        ScreenOutput();
+/**
+ *  This is used to implement the output on the command line
+ *
+ */
+class ScreenOutput {
+ public:
+  /**
+   * Standard constructor
+   */
+  ScreenOutput();
 
-        /**
-         * Standard destructor
-         */
-        ~ScreenOutput();
+  /**
+   * Standard destructor
+   */
+  ~ScreenOutput();
 
-        /**
-         *  update function running windows
-         *
-         *  @param progress percentage value
-         *  @param status status in words
-         */
-        void update(size_t progress, std::string status);
+  /**
+   *  update function running windows
+   *
+   *  @param progress percentage value
+   *  @param status status in words
+   */
+  void update(size_t progress, std::string status);
 
-        /**
-         * writes the header of the screen output
-         *
-         * @param appTitle the application's title
-         * @param appAuthor the application's author
-         */
-        void writeTitle(std::string appTitle, std::string appAuthor);
+  /**
+   * writes the header of the screen output
+   *
+   * @param appTitle the application's title
+   * @param appAuthor the application's author
+   */
+  void writeTitle(std::string appTitle, std::string appAuthor);
 
-        /**
-         * writes some help information to the console
-         *
-         * @param helpText the helptext to be displayed
-         */
-        void writeHelp(std::string helpText);
+  /**
+   * writes some help information to the console
+   *
+   * @param helpText the helptext to be displayed
+   */
+  void writeHelp(std::string helpText);
 
-        /**
-         * start the screen output
-         *
-         * @param text the start text to be displayed
-         */
-        void writeStartSolve(std::string text);
+  /**
+   * start the screen output
+   *
+   * @param text the start text to be displayed
+   */
+  void writeStartSolve(std::string text);
 
-        /**
-         * writes empty lines
-         *
-         * @param numLines number of empty lines to display
-         */
-        void writeEmptyLines(size_t numLines);
+  /**
+   * writes empty lines
+   *
+   * @param numLines number of empty lines to display
+   */
+  void writeEmptyLines(size_t numLines);
 
-      private:
+ private:
 #ifdef _WIN32
-        /// coordinates of the cusor's position
-        COORD pos;
-        /// buffers of the CMD
-        CONSOLE_SCREEN_BUFFER_INFO info;
-        /// handle to the CMD
-        HANDLE hCon;
+  /// coordinates of the cusor's position
+  COORD pos;
+  /// buffers of the CMD
+  CONSOLE_SCREEN_BUFFER_INFO info;
+  /// handle to the CMD
+  HANDLE hCon;
 #endif
-        /// is this the first run
-        bool first_run;
-    };
+  /// is this the first run
+  bool first_run;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* SCREENOUTPUT_HPP */

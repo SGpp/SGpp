@@ -20,12 +20,14 @@
 using namespace SGPP::base;
 using namespace std::chrono;
 
-void testCloned(std::shared_ptr<OCLManager> manager, double* values, size_t valueSize) {
+void testCloned(std::shared_ptr<OCLManager> manager, double* values,
+                size_t valueSize) {
   OCLClonedBuffer cloned(manager);
   cloned.initializeBuffer(values, sizeof(double), valueSize);
 }
 
-void testStretched(std::shared_ptr<OCLManager> manager, double* values, size_t valueSize) {
+void testStretched(std::shared_ptr<OCLManager> manager, double* values,
+                   size_t valueSize) {
   OCLStretchedBuffer stretched(manager);
   stretched.initializeBuffer(sizeof(double), valueSize);
   double* mappedBuffer = (double*)stretched.getMappedHostBuffer();
@@ -35,7 +37,8 @@ void testStretched(std::shared_ptr<OCLManager> manager, double* values, size_t v
   }
 }
 
-void testZeroCopyReadOnly(std::shared_ptr<OCLManager> manager, double* values, size_t valueSize) {
+void testZeroCopyReadOnly(std::shared_ptr<OCLManager> manager, double* values,
+                          size_t valueSize) {
   OCLZeroCopyBuffer buffer(manager);
   buffer.initializeBuffer( values, sizeof(double), valueSize, true);
 }
@@ -72,14 +75,16 @@ int main(int argc, char** argv) {
     testCloned(manager, values, valueSize);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>
+                    ( t2 - t1 ).count();
     //std::cout << "duration: " << duration << std::endl;
     sum += duration;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 
-  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 * 0.001;
+  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 *
+        0.001;
   std::cout << "Average: " << avg << std::endl;
   sum = 0;
   std::cout << std::endl;
@@ -95,14 +100,16 @@ int main(int argc, char** argv) {
     testStretched(manager, values, valueSize);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>
+                    ( t2 - t1 ).count();
     //std::cout << "duration: " << duration << std::endl;
     sum += duration;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 
-  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 * 0.001;
+  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 *
+        0.001;
   std::cout << "Average: " << avg << std::endl;
   sum = 0;
   std::cout << std::endl;
@@ -118,20 +125,24 @@ int main(int argc, char** argv) {
     testZeroCopyReadOnly(manager, values, valueSize);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>
+                    ( t2 - t1 ).count();
     //std::cout << "duration: " << duration << std::endl;
     sum += duration;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 
-  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 * 0.001;
+  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 *
+        0.001;
   std::cout << "Average: " << avg << std::endl;
   sum = 0;
 }
 #else
 int main(int argc, char** argv) {
-  std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
+  std::cout <<
+            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
+            std::endl;
   return 0;
 }
 #endif

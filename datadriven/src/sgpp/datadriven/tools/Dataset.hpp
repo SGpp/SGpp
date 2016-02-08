@@ -14,51 +14,51 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    class Dataset {
-      public:
-        /**
-         * Constructs an empty dataset (zero size).
-         */
-        Dataset();
+class Dataset {
+ public:
+  /**
+   * Constructs an empty dataset (zero size).
+   */
+  Dataset();
 
-        /**
-         * Constructs an empty dataset with given size.
-         *
-         * @param numberInstances number of instances in the dataset
-         * @param dimension number of dimensions in the dataset
-         */
-        Dataset(size_t numberInstances, size_t dimension);
+  /**
+   * Constructs an empty dataset with given size.
+   *
+   * @param numberInstances number of instances in the dataset
+   * @param dimension number of dimensions in the dataset
+   */
+  Dataset(size_t numberInstances, size_t dimension);
 
-        /**
-         * @return number of instances in the dataset
-         */
-        size_t getNumberInstances() const;
+  /**
+   * @return number of instances in the dataset
+   */
+  size_t getNumberInstances() const;
 
-        /**
-         * @return number of dimensions in the dataset
-         */
-        size_t getDimension() const;
+  /**
+   * @return number of dimensions in the dataset
+   */
+  size_t getDimension() const;
 
-        /**
-         * @return classes data of the dataset
-         */
-        SGPP::base::DataVector& getClasses();
+  /**
+   * @return classes data of the dataset
+   */
+  SGPP::base::DataVector& getClasses();
 
-        /**
-         * @return training data of the dataset
-         */
-        SGPP::base::DataMatrix& getTrainingData();
+  /**
+   * @return training data of the dataset
+   */
+  SGPP::base::DataMatrix& getTrainingData();
 
-      protected:
-        size_t numberInstances;
-        size_t dimension;
-        SGPP::base::DataVector classes;
-        SGPP::base::DataMatrix trainingData;
-    };
+ protected:
+  size_t numberInstances;
+  size_t dimension;
+  SGPP::base::DataVector classes;
+  SGPP::base::DataMatrix trainingData;
+};
 
-  }
+}
 }
 
 #endif

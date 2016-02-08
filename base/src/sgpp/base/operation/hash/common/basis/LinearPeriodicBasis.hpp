@@ -12,68 +12,68 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * linear basis functions with boundaries
-     * And here we have another implicit dependence on tensor products
-     *
-     */
-    template<class LT, class IT>
-    class LinearPeriodicBasis: public Basis<LT, IT>  {
-      public:
-        /**
-         * Destructor.
-         */
-        virtual ~LinearPeriodicBasis() override {
-        }
-
-        /**
-         * Evaluate a basis function.
-         * Has a dependence on the absolute position of grid point and support.
-         *
-         * @param l the level of the current basis function
-         * @param i the index of the current basis function
-         * @param x the absolute position of the evaluation point
-         */
-        inline virtual float_t eval(LT l, IT i, float_t x) override {
-          if (l == 0) {
-            return fabs(2 * x - 1);
-          } else {
-            return 1.0 - fabs(static_cast<float_t>(1 << l) * x -
-                              static_cast<float_t>(i));
-          }
-
-          // should not happen
-          return 0.0;
-        }
-
-        /**
-         * Evaluate a basis function with an offset and scaling factor
-         * Has a dependence on the absolute position of grid point and support.
-         *
-         * @param level the level of the current basis function
-         * @param index the index of the current basis function
-         * @param p the absolute position of the evaluation point
-         * @param q the scaling factor of the basis function
-         * @param t the offset of the basis function
-         */
-        float_t eval(LT level, IT index, float_t p, float_t q, float_t t) {
-          if (level == 0) {
-            return ((1.0 / q) * (fabs((2 * (p - t)) - (q))));
-          } else {
-            return 1.0 - ((1.0 / q) * (fabs(((1 << level) * (p - t)) - (q * index))));
-          }
-
-          // should not happen
-          return 0.0;
-        }
-    };
-
-    // default type-def (unsigned int for level and index)
-    typedef LinearPeriodicBasis<unsigned int, unsigned int> SLinearPeriodicBasis;
-
+/**
+ * linear basis functions with boundaries
+ * And here we have another implicit dependence on tensor products
+ *
+ */
+template<class LT, class IT>
+class LinearPeriodicBasis: public Basis<LT, IT>  {
+ public:
+  /**
+   * Destructor.
+   */
+  virtual ~LinearPeriodicBasis() override {
   }
-}
+
+  /**
+   * Evaluate a basis function.
+   * Has a dependence on the absolute position of grid point and support.
+   *
+   * @param l the level of the current basis function
+   * @param i the index of the current basis function
+   * @param x the absolute position of the evaluation point
+   */
+  inline virtual float_t eval(LT l, IT i, float_t x) override {
+    if (l == 0) {
+      return fabs(2 * x - 1);
+    } else {
+      return 1.0 - fabs(static_cast<float_t>(1 << l) * x -
+                        static_cast<float_t>(i));
+    }
+
+    // should not happen
+    return 0.0;
+  }
+
+  /**
+   * Evaluate a basis function with an offset and scaling factor
+   * Has a dependence on the absolute position of grid point and support.
+   *
+   * @param level the level of the current basis function
+   * @param index the index of the current basis function
+   * @param p the absolute position of the evaluation point
+   * @param q the scaling factor of the basis function
+   * @param t the offset of the basis function
+   */
+  float_t eval(LT level, IT index, float_t p, float_t q, float_t t) {
+    if (level == 0) {
+      return ((1.0 / q) * (fabs((2 * (p - t)) - (q))));
+    } else {
+      return 1.0 - ((1.0 / q) * (fabs(((1 << level) * (p - t)) - (q * index))));
+    }
+
+    // should not happen
+    return 0.0;
+  }
+};
+
+// default type-def (unsigned int for level and index)
+typedef LinearPeriodicBasis<unsigned int, unsigned int> SLinearPeriodicBasis;
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARPERIODICBASE_HPP */

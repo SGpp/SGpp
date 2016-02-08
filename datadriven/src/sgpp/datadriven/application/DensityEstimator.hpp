@@ -13,36 +13,36 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    class DensityEstimator {
-      public:
-        DensityEstimator();
-        DensityEstimator(base::DataMatrix& samples);
-        virtual ~DensityEstimator();
+class DensityEstimator {
+ public:
+  DensityEstimator();
+  DensityEstimator(base::DataMatrix& samples);
+  virtual ~DensityEstimator();
 
-        virtual void initialize(base::DataMatrix& samples) = 0;
+  virtual void initialize(base::DataMatrix& samples) = 0;
 
-        virtual float_t pdf(base::DataVector& x) = 0;
-        virtual void pdf(base::DataMatrix& points, base::DataVector& res) = 0;
+  virtual float_t pdf(base::DataVector& x) = 0;
+  virtual void pdf(base::DataMatrix& points, base::DataVector& res) = 0;
 
-        virtual float_t mean() = 0;
-        virtual float_t variance() = 0;
-        virtual float_t std_deviation();
-        virtual void cov(base::DataMatrix& cov) = 0;
-        virtual void corrcoef(base::DataMatrix& corr);
+  virtual float_t mean() = 0;
+  virtual float_t variance() = 0;
+  virtual float_t std_deviation();
+  virtual void cov(base::DataMatrix& cov) = 0;
+  virtual void corrcoef(base::DataMatrix& corr);
 
-        virtual base::DataVector* getSamples(size_t dim) = 0;
-        virtual base::DataMatrix* getSamples();
+  virtual base::DataVector* getSamples(size_t dim) = 0;
+  virtual base::DataMatrix* getSamples();
 
-        virtual size_t getDim() = 0;
-        virtual size_t getNsamples() = 0;
+  virtual size_t getDim() = 0;
+  virtual size_t getNsamples() = 0;
 
-      protected:
-        base::DataMatrix samples;
-    };
+ protected:
+  base::DataMatrix samples;
+};
 
-  } /* namespace datadriven */
+} /* namespace datadriven */
 } /* namespace sg */
 
 #endif /* DENSITYESTIMATOR_HPP_ */

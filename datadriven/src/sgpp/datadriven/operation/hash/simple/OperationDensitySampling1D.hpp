@@ -13,28 +13,29 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Sample 1D Probability Density Function
-     */
+/**
+ * Sample 1D Probability Density Function
+ */
 
-    class OperationDensitySampling1D {
-      public:
-        OperationDensitySampling1D() {}
-        virtual ~OperationDensitySampling1D() {}
+class OperationDensitySampling1D {
+ public:
+  OperationDensitySampling1D() {}
+  virtual ~OperationDensitySampling1D() {}
 
-        /**
-         * Sampling on 1D grid
-         *
-         * @param alpha Coefficient vector for current grid (1D grid)
-         * @param num_samples # of samples to draw
-         * @param samples Output DataVector
-        * @param seedp seed
-         */
-        virtual void doSampling1D(base::DataVector* alpha, size_t num_samples, base::DataVector*& samples, unsigned int* seedp) = 0;
-    };
+  /**
+   * Sampling on 1D grid
+   *
+   * @param alpha Coefficient vector for current grid (1D grid)
+   * @param num_samples # of samples to draw
+   * @param samples Output DataVector
+  * @param seedp seed
+   */
+  virtual void doSampling1D(base::DataVector* alpha, size_t num_samples,
+                            base::DataVector*& samples, unsigned int* seedp) = 0;
+};
 
-  }
+}
 }
 #endif /* OPERATIONDENSITYSAMPLING1D_HPP */

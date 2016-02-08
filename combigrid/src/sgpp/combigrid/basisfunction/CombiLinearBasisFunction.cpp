@@ -7,4 +7,6 @@
 
 using namespace std;
 
-const combigrid::BasisFunctionBasis* combigrid::LinearBasisFunction::defaultBasis_ = new combigrid::LinearBasisFunction();
+const combigrid::BasisFunctionBasis*
+combigrid::LinearBasisFunction::defaultBasis_ = new
+combigrid::LinearBasisFunction();

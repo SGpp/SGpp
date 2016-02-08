@@ -17,9 +17,9 @@
 
 namespace SGPP {
 
-  namespace op_factory {
+namespace op_factory {
 
-  }
+}
 
 }
 

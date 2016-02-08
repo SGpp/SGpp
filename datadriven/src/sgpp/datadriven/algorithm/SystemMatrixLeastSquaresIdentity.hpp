@@ -22,61 +22,68 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Class that implements the virtual class SGPP::base::OperationMatrix for the
-     * application of classification for the Systemmatrix
-     *
-     * The Identity matrix is used as regularization operator.
-     *
-     * For the Operation B's mult and mutlTransposed functions
-     * vectorized formulations are used.
-     */
-    class SystemMatrixLeastSquaresIdentity: public SGPP::datadriven::DMSystemMatrixBase {
-      private:
-        /// vectorization mode
-        //ComputeKernelType kernelType;
-        /// Number of orignal training instances
-        size_t instances;
-        /// Number of patched and used training instances
-        size_t paddedInstances;
-        /// OperationB for calculating the data matrix
-        //AbstractOperationMultipleEval* B;
-        SGPP::base::OperationMultipleEval* B;
+/**
+ * Class that implements the virtual class SGPP::base::OperationMatrix for the
+ * application of classification for the Systemmatrix
+ *
+ * The Identity matrix is used as regularization operator.
+ *
+ * For the Operation B's mult and mutlTransposed functions
+ * vectorized formulations are used.
+ */
+class SystemMatrixLeastSquaresIdentity: public
+  SGPP::datadriven::DMSystemMatrixBase {
+ private:
+  /// vectorization mode
+  //ComputeKernelType kernelType;
+  /// Number of orignal training instances
+  size_t instances;
+  /// Number of patched and used training instances
+  size_t paddedInstances;
+  /// OperationB for calculating the data matrix
+  //AbstractOperationMultipleEval* B;
+  SGPP::base::OperationMultipleEval* B;
 
-        SGPP::base::Grid& grid;
+  SGPP::base::Grid& grid;
 
-        SGPP::datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
+  SGPP::datadriven::OperationMultipleEvalConfiguration
+  implementationConfiguration;
 
-      public:
-        /**
-         * Std-Constructor
-         *
-         * @param SparseGrid reference to the sparse grid
-         * @param trainData reference to SGPP::base::DataMatrix that contains the training data
-         * @param lambda the lambda, the regression parameter
-         */
-        SystemMatrixLeastSquaresIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, float_t lambda);
+ public:
+  /**
+   * Std-Constructor
+   *
+   * @param SparseGrid reference to the sparse grid
+   * @param trainData reference to SGPP::base::DataMatrix that contains the training data
+   * @param lambda the lambda, the regression parameter
+   */
+  SystemMatrixLeastSquaresIdentity(SGPP::base::Grid& SparseGrid,
+                                   SGPP::base::DataMatrix& trainData, float_t lambda);
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~SystemMatrixLeastSquaresIdentity();
+  /**
+   * Std-Destructor
+   */
+  virtual ~SystemMatrixLeastSquaresIdentity();
 
-        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha,
+                    SGPP::base::DataVector& result);
 
-        virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
+  virtual void generateb(SGPP::base::DataVector& classes,
+                         SGPP::base::DataVector& b);
 
-        virtual void prepareGrid();
+  virtual void prepareGrid();
 
-        void setImplementation(SGPP::datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
-          this->implementationConfiguration = operationConfiguration;
-          this->B = SGPP::op_factory::createOperationMultipleEval(this->grid, *(this->dataset_), this->implementationConfiguration);
-        }
-    };
-
+  void setImplementation(SGPP::datadriven::OperationMultipleEvalConfiguration
+                         operationConfiguration) {
+    this->implementationConfiguration = operationConfiguration;
+    this->B = SGPP::op_factory::createOperationMultipleEval(this->grid,
+              *(this->dataset_), this->implementationConfiguration);
   }
+};
+
+}
 }
 
 #endif /* DMSYSTEMMATRIXSUBSPACES_HPP */

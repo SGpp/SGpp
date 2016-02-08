@@ -8,12 +8,14 @@
 #include <random>
 
 namespace SGPP {
-  namespace op_factory {
+namespace op_factory {
 
-    quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples,
-        std::uint64_t seed) {
-      return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples, seed);
-    }
+quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(
+  base::Grid& grid, size_t numberOfSamples,
+  std::uint64_t seed) {
+  return new quadrature::OperationQuadratureMCAdvanced(grid, numberOfSamples,
+         seed);
+}
 
-  } /* namespace op_factory */
+} /* namespace op_factory */
 } /* namespace SGPP */

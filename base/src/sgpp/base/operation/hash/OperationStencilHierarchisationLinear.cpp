@@ -14,33 +14,37 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationStencilHierarchisationLinear::doHierarchisation(DataVector& node_values) {
-      surplusStencil.clear();
-      neighborStencil.clear();
-      weightStencil.clear();
-      StencilHierarchisationLinear func(this->storage, surplusStencil, neighborStencil, weightStencil);
-      sweep<StencilHierarchisationLinear> s(func, this->storage);
+void OperationStencilHierarchisationLinear::doHierarchisation(
+  DataVector& node_values) {
+  surplusStencil.clear();
+  neighborStencil.clear();
+  weightStencil.clear();
+  StencilHierarchisationLinear func(this->storage, surplusStencil,
+                                    neighborStencil, weightStencil);
+  sweep<StencilHierarchisationLinear> s(func, this->storage);
 
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(node_values, node_values, i);
-      }
-    }
-
-    void OperationStencilHierarchisationLinear::doDehierarchisation(DataVector& alpha) {
-      surplusStencil.clear();
-      neighborStencil.clear();
-      weightStencil.clear();
-      StencilDehierarchisationLinear func(this->storage, surplusStencil, neighborStencil, weightStencil);
-      sweep<StencilDehierarchisationLinear> s(func, this->storage);
-
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
-      }
-    }
-
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(node_values, node_values, i);
   }
+}
+
+void OperationStencilHierarchisationLinear::doDehierarchisation(
+  DataVector& alpha) {
+  surplusStencil.clear();
+  neighborStencil.clear();
+  weightStencil.clear();
+  StencilDehierarchisationLinear func(this->storage, surplusStencil,
+                                      neighborStencil, weightStencil);
+  sweep<StencilDehierarchisationLinear> s(func, this->storage);
+
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(alpha, alpha, i);
+  }
+}
+
+}
 }

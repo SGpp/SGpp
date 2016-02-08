@@ -1,11 +1,11 @@
-/*
- * ConfigurationParser.hpp
- *
- *  Created on: Mar 25, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
+
+#include <sgpp/globaldef.hpp>
 
 #include <vector>
 #include <map>
@@ -13,48 +13,48 @@
 #include <memory>
 #include <iostream>
 
-#include <sgpp/globaldef.hpp>
-
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    class ConfigurationParameters {
-      protected:
-        std::map<std::string, std::string> parameters;
-      public:
-        ConfigurationParameters();
+class ConfigurationParameters {
+ protected:
+  std::map<std::string, std::string> parameters;
 
-        ConfigurationParameters(std::string fileName,
-                                std::map<std::string, std::string> defaultParameters = std::map<std::string, std::string>());
+ public:
+  ConfigurationParameters();
 
-        virtual ~ConfigurationParameters();
+  ConfigurationParameters(std::string fileName,
+                          std::map<std::string, std::string> defaultParameters =
+                            std::map<std::string, std::string>());
 
-        void set(const std::string key, std::string value);
+  virtual ~ConfigurationParameters();
 
-        std::string& get(const std::string& key);
+  void set(const std::string key, std::string value);
 
-        bool getAsBoolean(const std::string& key);
+  std::string& get(const std::string& key);
 
-        uint64_t getAsUnsigned(const std::string& key);
+  bool getAsBoolean(const std::string& key);
 
-        std::vector<std::string> getAsList(const std::string& key);
+  uint64_t getAsUnsigned(const std::string& key);
 
-        void readFromMap(std::map<std::string, std::string>& parametersMap);
+  std::vector<std::string> getAsList(const std::string& key);
 
-        void readFromFile(std::string fileName);
+  void readFromMap(const std::map<std::string, std::string>& parametersMap);
 
-        virtual std::shared_ptr<ConfigurationParameters> clone() = 0;
+  void readFromFile(std::string fileName);
 
-        std::vector<std::string> getKeys();
+  virtual std::shared_ptr<ConfigurationParameters> clone() = 0;
 
-        void writeToFile(std::string fileName);
+  std::vector<std::string> getKeys();
 
-        void clear();
+  void writeToFile(std::string fileName);
 
-      private:
-        std::vector<std::string> split(const std::string& s, char delim);
-    };
+  void clear();
 
-  }
-}
+ private:
+  std::vector<std::string> split(const std::string& s, char delim);
+};
+
+}  // namespace base
+}  // namespace SGPP
 

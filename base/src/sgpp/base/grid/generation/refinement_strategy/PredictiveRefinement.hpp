@@ -16,142 +16,146 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Container type for predictive refinement collection
-     */
-    class PredictiveRefinement_refinement_key : public AbstractRefinement_refinement_key {
-      public:
+/**
+ * Container type for predictive refinement collection
+ */
+class PredictiveRefinement_refinement_key : public
+  AbstractRefinement_refinement_key {
+ public:
 
-        /**
-         * Constructor
-         *
-         * @param index grid index
-         * @param seq sequence number in the hash grid storage
-         * @param dim dimensionality
-         */
-        PredictiveRefinement_refinement_key (const AbstractRefinement::index_type& index, size_t seq, size_t dim):
-          AbstractRefinement_refinement_key(index, seq), dim(dim) {}
+  /**
+   * Constructor
+   *
+   * @param index grid index
+   * @param seq sequence number in the hash grid storage
+   * @param dim dimensionality
+   */
+  PredictiveRefinement_refinement_key (const AbstractRefinement::index_type&
+                                       index, size_t seq, size_t dim):
+    AbstractRefinement_refinement_key(index, seq), dim(dim) {}
 
-        /**
-         * Returns dimensionality
-         *
-         * @return dimensionality
-         */
-        size_t getDim() {
-          return this->dim;
-        }
+  /**
+   * Returns dimensionality
+   *
+   * @return dimensionality
+   */
+  size_t getDim() {
+    return this->dim;
+  }
 
-        /**
-         * Destructor
-         */
-        virtual ~PredictiveRefinement_refinement_key() {}
+  /**
+   * Destructor
+   */
+  virtual ~PredictiveRefinement_refinement_key() {}
 
-      private:
-        size_t dim;
-    };
-
-
-    /*
-     * PredictiveRefinement performs local adaptive refinement of a sparse grid using the PredictiveRefinementIndicator.
-     * This way, instead of surpluses that are most often used for refinement, refinement decisions are based upon an estimation
-     * to the contribution of the MSE, which is especially helpful for regression.
-     *
-     */
-    class PredictiveRefinement: public virtual RefinementDecorator {
-        friend class LearnerOnlineSGD;
-      public:
-        typedef PredictiveRefinement_refinement_key refinement_key_type;
-
-        PredictiveRefinement(AbstractRefinement* refinement): RefinementDecorator(refinement),
-          iThreshold_(0.0), alpha_(NULL) {};
+ private:
+  size_t dim;
+};
 
 
-        /**
-         * Refines a grid according to a RefinementFunctor provided.
-         * Refines up to RefinementFunctor::getRefinementsNum() grid points if
-         * possible, and if their refinement value is larger than RefinementFunctor::start()
-         * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
-         *
-         * @param storage hashmap that stores the grid points
-         * @param functor a RefinementFunctor specifying the refinement criteria
-         */
-        void free_refine(GridStorage* storage, PredictiveRefinementIndicator* functor);
+/*
+ * PredictiveRefinement performs local adaptive refinement of a sparse grid using the PredictiveRefinementIndicator.
+ * This way, instead of surpluses that are most often used for refinement, refinement decisions are based upon an estimation
+ * to the contribution of the MSE, which is especially helpful for regression.
+ *
+ */
+class PredictiveRefinement: public virtual RefinementDecorator {
+  friend class LearnerOnlineSGD;
+ public:
+  typedef PredictiveRefinement_refinement_key refinement_key_type;
+
+  PredictiveRefinement(AbstractRefinement* refinement): RefinementDecorator(
+      refinement),
+    iThreshold_(0.0), alpha_(NULL) {};
+
+
+  /**
+   * Refines a grid according to a RefinementFunctor provided.
+   * Refines up to RefinementFunctor::getRefinementsNum() grid points if
+   * possible, and if their refinement value is larger than RefinementFunctor::start()
+   * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
+   *
+   * @param storage hashmap that stores the grid points
+   * @param functor a RefinementFunctor specifying the refinement criteria
+   */
+  void free_refine(GridStorage* storage, PredictiveRefinementIndicator* functor);
 
 
 
 
 
-        /**
-         * Setter for the alpha vector
-         * @param alpha
-         */
-        void setAlpha(DataVector* alpha) {
-          alpha_ = alpha;
-        }
+  /**
+   * Setter for the alpha vector
+   * @param alpha
+   */
+  void setAlpha(DataVector* alpha) {
+    alpha_ = alpha;
+  }
 
-      protected:
+ protected:
 
-        /**
-        * Examines the grid points and stores the indices those that can be refined
-        * and have maximal indicator values.
-        *
-        * @param storage hashmap that stores the grid points
-        * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
-        * @param collection container that contains elements to refine (empty initially)
-        */
-        virtual void collectRefinablePoints(GridStorage* storage,
-                                            RefinementFunctor* functor,
-                                            AbstractRefinement::refinement_container_type&  collection) override;
-
-
-        /**
-         * Extends the grid adding elements defined in collection
-         *
-         * @param storage hashmap that stores the grid points
-         * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
-         * @param collection container that contains elements to refine (empty initially)
-         */
-        virtual void refineGridpointsCollection(GridStorage* storage,
-                                                RefinementFunctor* functor,
-                                                AbstractRefinement::refinement_container_type& collection);
+  /**
+  * Examines the grid points and stores the indices those that can be refined
+  * and have maximal indicator values.
+  *
+  * @param storage hashmap that stores the grid points
+  * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+  * @param collection container that contains elements to refine (empty initially)
+  */
+  virtual void collectRefinablePoints(GridStorage* storage,
+                                      RefinementFunctor* functor,
+                                      AbstractRefinement::refinement_container_type&  collection) override;
 
 
-        /**
-        * Generates a list with indicator elements
-        *
-        * @param storage grid storage
-        * @param iter iterator
-        * @param functor refinement functor
-        * @return list with indicator elements
-        */
-        AbstractRefinement::refinement_list_type getIndicator(
-          GridStorage* storage,
-          const GridStorage::grid_map_iterator& iter,
-          const RefinementFunctor* functor) const;
+  /**
+   * Extends the grid adding elements defined in collection
+   *
+   * @param storage hashmap that stores the grid points
+   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+   * @param collection container that contains elements to refine (empty initially)
+   */
+  virtual void refineGridpointsCollection(GridStorage* storage,
+                                          RefinementFunctor* functor,
+                                          AbstractRefinement::refinement_container_type& collection);
 
 
-        /**
-        * Adds elements to the collection. This method is responsible for selection
-        * the elements with most important indicators and to limit the size of collection
-        * to refinements_num elements.
-        *
-        * @param iter storage iterator
-        * @param current_value_list list with elements that contain keys and values that specify refinement
-        * @param refinements_num number of elements to refine
-        * @param collection container where element pairs for refinement need to be stored
-        */
-        virtual void addElementToCollection(
-          const GridStorage::grid_map_iterator& iter,
-          AbstractRefinement::refinement_list_type current_value_list, size_t refinements_num,
-          AbstractRefinement::refinement_container_type& collection);
+  /**
+  * Generates a list with indicator elements
+  *
+  * @param storage grid storage
+  * @param iter iterator
+  * @param functor refinement functor
+  * @return list with indicator elements
+  */
+  AbstractRefinement::refinement_list_type getIndicator(
+    GridStorage* storage,
+    const GridStorage::grid_map_iterator& iter,
+    const RefinementFunctor* functor) const;
 
-      private:
-        float_t iThreshold_;
-        DataVector* alpha_;
-    };
 
-  } /* namespace base */
+  /**
+  * Adds elements to the collection. This method is responsible for selection
+  * the elements with most important indicators and to limit the size of collection
+  * to refinements_num elements.
+  *
+  * @param iter storage iterator
+  * @param current_value_list list with elements that contain keys and values that specify refinement
+  * @param refinements_num number of elements to refine
+  * @param collection container where element pairs for refinement need to be stored
+  */
+  virtual void addElementToCollection(
+    const GridStorage::grid_map_iterator& iter,
+    AbstractRefinement::refinement_list_type current_value_list,
+    size_t refinements_num,
+    AbstractRefinement::refinement_container_type& collection);
+
+ private:
+  float_t iThreshold_;
+  DataVector* alpha_;
+};
+
+} /* namespace base */
 } /* namespace SGPP */
 #endif /* ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_ */

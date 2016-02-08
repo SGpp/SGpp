@@ -9,30 +9,30 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Singleton containing an empty implementation of VectorFunctionGradient.
-     * This is intended as a fill-in for ConstrainedOptimizer, if
-     * only equality or inequality constraints are supported.
-     */
-    class EmptyVectorFunctionGradient {
-      public:
-        inline static WrapperVectorFunctionGradient& getInstance() {
-          static WrapperVectorFunctionGradient wrapperVectorFunctionGradient(
-            0, 0, [](const base::DataVector & x,
-                     base::DataVector & value,
-          base::DataMatrix & gradient) {});
-          return wrapperVectorFunctionGradient;
-        }
-
-      private:
-        EmptyVectorFunctionGradient() {}
-        EmptyVectorFunctionGradient(const EmptyVectorFunctionGradient&) = delete;
-        void operator=(const EmptyVectorFunctionGradient&) = delete;
-    };
-
+/**
+ * Singleton containing an empty implementation of VectorFunctionGradient.
+ * This is intended as a fill-in for ConstrainedOptimizer, if
+ * only equality or inequality constraints are supported.
+ */
+class EmptyVectorFunctionGradient {
+ public:
+  inline static WrapperVectorFunctionGradient& getInstance() {
+    static WrapperVectorFunctionGradient wrapperVectorFunctionGradient(
+      0, 0, [](const base::DataVector & x,
+               base::DataVector & value,
+    base::DataMatrix & gradient) {});
+    return wrapperVectorFunctionGradient;
   }
+
+ private:
+  EmptyVectorFunctionGradient() {}
+  EmptyVectorFunctionGradient(const EmptyVectorFunctionGradient&) = delete;
+  void operator=(const EmptyVectorFunctionGradient&) = delete;
+};
+
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORGRADIENT_HPP */

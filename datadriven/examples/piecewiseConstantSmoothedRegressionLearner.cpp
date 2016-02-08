@@ -70,8 +70,9 @@ int main(int argc, char** argv) {
 
   bool verbose = true;
 
-  SGPP::datadriven::PiecewiseConstantSmoothedRegressionMetaLearner learner(verbose, dataset, values, gridConfig, adaptConfig,
-      solverConfig, regularizationConfig);
+  SGPP::datadriven::PiecewiseConstantSmoothedRegressionMetaLearner learner(
+    verbose, dataset, values, gridConfig, adaptConfig,
+    solverConfig, regularizationConfig);
 
   //    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(10, 15, 0.25, 0.125);
 
@@ -87,7 +88,8 @@ int main(int argc, char** argv) {
 
   if (arffDataset.getDimension() == 2) {
 
-    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(*grid);
+    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(
+        *grid);
 
 #if USE_DOUBLE_PRECISION == 1
     SGPP::float_t pointIncrement = 0.01;
@@ -117,7 +119,8 @@ int main(int argc, char** argv) {
     resultFileLinear.close();
   } else if (arffDataset.getDimension() == 3) {
 
-    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(*grid);
+    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(
+        *grid);
 
 #if USE_DOUBLE_PRECISION == 1
     SGPP::float_t pointIncrement = 0.05;

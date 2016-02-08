@@ -17,37 +17,37 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation that cpnverts a given basis into the normal, linear hat basis and vice versa
-     *
-     */
-    class OperationConvert {
-      public:
-        /**
-         * Constructor
-         */
-        OperationConvert() {}
+/**
+ * Operation that cpnverts a given basis into the normal, linear hat basis and vice versa
+ *
+ */
+class OperationConvert {
+ public:
+  /**
+   * Constructor
+   */
+  OperationConvert() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationConvert() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationConvert() {}
 
-        /**
-         * Convert given basis into linear hat basis.
-         */
-        virtual void doConvertToLinear(DataVector& alpha) = 0;
+  /**
+   * Convert given basis into linear hat basis.
+   */
+  virtual void doConvertToLinear(DataVector& alpha) = 0;
 
 
-        /**
-         * Convert from a linear coefficient vector into given basis.
-         */
-        virtual void doConvertFromLinear(DataVector& alpha) = 0;
-    };
+  /**
+   * Convert from a linear coefficient vector into given basis.
+   */
+  virtual void doConvertFromLinear(DataVector& alpha) = 0;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONCONVERT_HPP */

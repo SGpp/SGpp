@@ -13,42 +13,42 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating modified wavelet linear combinations on Noboundary grids.
-     */
-    class OperationNaiveEvalModWavelet : public OperationNaiveEval {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         */
-        OperationNaiveEvalModWavelet(GridStorage* storage) : storage(storage) {
-        }
-
-        /**
-         * Destructor.
-         */
-        virtual ~OperationNaiveEvalModWavelet() override {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @return          value of linear combination
-         */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D wavelet basis
-        SWaveletModifiedBase base;
-    };
-
+/**
+ * Operation for evaluating modified wavelet linear combinations on Noboundary grids.
+ */
+class OperationNaiveEvalModWavelet : public OperationNaiveEval {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   */
+  OperationNaiveEvalModWavelet(GridStorage* storage) : storage(storage) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  virtual ~OperationNaiveEvalModWavelet() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of linear combination
+   */
+  virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D wavelet basis
+  SWaveletModifiedBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALMODWAVELET_HPP */

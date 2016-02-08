@@ -15,19 +15,20 @@
 #include <sgpp/base/tools/ConfigurationParameters.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    class OCLConfigurationParameters: public ConfigurationParameters {
-      public:
-        OCLConfigurationParameters(std::string fileName, std::map<std::string, std::string> defaultParameters);
+class OCLConfigurationParameters: public ConfigurationParameters {
+ public:
+  OCLConfigurationParameters(std::string fileName,
+                             std::map<std::string, std::string> defaultParameters);
 
-        OCLConfigurationParameters();
+  OCLConfigurationParameters();
 
-        virtual ~OCLConfigurationParameters();
+  virtual ~OCLConfigurationParameters();
 
-        virtual std::shared_ptr<ConfigurationParameters> clone() override;
-    };
+  virtual std::shared_ptr<ConfigurationParameters> clone() override;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 

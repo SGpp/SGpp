@@ -13,30 +13,31 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    class OperationDotProductLinear {
-      public:
-        /**
-         * Constructor of OperationTestLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         */
-        OperationDotProductLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
+class OperationDotProductLinear {
+ public:
+  /**
+   * Constructor of OperationTestLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   */
+  OperationDotProductLinear(SGPP::base::GridStorage* storage) : storage(
+      storage) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationDotProductLinear() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationDotProductLinear() {}
 
-        virtual float_t eval(SGPP::base::DataVector& x1, SGPP::base::DataVector& x2);
+  virtual float_t eval(SGPP::base::DataVector& x1, SGPP::base::DataVector& x2);
 
-      protected:
-        /// Pointer to the grid's GridStorage object
-        SGPP::base::GridStorage* storage;
-    };
+ protected:
+  /// Pointer to the grid's GridStorage object
+  SGPP::base::GridStorage* storage;
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONDOTPRODUCTLINEAR_HPP */

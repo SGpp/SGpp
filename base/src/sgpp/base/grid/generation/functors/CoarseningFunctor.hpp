@@ -12,66 +12,66 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Abstract class that defines the interfaces that coarsening functors have to provide.
-     */
-    class CoarseningFunctor {
-      public:
-        typedef float_t value_type;
+/**
+ * Abstract class that defines the interfaces that coarsening functors have to provide.
+ */
+class CoarseningFunctor {
+ public:
+  typedef float_t value_type;
 
-        /**
-         * Constructor
-         */
-        CoarseningFunctor() {}
+  /**
+   * Constructor
+   */
+  CoarseningFunctor() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~CoarseningFunctor() {}
+  /**
+   * Destructor
+   */
+  virtual ~CoarseningFunctor() {}
 
-        /**
-         * This should be returning a coarsening value for every grid point.
-         * The point with the lowest value will be removed first.
-         *
-         * @param storage pointer to the grids storage object
-         * @param seq sequence number in the coefficients array
-         *
-         * @return refinement value
-         */
-        virtual float_t operator()(GridStorage* storage, size_t seq) = 0;
+  /**
+   * This should be returning a coarsening value for every grid point.
+   * The point with the lowest value will be removed first.
+   *
+   * @param storage pointer to the grids storage object
+   * @param seq sequence number in the coefficients array
+   *
+   * @return refinement value
+   */
+  virtual float_t operator()(GridStorage* storage, size_t seq) = 0;
 
-        /**
-         * This should return the initial value of coarsening criterion (e.g. alpha or error).
-         *
-         * @return the initial value
-         */
-        virtual float_t start() const = 0;
+  /**
+   * This should return the initial value of coarsening criterion (e.g. alpha or error).
+   *
+   * @return the initial value
+   */
+  virtual float_t start() const = 0;
 
-        /**
-         * Returns the maximal number of points that should be removed.
-         *
-         * The maximal number of points to removed is set in the constructor of implementation class.
-         *
-         * @return number of points that should removed. Default value: 1.
-         */
-        virtual size_t getRemovementsNum() const {
-          return 1;
-        }
-
-        /**
-         * Returns the threshold value.
-         *
-         * Only the grid points with absolute value of coarsening criterion (e.g. alpha) less
-         * or equal to this threshold will be removed
-         *
-         * @return threshold value for refinement. Default value: 0.
-         */
-        virtual float_t getCoarseningThreshold() const = 0;
-    };
-
+  /**
+   * Returns the maximal number of points that should be removed.
+   *
+   * The maximal number of points to removed is set in the constructor of implementation class.
+   *
+   * @return number of points that should removed. Default value: 1.
+   */
+  virtual size_t getRemovementsNum() const {
+    return 1;
   }
-}
+
+  /**
+   * Returns the threshold value.
+   *
+   * Only the grid points with absolute value of coarsening criterion (e.g. alpha) less
+   * or equal to this threshold will be removed
+   *
+   * @return threshold value for refinement. Default value: 0.
+   */
+  virtual float_t getCoarseningThreshold() const = 0;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* COARSENINGFUNCTOR_HPP */

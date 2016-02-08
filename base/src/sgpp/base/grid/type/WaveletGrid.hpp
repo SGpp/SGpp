@@ -14,39 +14,39 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with wavelet base functions
-     */
-    class WaveletGrid : public Grid {
-      protected:
-        WaveletGrid(std::istream& istr);
+/**
+ * grid with wavelet base functions
+ */
+class WaveletGrid : public Grid {
+ protected:
+  WaveletGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor of grid with wavelet base functions
-         *
-         * @param dim the dimension of the grid
-         */
-        WaveletGrid(size_t dim);
+ public:
+  /**
+   * Constructor of grid with wavelet base functions
+   *
+   * @param dim the dimension of the grid
+   */
+  WaveletGrid(size_t dim);
 
-        /**
-         * Destructor
-         */
-        virtual ~WaveletGrid() override;
+  /**
+   * Destructor
+   */
+  virtual ~WaveletGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
+  virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis() override;
+  virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  virtual GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
-    };
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* WAVELETGRID_HPP */

@@ -28,7 +28,8 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
   return sin(x0 * M_PI);
 }
 
-DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVector& alpha, DataVector& error) {
+DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
+                           const DataVector& alpha, DataVector& error) {
   cout << "calculating error" << endl;
 
   //traverse dataSet
@@ -37,7 +38,8 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid, const DataVect
 
   for (unsigned int i = 0; i < dataSet.getNrows(); i++) {
     dataSet.getRow(i, vec);
-    error[i] = pow(f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha, vec), 2);
+    error[i] = pow(f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha,
+                   vec), 2);
   }
 
   return error;
@@ -90,7 +92,8 @@ int main() {
     }
 
     // hierarchize
-    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
+      alpha);
 
     // calculate squared offset
     DataVector errorVector(dataSet.getNrows());
@@ -105,7 +108,8 @@ int main() {
     PredictiveRefinementIndicator indicator(grid, &dataSet, &errorVector, 1);
     decorator.free_refine(hashGridStorage, &indicator);
 
-    cout << "Refinement step " << step + 1 << ", new grid size: " << hashGridStorage->size() << endl;
+    cout << "Refinement step " << step + 1 << ", new grid size: " <<
+         hashGridStorage->size() << endl;
 
     // plot grid
 
