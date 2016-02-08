@@ -16,39 +16,39 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
-      public:
+class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
+ public:
 
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    polynomial degree
-         */
-        OperationNaiveEvalPolyBoundary(GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    polynomial degree
+   */
+  OperationNaiveEvalPolyBoundary(GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {
+  }
 
-        virtual ~OperationNaiveEvalPolyBoundary() override {
-        }
+  virtual ~OperationNaiveEvalPolyBoundary() override {
+  }
 
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @return          value of linear combination
-         */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of linear combination
+   */
+  virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
 
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SPolyBoundaryBase base;
-    };
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SPolyBoundaryBase base;
+};
 
-  } /* namespace base */
+} /* namespace base */
 } /* namespace SGPP */
 
 #endif /* OPERATIONNAIVEEVALPOLYBOUNDARY_HPP_ */

@@ -17,43 +17,44 @@
 
 namespace SGPP {
 
-  namespace datadriven {
+namespace datadriven {
 
-    class LearnerSGD: public SGPP::datadriven::Learner {
+class LearnerSGD: public SGPP::datadriven::Learner {
 
-      public:
-        LearnerSGD(SGPP::pde::RegularizationType& regularization, const bool isRegression, const bool isVerbose = true);
+ public:
+  LearnerSGD(SGPP::pde::RegularizationType& regularization,
+             const bool isRegression, const bool isVerbose = true);
 
-        /*
-         * Implements stochastic gradient descent.
-         *
-         * @param trainDataset training dataset: x values
-         * @param classes training dataset: y values
-         * @param maxIterations stops after maxIterations
-         * @param eps stop if alpha_i < eps for all i
-         * @param lambda regularization factor
-         * @param gamma step width
-         * */
-        virtual void train(
-          SGPP::base::DataMatrix& trainDataset,
-          SGPP::base::DataVector& classes,
-          SGPP::base::RegularGridConfiguration& GridConfig,
-          size_t maxIterations,
-          float_t eps,
-          float_t lambda,
-          float_t gamma
-        );
+  /*
+   * Implements stochastic gradient descent.
+   *
+   * @param trainDataset training dataset: x values
+   * @param classes training dataset: y values
+   * @param maxIterations stops after maxIterations
+   * @param eps stop if alpha_i < eps for all i
+   * @param lambda regularization factor
+   * @param gamma step width
+   * */
+  virtual void train(
+    SGPP::base::DataMatrix& trainDataset,
+    SGPP::base::DataVector& classes,
+    SGPP::base::RegularGridConfiguration& GridConfig,
+    size_t maxIterations,
+    float_t eps,
+    float_t lambda,
+    float_t gamma
+  );
 
-        virtual ~LearnerSGD();
+  virtual ~LearnerSGD();
 
-        SGPP::base::DataVector* getAlpha();
-        SGPP::base::Grid* getGrid();
+  SGPP::base::DataVector* getAlpha();
+  SGPP::base::Grid* getGrid();
 
-      private:
-        int getRandom(int limit);
+ private:
+  int getRandom(int limit);
 
-    };
-  }
+};
+}
 }
 
 #endif /* LEARNERSGD_HPP */

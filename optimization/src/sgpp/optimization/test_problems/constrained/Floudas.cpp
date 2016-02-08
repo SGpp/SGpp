@@ -8,111 +8,111 @@
 #include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      Floudas::Floudas() :
-        ConstrainedTestProblem(2),
-        f(),
-        g(),
-        h() {
-      }
+Floudas::Floudas() :
+  ConstrainedTestProblem(2),
+  f(),
+  g(),
+  h() {
+}
 
-      Floudas::~Floudas() {
-      }
+Floudas::~Floudas() {
+}
 
-      TestScalarFunction& Floudas::getObjectiveFunction() {
-        return f;
-      }
+TestScalarFunction& Floudas::getObjectiveFunction() {
+  return f;
+}
 
-      TestVectorFunction& Floudas::getInequalityConstraintFunction() {
-        return g;
-      }
+TestVectorFunction& Floudas::getInequalityConstraintFunction() {
+  return g;
+}
 
-      TestVectorFunction& Floudas::getEqualityConstraintFunction() {
-        return h;
-      }
+TestVectorFunction& Floudas::getEqualityConstraintFunction() {
+  return h;
+}
 
-      float_t Floudas::getOptimalPointUndisplaced(base::DataVector& x) {
-        x.resize(2);
-        x[0] = 0.776506732492537;
-        x[1] = 0.794623268529425;
-        return -5.50801327159531;
-      }
-
-
-
-      FloudasObjective::FloudasObjective() :
-        TestScalarFunction(2) {
-      }
-
-      FloudasObjective::~FloudasObjective() {
-      }
-
-      float_t FloudasObjective::evalUndisplaced(
-        const base::DataVector& x) {
-        const float_t x1 = 3.0 * x[0];
-        const float_t x2 = 4.0 * x[1];
-
-        return -x1 - x2;
-      }
-
-      void FloudasObjective::clone(
-        std::unique_ptr<ScalarFunction>& clone) const {
-        clone = std::unique_ptr<ScalarFunction>(
-                  new FloudasObjective(*this));
-      }
+float_t Floudas::getOptimalPointUndisplaced(base::DataVector& x) {
+  x.resize(2);
+  x[0] = 0.776506732492537;
+  x[1] = 0.794623268529425;
+  return -5.50801327159531;
+}
 
 
 
-      FloudasInequalityConstraint::FloudasInequalityConstraint() :
-        TestVectorFunction(2, 2) {
-      }
+FloudasObjective::FloudasObjective() :
+  TestScalarFunction(2) {
+}
 
-      FloudasInequalityConstraint::~FloudasInequalityConstraint() {
-      }
+FloudasObjective::~FloudasObjective() {
+}
 
-      void FloudasInequalityConstraint::evalUndisplaced(
-        const base::DataVector& x,
-        base::DataVector& value) {
-        const float_t x1 = 3.0 * x[0];
-        const float_t x2 = 4.0 * x[1];
+float_t FloudasObjective::evalUndisplaced(
+  const base::DataVector& x) {
+  const float_t x1 = 3.0 * x[0];
+  const float_t x2 = 4.0 * x[1];
 
-        const float_t x1p2 = x1 * x1;
-        const float_t x1p3 = x1p2 * x1;
-        const float_t x1p4 = x1p3 * x1;
+  return -x1 - x2;
+}
 
-        value[0] = x2 - (2.0 * x1p4 - 8.0 * x1p3 + 8.0 * x1p2 + 2.0);
-        value[1] = x2 - (4.0 * x1p4 - 32.0 * x1p3 +
-                         88.0 * x1p2 - 96.0 * x1 + 36.0);
-      }
-
-      void FloudasInequalityConstraint::clone(
-        std::unique_ptr<VectorFunction>& clone) const {
-        clone = std::unique_ptr<VectorFunction>(
-                  new FloudasInequalityConstraint(*this));
-      }
+void FloudasObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new FloudasObjective(*this));
+}
 
 
 
-      FloudasEqualityConstraint::FloudasEqualityConstraint() :
-        TestVectorFunction(2, 0) {
-      }
+FloudasInequalityConstraint::FloudasInequalityConstraint() :
+  TestVectorFunction(2, 2) {
+}
 
-      FloudasEqualityConstraint::~FloudasEqualityConstraint() {
-      }
+FloudasInequalityConstraint::~FloudasInequalityConstraint() {
+}
 
-      void FloudasEqualityConstraint::evalUndisplaced(
-        const base::DataVector& x,
-        base::DataVector& value) {
-      }
+void FloudasInequalityConstraint::evalUndisplaced(
+  const base::DataVector& x,
+  base::DataVector& value) {
+  const float_t x1 = 3.0 * x[0];
+  const float_t x2 = 4.0 * x[1];
 
-      void FloudasEqualityConstraint::clone(
-        std::unique_ptr<VectorFunction>& clone) const {
-        clone = std::unique_ptr<VectorFunction>(
-                  new FloudasEqualityConstraint(*this));
-      }
+  const float_t x1p2 = x1 * x1;
+  const float_t x1p3 = x1p2 * x1;
+  const float_t x1p4 = x1p3 * x1;
 
-    }
-  }
+  value[0] = x2 - (2.0 * x1p4 - 8.0 * x1p3 + 8.0 * x1p2 + 2.0);
+  value[1] = x2 - (4.0 * x1p4 - 32.0 * x1p3 +
+                   88.0 * x1p2 - 96.0 * x1 + 36.0);
+}
+
+void FloudasInequalityConstraint::clone(
+  std::unique_ptr<VectorFunction>& clone) const {
+  clone = std::unique_ptr<VectorFunction>(
+            new FloudasInequalityConstraint(*this));
+}
+
+
+
+FloudasEqualityConstraint::FloudasEqualityConstraint() :
+  TestVectorFunction(2, 0) {
+}
+
+FloudasEqualityConstraint::~FloudasEqualityConstraint() {
+}
+
+void FloudasEqualityConstraint::evalUndisplaced(
+  const base::DataVector& x,
+  base::DataVector& value) {
+}
+
+void FloudasEqualityConstraint::clone(
+  std::unique_ptr<VectorFunction>& clone) const {
+  clone = std::unique_ptr<VectorFunction>(
+            new FloudasEqualityConstraint(*this));
+}
+
+}
+}
 }

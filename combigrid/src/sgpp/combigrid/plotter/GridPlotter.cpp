@@ -12,18 +12,22 @@
 
 using namespace std;
 
-void combigrid::GridPlotter::plotFullGrid(const std::string& filePath , const FullGridD* fg ,
+void combigrid::GridPlotter::plotFullGrid(const std::string& filePath ,
+    const FullGridD* fg ,
     std::vector<double>& globalCoord_in , int resolution) {
   combigrid::Evaluable obj(fg);
   int dim = fg->getDimension();
-  plotObject( dim , filePath , &obj , fg->getDomain() , globalCoord_in , resolution);
+  plotObject( dim , filePath , &obj , fg->getDomain() , globalCoord_in ,
+              resolution);
 }
 
-void combigrid::GridPlotter::plotCombiGrid(const std::string& filePath , const combigrid::AbstractCombiGrid* cg ,
+void combigrid::GridPlotter::plotCombiGrid(const std::string& filePath ,
+    const combigrid::AbstractCombiGrid* cg ,
     std::vector<double>& globalCoord_in , int resolution) {
   combigrid::Evaluable obj(cg);
   int dim = cg->getFullGrid(0)->getDimension();
-  plotObject( dim , filePath , &obj , cg->getDomain() , globalCoord_in , resolution);
+  plotObject( dim , filePath , &obj , cg->getDomain() , globalCoord_in ,
+              resolution);
 }
 
 void combigrid::GridPlotter::plotObject(int dim ,
@@ -68,7 +72,8 @@ void combigrid::GridPlotter::plotObject(int dim ,
       myfile << "X = [ " << minX;
 
       for (int ii = 1 ; ii < resolution ; ii++) {
-        myfile << " , " << (minX + (maxX - minX) * (double(ii) / double(resolution - 1)));
+        myfile << " , " << (minX + (maxX - minX) * (double(ii) / double(
+                              resolution - 1)));
       }
 
       myfile << "]; \n ";
@@ -110,14 +115,16 @@ void combigrid::GridPlotter::plotObject(int dim ,
       myfile << "X = [ " << minX;
 
       for (int ii = 1 ; ii < resolution ; ii++) {
-        myfile << " , " << (minX + (maxX - minX) * (double(ii) / double(resolution - 1)));
+        myfile << " , " << (minX + (maxX - minX) * (double(ii) / double(
+                              resolution - 1)));
       }
 
       myfile << "]; \n ";
       myfile << "Y = [ " << minY;
 
       for (int ii = 1 ; ii < resolution ; ii++) {
-        myfile << " , " << (minY + (maxY - minY) * (double(ii) / double(resolution - 1)));
+        myfile << " , " << (minY + (maxY - minY) * (double(ii) / double(
+                              resolution - 1)));
       }
 
       myfile << "]; \n ";
@@ -141,7 +148,8 @@ void combigrid::GridPlotter::plotObject(int dim ,
       result.resize( domain->get1DDomain(0).axisScaling().size() );
 
       // loop and evaluate points
-      for ( unsigned int ii = 0 ; ii < domain->get1DDomain(0).axisScaling().size() ; ii++) {
+      for ( unsigned int ii = 0 ; ii < domain->get1DDomain(0).axisScaling().size() ;
+            ii++) {
         globalCoord[ 0 ] = domain->get1DDomain(0).axisScaling()[ii];
         result[ii] = obj->eval(globalCoord);
       }
@@ -151,14 +159,16 @@ void combigrid::GridPlotter::plotObject(int dim ,
       myfile.open(filePath.c_str());
       myfile << "X = [ " << domain->get1DDomain(0).axisScaling()[0];
 
-      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(0).axisScaling().size() ; ii++) {
+      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(0).axisScaling().size() ;
+            ii++) {
         myfile << " , " << domain->get1DDomain(0).axisScaling()[ii];
       }
 
       myfile << "]; \n ";
       myfile << "res = [ " << result[0];
 
-      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(0).axisScaling().size() ; ii++) {
+      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(0).axisScaling().size() ;
+            ii++) {
         myfile << " , " << result[ii];
       }
 
@@ -166,12 +176,15 @@ void combigrid::GridPlotter::plotObject(int dim ,
       myfile << " plot(X,res); \n ";
       myfile.close();
     } else {
-      result.resize( domain->get1DDomain(0).axisScaling().size() * domain->get1DDomain(1).axisScaling().size() );
+      result.resize( domain->get1DDomain(0).axisScaling().size() *
+                     domain->get1DDomain(1).axisScaling().size() );
       // loop and evaluate points
       double res = 0.0;
 
-      for ( unsigned int ii = 0 ; ii < domain->get1DDomain(0).axisScaling().size() ; ii++) {
-        for ( unsigned int jj = 0 ; jj < domain->get1DDomain(1).axisScaling().size() ; jj++) {
+      for ( unsigned int ii = 0 ; ii < domain->get1DDomain(0).axisScaling().size() ;
+            ii++) {
+        for ( unsigned int jj = 0 ; jj < domain->get1DDomain(1).axisScaling().size() ;
+              jj++) {
           globalCoord[0] = domain->get1DDomain(0).axisScaling()[ii];
           globalCoord[1] = domain->get1DDomain(1).axisScaling()[jj];
           res = obj->eval(globalCoord);
@@ -183,14 +196,16 @@ void combigrid::GridPlotter::plotObject(int dim ,
       myfile.open(filePath.c_str());
       myfile << "X = [ " << domain->get1DDomain(0).axisScaling()[0];
 
-      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(0).axisScaling().size() ; ii++) {
+      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(0).axisScaling().size() ;
+            ii++) {
         myfile << " , " << domain->get1DDomain(0).axisScaling()[ii];
       }
 
       myfile << "]; \n ";
       myfile << "Y = [ " << domain->get1DDomain(1).axisScaling()[0];
 
-      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(1).axisScaling().size() ; ii++) {
+      for ( unsigned int ii = 1 ; ii < domain->get1DDomain(1).axisScaling().size() ;
+            ii++) {
         myfile << " , " << domain->get1DDomain(1).axisScaling()[ii];
       }
 

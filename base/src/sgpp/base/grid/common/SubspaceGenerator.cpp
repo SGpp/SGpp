@@ -9,35 +9,36 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    SubspaceGenerator::SubspaceGenerator (unsigned int dim, unsigned int max_level) :
-      val_(NULL), dim_(dim), max_sum_(max_level + dim - 1) {
-      pointer_type root_subspace = new value_type(dim, 1);
-      queue_value_type pair(root_subspace, 0);
-      queue_.push(pair);
-      this->next_();
+SubspaceGenerator::SubspaceGenerator (unsigned int dim,
+                                      unsigned int max_level) :
+  val_(NULL), dim_(dim), max_sum_(max_level + dim - 1) {
+  pointer_type root_subspace = new value_type(dim, 1);
+  queue_value_type pair(root_subspace, 0);
+  queue_.push(pair);
+  this->next_();
+}
+
+
+
+SubspaceGenerator* SubspaceGenerator::next_() {
+  queue_value_type pair = queue_.front();
+  val_ = pair.first;
+  unsigned int start_dim = pair.second;
+  unsigned int sum = std::accumulate(val_->begin(), val_->end(), 0);
+
+  if (sum < max_sum_) {
+    for (unsigned int d = start_dim; d < this->dim_; d++) {
+      pointer_type new_subspace = new value_type(*val_);
+      (*new_subspace)[d] += 1;
+      queue_.push(std::make_pair(new_subspace, d));
     }
+  }
 
+  queue_.pop();
+  return this;
+}
 
-
-    SubspaceGenerator* SubspaceGenerator::next_() {
-      queue_value_type pair = queue_.front();
-      val_ = pair.first;
-      unsigned int start_dim = pair.second;
-      unsigned int sum = std::accumulate(val_->begin(), val_->end(), 0);
-
-      if (sum < max_sum_) {
-        for (unsigned int d = start_dim; d < this->dim_; d++) {
-          pointer_type new_subspace = new value_type(*val_);
-          (*new_subspace)[d] += 1;
-          queue_.push(std::make_pair(new_subspace, d));
-        }
-      }
-
-      queue_.pop();
-      return this;
-    }
-
-  } /* namespace base */
+} /* namespace base */
 } /* namespace sg */

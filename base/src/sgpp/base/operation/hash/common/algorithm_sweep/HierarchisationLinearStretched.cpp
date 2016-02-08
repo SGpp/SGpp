@@ -12,67 +12,71 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
 
 
-    HierarchisationLinearStretched::HierarchisationLinearStretched(GridStorage* storage) : storage(storage), stretch(storage->getStretching()) {
+HierarchisationLinearStretched::HierarchisationLinearStretched(
+  GridStorage* storage) : storage(storage), stretch(storage->getStretching()) {
+}
+
+HierarchisationLinearStretched::~HierarchisationLinearStretched() {
+}
+
+void HierarchisationLinearStretched::operator()(DataVector& source,
+    DataVector& result, grid_iterator& index, size_t dim) {
+  rec(source, result, index, dim, 0.0, 0.0);
+}
+
+void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result,
+    grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+  // current position on the grid
+  size_t seq = index.seq();
+  // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+  float_t fm = source[seq];
+
+  // recursive calls for the right and left side of the current node
+  if (index.hint() == false) {
+    // descend left
+    index.leftChild(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fm);
     }
 
-    HierarchisationLinearStretched::~HierarchisationLinearStretched() {
+    // descend right
+    index.stepRight(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fm, fr);
     }
 
-    void HierarchisationLinearStretched::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
-      rec(source, result, index, dim, 0.0, 0.0);
-    }
+    // ascend
+    index.up(dim);
+  }
 
-    void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
-      // current position on the grid
-      size_t seq = index.seq();
-      // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      float_t fm = source[seq];
+  // hierarchisation
+  GridStorage::index_type::level_type current_level;
+  GridStorage::index_type::index_type current_index;
+  index.get(dim, current_level, current_index);
 
-      // recursive calls for the right and left side of the current node
-      if (index.hint() == false) {
-        // descend left
-        index.leftChild(dim);
+  float_t posl = 0, posr = 0, posc = 0;
 
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fm);
-        }
-
-        // descend right
-        index.stepRight(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fm, fr);
-        }
-
-        // ascend
-        index.up(dim);
-      }
-
-      // hierarchisation
-      GridStorage::index_type::level_type current_level;
-      GridStorage::index_type::index_type current_index;
-      index.get(dim, current_level, current_index);
-
-      float_t posl = 0, posr = 0, posc = 0;
-
-      if ((static_cast<int>(current_level)) == 0) {
-        std::cout << "printing fl and fr " << fl << " " << fr << std::endl;
-      }
+  if ((static_cast<int>(current_level)) == 0) {
+    std::cout << "printing fl and fr " << fl << " " << fr << std::endl;
+  }
 
 
-      stretch->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, posc, posl, posr );
+  stretch->getAdjacentPositions(static_cast<int>(current_level),
+                                static_cast<int>(current_index), dim, posc, posl, posr );
 
 
-      float_t fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
-      result[seq] = fm - fcurr;
+  float_t fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
+  result[seq] = fm - fcurr;
 
-    }
+}
 
-    // namespace detail
+// namespace detail
 
-  } // namespace SGPP
+} // namespace SGPP
 }

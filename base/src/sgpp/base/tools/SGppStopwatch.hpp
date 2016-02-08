@@ -6,48 +6,48 @@
 #ifndef SGPPSTOPWATCH_H
 #define SGPPSTOPWATCH_H
 
-#include <chrono>
-
 #include <sgpp/globaldef.hpp>
+
+#include <chrono>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     *  OS-independent version of a stop watch (using std::chrono).
-     *
-     *  Part of SGpp, so you can easily calculate the needed time of SGpp computations with a high precision
-     */
-    class SGppStopwatch {
-      public:
-        /**
-         * Constructor. Resets the stop watch.
-         */
-        SGppStopwatch();
+/**
+ *  OS-independent version of a stop watch (using std::chrono).
+ *
+ *  Part of SGpp, so you can easily calculate the needed time of SGpp computations with a high precision
+ */
+class SGppStopwatch {
+ public:
+  /**
+   * Constructor. Resets the stop watch.
+   */
+  SGppStopwatch();
 
-        /**
-         * Destructor.
-         */
-        ~SGppStopwatch();
+  /**
+   * Destructor.
+   */
+  ~SGppStopwatch();
 
-        /**
-         * Starts the stop watch.
-         */
-        void start();
+  /**
+   * Starts the stop watch.
+   */
+  void start();
 
-        /**
-         * Stops the stop watch.
-         *
-         * @return elapsed time since the last call to start in seconds
-         */
-        float_t stop();
+  /**
+   * Stops the stop watch.
+   *
+   * @return elapsed time since the last call to start in seconds
+   */
+  float_t stop();
 
-      protected:
-        std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
-    };
+ protected:
+  std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif  /* SGPPSTOPWATCH_H */

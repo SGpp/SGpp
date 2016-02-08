@@ -24,7 +24,8 @@
  * after creating a screen.
  */
 void writeHelp() {
-  SGPP::pde::LaserHeatEquationSolver2D* myHESolver = new SGPP::pde::LaserHeatEquationSolver2D(1.0, 0.4, 5, 0.1, 0.001, 4.0);
+  SGPP::pde::LaserHeatEquationSolver2D* myHESolver = new
+  SGPP::pde::LaserHeatEquationSolver2D(1.0, 0.4, 5, 0.1, 0.001, 4.0);
 
   myHESolver->initScreen();
 
@@ -32,8 +33,10 @@ void writeHelp() {
 
   std::stringstream mySStream;
 
-  mySStream << "Some instructions for the use of 2D Laser Heat Equation Solver:" << std::endl;
-  mySStream << "---------------------------------------------------------------" << std::endl << std::endl;
+  mySStream << "Some instructions for the use of 2D Laser Heat Equation Solver:"
+            << std::endl;
+  mySStream << "---------------------------------------------------------------"
+            << std::endl << std::endl;
   mySStream << "Parameters are:" << std::endl;
   mySStream << "     level: regular starting level" << std::endl;
   mySStream << "     maxLevel: max. refinement level" << std::endl;
@@ -48,20 +51,25 @@ void writeHelp() {
   mySStream << "     dt: timestepsize" << std::endl;
   mySStream << "     cg_its: max. CG iterations" << std::endl;
   mySStream << "     cg_eps: CG epsilon" << std::endl;
-  mySStream << "     animation: 0 no plots, 1 generate plots for animation" << std::endl << std::endl << std::endl;
+  mySStream << "     animation: 0 no plots, 1 generate plots for animation" <<
+            std::endl << std::endl << std::endl;
   mySStream << "Example:" << std::endl;
-  mySStream << "     LaserHESolver2D 5 8 5 0.01 0.001 1.0 10.0 4.0 0.04 2.0 0.001 400 0.00001 0" << std::endl;
+  mySStream <<
+            "     LaserHESolver2D 5 8 5 0.01 0.001 1.0 10.0 4.0 0.04 2.0 0.001 400 0.00001 0"
+            << std::endl;
   mySStream << std::endl << std::endl;
 
   std::cout << mySStream.str() << std::endl;
 }
 
-void testLaserHeatEquation( size_t level, size_t maxLevel, size_t initialRefines, double refine_threshold,
+void testLaserHeatEquation( size_t level, size_t maxLevel,
+                            size_t initialRefines, double refine_threshold,
                             double coarsen_threshold, double v, double a, double heat, double heat_sigma,
                             double T, double dt, size_t cg_its, double cg_eps, size_t animation) {
   size_t timesteps = (size_t)(T / dt);
 
-  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[2];
+  SGPP::base::DimensionBoundary* myBoundaries = new
+  SGPP::base::DimensionBoundary[2];
 
   // set the bounding box
   for (size_t i = 0; i < 2; i++) {
@@ -71,8 +79,11 @@ void testLaserHeatEquation( size_t level, size_t maxLevel, size_t initialRefines
     myBoundaries[i].bDirichletRight = true;
   }
 
-  SGPP::pde::LaserHeatEquationSolver2D* myHESolver = new SGPP::pde::LaserHeatEquationSolver2D(v, heat_sigma, maxLevel, refine_threshold, coarsen_threshold, heat);
-  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(2, myBoundaries);
+  SGPP::pde::LaserHeatEquationSolver2D* myHESolver = new
+  SGPP::pde::LaserHeatEquationSolver2D(v, heat_sigma, maxLevel, refine_threshold,
+                                       coarsen_threshold, heat);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(2,
+      myBoundaries);
   delete[] myBoundaries;
 
   // init Screen Object
@@ -82,7 +93,8 @@ void testLaserHeatEquation( size_t level, size_t maxLevel, size_t initialRefines
   myHESolver->constructGrid(*myBoundingBox, level);
 
   // init the basis functions' coefficient vector (start solution)
-  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myHESolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(
+    myHESolver->getNumberGridPoints());
   myHESolver->refineInitialGridWithLaserHeat(*alpha, initialRefines);
 
   // Print the initial heat function into a gnuplot file
@@ -93,9 +105,11 @@ void testLaserHeatEquation( size_t level, size_t maxLevel, size_t initialRefines
 
   // Start solving the Heat Equation
   if (animation == 0) {
-    myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, false, std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
+    myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true,
+                                   false, std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
   } else {
-    myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true, true, std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
+    myHESolver->solveImplicitEuler(timesteps, dt, cg_its, cg_eps, *alpha, true,
+                                   true, std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
   }
 
   // Print the solved Heat Equation into a gnuplot file
@@ -148,7 +162,8 @@ int main(int argc, char* argv[]) {
 
   animation = atoi(argv[14]);
 
-  testLaserHeatEquation(level, maxLevel, initialRefines, refine_threshold, coarsen_threshold, v, a, heat, heat_sigma, T, dt, cg_its, cg_eps, animation);
+  testLaserHeatEquation(level, maxLevel, initialRefines, refine_threshold,
+                        coarsen_threshold, v, a, heat, heat_sigma, T, dt, cg_its, cg_eps, animation);
 
   return 0;
 }

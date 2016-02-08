@@ -12,25 +12,26 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    class OperationInverseRosenblattTransformation1DLinear : public OperationTransformation1D {
-      protected:
-        base::Grid* grid;
-      public:
-        OperationInverseRosenblattTransformation1DLinear(base::Grid* grid);
-        virtual ~OperationInverseRosenblattTransformation1DLinear();
+class OperationInverseRosenblattTransformation1DLinear : public
+  OperationTransformation1D {
+ protected:
+  base::Grid* grid;
+ public:
+  OperationInverseRosenblattTransformation1DLinear(base::Grid* grid);
+  virtual ~OperationInverseRosenblattTransformation1DLinear();
 
-        /**
-         * Inverse Rosenblatt Transformation 1D
-         * @param alpha1d
-         * @param coord1d
-         * @return
-         */
-        float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d);
-    };
+  /**
+   * Inverse Rosenblatt Transformation 1D
+   * @param alpha1d
+   * @param coord1d
+   * @return
+   */
+  float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d);
+};
 
-  } /* namespace datadriven */
+} /* namespace datadriven */
 } /* namespace SGPP */
 
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR1D_HPP */

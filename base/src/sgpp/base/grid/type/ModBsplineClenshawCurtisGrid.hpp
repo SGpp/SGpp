@@ -15,77 +15,77 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Grid with modified Clenshaw-Curtis Bspline basis functions
-     */
-    class ModBsplineClenshawCurtisGrid : public Grid {
-      protected:
-        /**
-         * This constructor creates a new GridStorage out of the stream.
-         *
-         * @param istr inputstream that contains the grid information
-         */
-        ModBsplineClenshawCurtisGrid(std::istream& istr);
+/**
+ * Grid with modified Clenshaw-Curtis Bspline basis functions
+ */
+class ModBsplineClenshawCurtisGrid : public Grid {
+ protected:
+  /**
+   * This constructor creates a new GridStorage out of the stream.
+   *
+   * @param istr inputstream that contains the grid information
+   */
+  ModBsplineClenshawCurtisGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor of grid with modified Clenshaw-Curtis Bspline basis functions
-         *
-         * @param dim the dimension of the grid
-           * @param degree the bspline's degree
-         */
-        ModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+ public:
+  /**
+   * Constructor of grid with modified Clenshaw-Curtis Bspline basis functions
+   *
+   * @param dim the dimension of the grid
+     * @param degree the bspline's degree
+   */
+  ModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 
-        /**
-         * Destructor.
-         */
-        virtual ~ModBsplineClenshawCurtisGrid() override;
+  /**
+   * Destructor.
+   */
+  virtual ~ModBsplineClenshawCurtisGrid() override;
 
-        /**
-         * @return string that identifies the grid type uniquely
-         */
-        virtual SGPP::base::GridType getType() override;
+  /**
+   * @return string that identifies the grid type uniquely
+   */
+  virtual SGPP::base::GridType getType() override;
 
-        /**
-         * @return B-spline basis
-         */
-        virtual const SBasis& getBasis() override;
+  /**
+   * @return B-spline basis
+   */
+  virtual const SBasis& getBasis() override;
 
-        /**
-         * @return pointer to a GridGenerator object
-         */
-        virtual GridGenerator* createGridGenerator() override;
+  /**
+   * @return pointer to a GridGenerator object
+   */
+  virtual GridGenerator* createGridGenerator() override;
 
-        /**
-         * reads a grid out of a string
-         *
-         * @param istr string that contains the grid information
-         * @return grid
-         */
-        static Grid* unserialize(std::istream& istr);
+  /**
+   * reads a grid out of a string
+   *
+   * @param istr string that contains the grid information
+   * @return grid
+   */
+  static Grid* unserialize(std::istream& istr);
 
-        /**
-         * Serializes the grid.
-         *
-         * @param ostr stream to which the grid is written
-         */
-        virtual void serialize(std::ostream& ostr) override;
+  /**
+   * Serializes the grid.
+   *
+   * @param ostr stream to which the grid is written
+   */
+  virtual void serialize(std::ostream& ostr) override;
 
-        /**
-         * @return B-spline degree
-         */
-        virtual size_t getDegree();
+  /**
+   * @return B-spline degree
+   */
+  virtual size_t getDegree();
 
-      protected:
-        /// B-spline degree
-        size_t degree;
-        /// B-spline basis
-        const SBsplineModifiedClenshawCurtisBase* basis_;
-    };
+ protected:
+  /// B-spline degree
+  size_t degree;
+  /// B-spline basis
+  const SBsplineModifiedClenshawCurtisBase* basis_;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* MODBSPLINECLENSHAWCURTISGRID_HPP */

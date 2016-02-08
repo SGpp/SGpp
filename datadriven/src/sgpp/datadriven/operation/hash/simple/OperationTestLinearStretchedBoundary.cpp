@@ -12,27 +12,36 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    float_t OperationTestLinearStretchedBoundary::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
-      base::LinearBoundaryBasis<unsigned int, unsigned int> base;
-      return test_dataset(this->storage, base, alpha, data, classes);
-    }
+float_t OperationTestLinearStretchedBoundary::test(SGPP::base::DataVector&
+    alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
+  base::LinearBoundaryBasis<unsigned int, unsigned int> base;
+  return test_dataset(this->storage, base, alpha, data, classes);
+}
 
-    float_t OperationTestLinearStretchedBoundary::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
-      base::LinearBoundaryBasis<unsigned int, unsigned int> base;
-      return test_dataset_mse(this->storage, base, alpha, data, refValues);
-    }
+float_t OperationTestLinearStretchedBoundary::testMSE(SGPP::base::DataVector&
+    alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
+  base::LinearBoundaryBasis<unsigned int, unsigned int> base;
+  return test_dataset_mse(this->storage, base, alpha, data, refValues);
+}
 
-    float_t OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
-      base::LinearBoundaryBasis<unsigned int, unsigned int> base;
-      return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes, charaNumbers, 0);
-    }
+float_t OperationTestLinearStretchedBoundary::testWithCharacteristicNumber(
+  SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
+  SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
+  base::LinearBoundaryBasis<unsigned int, unsigned int> base;
+  return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data,
+         classes, charaNumbers, 0);
+}
 
-    void OperationTestLinearStretchedBoundary::calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) {
-      base::LinearBoundaryBasis<unsigned int, unsigned int> base;
-      test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
-    }
+void OperationTestLinearStretchedBoundary::calculateROCcurve(
+  SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
+  SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds,
+  SGPP::base::DataMatrix& ROC_curve) {
+  base::LinearBoundaryBasis<unsigned int, unsigned int> base;
+  test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds,
+                         ROC_curve);
+}
 
-  }
+}
 }

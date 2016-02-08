@@ -37,7 +37,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 6;
-  std::vector<std::unique_ptr<test_problems::UnconstrainedTestProblem>> testProblems;
+  std::vector<std::unique_ptr<test_problems::UnconstrainedTestProblem>>
+      testProblems;
   testProblems.push_back(
     std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
                 new test_problems::AbsoluteValue(d))));

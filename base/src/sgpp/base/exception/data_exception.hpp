@@ -13,52 +13,52 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Exception that is thrown in case of a data failure (conversion, creation, ...).
-     *
-     */
-    class data_exception : public std::exception {
-      public:
-        /**
-         * Create a new exception (constructor) with some message.
-         *
-         * @param msg The exception message
-         */
-        data_exception(const char* msg) throw() : msg(msg) {
-        }
-
-        /**
-         * Create default exception (constructor).
-         */
-        data_exception() throw() : msg(NULL) { }
-
-        /**
-         * Destructor
-         */
-        virtual ~data_exception() throw() override { }
-
-        /**
-         * Return message of exception object.
-         *
-         * @return Returns the message specified in the constructor, otherwise a general text
-         */
-        virtual const char* what() const throw() override {
-          if (msg) {
-            return msg;
-          } else {
-            return "data_exception: general failure";
-          }
-        }
-
-      protected:
-        /// the exception message
-        const char* msg;
-
-    };
-
+/**
+ * Exception that is thrown in case of a data failure (conversion, creation, ...).
+ *
+ */
+class data_exception : public std::exception {
+ public:
+  /**
+   * Create a new exception (constructor) with some message.
+   *
+   * @param msg The exception message
+   */
+  data_exception(const char* msg) throw() : msg(msg) {
   }
-}
+
+  /**
+   * Create default exception (constructor).
+   */
+  data_exception() throw() : msg(NULL) { }
+
+  /**
+   * Destructor
+   */
+  virtual ~data_exception() throw() override { }
+
+  /**
+   * Return message of exception object.
+   *
+   * @return Returns the message specified in the constructor, otherwise a general text
+   */
+  virtual const char* what() const throw() override {
+    if (msg) {
+      return msg;
+    } else {
+      return "data_exception: general failure";
+    }
+  }
+
+ protected:
+  /// the exception message
+  const char* msg;
+
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DATA_EXCEPTION_HPP */

@@ -15,69 +15,81 @@
 
 
 namespace SGPP {
-  namespace solver {
+namespace solver {
 
-    /**
-     * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
-     * for solving ordinary partial equations
-     *
-     */
-    class StepsizeControl : public ODESolver {
-      private:
-        /// identify of grid coarsening is used
-        bool useCoarsen;
-
-
-      protected:
-        /// Pointer to SGPP::base::ScreenOutput object
-        SGPP::base::ScreenOutput* myScreen;
-
-        /// temp. Stepsize Control
-        float_t mySC;
-
-        /// epsilon for the step size control
-        float_t myEps;
-
-        virtual void predictor(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
-                               float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) = 0;
-        virtual void corrector(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs) = 0;
-
-        virtual float_t norm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
-
-        virtual float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon) = 0;
-
-        float_t twoNorm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
-
-        float_t maxNorm(SGPP::solver::OperationParabolicPDESolverSystem& System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
-
-        std::string filename;
-
-        /// damping factor
-        float_t _gamma;
+/**
+ * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
+ * for solving ordinary partial equations
+ *
+ */
+class StepsizeControl : public ODESolver {
+ private:
+  /// identify of grid coarsening is used
+  bool useCoarsen;
 
 
-      public:
-        /**
-         * Std-Constructer
-         *
-         * @param sc step size
-         * @param imax number of maximum executed iterations
-         * @param timestepSize the size of one timestep
-         * @param eps the epsilon for the step size control
-         * @param screen possible pointer to a SGPP::base::ScreenOutput object
-         * @param gamma damping factor
-         */
-        StepsizeControl(size_t imax, float_t timestepSize, float_t eps, float_t sc, SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.5);
+ protected:
+  /// Pointer to SGPP::base::ScreenOutput object
+  SGPP::base::ScreenOutput* myScreen;
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~StepsizeControl();
+  /// temp. Stepsize Control
+  float_t mySC;
 
-        void solve(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep = false, bool verbose = false);
-    };
+  /// epsilon for the step size control
+  float_t myEps;
 
-  }
+  virtual void predictor(SLESolver& LinearSystemSolver,
+                         SGPP::solver::OperationParabolicPDESolverSystem& System,
+                         float_t tmp_timestepsize, SGPP::base::DataVector& dv,
+                         SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) = 0;
+  virtual void corrector(SLESolver& LinearSystemSolver,
+                         SGPP::solver::OperationParabolicPDESolverSystem& System,
+                         float_t tmp_timestepsize, SGPP::base::DataVector& dv,
+                         SGPP::base::DataVector* rhs) = 0;
+
+  virtual float_t norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
+                       SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+
+  virtual float_t nextTimestep(float_t tmp_timestepsize,
+                               float_t tmp_timestepsize_old, float_t norm, float_t epsilon) = 0;
+
+  float_t twoNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
+                  SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+
+  float_t maxNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
+                  SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+
+  std::string filename;
+
+  /// damping factor
+  float_t _gamma;
+
+
+ public:
+  /**
+   * Std-Constructer
+   *
+   * @param sc step size
+   * @param imax number of maximum executed iterations
+   * @param timestepSize the size of one timestep
+   * @param eps the epsilon for the step size control
+   * @param screen possible pointer to a SGPP::base::ScreenOutput object
+   * @param gamma damping factor
+   */
+  StepsizeControl(size_t imax, float_t timestepSize, float_t eps, float_t sc,
+                  SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.5);
+
+  /**
+   * Std-Destructor
+   */
+  virtual ~StepsizeControl();
+
+  void solve(SLESolver& LinearSystemSolver,
+             SGPP::solver::OperationParabolicPDESolverSystem& System,
+             bool bIdentifyLastStep = false, bool verbose = false);
+};
+
+}
 }
 
 #endif /* STEPSIZECONTROL_H_ */

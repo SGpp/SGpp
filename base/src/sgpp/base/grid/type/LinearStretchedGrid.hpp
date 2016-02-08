@@ -15,44 +15,44 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with linearstretched base functions
-     */
-    class LinearStretchedGrid : public Grid {
-      protected:
-        LinearStretchedGrid(std::istream& istr);
+/**
+ * grid with linearstretched base functions
+ */
+class LinearStretchedGrid : public Grid {
+ protected:
+  LinearStretchedGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor LinearStretched Grid without boundaries
-         *
-         * @param dim the dimension of the grid
-         */
-        LinearStretchedGrid(size_t dim);
+ public:
+  /**
+   * Constructor LinearStretched Grid without boundaries
+   *
+   * @param dim the dimension of the grid
+   */
+  LinearStretchedGrid(size_t dim);
 
-        /**
-         * Constructor LinearStretched Grid
-         *
-         * @param BB the BoundingBox of the grid
-         */
-        LinearStretchedGrid(Stretching& BB);
+  /**
+   * Constructor LinearStretched Grid
+   *
+   * @param BB the BoundingBox of the grid
+   */
+  LinearStretchedGrid(Stretching& BB);
 
-        /**
-         * Destructor
-         */
-        virtual ~LinearStretchedGrid() override;
+  /**
+   * Destructor
+   */
+  virtual ~LinearStretchedGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
+  virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis() override;
+  virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator() override;
-        static Grid* unserialize(std::istream& istr);
-    };
+  virtual GridGenerator* createGridGenerator() override;
+  static Grid* unserialize(std::istream& istr);
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARSTRETCHEDGRID_HPP */

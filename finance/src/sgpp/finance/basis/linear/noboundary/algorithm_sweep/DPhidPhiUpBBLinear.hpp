@@ -13,80 +13,84 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
 
 
-    /**
-     * Implementation of sweep operator (): 1D Up for
-     * Bilinearform \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
-     */
-    class DPhidPhiUpBBLinear {
-      protected:
-        typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
+/**
+ * Implementation of sweep operator (): 1D Up for
+ * Bilinearform \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
+ */
+class DPhidPhiUpBBLinear {
+ protected:
+  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
 
-        /// Pointer to SGPP::base::GridStorage object
-        SGPP::base::GridStorage* storage;
-        /// Pointer to the bounding box Obejct
-        SGPP::base::BoundingBox* boundingBox;
+  /// Pointer to SGPP::base::GridStorage object
+  SGPP::base::GridStorage* storage;
+  /// Pointer to the bounding box Obejct
+  SGPP::base::BoundingBox* boundingBox;
 
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's SGPP::base::GridStorage object
-         */
-        DPhidPhiUpBBLinear(SGPP::base::GridStorage* storage);
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's SGPP::base::GridStorage object
+   */
+  DPhidPhiUpBBLinear(SGPP::base::GridStorage* storage);
 
-        /**
-         * Destructor
-         */
-        virtual ~DPhidPhiUpBBLinear();
+  /**
+   * Destructor
+   */
+  virtual ~DPhidPhiUpBBLinear();
 
 
-        /**
-         * This operations performs the calculation of up in the direction of dimension <i>dim</i>
-         * on a grid with fix Dirichlet 0 boundary conditions
-         *
-         * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-         * @param result SGPP::base::DataVector that contains the result of the up operation
-         * @param index a iterator object of the grid
-         * @param dim current fixed dimension of the 'execution direction'
-         */
-        virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
+  /**
+   * This operations performs the calculation of up in the direction of dimension <i>dim</i>
+   * on a grid with fix Dirichlet 0 boundary conditions
+   *
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param result SGPP::base::DataVector that contains the result of the up operation
+   * @param index a iterator object of the grid
+   * @param dim current fixed dimension of the 'execution direction'
+   */
+  virtual void operator()(SGPP::base::DataVector& source,
+                          SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
 
-      protected:
+ protected:
 
-        /**
-         * recursive function for the calculation of Up without Bounding Box support
-         *
-         * @param source SGPP::base::DataVector that contains the coefficients of the ansatzfunction
-         * @param result SGPP::base::DataVector in which the result of the operation is stored
-         * @param index reference to a griditerator object that is used navigate through the grid
-         * @param dim the dimension in which the operation is executed
-         * @param fl function value on the left boundary, reference parameter
-         * @param fr function value on the right boundary, reference parameter
-         */
-        void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr);
+  /**
+   * recursive function for the calculation of Up without Bounding Box support
+   *
+   * @param source SGPP::base::DataVector that contains the coefficients of the ansatzfunction
+   * @param result SGPP::base::DataVector in which the result of the operation is stored
+   * @param index reference to a griditerator object that is used navigate through the grid
+   * @param dim the dimension in which the operation is executed
+   * @param fl function value on the left boundary, reference parameter
+   * @param fr function value on the right boundary, reference parameter
+   */
+  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+           grid_iterator& index, size_t dim, float_t& fl, float_t& fr);
 
-        /**
-         * recursive function for the calculation of Up with Bounding Box support
-         *
-         * @param source SGPP::base::DataVector that contains the coefficients of the ansatzfunction
-         * @param result SGPP::base::DataVector in which the result of the operation is stored
-         * @param index reference to a griditerator object that is used navigate through the grid
-         * @param dim the dimension in which the operation is executed
-         * @param fl function value on the left boundary, reference parameter
-         * @param fr function value on the right boundary, reference parameter
-         * @param q interval width in the current dimension <i>dim</i>
-         * @param t interval offset in current dimension <i>dim</i>
-         */
-        void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl, float_t& fr, float_t q, float_t t);
-    };
+  /**
+   * recursive function for the calculation of Up with Bounding Box support
+   *
+   * @param source SGPP::base::DataVector that contains the coefficients of the ansatzfunction
+   * @param result SGPP::base::DataVector in which the result of the operation is stored
+   * @param index reference to a griditerator object that is used navigate through the grid
+   * @param dim the dimension in which the operation is executed
+   * @param fl function value on the left boundary, reference parameter
+   * @param fr function value on the right boundary, reference parameter
+   * @param q interval width in the current dimension <i>dim</i>
+   * @param t interval offset in current dimension <i>dim</i>
+   */
+  void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+             grid_iterator& index, size_t dim, float_t& fl, float_t& fr, float_t q,
+             float_t t);
+};
 
-    // namespace detail
+// namespace detail
 
-  } // namespace SGPP
+} // namespace SGPP
 }
 
 #endif /* DPHIDPHIUPBBLINEARBOUNDARY_HPP */

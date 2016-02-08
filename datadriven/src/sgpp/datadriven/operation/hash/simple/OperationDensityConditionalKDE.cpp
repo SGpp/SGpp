@@ -17,100 +17,101 @@ using namespace SGPP::base;
 using namespace SGPP::datadriven;
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    OperationDensityConditionalKDE::OperationDensityConditionalKDE(GaussianKDE& kde) :
-      kde(&kde) {
+OperationDensityConditionalKDE::OperationDensityConditionalKDE(
+  GaussianKDE& kde) :
+  kde(&kde) {
+}
+
+OperationDensityConditionalKDE::~OperationDensityConditionalKDE() {
+}
+
+// -------------------------------------------------------------------
+
+void OperationDensityConditionalKDE::doConditional(size_t mdim, float_t xbar,
+    GaussianKDE& conditionalizedKDE) {
+  throw algorithm_exception(
+    "OperationDensityConditionalKDE::doConditional is not implemented");
+}
+
+void OperationDensityConditionalKDE::doConditional(std::vector<size_t>& mdims,
+    base::DataVector& xbar, datadriven::GaussianKDE& conditionalizedKDE) {
+  // compute the dimensions to conditionalize
+  size_t ndim = kde->getDim();
+  std::vector<size_t> condDims(ndim - 1);
+
+  size_t idim = 0;
+  size_t jdim = 0;
+  size_t kdim = 0;
+
+  while (idim < ndim) {
+    jdim = 0;
+
+    while (jdim < mdims.size() && idim != mdims[jdim]) {
+      jdim++;
     }
 
-    OperationDensityConditionalKDE::~OperationDensityConditionalKDE() {
+    // check if current dim has been found in dims
+    if (jdim == mdims.size()) {
+      condDims[kdim] = idim;
+      kdim++;
     }
 
-    // -------------------------------------------------------------------
+    idim++;
+  }
 
-    void OperationDensityConditionalKDE::doConditional(size_t mdim, float_t xbar,
-        GaussianKDE& conditionalizedKDE) {
-      throw algorithm_exception(
-        "OperationDensityConditionalKDE::doConditional is not implemented");
+  // update the conditionalization factors
+  size_t nsamples = kde->getNsamples();
+  DataVector pcond(nsamples);
+  kde->getConditionalizationFactor(pcond);
+  kde->updateConditionalizationFactors(xbar, condDims, pcond);
+
+  // marginalize the kde to the desired dimensions
+  OperationDensityMarginalizeKDE* opMarg =
+    op_factory::createOperationDensityMarginalizeKDE(*kde);
+  opMarg->margToDimXs(mdims, conditionalizedKDE);
+  // set the conditionalization coefficients
+  conditionalizedKDE.setConditionalizationFactor(pcond);
+
+  delete opMarg;
+}
+
+void OperationDensityConditionalKDE::condToDimX(size_t mdim,
+    base::DataVector& xbar, datadriven::GaussianKDE& conditionalizedKDE) {
+  // compute the dimensions to conditionalize over
+  size_t ndim = kde->getDim();
+  std::vector<size_t> condDims(ndim - 1);
+  size_t jdim = 0;
+
+  for (size_t idim = 0; idim < ndim; idim++) {
+    if (idim != mdim) {
+      condDims[jdim] = idim;
+      jdim++;
     }
+  }
 
-    void OperationDensityConditionalKDE::doConditional(std::vector<size_t>& mdims,
-        base::DataVector& xbar, datadriven::GaussianKDE& conditionalizedKDE) {
-      // compute the dimensions to conditionalize
-      size_t ndim = kde->getDim();
-      std::vector<size_t> condDims(ndim - 1);
+  // update the conditionalization factors
+  size_t nsamples = kde->getNsamples();
+  DataVector pcond(nsamples);
+  kde->getConditionalizationFactor(pcond);
+  kde->updateConditionalizationFactors(xbar, condDims, pcond);
 
-      size_t idim = 0;
-      size_t jdim = 0;
-      size_t kdim = 0;
+  // marginalize the kde to the desired dimensions
+  OperationDensityMarginalizeKDE* opMarg =
+    op_factory::createOperationDensityMarginalizeKDE(*kde);
+  opMarg->margToDimX(mdim, conditionalizedKDE);
+  // set the conditionalization coefficients
+  conditionalizedKDE.setConditionalizationFactor(pcond);
 
-      while (idim < ndim) {
-        jdim = 0;
+  delete opMarg;
+}
 
-        while (jdim < mdims.size() && idim != mdims[jdim]) {
-          jdim++;
-        }
+void OperationDensityConditionalKDE::condToDimXs(std::vector<size_t>& mdims,
+    DataVector& xbar, GaussianKDE& conditionalizedKDE) {
+  throw algorithm_exception(
+    "OperationDensityConditionalKDE::condToDimXs is not implemented");
+}
 
-        // check if current dim has been found in dims
-        if (jdim == mdims.size()) {
-          condDims[kdim] = idim;
-          kdim++;
-        }
-
-        idim++;
-      }
-
-      // update the conditionalization factors
-      size_t nsamples = kde->getNsamples();
-      DataVector pcond(nsamples);
-      kde->getConditionalizationFactor(pcond);
-      kde->updateConditionalizationFactors(xbar, condDims, pcond);
-
-      // marginalize the kde to the desired dimensions
-      OperationDensityMarginalizeKDE* opMarg =
-        op_factory::createOperationDensityMarginalizeKDE(*kde);
-      opMarg->margToDimXs(mdims, conditionalizedKDE);
-      // set the conditionalization coefficients
-      conditionalizedKDE.setConditionalizationFactor(pcond);
-
-      delete opMarg;
-    }
-
-    void OperationDensityConditionalKDE::condToDimX(size_t mdim,
-        base::DataVector& xbar, datadriven::GaussianKDE& conditionalizedKDE) {
-      // compute the dimensions to conditionalize over
-      size_t ndim = kde->getDim();
-      std::vector<size_t> condDims(ndim - 1);
-      size_t jdim = 0;
-
-      for (size_t idim = 0; idim < ndim; idim++) {
-        if (idim != mdim) {
-          condDims[jdim] = idim;
-          jdim++;
-        }
-      }
-
-      // update the conditionalization factors
-      size_t nsamples = kde->getNsamples();
-      DataVector pcond(nsamples);
-      kde->getConditionalizationFactor(pcond);
-      kde->updateConditionalizationFactors(xbar, condDims, pcond);
-
-      // marginalize the kde to the desired dimensions
-      OperationDensityMarginalizeKDE* opMarg =
-        op_factory::createOperationDensityMarginalizeKDE(*kde);
-      opMarg->margToDimX(mdim, conditionalizedKDE);
-      // set the conditionalization coefficients
-      conditionalizedKDE.setConditionalizationFactor(pcond);
-
-      delete opMarg;
-    }
-
-    void OperationDensityConditionalKDE::condToDimXs(std::vector<size_t>& mdims,
-        DataVector& xbar, GaussianKDE& conditionalizedKDE) {
-      throw algorithm_exception(
-        "OperationDensityConditionalKDE::condToDimXs is not implemented");
-    }
-
-  } /* namespace datadriven */
+} /* namespace datadriven */
 } /* namespace SGPP */

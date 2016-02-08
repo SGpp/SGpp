@@ -14,39 +14,41 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(DataVector& node_values) {
-      HierarchisationLinearStretchedBoundary func(this->storage);
-      sweep<HierarchisationLinearStretchedBoundary> s(func, this->storage);
+void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(
+  DataVector& node_values) {
+  HierarchisationLinearStretchedBoundary func(this->storage);
+  sweep<HierarchisationLinearStretchedBoundary> s(func, this->storage);
 
-      // N D case
-      if (this->storage->dim() > 1) {
-        for (size_t i = 0; i < this->storage->dim(); i++) {
-          s.sweep1D_Boundary(node_values, node_values, i);
-        }
-      }
-      // 1 D case
-      else {
-        s.sweep1D(node_values, node_values, 0);
-      }
+  // N D case
+  if (this->storage->dim() > 1) {
+    for (size_t i = 0; i < this->storage->dim(); i++) {
+      s.sweep1D_Boundary(node_values, node_values, i);
     }
-
-    void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(DataVector& alpha) {
-      DehierarchisationLinearStretchedBoundary func(this->storage);
-      sweep<DehierarchisationLinearStretchedBoundary> s(func, this->storage);
-
-      // N D case
-      if (this->storage->dim() > 1) {
-        for (size_t i = 0; i < this->storage->dim(); i++) {
-          s.sweep1D_Boundary(alpha, alpha, i);
-        }
-      }
-      // 1 D case
-      else {
-        s.sweep1D(alpha, alpha, 0);
-      }
-    }
-
   }
+  // 1 D case
+  else {
+    s.sweep1D(node_values, node_values, 0);
+  }
+}
+
+void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(
+  DataVector& alpha) {
+  DehierarchisationLinearStretchedBoundary func(this->storage);
+  sweep<DehierarchisationLinearStretchedBoundary> s(func, this->storage);
+
+  // N D case
+  if (this->storage->dim() > 1) {
+    for (size_t i = 0; i < this->storage->dim(); i++) {
+      s.sweep1D_Boundary(alpha, alpha, i);
+    }
+  }
+  // 1 D case
+  else {
+    s.sweep1D(alpha, alpha, 0);
+  }
+}
+
+}
 }

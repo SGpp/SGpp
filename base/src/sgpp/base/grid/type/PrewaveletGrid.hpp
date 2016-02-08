@@ -12,38 +12,38 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with prewavelet base functions
-     */
-    class PrewaveletGrid : public Grid {
-      protected:
-        PrewaveletGrid(std::istream& istr);
-        GridStorage* shadowStorage;
+/**
+ * grid with prewavelet base functions
+ */
+class PrewaveletGrid : public Grid {
+ protected:
+  PrewaveletGrid(std::istream& istr);
+  GridStorage* shadowStorage;
 
-      public:
-        PrewaveletGrid(size_t dim);
-        virtual ~PrewaveletGrid() override;
+ public:
+  PrewaveletGrid(size_t dim);
+  virtual ~PrewaveletGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
+  virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis() override;
+  virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  virtual GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
-        /**
-         * gets a pointer to the GridStorage object
-         *
-         * @return pointer to the GridStorage object
-         */
-        GridStorage* getShadowStorage();
+  /**
+   * gets a pointer to the GridStorage object
+   *
+   * @return pointer to the GridStorage object
+   */
+  GridStorage* getShadowStorage();
 
-    };
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* PREWAVELETGRID_HPP */

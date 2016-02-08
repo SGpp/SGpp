@@ -13,36 +13,36 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * SecondMomemnt of sparse grid function, linear grid without boundaries
-     */
-    class OperationSecondMomentLinear : public OperationSecondMoment {
-      public:
-        /**
-         * Constructor of OperationSecondMomentLinear
-         *
-         * @param storage Pointer to the grid's GridStorage object
-         */
-        OperationSecondMomentLinear(GridStorage* storage) : storage(storage) {}
+/**
+ * SecondMomemnt of sparse grid function, linear grid without boundaries
+ */
+class OperationSecondMomentLinear : public OperationSecondMoment {
+ public:
+  /**
+   * Constructor of OperationSecondMomentLinear
+   *
+   * @param storage Pointer to the grid's GridStorage object
+   */
+  OperationSecondMomentLinear(GridStorage* storage) : storage(storage) {}
 
-        virtual ~OperationSecondMomentLinear() override {}
+  virtual ~OperationSecondMomentLinear() override {}
 
-        /**
-         * Compute second moment of the function
-         * @f[ \int_{\Omega} x^2\cdot f(x) dx. @f]
-         *
-         * @param alpha Coefficient vector for current grid
-         */
-        virtual float_t doQuadrature(DataVector& alpha) override;
+  /**
+   * Compute second moment of the function
+   * @f[ \int_{\Omega} x^2\cdot f(x) dx. @f]
+   *
+   * @param alpha Coefficient vector for current grid
+   */
+  virtual float_t doQuadrature(DataVector& alpha) override;
 
-      protected:
-        // Pointer to the grid's GridStorage object
-        GridStorage* storage;
-    };
+ protected:
+  // Pointer to the grid's GridStorage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONSECONDMOMENTLINEAR_HPP */

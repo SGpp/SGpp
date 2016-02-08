@@ -15,50 +15,51 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Hierarchisation on sparse grid, poly case
-     */
-    class OperationHierarchisationPoly : public OperationHierarchisation {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         * @param degree the polynom's max. degree
-         */
-        OperationHierarchisationPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+/**
+ * Hierarchisation on sparse grid, poly case
+ */
+class OperationHierarchisationPoly : public OperationHierarchisation {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's GridStorage object
+   * @param degree the polynom's max. degree
+   */
+  OperationHierarchisationPoly(GridStorage* storage,
+                               size_t degree) : storage(storage), base(degree) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationHierarchisationPoly() override {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationHierarchisationPoly() override {}
 
-        /**
-         * Implements the hierarchisation on a sprase grid with poly base functions
-         *
-         * @param node_values the functions values in the node base
-         *
-         */
-        virtual void doHierarchisation(DataVector& node_values) override;
+  /**
+   * Implements the hierarchisation on a sprase grid with poly base functions
+   *
+   * @param node_values the functions values in the node base
+   *
+   */
+  virtual void doHierarchisation(DataVector& node_values) override;
 
-        /**
-         * Implements the dehierarchisation on a sprase grid with poly base functions
-         *
-         * @param alpha the coefficients of the sparse grid's base functions
-         *
-         */
-        virtual void doDehierarchisation(DataVector& alpha) override;
+  /**
+   * Implements the dehierarchisation on a sprase grid with poly base functions
+   *
+   * @param alpha the coefficients of the sparse grid's base functions
+   *
+   */
+  virtual void doDehierarchisation(DataVector& alpha) override;
 
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-        /// Poly Basis object
-        SPolyBase base;
-    };
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+  /// Poly Basis object
+  SPolyBase base;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONHIERARCHISATIONPOLY_HPP */

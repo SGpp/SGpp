@@ -21,7 +21,8 @@ DataMatrix* generateBBTMatrix(Grid* grid, DataMatrix& training) {
 
   GridStorage* storage = grid->getStorage();
 
-  OperationMultipleEval* b = SGPP::op_factory::createOperationMultipleEval(*grid, training);
+  OperationMultipleEval* b = SGPP::op_factory::createOperationMultipleEval(*grid,
+                             training);
 
   DataVector alpha(storage->size());
   DataVector erg(storage->size());
@@ -144,7 +145,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -175,7 +177,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t level = 5;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -199,7 +202,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -223,7 +227,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t level = 4;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -251,7 +256,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -277,7 +283,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t level = 5;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -301,7 +308,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -325,7 +333,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t level = 4;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -353,7 +362,8 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_1_nopsgrid_7_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_1_nopsgrid_7_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -377,7 +387,8 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
 
   size_t level = 5;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_1_nopsgrid_31_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_1_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -401,7 +412,8 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_one) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_3_nopsgrid_31_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_3_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -425,7 +437,8 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_two) {
 
   size_t level = 4;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_3_nopsgrid_111_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_3_nopsgrid_111_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -448,8 +461,10 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_two) {
 BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
 
   size_t level = 2;
-  std::string fileName("datadriven/tests/data/data_dim_4_nops_4096_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_4_nopsgrid_17_adapt_float.dat.gz");
+  std::string
+  fileName("datadriven/tests/data/data_dim_4_nops_4096_float.arff.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_prewavelet_dim_4_nopsgrid_17_adapt_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -487,7 +502,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t level = 4;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -536,7 +552,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -560,7 +577,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t level = 4;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -588,7 +606,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t level = 4;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -612,7 +631,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t level = 5;
   std::string fileName("datadriven/tests/data/data_dim_1_nops_8_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -636,7 +656,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t level = 2;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -660,7 +681,8 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t level = 3;
   std::string fileName("datadriven/tests/data/data_dim_3_nops_512_float.arff.gz");
-  std::string referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz");
+  std::string
+  referenceMatrixFileName("datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz");
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
@@ -698,7 +720,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(*grid);
+  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(
+        *grid);
 
   alpha.setAll(1.0);
   SGPP::float_t c = testOP->test(alpha, data, classes);
@@ -727,7 +750,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(*grid);
+  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(
+        *grid);
 
   alpha[0] = 0.0;
   alpha[1] = 0.0;
@@ -760,7 +784,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(*grid);
+  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(
+        *grid);
 
   alpha[0] = 0.0;
   alpha[1] = 0.0;

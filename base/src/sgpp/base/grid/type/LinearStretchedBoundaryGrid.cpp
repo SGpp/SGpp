@@ -17,44 +17,44 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) :
-      Grid(istr) {
+LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) :
+  Grid(istr) {
 
-    }
-
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) :
-      Grid(dim) {
-    }
-
-    LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(Stretching& BB) :
-      Grid(BB) {
-    }
-
-    LinearStretchedBoundaryGrid::~LinearStretchedBoundaryGrid() {
-    }
-
-    SGPP::base::GridType LinearStretchedBoundaryGrid::getType() {
-      return SGPP::base::GridType::LinearStretchedBoundary;
-    }
-
-    const SBasis& LinearStretchedBoundaryGrid::getBasis() {
-      static SLinearStretchedBoundaryBase basis;
-      return basis;
-    }
-
-    Grid* LinearStretchedBoundaryGrid::unserialize(std::istream& istr) {
-      return new LinearStretchedBoundaryGrid(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* LinearStretchedBoundaryGrid::createGridGenerator() {
-      return new StretchedBoundaryGridGenerator(this->storage);
-    }
-
-  }
 }
+
+LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) :
+  Grid(dim) {
+}
+
+LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(Stretching& BB) :
+  Grid(BB) {
+}
+
+LinearStretchedBoundaryGrid::~LinearStretchedBoundaryGrid() {
+}
+
+SGPP::base::GridType LinearStretchedBoundaryGrid::getType() {
+  return SGPP::base::GridType::LinearStretchedBoundary;
+}
+
+const SBasis& LinearStretchedBoundaryGrid::getBasis() {
+  static SLinearStretchedBoundaryBase basis;
+  return basis;
+}
+
+Grid* LinearStretchedBoundaryGrid::unserialize(std::istream& istr) {
+  return new LinearStretchedBoundaryGrid(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* LinearStretchedBoundaryGrid::createGridGenerator() {
+  return new StretchedBoundaryGridGenerator(this->storage);
+}
+
+}  // namespace base
+}  // namespace SGPP

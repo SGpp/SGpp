@@ -13,34 +13,34 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
-     */
-    class OperationEvalModWavelet : public OperationEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         */
-        OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
+/**
+ * This class implements OperationEval for a grids with mod wavelet basis ansatzfunctions with
+ */
+class OperationEvalModWavelet : public OperationEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's GridStorage object
+   */
+  OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationEvalModWavelet() override {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationEvalModWavelet() override {}
 
-        virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point) override;
+  virtual float_t eval(const DataVector& alpha,
+                       const DataVector& point) override;
 
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-    };
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIINEVALMODWAVELET_HPP */

@@ -14,15 +14,17 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationHierarchisationModWavelet::doHierarchisation(DataVector& node_values) {
-      throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
-    }
+void OperationHierarchisationModWavelet::doHierarchisation(
+  DataVector& node_values) {
+  throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+}
 
-    void OperationHierarchisationModWavelet::doDehierarchisation(DataVector& alpha) {
-      throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
-    }
+void OperationHierarchisationModWavelet::doDehierarchisation(
+  DataVector& alpha) {
+  throw new operation_exception("This operation is not implemented, yet! Sorry ;-)");
+}
 
-  }
+}
 }

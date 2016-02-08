@@ -13,38 +13,39 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grids with periodic linear basis ansatzfunctions
-     *
-     */
-    class OperationMultipleEvalPeriodic : public OperationMultipleEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid grid
-         * @param dataset the dataset that should be evaluated
-         */
-        OperationMultipleEvalPeriodic(Grid& grid, DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalPeriodic() override {}
-
-        virtual void mult(DataVector& alpha, DataVector& result) override;
-        virtual void multTranspose(DataVector& source, DataVector& result);
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grids with periodic linear basis ansatzfunctions
+ *
+ */
+class OperationMultipleEvalPeriodic : public OperationMultipleEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid grid
+   * @param dataset the dataset that should be evaluated
+   */
+  OperationMultipleEvalPeriodic(Grid& grid,
+                                DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  virtual ~OperationMultipleEvalPeriodic() override {}
+
+  virtual void mult(DataVector& alpha, DataVector& result) override;
+  virtual void multTranspose(DataVector& source, DataVector& result);
+
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALPERIODIC_HPP */

@@ -14,19 +14,23 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    class DMSystemMatrixSPMPITypeFactory {
-      private:
-        template<typename Kernel>
-        static SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystemMatrixMPITypeSP(SGPP::base::Grid& grid, SGPP::base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType);
+class DMSystemMatrixSPMPITypeFactory {
+ private:
+  template<typename Kernel>
+  static SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystemMatrixMPITypeSP(
+    SGPP::base::Grid& grid, SGPP::base::DataMatrixSP& trainDataset, float lambda,
+    VectorizationType vecType, MPIType mpiType);
 
-      public:
-        static SGPP::datadriven::DMSystemMatrixBaseSP* getDMSystemMatrixSP(SGPP::base::Grid& grid, SGPP::base::DataMatrixSP& trainDataset, float lambda, VectorizationType vecType, MPIType mpiType);
+ public:
+  static SGPP::datadriven::DMSystemMatrixBaseSP* getDMSystemMatrixSP(
+    SGPP::base::Grid& grid, SGPP::base::DataMatrixSP& trainDataset, float lambda,
+    VectorizationType vecType, MPIType mpiType);
 
-    };
+};
 
-  }
+}
 }
 
 #endif // DMSYSTEMMATRIXSPMPITYPEFACTORY_HPP

@@ -9,18 +9,18 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    enum class RegularizationType {
-      Identity,
-      Laplace
-    };
+enum class RegularizationType {
+  Identity,
+  Laplace
+};
 
-    struct RegularizationConfiguration {
-      RegularizationType regType_;
-    };
+struct RegularizationConfiguration {
+  RegularizationType regType_;
+};
 
-  } // pde
+} // pde
 } // SGPP
 
 #endif /* REGULARIZATIONCONFIGURATION_HPP_ */

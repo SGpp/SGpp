@@ -11,87 +11,87 @@
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      /**
-       * Beale objective function.
-       *
-       * Definition:
-       * \f[\bar{f}(\bar{\vec{x}}) :=
-       * (1.5 - \bar{x}_1 (1 - \bar{x}_2))^2 +
-       * (2.25 - \bar{x}_1 (1 - \bar{x}_2^2))^2 +
-       * (2.625 - \bar{x}_1 (1 - \bar{x}_2^3))^2\f],
-       */
-      class BealeObjective : public TestScalarFunction {
-        public:
-          /**
-           * Constructor.
-           */
-          BealeObjective();
+/**
+ * Beale objective function.
+ *
+ * Definition:
+ * \f[\bar{f}(\bar{\vec{x}}) :=
+ * (1.5 - \bar{x}_1 (1 - \bar{x}_2))^2 +
+ * (2.25 - \bar{x}_1 (1 - \bar{x}_2^2))^2 +
+ * (2.625 - \bar{x}_1 (1 - \bar{x}_2^3))^2\f],
+ */
+class BealeObjective : public TestScalarFunction {
+ public:
+  /**
+   * Constructor.
+   */
+  BealeObjective();
 
-          /**
-           * Destructor.
-           */
-          virtual ~BealeObjective() override;
+  /**
+   * Destructor.
+   */
+  virtual ~BealeObjective() override;
 
-          /**
-           * @param x     point \f$\vec{x} \in [0, 1]^d\f$
-           * @return      \f$f(\vec{x})\f$
-           */
-          virtual float_t evalUndisplaced(const base::DataVector& x)
-          override;
+  /**
+   * @param x     point \f$\vec{x} \in [0, 1]^d\f$
+   * @return      \f$f(\vec{x})\f$
+   */
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-          const override;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
+};
 
-      /**
-       * Beale unconstrained test problem.
-       *
-       * * Number of parameters: 2
-       * * Domain: \f$\bar{\vec{x}} \in [-5, 5]^2\f$
-       * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
-       *   (3, 1/2)\f$
-       * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
-       *   0\f$
-       */
-      class Beale : public UnconstrainedTestProblem {
-        public:
-          /**
-           * Constructor.
-           */
-          Beale();
+/**
+ * Beale unconstrained test problem.
+ *
+ * * Number of parameters: 2
+ * * Domain: \f$\bar{\vec{x}} \in [-5, 5]^2\f$
+ * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
+ *   (3, 1/2)\f$
+ * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
+ *   0\f$
+ */
+class Beale : public UnconstrainedTestProblem {
+ public:
+  /**
+   * Constructor.
+   */
+  Beale();
 
-          /**
-           * Destructor.
-           */
-          virtual ~Beale() override;
+  /**
+   * Destructor.
+   */
+  virtual ~Beale() override;
 
-          /**
-           * @return  objective function of the test problem
-           */
-          virtual TestScalarFunction& getObjectiveFunction() override;
+  /**
+   * @return  objective function of the test problem
+   */
+  virtual TestScalarFunction& getObjectiveFunction() override;
 
-          /**
-           * @param[out] x minimal point
-           *               \f$\vec{x}_\opt \in [0, 1]^d\f$
-           * @return       minimal function value
-           *               \f$f(\vec{x}_\opt)\f$
-           */
-          virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-          override;
+  /**
+   * @param[out] x minimal point
+   *               \f$\vec{x}_\opt \in [0, 1]^d\f$
+   * @return       minimal function value
+   *               \f$f(\vec{x}_\opt)\f$
+   */
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
-        protected:
-          /// objective function
-          BealeObjective f;
-      };
+ protected:
+  /// objective function
+  BealeObjective f;
+};
 
-    }
-  }
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_BEALE_HPP */

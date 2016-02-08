@@ -301,7 +301,7 @@ if env['PYDOC'] and env['SG_PYTHON']:
 
       doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
 
-      doxy2swig_command = "python pysgpp/doxy2swig.py -o -c " + ('' if env['VERBOSE'] else '-q') + " $SOURCE $TARGET"
+      doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
       doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
 
       for root, dirs, files in os.walk(os.path.join(module, 'src')):

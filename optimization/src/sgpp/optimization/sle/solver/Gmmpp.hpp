@@ -12,33 +12,33 @@
 #include <vector>
 
 namespace SGPP {
-  namespace optimization {
-    namespace sle_solver {
+namespace optimization {
+namespace sle_solver {
 
-      /**
-       * Linear system solver using Gmm++ (iterative sparse solver).
-       */
-      class Gmmpp : public SLESolver {
-        public:
-          /**
-           * Destructor.
-           */
-          virtual ~Gmmpp() override;
+/**
+ * Linear system solver using Gmm++ (iterative sparse solver).
+ */
+class Gmmpp : public SLESolver {
+ public:
+  /**
+   * Destructor.
+   */
+  virtual ~Gmmpp() override;
 
-          /**
-           * @param       system  system to be solved
-           * @param       b       right-hand side
-           * @param[out]  x       solution to the system
-           * @return              whether all went well
-           *                      (false if errors occurred)
-           */
-          virtual bool solve(SLE& system,
-                             base::DataVector& b,
-                             base::DataVector& x) const override;
-      };
+  /**
+   * @param       system  system to be solved
+   * @param       b       right-hand side
+   * @param[out]  x       solution to the system
+   * @return              whether all went well
+   *                      (false if errors occurred)
+   */
+  virtual bool solve(SLE& system,
+                     base::DataVector& b,
+                     base::DataVector& x) const override;
+};
 
-    }
-  }
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_GMMPP_HPP */

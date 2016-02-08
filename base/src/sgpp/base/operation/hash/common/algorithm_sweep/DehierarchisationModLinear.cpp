@@ -12,84 +12,87 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
 
 
-    DehierarchisationModLinear::DehierarchisationModLinear(GridStorage* storage) : storage(storage) {
+DehierarchisationModLinear::DehierarchisationModLinear(GridStorage* storage) :
+  storage(storage) {
+}
+
+DehierarchisationModLinear::~DehierarchisationModLinear() {
+}
+
+void DehierarchisationModLinear::operator()(DataVector& source,
+    DataVector& result, grid_iterator& index, size_t dim) {
+  rec(source, result, index, dim, 0.0, 0.0);
+}
+
+void DehierarchisationModLinear::rec(DataVector& source, DataVector& result,
+                                     grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+  // current position on the grid
+  size_t seq = index.seq();
+  // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+  float_t fm = source[seq];
+
+  // dehierarchisation
+  fm += ((fl + fr) / 2.0);
+  result[seq] = fm;
+
+  GridStorage::index_type::level_type l;
+  GridStorage::index_type::index_type i;
+
+  index.get(dim, l, i);
+
+  // recursive calls for the right and left side of the current node
+  if (index.hint() == false) {
+    float_t fltemp = fl;
+    float_t frtemp = fr;
+
+    // When we descend the hierarchical basis we have to modify the boundary values
+    // in case the index is 1 or (2^l)-1 or we are on the first level
+    // level 1, constant function
+    if (l == 1) {
+      // constant function
+      fltemp = fm;
+      frtemp = fm;
+    }
+    // left boundary
+    else if (i == 1) {
+      float_t ftemp;
+      ftemp = fr - fm;
+      fltemp = fm - ftemp;
+    }
+    // right boundary
+    else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+      float_t ftemp;
+      ftemp = fl - fm;
+      frtemp = fm - ftemp;
+    }
+    // inner functions
+    else {
     }
 
-    DehierarchisationModLinear::~DehierarchisationModLinear() {
+    // descend left
+    index.leftChild(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fltemp, fm);
     }
 
-    void DehierarchisationModLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
-      rec(source, result, index, dim, 0.0, 0.0);
+    // descend right
+    index.stepRight(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fm, frtemp);
     }
 
-    void DehierarchisationModLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
-      // current position on the grid
-      size_t seq = index.seq();
-      // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      float_t fm = source[seq];
+    // ascend
+    index.up(dim);
+  }
+}
 
-      // dehierarchisation
-      fm += ((fl + fr) / 2.0);
-      result[seq] = fm;
+// namespace detail
 
-      GridStorage::index_type::level_type l;
-      GridStorage::index_type::index_type i;
-
-      index.get(dim, l, i);
-
-      // recursive calls for the right and left side of the current node
-      if (index.hint() == false) {
-        float_t fltemp = fl;
-        float_t frtemp = fr;
-
-        // When we descend the hierarchical basis we have to modify the boundary values
-        // in case the index is 1 or (2^l)-1 or we are on the first level
-        // level 1, constant function
-        if (l == 1) {
-          // constant function
-          fltemp = fm;
-          frtemp = fm;
-        }
-        // left boundary
-        else if (i == 1) {
-          float_t ftemp;
-          ftemp = fr - fm;
-          fltemp = fm - ftemp;
-        }
-        // right boundary
-        else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
-          float_t ftemp;
-          ftemp = fl - fm;
-          frtemp = fm - ftemp;
-        }
-        // inner functions
-        else {
-        }
-
-        // descend left
-        index.leftChild(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fltemp, fm);
-        }
-
-        // descend right
-        index.stepRight(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fm, frtemp);
-        }
-
-        // ascend
-        index.up(dim);
-      }
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+} // namespace SGPP
 }

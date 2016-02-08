@@ -10,23 +10,23 @@
 
 namespace combigrid {
 
-  /** uniform stretching used only for testing purposes */
-  class UniformStretching : public AbstractStretchingMaker {
-    public:
+/** uniform stretching used only for testing purposes */
+class UniformStretching : public AbstractStretchingMaker {
+ public:
 
-      UniformStretching(): AbstractStretchingMaker() {
-        ;
-      }
+  UniformStretching(): AbstractStretchingMaker() {
+    ;
+  }
 
-      virtual ~UniformStretching() {
-        ;
-      }
+  virtual ~UniformStretching() {
+    ;
+  }
 
-      void get1DStretching(
-        int level , double min, double max,
-        std::vector<double>& stretching) const;
+  void get1DStretching(
+    int level , double min, double max,
+    std::vector<double>& stretching) const;
 
-  };
+};
 
 }
 

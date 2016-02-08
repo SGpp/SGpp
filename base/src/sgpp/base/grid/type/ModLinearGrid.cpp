@@ -20,40 +20,40 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    ModLinearGrid::ModLinearGrid(std::istream& istr) :
-      Grid(istr) {
-    }
-
-    ModLinearGrid::ModLinearGrid(size_t dim) :
-      Grid(dim) {
-    }
-
-    ModLinearGrid::~ModLinearGrid() {
-    }
-
-    SGPP::base::GridType ModLinearGrid::getType() {
-      return SGPP::base::GridType::ModLinear;
-    }
-
-    const SBasis& ModLinearGrid::getBasis() {
-      static SLinearModifiedBase basis;
-      return basis;
-    }
-
-    Grid* ModLinearGrid::unserialize(std::istream& istr) {
-      return new ModLinearGrid(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* ModLinearGrid::createGridGenerator() {
-      return new StandardGridGenerator(this->storage);
-    }
-
-
-  }
+ModLinearGrid::ModLinearGrid(std::istream& istr) :
+  Grid(istr) {
 }
+
+ModLinearGrid::ModLinearGrid(size_t dim) :
+  Grid(dim) {
+}
+
+ModLinearGrid::~ModLinearGrid() {
+}
+
+SGPP::base::GridType ModLinearGrid::getType() {
+  return SGPP::base::GridType::ModLinear;
+}
+
+const SBasis& ModLinearGrid::getBasis() {
+  static SLinearModifiedBase basis;
+  return basis;
+}
+
+Grid* ModLinearGrid::unserialize(std::istream& istr) {
+  return new ModLinearGrid(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* ModLinearGrid::createGridGenerator() {
+  return new StandardGridGenerator(this->storage);
+}
+
+
+}  // namespace base
+}  // namespace SGPP

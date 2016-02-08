@@ -13,39 +13,41 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grids with linearstretched basis ansatzfunctions
-     * with boundaries
-     *
-     */
-    class OperationMultipleEvalLinearStretchedBoundary : public OperationMultipleEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid grid
-         * @param dataset the dataset the should be evaluated
-         */
-        OperationMultipleEvalLinearStretchedBoundary(Grid& grid, DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalLinearStretchedBoundary() override {}
-
-        virtual void mult(DataVector& alpha, DataVector& result) override;
-        virtual void multTranspose(DataVector& source, DataVector& result) override;
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grids with linearstretched basis ansatzfunctions
+ * with boundaries
+ *
+ */
+class OperationMultipleEvalLinearStretchedBoundary : public
+  OperationMultipleEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid grid
+   * @param dataset the dataset the should be evaluated
+   */
+  OperationMultipleEvalLinearStretchedBoundary(Grid& grid,
+      DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  virtual ~OperationMultipleEvalLinearStretchedBoundary() override {}
+
+  virtual void mult(DataVector& alpha, DataVector& result) override;
+  virtual void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALLINEARSTRETCHEDBOUNDARY_HPP */

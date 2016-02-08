@@ -133,21 +133,25 @@ void randomMatrixEntry(T& x) {
 
 template <>
 void randomMatrixEntry(float& x) {
-  x = static_cast<float>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
+  x = static_cast<float>(RandomNumberGenerator::getInstance().getUniformRN(-100.0,
+                         100.0));
 }
 
 template <>
 void randomMatrixEntry(double& x) {
-  x = static_cast<double>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
+  x = static_cast<double>(RandomNumberGenerator::getInstance().getUniformRN(
+                            -100.0, 100.0));
 }
 
 template <>
 void randomMatrixEntry(std::string& x) {
-  const size_t length = RandomNumberGenerator::getInstance().getUniformIndexRN(100);
+  const size_t length = RandomNumberGenerator::getInstance().getUniformIndexRN(
+                          100);
   x.clear();
 
   for (size_t i = 0; i < length; i++) {
-    x += static_cast<char>(32 + RandomNumberGenerator::getInstance().getUniformIndexRN(96));
+    x += static_cast<char>(32 +
+                           RandomNumberGenerator::getInstance().getUniformIndexRN(96));
   }
 }
 
@@ -388,7 +392,8 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
 
     for (size_t k = 0; k < mus.size(); k++) {
       for (size_t i = 0; i < N; i++) {
-        numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(sigmas[k], mus[k]);
+        numbers[i] = RandomNumberGenerator::getInstance().getGaussianRN(sigmas[k],
+                     mus[k]);
       }
 
       BOOST_CHECK_SMALL(calculateMean(numbers) - mus[k],

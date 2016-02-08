@@ -13,51 +13,51 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * trapezoid boundary grid with polynomial base functions
-     */
-    class PolyBoundaryGrid : public Grid {
-      protected:
-        PolyBoundaryGrid(std::istream& istr);
+/**
+ * trapezoid boundary grid with polynomial base functions
+ */
+class PolyBoundaryGrid : public Grid {
+ protected:
+  PolyBoundaryGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor of grid with polynomial base functions
-         *
-         * @param dim the dimension of the grid
-         * @param degree the max. polynom's degree
-         * @param boundaryLevel level at which the boundary points should be
-         *                      inserted (default = 1: boundary has same level
-         *                      as main axes)
-         */
-        PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
+ public:
+  /**
+   * Constructor of grid with polynomial base functions
+   *
+   * @param dim the dimension of the grid
+   * @param degree the max. polynom's degree
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted (default = 1: boundary has same level
+   *                      as main axes)
+   */
+  PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
-        /**
-         * Destructor
-         */
-        virtual ~PolyBoundaryGrid() override;
+  /**
+   * Destructor
+   */
+  virtual ~PolyBoundaryGrid() override;
 
-        virtual const SBasis& getBasis() override;
-        virtual SGPP::base::GridType getType() override;
-        virtual void serialize(std::ostream& ostr) override;
+  virtual const SBasis& getBasis() override;
+  virtual SGPP::base::GridType getType() override;
+  virtual void serialize(std::ostream& ostr) override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  virtual GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
-        size_t getDegree() const;
+  static Grid* unserialize(std::istream& istr);
+  size_t getDegree() const;
 
-      protected:
-        /// max. polynom's degree
-        size_t degree;
-        /// polynomial basis
-        const SPolyBoundaryBase* basis_;
-        /// level at which the boundary points should be inserted
-        level_t boundaryLevel;
-    };
+ protected:
+  /// max. polynom's degree
+  size_t degree;
+  /// polynomial basis
+  const SPolyBoundaryBase* basis_;
+  /// level at which the boundary points should be inserted
+  level_t boundaryLevel;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* POLYTRUNCATEDBOUNDARYGRID_HPP */

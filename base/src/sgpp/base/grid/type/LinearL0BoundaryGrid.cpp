@@ -11,40 +11,40 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    LinearL0BoundaryGrid::LinearL0BoundaryGrid(std::istream& istr) :
-      Grid(istr) {
+LinearL0BoundaryGrid::LinearL0BoundaryGrid(std::istream& istr) :
+  Grid(istr) {
 
-    }
-
-    LinearL0BoundaryGrid::LinearL0BoundaryGrid(size_t dim) :
-      Grid(dim) {
-    }
-
-    LinearL0BoundaryGrid::~LinearL0BoundaryGrid() {
-    }
-
-    SGPP::base::GridType LinearL0BoundaryGrid::getType() {
-      return SGPP::base::GridType::LinearL0Boundary;
-    }
-
-    const SBasis& LinearL0BoundaryGrid::getBasis() {
-      static SLinearBoundaryBase basis;
-      return basis;
-    }
-
-    Grid* LinearL0BoundaryGrid::unserialize(std::istream& istr) {
-      return new LinearL0BoundaryGrid(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* LinearL0BoundaryGrid::createGridGenerator() {
-      return new L0BoundaryGridGenerator(this->storage);
-    }
-
-  }
 }
+
+LinearL0BoundaryGrid::LinearL0BoundaryGrid(size_t dim) :
+  Grid(dim) {
+}
+
+LinearL0BoundaryGrid::~LinearL0BoundaryGrid() {
+}
+
+SGPP::base::GridType LinearL0BoundaryGrid::getType() {
+  return SGPP::base::GridType::LinearL0Boundary;
+}
+
+const SBasis& LinearL0BoundaryGrid::getBasis() {
+  static SLinearBoundaryBase basis;
+  return basis;
+}
+
+Grid* LinearL0BoundaryGrid::unserialize(std::istream& istr) {
+  return new LinearL0BoundaryGrid(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* LinearL0BoundaryGrid::createGridGenerator() {
+  return new L0BoundaryGridGenerator(this->storage);
+}
+
+}  // namespace base
+}  // namespace SGPP

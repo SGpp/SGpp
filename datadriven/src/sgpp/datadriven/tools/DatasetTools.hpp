@@ -11,16 +11,19 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    class DatasetTools {
-      public:
-        static void splitset(base::DataMatrix& dataset, base::DataVector& datasetValues, size_t kFold,
-                             std::vector<base::DataMatrix>& trainingSets, std::vector<base::DataVector>& trainingSetValues,
-                             std::vector<base::DataMatrix>& testSets, std::vector<base::DataVector>& testSetValues,
-                             bool verbose = false);
+class DatasetTools {
+ public:
+  static void splitset(base::DataMatrix& dataset, base::DataVector& datasetValues,
+                       size_t kFold,
+                       std::vector<base::DataMatrix>& trainingSets,
+                       std::vector<base::DataVector>& trainingSetValues,
+                       std::vector<base::DataMatrix>& testSets,
+                       std::vector<base::DataVector>& testSetValues,
+                       bool verbose = false);
 
-    };
+};
 
-  }
+}
 }

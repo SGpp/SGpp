@@ -12,46 +12,52 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * Implementation for linear functions of Laplace Operation, linear grids without boundaries
-     *
-     */
-    class OperationLaplaceLinear: public UpDownOneOpDim {
-      public:
-        /**
-         * Constructor of OperationLaplaceLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         */
-        OperationLaplaceLinear(SGPP::base::GridStorage* storage);
+/**
+ * Implementation for linear functions of Laplace Operation, linear grids without boundaries
+ *
+ */
+class OperationLaplaceLinear: public UpDownOneOpDim {
+ public:
+  /**
+   * Constructor of OperationLaplaceLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   */
+  OperationLaplaceLinear(SGPP::base::GridStorage* storage);
 
-        /**
-         * Constructor of OperationLaplaceLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
-         */
-        OperationLaplaceLinear(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef);
+  /**
+   * Constructor of OperationLaplaceLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
+   */
+  OperationLaplaceLinear(SGPP::base::GridStorage* storage,
+                         SGPP::base::DataVector& coef);
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationLaplaceLinear();
+  /**
+   * Destructor
+   */
+  virtual ~OperationLaplaceLinear();
 
-        virtual void specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim, size_t gradient_dim);
+  virtual void specialOP(SGPP::base::DataVector& alpha,
+                         SGPP::base::DataVector& result, size_t dim, size_t gradient_dim);
 
-        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                  size_t dim);
 
-        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                    size_t dim);
 
-        virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(SGPP::base::DataVector& alpha,
+                         SGPP::base::DataVector& result, size_t dim);
 
-        virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
-    };
+  virtual void upOpDim(SGPP::base::DataVector& alpha,
+                       SGPP::base::DataVector& result, size_t dim);
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONLAPLACELINEAR_HPP */

@@ -16,47 +16,47 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with linear base functions
-     */
-    class LinearGridStencil : public GridStencil {
-      protected:
-        LinearGridStencil(std::istream& istr);
+/**
+ * grid with linear base functions
+ */
+class LinearGridStencil : public GridStencil {
+ protected:
+  LinearGridStencil(std::istream& istr);
 
-      public:
-        /**
-         * Constructor Linear Grid without boundaries
-         *
-         * @param dim the dimension of the grid
-         */
-        LinearGridStencil(size_t dim);
+ public:
+  /**
+   * Constructor Linear Grid without boundaries
+   *
+   * @param dim the dimension of the grid
+   */
+  LinearGridStencil(size_t dim);
 
-        /**
-         * Constructor Linear Grid
-         *
-         * @param BB the BoundingBox of the grid
-         */
-        LinearGridStencil(BoundingBox& BB);
+  /**
+   * Constructor Linear Grid
+   *
+   * @param BB the BoundingBox of the grid
+   */
+  LinearGridStencil(BoundingBox& BB);
 
-        /**
-         * Destructor
-         */
-        virtual ~LinearGridStencil() override;
+  /**
+   * Destructor
+   */
+  virtual ~LinearGridStencil() override;
 
-        virtual SGPP::base::GridType getType() override;
+  virtual SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis() override;
+  virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  virtual GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
 
 
-    };
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARGRIDSTENCIL_HPP */

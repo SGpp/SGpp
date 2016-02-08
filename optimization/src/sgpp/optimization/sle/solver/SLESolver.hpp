@@ -15,75 +15,75 @@
 #include <vector>
 
 namespace SGPP {
-  namespace optimization {
-    namespace sle_solver {
+namespace optimization {
+namespace sle_solver {
 
-      /**
-       * Abstract class for solving systems of linear equations.
-       */
-      class SLESolver {
-        public:
-          /**
-           * Constructor.
-           */
-          SLESolver() {
-          }
-
-          /**
-           * Destructor.
-           */
-          virtual ~SLESolver() {
-          }
-
-          /**
-           * Pure virtual method for a solving linear system.
-           *
-           * @param       system  system to be solved
-           * @param       b       right-hand side
-           * @param[out]  x       solution to the system
-           * @return              whether all went well
-           *                      (false if errors occurred)
-           */
-          virtual bool solve(SLE& system, base::DataVector& b,
-                             base::DataVector& x) const = 0;
-
-          /**
-           * Virtual method for solving multiple linear systems with
-           * different right-hand sides.
-           * Defaults to calling the solve() method for a single
-           * right-hand side multiple times.
-           *
-           * @param       system  system to be solved
-           * @param       B       matrix of right-hand sides
-           * @param[out]  X       matrix of solutions to the systems
-           * @return              whether all went well
-           *                      (false if errors occurred)
-           */
-          virtual bool solve(SLE& system,
-                             base::DataMatrix& B,
-                             base::DataMatrix& X) const {
-            const size_t n = system.getDimension();
-            const size_t m = B.getNcols();
-            base::DataVector b(n);
-            base::DataVector x(n);
-            X.resize(n, m);
-
-            for (size_t i = 0; i < m; i++) {
-              B.getColumn(i, b);
-
-              if (solve(system, b, x)) {
-                X.setColumn(i, x);
-              } else {
-                return false;
-              }
-            }
-
-            return true;
-          }
-      };
-
-    }
+/**
+ * Abstract class for solving systems of linear equations.
+ */
+class SLESolver {
+ public:
+  /**
+   * Constructor.
+   */
+  SLESolver() {
   }
+
+  /**
+   * Destructor.
+   */
+  virtual ~SLESolver() {
+  }
+
+  /**
+   * Pure virtual method for a solving linear system.
+   *
+   * @param       system  system to be solved
+   * @param       b       right-hand side
+   * @param[out]  x       solution to the system
+   * @return              whether all went well
+   *                      (false if errors occurred)
+   */
+  virtual bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const = 0;
+
+  /**
+   * Virtual method for solving multiple linear systems with
+   * different right-hand sides.
+   * Defaults to calling the solve() method for a single
+   * right-hand side multiple times.
+   *
+   * @param       system  system to be solved
+   * @param       B       matrix of right-hand sides
+   * @param[out]  X       matrix of solutions to the systems
+   * @return              whether all went well
+   *                      (false if errors occurred)
+   */
+  virtual bool solve(SLE& system,
+                     base::DataMatrix& B,
+                     base::DataMatrix& X) const {
+    const size_t n = system.getDimension();
+    const size_t m = B.getNcols();
+    base::DataVector b(n);
+    base::DataVector x(n);
+    X.resize(n, m);
+
+    for (size_t i = 0; i < m; i++) {
+      B.getColumn(i, b);
+
+      if (solve(system, b, x)) {
+        X.setColumn(i, x);
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  }
+};
+
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_SLESOLVER_HPP */

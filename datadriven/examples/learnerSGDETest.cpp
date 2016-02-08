@@ -17,7 +17,8 @@ int main(int argc, char** argv) {
   std::string filename = "../tests/data/friedman_4d_2000.arff";
 
   cout << "# loading file: " << filename << endl;
-  SGPP::datadriven::Dataset dataset = SGPP::datadriven::ARFFTools::readARFF(filename);
+  SGPP::datadriven::Dataset dataset = SGPP::datadriven::ARFFTools::readARFF(
+                                        filename);
   SGPP::base::DataMatrix& samples = dataset.getTrainingData();
 
   // configure grid
@@ -60,7 +61,8 @@ int main(int argc, char** argv) {
   learnerConfig.silent_ = false;
 
   cout << "# creating the learner" << endl;
-  SGPP::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig, learnerConfig);
+  SGPP::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig,
+                                        regularizationConfig, learnerConfig);
   learner.initialize(samples);
 
   SGPP::datadriven::GaussianKDE kde(samples);
@@ -71,9 +73,13 @@ int main(int argc, char** argv) {
   }
 
   cout << "--------------------------------------------------------" << endl;
-  cout << (learner.getGrid())->getSize() << " -> " << (learner.getAlpha())->sum() << endl;
-  cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)" << endl;
-  cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)" << endl;
-  cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)" << endl;
+  cout << (learner.getGrid())->getSize() << " -> " << (learner.getAlpha())->sum()
+       << endl;
+  cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(
+         x) << " = pdf_KDE(x)" << endl;
+  cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() <<
+       " = mean_KDE(x)" << endl;
+  cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() <<
+       " = var_KDE(x)" << endl;
 }
 

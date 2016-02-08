@@ -9,29 +9,29 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Singleton containing an empty implementation of VectorFunction.
-     * This is intended as a fill-in for ConstrainedOptimizer, if
-     * only equality or inequality constraints are supported.
-     */
-    class EmptyVectorFunction {
-      public:
-        inline static WrapperVectorFunction& getInstance() {
-          static WrapperVectorFunction wrapperVectorFunction(
-            0, 0, [](const base::DataVector & x,
-          base::DataVector & value) {});
-          return wrapperVectorFunction;
-        }
-
-      private:
-        EmptyVectorFunction() {}
-        EmptyVectorFunction(const EmptyVectorFunction&) = delete;
-        void operator=(const EmptyVectorFunction&) = delete;
-    };
-
+/**
+ * Singleton containing an empty implementation of VectorFunction.
+ * This is intended as a fill-in for ConstrainedOptimizer, if
+ * only equality or inequality constraints are supported.
+ */
+class EmptyVectorFunction {
+ public:
+  inline static WrapperVectorFunction& getInstance() {
+    static WrapperVectorFunction wrapperVectorFunction(
+      0, 0, [](const base::DataVector & x,
+    base::DataVector & value) {});
+    return wrapperVectorFunction;
   }
+
+ private:
+  EmptyVectorFunction() {}
+  EmptyVectorFunction(const EmptyVectorFunction&) = delete;
+  void operator=(const EmptyVectorFunction&) = delete;
+};
+
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP */

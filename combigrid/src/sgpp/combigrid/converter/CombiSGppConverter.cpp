@@ -7,7 +7,8 @@
 
 using namespace std;
 
-void combigrid::CombiSGppConverter::createSGpp( SGPP::base::GridStorage* storage , const CombiGridKernelD* combikernel ) {
+void combigrid::CombiSGppConverter::createSGpp( SGPP::base::GridStorage* storage
+    , const CombiGridKernelD* combikernel ) {
 
   if (storage->size() > 0) {
     storage->emptyStorage();
@@ -98,7 +99,9 @@ void combigrid::CombiSGppConverter::createSGpp( SGPP::base::GridStorage* storage
 
  */
 
-void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , SGPP::base::GridStorage* storage , SGPP::base::DataVector* alpha) {
+void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg ,
+    double coef , SGPP::base::GridStorage* storage ,
+    SGPP::base::DataVector* alpha) {
   int dim = fg->getDimension();
   SGPP::base::GridIndex* hgi = new SGPP::base::GridIndex( dim );
 
@@ -141,8 +144,10 @@ void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double 
 }
 
 
-void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double coef , SGPP::base::GridStorage* storage ,
-    SGPP::base::DataVector* alpha , SGPP::base::DataVector* minAlpha , SGPP::base::DataVector* maxAlpha ) {
+void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg ,
+    double coef , SGPP::base::GridStorage* storage ,
+    SGPP::base::DataVector* alpha , SGPP::base::DataVector* minAlpha ,
+    SGPP::base::DataVector* maxAlpha ) {
 
   int dim = fg->getDimension();
   SGPP::base::GridIndex* hgi = new SGPP::base::GridIndex( dim );
@@ -200,7 +205,8 @@ void combigrid::CombiSGppConverter::FullGridToSGpp(const FullGridD* fg , double 
 }
 
 
-void combigrid::CombiSGppConverter::SGppToFullGrid( SGPP::base::GridStorage* storage , SGPP::base::DataVector* alpha , FullGridD* fg ) {
+void combigrid::CombiSGppConverter::SGppToFullGrid( SGPP::base::GridStorage*
+    storage , SGPP::base::DataVector* alpha , FullGridD* fg ) {
   // for each full grid point get the corresponding value from SGpp and just set the FG value with that value
   int dim = fg->getDimension() , sgppIndex , k;
   std::vector<int> levelsLI( dim , 0.0);

@@ -14,19 +14,20 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationMultipleEvalModPoly::mult(DataVector& alpha, DataVector& result) {
-      AlgorithmDGEMV<SPolyModifiedBase> op;
+void OperationMultipleEvalModPoly::mult(DataVector& alpha, DataVector& result) {
+  AlgorithmDGEMV<SPolyModifiedBase> op;
 
-      op.mult(storage, base, alpha, this->dataset, result);
-    }
+  op.mult(storage, base, alpha, this->dataset, result);
+}
 
-    void OperationMultipleEvalModPoly::multTranspose(DataVector& source, DataVector& result) {
-      AlgorithmDGEMV<SPolyModifiedBase> op;
+void OperationMultipleEvalModPoly::multTranspose(DataVector& source,
+    DataVector& result) {
+  AlgorithmDGEMV<SPolyModifiedBase> op;
 
-      op.mult_transposed(storage, base, source, this->dataset, result);
-    }
+  op.mult_transposed(storage, base, source, this->dataset, result);
+}
 
-  }
+}
 }

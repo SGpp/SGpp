@@ -27,7 +27,9 @@ int main(int argc, char* argv[]) {
   std::string grid_selection;
 
   if (argc != 9) {
-    std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]" << std::endl << std::endl;
+    std::cout << std::endl << "Usage " << argv[0] <<
+              " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]"
+              << std::endl << std::endl;
     exit(-1);
   }
 
@@ -40,7 +42,8 @@ int main(int argc, char* argv[]) {
   grid_selection.assign(argv[7]);
   lmb = atoi(argv[8]);
 
-  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new
+  SGPP::base::DimensionBoundary[dim];
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -56,7 +59,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim,
+      myBoundaries);
   delete[] myBoundaries;
 
   // Generate lambda for test if needed
@@ -77,7 +81,9 @@ int main(int argc, char* argv[]) {
   } else if (grid_selection == "B") {
     myGrid = new SGPP::base::LinearBoundaryGrid(*myBoundingBox);
   } else {
-    std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]" << std::endl << std::endl;
+    std::cout << std::endl << "Usage " << argv[0] <<
+              " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]"
+              << std::endl << std::endl;
     exit(-1);
   }
 
@@ -123,8 +129,10 @@ int main(int argc, char* argv[]) {
 
   if (test == "M") {
     alpha->setAll(0.0);
-    SGPP::base::DataMatrix* matrix_updown = new SGPP::base::DataMatrix(gridsize, gridsize);
-    SGPP::base::DataMatrix* matrix_vector = new SGPP::base::DataMatrix(gridsize, gridsize);
+    SGPP::base::DataMatrix* matrix_updown = new SGPP::base::DataMatrix(gridsize,
+        gridsize);
+    SGPP::base::DataMatrix* matrix_vector = new SGPP::base::DataMatrix(gridsize,
+        gridsize);
 
     for (size_t i = 0; i < gridsize; i++) {
       alpha->set(i, 1.0);
@@ -194,11 +202,14 @@ int main(int argc, char* argv[]) {
 
     }
   } else {
-    std::cout << std::endl << "Usage " << argv[0] << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B]" << std::endl << std::endl;
+    std::cout << std::endl << "Usage " << argv[0] <<
+              " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B]" << std::endl
+              << std::endl;
     exit(-1);
   }
 
-  std::cout << "Max error for vectorized version is " << max_error << std::endl << std::endl;
+  std::cout << "Max error for vectorized version is " << max_error << std::endl <<
+            std::endl;
 
   delete vect;
   delete updown;

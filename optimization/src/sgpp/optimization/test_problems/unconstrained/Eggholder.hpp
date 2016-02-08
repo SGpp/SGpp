@@ -12,99 +12,99 @@
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      /**
-       * Eggholder objective function.
-       *
-       * Definition:
-       * \f[\bar{f}(\bar{\vec{x})} :=
-       * -(\bar{x}_2 + 47) \sin\!\left(\sqrt{
-       * \left|\bar{x}_1/2 + \bar{x}_2 + 47\right|}\right) -
-       * \bar{x}_1 \sin\!\left(\sqrt{
-       * \left|\bar{x}_1 - \bar{x}_2 - 47\right|}\right)\f]
-       */
-      class EggholderObjective : public TestScalarFunction {
-        public:
-          /**
-           * Constructor.
-           */
-          EggholderObjective();
+/**
+ * Eggholder objective function.
+ *
+ * Definition:
+ * \f[\bar{f}(\bar{\vec{x})} :=
+ * -(\bar{x}_2 + 47) \sin\!\left(\sqrt{
+ * \left|\bar{x}_1/2 + \bar{x}_2 + 47\right|}\right) -
+ * \bar{x}_1 \sin\!\left(\sqrt{
+ * \left|\bar{x}_1 - \bar{x}_2 - 47\right|}\right)\f]
+ */
+class EggholderObjective : public TestScalarFunction {
+ public:
+  /**
+   * Constructor.
+   */
+  EggholderObjective();
 
-          /**
-           * Destructor.
-           */
-          virtual ~EggholderObjective() override;
+  /**
+   * Destructor.
+   */
+  virtual ~EggholderObjective() override;
 
-          /**
-           * @param x     point \f$\vec{x} \in [0, 1]^d\f$
-           * @return      \f$f(\vec{x})\f$
-           */
-          virtual float_t evalUndisplaced(const base::DataVector& x)
-          override;
+  /**
+   * @param x     point \f$\vec{x} \in [0, 1]^d\f$
+   * @return      \f$f(\vec{x})\f$
+   */
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-          const override;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
+};
 
-      /**
-       * Eggholder unconstrained test problem.
-       *
-       * * Number of parameters: 2
-       * * Domain: \f$\bar{\vec{x}} \in [-512, 512]^2\f$
-       * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
-       *   (512, 404.2318)\f$
-       * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
-       *   -959.6407\f$
-       *
-       * The displacement is restricted because the minimal point lies on
-       * the boundary of \f$[0, 1]^2\f$.
-       */
-      class Eggholder : public UnconstrainedTestProblem {
-        public:
-          /**
-           * Constructor.
-           */
-          Eggholder();
+/**
+ * Eggholder unconstrained test problem.
+ *
+ * * Number of parameters: 2
+ * * Domain: \f$\bar{\vec{x}} \in [-512, 512]^2\f$
+ * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
+ *   (512, 404.2318)\f$
+ * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
+ *   -959.6407\f$
+ *
+ * The displacement is restricted because the minimal point lies on
+ * the boundary of \f$[0, 1]^2\f$.
+ */
+class Eggholder : public UnconstrainedTestProblem {
+ public:
+  /**
+   * Constructor.
+   */
+  Eggholder();
 
-          /**
-           * Destructor.
-           */
-          virtual ~Eggholder() override;
+  /**
+   * Destructor.
+   */
+  virtual ~Eggholder() override;
 
-          /**
-           * @return  objective function of the test problem
-           */
-          virtual TestScalarFunction& getObjectiveFunction() override;
+  /**
+   * @return  objective function of the test problem
+   */
+  virtual TestScalarFunction& getObjectiveFunction() override;
 
-          /**
-           * @param[out] x minimal point
-           *               \f$\vec{x}_\opt \in [0, 1]^d\f$
-           * @return       minimal function value
-           *               \f$f(\vec{x}_\opt)\f$
-           */
-          virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-          override;
+  /**
+   * @param[out] x minimal point
+   *               \f$\vec{x}_\opt \in [0, 1]^d\f$
+   * @return       minimal function value
+   *               \f$f(\vec{x}_\opt)\f$
+   */
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
-        protected:
-          /**
-           * Sets the first displacement component to zero and
-           * checks the resulting displacement.
-           *
-           * @return whether the current displacement is feasible
-           */
-          virtual bool isDisplacementFeasible() override;
+ protected:
+  /**
+   * Sets the first displacement component to zero and
+   * checks the resulting displacement.
+   *
+   * @return whether the current displacement is feasible
+   */
+  virtual bool isDisplacementFeasible() override;
 
-          /// objective function
-          EggholderObjective f;
-      };
+  /// objective function
+  EggholderObjective f;
+};
 
-    }
-  }
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_EGGHOLDER_HPP */

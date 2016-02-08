@@ -9,40 +9,40 @@
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    RandomNumberGenerator::RandomNumberGenerator() {
-      setSeed();
-    }
+RandomNumberGenerator::RandomNumberGenerator() {
+  setSeed();
+}
 
-    float_t RandomNumberGenerator::getUniformRN(float_t a, float_t b) {
-      std::uniform_real_distribution<float_t> distr(a, b);
-      return distr(generator);
-    }
+float_t RandomNumberGenerator::getUniformRN(float_t a, float_t b) {
+  std::uniform_real_distribution<float_t> distr(a, b);
+  return distr(generator);
+}
 
-    size_t RandomNumberGenerator::getUniformIndexRN(size_t size) {
-      std::uniform_int_distribution<size_t> distr(0, size - 1);
-      return distr(generator);
-    }
+size_t RandomNumberGenerator::getUniformIndexRN(size_t size) {
+  std::uniform_int_distribution<size_t> distr(0, size - 1);
+  return distr(generator);
+}
 
-    float_t RandomNumberGenerator::getGaussianRN(float_t stdDev,
-        float_t mean) {
-      std::normal_distribution<float_t> distr(mean, stdDev);
-      return distr(generator);
-    }
+float_t RandomNumberGenerator::getGaussianRN(float_t stdDev,
+    float_t mean) {
+  std::normal_distribution<float_t> distr(mean, stdDev);
+  return distr(generator);
+}
 
-    RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() const {
-      return seed;
-    }
+RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() const {
+  return seed;
+}
 
-    void RandomNumberGenerator::setSeed() {
-      setSeed(static_cast<SeedType>(std::time(0)));
-    }
+void RandomNumberGenerator::setSeed() {
+  setSeed(static_cast<SeedType>(std::time(0)));
+}
 
-    void RandomNumberGenerator::setSeed(RandomNumberGenerator::SeedType seed) {
-      this->seed = seed;
-      generator.seed(seed);
-    }
+void RandomNumberGenerator::setSeed(RandomNumberGenerator::SeedType seed) {
+  this->seed = seed;
+  generator.seed(seed);
+}
 
-  }
+}
 }

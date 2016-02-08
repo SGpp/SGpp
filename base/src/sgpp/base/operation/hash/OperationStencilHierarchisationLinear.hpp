@@ -15,66 +15,67 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Hierarchisation on sparse grid, linear grid without boundaries
-     */
-    class OperationStencilHierarchisationLinear : public OperationStencilHierarchisation {
-      public:
-        /**
-         * Constructor of OperationStencilHierarchisationLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         */
-        OperationStencilHierarchisationLinear(GridStorage* storage) : storage(storage),
-          surplusStencil(0), neighborStencil(0), weightStencil(0) {}
+/**
+ * Hierarchisation on sparse grid, linear grid without boundaries
+ */
+class OperationStencilHierarchisationLinear : public
+  OperationStencilHierarchisation {
+ public:
+  /**
+   * Constructor of OperationStencilHierarchisationLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   */
+  OperationStencilHierarchisationLinear(GridStorage* storage) : storage(storage),
+    surplusStencil(0), neighborStencil(0), weightStencil(0) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationStencilHierarchisationLinear() override {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationStencilHierarchisationLinear() override {}
 
-        virtual void doHierarchisation(DataVector& node_values) override;
-        virtual void doDehierarchisation(DataVector& alpha) override;
+  virtual void doHierarchisation(DataVector& node_values) override;
+  virtual void doDehierarchisation(DataVector& alpha) override;
 
 
-        virtual const IndexStencil&
-        getSurplusStencil() const override {
-          return surplusStencil;
-        };
+  virtual const IndexStencil&
+  getSurplusStencil() const override {
+    return surplusStencil;
+  };
 
-        virtual const IndexStencil&
-        getNeighborStencil() const override {
-          return neighborStencil;
-        };
+  virtual const IndexStencil&
+  getNeighborStencil() const override {
+    return neighborStencil;
+  };
 
-        virtual const WeightStencil&
-        getWeightStencil() const override {
-          return weightStencil;
-        };
+  virtual const WeightStencil&
+  getWeightStencil() const override {
+    return weightStencil;
+  };
 
-        virtual size_t
-        getStencilSize() const override {
-          return surplusStencil.size();
-        };
+  virtual size_t
+  getStencilSize() const override {
+    return surplusStencil.size();
+  };
 
-      protected:
-        /// Pointer to the grid's GridStorage object
-        GridStorage* storage;
+ protected:
+  /// Pointer to the grid's GridStorage object
+  GridStorage* storage;
 
-        /// Index array with surplus indices
-        IndexStencil surplusStencil;
+  /// Index array with surplus indices
+  IndexStencil surplusStencil;
 
-        /// Index array with neighboring surplus indices
-        IndexStencil neighborStencil;
+  /// Index array with neighboring surplus indices
+  IndexStencil neighborStencil;
 
-        /// Index array with surplus indices
-        WeightStencil weightStencil;
+  /// Index array with surplus indices
+  WeightStencil weightStencil;
 
-    };
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONSTENCILHIERARCHISATION_HPP */

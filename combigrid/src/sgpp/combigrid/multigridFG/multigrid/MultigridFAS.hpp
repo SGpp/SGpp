@@ -10,59 +10,59 @@
 
 namespace combigrid {
 
-  /** multigrid solver for a full grid. <br>
-   * Actually it contains also Krylov space methods, and a variety of other methods
-   * (hierarchical and non-hierarchical)
-   * <br>
-   * It uses an operator which contains the problem specific operators */
-  class MultigridFAS {
-    public:
+/** multigrid solver for a full grid. <br>
+ * Actually it contains also Krylov space methods, and a variety of other methods
+ * (hierarchical and non-hierarchical)
+ * <br>
+ * It uses an operator which contains the problem specific operators */
+class MultigridFAS {
+ public:
 
-      /** Ctor
-       * @param op [IN] the operator which defines the problem
-       * @param fg [IN] the full grid on which the problem should be solved
-       * @param createHierarchy [IN] if a hierarchy of grids should be created */
-      MultigridFAS(OperatorFG* op ,
-                   FullGridD* fg ,
-                   bool createHierarchy = true );
+  /** Ctor
+   * @param op [IN] the operator which defines the problem
+   * @param fg [IN] the full grid on which the problem should be solved
+   * @param createHierarchy [IN] if a hierarchy of grids should be created */
+  MultigridFAS(OperatorFG* op ,
+               FullGridD* fg ,
+               bool createHierarchy = true );
 
-      /** */
-      virtual ~MultigridFAS();
+  /** */
+  virtual ~MultigridFAS();
 
-      /** solves the problem using the full approximation scheme
-      * @param unknowns [IN/OUT] the unknown vector, which will be the initial solution
-      * and later the output for the solution
-      * @param errorTol [IN] the error tolerance for the solver */
-      void solveFAS( std::vector<double>& unknowns , double errorTol);
+  /** solves the problem using the full approximation scheme
+  * @param unknowns [IN/OUT] the unknown vector, which will be the initial solution
+  * and later the output for the solution
+  * @param errorTol [IN] the error tolerance for the solver */
+  void solveFAS( std::vector<double>& unknowns , double errorTol);
 
-    private:
+ private:
 
-      /** the hierarchy of grids for the multigrid,
-       * the first one is the input grid, the rest will be created*/
-      std::vector<FullGridD*> fullgrids_;
+  /** the hierarchy of grids for the multigrid,
+   * the first one is the input grid, the rest will be created*/
+  std::vector<FullGridD*> fullgrids_;
 
-      /** operators for each full grid */
-      std::vector<OperatorFG*> operators_;
+  /** operators for each full grid */
+  std::vector<OperatorFG*> operators_;
 
-      std::vector< std::vector<double>* > unknowns_;
+  std::vector< std::vector<double>* > unknowns_;
 
-      std::vector< std::vector<double>* > correction_;
+  std::vector< std::vector<double>* > correction_;
 
-      std::vector< std::vector<double>* > rhs_;
+  std::vector< std::vector<double>* > rhs_;
 
-      std::vector< std::vector<double>* > rhs_tmp_;
+  std::vector< std::vector<double>* > rhs_tmp_;
 
-      std::vector< std::vector<double>* > u_hH_;
+  std::vector< std::vector<double>* > u_hH_;
 
-      std::vector< std::vector<double>* > lh_;
+  std::vector< std::vector<double>* > lh_;
 
-      /** */
-      int depth_;
+  /** */
+  int depth_;
 
-      int nrGSPre_;
+  int nrGSPre_;
 
-      int nrGSPost_;
-  };
+  int nrGSPost_;
+};
 
 }
 

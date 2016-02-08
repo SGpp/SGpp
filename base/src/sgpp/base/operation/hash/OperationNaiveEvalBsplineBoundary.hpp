@@ -13,44 +13,44 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating B-spline linear combinations on Boundary grids.
-     */
-    class OperationNaiveEvalBsplineBoundary : public OperationNaiveEval {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    B-spline degree
-         */
-        OperationNaiveEvalBsplineBoundary(GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
-
-        /**
-         * Destructor.
-         */
-        virtual ~OperationNaiveEvalBsplineBoundary() override {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @return          value of linear combination
-         */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SBsplineBoundaryBase base;
-    };
-
+/**
+ * Operation for evaluating B-spline linear combinations on Boundary grids.
+ */
+class OperationNaiveEvalBsplineBoundary : public OperationNaiveEval {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    B-spline degree
+   */
+  OperationNaiveEvalBsplineBoundary(GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  virtual ~OperationNaiveEvalBsplineBoundary() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of linear combination
+   */
+  virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SBsplineBoundaryBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALBSPLINEBOUNDARY_HPP */

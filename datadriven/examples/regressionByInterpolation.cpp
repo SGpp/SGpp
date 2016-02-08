@@ -57,9 +57,11 @@ int main(int argc, char** argv) {
 
   sampleFile.close();
 
-  SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressor(dataset, values);
+  SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressor(
+    dataset, values);
 
-  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> node = piecewiseRegressor.hierarchize(0.001, 10);
+  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> node =
+    piecewiseRegressor.hierarchize(0.001, 10);
 
   //    std::ofstream resultFile;
   //    resultFile.open("resultFile.csv");

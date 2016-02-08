@@ -11,90 +11,90 @@
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      /**
-       * Ackley objective function.
-       *
-       * Definition:
-       * \f[\bar{f}(\bar{\vec{x}}) := 20 + \mathrm{e}
-       * - 20 \exp\!\left(-\frac{\norm{\bar{\vec{x}}}_2}{5\sqrt{d}}\right)
-       * - \exp\!\left(\frac{1}{d} \sum_{t=1}^d \cos(2\pi \bar{x}_t)\right)\f]
-       */
-      class AckleyObjective : public TestScalarFunction {
-        public:
-          /**
-           * Constructor.
-           *
-           * @param d     dimension of the domain
-           */
-          AckleyObjective(size_t d);
+/**
+ * Ackley objective function.
+ *
+ * Definition:
+ * \f[\bar{f}(\bar{\vec{x}}) := 20 + \mathrm{e}
+ * - 20 \exp\!\left(-\frac{\norm{\bar{\vec{x}}}_2}{5\sqrt{d}}\right)
+ * - \exp\!\left(\frac{1}{d} \sum_{t=1}^d \cos(2\pi \bar{x}_t)\right)\f]
+ */
+class AckleyObjective : public TestScalarFunction {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param d     dimension of the domain
+   */
+  AckleyObjective(size_t d);
 
-          /**
-           * Destructor.
-           */
-          virtual ~AckleyObjective() override;
+  /**
+   * Destructor.
+   */
+  virtual ~AckleyObjective() override;
 
-          /**
-           * @param x     point \f$\vec{x} \in [0, 1]^d\f$
-           * @return      \f$f(\vec{x})\f$
-           */
-          virtual float_t evalUndisplaced(const base::DataVector& x)
-          override;
+  /**
+   * @param x     point \f$\vec{x} \in [0, 1]^d\f$
+   * @return      \f$f(\vec{x})\f$
+   */
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-          const override;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
+};
 
-      /**
-       * Ackley unconstrained test problem.
-       *
-       * * Number of parameters: \f$d\f$
-       * * Domain: \f$\bar{\vec{x}} \in [-1, 9]^d\f$
-       * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
-       *   \vec{0}\f$
-       * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
-       *   0\f$
-       */
-      class Ackley : public UnconstrainedTestProblem {
-        public:
-          /**
-           * Constructor.
-           *
-           * @param d     dimension of the domain
-           */
-          Ackley(size_t d);
+/**
+ * Ackley unconstrained test problem.
+ *
+ * * Number of parameters: \f$d\f$
+ * * Domain: \f$\bar{\vec{x}} \in [-1, 9]^d\f$
+ * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
+ *   \vec{0}\f$
+ * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
+ *   0\f$
+ */
+class Ackley : public UnconstrainedTestProblem {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param d     dimension of the domain
+   */
+  Ackley(size_t d);
 
-          /**
-           * Destructor.
-           */
-          virtual ~Ackley() override;
+  /**
+   * Destructor.
+   */
+  virtual ~Ackley() override;
 
-          /**
-           * @return  objective function of the test problem
-           */
-          virtual TestScalarFunction& getObjectiveFunction() override;
+  /**
+   * @return  objective function of the test problem
+   */
+  virtual TestScalarFunction& getObjectiveFunction() override;
 
-          /**
-           * @param[out] x minimal point
-           *               \f$\vec{x}_\opt \in [0, 1]^d\f$
-           * @return       minimal function value
-           *               \f$f(\vec{x}_\opt)\f$
-           */
-          virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-          override;
+  /**
+   * @param[out] x minimal point
+   *               \f$\vec{x}_\opt \in [0, 1]^d\f$
+   * @return       minimal function value
+   *               \f$f(\vec{x}_\opt)\f$
+   */
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
-        protected:
-          /// objective function
-          AckleyObjective f;
-      };
+ protected:
+  /// objective function
+  AckleyObjective f;
+};
 
-    }
-  }
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_ACKLEY_HPP */

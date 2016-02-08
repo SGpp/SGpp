@@ -25,8 +25,9 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alphaRefine,
-        adaptConfig.noPoints_, adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
+    SGPP::base::SurplusRefinementFunctor(&alphaRefine,
+                                         adaptConfig.noPoints_, adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -79,7 +80,8 @@ int main(int argc, char** argv) {
     level = atoi(argv[2]);
     adaptConfig.numRefinements_ = atoi(argv[3]);
 
-    std::cout << "level: " << level << " numRef: " << adaptConfig.numRefinements_ << std::endl;
+    std::cout << "level: " << level << " numRef: " << adaptConfig.numRefinements_ <<
+              std::endl;
   }
 
   if ( argc == 5) {
@@ -99,7 +101,8 @@ int main(int argc, char** argv) {
   SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << std::endl;
-  std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
+  std::cout << "number of data points: " << dataset.getNumberInstances() <<
+            std::endl;
 
   std::random_device rd;
   std::mt19937 mt(1234);
@@ -113,11 +116,13 @@ int main(int argc, char** argv) {
 
   std::cout << "creating operation with unrefined grid" << std::endl;
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
+        configuration);
 
   doAllRefinements(adaptConfig, *grid, *gridGen, mt, dist);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->size() << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage->size()
+            << std::endl;
   std::cout << "grid set up" << std::endl;
 
   SGPP::base::DataVector alphaResult(gridStorage->size());
@@ -145,7 +150,8 @@ int main(int argc, char** argv) {
     size_t biggestErrorIndex = 0;
 
     for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
-      std::cout << "mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i] << std::endl;
+      std::cout << "mine: " << alphaResult[i] << " ref: " << alphaResultCompare[i] <<
+                std::endl;
 
       double error = (alphaResult[i] - alphaResultCompare[i]);
 
@@ -159,7 +165,8 @@ int main(int argc, char** argv) {
 
     mse = mse / static_cast<double>(alphaResult.getSize());
     std::cout << "mse: " << mse << std::endl;
-    std::cout << "biggest error i: " << biggestErrorIndex << " value: " << biggestError << std::endl;
+    std::cout << "biggest error i: " << biggestErrorIndex << " value: " <<
+              biggestError << std::endl;
   }
 }
 

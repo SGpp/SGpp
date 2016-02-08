@@ -9,13 +9,13 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    EllipticPDESolver::EllipticPDESolver() : PDESolver() {
-    }
+EllipticPDESolver::EllipticPDESolver() : PDESolver() {
+}
 
-    EllipticPDESolver::~EllipticPDESolver() {
-    }
+EllipticPDESolver::~EllipticPDESolver() {
+}
 
-  }
+}
 }

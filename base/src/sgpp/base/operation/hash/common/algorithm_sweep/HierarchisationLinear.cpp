@@ -12,51 +12,54 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
 
 
-    HierarchisationLinear::HierarchisationLinear(GridStorage* storage) : storage(storage) {
+HierarchisationLinear::HierarchisationLinear(GridStorage* storage) : storage(
+    storage) {
+}
+
+HierarchisationLinear::~HierarchisationLinear() {
+}
+
+void HierarchisationLinear::operator()(DataVector& source, DataVector& result,
+                                       grid_iterator& index, size_t dim) {
+  rec(source, result, index, dim, 0.0, 0.0);
+}
+
+void HierarchisationLinear::rec(DataVector& source, DataVector& result,
+                                grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+  // current position on the grid
+  size_t seq = index.seq();
+  // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+  float_t fm = source[seq];
+
+  // recursive calls for the right and left side of the current node
+  if (index.hint() == false) {
+    // descend left
+    index.leftChild(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fm);
     }
 
-    HierarchisationLinear::~HierarchisationLinear() {
+    // descend right
+    index.stepRight(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fm, fr);
     }
 
-    void HierarchisationLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
-      rec(source, result, index, dim, 0.0, 0.0);
-    }
+    // ascend
+    index.up(dim);
+  }
 
-    void HierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
-      // current position on the grid
-      size_t seq = index.seq();
-      // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      float_t fm = source[seq];
+  // hierarchisation
+  result[seq] = fm - ((fl + fr) / 2.0);
+}
 
-      // recursive calls for the right and left side of the current node
-      if (index.hint() == false) {
-        // descend left
-        index.leftChild(dim);
+// namespace detail
 
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fm);
-        }
-
-        // descend right
-        index.stepRight(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fm, fr);
-        }
-
-        // ascend
-        index.up(dim);
-      }
-
-      // hierarchisation
-      result[seq] = fm - ((fl + fr) / 2.0);
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+} // namespace SGPP
 }

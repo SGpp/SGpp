@@ -16,46 +16,46 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with modified polynomial base functions
-     */
-    class ModPolyGrid : public Grid {
-      protected:
-        ModPolyGrid(std::istream& istr);
+/**
+ * grid with modified polynomial base functions
+ */
+class ModPolyGrid : public Grid {
+ protected:
+  ModPolyGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor of grid with modified polynomial base functions
-         *
-         * @param dim the dimension of the grid
-         * @param degree the max. polynom's degree
-         */
-        ModPolyGrid(size_t dim, size_t degree);
+ public:
+  /**
+   * Constructor of grid with modified polynomial base functions
+   *
+   * @param dim the dimension of the grid
+   * @param degree the max. polynom's degree
+   */
+  ModPolyGrid(size_t dim, size_t degree);
 
-        /**
-         * Destructor
-         */
-        virtual ~ModPolyGrid() override;
+  /**
+   * Destructor
+   */
+  virtual ~ModPolyGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
-        virtual void serialize(std::ostream& ostr) override;
+  virtual SGPP::base::GridType getType() override;
+  virtual void serialize(std::ostream& ostr) override;
 
-        virtual const SBasis& getBasis() override;
+  virtual const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator();
+  virtual GridGenerator* createGridGenerator();
 
-        static Grid* unserialize(std::istream& istr);
-        virtual size_t getDegree() const;
+  static Grid* unserialize(std::istream& istr);
+  virtual size_t getDegree() const;
 
-      protected:
-        /// max. polynom's degree
-        size_t degree;
-        const SPolyModifiedBase* basis_;
-    };
+ protected:
+  /// max. polynom's degree
+  size_t degree;
+  const SPolyModifiedBase* basis_;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* MODPOLYGRID_HPP */

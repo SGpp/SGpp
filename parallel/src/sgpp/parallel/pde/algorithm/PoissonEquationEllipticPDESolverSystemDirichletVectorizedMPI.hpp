@@ -12,39 +12,43 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    /**
-     * This class uses OperationEllipticPDESolverSystemDirichlet
-     * to define a solver system for the Poission Equation.
-     *
-     * For the mult-routine only the Laplace-Operator is required
-     */
-    class PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : public SGPP::pde::OperationEllipticPDESolverSystemDirichlet {
-      protected:
-        SGPP::base::OperationMatrix* Laplace_Inner;
-        SGPP::base::OperationMatrix* Laplace_Complete;
+/**
+ * This class uses OperationEllipticPDESolverSystemDirichlet
+ * to define a solver system for the Poission Equation.
+ *
+ * For the mult-routine only the Laplace-Operator is required
+ */
+class PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : public
+  SGPP::pde::OperationEllipticPDESolverSystemDirichlet {
+ protected:
+  SGPP::base::OperationMatrix* Laplace_Inner;
+  SGPP::base::OperationMatrix* Laplace_Complete;
 
-        void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorComplete(SGPP::base::DataVector& alpha,
+                              SGPP::base::DataVector& result);
 
-        void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorInner(SGPP::base::DataVector& alpha,
+                           SGPP::base::DataVector& result);
 
-      public:
-        /**
-         * Constructor
-         *
-         * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
-         * @param rhs the right hand side for solving the elliptic PDE
-         */
-        PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
+ public:
+  /**
+   * Constructor
+   *
+   * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
+   * @param rhs the right hand side for solving the elliptic PDE
+   */
+  PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(
+    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
 
-        /**
-         * Destructor
-         */
-        virtual ~PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI();
-    };
+  /**
+   * Destructor
+   */
+  virtual ~PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI();
+};
 
-  }
+}
 }
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETVECTORIZEDMPI_HPP */

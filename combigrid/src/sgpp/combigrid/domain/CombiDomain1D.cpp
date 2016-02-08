@@ -19,11 +19,14 @@ combigrid::Domain1D::Domain1D(double min, double max) {
 
 combigrid::Domain1D::Domain1D(const std::vector<double>& inputStretching) {
   isStretched_ = true;
-  level_ = static_cast<int>(::round( ::log(static_cast<double>(inputStretching.size())) / ::log(2.0) ));
+  level_ = static_cast<int>(::round( ::log(static_cast<double>
+                                     (inputStretching.size())) / ::log(2.0) ));
 
   // test if the vector size match
-  COMBIGRID_ERROR_TEST( (int)inputStretching.size() == combigrid::powerOfTwo[level_] + 1 ,
-                        "Domain1D::Domain1D , Input vector size must be 2^L+1 , inputStretching.size():" << inputStretching.size()
+  COMBIGRID_ERROR_TEST( (int)inputStretching.size() ==
+                        combigrid::powerOfTwo[level_] + 1 ,
+                        "Domain1D::Domain1D , Input vector size must be 2^L+1 , inputStretching.size():"
+                        << inputStretching.size()
                         << " , level_:" << level_);
 
   // copy the vector and sort
@@ -34,7 +37,8 @@ combigrid::Domain1D::Domain1D(const std::vector<double>& inputStretching) {
 }
 
 
-combigrid::Domain1D::Domain1D(int level, double min, double max, const combigrid::AbstractStretchingMaker& stretching) {
+combigrid::Domain1D::Domain1D(int level, double min, double max,
+                              const combigrid::AbstractStretchingMaker& stretching) {
   isStretched_ = true;
   level_ = level;
   stretching.get1DStretching( level , min , max , stretching_);
@@ -72,7 +76,8 @@ void combigrid::Domain1D::transformRealToUnit(double coordReal,
     intersec = (stretching_[endInd] - coordReal) /
                (stretching_[endInd] - stretching_[startInd]);
     //   - make the transformation to the unit domain -> unitCoords
-    coordUnit = ( ((double)endInd) * combigrid::oneOverPowOfTwo[level_diff] - intersec) /
+    coordUnit = ( ((double)endInd) * combigrid::oneOverPowOfTwo[level_diff] -
+                  intersec) /
                 combigrid::powerOfTwo[ level_ - level_diff];
 
     if ( noBoundary ) {
@@ -82,7 +87,8 @@ void combigrid::Domain1D::transformRealToUnit(double coordReal,
       if (startInd == 0) {
         double h = stretching_[endInd + offs] - stretching_[startInd + offs];
         intersec = (stretching_[endInd] - coordReal) / h;
-        coordUnit = ( ((double)endInd) * combigrid::oneOverPowOfTwo[level_diff] - intersec) /
+        coordUnit = ( ((double)endInd) * combigrid::oneOverPowOfTwo[level_diff] -
+                      intersec) /
                     combigrid::powerOfTwo[ level_ - level_diff];
         //COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::tran 1");
       }
@@ -90,7 +96,8 @@ void combigrid::Domain1D::transformRealToUnit(double coordReal,
       if (endInd == (int)stretching_.size() - 1) {
         double h = stretching_[startInd] - stretching_[startInd - offs];
         intersec = (coordReal - stretching_[startInd]) / h;
-        coordUnit = ( ((double)(endInd - offs)) * combigrid::oneOverPowOfTwo[level_diff] + intersec) /
+        coordUnit = ( ((double)(endInd - offs)) * combigrid::oneOverPowOfTwo[level_diff]
+                      + intersec) /
                     combigrid::powerOfTwo[ level_ - level_diff];
         //COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::tran 2 , intersec:" << intersec << " , endInd:"<<endInd);
         //COMBIGRID_OUT_LEVEL3( verb , " stretching_[startInd]:" << stretching_[startInd]<< " , stretching_[endInd]:" << stretching_[endInd]);
@@ -149,20 +156,26 @@ void combigrid::Domain1D::findEntry(double coordReal, int level_in ,
   } else {
     // for the non-stretched case
     double unitC = (coordReal - min_) / (max_ - min_);
-    startIndex = static_cast<int>(::floor( (double)combigrid::powerOfTwo[level_in] * unitC ));
+    startIndex = static_cast<int>(::floor( (double)combigrid::powerOfTwo[level_in] *
+                                           unitC ));
     startIndex = (startIndex < 0) ? 0 : startIndex;
-    startIndex = (startIndex >= combigrid::powerOfTwo[level_in] - 1) ? combigrid::powerOfTwo[level_in] - 1 : startIndex;
-    intersect =  (unitC * (double)combigrid::powerOfTwo[level_in]  - (double)(startIndex));
+    startIndex = (startIndex >= combigrid::powerOfTwo[level_in] - 1) ?
+                 combigrid::powerOfTwo[level_in] - 1 : startIndex;
+    intersect =  (unitC * (double)combigrid::powerOfTwo[level_in]  - (double)(
+                    startIndex));
   }
 }
 
 
-void combigrid::Domain1D::getMeshWidth(int index , int level_in , double& h0 , double& h1) const {
+void combigrid::Domain1D::getMeshWidth(int index , int level_in , double& h0 ,
+                                       double& h1) const {
   if (isStretched_) {
     int level_diff = (level_ < level_in) ? 0 : level_ - level_in;
     // index checking should be done in the debug mode
-    h0 = stretching_[ index * combigrid::powerOfTwo[level_diff] ] - stretching_[ (index - 1) * combigrid::powerOfTwo[level_diff] ];
-    h1 = stretching_[ (index + 1) * combigrid::powerOfTwo[level_diff] ] - stretching_[ index * combigrid::powerOfTwo[level_diff] ];
+    h0 = stretching_[ index * combigrid::powerOfTwo[level_diff] ] -
+         stretching_[ (index - 1) * combigrid::powerOfTwo[level_diff] ];
+    h1 = stretching_[ (index + 1) * combigrid::powerOfTwo[level_diff] ] -
+         stretching_[ index * combigrid::powerOfTwo[level_diff] ];
   } else {
     h1 = h0 = (max_ - min_) * ( 1 / (double)combigrid::powerOfTwo[level_in] );
   }

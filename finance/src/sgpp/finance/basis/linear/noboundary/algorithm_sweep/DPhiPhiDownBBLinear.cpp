@@ -9,54 +9,58 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
 
 
-    DPhiPhiDownBBLinear::DPhiPhiDownBBLinear(SGPP::base::GridStorage* storage) : storage(storage), boundingBox(storage->getBoundingBox()) {
+DPhiPhiDownBBLinear::DPhiPhiDownBBLinear(SGPP::base::GridStorage* storage) :
+  storage(storage), boundingBox(storage->getBoundingBox()) {
+}
+
+DPhiPhiDownBBLinear::~DPhiPhiDownBBLinear() {
+}
+
+void DPhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
+                                     SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+  rec(source, result, index, dim, 0.0, 0.0);
+}
+
+void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source,
+                              SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
+                              float_t fr) {
+  size_t seq = index.seq();
+
+  float_t alpha_value = source[seq];
+
+  SGPP::base::GridStorage::index_type::level_type l;
+  SGPP::base::GridStorage::index_type::index_type i;
+
+  index.get(dim, l, i);
+
+  // integration
+  result[seq] = (  0.5 * (fr - fl) ); // diagonal entry = 0.0
+
+  // dehierarchisation
+  float_t fm = ((fl + fr) / 2.0) + alpha_value;
+
+  if (!index.hint()) {
+    index.leftChild(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fm);
     }
 
-    DPhiPhiDownBBLinear::~DPhiPhiDownBBLinear() {
+    index.stepRight(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fm, fr);
     }
 
-    void DPhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      rec(source, result, index, dim, 0.0, 0.0);
-    }
+    index.up(dim);
+  }
+}
 
-    void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
-      size_t seq = index.seq();
+// namespace detail
 
-      float_t alpha_value = source[seq];
-
-      SGPP::base::GridStorage::index_type::level_type l;
-      SGPP::base::GridStorage::index_type::index_type i;
-
-      index.get(dim, l, i);
-
-      // integration
-      result[seq] = (  0.5 * (fr - fl) ); // diagonal entry = 0.0
-
-      // dehierarchisation
-      float_t fm = ((fl + fr) / 2.0) + alpha_value;
-
-      if (!index.hint()) {
-        index.leftChild(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fm);
-        }
-
-        index.stepRight(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fm, fr);
-        }
-
-        index.up(dim);
-      }
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+} // namespace SGPP
 }

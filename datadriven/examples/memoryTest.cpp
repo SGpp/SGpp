@@ -23,7 +23,8 @@
 
 using namespace SGPP::base;
 
-void doStuffOld(std::shared_ptr<OCLManager> manager, double* values, size_t valueSize) {
+void doStuffOld(std::shared_ptr<OCLManager> manager, double* values,
+                size_t valueSize) {
   //    OCLClonedBuffer buffer(manager);
   //    buffer.initializeBuffer(values, sizeof(double), valueSize);
 
@@ -31,7 +32,8 @@ void doStuffOld(std::shared_ptr<OCLManager> manager, double* values, size_t valu
   stretched.initializeBuffer(sizeof(double), valueSize);
 }
 
-void doStuff(std::shared_ptr<OCLManagerMultiPlatform> manager, double* values, size_t valueSize) {
+void doStuff(std::shared_ptr<OCLManagerMultiPlatform> manager, double* values,
+             size_t valueSize) {
   //    OCLClonedBufferMultiPlatform buffer(manager);
   //    buffer.initializeBuffer(values, sizeof(double), valueSize);
 
@@ -71,7 +73,9 @@ int main(int argc, char** argv) {
 #else
 #include <iostream>
 int main(int argc, char** argv) {
-  std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
+  std::cout <<
+            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
+            std::endl;
   return 0;
 }
 #endif

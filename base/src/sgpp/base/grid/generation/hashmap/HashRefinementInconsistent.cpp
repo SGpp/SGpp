@@ -13,12 +13,13 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
 
-    void HashRefinementInconsistent::createGridpoint(GridStorage* storage, index_type& index) {
-      storage->insert(index);
-    }
-
-  }
+void HashRefinementInconsistent::createGridpoint(GridStorage* storage,
+    index_type& index) {
+  storage->insert(index);
 }
+
+}  // namespace base
+}  // namespace SGPP

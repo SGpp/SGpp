@@ -14,52 +14,54 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    float_t OperationEvalModLinear::eval(const DataVector& alpha,
-                                         const DataVector& point) {
-      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+float_t OperationEvalModLinear::eval(const DataVector& alpha,
+                                     const DataVector& point) {
+  typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
-      IndexValVector vec;
-      LinearModifiedBasis<unsigned int, unsigned int> base;
-      GetAffectedBasisFunctions<LinearModifiedBasis<unsigned int, unsigned int> > ga(storage);
+  IndexValVector vec;
+  LinearModifiedBasis<unsigned int, unsigned int> base;
+  GetAffectedBasisFunctions<LinearModifiedBasis<unsigned int, unsigned int> > ga(
+    storage);
 
-      /* Scale point to bounding box */
+  /* Scale point to bounding box */
 
-      // Initialize a copy of point
-      DataVector point_bb = DataVector(point.getSize());
-      point_bb.copyFrom(point);
+  // Initialize a copy of point
+  DataVector point_bb = DataVector(point.getSize());
+  point_bb.copyFrom(point);
 
-      // Get bounding box
-      BoundingBox* bb = storage->getBoundingBox();
-      size_t dim = bb->getDimensions();
+  // Get bounding box
+  BoundingBox* bb = storage->getBoundingBox();
+  size_t dim = bb->getDimensions();
 
-      if (bb != NULL) {
-        for (size_t d = 0; d < dim; ++d) {
-          DimensionBoundary dimbb = bb->getBoundary(d);
+  if (bb != NULL) {
+    for (size_t d = 0; d < dim; ++d) {
+      DimensionBoundary dimbb = bb->getBoundary(d);
 
-          if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
-            continue;
-          }
-
-          if (!(dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary)) {
-            return 0.0;
-          }
-
-          point_bb[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary - dimbb.leftBoundary);
-        }
+      if (dimbb.leftBoundary == 0.0 && dimbb.rightBoundary == 1.0) {
+        continue;
       }
 
-      ga(base, point_bb, vec);
-
-      float_t result = 0.0;
-
-      for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
-        result += iter->second * alpha[iter->first];
+      if (!(dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary)) {
+        return 0.0;
       }
 
-      return result;
+      point_bb[d] = (point[d] - dimbb.leftBoundary) / (dimbb.rightBoundary -
+                    dimbb.leftBoundary);
     }
-
   }
+
+  ga(base, point_bb, vec);
+
+  float_t result = 0.0;
+
+  for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
+    result += iter->second * alpha[iter->first];
+  }
+
+  return result;
 }
+
+}  // namespace base
+}  // namespace SGPP

@@ -16,58 +16,61 @@
 #include <string>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Class that provides functionality to read ARFF files.
-     */
-    class ARFFTools {
-      public:
-        /**
-         * Reads an ARFF file.
-         *
-         * @param filename filename of the file to be read
-         * @return ARFF as Dataset
-         */
-        static Dataset readARFF(const std::string& filename);
+/**
+ * Class that provides functionality to read ARFF files.
+ */
+class ARFFTools {
+ public:
+  /**
+   * Reads an ARFF file.
+   *
+   * @param filename filename of the file to be read
+   * @return ARFF as Dataset
+   */
+  static Dataset readARFF(const std::string& filename);
 
-        static Dataset readARFFFromString(const std::string& content);
+  static Dataset readARFFFromString(const std::string& content);
 
-        /**
-         * Reads the size of an ARFF file.
-         *
-         * @param filename filename of the file to be read
-         * @param[out] numberInstances number of instances in the dataset
-         * @param[out] dimension number of dimensions in the dataset
-         */
-        static void readARFFSize(const std::string& filename, size_t& numberInstances, size_t& dimension);
+  /**
+   * Reads the size of an ARFF file.
+   *
+   * @param filename filename of the file to be read
+   * @param[out] numberInstances number of instances in the dataset
+   * @param[out] dimension number of dimensions in the dataset
+   */
+  static void readARFFSize(const std::string& filename, size_t& numberInstances,
+                           size_t& dimension);
 
-        static void readARFFSizeFromString(const std::string& content,
-                                           size_t& numberInstances, size_t& dimension);
+  static void readARFFSizeFromString(const std::string& content,
+                                     size_t& numberInstances, size_t& dimension);
 
 
 
-      private:
-        /**
-         * stores the attribute info of one instance into a SGPP::base::DataMatrix
-         *
-         * @param arffLine the string that contains the instance's values
-         * @param destination SGPP::base::DataMatrix into which the instance is stored
-         * @param instanceNo the number of the instance
-         */
-        static void writeNewTrainingDataEntry(const std::string& arffLine, SGPP::base::DataMatrix& destination, size_t instanceNo);
+ private:
+  /**
+   * stores the attribute info of one instance into a SGPP::base::DataMatrix
+   *
+   * @param arffLine the string that contains the instance's values
+   * @param destination SGPP::base::DataMatrix into which the instance is stored
+   * @param instanceNo the number of the instance
+   */
+  static void writeNewTrainingDataEntry(const std::string& arffLine,
+                                        SGPP::base::DataMatrix& destination, size_t instanceNo);
 
-        /**
-         * stores the class info of one instance into a SGPP::base::DataVector
-         *
-         * @param arffLine the string that contains the instance's class
-         * @param destination SGPP::base::DataVector into which the instance is stored
-         * @param instanceNo the number of the instance
-         */
-        static void writeNewClass(const std::string& arffLine, SGPP::base::DataVector& destination, size_t instanceNo);
-    };
+  /**
+   * stores the class info of one instance into a SGPP::base::DataVector
+   *
+   * @param arffLine the string that contains the instance's class
+   * @param destination SGPP::base::DataVector into which the instance is stored
+   * @param instanceNo the number of the instance
+   */
+  static void writeNewClass(const std::string& arffLine,
+                            SGPP::base::DataVector& destination, size_t instanceNo);
+};
 
-  }
+}
 }
 
 #endif /* ARFFTOOLS_HPP */

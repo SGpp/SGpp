@@ -17,49 +17,49 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
-      Grid(istr),
-      shadowStorage(NULL) {
-    }
+PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
+  Grid(istr),
+  shadowStorage(NULL) {
+}
 
-    PrewaveletGrid::PrewaveletGrid(size_t dim) :
-      Grid(dim),
-      shadowStorage(new GridStorage(dim)) {
-    }
+PrewaveletGrid::PrewaveletGrid(size_t dim) :
+  Grid(dim),
+  shadowStorage(new GridStorage(dim)) {
+}
 
-    PrewaveletGrid::~PrewaveletGrid() {
-      if (shadowStorage != NULL) {
-        delete shadowStorage;
-      }
-    }
-
-    SGPP::base::GridType PrewaveletGrid::getType() {
-      return base::GridType::Prewavelet;
-    }
-
-    const SBasis& PrewaveletGrid::getBasis() {
-      static SPrewaveletBase basis;
-      return basis;
-    }
-
-    Grid* PrewaveletGrid::unserialize(std::istream& istr) {
-      return new PrewaveletGrid(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* PrewaveletGrid::createGridGenerator() {
-      return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
-    }
-
-
-    GridStorage* PrewaveletGrid::getShadowStorage() {
-      return this->shadowStorage;
-    }
-
+PrewaveletGrid::~PrewaveletGrid() {
+  if (shadowStorage != NULL) {
+    delete shadowStorage;
   }
 }
+
+SGPP::base::GridType PrewaveletGrid::getType() {
+  return base::GridType::Prewavelet;
+}
+
+const SBasis& PrewaveletGrid::getBasis() {
+  static SPrewaveletBase basis;
+  return basis;
+}
+
+Grid* PrewaveletGrid::unserialize(std::istream& istr) {
+  return new PrewaveletGrid(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* PrewaveletGrid::createGridGenerator() {
+  return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
+}
+
+
+GridStorage* PrewaveletGrid::getShadowStorage() {
+  return this->shadowStorage;
+}
+
+}  // namespace base
+}  // namespace SGPP

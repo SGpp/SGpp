@@ -14,50 +14,50 @@
 
 namespace combigrid {
 
-  /** class to run the test cases for tikhonov regularization <br>
-   * The input */
-  class RunPoisson {
-    public:
+/** class to run the test cases for tikhonov regularization <br>
+ * The input */
+class RunPoisson {
+ public:
 
-      /** empty Ctor*/
-      RunPoisson() {
-        ;
-      }
+  /** empty Ctor*/
+  RunPoisson() {
+    ;
+  }
 
-      /** empty Dtor*/
-      virtual ~RunPoisson() {
-        ;
-      }
+  /** empty Dtor*/
+  virtual ~RunPoisson() {
+    ;
+  }
 
-      /** static function to run the Poisson problem on a full grid
-       * @param domain the domain for the full grid
-       * @param levels  level vector
-       * @param sigma  diffusion coefficients in each direction
-       * @param startValue the value of all unknowns at the beginning
-       * @param callbackRHS  right hand side call back
-       * */
-      static FullGridD* computeFGPoisson(
-        GridDomain& domain,
-        const std::vector<int>& levels,
-        const std::vector<double>& sigma ,
-        double startValue ,
-        const CallBackRHS* callbackRHS );
+  /** static function to run the Poisson problem on a full grid
+   * @param domain the domain for the full grid
+   * @param levels  level vector
+   * @param sigma  diffusion coefficients in each direction
+   * @param startValue the value of all unknowns at the beginning
+   * @param callbackRHS  right hand side call back
+   * */
+  static FullGridD* computeFGPoisson(
+    GridDomain& domain,
+    const std::vector<int>& levels,
+    const std::vector<double>& sigma ,
+    double startValue ,
+    const CallBackRHS* callbackRHS );
 
-      /** static function to run the Poisson problem on a full grid, which the user already created
-       * @param fg  the full grid
-       * @param sigma  diffusion coefficients in each direction
-       * @param unknowns  the initial value of unkowns
-       * @param callbackRHS right hand side call back
-       * */
-      static void computeFGPoisson_FG(
-        FullGridD* fg ,
-        const std::vector<double>& sigma ,
-        std::vector<double>& unknowns ,
-        const CallBackRHS* callbackRHS );
+  /** static function to run the Poisson problem on a full grid, which the user already created
+   * @param fg  the full grid
+   * @param sigma  diffusion coefficients in each direction
+   * @param unknowns  the initial value of unkowns
+   * @param callbackRHS right hand side call back
+   * */
+  static void computeFGPoisson_FG(
+    FullGridD* fg ,
+    const std::vector<double>& sigma ,
+    std::vector<double>& unknowns ,
+    const CallBackRHS* callbackRHS );
 
-    private :
+ private :
 
-  };
+};
 
 }
 

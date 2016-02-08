@@ -9,15 +9,15 @@ using namespace std;
 #include <iostream>
 
 class Graph {
-    int V;    // No. of vertices
-    vector<list<int> >* adj = NULL;    // An array of adjacency lists
-    void dfs(int v, std::vector<int>& components, int label);
-    std::vector<int>* components = NULL;
-  public:
-    Graph(int V);
-    ~Graph();
-    void addEdge(int v, int w);
-    std::vector<int> getComponents();
+  int V;    // No. of vertices
+  vector<list<int> >* adj = NULL;    // An array of adjacency lists
+  void dfs(int v, std::vector<int>& components, int label);
+  std::vector<int>* components = NULL;
+ public:
+  Graph(int V);
+  ~Graph();
+  void addEdge(int v, int w);
+  std::vector<int> getComponents();
 };
 
 Graph::Graph(int V) {

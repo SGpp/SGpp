@@ -9,29 +9,31 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num, float_t threshold) : alpha(alpha), removements_num(removements_num), threshold(threshold) {
-    }
-
-    SurplusCoarseningFunctor::~SurplusCoarseningFunctor() {}
-
-
-    float_t SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
-      return fabs(alpha->get(seq));
-    }
-
-    float_t SurplusCoarseningFunctor::start() const {
-      return 1.0;
-    }
-
-    size_t SurplusCoarseningFunctor::getRemovementsNum() const {
-      return this->removements_num;
-    }
-
-    float_t SurplusCoarseningFunctor::getCoarseningThreshold() const {
-      return this->threshold;
-    }
-
-  }
+SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha,
+    size_t removements_num, float_t threshold) : alpha(alpha),
+  removements_num(removements_num), threshold(threshold) {
 }
+
+SurplusCoarseningFunctor::~SurplusCoarseningFunctor() {}
+
+
+float_t SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
+  return fabs(alpha->get(seq));
+}
+
+float_t SurplusCoarseningFunctor::start() const {
+  return 1.0;
+}
+
+size_t SurplusCoarseningFunctor::getRemovementsNum() const {
+  return this->removements_num;
+}
+
+float_t SurplusCoarseningFunctor::getCoarseningThreshold() const {
+  return this->threshold;
+}
+
+}  // namespace base
+}  // namespace SGPP

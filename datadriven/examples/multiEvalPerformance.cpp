@@ -53,7 +53,8 @@ int main(int argc, char** argv) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
+        configuration);
 
   SGPP::base::DataVector result(dataset.getNumberInstances());
 

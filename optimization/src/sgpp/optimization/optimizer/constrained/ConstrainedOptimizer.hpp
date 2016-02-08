@@ -17,70 +17,70 @@
 #include <memory>
 
 namespace SGPP {
-  namespace optimization {
-    namespace optimizer {
+namespace optimization {
+namespace optimizer {
 
-      /**
-       * Abstract class for solving constrained optimization problems.
-       */
-      class ConstrainedOptimizer : public UnconstrainedOptimizer {
-        public:
-          /**
-           * Constructor.
-           * The starting point is set to
-           * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
-           * Depending on the implementation $g$ and/or $h$ may be ignored
-           * (if only equality or inequality constraints can be handled
-           * by the underlying algorithm).
-           *
-           * @param f     function to optimize
-           * @param g     inequality constraint function
-           *              (\f$g(\vec{x}) \le 0\f$)
-           * @param h     equality constraint function
-           *              (\f$h(\vec{x}) = 0\f$)
-           * @param N     maximal number of iterations or
-           *              objective function evaluations
-           *              (depending on the implementation)
-           */
-          ConstrainedOptimizer(
-            ScalarFunction& f,
-            VectorFunction& g,
-            VectorFunction& h,
-            size_t N = DEFAULT_N) :
-            UnconstrainedOptimizer(f, N),
-            g(g),
-            h(h) {
-          }
-
-          /**
-           * Destructor.
-           */
-          virtual ~ConstrainedOptimizer() override {
-          }
-
-          /**
-           * @return inequality constraint function
-           */
-          VectorFunction& getInequalityConstraintFunction() const {
-            return g;
-          }
-
-          /**
-           * @return equality constraint function
-           */
-          VectorFunction& getEqualityConstraintFunction() const {
-            return h;
-          }
-
-        protected:
-          /// inequality constraint function
-          VectorFunction& g;
-          /// equality constraint function
-          VectorFunction& h;
-      };
-
-    }
+/**
+ * Abstract class for solving constrained optimization problems.
+ */
+class ConstrainedOptimizer : public UnconstrainedOptimizer {
+ public:
+  /**
+   * Constructor.
+   * The starting point is set to
+   * \f$(0.5, \dotsc, 0.5)^{\mathrm{T}}\f$.
+   * Depending on the implementation $g$ and/or $h$ may be ignored
+   * (if only equality or inequality constraints can be handled
+   * by the underlying algorithm).
+   *
+   * @param f     function to optimize
+   * @param g     inequality constraint function
+   *              (\f$g(\vec{x}) \le 0\f$)
+   * @param h     equality constraint function
+   *              (\f$h(\vec{x}) = 0\f$)
+   * @param N     maximal number of iterations or
+   *              objective function evaluations
+   *              (depending on the implementation)
+   */
+  ConstrainedOptimizer(
+    ScalarFunction& f,
+    VectorFunction& g,
+    VectorFunction& h,
+    size_t N = DEFAULT_N) :
+    UnconstrainedOptimizer(f, N),
+    g(g),
+    h(h) {
   }
+
+  /**
+   * Destructor.
+   */
+  virtual ~ConstrainedOptimizer() override {
+  }
+
+  /**
+   * @return inequality constraint function
+   */
+  VectorFunction& getInequalityConstraintFunction() const {
+    return g;
+  }
+
+  /**
+   * @return equality constraint function
+   */
+  VectorFunction& getEqualityConstraintFunction() const {
+    return h;
+  }
+
+ protected:
+  /// inequality constraint function
+  VectorFunction& g;
+  /// equality constraint function
+  VectorFunction& h;
+};
+
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_CONSTRAINEDOPTIMIZER_HPP */

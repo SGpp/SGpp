@@ -41,57 +41,58 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
 
 namespace SGPP {
-  namespace op_factory {
+namespace op_factory {
 
-    optimization::OperationMultipleHierarchisation*
-    createOperationMultipleHierarchisation(base::Grid& grid) {
-      if (grid.getType() == base::GridType::Linear) {
-        return new optimization::OperationMultipleHierarchisationLinear(
-                 dynamic_cast<base::LinearGrid&>(grid));
-      } else if (grid.getType() == base::GridType::LinearBoundary) {
-        return new optimization::OperationMultipleHierarchisationLinearBoundary(
-                 dynamic_cast<base::LinearBoundaryGrid&>(grid));
-      } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
-        return new optimization::OperationMultipleHierarchisationLinearClenshawCurtis(
-                 dynamic_cast<base::LinearClenshawCurtisGrid&>(grid));
-      } else if (grid.getType() == base::GridType::ModLinear) {
-        return new optimization::OperationMultipleHierarchisationModLinear(
-                 dynamic_cast<base::ModLinearGrid&>(grid));
-      } else if (grid.getType() == base::GridType::Bspline) {
-        return new optimization::OperationMultipleHierarchisationBspline(
-                 dynamic_cast<base::BsplineGrid&>(grid));
-      } else if (grid.getType() == base::GridType::BsplineBoundary) {
-        return new optimization::OperationMultipleHierarchisationBsplineBoundary(
-                 dynamic_cast<base::BsplineBoundaryGrid&>(grid));
-      } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
-        return new optimization::OperationMultipleHierarchisationBsplineClenshawCurtis(
-                 dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid));
-      } else if (grid.getType() == base::GridType::ModBspline) {
-        return new optimization::OperationMultipleHierarchisationModBspline(
-                 dynamic_cast<base::ModBsplineGrid&>(grid));
-      } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-        return new optimization::OperationMultipleHierarchisationModBsplineClenshawCurtis(
-                 dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid));
-      } else if (grid.getType() == base::GridType::Wavelet) {
-        return new optimization::OperationMultipleHierarchisationWavelet(
-                 dynamic_cast<base::WaveletGrid&>(grid));
-      } else if (grid.getType() == base::GridType::WaveletBoundary) {
-        return new optimization::OperationMultipleHierarchisationWaveletBoundary(
-                 dynamic_cast<base::WaveletBoundaryGrid&>(grid));
-      } else if (grid.getType() == base::GridType::ModWavelet) {
-        return new optimization::OperationMultipleHierarchisationModWavelet(
-                 dynamic_cast<base::ModWaveletGrid&>(grid));
-      } else if (grid.getType() == base::GridType::FundamentalSpline) {
-        return new optimization::OperationMultipleHierarchisationFundamentalSpline(
-                 dynamic_cast<base::FundamentalSplineGrid&>(grid));
-      } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
-        return new optimization::OperationMultipleHierarchisationModFundamentalSpline(
-                 dynamic_cast<base::ModFundamentalSplineGrid&>(grid));
-      } else {
-        throw base::factory_exception(
-          "OperationMultipleHierarchisation is not implemented for this grid type.");
-      }
-    }
-
+optimization::OperationMultipleHierarchisation*
+createOperationMultipleHierarchisation(base::Grid& grid) {
+  if (grid.getType() == base::GridType::Linear) {
+    return new optimization::OperationMultipleHierarchisationLinear(
+             dynamic_cast<base::LinearGrid&>(grid));
+  } else if (grid.getType() == base::GridType::LinearBoundary) {
+    return new optimization::OperationMultipleHierarchisationLinearBoundary(
+             dynamic_cast<base::LinearBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
+    return new optimization::OperationMultipleHierarchisationLinearClenshawCurtis(
+             dynamic_cast<base::LinearClenshawCurtisGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModLinear) {
+    return new optimization::OperationMultipleHierarchisationModLinear(
+             dynamic_cast<base::ModLinearGrid&>(grid));
+  } else if (grid.getType() == base::GridType::Bspline) {
+    return new optimization::OperationMultipleHierarchisationBspline(
+             dynamic_cast<base::BsplineGrid&>(grid));
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationBsplineBoundary(
+             dynamic_cast<base::BsplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
+    return new optimization::OperationMultipleHierarchisationBsplineClenshawCurtis(
+             dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new optimization::OperationMultipleHierarchisationModBspline(
+             dynamic_cast<base::ModBsplineGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
+    return new
+           optimization::OperationMultipleHierarchisationModBsplineClenshawCurtis(
+             dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid));
+  } else if (grid.getType() == base::GridType::Wavelet) {
+    return new optimization::OperationMultipleHierarchisationWavelet(
+             dynamic_cast<base::WaveletGrid&>(grid));
+  } else if (grid.getType() == base::GridType::WaveletBoundary) {
+    return new optimization::OperationMultipleHierarchisationWaveletBoundary(
+             dynamic_cast<base::WaveletBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModWavelet) {
+    return new optimization::OperationMultipleHierarchisationModWavelet(
+             dynamic_cast<base::ModWaveletGrid&>(grid));
+  } else if (grid.getType() == base::GridType::FundamentalSpline) {
+    return new optimization::OperationMultipleHierarchisationFundamentalSpline(
+             dynamic_cast<base::FundamentalSplineGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
+    return new optimization::OperationMultipleHierarchisationModFundamentalSpline(
+             dynamic_cast<base::ModFundamentalSplineGrid&>(grid));
+  } else {
+    throw base::factory_exception(
+      "OperationMultipleHierarchisation is not implemented for this grid type.");
   }
+}
+
+}
 }

@@ -13,34 +13,34 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationEval for a grids with linear basis ansatzfunctions without boundaries
-     */
-    class OperationEvalLinear : public OperationEval {
-      public:
-        /**
-         * Constructor of OperationEvalLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         */
-        OperationEvalLinear(GridStorage* storage) : storage(storage) {}
+/**
+ * This class implements OperationEval for a grids with linear basis ansatzfunctions without boundaries
+ */
+class OperationEvalLinear : public OperationEval {
+ public:
+  /**
+   * Constructor of OperationEvalLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   */
+  OperationEvalLinear(GridStorage* storage) : storage(storage) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationEvalLinear() override {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationEvalLinear() override {}
 
-        virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point) override;
+  virtual float_t eval(const DataVector& alpha,
+                       const DataVector& point) override;
 
-      protected:
-        /// Pointer to the grid's GridStorage object
-        GridStorage* storage;
-    };
+ protected:
+  /// Pointer to the grid's GridStorage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONEVALLINEAR_HPP */

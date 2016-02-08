@@ -7,7 +7,8 @@
 #include <sgpp/combigrid/multigridFG/multigrid/ProlongationRestriction.hpp>
 
 
-combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op , FullGridD* fg , bool createHierarchy) {
+combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op ,
+                                      FullGridD* fg , bool createHierarchy) {
 
   // - create the hierarchy of grids
   //     - in each direction there should be at least 3 points
@@ -32,12 +33,18 @@ combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op , FullGridD* fg 
   do {
     fullgrids_.push_back(fg_tmp);
     operators_.push_back(op_tmp);
-    unknowns_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
-    correction_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
-    rhs_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
-    rhs_tmp_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
-    u_hH_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
-    lh_.push_back( new std::vector<double>( fg_tmp->getNrElements() * op_tmp->getNrSpace() , 0.0) );
+    unknowns_.push_back( new std::vector<double>( fg_tmp->getNrElements() *
+                         op_tmp->getNrSpace() , 0.0) );
+    correction_.push_back( new std::vector<double>( fg_tmp->getNrElements() *
+                           op_tmp->getNrSpace() , 0.0) );
+    rhs_.push_back( new std::vector<double>( fg_tmp->getNrElements() *
+                    op_tmp->getNrSpace() , 0.0) );
+    rhs_tmp_.push_back( new std::vector<double>( fg_tmp->getNrElements() *
+                        op_tmp->getNrSpace() , 0.0) );
+    u_hH_.push_back( new std::vector<double>( fg_tmp->getNrElements() *
+                     op_tmp->getNrSpace() , 0.0) );
+    lh_.push_back( new std::vector<double>( fg_tmp->getNrElements() *
+                                            op_tmp->getNrSpace() , 0.0) );
     op_tmp->getRHS( *(rhs_[depth_]) , i );
     combigrid::vect_add_mul( 0.0 , rhs_tmp_[depth_] , 1.0 , rhs_[depth_]);
     COMBIGRID_OUT_LEVEL2(verb, "Created depth_:" << depth_);
@@ -49,7 +56,8 @@ combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op , FullGridD* fg 
     maxLevel = (boundaryFlag[0]) ? levels[0] - 1 : levels[0] ;
 
     for ( i = 1 ; i < dim ; i++) {
-      maxNrPoint = ( fg_tmp->length(i) > maxNrPoint) ? fg_tmp->length(i) : maxNrPoint ;
+      maxNrPoint = ( fg_tmp->length(i) > maxNrPoint) ? fg_tmp->length(
+                     i) : maxNrPoint ;
       maxLevel = (boundaryFlag[i]) ? levels[i] - 1 : levels[i] ;
     }
 
@@ -70,7 +78,8 @@ combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op , FullGridD* fg 
         if ( (levels[i] >= maxLevel) && (fg_tmp->length(i) >= maxNrPoint) ) {
           levels[i] = levels[i] - 1;
           doneRef = true;
-          COMBIGRID_OUT_LEVEL2(verb, "REFINE levels[" << i << "]=" << levels[i] << " , maxLevel=" << maxLevel);
+          COMBIGRID_OUT_LEVEL2(verb,
+                               "REFINE levels[" << i << "]=" << levels[i] << " , maxLevel=" << maxLevel);
         }
       }
 
@@ -81,7 +90,8 @@ combigrid::MultigridFAS::MultigridFAS(combigrid::OperatorFG* op , FullGridD* fg 
     }
   } while (refine && doneRef && createHierarchy);
 
-  COMBIGRID_OUT_LEVEL2(verb, "MultigridFAS::MultigridFAS ... END depth_=" << depth_);
+  COMBIGRID_OUT_LEVEL2(verb,
+                       "MultigridFAS::MultigridFAS ... END depth_=" << depth_);
 }
 
 combigrid::MultigridFAS::~MultigridFAS() {
@@ -106,7 +116,8 @@ combigrid::MultigridFAS::~MultigridFAS() {
 }
 
 
-void combigrid::MultigridFAS::solveFAS( std::vector<double>& unknowns , double errorTol) {
+void combigrid::MultigridFAS::solveFAS( std::vector<double>& unknowns ,
+                                        double errorTol) {
 
   // todo: get good starting value
 
@@ -137,10 +148,13 @@ void combigrid::MultigridFAS::solveFAS( std::vector<double>& unknowns , double e
       COMBIGRID_OUT_LEVEL2(verb, " GS level" << i)
       // restriction to the right hand side
       operators_[i]->multiplyVector( *(unknowns_[i]) , *(correction_[i]) );
-      combigrid::ProlongationRestriction::restriction( fullgrids_[i], *(correction_[i]), -1.0, fullgrids_[i + 1], *(correction_[i + 1]), 0.0, operators_[i]->getNrSpace() );
+      combigrid::ProlongationRestriction::restriction( fullgrids_[i],
+          *(correction_[i]), -1.0, fullgrids_[i + 1], *(correction_[i + 1]), 0.0,
+          operators_[i]->getNrSpace() );
       combigrid::vect_add_mul( 0.0 , rhs_tmp_[i + 1] , 1.0 , rhs_[i + 1]);
       combigrid::vect_add_mul( 1.0 , rhs_tmp_[i + 1] , -1.0 , correction_[i + 1]);
-      combigrid::ProlongationRestriction::restriction( fullgrids_[i], *(unknowns_[i]), 1.0, fullgrids_[i + 1], *(u_hH_[i + 1]), 0.0, operators_[i]->getNrSpace() );
+      combigrid::ProlongationRestriction::restriction( fullgrids_[i], *(unknowns_[i]),
+          1.0, fullgrids_[i + 1], *(u_hH_[i + 1]), 0.0, operators_[i]->getNrSpace() );
       combigrid::vect_add_mul( 0.0 , correction_[i + 1] , 1.0 , u_hH_[i + 1]);
       operators_[i + 1]->multiplyVector( *(correction_[i + 1]) , *(lh_[i + 1]) );
       combigrid::vect_add_mul( 1.0 , rhs_tmp_[i + 1] , 1.0 , lh_[i + 1] );
@@ -148,14 +162,16 @@ void combigrid::MultigridFAS::solveFAS( std::vector<double>& unknowns , double e
     }
 
     // presmooth & postsmooth on the coarsest level
-    operators_[depth_ - 1]->doSmoothing( nrGSPre_ + nrGSPost_ , *(unknowns_[depth_ - 1]) , *(rhs_tmp_[depth_ - 1]) );
+    operators_[depth_ - 1]->doSmoothing( nrGSPre_ + nrGSPost_ ,
+                                         *(unknowns_[depth_ - 1]) , *(rhs_tmp_[depth_ - 1]) );
     COMBIGRID_OUT_LEVEL2(verb, " GS lowest level")
 
     // rising branch
     for (i = depth_ - 2 ; i >= 0 ; i-- ) {
       // prolongation
       combigrid::vect_add_mul( -1.0 , u_hH_[i + 1] , 1.0 , unknowns_[i + 1] );
-      combigrid::ProlongationRestriction::prolongation( fullgrids_[i], *(u_hH_[i]), 0.0, fullgrids_[i + 1], *(u_hH_[i + 1]), 1.0, operators_[i]->getNrSpace() );
+      combigrid::ProlongationRestriction::prolongation( fullgrids_[i], *(u_hH_[i]),
+          0.0, fullgrids_[i + 1], *(u_hH_[i + 1]), 1.0, operators_[i]->getNrSpace() );
       combigrid::vect_add_mul( 1.0 , unknowns_[i] , 1.0 , u_hH_[i]);
       COMBIGRID_OUT_LEVEL2(verb, " Prolongation level" << i)
       // post smoothing
@@ -167,7 +183,8 @@ void combigrid::MultigridFAS::solveFAS( std::vector<double>& unknowns , double e
     operators_[0]->multiplyVector( (*unknowns_[0]) , errVect);
     combigrid::vect_diff( &errVect , rhs_tmp_[0] );
     errorAct = combigrid::l2_norm( &errVect );
-    COMBIGRID_OUT_LEVEL2(verb, " ===== END V-cycle ========= error:" << errorAct << " , vCycle:" << vCycle )
+    COMBIGRID_OUT_LEVEL2(verb,
+                         " ===== END V-cycle ========= error:" << errorAct << " , vCycle:" << vCycle )
 
     // if the smoother is not working properly than increase the
     if ( errorAct > error ) {

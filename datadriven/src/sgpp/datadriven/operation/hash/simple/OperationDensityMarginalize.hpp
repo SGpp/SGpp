@@ -13,28 +13,29 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Marginalize Probability Density Function
-     */
+/**
+ * Marginalize Probability Density Function
+ */
 
-    class OperationDensityMarginalize {
-      public:
-        OperationDensityMarginalize() {}
-        virtual ~OperationDensityMarginalize() {}
+class OperationDensityMarginalize {
+ public:
+  OperationDensityMarginalize() {}
+  virtual ~OperationDensityMarginalize() {}
 
-        /**
-         * Marginalizes (Density) Functions
-         *
-         * @param alpha Coefficient vector for current grid
-         * @param mg Referenz of grid pointer
-         * @param malpha Coefficient vector for new grid (mg). Will be resized.
-         * @param mdim Marginalize in dimension mdim
-         */
-        virtual void doMarginalize(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim) = 0;
-    };
+  /**
+   * Marginalizes (Density) Functions
+   *
+   * @param alpha Coefficient vector for current grid
+   * @param mg Referenz of grid pointer
+   * @param malpha Coefficient vector for new grid (mg). Will be resized.
+   * @param mdim Marginalize in dimension mdim
+   */
+  virtual void doMarginalize(base::DataVector& alpha, base::Grid*& mg,
+                             base::DataVector& malpha, unsigned int mdim) = 0;
+};
 
-  }
+}
 }
 #endif /* OPERATIONDENSITYMARGINALIZE_HPP */
