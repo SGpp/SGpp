@@ -10,6 +10,8 @@
 
 #include <sgpp/datadriven/datamining/Metric.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 namespace SGPP {
 namespace datadriven {
 
@@ -18,11 +20,11 @@ namespace datadriven {
  */
 class Scorer {
 public:
-	Scorer(Metric& metric):metric(metric){};
+	Scorer(Metric* metric):metric(metric){};
 	virtual ~Scorer();
 
 private:
-	Metric metric;
+	Metric* metric;
 };
 
 } /* namespace datadriven */

@@ -7,13 +7,13 @@
 
 #include "Scorer.hpp"
 
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/globaldef.hpp>
+
+
 namespace SGPP {
 namespace datadriven {
-
-Scorer::Scorer() {
-	// TODO Auto-generated constructor stub
-
-}
 
 Scorer::~Scorer() {
 	// TODO Auto-generated destructor stub

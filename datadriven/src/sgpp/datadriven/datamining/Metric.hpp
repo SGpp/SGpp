@@ -10,6 +10,9 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
+#include <sgpp/globaldef.hpp>
+
+
 using namespace SGPP::base;
 
 namespace SGPP {

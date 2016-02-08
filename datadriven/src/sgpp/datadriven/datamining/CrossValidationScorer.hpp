@@ -16,12 +16,15 @@
 
 #include "Scorer.hpp"
 
+#include <sgpp/globaldef.hpp>
+
+
 namespace SGPP {
 namespace datadriven {
 
 class CrossValidationScorer: public Scorer {
 public:
-	CrossValidationScorer(Dataset& dataset, Metric& metric, size_t kFold);
+	CrossValidationScorer(Dataset& dataset, Metric* metric, size_t kFold);
 	virtual ~CrossValidationScorer();
 
 	void splitset(base::DataMatrix& dataset,

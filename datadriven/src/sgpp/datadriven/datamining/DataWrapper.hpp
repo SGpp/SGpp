@@ -12,13 +12,19 @@
 
 #include "../datamining/SampleProvider.hpp"
 
+#include <sgpp/globaldef.hpp>
+
+
 namespace SGPP {
 namespace datadriven {
 
 class DataWrapper : public SampleProvider {
 public:
-	DataWrapper(std::string filename);
+	DataWrapper(std::string filename): filename(filename){}
 	virtual ~DataWrapper();
+
+protected:
+	std::string filename;
 };
 
 } /* namespace datadriven */
