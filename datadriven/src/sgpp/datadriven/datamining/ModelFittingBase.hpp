@@ -19,7 +19,7 @@ namespace SGPP {
 
     class ModelFittingBase {
       public:
-        ModelFittingBase(SGPP::datadriven::DataMiningConfiguration& config);
+        ModelFittingBase(SGPP::datadriven::DataMiningConfiguration config);
         virtual ~ModelFittingBase();
 
         /**

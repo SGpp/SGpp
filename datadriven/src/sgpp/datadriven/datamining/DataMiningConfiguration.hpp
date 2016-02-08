@@ -9,6 +9,10 @@
 
 #include <sgpp/base/tools/json/JSON.hpp>
 
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+
 #include <vector>
 #include <map>
 #include <string>
@@ -23,6 +27,10 @@ class DataMiningConfiguration: public json::JSON {
   explicit DataMiningConfiguration(const std::string& fileName);
 
   virtual DataMiningConfiguration* clone();
+
+  SGPP::base::GridType stringToGridType(std::string& gridType);
+  SGPP::datadriven::RegularizationType stringToRegularizationType(std::string& regularizationType);
+  SGPP::solver::SLESolverType stringToSolverType(std::string& solverType);
 };
 
 }  // namespace base
