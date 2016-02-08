@@ -80,6 +80,7 @@ class AlgorithmDGEMV {
       }
     }
   }
+  /*
   // implementation requires OpenMP 4.0 support
   //        void mult_transposed(GridStorage* storage, BASIS& basis, const DataVector& source, DataMatrix& x, DataVector& result) {
   //          typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
@@ -112,7 +113,7 @@ class AlgorithmDGEMV {
   //            }
   //          }
   //        }
-
+  */
 
   /**
    * Performs the DGEMV Operation on the grid having a transposed matrix
