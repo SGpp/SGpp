@@ -27,14 +27,14 @@ class OperationNaiveEvalPartialDerivativeModWavelet :
    *
    * @param storage   storage of the sparse grid
    */
-  OperationNaiveEvalPartialDerivativeModWavelet(GridStorage* storage) :
+  explicit OperationNaiveEvalPartialDerivativeModWavelet(GridStorage* storage) :
     storage(storage) {
   }
 
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalPartialDerivativeModWavelet() override {
+  ~OperationNaiveEvalPartialDerivativeModWavelet() override {
   }
 
   /**
@@ -43,7 +43,7 @@ class OperationNaiveEvalPartialDerivativeModWavelet :
    * @param derivDim  dimension in which the partial derivative should be taken
    * @return          value of the partial derivative of the linear combination
    */
-  virtual float_t evalPartialDerivative(const DataVector& alpha,
+  float_t evalPartialDerivative(const DataVector& alpha,
                                         const DataVector& point,
                                         size_t derivDim) override;
 

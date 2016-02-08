@@ -38,7 +38,7 @@ class OperationMultipleEvalModBspline: public OperationMultipleEval {
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalModBspline() override {
+  ~OperationMultipleEvalModBspline() override {
   }
 
   void mult(DataVector& alpha, DataVector& result) override;

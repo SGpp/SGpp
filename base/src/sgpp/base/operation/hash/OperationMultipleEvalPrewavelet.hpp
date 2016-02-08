@@ -34,7 +34,7 @@ class OperationMultipleEvalPrewavelet : public OperationMultipleEval {
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalPrewavelet() override {}
+  ~OperationMultipleEvalPrewavelet() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;

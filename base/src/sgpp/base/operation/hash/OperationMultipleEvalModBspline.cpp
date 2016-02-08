@@ -29,5 +29,5 @@ void OperationMultipleEvalModBspline::multTranspose(DataVector& source,
   op.mult_transposed(storage, base, source, this->dataset, result);
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

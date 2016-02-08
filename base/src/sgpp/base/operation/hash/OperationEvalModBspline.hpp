@@ -29,16 +29,17 @@ class OperationEvalModBspline : public OperationEval {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationEvalModBspline(GridStorage* storage, size_t degree) : storage(storage),
+  OperationEvalModBspline(GridStorage* storage, size_t degree) :
+    storage(storage),
     base(degree) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalModBspline() override {}
+  ~OperationEvalModBspline() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object

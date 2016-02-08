@@ -12,6 +12,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <vector>
+
 
 namespace SGPP {
 namespace base {
@@ -22,8 +25,8 @@ float_t OperationEvalModLinear::eval(const DataVector& alpha,
 
   IndexValVector vec;
   LinearModifiedBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<LinearModifiedBasis<unsigned int, unsigned int> > ga(
-    storage);
+  GetAffectedBasisFunctions<
+  LinearModifiedBasis<unsigned int, unsigned int> > ga(storage);
 
   /* Scale point to bounding box */
 
@@ -43,7 +46,8 @@ float_t OperationEvalModLinear::eval(const DataVector& alpha,
         continue;
       }
 
-      if (!(dimbb.leftBoundary <= point[d] && point[d] <= dimbb.rightBoundary)) {
+      if (!(dimbb.leftBoundary <= point[d] &&
+          point[d] <= dimbb.rightBoundary)) {
         return 0.0;
       }
 

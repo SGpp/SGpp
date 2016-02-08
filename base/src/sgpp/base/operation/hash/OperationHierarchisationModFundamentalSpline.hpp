@@ -26,7 +26,7 @@ class OperationHierarchisationModFundamentalSpline :
    *
    * @param grid Pointer to the grid
    */
-  OperationHierarchisationModFundamentalSpline(
+  explicit OperationHierarchisationModFundamentalSpline(
     ModFundamentalSplineGrid* grid);
 
   /**

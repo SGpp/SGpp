@@ -25,13 +25,13 @@ class OperationNaiveEvalWavelet : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  OperationNaiveEvalWavelet(GridStorage* storage) : storage(storage) {
+  explicit OperationNaiveEvalWavelet(GridStorage* storage) : storage(storage) {
   }
 
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalWavelet() override {
+  ~OperationNaiveEvalWavelet() override {
   }
 
   /**

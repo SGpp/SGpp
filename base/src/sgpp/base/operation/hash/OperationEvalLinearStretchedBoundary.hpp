@@ -27,15 +27,16 @@ class OperationEvalLinearStretchedBoundary : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  OperationEvalLinearStretchedBoundary(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalLinearStretchedBoundary(GridStorage* storage) :
+  storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalLinearStretchedBoundary() override {}
+  ~OperationEvalLinearStretchedBoundary() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object

@@ -29,5 +29,5 @@ void OperationMultipleEvalLinear::multTranspose(DataVector& alpha,
   op.mult_transpose(storage, base, alpha, this->dataset, result);
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

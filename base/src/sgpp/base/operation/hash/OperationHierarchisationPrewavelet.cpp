@@ -40,7 +40,6 @@ void OperationHierarchisationPrewavelet::doHierarchisation(
   for (size_t i = 0; i < this->storage->dim(); i++) {
     s2.sweep1D(node_values, node_values, i);
   }
-
 }
 
 void OperationHierarchisationPrewavelet::doDehierarchisation(
@@ -58,7 +57,6 @@ void OperationHierarchisationPrewavelet::doDehierarchisation(
   for (size_t i = 0; i < this->storage->dim(); i++) {
     s2.sweep1D(alpha, alpha, (this->storage->dim() - (i + 1)));
   }
-
 }
 
 void OperationHierarchisationPrewavelet::expandGrid() {
@@ -69,7 +67,7 @@ void OperationHierarchisationPrewavelet::expandGrid() {
     if ((*shadowStorage->get(i)).isLeaf())
       std::cout << "is Leaf : " << std::endl;
     else
-      std::cout << "nööö" << std::endl;
+      std::cout << "nooo" << std::endl;
   }
 }
 
@@ -79,5 +77,5 @@ void OperationHierarchisationPrewavelet::shrinkGrid() {
   }
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

@@ -28,14 +28,15 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
    * @param dataset the dataset that should be evaluated
    */
   OperationMultipleEvalPeriodic(Grid& grid,
-                                DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+                                DataMatrix& dataset) :
+                                OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalPeriodic() override {}
+  ~OperationMultipleEvalPeriodic() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   virtual void multTranspose(DataVector& source, DataVector& result);

@@ -37,5 +37,5 @@ void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha) {
   }
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

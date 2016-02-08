@@ -38,7 +38,7 @@ class OperationNaiveEvalHessianModBsplineClenshawCurtis :
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalHessianModBsplineClenshawCurtis() override {
+  ~OperationNaiveEvalHessianModBsplineClenshawCurtis() override {
   }
 
   /**
@@ -48,7 +48,7 @@ class OperationNaiveEvalHessianModBsplineClenshawCurtis :
    * @param[out]  hessian     Hessian matrix of linear combination
    * @return                  value of linear combination
    */
-  virtual float_t evalHessian(const DataVector& alpha,
+  float_t evalHessian(const DataVector& alpha,
                               const DataVector& point,
                               DataVector& gradient,
                               DataMatrix& hessian) override;

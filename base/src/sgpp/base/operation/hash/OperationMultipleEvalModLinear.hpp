@@ -28,14 +28,15 @@ class OperationMultipleEvalModLinear : public OperationMultipleEval {
    * @param dataset the dataset that should be evaluated
    */
   OperationMultipleEvalModLinear(Grid& grid,
-                                 DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+                                 DataMatrix& dataset) :
+                                   OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalModLinear() override {}
+  ~OperationMultipleEvalModLinear() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;

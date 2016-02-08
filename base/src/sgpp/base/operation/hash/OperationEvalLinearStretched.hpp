@@ -25,15 +25,16 @@ class OperationEvalLinearStretched : public OperationEval {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationEvalLinearStretched(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalLinearStretched(GridStorage* storage) :
+  storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalLinearStretched() override {}
+  ~OperationEvalLinearStretched() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to the grid's GridStorage object

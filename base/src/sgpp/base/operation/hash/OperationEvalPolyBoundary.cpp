@@ -9,6 +9,9 @@
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
+#include <utility>
+#include <vector>
+
 namespace SGPP {
 namespace base {
 

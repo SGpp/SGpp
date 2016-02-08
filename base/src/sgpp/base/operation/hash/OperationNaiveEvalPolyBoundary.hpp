@@ -31,7 +31,7 @@ class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
     storage(storage), base(degree) {
   }
 
-  virtual ~OperationNaiveEvalPolyBoundary() override {
+  ~OperationNaiveEvalPolyBoundary() override {
   }
 
   /**

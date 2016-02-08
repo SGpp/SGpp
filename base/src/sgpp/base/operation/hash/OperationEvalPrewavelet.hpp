@@ -25,15 +25,15 @@ class OperationEvalPrewavelet : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  OperationEvalPrewavelet(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalPrewavelet(GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalPrewavelet() override {}
+  ~OperationEvalPrewavelet() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
   virtual float_t test(const DataVector& alpha,
                        const DataVector& data,
                        const DataVector& classes);
@@ -42,7 +42,6 @@ class OperationEvalPrewavelet : public OperationEval {
  protected:
   /// Pointer to GridStorage object
   GridStorage* storage;
-
 };
 
 }  // namespace base

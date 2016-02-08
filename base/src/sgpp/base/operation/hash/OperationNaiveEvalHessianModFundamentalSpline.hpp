@@ -37,7 +37,7 @@ class OperationNaiveEvalHessianModFundamentalSpline : public
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalHessianModFundamentalSpline() override {
+  ~OperationNaiveEvalHessianModFundamentalSpline() override {
   }
 
   /**
@@ -47,7 +47,7 @@ class OperationNaiveEvalHessianModFundamentalSpline : public
    * @param[out]  hessian     Hessian matrix of linear combination
    * @return                  value of linear combination
    */
-  virtual float_t evalHessian(const DataVector& alpha,
+  float_t evalHessian(const DataVector& alpha,
                               const DataVector& point,
                               DataVector& gradient,
                               DataMatrix& hessian) override;

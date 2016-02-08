@@ -33,7 +33,7 @@ class OperationNaiveEvalModBspline : public OperationNaiveEval {
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalModBspline() override {
+  ~OperationNaiveEvalModBspline() override {
   }
 
   /**

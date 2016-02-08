@@ -35,7 +35,7 @@ class OperationNaiveEvalBsplineClenshawCurtis : public OperationNaiveEval {
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalBsplineClenshawCurtis() override {
+  ~OperationNaiveEvalBsplineClenshawCurtis() override {
   }
 
   /**

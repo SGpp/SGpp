@@ -26,20 +26,19 @@ class OperationEvalModLinear : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  OperationEvalModLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalModLinear(GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalModLinear() override {}
+  ~OperationEvalModLinear() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object
   GridStorage* storage;
-
 };
 
 }  // namespace base

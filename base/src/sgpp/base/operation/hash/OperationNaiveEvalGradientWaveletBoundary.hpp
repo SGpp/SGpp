@@ -26,14 +26,14 @@ class OperationNaiveEvalGradientWaveletBoundary : public
    *
    * @param storage   storage of the sparse grid
    */
-  OperationNaiveEvalGradientWaveletBoundary(GridStorage* storage) : storage(
+  explicit OperationNaiveEvalGradientWaveletBoundary(GridStorage* storage) : storage(
       storage) {
   }
 
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalGradientWaveletBoundary() override {
+  ~OperationNaiveEvalGradientWaveletBoundary() override {
   }
 
   /**
@@ -42,7 +42,7 @@ class OperationNaiveEvalGradientWaveletBoundary : public
    * @param[out]  gradient    gradient of linear combination
    * @return                  value of linear combination
    */
-  virtual float_t evalGradient(const DataVector& alpha,
+  float_t evalGradient(const DataVector& alpha,
                                const DataVector& point,
                                DataVector& gradient) override;
 

@@ -44,15 +44,6 @@
 #include <omp.h>
 %}
 
-// -----------------------------------------------------------
-// needed for MSVC++ wrapper since swig does not understand
-// that unsigned int is equal to size_t and generates
-// template specifications twice
-#ifdef SWIGWIN
-typedef unsigned int size_t;
-#endif
-// -----------------------------------------------------------
-
 %{
 #define SWIG_FILE_WITH_INIT
 %}

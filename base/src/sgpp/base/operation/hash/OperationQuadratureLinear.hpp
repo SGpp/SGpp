@@ -25,9 +25,9 @@ class OperationQuadratureLinear : public OperationQuadrature {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  OperationQuadratureLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationQuadratureLinear(GridStorage* storage) : storage(storage) {}
 
-  virtual ~OperationQuadratureLinear() override {}
+  ~OperationQuadratureLinear() override {}
 
   /**
    * Quadrature for piecewise linear hat basis functions. Computes

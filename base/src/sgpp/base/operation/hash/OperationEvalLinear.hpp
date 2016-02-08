@@ -25,15 +25,15 @@ class OperationEvalLinear : public OperationEval {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationEvalLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalLinear(GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalLinear() override {}
+  ~OperationEvalLinear() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to the grid's GridStorage object

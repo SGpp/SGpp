@@ -27,14 +27,14 @@ class OperationStencilHierarchisationModLinear : public
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationStencilHierarchisationModLinear(GridStorage* storage) : storage(
+  explicit OperationStencilHierarchisationModLinear(GridStorage* storage) : storage(
       storage),
     surplusStencil(0), neighborStencil(0), weightStencil(0) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationStencilHierarchisationModLinear() override {}
+  ~OperationStencilHierarchisationModLinear() override {}
 
   void doHierarchisation(DataVector& node_values) override;
   void doDehierarchisation(DataVector& alpha) override;

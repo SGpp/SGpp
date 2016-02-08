@@ -44,7 +44,7 @@ class OperationStencilHierarchisation : public OperationHierarchisation {
   /**
    * Destructor
    */
-  virtual ~OperationStencilHierarchisation() override {}
+  ~OperationStencilHierarchisation() override {}
 
   /**
    * Implements the abstract hierarchisation on a sparse grid.

@@ -38,5 +38,5 @@ void OperationHierarchisationLinearStretched::doDehierarchisation(
   }
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

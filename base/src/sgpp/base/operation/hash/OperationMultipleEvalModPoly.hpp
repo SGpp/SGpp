@@ -28,7 +28,8 @@ class OperationMultipleEvalModPoly: public OperationMultipleEval {
    * @param degree the polynom's max. degree
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalModPoly(Grid& grid, size_t degree, DataMatrix& dataset) :
+  OperationMultipleEvalModPoly(Grid& grid, size_t degree,
+                               DataMatrix& dataset) :
     OperationMultipleEval(grid, dataset), base(degree) {
     this->storage = grid.getStorage();
   }
@@ -36,7 +37,7 @@ class OperationMultipleEvalModPoly: public OperationMultipleEval {
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalModPoly() override {
+  ~OperationMultipleEvalModPoly() override {
   }
 
   void mult(DataVector& alpha, DataVector& result) override;

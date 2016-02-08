@@ -25,9 +25,9 @@ class OperationSecondMomentLinear : public OperationSecondMoment {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  OperationSecondMomentLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationSecondMomentLinear(GridStorage* storage) : storage(storage) {}
 
-  virtual ~OperationSecondMomentLinear() override {}
+  ~OperationSecondMomentLinear() override {}
 
   /**
    * Compute second moment of the function

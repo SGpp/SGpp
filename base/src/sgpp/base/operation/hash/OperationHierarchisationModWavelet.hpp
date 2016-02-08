@@ -25,12 +25,13 @@ class OperationHierarchisationModWavelet : public OperationHierarchisation {
    *
    * @param storage the grid's GridStorage object
    */
-  OperationHierarchisationModWavelet(GridStorage* storage) : storage(storage) {}
+  explicit OperationHierarchisationModWavelet(GridStorage* storage) :
+  storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationHierarchisationModWavelet() override {}
+  ~OperationHierarchisationModWavelet() override {}
 
   /**
    * Implements the hierarchisation on a sprase grid with mod wavelets base functions

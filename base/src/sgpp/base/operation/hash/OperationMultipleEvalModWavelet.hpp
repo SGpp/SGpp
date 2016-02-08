@@ -27,14 +27,15 @@ class OperationMultipleEvalModWavelet : public OperationMultipleEval {
    * @param dataset data
    */
   OperationMultipleEvalModWavelet(Grid& grid,
-                                  DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+                                  DataMatrix& dataset) :
+                                    OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalModWavelet() override {}
+  ~OperationMultipleEvalModWavelet() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;

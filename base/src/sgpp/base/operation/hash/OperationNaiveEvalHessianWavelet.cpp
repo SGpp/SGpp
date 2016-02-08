@@ -33,7 +33,8 @@ float_t OperationNaiveEvalHessianWavelet::evalHessian(
 
     for (size_t t = 0; t < d; t++) {
       const float_t val1d = base.eval(gp.getLevel(t), gp.getIndex(t), point[t]);
-      const float_t dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t), point[t]);
+      const float_t dx1d = base.evalDx(gp.getLevel(t), gp.getIndex(t),
+                                       point[t]);
       const float_t dxdx1d = base.evalDxDx(gp.getLevel(t), gp.getIndex(t), point[t]);
 
       curValue *= val1d;

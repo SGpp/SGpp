@@ -28,15 +28,15 @@ class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
    * @param grid grid
    * @param dataset the dataset the should be evaluated
    */
-  OperationMultipleEvalLinearBoundary(Grid& grid,
-                                      DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+  OperationMultipleEvalLinearBoundary(Grid& grid, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalLinearBoundary() override {}
+  ~OperationMultipleEvalLinearBoundary() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;

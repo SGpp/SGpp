@@ -30,7 +30,7 @@ class OperationIdentity: public OperationMatrix {
   /**
    * Destructor
    */
-  virtual ~OperationIdentity() override {}
+  ~OperationIdentity() override {}
 
   void mult(DataVector& alpha, DataVector& result) override {
     result = alpha;

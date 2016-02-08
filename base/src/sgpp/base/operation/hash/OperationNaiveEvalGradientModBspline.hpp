@@ -34,7 +34,7 @@ class OperationNaiveEvalGradientModBspline : public OperationNaiveEvalGradient {
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalGradientModBspline() override {
+  ~OperationNaiveEvalGradientModBspline() override {
   }
 
   /**
@@ -43,7 +43,7 @@ class OperationNaiveEvalGradientModBspline : public OperationNaiveEvalGradient {
    * @param[out]  gradient    gradient of linear combination
    * @return                  value of linear combination
    */
-  virtual float_t evalGradient(const DataVector& alpha,
+  float_t evalGradient(const DataVector& alpha,
                                const DataVector& point,
                                DataVector& gradient) override;
 

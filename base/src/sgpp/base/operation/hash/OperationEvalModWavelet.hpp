@@ -25,15 +25,15 @@ class OperationEvalModWavelet : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalModWavelet(GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationEvalModWavelet() override {}
+  ~OperationEvalModWavelet() override {}
 
-  virtual float_t eval(const DataVector& alpha,
-                       const DataVector& point) override;
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object

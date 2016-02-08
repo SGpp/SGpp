@@ -36,5 +36,5 @@ void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha) {
   }
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

@@ -33,7 +33,7 @@ class OperationNaiveEvalBsplineBoundary : public OperationNaiveEval {
   /**
    * Destructor.
    */
-  virtual ~OperationNaiveEvalBsplineBoundary() override {
+  ~OperationNaiveEvalBsplineBoundary() override {
   }
 
   /**

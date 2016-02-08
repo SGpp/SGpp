@@ -25,12 +25,13 @@ class OperationHierarchisationLinear : public OperationHierarchisation {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationHierarchisationLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationHierarchisationLinear(GridStorage* storage) :
+  storage(storage) {}
 
   /**
    * Destructor
    */
-  virtual ~OperationHierarchisationLinear() override {}
+  ~OperationHierarchisationLinear() override {}
 
   void doHierarchisation(DataVector& node_values) override;
   void doDehierarchisation(DataVector& alpha) override;

@@ -20,7 +20,6 @@ namespace base {
 
 void OperationConvertPrewavelet::doConvertToLinear(
   DataVector& alpha) {
-
   ConvertPrewaveletToLinear func(this->storage);
   sweep<ConvertPrewaveletToLinear> s(func, this->storage);
 
@@ -28,7 +27,6 @@ void OperationConvertPrewavelet::doConvertToLinear(
   for (size_t i = 0; i < this->storage->dim(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
-
 }
 
 void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha) {
@@ -40,5 +38,5 @@ void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha) {
   }
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

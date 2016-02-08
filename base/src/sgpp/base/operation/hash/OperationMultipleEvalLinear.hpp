@@ -34,7 +34,7 @@ class OperationMultipleEvalLinear: public OperationMultipleEval {
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalLinear() override {
+  ~OperationMultipleEvalLinear() override {
   }
 
   void mult(DataVector& alpha, DataVector& result) override;
