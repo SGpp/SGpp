@@ -7,11 +7,11 @@
 #ifndef COMBIFULLGRID_HPP_
 #define COMBIFULLGRID_HPP_
 
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include <sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp>
 #include <sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp>
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 #include <sgpp/combigrid/domain/StretchingFactory.hpp>
+#include "../utils/combigrid_utils.hpp"
 
 namespace combigrid {
 

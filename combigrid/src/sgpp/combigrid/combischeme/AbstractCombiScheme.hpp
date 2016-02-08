@@ -8,11 +8,11 @@
 #ifndef ABSTRACTCOMBISCHEME_HPP_
 #define ABSTRACTCOMBISCHEME_HPP_
 
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 #include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
 #include <sgpp/combigrid/fullgrid/GridContainer.hpp>
 #include <stdlib.h>
+#include "../utils/combigrid_utils.hpp"
 
 namespace combigrid {
 

@@ -12,8 +12,8 @@
 
 #include "boost/lexical_cast.hpp"
 #include "sgpp/distributedcombigrid/fullgrid/DistributedFullGrid.hpp"
-#include "sgpp/combigrid/utils/combigrid_ultils.hpp"
 #include "sgpp/distributedcombigrid/utils/StatsContainer.hpp"
+#include "../../../../../combigrid/src/sgpp/combigrid/utils/combigrid_utils.hpp"
 
 using namespace combigrid;
 

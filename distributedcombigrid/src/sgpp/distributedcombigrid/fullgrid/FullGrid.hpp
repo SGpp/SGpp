@@ -16,7 +16,7 @@
 #include "boost/archive/text_iarchive.hpp"
 #include <string>
 #include <assert.h>
-#include "sgpp/combigrid/utils/combigrid_ultils.hpp"
+#include "sgpp/combigrid/utils/combigrid_utils.hpp"
 #include "sgpp/distributedcombigrid/utils/Types.hpp"
 #include "sgpp/combigrid/basisfunction/CombiBasisFunctionBasis.hpp"
 #include "sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp"
