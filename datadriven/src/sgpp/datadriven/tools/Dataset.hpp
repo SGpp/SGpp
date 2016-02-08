@@ -9,9 +9,9 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cstddef>
 
 namespace SGPP {
 namespace datadriven {
@@ -58,7 +58,7 @@ class Dataset {
   SGPP::base::DataMatrix trainingData;
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif

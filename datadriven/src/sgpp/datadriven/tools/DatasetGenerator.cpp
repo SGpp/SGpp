@@ -4,11 +4,11 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/tools/DatasetGenerator.hpp>
-#include <cstdlib>
-#include <cmath>
 
 #include <sgpp/globaldef.hpp>
 
+#include <cstdlib>
+#include <cmath>
 
 namespace SGPP {
 namespace datadriven {
@@ -71,10 +71,8 @@ void Friedman2Generator::createData(size_t offset, size_t size,
     trData.set(i, 1, uniform(40.0 * M_PI, 560.0 * M_PI));
     trData.set(i, 2, uniform(0.0, 1.0));
     trData.set(i, 3, uniform(1.0, 11.0));
-    float_t tmp = trData.get(i, 1) * trData.get(i, 2) - 1.0 / (trData.get(i,
-                  1) * trData.get(i, 3));
-    float_t cls = sqrt(trData.get(i, 0) * trData.get(i,
-                       0) + tmp * tmp ) + normal(0.0, 125.0);
+    float_t tmp = trData.get(i, 1) * trData.get(i, 2) - 1.0 / (trData.get(i, 1) * trData.get(i, 3));
+    float_t cls = sqrt(trData.get(i, 0) * trData.get(i, 0) + tmp * tmp) + normal(0.0, 125.0);
     classes.set(i, cls);
   }
 
@@ -113,5 +111,7 @@ void Friedman3Generator::createData(size_t offset, size_t size,
 size_t Friedman3Generator::getDims() {
   return 4;
 }
-}
-}
+
+}  // namespace datadriven
+}  // namespace SGPP
+

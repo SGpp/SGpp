@@ -70,7 +70,7 @@ class ARFFTools {
                             SGPP::base::DataVector& destination, size_t instanceNo);
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* ARFFTOOLS_HPP */

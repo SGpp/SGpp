@@ -37,5 +37,6 @@ SGPP::base::DataMatrix& Dataset::getTrainingData() {
   return trainingData;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+
