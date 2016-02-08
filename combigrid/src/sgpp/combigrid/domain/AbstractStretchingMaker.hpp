@@ -42,6 +42,8 @@ class AbstractStretchingMaker {
                                std::vector<double>& stretching,
                                std::vector<double>& jacobian) const = 0;
 
+  virtual ~AbstractStretchingMaker(){};
+
   virtual Stretching getStretchingType() const = 0;
 
   double transforminterval(double min, double max, double point,

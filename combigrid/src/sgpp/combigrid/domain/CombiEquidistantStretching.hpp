@@ -21,14 +21,10 @@ namespace combigrid {
 class CombiEquidistantStretching: public AbstractStretchingMaker {
  public:
 
-  CombiEquidistantStretching() :
-    AbstractStretchingMaker() {
-    ;
-  }
+//  CombiEquidistantStretching(){}
 
-  virtual ~CombiEquidistantStretching() {
-    ;
-  }
+  ~CombiEquidistantStretching(){}
+
   /**
    * @param level - integer specifying the current grid level . the corresponding nr of points is 2^level + 1
    * @param min - the left boundary of the interval

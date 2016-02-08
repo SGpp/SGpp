@@ -122,7 +122,7 @@ class FGridContainer {
                  const std::vector<bool>& hasBoundaryPts, _Tp coef,
                  BasisFunctionBasis* basis = NULL) {
 
-    int dim = levels.size();
+    int dim = static_cast<int>(levels.size());
 
     _fullgrid = new combigrid::FullGrid<_Tp>(dim, levels, hasBoundaryPts, basis);
     _fullgrid_levels = levels;
