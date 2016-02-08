@@ -43,7 +43,7 @@ MPIOnlyFiles = [
     "OperationLTwoDotLaplaceVectorizedLinear.cpp",
     "OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp",
     ]
-
+  
 # Nvidia OpenCL: -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
 # Intel OpenCL CPU: -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
 # Intel OpenCL GPU: -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
@@ -115,11 +115,11 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith(os.path.join(".", "src")):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
             if fileName in MPIOnlyFiles:
-                continue
+                 continue
             if fileName in OCLOnlyFiles:
-                continue
+                 continue
             if fileName in ArBBOnlyFiles:
-                continue
+                 continue
             srcs.append(os.path.join(currentFolder, fileName))
 
 objs = []

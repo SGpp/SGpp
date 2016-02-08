@@ -18,7 +18,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
+#if USE_DOUBLE_PRECISION==0
 namespace SGPP {
 namespace parallel {
 template<typename KernelImplementation>
@@ -137,6 +137,5 @@ class DMSystemMatrixSPVectorizedIdentityBigdataAllreduce : public
 };
 
 }
-}
-
+#endif
 #endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYBIGDATAALLREDUCE_H

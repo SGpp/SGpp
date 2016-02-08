@@ -380,7 +380,7 @@ base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid,
       throw base::factory_exception("Unsupported vectorization type");
     }
   } else if (grid.getType() == base::GridType::LinearL0Boundary
-             || grid.getType() == base::GridType::LinearBoundary0) {
+             || grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
       return new parallel::OperationLaplaceVectorizedLinearBoundary(
                grid.getStorage());

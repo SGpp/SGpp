@@ -34,7 +34,7 @@ j_env = env.Clone()
 # (as we cannot do anything against them and as they confuse jenkins)
 j_env.AppendUnique(CPPFLAGS=["-w"])
 
-defines = ["-D" + c for c in j_env["CPPDEFINES"]]
+defines = ["-D" + c[0] + "=" + c[1] for c in j_env["CPPDEFINES"]]
 #swigIncludePaths = ["-I" + module + "/src/" for module in moduleFolders]
 swigIncludePaths = []
 j_env.AppendUnique(SWIGFLAGS=["-c++", "-java", "-package", "sgpp",

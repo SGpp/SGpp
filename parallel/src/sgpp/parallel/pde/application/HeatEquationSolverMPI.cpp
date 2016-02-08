@@ -77,7 +77,7 @@ void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps,
     }
 
     SGPP::solver::SLESolver* myCG;
-    SGPP::pde::OperationParabolicPDESolverSystem* myHESolver;
+    SGPP::solver::OperationParabolicPDESolverSystem* myHESolver;
 
     double dNeededTime;
     SGPP::solver::Euler* myEuler = new SGPP::solver::Euler("ImEul", numTimesteps,
@@ -135,7 +135,7 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps,
     }
 
     SGPP::solver::SLESolver* myCG;
-    SGPP::pde::OperationParabolicPDESolverSystem* myHESolver;
+    SGPP::solver::OperationParabolicPDESolverSystem* myHESolver;
     double dNeededTime;
 
     char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
@@ -240,6 +240,7 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector&
   } else {
     throw new SGPP::base::application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
+
 }
 
 void HeatEquationSolverMPI::initScreen() {

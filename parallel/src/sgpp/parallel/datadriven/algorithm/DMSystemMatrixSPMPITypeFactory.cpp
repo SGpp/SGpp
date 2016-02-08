@@ -50,6 +50,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#if USE_DOUBLE_PRECISION==0
+
 
 namespace SGPP {
 namespace parallel {
@@ -261,5 +263,5 @@ DMSystemMatrixSPMPITypeFactory::getDMSystemMatrixSP(base::Grid& grid,
     throw base::factory_exception("MPITypeFactory: OperationMultipleEvalVectorized is not implemented for this grid type.");
   }
 }
-}
-}
+
+#endif

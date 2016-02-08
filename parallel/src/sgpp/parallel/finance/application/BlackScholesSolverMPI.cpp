@@ -474,7 +474,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
     solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize,
         generateAnimation, numEvalsAnimation, myScreen);
     solver::SLESolver* myCG;
-    pde::OperationParabolicPDESolverSystem* myBSSystem = NULL;
+    solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
     if (this->usePAT == false) {
       myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
@@ -577,7 +577,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
     SGPP::base::DataVector& alpha, size_t NumImEul) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::SLESolver* myCG;
-    pde::OperationParabolicPDESolverSystem* myBSSystem = NULL;
+    solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
     if (this->usePAT == false) {
       myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);

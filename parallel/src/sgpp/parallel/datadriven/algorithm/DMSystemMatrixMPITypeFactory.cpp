@@ -142,13 +142,12 @@ datadriven::DMSystemMatrixBase* DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
     modlinear_mode = "mask";
   }
 
-  if (strcmp(grid.getType(), "linear") == 0
-      || strcmp(grid.getType(), "linearL0Boundary") == 0
-      || strcmp(grid.getType(), "linearBoundary") == 0) {
-    if (vecType == parallel::X86SIMD) {
-      return createDMSystemMatrixMPIType<CPUKernel<X86SimdLinear> >
-             (grid, trainDataset, lambda, vecType, mpiType);
-    }
+      if (grid.getType() == SGPP::base::GridType::Linear || grid.getType() == SGPP::base::GridType::LinearL0Boundary ||
+          grid.getType() == SGPP::base::GridType::LinearBoundary) {
+        if (vecType == parallel::X86SIMD) {
+          return createDMSystemMatrixMPIType<CPUKernel<X86SimdLinear> >
+                 (grid, trainDataset, lambda, vecType, mpiType);
+        }
 
 #ifdef USEOCL
     else if (vecType == parallel::OpenCL) {
@@ -181,7 +180,7 @@ datadriven::DMSystemMatrixBase* DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
       return new SGPP::parallel::DMSystemMatrixVectorizedIdentityMPI(grid,
              trainDataset, lambda, vecType);
     }
-  } else if (strcmp(grid.getType(), "modlinear") == 0) {
+  } else if (grid.getType() == SGPP::base::GridType::ModLinear) {
     if (vecType == parallel::X86SIMD) {
       if (strcmp(modlinear_mode, "orig") == 0) {
         return createDMSystemMatrixMPIType<CPUKernel<X86SimdModLinear> >

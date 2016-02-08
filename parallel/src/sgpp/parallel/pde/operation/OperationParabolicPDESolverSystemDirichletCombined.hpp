@@ -6,7 +6,7 @@
 #ifndef OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 #define OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP
 
-#include <sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp>
+#include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
 
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/base/grid/common/DirichletGridConverter.hpp>
@@ -37,7 +37,7 @@ namespace parallel {
  * inner grid points into account.
  */
 class OperationParabolicPDESolverSystemDirichletCombined : public
-  SGPP::pde::OperationParabolicPDESolverSystem {
+  SGPP::solver::OperationParabolicPDESolverSystem {
  protected:
   /// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
   SGPP::base::DataVector* alpha_inner;

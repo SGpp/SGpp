@@ -17,7 +17,7 @@ namespace parallel {
 OperationMultipleEvalIterativeArBBModLinear::OperationMultipleEvalIterativeArBBModLinear(
   SGPP::base::GridStorage* storage,
   SGPP::base::DataMatrix* dataset) :
-  SGPP::parallel::OperationMultipleEvalVectorized(dataset) {
+  SGPP::parallel::OperationMultipleEvalVectorized(storage, dataset) {
   this->storage = storage;
 
   this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
