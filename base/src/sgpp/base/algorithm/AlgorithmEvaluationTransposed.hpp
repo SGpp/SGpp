@@ -69,7 +69,7 @@ class AlgorithmEvaluationTransposed {
         DimensionBoundary dimbb = bb->getBoundary(d);
 
         if (!(dimbb.leftBoundary <= point[d] &&
-            point[d] <= dimbb.rightBoundary) ) {
+              point[d] <= dimbb.rightBoundary) ) {
           inside = false;
           break;
         }

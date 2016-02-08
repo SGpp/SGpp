@@ -195,7 +195,7 @@ class GetAffectedBasisFunctions {
  */
 template<>
 class GetAffectedBasisFunctions<WaveletModifiedBasis<
-unsigned int, unsigned int> > {
+  unsigned int, unsigned int> > {
   typedef WaveletModifiedBasis<unsigned int, unsigned int> SWaveletModifiedBase;
  public:
   explicit GetAffectedBasisFunctions(GridStorage* storage) :
@@ -384,8 +384,8 @@ unsigned int, unsigned int> > {
  * Template Specialization for B-Spline basis.
  **/
 template<>
-class GetAffectedBasisFunctions<
-BsplineModifiedBasis<unsigned int, unsigned int> > {
+class GetAffectedBasisFunctions <
+  BsplineModifiedBasis<unsigned int, unsigned int> > {
   typedef BsplineModifiedBasis<unsigned int, unsigned int> SBsplineModifiedBase;
  public:
   explicit GetAffectedBasisFunctions(GridStorage* storage) : storage(storage) {
@@ -430,7 +430,8 @@ BsplineModifiedBasis<unsigned int, unsigned int> > {
   GridStorage* storage;
 
   void rec(SBsplineModifiedBase& base, const DataVector& point,
-           size_t current_dim, float_t value, GridStorage::grid_iterator& working,
+           size_t current_dim, float_t value,
+           GridStorage::grid_iterator& working,
            GridStorage::index_type::index_type* source,
            std::vector<std::pair<size_t, float_t> >& result) {
     typedef GridStorage::index_type::level_type level_type;
@@ -450,7 +451,7 @@ BsplineModifiedBasis<unsigned int, unsigned int> > {
     while (true) {
       size_t seq = working.seq();
 
-      if ( storage->end(seq)  ) {
+      if (storage->end(seq)) {
         // std::cout << "Grid not found or dim exceed breaking..Grid: " <<
         // seq<<" dim "<<current_dim<<std::endl;
         break;
@@ -493,7 +494,6 @@ BsplineModifiedBasis<unsigned int, unsigned int> > {
             // std::cout << "RBasis function " << tmpSeq <<" Value " <<
             // value*tmpValue<<std::endl;
             result.push_back(std::make_pair(tmpSeq, value * tmpValue));
-
           }
 
           working.stepLeft(current_dim);
@@ -502,7 +502,7 @@ BsplineModifiedBasis<unsigned int, unsigned int> > {
           working.stepLeft(current_dim);
           tmpSeq = working.seq();
 
-          if (!(storage->end(tmpSeq)) ) {
+          if (!(storage->end(tmpSeq))) {
             // for( int i=0;i < storage->dim();i++)
             // {
             //   working.get(i, temp, work_index);
@@ -514,7 +514,6 @@ BsplineModifiedBasis<unsigned int, unsigned int> > {
             // std::cout << "LBasis function " << tmpSeq <<" Value " <<
             // value*tmpValue<<std::endl;
             result.push_back(std::make_pair(tmpSeq, value * tmpValue));
-
           }
 
           working.stepRight(current_dim);
@@ -523,7 +522,7 @@ BsplineModifiedBasis<unsigned int, unsigned int> > {
           rec(base, point, current_dim + 1, value * new_value, working, source,
               result);
 
-          //std::cout << "Checking Right Neighbour" << std::endl;
+          // std::cout << "Checking Right Neighbour" << std::endl;
           working.stepRight(current_dim);
           working.get(current_dim, temp, work_index);
           new_value = base.eval(work_level, work_index, point[current_dim]);
@@ -567,7 +566,8 @@ BsplineModifiedBasis<unsigned int, unsigned int> > {
  * Template Specialization for LinearBoundaryBasis basis.
  */
 template<>
-class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> > {
+class GetAffectedBasisFunctions <
+  LinearBoundaryBasis<unsigned int, unsigned int> > {
   typedef LinearBoundaryBasis<unsigned int, unsigned int> SLinearBoundaryBase;
  public:
   explicit GetAffectedBasisFunctions(GridStorage* storage) : storage(storage),
@@ -634,9 +634,7 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
             rec(basis, point, current_dim + 1, value * new_value, working,
                 result);
           }
-        }
-        // handle boundaries if we are on level 0
-        else {
+        } else {  // handle boundaries if we are on level 0
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
@@ -653,7 +651,8 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
           // level 0, index 1
           working.resetToRightLevelZero(current_dim);
           size_t seq_lz_right = working.seq();
-          float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
+          float_t new_value_l_zero_right = basis.eval(0, 1,
+                                           point[current_dim]);
 
           if (current_dim == storage->dim() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
@@ -681,7 +680,7 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
         h = 1 << work_level;
 
         hat = (1.0 / static_cast<float_t>(h)) *
-            static_cast<float_t>(global_work_index);
+              static_cast<float_t>(global_work_index);
 
         if (point[current_dim] == hat)
           break;
@@ -740,9 +739,7 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
             recBB(basis, point, current_dim + 1, value * new_value, working,
                   result);
           }
-        }
-        // handle boundaries if we are on level 0
-        else {
+        } else {  // handle boundaries if we are on level 0
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
@@ -794,7 +791,7 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
 
         hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<float_t>
                (h)) * static_cast<float_t>(global_work_index))) +
-                   BB->getIntervalOffset(
+              BB->getIntervalOffset(
                 current_dim);
 
         if (point[current_dim] == hat)
@@ -819,19 +816,18 @@ class GetAffectedBasisFunctions<LinearBoundaryBasis<unsigned int, unsigned int> 
 
     working.resetToLeftLevelZero(current_dim);
   }
-
 };
 
 /**
  * Template Specialization for LinearStretchedBoundaryBasis basis.
  */
 template<>
-class GetAffectedBasisFunctions<
-LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
+class GetAffectedBasisFunctions <
+  LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
   typedef LinearStretchedBoundaryBasis<unsigned int, unsigned int>
   SLinearStretchedBoundaryBase;
  public:
-  GetAffectedBasisFunctions(GridStorage* storage) : storage(storage),
+  explicit GetAffectedBasisFunctions(GridStorage* storage) : storage(storage),
     stretch(storage->getStretching()) {
   }
 
@@ -839,7 +835,7 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
 
   void operator()(SLinearStretchedBoundaryBase& basis, const DataVector& point,
                   std::vector<std::pair<size_t, float_t> >& result) {
-    //There's no BoundaryBox checking necessary
+    // There's no BoundaryBox checking necessary
 
     GridStorage::grid_iterator working(storage);
 
@@ -847,8 +843,6 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
     result.clear();
 
     recBB(basis, point, 0, 1.0, working, result);
-
-
   }
 
  protected:
@@ -900,7 +894,7 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
             new_value = basis.eval(work_level, work_index,
                                    point[current_dim], posr, posc);
           } else {
-            ///calculate using the left-hand ramp
+            /// calculate using the left-hand ramp
             new_value = basis.eval(work_level, work_index,
                                    point[current_dim], posl, posc);
           }
@@ -912,9 +906,7 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
             recBB(basis, point, current_dim + 1, value * new_value, working,
                   result);
           }
-        }
-        // handle boundaries if we are on level 0
-        else {
+        } else {  // handle boundaries if we are on level 0
           float_t left = stretch->getBoundary(current_dim).leftBoundary;
           float_t right = stretch->getBoundary(current_dim).rightBoundary;
           // level 0, index 0
@@ -924,8 +916,8 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
           // point[current_dim], BB->getIntervalWidth(current_dim),
           // BB->getIntervalOffset(current_dim));
           float_t new_value_l_zero_left = basis.eval(0, 0,
-                                                     point[current_dim],
-                                                     right, left);
+                                          point[current_dim],
+                                          right, left);
 
           if (current_dim == storage->dim() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
@@ -943,8 +935,8 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
           // point[current_dim], BB->getIntervalWidth(current_dim),
           // BB->getIntervalOffset(current_dim));
           float_t new_value_l_zero_right = basis.eval(0, 1,
-                                                      point[current_dim],
-                                                      left, right);
+                                           point[current_dim],
+                                           left, right);
 
           if (current_dim == storage->dim() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
@@ -993,7 +985,8 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
         // break;
 
         if ((point[current_dim] == stretch->getCoordinates(0, 0, current_dim))
-            || (point[current_dim] == stretch->getCoordinates(0, 1, current_dim))) {
+            || (point[current_dim] == stretch->getCoordinates(0, 1,
+                current_dim))) {
           break;
         }
 
@@ -1005,7 +998,6 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
 
     working.resetToLeftLevelZero(current_dim);
   }
-
 };
 
 
@@ -1015,10 +1007,10 @@ LinearStretchedBoundaryBasis<unsigned int, unsigned int> > {
  */
 template<>
 class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
-
   typedef PrewaveletBasis<unsigned int, unsigned int> SPrewaveletBase;
+
  public:
-  GetAffectedBasisFunctions(GridStorage* storage) :
+  explicit GetAffectedBasisFunctions(GridStorage* storage) :
     storage(storage) {
   }
 
@@ -1038,12 +1030,9 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
    */
   void operator()(SPrewaveletBase& basis, const DataVector& point,
                   std::vector<std::pair<size_t, float_t> >& result) {
-
     GridStorage::grid_iterator iter(storage);
     result.clear();
     rec(basis, point, 0, iter, result);
-
-
   }
 
 
@@ -1067,8 +1056,7 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
   void rec(SPrewaveletBase& basis, const DataVector& point,
            size_t current_dim, GridStorage::grid_iterator& iter, std::vector <
            std::pair<size_t, float_t> > & result) {
-
-    //First, save this point
+    // First, save this point
     float_t value = 1.0;
 
     for (size_t d = 0; d < storage->dim(); ++d) {
@@ -1083,16 +1071,16 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
     for (size_t d = current_dim; d < storage->dim(); d++) {
       index_type save_index;
       level_type save_level;
-      iter.get(d, save_level, save_index); //Save current index
+      iter.get(d, save_level, save_index);  // Save current index
 
       if (iter.hintLeft(d)) {
-        //Handle left Child in dimension d
+        // Handle left Child in dimension d
         iter.leftChild(d);
         index_type current_index;
         level_type current_level;
         iter.get(d, current_level, current_index);
-        //Check if current index is still in the area of the point
-        int int_index = current_index; // needed to avoid overrun with index-3
+        // Check if current index is still in the area of the point
+        int int_index = current_index;  // needed to avoid overrun with index-3
 
         if ((1.0 / (1 << current_level)) * (int_index - 3) < point[d]
             && (1.0 / (1 << current_level)) * (int_index + 3)
@@ -1101,16 +1089,16 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
         }
       }
 
-      iter.set(d, save_level, save_index); //reset index
+      iter.set(d, save_level, save_index);  // reset index
 
       if (iter.hintRight(d)) {
-        //Handle left Child in dimension d
+        // Handle left Child in dimension d
         iter.rightChild(d);
         index_type current_index;
         level_type current_level;
         iter.get(d, current_level, current_index);
-        //Check if current index is still in the area of the point
-        int int_index = current_index; // needed to avoid overrun with index-3
+        // Check if current index is still in the area of the point
+        int int_index = current_index;  // needed to avoid overrun with index-3
 
         if ((1.0 / (1 << current_level)) * (int_index - 3) < point[d]
             && (1.0 / (1 << current_level)) * (int_index + 3)
@@ -1119,11 +1107,9 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
         }
       }
 
-      iter.set(d, save_level, save_index); //reset index
+      iter.set(d, save_level, save_index);  // reset index
     }
-
   }
-
 };
 
 
@@ -1133,10 +1119,11 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
 * Template Specialization for PeriodicBasis basis.
 */
 template<>
-class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> > {
+class GetAffectedBasisFunctions <
+  LinearPeriodicBasis<unsigned int, unsigned int> > {
   typedef LinearPeriodicBasis<unsigned int, unsigned int> SLinearPeriodicBasis;
  public:
-  GetAffectedBasisFunctions(GridStorage* storage) : storage(storage) {
+  explicit GetAffectedBasisFunctions(GridStorage* storage) : storage(storage) {
   }
 
   ~GetAffectedBasisFunctions() {}
@@ -1156,7 +1143,8 @@ class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> 
   GridStorage* storage;
 
   void rec(SLinearPeriodicBasis& basis, const DataVector& point,
-           size_t current_dim, float_t value, GridStorage::grid_iterator& working,
+           size_t current_dim, float_t value,
+           GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, float_t> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
@@ -1178,25 +1166,27 @@ class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> 
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index, point[current_dim]);
+          float_t new_value = basis.eval(work_level, work_index,
+                                         point[current_dim]);
 
           if (current_dim == storage->dim() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
-            rec(basis, point, current_dim + 1, value * new_value, working, result);
+            rec(basis, point, current_dim + 1, value * new_value, working,
+                result);
           }
-        }
-        // handle boundaries if we are on level 0
-        else {
+        } else {  // handle boundaries if we are on level 0
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
           float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
           if (current_dim == storage->dim() - 1) {
-            result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
+            result.push_back(std::make_pair(seq_lz_left,
+                                            value * new_value_l_zero_left));
           } else {
-            rec(basis, point, current_dim + 1, value * new_value_l_zero_left, working,
+            rec(basis, point, current_dim + 1, value * new_value_l_zero_left,
+                working,
                 result);
           }
         }
@@ -1207,15 +1197,18 @@ class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> 
         break;
       }
 
-      // this decides in which direction we should descend by evaluating the corresponding bit
-      // the bits are coded from left to right starting with level 1 being in position max_level
+      // this decides in which direction we should descend by evaluating
+      // the corresponding bit
+      // the bits are coded from left to right starting with level 1
+      // being in position max_level
       if (work_level > 0) {
         float_t hat = 0.0;
         level_type h = 0;
 
         h = 1 << work_level;
 
-        hat = (1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index);
+        hat = (1.0 / static_cast<float_t>(h)) *
+              static_cast<float_t>(global_work_index);
 
         if (point[current_dim] == hat)
           break;
@@ -1243,10 +1236,11 @@ class GetAffectedBasisFunctions<LinearPeriodicBasis<unsigned int, unsigned int> 
  * Template Specialization for PolyBoundaryBasis basis.
  */
 template<>
-class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > {
+class GetAffectedBasisFunctions <
+  PolyBoundaryBasis<unsigned int, unsigned int> > {
   typedef PolyBoundaryBasis<unsigned int, unsigned int> SPolyBoundaryBase;
  public:
-  GetAffectedBasisFunctions(GridStorage* storage) : storage(storage),
+  explicit GetAffectedBasisFunctions(GridStorage* storage) : storage(storage),
     BB(storage->getBoundingBox()) {
   }
 
@@ -1277,7 +1271,8 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
   GridStorage* storage;
   BoundingBox* BB;
 
-  void rec(SPolyBoundaryBase& basis, const DataVector& point, size_t current_dim,
+  void rec(SPolyBoundaryBase& basis, const DataVector& point,
+           size_t current_dim,
            float_t value, GridStorage::grid_iterator& working,
            std::vector<std::pair<size_t, float_t> >& result) {
     typedef GridStorage::index_type::level_type level_type;
@@ -1300,25 +1295,27 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index, point[current_dim]);
+          float_t new_value = basis.eval(work_level, work_index,
+                                         point[current_dim]);
 
           if (current_dim == storage->dim() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
-            rec(basis, point, current_dim + 1, value * new_value, working, result);
+            rec(basis, point, current_dim + 1, value * new_value, working,
+                result);
           }
-        }
-        // handle boundaries if we are on level 0
-        else {
+        } else {  // handle boundaries if we are on level 0
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
           float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
           if (current_dim == storage->dim() - 1) {
-            result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
+            result.push_back(std::make_pair(seq_lz_left,
+                                            value * new_value_l_zero_left));
           } else {
-            rec(basis, point, current_dim + 1, value * new_value_l_zero_left, working,
+            rec(basis, point, current_dim + 1, value * new_value_l_zero_left,
+                working,
                 result);
           }
 
@@ -1328,9 +1325,11 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
           float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
 
           if (current_dim == storage->dim() - 1) {
-            result.push_back(std::make_pair(seq_lz_right, value * new_value_l_zero_right));
+            result.push_back(std::make_pair(seq_lz_right,
+                                            value * new_value_l_zero_right));
           } else {
-            rec(basis, point, current_dim + 1, value * new_value_l_zero_right, working,
+            rec(basis, point, current_dim + 1, value * new_value_l_zero_right,
+                working,
                 result);
           }
         }
@@ -1341,15 +1340,18 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
         break;
       }
 
-      // this decides in which direction we should descend by evaluating the corresponding bit
-      // the bits are coded from left to right starting with level 1 being in position max_level
+      // this decides in which direction we should descend by evaluating
+      // the corresponding bit
+      // the bits are coded from left to right starting with level 1
+      // being in position max_level
       if (work_level > 0) {
         float_t hat = 0.0;
         level_type h = 0;
 
         h = 1 << work_level;
 
-        hat = (1.0 / static_cast<float_t>(h)) * static_cast<float_t>(global_work_index);
+        hat = (1.0 / static_cast<float_t>(h)) *
+              static_cast<float_t>(global_work_index);
 
         if (point[current_dim] == hat)
           break;
@@ -1374,7 +1376,8 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
 
 
   void recBB(SPolyBoundaryBase& basis, const DataVector& point,
-             size_t current_dim, float_t value, GridStorage::grid_iterator& working,
+             size_t current_dim, float_t value,
+             GridStorage::grid_iterator& working,
              std::vector<std::pair<size_t, float_t> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
@@ -1396,27 +1399,31 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index, point[current_dim],
-                                         BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+          float_t new_value = basis.eval(work_level, work_index,
+                                         point[current_dim],
+                                         BB->getIntervalWidth(current_dim),
+                                         BB->getIntervalOffset(current_dim));
 
           if (current_dim == storage->dim() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
-            recBB(basis, point, current_dim + 1, value * new_value, working, result);
+            recBB(basis, point, current_dim + 1, value * new_value, working,
+                  result);
           }
-        }
-        // handle boundaries if we are on level 0
-        else {
+        } else {  // handle boundaries if we are on level 0
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
           float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim],
-                                          BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                                          BB->getIntervalWidth(current_dim),
+                                          BB->getIntervalOffset(current_dim));
 
           if (current_dim == storage->dim() - 1) {
-            result.push_back(std::make_pair(seq_lz_left, value * new_value_l_zero_left));
+            result.push_back(std::make_pair(seq_lz_left,
+                                            value * new_value_l_zero_left));
           } else {
-            recBB(basis, point, current_dim + 1, value * new_value_l_zero_left, working,
+            recBB(basis, point, current_dim + 1, value * new_value_l_zero_left,
+                  working,
                   result);
           }
 
@@ -1424,12 +1431,15 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
           working.resetToRightLevelZero(current_dim);
           size_t seq_lz_right = working.seq();
           float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim],
-                                           BB->getIntervalWidth(current_dim), BB->getIntervalOffset(current_dim));
+                                           BB->getIntervalWidth(current_dim),
+                                           BB->getIntervalOffset(current_dim));
 
           if (current_dim == storage->dim() - 1) {
-            result.push_back(std::make_pair(seq_lz_right, value * new_value_l_zero_right));
+            result.push_back(std::make_pair(seq_lz_right,
+                                            value * new_value_l_zero_right));
           } else {
-            recBB(basis, point, current_dim + 1, value * new_value_l_zero_right, working,
+            recBB(basis, point, current_dim + 1, value * new_value_l_zero_right,
+                  working,
                   result);
           }
         }
@@ -1440,8 +1450,10 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
         break;
       }
 
-      // this decides in which direction we should descend by evaluating the corresponding bit
-      // the bits are coded from left to right starting with level 1 being in position max_level
+      // this decides in which direction we should descend by evaluating
+      // the corresponding bit
+      // the bits are coded from left to right starting with level 1
+      // being in position max_level
       if (work_level > 0) {
         float_t hat = 0.0;
         level_type h = 0;
@@ -1449,7 +1461,8 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
         h = 1 << work_level;
 
         hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<float_t>
-               (h)) * static_cast<float_t>(global_work_index))) + BB->getIntervalOffset(
+               (h)) * static_cast<float_t>(global_work_index))) +
+              BB->getIntervalOffset(
                 current_dim);
 
         if (point[current_dim] == hat)
@@ -1474,7 +1487,6 @@ class GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > 
 
     working.resetToLeftLevelZero(current_dim);
   }
-
 };
 
 }  // namespace base

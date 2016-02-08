@@ -80,8 +80,8 @@ class AlgorithmDGEMV {
         ga(basis, line, vec);
 
         for (IndexValVector::iterator iter = vec.begin();
-            iter != vec.end();
-            iter++) {
+             iter != vec.end();
+             iter++) {
           privateResult[iter->first] += iter->second * source[i];
         }
       }
@@ -130,8 +130,8 @@ class AlgorithmDGEMV {
         ga(basis, line, vec);
 
         for (IndexValVector::iterator iter = vec.begin();
-            iter != vec.end();
-            iter++) {
+             iter != vec.end();
+             iter++) {
           result[i] += iter->second * source[iter->first];
         }
       }

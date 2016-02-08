@@ -9,11 +9,11 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <vector>
 #include <utility>
 #include <iostream>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -45,7 +45,7 @@ class sweep {
    *
    * @param storage the storage that contains the grid points
    */
-  sweep(GridStorage* storage) : functor(), storage(storage),
+  explicit sweep(GridStorage* storage) : functor(), storage(storage),
     algoDims(storage->getAlgorithmicDimensions()),
     numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
   }
@@ -56,7 +56,8 @@ class sweep {
    * @param functor the functor that is executed on the grid
    * @param storage the storage that contains the grid points
    */
-  sweep(FUNC& functor, GridStorage* storage) : functor(functor), storage(storage),
+  sweep(FUNC& functor, GridStorage* storage) :
+    functor(functor), storage(storage),
     algoDims(storage->getAlgorithmicDimensions()),
     numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
   }
@@ -76,7 +77,8 @@ class sweep {
    * @param dim_sweep the dimension in which the functor is executed
    */
   void sweep1D(DataVector& source, DataVector& result, size_t dim_sweep) {
-    // generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+    // generate a list of all dimension (-dim_sweep)
+    // from dimension recursion unrolling
     std::vector<size_t> dim_list;
 
     for (size_t i = 0; i < storage->dim(); i++) {
@@ -99,7 +101,8 @@ class sweep {
    * @param dim_sweep the dimension in which the functor is executed
    */
   void sweep1D(DataMatrix& source, DataMatrix& result, size_t dim_sweep) {
-    // generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+    // generate a list of all dimension (-dim_sweep)
+    // from dimension recursion unrolling
     std::vector<size_t> dim_list;
 
     for (size_t i = 0; i < this->numAlgoDims_; i++) {
@@ -110,7 +113,8 @@ class sweep {
 
     grid_iterator index(storage);
 
-    sweep_rec(source, result, index, dim_list, this->numAlgoDims_ - 1, dim_sweep);
+    sweep_rec(source, result, index, dim_list, this->numAlgoDims_ - 1,
+              dim_sweep);
   }
 
   /**
@@ -123,7 +127,8 @@ class sweep {
    */
   void sweep1D_Boundary(DataVector& source, DataVector& result,
                         size_t dim_sweep) {
-    // generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+    // generate a list of all dimension (-dim_sweep) from
+    // dimension recursion unrolling
     std::vector<size_t> dim_list;
 
     for (size_t i = 0; i < storage->dim(); i++) {
@@ -150,7 +155,8 @@ class sweep {
    */
   void sweep1D_Boundary(DataMatrix& source, DataMatrix& result,
                         size_t dim_sweep) {
-    // generate a list of all dimension (-dim_sweep) from dimension recursion unrolling
+    // generate a list of all dimension (-dim_sweep) from
+    // dimension recursion unrolling
     std::vector<size_t> dim_list;
 
     for (size_t i = 0; i < storage->dim(); i++) {
@@ -167,7 +173,6 @@ class sweep {
   }
 
  protected:
-
   /**
    * Descends on all dimensions beside dim_sweep. Class functor for dim_sweep.
    * Boundaries are not regarded
@@ -180,7 +185,8 @@ class sweep {
    * @param dim_sweep static dimension, in this dimension the functor is executed
    */
   void sweep_rec(DataVector& source, DataVector& result, grid_iterator& index,
-                 std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep) {
+                 std::vector<size_t>& dim_list, size_t dim_rem,
+                 size_t dim_sweep) {
     functor(source, result, index, dim_sweep);
 
     // dimension recursion unrolled
@@ -219,7 +225,8 @@ class sweep {
    * @param dim_sweep static dimension, in this dimension the functor is executed
   */
   void sweep_rec(DataMatrix& source, DataMatrix& result, grid_iterator& index,
-                 std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep) {
+                 std::vector<size_t>& dim_list, size_t dim_rem,
+                 size_t dim_sweep) {
     functor(source, result, index, dim_sweep);
 
     // dimension recursion unrolled
@@ -259,7 +266,8 @@ class sweep {
    */
   void sweep_Boundary_rec(DataVector& source, DataVector& result,
                           grid_iterator& index,
-                          std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep) {
+                          std::vector<size_t>& dim_list, size_t dim_rem,
+                          size_t dim_sweep) {
     if (dim_rem == 0) {
       functor(source, result, index, dim_sweep);
     } else {
@@ -274,36 +282,40 @@ class sweep {
       // handle level greater zero
       if (current_level > 0) {
         // given current point to next dim
-        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1,
+                           dim_sweep);
 
         if (!index.hint()) {
           index.leftChild(dim_list[dim_rem - 1]);
 
           if (!storage->end(index.seq())) {
-            sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+            sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
+                               dim_sweep);
           }
 
           index.stepRight(dim_list[dim_rem - 1]);
 
           if (!storage->end(index.seq())) {
-            sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+            sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
+                               dim_sweep);
           }
 
           index.up(dim_list[dim_rem - 1]);
         }
-      }
-      // handle level zero
-      else {
-        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+      } else {  // handle level zero
+        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1,
+                           dim_sweep);
 
         index.resetToRightLevelZero(dim_list[dim_rem - 1]);
-        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1,
+                           dim_sweep);
 
         if (!index.hint()) {
           index.resetToLevelOne(dim_list[dim_rem - 1]);
 
           if (!storage->end(index.seq())) {
-            sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+            sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
+                               dim_sweep);
           }
         }
 
@@ -325,7 +337,8 @@ class sweep {
    */
   void sweep_Boundary_rec(DataMatrix& source, DataMatrix& result,
                           grid_iterator& index,
-                          std::vector<size_t>& dim_list, size_t dim_rem, size_t dim_sweep) {
+                          std::vector<size_t>& dim_list, size_t dim_rem,
+                          size_t dim_sweep) {
     if (dim_rem == 0) {
       functor(source, result, index, dim_sweep);
     } else {
@@ -340,36 +353,40 @@ class sweep {
       // handle level greater zero
       if (current_level > 0) {
         // given current point to next dim
-        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1,
+                           dim_sweep);
 
         if (!index.hint()) {
           index.leftChild(dim_list[dim_rem - 1]);
 
           if (!storage->end(index.seq())) {
-            sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+            sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
+                               dim_sweep);
           }
 
           index.stepRight(dim_list[dim_rem - 1]);
 
           if (!storage->end(index.seq())) {
-            sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+            sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
+                               dim_sweep);
           }
 
           index.up(dim_list[dim_rem - 1]);
         }
-      }
-      // handle level zero
-      else {
-        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+      } else {  // handle level zero
+        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1,
+                           dim_sweep);
 
         index.resetToRightLevelZero(dim_list[dim_rem - 1]);
-        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1, dim_sweep);
+        sweep_Boundary_rec(source, result, index, dim_list, dim_rem - 1,
+                           dim_sweep);
 
         if (!index.hint()) {
           index.resetToLevelOne(dim_list[dim_rem - 1]);
 
           if (!storage->end(index.seq())) {
-            sweep_Boundary_rec(source, result, index, dim_list, dim_rem, dim_sweep);
+            sweep_Boundary_rec(source, result, index, dim_list, dim_rem,
+                               dim_sweep);
           }
         }
 

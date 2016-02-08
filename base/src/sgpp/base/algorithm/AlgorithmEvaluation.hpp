@@ -81,7 +81,7 @@ class AlgorithmEvaluation {
     typedef GridStorage::index_type::index_type index_type;
 
     size_t bits = sizeof(index_type) *
-        8;  // how many levels can we store in a index_type?
+                  8;  // how many levels can we store in a index_type?
 
     size_t dim = storage->dim();
 
@@ -101,14 +101,14 @@ class AlgorithmEvaluation {
         }
 
         if (!(dimbb.leftBoundary <= newPoint[d]
-                && newPoint[d] <= dimbb.rightBoundary) ) {
+              && newPoint[d] <= dimbb.rightBoundary) ) {
           // std::cout << "Out of bounds: " << point[d] << std::endl;
           return 0.0;
         }
 
         // std::cout << "Old: " << point[d] << std::endl;
         newPoint[d] = (newPoint[d] - dimbb.leftBoundary) /
-            (dimbb.rightBoundary - dimbb.leftBoundary);
+                      (dimbb.rightBoundary - dimbb.leftBoundary);
         // std::cout << "New: " << point[d] << std::endl;
       }
     }
