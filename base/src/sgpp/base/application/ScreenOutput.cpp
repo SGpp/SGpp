@@ -7,6 +7,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 
 namespace SGPP {
 namespace base {
@@ -31,7 +33,7 @@ void ScreenOutput::update(size_t progress, std::string status) {
 
   std::cout << "[";
 
-  for (i = 0; i < ((int)(((float_t)progress) * 0.64)); i++) {
+  for (i = 0; i < static_cast<int>(((float_t)progress) * 0.64); i++) {
     std::cout << '\xdb';
   }
 
@@ -60,7 +62,7 @@ void ScreenOutput::update(size_t progress, std::string status) {
 
   std::cout << "[";
 
-  for (i = 0; i < ((int)(((float_t)progress) * 0.64)); i++) {
+  for (i = 0; i < static_cast<int>(((float_t)progress) * 0.64); i++) {
     std::cout << "=";
   }
 
@@ -90,11 +92,13 @@ void ScreenOutput::writeTitle(std::string appTitle, std::string appAuthor) {
   std::cout << "=========================================           " <<
             "  ##  ##  ##  ##  ##" << std::endl;
   std::cout <<
-            "                                                      ##  ##  ##  ##  ##" <<
+            "                                                      "
+            "##  ##  ##  ##  ##" <<
             std::endl;
   std::cout << appAuthor << "##  ##  ##  ##  ##" << std::endl;
   std::cout <<
-            "                                                      ##  ######  ##  ##" <<
+            "                                                      "
+            "##  ######  ##  ##" <<
             std::endl << std::endl;
 }
 
