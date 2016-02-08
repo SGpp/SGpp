@@ -23,7 +23,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
+#if USE_DOUBLE_PRECISION==0
 namespace SGPP {
 namespace parallel {
 
@@ -343,5 +343,6 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI : public
 };
 
 }
-}
+#endif
+
 #endif /* DMSYSTEMMATRIXSPVECTORIZEDIDENTITYASYNCMPI_HPP */

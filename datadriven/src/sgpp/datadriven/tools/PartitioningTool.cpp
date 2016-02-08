@@ -138,7 +138,7 @@ void PartitioningTool::calcMPIChunkedDistribution(size_t totalSize,
     size_t numChunksPerProc, int* sizes, int* offsets, size_t blocksize) {
   size_t numRanks = 1;
 
-  numRanks = myGlobalMPIComm->getNumRanks();
+      numRanks = SGPP::parallel::myGlobalMPIComm->getNumRanks();
 
   size_t procSize;
   size_t procOffset;

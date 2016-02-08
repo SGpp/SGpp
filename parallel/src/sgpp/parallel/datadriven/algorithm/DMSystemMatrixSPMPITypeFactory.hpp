@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
+#if USE_DOUBLE_PRECISION==0
 namespace SGPP {
 namespace parallel {
 
@@ -32,5 +32,6 @@ class DMSystemMatrixSPMPITypeFactory {
 
 }
 }
+#endif
 
 #endif // DMSYSTEMMATRIXSPMPITYPEFACTORY_HPP

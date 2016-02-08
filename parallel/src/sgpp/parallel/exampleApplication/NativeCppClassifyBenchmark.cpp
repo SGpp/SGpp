@@ -129,9 +129,9 @@ void printSettings(std::string dataFile, std::string testFile,
     std::cout << "Mode: Classification" << std::endl << std::endl;
   }
 
-  if (GridConfig.type_ == SGPP::base::Linear) {
+  if (GridConfig.type_ == SGPP::base::GridType::Linear) {
     std::cout << "chosen gridtype: Linear" << std::endl << std::endl;
-  } else if (GridConfig.type_ == SGPP::base::LinearBoundary) {
+  } else if (GridConfig.type_ == SGPP::base::GridType::LinearBoundary) {
     std::cout << "chosen gridtype: LinearBoundary" << std::endl << std::endl;
   } else {
     const char* modlinear_mode = getenv("SGPP_MODLINEAR_EVAL");
@@ -291,12 +291,12 @@ void adaptClassificationTestRecursive(SGPP::base::DataMatrix& data,
                                       const SGPP::base::AdpativityConfiguration& AdaptConfig,
                                       const double lambda, const SGPP::parallel::VectorizationType vecType) {
   SGPP::datadriven::LearnerBase* myLearner;
-  SGPP::datadriven::LearnerRegularizationType C_type;
+  SGPP::datadriven::RegularizationType C_type;
 
 #ifdef USE_REC_LAPLACE
   C_type = SGPP::datadriven::Laplace;
 #else
-  C_type = SGPP::datadriven::Identity;
+  C_type = SGPP::datadriven::RegularizationType::Identity;
 #endif
   myLearner = new SGPP::datadriven::Learner(C_type, isRegression, true);
 
@@ -475,23 +475,23 @@ int main(int argc, char* argv[]) {
     SLESolverConfigRefine.eps_ = cg_eps_learning;
     SLESolverConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverConfigRefine.threshold_ = -1.0;
-    SLESolverConfigRefine.type_ = SGPP::solver::CG;
+    SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
     SLESolverSPConfigRefine.eps_ = static_cast<float>(cg_eps_learning);
     SLESolverSPConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverSPConfigRefine.threshold_ = -1.0f;
-    SLESolverSPConfigRefine.type_ = SGPP::solver::CG;
+    SLESolverSPConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
 
     // Set solver for final step
     SLESolverConfigFinal.eps_ = cg_eps;
     SLESolverConfigFinal.maxIterations_ = cg_max;
     SLESolverConfigFinal.threshold_ = -1.0;
-    SLESolverConfigFinal.type_ = SGPP::solver::CG;
+    SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
     SLESolverSPConfigFinal.eps_ = static_cast<float>(cg_eps);
     SLESolverSPConfigFinal.maxIterations_ = cg_max;
     SLESolverSPConfigFinal.threshold_ = -1.0f;
-    SLESolverSPConfigFinal.type_ = SGPP::solver::CG;
+    SLESolverSPConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
@@ -506,10 +506,10 @@ int main(int argc, char* argv[]) {
     size_t nInstancesTestNo = testdataset.getNumberInstances();
 
     // Define DP data
-    SGPP::base::DataMatrix data = *dataset.getTrainingData();
-    SGPP::base::DataVector classes = *dataset.getClasses();
-    SGPP::base::DataMatrix testdata = *testdataset.getTrainingData();
-    SGPP::base::DataVector testclasses = *testdataset.getClasses();
+    SGPP::base::DataMatrix data = dataset.getTrainingData();
+    SGPP::base::DataVector classes = dataset.getClasses();
+    SGPP::base::DataMatrix testdata = testdataset.getTrainingData();
+    SGPP::base::DataVector testclasses = testdataset.getClasses();
 
     // Define SP data
     SGPP::base::DataMatrixSP dataSP(nInstancesNo, nDim);
@@ -530,11 +530,11 @@ int main(int argc, char* argv[]) {
     ggridtype = gridtype;
 
     if (gridtype == "linearboundary") {
-      gridConfig.type_ = SGPP::base::LinearBoundary;
+      gridConfig.type_ = SGPP::base::GridType::LinearBoundary;
     } else if (gridtype == "modlinear") {
-      gridConfig.type_ = SGPP::base::ModLinear;
+      gridConfig.type_ = SGPP::base::GridType::ModLinear;
     } else if (gridtype == "linear") {
-      gridConfig.type_ = SGPP::base::Linear;
+      gridConfig.type_ = SGPP::base::GridType::Linear;
     } else {
       std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." <<
                 std::endl << std::endl;
