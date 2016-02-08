@@ -3,15 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <sys/types.h>
-#include <cmath>
-#include <algorithm>
 
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
+
+#include <sys/types.h>
+
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <utility>
+#include <map>
 
 
 namespace SGPP {
@@ -62,7 +66,7 @@ HashGridIndex::HashGridIndex(std::istream& istream, int version) :
   for (size_t d = 0; d < DIM; d++) {
     istream >> level[d];
     istream >> index[d];
-  };
+  }
 
   if (version >= 2 && version != 4) {
     // read leaf option
@@ -233,7 +237,6 @@ HashGridIndex::operator=(
   }
 
   if (DIM != rhs.DIM) {
-
     if (level) {
       delete[] level;
     }
@@ -315,7 +318,7 @@ HashGridIndex::getCoordsString() const {
   std::stringstream return_stream;
 
   // switch on scientific notation:
-  //return_stream << std::scientific;
+  // return_stream << std::scientific;
 
   for (size_t d = 0; d < DIM; d++) {
     if (level[d] == 0) {
@@ -338,7 +341,8 @@ HashGridIndex::getCoordsStringBB(BoundingBox& BB) const {
 
   for (size_t d = 0; d < DIM; d++) {
     return_stream << std::scientific
-                  << BB.getIntervalWidth(d) * getCoord(d) + BB.getIntervalOffset(d);
+                  << BB.getIntervalWidth(d) * getCoord(d) +
+                  BB.getIntervalOffset(d);
 
     if (d < DIM - 1) {
       return_stream << " ";
@@ -408,16 +412,20 @@ HashGridIndex::typeMap() {
      */
 #ifdef _WIN32
     tMap->insert(
-      std::pair<std::string, base::HashGridIndex::PointDistribution>("Normal",
+      std::pair<std::string,
+      base::HashGridIndex::PointDistribution>("Normal",
           HashGridIndex::PointDistribution::Normal));
     tMap->insert(
-      std::pair<std::string, base::HashGridIndex::PointDistribution>("ClenshawCurtis",
+      std::pair<std::string,
+      base::HashGridIndex::PointDistribution>("ClenshawCurtis",
           HashGridIndex::PointDistribution::ClenshawCurtis));
 #else
-    tMap->insert(std::make_pair("Normal",
-                                HashGridIndex::PointDistribution::Normal));
-    tMap->insert(std::make_pair("ClenshawCurtis",
-                                HashGridIndex::PointDistribution::ClenshawCurtis));
+    tMap->insert(std::make_pair(
+                   "Normal",
+                   HashGridIndex::PointDistribution::Normal));
+    tMap->insert(std::make_pair(
+                   "ClenshawCurtis",
+                   HashGridIndex::PointDistribution::ClenshawCurtis));
 #endif
   }
 

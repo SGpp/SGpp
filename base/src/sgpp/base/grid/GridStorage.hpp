@@ -22,7 +22,7 @@ typedef unsigned int index_t;
 /**
  * Main typedef for GridIndex
  */
-//typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
+// typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
 typedef HashGridIndex GridIndex;
 
 /**

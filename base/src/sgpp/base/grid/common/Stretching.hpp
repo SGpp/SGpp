@@ -9,16 +9,18 @@
 #define LOOKUPSIZE 2047
 #define LOOKUPMAX 11
 
+#include <sgpp/base/grid/common/BoundingBox.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <time.h>
+
 #include <cstddef>
 #include <cmath>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <time.h>
 #include <algorithm>
-#include <sgpp/base/grid/common/BoundingBox.hpp>
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -27,9 +29,9 @@ namespace base {
 struct Stretching1D {
   std::string type;
   float_t x_0, xsi;
-  //Index 0 : current position
-  //Index 1: left neighbor position
-  //Index 2: right neighbor position
+  // Index 0 : current position
+  // Index 1: left neighbor position
+  // Index 2: right neighbor position
   float_t lookup[LOOKUPSIZE][3];
 };
 
@@ -45,7 +47,6 @@ struct Stretching1D {
 
 class Stretching : public BoundingBox {
  private:
-
   Stretching1D* stretching1Ds;
   int* discreteVectorLevel;
   std::string* stretchingMode;
@@ -103,7 +104,7 @@ class Stretching : public BoundingBox {
    *
    * @param dimension describes in which dimension the Stretching occurs.
    */
-  void leentvaarXform (Stretching1D& str1D, size_t dimension);
+  void leentvaarXform(Stretching1D& str1D, size_t dimension);
 
   /*
    * overloaded
@@ -113,7 +114,7 @@ class Stretching : public BoundingBox {
    *
    * @param dimension describes in which dimension the Stretching occurs.
    */
-  float_t leentvaarXform (int level, int index, size_t dimension);
+  float_t leentvaarXform(int level, int index, size_t dimension);
 
   /*
    * makes no Stretching on the dimension, the points are equidistant
@@ -149,7 +150,8 @@ class Stretching : public BoundingBox {
    * @param discreteVectorLevel how many levels the grid vector points form
    */
 
-  void parseVectorToLookupTable(std::vector<float_t> vec, Stretching1D& stretch1d,
+  void parseVectorToLookupTable(std::vector<float_t> vec,
+                                Stretching1D& stretch1d,
                                 size_t dim, int& discreteVectorLevel);
 
 
@@ -166,7 +168,6 @@ class Stretching : public BoundingBox {
                               int& leftIndex, int& rightLevel, int& rightIndex);
 
  public:
-
   /**
    * Constructor for Stretching
    *
@@ -242,7 +243,8 @@ class Stretching : public BoundingBox {
    * @param posl left point
    * @param posr right point
    */
-  void getAdjacentPositions(int level, int index, size_t dimension, float_t& posc,
+  void getAdjacentPositions(int level, int index, size_t dimension,
+                            float_t& posc,
                             float_t& posl, float_t& posr);
 
   /*

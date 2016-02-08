@@ -29,13 +29,15 @@ class DirichletGridConverter {
   size_t numTotalGridPoints;
   /// number of the inner grid's grid points
   size_t numInnerGridPoints;
-  /// array to store the position of i-th inner point in the boundary grid's coefficients
+  /**
+   * array to store the position of i-th inner point in
+   * the boundary grid's coefficients
+   */
   size_t* conCoefArray;
   /// ensure that buildInnerGridWithCoefs can only be called once
   bool bFirstTime;
 
  public:
-
   /**
    * Constructor
    */

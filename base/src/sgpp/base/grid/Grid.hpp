@@ -10,9 +10,11 @@
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 
-#include <map>
-
 #include <sgpp/globaldef.hpp>
+
+#include <map>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace base {
@@ -322,7 +324,7 @@ class Grid {
    *
    * @param istr inputstream that contains the grid information
    */
-  Grid(std::istream& istr);
+  explicit Grid(std::istream& istr);
 
   /**
    * Standard Constructor
@@ -335,7 +337,7 @@ class Grid {
    *
    * @param dim dimensionality
    */
-  Grid(size_t dim);
+  explicit Grid(size_t dim);
 
   /**
    * Constructor initializing the grid storage with the given
@@ -343,7 +345,7 @@ class Grid {
    *
    * @param BB BoundingBox of the grid
    */
-  Grid(BoundingBox& BB);
+  explicit Grid(BoundingBox& BB);
 
   /**
    * Constructor initializing the grid storage with the given
@@ -351,7 +353,7 @@ class Grid {
    *
    * @param BB Stretching of the grid
    */
-  Grid(Stretching& BB);
+  explicit Grid(Stretching& BB);
 
  public:
   /**
@@ -514,7 +516,7 @@ class Grid {
    */
   static gridTypeVerboseMap& typeVerboseMap();
 
-  //pointer to the Operation Eval used in Grid.eval()
+  // pointer to the Operation Eval used in Grid.eval()
   static OperationEval* evalOp;
 };
 

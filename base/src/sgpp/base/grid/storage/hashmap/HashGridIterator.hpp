@@ -11,12 +11,12 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <memory>
 #include <string>
 #include <sstream>
 #include <exception>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -40,14 +40,14 @@ class HashGridIterator {
    *
    * @param storage pointer the hashmap that stores the grid points
    */
-  HashGridIterator(HashGridStorage* storage);
+  explicit HashGridIterator(HashGridStorage* storage);
 
   /**
    * Copy Constructor of the griditerator object
    *
    * @param copy a HashGridIterator object that is used to build this instance
    */
-  HashGridIterator(HashGridIterator& copy);
+  explicit HashGridIterator(HashGridIterator& copy);
 
   /**
    * Destructor
@@ -190,7 +190,8 @@ class HashGridIterator {
    * @param l the ansatz function's level
    * @param i the ansatz function's index
    */
-  inline void push(size_t d, index_type::level_type l, index_type::index_type i) {
+  inline void push(size_t d, index_type::level_type l,
+                   index_type::index_type i) {
     index.push(d, l, i);
   }
 
@@ -226,7 +227,7 @@ class HashGridIterator {
   size_t seq_;
 };
 
-} // namespace base
-} // namespace SGPP
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HASHGRIDITERATOR_HPP */

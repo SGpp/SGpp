@@ -1,17 +1,21 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/common/IndexInSubspaceGenerator.hpp>
 
 namespace SGPP {
 namespace base {
 
-IndexInSubspaceGenerator::IndexInSubspaceGenerator (const value_type&
+IndexInSubspaceGenerator::IndexInSubspaceGenerator(const value_type&
     level_vector) :
   level_vector(level_vector),
   max_index_vector(level_vector.size()), val_(NULL), dim_(level_vector.size()) {
   for (size_t d = 0; d < dim_; d++) {
     max_index_vector[d] = (2 << (level_vector[d] - 1)) - 1;
   }
-
 }
 
 IndexInSubspaceGenerator::iterator IndexInSubspaceGenerator::begin() {
@@ -59,8 +63,5 @@ IndexInSubspaceGenerator* IndexInSubspaceGenerator::next_() {
   return this;
 }
 
-
-
-
 }  // namespace base
-}  // namespace sg
+}  // namespace SGPP

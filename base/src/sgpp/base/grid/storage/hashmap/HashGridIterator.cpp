@@ -3,15 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
+
 #include <memory>
 #include <string>
 #include <sstream>
 #include <exception>
-
-#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
-
-#include <sgpp/base/exception/generation_exception.hpp>
-#include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 namespace SGPP {
 namespace base {
@@ -111,7 +110,6 @@ HashGridIterator::stepLeft(size_t d) {
   index.get(d, l, i);
   index.set(d, l, i - 2);
   this->seq_ = storage->seq(&index);
-
 }
 
 void
@@ -121,7 +119,6 @@ HashGridIterator::stepRight(size_t d) {
   index.get(d, l, i);
   index.set(d, l, i + 2);
   this->seq_ = storage->seq(&index);
-
 }
 
 bool
@@ -175,7 +172,6 @@ HashGridIterator::seq() const {
 
 HashGridIterator::level_t
 HashGridIterator::getGridDepth(size_t dim) {
-
   index_type::level_type depth = 1;
   index_type::level_type orig_level, cur_level;
   index_type::index_type orig_index, cur_index;
@@ -190,18 +186,18 @@ HashGridIterator::getGridDepth(size_t dim) {
       depth++;
       this->rightChild(dim);
     } else {
-
       index.get(dim, cur_level, cur_index);
 
-      bool hasFound = false; //Was a next index found?
+      bool hasFound = false;  // Was a next index found?
 
-      //Ok, we have no more childs left. Now we slide from left to right in the dim on
-      //the same level, to see, if there are adaptive refinements
+      // Ok, we have no more childs left.
+      // Now we slide from left to right in the dim on
+      // the same level, to see, if there are adaptive refinements
       for (size_t i = cur_index + 2; i < (unsigned int) (1 << (depth));
            i = i + 2) {
         this->set(dim, cur_level, *reinterpret_cast<unsigned int*>(&i));
 
-        //does this index exist?
+        // does this index exist?
         if (!storage->end(this->seq())) {
           if (this->hintLeft(dim)) {
             depth++;
@@ -220,7 +216,6 @@ HashGridIterator::getGridDepth(size_t dim) {
       if (!hasFound) {
         break;
       }
-
     }
   }
 
@@ -233,6 +228,6 @@ HashGridIterator::toString() {
   return index.toString();
 }
 
-} // namespace base
-} // namespace SGPP
+}  // namespace base
+}  // namespace SGPP
 

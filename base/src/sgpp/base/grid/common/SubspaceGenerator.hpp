@@ -3,15 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream> //std::cout
-#include <algorithm> //std::nth_element
-#include <vector> //std::vector
-#include <utility> // std::pair
+#include <sgpp/globaldef.hpp>
+
+#include <iostream>  // std::cout
+#include <algorithm>  // std::nth_element
+#include <vector>  // std::vector
+#include <utility>  // std::pair
 #include <iterator>
 #include <queue>
 #include <numeric>
-
-#include <sgpp/globaldef.hpp>
 
 #ifndef SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_
 #define SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_
@@ -20,21 +20,18 @@ namespace SGPP {
 namespace base {
 
 class SubspaceGenerator {
-
  public:
   typedef std::vector<unsigned int> value_type;
   typedef value_type* pointer_type;
 
   typedef std::pair<pointer_type, unsigned int> queue_value_type;
 
-
-  SubspaceGenerator (unsigned int dim, unsigned int max_level) ;
-
+  explicit SubspaceGenerator(unsigned int dim, unsigned int max_level);
 
   class iterator
     : std::iterator<std::forward_iterator_tag, pointer_type> {
    public:
-    explicit iterator (SubspaceGenerator* p = 0) : ptr_(p) {}
+    explicit iterator(SubspaceGenerator* p = 0) : ptr_(p) {}
     // implicit copy constructor, copy assignment and destructor
 
     reference operator* () {
@@ -46,12 +43,11 @@ class SubspaceGenerator {
         ptr_ = ptr_->next_();
       } else {
         ptr_ = NULL;
-
       }
 
       return *this;
     }
-    iterator operator++ (int) {
+    iterator operator++(int) {
       iterator tmp = *this;
       ++*this;
       return tmp;
@@ -85,11 +81,9 @@ class SubspaceGenerator {
   std::queue <queue_value_type> queue_;
 
   SubspaceGenerator* next_();
-
-
 };
 
 }  // namespace base
-}  // namespace sg
+}  // namespace SGPP
 
 #endif /* SRC_SGPP_BASE_GRID_COMMON_SUBSPACEGENERATOR_HPP_ */

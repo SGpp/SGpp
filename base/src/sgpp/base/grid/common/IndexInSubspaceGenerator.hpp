@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm> //std::nth_element
+#include <sgpp/globaldef.hpp>
+
+#include <algorithm>  // std::nth_element
 #include <cmath>
-#include <iostream> //std::cout
+#include <iostream>  // std::cout
 #include <iterator>
 #include <memory>
 #include <numeric>
 #include <queue>
 #include <stdexcept>
-#include <utility> // std::pair
-#include <vector> //std::vector
-
-#include <sgpp/globaldef.hpp>
+#include <utility>  // std::pair
+#include <vector>  // std::vector
 
 #ifndef SRC_SGPP_BASE_GRID_COMMON_INDEXINSUBSPACEGENERATOR_HPP_
 #define SRC_SGPP_BASE_GRID_COMMON_INDEXINSUBSPACEGENERATOR_HPP_
@@ -40,7 +40,7 @@ class IndexInSubspaceGenerator {
    * Constructor
    * @param level_vector std::vector<int> with the level vector of the subspace
    */
-  IndexInSubspaceGenerator (const value_type& level_vector);
+  explicit IndexInSubspaceGenerator(const value_type& level_vector);
 
 
   /**
@@ -57,7 +57,7 @@ class IndexInSubspaceGenerator {
   class iterator
     : std::iterator<std::forward_iterator_tag, value_type> {
    public:
-    explicit iterator (IndexInSubspaceGenerator* p = 0) : ptr_(p) {}
+    explicit iterator(IndexInSubspaceGenerator* p = 0) : ptr_(p) {}
     // implicit copy constructor, copy assignment and destructor
 
     reference operator* () {
@@ -69,12 +69,12 @@ class IndexInSubspaceGenerator {
         ptr_ = ptr_->next_();
       } else {
         ptr_ = NULL;
-
       }
 
       return *this;
     }
-    iterator operator++ (int) {
+
+    iterator operator++(int) {
       iterator tmp = *this;
       ++*this;
       return tmp;
@@ -130,10 +130,9 @@ class IndexInSubspaceGenerator {
    * @return pointer to self
    */
   IndexInSubspaceGenerator* next_();
-
 };
 
 }  // namespace base
-}  // namespace sg
+}  // namespace SGPP
 
 #endif /* SRC_SGPP_BASE_GRID_COMMON_INDEXINSUBSPACEGENERATOR_HPP_ */

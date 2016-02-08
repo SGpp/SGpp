@@ -42,7 +42,7 @@ class DirichletUpdateVector {
    *
    * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
    */
-  DirichletUpdateVector(GridStorage* storage);
+  explicit DirichletUpdateVector(GridStorage* storage);
 
   /**
    * Std-Destructor

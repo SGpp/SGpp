@@ -10,9 +10,10 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
-#include <cstring>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cstring>
+#include <vector>
 
 
 namespace SGPP {
@@ -39,8 +40,8 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       this->numTotalGridPoints = myGridStorage->size();
       this->numInnerGridPoints = myGridStorage->getNumInnerPoints();
 
-      //std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
-      //std::cout << "Inner Points: " << this->numInnerGridPoints << std::endl;
+      // std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
+      // std::cout << "Inner Points: " << this->numInnerGridPoints << std::endl;
 
       // allocate the translation array for the coefficients
       this->conCoefArray = new size_t[this->numInnerGridPoints];
@@ -73,22 +74,23 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
         }
       }
 
-      //std::string inGrid;
-      //*InnerGrid->serialize(inGrid);
-      //std::cout << inGrid << std::endl;
+      // std::string inGrid;
+      // *InnerGrid->serialize(inGrid);
+      // std::cout << inGrid << std::endl;
 
-      //(*InnerGrid)->getStorage()->recalcLeafProperty();
+      // (*InnerGrid)->getStorage()->recalcLeafProperty();
 
       this->bFirstTime = false;
-    } else if (boundaryGrid.getType() == base::GridType::LinearStretchedBoundary) {
+    } else if (boundaryGrid.getType() ==
+               base::GridType::LinearStretchedBoundary) {
       GridStorage* myGridStorage = boundaryGrid.getStorage();
 
       // determine the number of grid points for both grids
       this->numTotalGridPoints = myGridStorage->size();
       this->numInnerGridPoints = myGridStorage->getNumInnerPoints();
 
-      //std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
-      //std::cout << "Inner Points: " << this->numInnerGridPoints << std::endl;
+      // std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
+      // std::cout << "Inner Points: " << this->numInnerGridPoints << std::endl;
 
       // allocate the translation array for the coefficients
       this->conCoefArray = new size_t[this->numInnerGridPoints];
@@ -121,18 +123,22 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
         }
       }
 
-      //std::string inGrid;
-      //*InnerGrid->serialize(inGrid);
-      //std::cout << inGrid << std::endl;
+      // std::string inGrid;
+      // *InnerGrid->serialize(inGrid);
+      // std::cout << inGrid << std::endl;
 
-      //(*InnerGrid)->getStorage()->recalcLeafProperty();
+      // (*InnerGrid)->getStorage()->recalcLeafProperty();
 
       this->bFirstTime = false;
     } else {
-      throw generation_exception("DirichletGridConverter : buildInnerGridWithCoefs : Boundary Grid is from an unsupported grid type!");
+      throw generation_exception(
+        "DirichletGridConverter : buildInnerGridWithCoefs : "
+        "Boundary Grid is from an unsupported grid type!");
     }
   } else {
-    throw generation_exception("DirichletGridConverter : buildInnerGridWithCoefs : This method can only be called once for one instance!");
+    throw generation_exception(
+      "DirichletGridConverter : buildInnerGridWithCoefs : "
+      "This method can only be called once for one instance!");
   }
 }
 
@@ -181,12 +187,16 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
         }
       }
 
-      //(*InnerGrid)->getStorage()->recalcLeafProperty();
+      // (*InnerGrid)->getStorage()->recalcLeafProperty();
     } else {
-      throw generation_exception("DirichletGridConverter : rebuildInnerGridWithCoefs : Boundary Grid is from an unsupported grid type!");
+      throw generation_exception(
+        "DirichletGridConverter : rebuildInnerGridWithCoefs : "
+        "Boundary Grid is from an unsupported grid type!");
     }
   } else {
-    throw generation_exception("DirichletGridConverter : rebuildInnerGridWithCoefs : This method can only be called after initial build!");
+    throw generation_exception(
+      "DirichletGridConverter : rebuildInnerGridWithCoefs : "
+      "This method can only be called after initial build!");
   }
 }
 
@@ -197,7 +207,10 @@ void DirichletGridConverter::calcInnerCoefs(DataVector& BoundaryCoefs,
       InnerCoefs.set(i, BoundaryCoefs.get(this->conCoefArray[i]));
     }
   } else {
-    throw generation_exception("DirichletGridConverter : calcInnerCoefs : The inner grid has no gridpoints! Check adaptivity calls and settings!");
+    throw generation_exception(
+      "DirichletGridConverter : calcInnerCoefs : "
+      "The inner grid has no gridpoints! "
+      "Check adaptivity calls and settings!");
   }
 }
 
@@ -208,7 +221,10 @@ void DirichletGridConverter::updateBoundaryCoefs(DataVector& BoundaryCoefs,
       BoundaryCoefs.set(this->conCoefArray[i], InnerCoefs.get(i));
     }
   } else {
-    throw generation_exception("DirichletGridConverter : updateBoundaryCoefs : The inner grid has no gridpoints! Check adaptivity calls and settings!");
+    throw generation_exception(
+      "DirichletGridConverter : updateBoundaryCoefs : "
+      "The inner grid has no gridpoints! "
+      "Check adaptivity calls and settings!");
   }
 }
 

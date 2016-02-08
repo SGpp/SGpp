@@ -10,12 +10,12 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <iostream>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -104,7 +104,8 @@ float_t GridDataBase::get(GridIndex* gi) {
 
   if (ind == _map.end()) {
     std::cerr << gi->toString() << " not in database" << std::endl;
-    throw new SGPP::base::data_exception("GridDataBase::get : grid point not in database");
+    throw new SGPP::base::data_exception(
+      "GridDataBase::get : grid point not in database");
   }
 
   return ind->second;
@@ -158,7 +159,7 @@ void GridDataBase::save(std::string filename, char ftype) {
       fout << git->second << std::endl;
     }
 
-  } else { // type: binary
+  } else {  // type: binary
     // open file
     fout.open(filename.c_str(), std::ios::binary);
 
@@ -170,9 +171,9 @@ void GridDataBase::save(std::string filename, char ftype) {
 
     // dump contents to file
     // write binary information
-    fout.write((char*)(&ftype), sizeof(ftype));
+    fout.write(static_cast<char*>(&ftype), sizeof(ftype));
     // write dimensionality
-    fout.write((char*)(&_dim), sizeof(_dim));
+    fout.write(static_cast<char*>(&_dim), sizeof(_dim));
     // iterate over hashmap
     grid_map_const_iterator git;
     level_t lev;
@@ -181,8 +182,8 @@ void GridDataBase::save(std::string filename, char ftype) {
     for (git = _map.begin(); git != _map.end(); git++) {
       for (int d = 0; d < _dim; d++) {
         git->first->get(d, lev, ind);
-        fout.write((char*)(&lev), sizeof(lev));
-        fout.write((char*)(&ind), sizeof(ind));
+        fout.write(static_cast<char*>(&lev), sizeof(lev));
+        fout.write(static_cast<char*>(&ind), sizeof(ind));
       }
 
       fout.write((const char*) & (git->second), sizeof(git->second));
@@ -220,15 +221,13 @@ void GridDataBase::_loadTypeDim(const std::string filename, char& ftype,
     throw new file_exception(msg.c_str());
   }
 
-  fin.read((char*)&ftype, sizeof(ftype));
+  fin.read(static_cast<char*>(&dim)&ftype, sizeof(ftype));
 
   // we're in binary mode
   if (ftype == binary) {
     std::cout << filename << " is binary" << std::endl;
-    fin.read((char*)&dim, sizeof(dim));
-  }
-  // we're in ASCII mode
-  else {
+    fin.read(static_cast<char*>(&dim), sizeof(dim));
+  } else {  // we're in ASCII mode
     fin.close();
     fin.open(filename.c_str());
     std::cout << filename << " is ascii" << std::endl;
@@ -242,7 +241,6 @@ void GridDataBase::_loadTypeDim(const std::string filename, char& ftype,
 
     fin >> dim;
   }
-
 }
 
 void GridDataBase::_loadData(std::ifstream& fin, char& ftype) {
@@ -269,17 +267,15 @@ void GridDataBase::_loadData(std::ifstream& fin, char& ftype) {
       fin >> val;
       set(&gi, val);
     }
-  }
-  // binary data
-  else {
+  } else {  // binary data
     while (!fin.eof()) {
       for (int d = 0; d < _dim; d++) {
-        fin.read((char*)&lev, sizeof(lev));
-        fin.read((char*)&ind, sizeof(ind));
+        fin.read(static_cast<char*>(&lev), sizeof(lev));
+        fin.read(static_cast<char*>(&ind), sizeof(ind));
         gi.set(d, lev, ind);
       }
 
-      fin.read((char*)&val, sizeof(val));
+      fin.read(static_cast<char*>(&val), sizeof(val));
       set(&gi, val);
     }
   }
