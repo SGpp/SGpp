@@ -70,35 +70,10 @@ if env['USE_STATICLIB']:
 else:
     # building of shared libraries differs
     libsuffix = env['SHLIBSUFFIX']
-    if (env['PLATFORM'] == 'cygwin') or (env['COMPILER'] == 'vcc'):
-        # remove old moduleDependencies if they exist already
-        for ext in ['lib', 'exp', 'dll', 'def']:
-            newlibFilename = "%s.%s" % (libname, ext)
-            if os.path.exists(newlibFilename):
-                os.remove(newlibFilename)
-
-        def buildDefFile(target, source, env):
-            # load all object files
-            win32objs = []
-            for currentFolder, subdirNames, fileNames in os.walk(os.path.join(moduleName, "src")):
-                for fileName in fnmatch.filter(fileNames, '*.obj'):
-                    win32objs.append(os.path.join(currentFolder, fileName))
-            # build windows module definition file (def-file)
-            subprocess.call(['bindexplib.exe', '-o', os.path.join(moduleName, '%s.def' % libname), os.path.join(moduleName, '%s.dll' % libname)] + win32objs)
-
-        cmd = env.Command('buildDefFile', [], buildDefFile)
-        lib = env.SharedLibrary(target=libname,
-                                source=objs,
-                                LIBPATH=BUILD_DIR,
-                                LIBS=moduleDependencies,
-                                LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
-        env.Depends(cmd, objs)
-        env.Depends(lib, cmd)
-    else:
-        lib = env.SharedLibrary(target=libname,
-                                source=objs,
-                                LIBPATH=BUILD_DIR,
-                                LIBS=moduleDependencies)
+    lib = env.SharedLibrary(target=libname,
+                            source=objs,
+                            LIBPATH=BUILD_DIR,
+                            LIBS=moduleDependencies)
 
 for lib_str in moduleDependencies:
     if lib_str.startswith("sgpp"):
