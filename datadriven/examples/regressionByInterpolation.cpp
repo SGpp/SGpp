@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
       sampleFile << point[d] << ", ";
     }
 
-    dataset.appendRow(point);
+    dataset.appendRow(SGPP::base::DataVector(point));
     values[sample] = f(point);
     sampleFile << values[sample] << std::endl;
   }
