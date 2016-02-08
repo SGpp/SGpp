@@ -6,14 +6,17 @@
 #ifndef FUNDAMENTAL_SPLINE_MODIFIED_BASE_HPP
 #define FUNDAMENTAL_SPLINE_MODIFIED_BASE_HPP
 
-#include <cmath>
-#include <stdexcept>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
+#include <algorithm>
+#include <vector>
+#include <stdexcept>
 
 namespace SGPP {
 namespace base {
@@ -38,7 +41,7 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
    * @param degree    fundamental spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  FundamentalSplineModifiedBasis(size_t degree) :
+  explicit FundamentalSplineModifiedBasis(size_t degree) :
     fundamentalSplineBasis(FundamentalSplineBasis<LT, IT>(degree)),
     bsplineBasis(BsplineBasis<LT, IT>(degree)) {
     switch (bsplineBasis.getDegree()) {
@@ -290,7 +293,7 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~FundamentalSplineModifiedBasis() override {
+  ~FundamentalSplineModifiedBasis() override {
   }
 
   /**
@@ -299,7 +302,7 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of modified fundamental spline basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 1) {
       return 1.0;
     }
@@ -471,7 +474,8 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
 // default type-def (unsigned int for level and index)
 typedef FundamentalSplineModifiedBasis<unsigned int, unsigned int>
 SFundamentalSplineModifiedBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* FUNDAMENTAL_SPLINE_MODIFIED_BASE_HPP */

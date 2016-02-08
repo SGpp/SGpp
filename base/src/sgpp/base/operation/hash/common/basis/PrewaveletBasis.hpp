@@ -6,11 +6,12 @@
 #ifndef PREWAVELET_BASE_HPP
 #define PREWAVELET_BASE_HPP
 
-#include <cmath>
-#include <iostream>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
+#include <iostream>
 
 
 namespace SGPP {
@@ -37,7 +38,6 @@ namespace base {
 template<class LT, class IT>
 class PrewaveletBasis: public Basis<LT, IT> {
  private:
-
   static const float_t normal_stamp[];
   static const float_t border_stamp[];
 
@@ -50,20 +50,21 @@ class PrewaveletBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~PrewaveletBasis() override {
+  ~PrewaveletBasis() override {
   }
 
   /**
    * Evaluate a basis function.
    * Has a dependence on the absolute position of grid point and support.
    */
-  virtual float_t eval(LT level, IT index, float_t p) override {
+  float_t eval(LT level, IT index, float_t p) override {
     /* A prewavelet is simply the sum of neighboring hat functions with a certain
      * stamp. So we have to figure out, which of the 5 hat functions is the one
      * "hit" by p, modify the index and use the normal hat-function calculation.
      */
 
-    //    //First, check, if the given point is really in the support area of this basis-function!
+    //    //First, check, if the given point is really in the support area
+    //    //of this basis-function!
     //    int int_index = index; // needed to avoid overrun with index-3
     //    if ((1.0 / (1 << level)) * (int_index - 3) > p || (1.0 / (1 << level))
     //        * (index + 3) < p)
@@ -77,8 +78,8 @@ class PrewaveletBasis: public Basis<LT, IT> {
 
     if (1 == level) {
       return evalNormalHat(level, index, p);
-    } else if (1 == index) { //left border
-      //Index of the affected hatbasis. The affected bases are ab and ab + 1
+    } else if (1 == index) {  // left border
+      // Index of the affected hatbasis. The affected bases are ab and ab + 1
       int ab = static_cast<int>(
                  floor(p * static_cast<float_t>(1 << level)));
 
@@ -90,8 +91,8 @@ class PrewaveletBasis: public Basis<LT, IT> {
         return border_stamp[ab - 1] * evalNormalHat(level, ab, p)
                + border_stamp[ab] * evalNormalHat(level, ab + 1, p);
       }
-    } else if ((unsigned int)(1 << level) - 1 == index) { //right border
-      //Index of the affected hatbasis. The affected bases are ab and ab + 1
+    } else if ((unsigned int)(1 << level) - 1 == index) {  // right border
+      // Index of the affected hatbasis. The affected bases are ab and ab + 1
       int ab = static_cast<int>(
                  floor(p * static_cast<float_t>(1 << level)));
 
@@ -105,7 +106,7 @@ class PrewaveletBasis: public Basis<LT, IT> {
                * evalNormalHat(level, ab + 1, p);
       }
     } else {
-      //Index of the affected hatbasis. The affected bases are ab and ab + 1
+      // Index of the affected hatbasis. The affected bases are ab and ab + 1
       unsigned int ab = static_cast<int>(
                           floor(p * static_cast<float_t>(1 << level)));
 

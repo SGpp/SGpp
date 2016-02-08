@@ -31,9 +31,9 @@ class Basis {
   /**
    * Destructor.
    */
-  virtual ~Basis() {};
+  virtual ~Basis() {}
 
-  //Basis();
+  // Basis();
   /*private:
   Basis(Basis const&);
   Basis& operator=(Basis const&);
@@ -41,7 +41,8 @@ class Basis {
 };
 
 typedef Basis<unsigned int, unsigned int> SBasis;
-}
-}
 
-#endif // BASIS_HPP
+}  // namespace base
+}  // namespace SGPP
+
+#endif  // BASIS_HPP

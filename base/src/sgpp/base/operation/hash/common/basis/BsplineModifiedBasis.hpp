@@ -6,11 +6,12 @@
 #ifndef BSPLINE_MODIFIED_BASE_HPP
 #define BSPLINE_MODIFIED_BASE_HPP
 
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 namespace SGPP {
 namespace base {
@@ -33,14 +34,14 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  BsplineModifiedBasis(size_t degree) :
+  explicit BsplineModifiedBasis(size_t degree) :
     bsplineBasis(BsplineBasis<LT, IT>(degree)) {
   }
 
   /**
    * Destructor.
    */
-  virtual ~BsplineModifiedBasis() override {
+  ~BsplineModifiedBasis() override {
   }
 
   /**
@@ -1153,7 +1154,7 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of modified B-spline basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 1) {
       return 1.0;
     }
@@ -1262,7 +1263,8 @@ class BsplineModifiedBasis: public Basis<LT, IT> {
 // default type-def (unsigned int for level and index)
 typedef BsplineModifiedBasis<unsigned int, unsigned int>
 SBsplineModifiedBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* BSPLINE_MODIFIED_BASE_HPP */

@@ -61,7 +61,6 @@ class HierarchisationPolyBoundary {
                   size_t dim);
 
  protected:
-
   /**
    * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -73,11 +72,9 @@ class HierarchisationPolyBoundary {
    */
   void rec(DataVector& source, DataVector& result, grid_iterator& index,
            size_t dim, DataVector& coeffs);
-
 };
 
-} // namespace base
-
-} // namespace sg
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HIERARCHISATIONPOLY_HPP */

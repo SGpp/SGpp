@@ -6,11 +6,12 @@
 #ifndef BSPLINE_BOUNDARY_BASE_HPP
 #define BSPLINE_BOUNDARY_BASE_HPP
 
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 namespace SGPP {
 namespace base {
@@ -33,14 +34,14 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  BsplineBoundaryBasis(size_t degree) :
+  explicit BsplineBoundaryBasis(size_t degree) :
     bsplineBasis(BsplineBasis<LT, IT>(degree)) {
   }
 
   /**
    * Destructor.
    */
-  virtual ~BsplineBoundaryBasis() override {
+  ~BsplineBoundaryBasis() override {
   }
 
   /**
@@ -49,7 +50,7 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of boundary B-spline basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
 
     return bsplineBasis.uniformBSpline(
@@ -102,7 +103,8 @@ class BsplineBoundaryBasis: public Basis<LT, IT> {
 
 // default type-def (unsigned int for level and index)
 typedef BsplineBoundaryBasis<unsigned int, unsigned int> SBsplineBoundaryBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* BSPLINE_BOUNDARY_BASE_HPP */

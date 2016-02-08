@@ -7,9 +7,9 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 namespace SGPP {
 
@@ -31,7 +31,8 @@ void DehierarchisationPoly::operator()(DataVector& source, DataVector& result,
 }
 
 void DehierarchisationPoly::rec(DataVector& source, DataVector& result,
-                                grid_iterator& index, size_t dim, DataVector& coeffs) {
+                                grid_iterator& index, size_t dim,
+                                DataVector& coeffs) {
   // current position on the grid
   size_t seq = index.seq();
 
@@ -74,6 +75,6 @@ void DehierarchisationPoly::rec(DataVector& source, DataVector& result,
   }
 }
 
-} // namespace base
+}  // namespace base
 
-} // namespace SGPP
+}  // namespace SGPP

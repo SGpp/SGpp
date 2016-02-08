@@ -35,7 +35,7 @@ class DehierarchisationLinearStretched {
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    */
-  DehierarchisationLinearStretched(GridStorage* storage);
+  explicit DehierarchisationLinearStretched(GridStorage* storage);
   /**
    * Destructor
    */
@@ -54,7 +54,6 @@ class DehierarchisationLinearStretched {
                           grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * Recursive dehierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -69,9 +68,7 @@ class DehierarchisationLinearStretched {
            size_t dim, float_t fl, float_t fr);
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DEHIERARCHISATIONLINEARSTRETCHED_HPP */

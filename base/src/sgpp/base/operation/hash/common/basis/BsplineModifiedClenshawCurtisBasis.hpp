@@ -6,12 +6,14 @@
 #ifndef BSPLINE_MODIFIED_CLENSHAW_CURTIS_BASE_HPP
 #define BSPLINE_MODIFIED_CLENSHAW_CURTIS_BASE_HPP
 
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
+#include <vector>
 
 namespace SGPP {
 namespace base {
@@ -35,7 +37,7 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
    * @param degree        B-spline degree, must be odd
    *                      (if it's even, degree - 1 is used)
    */
-  BsplineModifiedClenshawCurtisBasis(size_t degree)
+  explicit BsplineModifiedClenshawCurtisBasis(size_t degree)
     : degree(degree),
       xi(std::vector<float_t>(degree + 2, 0.0)) {
     if (degree < 1) {
@@ -48,7 +50,7 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~BsplineModifiedClenshawCurtisBasis() override {
+  ~BsplineModifiedClenshawCurtisBasis() override {
   }
 
   /**
@@ -78,7 +80,7 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
    * @return      value of modified Clenshaw-Curtis
    *              B-spline basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 1) {
       return 1.0;
     }
@@ -170,8 +172,10 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       return 2.0 * ClenshawCurtisTable::getInstance().getPoint(l, 1, hInv) -
              ClenshawCurtisTable::getInstance().getPoint(l, 2, hInv);
     } else if (i >= hInv) {
-      const float_t x1 = ClenshawCurtisTable::getInstance().getPoint(l, 1, hInv);
-      const float_t x2 = ClenshawCurtisTable::getInstance().getPoint(l, 2, hInv);
+      const float_t x1 = ClenshawCurtisTable::
+                         getInstance().getPoint(l, 1, hInv);
+      const float_t x2 = ClenshawCurtisTable::
+                         getInstance().getPoint(l, 2, hInv);
       const float_t hBoundary = x2 - x1;
 
       return (1.0 - x1) + hBoundary * static_cast<float_t>(i - hInv + 1);
@@ -269,7 +273,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       case 3:
         if (x < xi[k + 1]) {
           return -std::pow(x - xi[k], 3)
-                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) * (xi[k] - xi[k + 3]));
+                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) *
+                    (xi[k] - xi[k + 3]));
         } else if (x < xi[k + 2]) {
           return (x - xi[k])
                  * ((x - xi[k]) * (x - xi[k + 2])
@@ -299,7 +304,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       case 5:
         if (x < xi[k + 1]) {
           return -std::pow(x - xi[k], 5)
-                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) * (xi[k] - xi[k + 3])
+                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) *
+                    (xi[k] - xi[k + 3])
                     * (xi[k] - xi[k + 4]) * (xi[k] - xi[k + 5]));
         } else if (x < xi[k + 2]) {
           return (x - xi[k])
@@ -604,10 +610,12 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       case 3:
         if (x < xi[k + 1]) {
           return -3.0 * std::pow(x - xi[k], 2)
-                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) * (xi[k] - xi[k + 3]));
+                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) *
+                    (xi[k] - xi[k + 3]));
         } else if (x < xi[k + 2]) {
           return (x - xi[k])
-                 * ((x - xi[k]) / ((xi[k] - xi[k + 2]) * (xi[k + 1] - xi[k + 2]))
+                 * ((x - xi[k]) / ((xi[k] - xi[k + 2]) *
+                                   (xi[k + 1] - xi[k + 2]))
                     + (x - xi[k + 2])
                     / ((xi[k] - xi[k + 2]) * (xi[k + 1] - xi[k + 2]))
                     + (x - xi[k + 1])
@@ -657,7 +665,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       case 5:
         if (x < xi[k + 1]) {
           return -5.0 * std::pow(x - xi[k], 4)
-                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) * (xi[k] - xi[k + 3])
+                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) *
+                    (xi[k] - xi[k + 3])
                     * (xi[k] - xi[k + 4]) * (xi[k] - xi[k + 5]));
         } else if (x < xi[k + 2]) {
           return (x - xi[k])
@@ -1420,7 +1429,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       case 3:
         if (x < xi[k + 1]) {
           return -6.0 * (x - xi[k])
-                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) * (xi[k] - xi[k + 3]));
+                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) *
+                    (xi[k] - xi[k + 3]));
         } else if (x < xi[k + 2]) {
           return 2.0 * (x - xi[k])
                  * (1 / ((xi[k] - xi[k + 2]) * (xi[k + 1] - xi[k + 2]))
@@ -1472,7 +1482,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
       case 5:
         if (x < xi[k + 1]) {
           return -20.0 * std::pow(x - xi[k], 3)
-                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) * (xi[k] - xi[k + 3])
+                 / ((xi[k] - xi[k + 1]) * (xi[k] - xi[k + 2]) *
+                    (xi[k] - xi[k + 3])
                     * (xi[k] - xi[k + 4]) * (xi[k] - xi[k + 5]));
         } else if (x < xi[k + 2]) {
           return 2.0 * (x - xi[k])
@@ -1593,7 +1604,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
           return -2.0 * (x - xi[k + 6])
                  * ((x - xi[k + 1])
                     * ((x - xi[k + 1])
-                       * (1 / ((xi[k + 1] - xi[k + 3]) * (xi[k + 2] - xi[k + 3]))
+                       * (1 / ((xi[k + 1] - xi[k + 3]) *
+                               (xi[k + 2] - xi[k + 3]))
                           + 1
                           / ((xi[k + 2] - xi[k + 3])
                              * (xi[k + 2] - xi[k + 4])))
@@ -1917,7 +1929,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
           return 2.0 * (x - xi[k + 6])
                  * ((x - xi[k + 6])
                     * ((x - xi[k + 2])
-                       * (1 / ((xi[k + 2] - xi[k + 4]) * (xi[k + 3] - xi[k + 4]))
+                       * (1 / ((xi[k + 2] - xi[k + 4]) *
+                               (xi[k + 3] - xi[k + 4]))
                           + 1
                           / ((xi[k + 3] - xi[k + 4])
                              * (xi[k + 3] - xi[k + 5])))
@@ -2240,7 +2253,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
           return -2.0 * (x - xi[k + 6])
                  * ((x - xi[k + 6])
                     * ((x - xi[k + 6])
-                       * (1 / ((xi[k + 3] - xi[k + 5]) * (xi[k + 4] - xi[k + 5]))
+                       * (1 / ((xi[k + 3] - xi[k + 5]) *
+                               (xi[k + 4] - xi[k + 5]))
                           + 1
                           / ((xi[k + 4] - xi[k + 5])
                              * (xi[k + 4] - xi[k + 6])))
@@ -2727,7 +2741,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
 // default type-def (unsigned int for level and index)
 typedef BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>
 SBsplineModifiedClenshawCurtisBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* BSPLINE_MODIFIED_CLENSHAW_CURTIS_BASE_HPP */

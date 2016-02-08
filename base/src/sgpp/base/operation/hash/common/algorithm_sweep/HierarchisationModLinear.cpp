@@ -29,10 +29,12 @@ void HierarchisationModLinear::operator()(DataVector& source,
 }
 
 void HierarchisationModLinear::rec(DataVector& source, DataVector& result,
-                                   grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+                                   grid_iterator& index, size_t dim,
+                                   float_t fl, float_t fr) {
   // current position on the grid
   size_t seq = index.seq();
-  // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+  // value in the middle, needed for recursive call and
+  // calculation of the hierarchical surplus
   float_t fm = source[seq];
 
   GridStorage::index_type::level_type l;
@@ -45,28 +47,24 @@ void HierarchisationModLinear::rec(DataVector& source, DataVector& result,
     float_t fltemp = fl;
     float_t frtemp = fr;
 
-    // When we descend the hierarchical basis we have to modify the boundary values
+    // When we descend the hierarchical basis
+    // we have to modify the boundary values
     // in case the index is 1 or (2^l)-1 or we are on the first level
     // level 1, constant function
     if (l == 1) {
       // constant function
       fltemp = fm;
       frtemp = fm;
-    }
-    // left boundary
-    else if (i == 1) {
+    } else if (i == 1) {  // left boundary
       float_t ftemp;
       ftemp = fr - fm;
       fltemp = fm - ftemp;
-    }
-    // right boundary
-    else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+    } else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+      // right boundary
       float_t ftemp;
       ftemp = fl - fm;
       frtemp = fm - ftemp;
-    }
-    // inner functions
-    else {
+    } else {  // inner functions
     }
 
     // descend left
@@ -91,7 +89,5 @@ void HierarchisationModLinear::rec(DataVector& source, DataVector& result,
   result[seq] = fm - ((fl + fr) / 2.0);
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

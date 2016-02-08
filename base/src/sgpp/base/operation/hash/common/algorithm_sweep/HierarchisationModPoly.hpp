@@ -61,7 +61,6 @@ class HierarchisationModPoly {
                   size_t dim);
 
  protected:
-
   /**
    * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -73,11 +72,9 @@ class HierarchisationModPoly {
    */
   void rec(DataVector& source, DataVector& result, grid_iterator& index,
            size_t dim, DataVector& koeffs);
-
 };
 
-} // namespace base
-
-} // namespace SGPP
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HIERARCHISATIONMODPOLY_HPP */

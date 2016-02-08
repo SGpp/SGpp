@@ -41,7 +41,8 @@ void DehierarchisationPolyBoundary::operator()(DataVector& source,
 }
 
 void DehierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
-                                        grid_iterator& index, size_t dim, DataVector& coeffs) {
+                                        grid_iterator& index, size_t dim,
+                                        DataVector& coeffs) {
   // current position on the grid
   size_t seq = index.seq();
 
@@ -92,6 +93,5 @@ void DehierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
   }
 }
 
-} // namespace base
-
-} // namespace sg
+}  // namespace base
+}  // namespace SGPP

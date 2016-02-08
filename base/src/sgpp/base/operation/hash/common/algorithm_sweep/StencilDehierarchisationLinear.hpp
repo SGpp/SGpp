@@ -39,10 +39,11 @@ class StencilDehierarchisationLinear {
    * @param neighborStencil storage holding the grid point indices which are the neighbors
    * @param weightStencil storage holding the weight in order to calculate the surplus at each node using it's neighbors
    */
-  StencilDehierarchisationLinear(GridStorage* storage,
-                                 OperationStencilHierarchisation::IndexStencil& surplusStencil,
-                                 OperationStencilHierarchisation::IndexStencil& neighborStencil,
-                                 OperationStencilHierarchisation::WeightStencil& weightStencil);
+  StencilDehierarchisationLinear(
+    GridStorage* storage,
+    OperationStencilHierarchisation::IndexStencil& surplusStencil,
+    OperationStencilHierarchisation::IndexStencil& neighborStencil,
+    OperationStencilHierarchisation::WeightStencil& weightStencil);
   /**
    * Destructor
    */
@@ -62,7 +63,6 @@ class StencilDehierarchisationLinear {
 
 
  protected:
-
   /**
    * Recursive dehierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -82,9 +82,7 @@ class StencilDehierarchisationLinear {
   OperationStencilHierarchisation::WeightStencil& _weightStencil;
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* STENCILDEHIERARCHISATIONLINEAR_HPP */

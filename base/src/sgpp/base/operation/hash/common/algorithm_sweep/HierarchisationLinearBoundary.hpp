@@ -31,7 +31,7 @@ class HierarchisationLinearBoundary: public HierarchisationLinear {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  HierarchisationLinearBoundary(GridStorage* storage);
+  explicit HierarchisationLinearBoundary(GridStorage* storage);
 
   /**
    * Destructor
@@ -56,9 +56,7 @@ class HierarchisationLinearBoundary: public HierarchisationLinear {
                           grid_iterator& index, size_t dim) override;
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HIERARCHISATIONLINEARBOUNDARY_HPP */

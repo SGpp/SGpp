@@ -7,11 +7,11 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
-#include <cmath>
-
 #include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationModPoly.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 
 namespace SGPP {
@@ -33,7 +33,8 @@ void DehierarchisationModPoly::operator()(DataVector& source,
 }
 
 void DehierarchisationModPoly::rec(DataVector& source, DataVector& result,
-                                   grid_iterator& index, size_t dim, DataVector& koeffs) {
+                                   grid_iterator& index, size_t dim,
+                                   DataVector& koeffs) {
   // current position on the grid
   size_t seq = index.seq();
 
@@ -44,7 +45,8 @@ void DehierarchisationModPoly::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // Dehierarchisation
-  result[seq] = source[seq] + this->base->evalHierToTop(cur_lev, cur_ind, koeffs,
+  result[seq] = source[seq] + this->base->evalHierToTop(cur_lev, cur_ind,
+                koeffs,
                 cur_ind / (pow(2.0, static_cast<int>(cur_lev))));
 
   // recursive calls for the right and left side of the current node
@@ -72,6 +74,5 @@ void DehierarchisationModPoly::rec(DataVector& source, DataVector& result,
   }
 }
 
-} // namespace base
-
-} // namespace SGPP
+}  // namespace base
+}  // namespace SGPP

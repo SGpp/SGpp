@@ -61,7 +61,6 @@ class DehierarchisationModPoly {
                   size_t dim);
 
  protected:
-
   /**
    * Recursive dehierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -75,9 +74,7 @@ class DehierarchisationModPoly {
            size_t dim, DataVector& koeffs);
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DEHIERARCHISATIONMODPOLY_HPP */

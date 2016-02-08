@@ -6,15 +6,15 @@
 #ifndef MODIFIED_POLY_BASE_HPP
 #define MODIFIED_POLY_BASE_HPP
 
-#include <cmath>
-#include <vector>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
+#include <vector>
 
 
 namespace SGPP {
@@ -34,22 +34,22 @@ class PolyModifiedBasis: public Basis<LT, IT> {
   size_t degree;
 
  public:
-
   /**
    * Constructor
    *
    * @param degree the polynom's max. degree
    */
-  PolyModifiedBasis(size_t degree) : polynoms(NULL), degree(degree) {
-    //if(degree < 0)
-    //{
-    //  throw factory_exception("PolyBasis: degree < 0");
-    //}
+  explicit PolyModifiedBasis(size_t degree) : polynoms(NULL), degree(degree) {
+    // if(degree < 0)
+    // {
+    //   throw factory_exception("PolyBasis: degree < 0");
+    // }
 
     int polycount = (1 << (degree + 1)) - 1;
     std::vector<float_t> x;
 
-    // degree + 1 for the polynom, +1 for the integral value, +1 for the base-point
+    // degree + 1 for the polynom, +1 for the integral value,
+    // +1 for the base-point
     polynoms = new float_t[(degree + 1 + 2) * polycount];
     initPolynoms(x, 1, 1);
   }
@@ -57,7 +57,7 @@ class PolyModifiedBasis: public Basis<LT, IT> {
   /**
    * Destructor
    */
-  virtual ~PolyModifiedBasis() override {
+  ~PolyModifiedBasis() override {
     if (polynoms) {
       delete [] polynoms;
     }
@@ -67,7 +67,7 @@ class PolyModifiedBasis: public Basis<LT, IT> {
    * Evaluate a basis function.
    * Has a dependence on the absolute position of grid point and support.
    */
-  virtual float_t eval(LT level, IT index, float_t p) override {
+  float_t eval(LT level, IT index, float_t p) override {
     size_t deg = degree + 1 < level ? degree + 1 : level;
 
     size_t idMask = (1 << deg) - 1;
@@ -101,10 +101,10 @@ class PolyModifiedBasis: public Basis<LT, IT> {
     float_t* y_store = x_store + 2;
 
     float_t y_val = y_store[deg - 1];
-    float_t x_val = x_store[0] + val * pow(2.0,
-                                           -(1.0) * (static_cast<float_t>(deg)));
+    float_t x_val = x_store[0] +
+                    val * pow(2.0, -(1.0) * (static_cast<float_t>(deg)));
 
-    //Horner
+    // Horner
     for (size_t i = deg - 2; i > 0; i--) {
       y_val = y_val * x_val + y_store[i];
     }
@@ -169,7 +169,8 @@ class PolyModifiedBasis: public Basis<LT, IT> {
       }
     }
 
-    //determine position in storage. (degree + 1) polynomial factors and 2 values for integral and x-value
+    // determine position in storage.
+    // (degree + 1) polynomial factors and 2 values for integral and x-value
     float_t* x_store = this->polynoms + (degree + 3) * id;
     float_t* y_store = x_store + 2;
 
@@ -187,13 +188,13 @@ class PolyModifiedBasis: public Basis<LT, IT> {
     }
 
     x.pop_back();
-
   }
 };
 
 // default type-def (unsigned int for level and index)
 typedef PolyModifiedBasis<unsigned int, unsigned int> SPolyModifiedBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* MODIFIED_POLY_BASE_HPP */

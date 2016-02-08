@@ -6,11 +6,12 @@
 #ifndef LINEAR_BOUNDARY_BASE_HPP
 #define LINEAR_BOUNDARY_BASE_HPP
 
-#include <algorithm>
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <algorithm>
+#include <cmath>
 
 namespace SGPP {
 namespace base {
@@ -24,7 +25,7 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~LinearBoundaryBasis() override {
+  ~LinearBoundaryBasis() override {
   }
 
   /**
@@ -33,7 +34,7 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of boundary linear basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 0) {
       // first level
       if (i == 0) {

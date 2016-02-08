@@ -6,9 +6,9 @@
 #ifndef LINEARPERIODICBASE_HPP
 #define LINEARPERIODICBASE_HPP
 
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 
 namespace SGPP {
@@ -25,7 +25,7 @@ class LinearPeriodicBasis: public Basis<LT, IT>  {
   /**
    * Destructor.
    */
-  virtual ~LinearPeriodicBasis() override {
+  ~LinearPeriodicBasis() override {
   }
 
   /**
@@ -36,7 +36,7 @@ class LinearPeriodicBasis: public Basis<LT, IT>  {
    * @param i the index of the current basis function
    * @param x the absolute position of the evaluation point
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 0) {
       return fabs(2 * x - 1);
     } else {

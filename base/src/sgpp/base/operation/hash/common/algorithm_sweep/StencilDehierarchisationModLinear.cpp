@@ -33,7 +33,7 @@ void StencilDehierarchisationModLinear::operator()(DataVector& source,
 void StencilDehierarchisationModLinear::rec(DataVector& source,
     DataVector& result, grid_iterator& index, size_t dim, int seql, int seqr) {
   // current position on the grid
-  int seqm = (int) index.seq();
+  int seqm = static_cast<int>(index.seq());
 
   GridStorage::index_type::level_type l;
   GridStorage::index_type::index_type i;
@@ -44,7 +44,8 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
   bool isLeaf = index.hint();
 
 
-  // When we descend the hierarchical basis we have to modify the boundary values
+  // When we descend the hierarchical basis
+  // we have to modify the boundary values
   // in case the index is 1 or (2^l)-1 or we are on the first level
   // level 1, constant function
   if (l == 1) {
@@ -68,9 +69,7 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
 
     // ascend
     index.up(dim);
-  }
-  // left boundary
-  else if (i == 1) {
+  } else if (i == 1) {  // left boundary
     // dehierarchisation
     if (l > 2) {
       // seql actually stands for the grandparent here, both
@@ -110,9 +109,8 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
       // ascend
       index.up(dim);
     }
-  }
-  // right boundary
-  else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+  } else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+    // right boundary
     // dehierarchisation
     if (l > 2) {
       // seqr actually stands for the grandparent here, both
@@ -152,9 +150,7 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
       // ascend
       index.up(dim);
     }
-  }
-  // inner functions
-  else {
+  } else {  // inner functions
     // dehierarchisation
 
     // left parent contribution
@@ -188,7 +184,5 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
