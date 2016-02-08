@@ -22,7 +22,6 @@ namespace base {
  */
 class HashRefinementBoundaries: public AbstractRefinement {
  public:
-
   /**
    * Performs the refinement on grid
    *
@@ -105,9 +104,10 @@ class HashRefinementBoundaries: public AbstractRefinement {
   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
   * @param collection container that contains elements to refine (empty initially)
   */
-  virtual void collectRefinablePoints(GridStorage* storage,
-                                      RefinementFunctor* functor,
-                                      AbstractRefinement::refinement_container_type& collection) override;
+  void collectRefinablePoints(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
   /**
   * Extends the grid adding elements defined in collection
@@ -116,9 +116,10 @@ class HashRefinementBoundaries: public AbstractRefinement {
   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
   * @param collection container that contains elements to refine (empty initially)
   */
-  virtual void refineGridpointsCollection(GridStorage* storage,
-                                          RefinementFunctor* functor,
-                                          AbstractRefinement::refinement_container_type& collection) override;
+  void refineGridpointsCollection(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
   /**
   * Adds elements to the collection. This method is responsible for selection

@@ -43,14 +43,14 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
   /**
    * Destructor.
    */
-  virtual ~IterativeGridGeneratorSOO() override;
+  ~IterativeGridGeneratorSOO() override;
 
   /**
    * Generate the grid.
    *
    * @return true on success, otherwise false
    */
-  virtual bool generate() override;
+  bool generate() override;
 
   /*
    * @return            adaptivity (function of the form

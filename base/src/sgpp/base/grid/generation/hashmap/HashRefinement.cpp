@@ -3,14 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-#include <memory>
-
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
 
-
 #include <sgpp/globaldef.hpp>
+
+#include <algorithm>
+#include <memory>
 
 
 namespace SGPP {
@@ -21,7 +20,6 @@ void HashRefinement::addElementToCollection(
   AbstractRefinement::refinement_list_type current_value_list,
   size_t refinements_num,
   AbstractRefinement::refinement_container_type& collection) {
-
   for (AbstractRefinement::refinement_list_type::iterator it =
          current_value_list.begin();
        it != current_value_list.end(); it++) {
@@ -57,7 +55,8 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage,
 
     GridStorage::grid_map_iterator child_iter;
 
-    // check for each grid point whether it can be refined (i.e., whether not all kids exist yet)
+    // check for each grid point whether it can be refined
+    // (i.e., whether not all kids exist yet)
     // if yes, check whether it belongs to the refinements_num largest ones
     for (size_t d = 0; d < storage->dim(); d++) {
       index_t source_index;
@@ -70,9 +69,10 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage,
 
       // if there no more grid points --> test if we should refine the grid
       if (child_iter == end_iter) {
-        AbstractRefinement::refinement_list_type current_value_list = getIndicator(
-              storage, iter, functor);
-        addElementToCollection(iter, current_value_list, refinements_num, collection);
+        AbstractRefinement::refinement_list_type current_value_list =
+          getIndicator(storage, iter, functor);
+        addElementToCollection(iter, current_value_list, refinements_num,
+                               collection);
         break;
       }
 
@@ -81,9 +81,10 @@ void HashRefinement::collectRefinablePoints(GridStorage* storage,
       child_iter = storage->find(&index);
 
       if (child_iter == end_iter) {
-        AbstractRefinement::refinement_list_type current_value_list = getIndicator(
-              storage, iter, functor);
-        addElementToCollection(iter, current_value_list, refinements_num, collection);
+        AbstractRefinement::refinement_list_type current_value_list =
+          getIndicator(storage, iter, functor);
+        addElementToCollection(iter, current_value_list, refinements_num,
+                               collection);
         break;
       }
 
@@ -148,7 +149,8 @@ size_t HashRefinement::getNumberOfRefinablePoints(GridStorage* storage) {
 
     GridStorage::grid_map_iterator child_iter;
 
-    // check for each grid point whether it can be refined (i.e., whether not all children exist yet)
+    // check for each grid point whether it can be refined
+    // (i.e., whether not all children exist yet)
     for (size_t d = 0; d < storage->dim(); d++) {
       index_t source_index;
       level_t source_level;
@@ -179,12 +181,10 @@ size_t HashRefinement::getNumberOfRefinablePoints(GridStorage* storage) {
   }
 
   return counter;
-
 }
 
 void HashRefinement::refineGridpoint1D(GridStorage* storage, index_type& index,
                                        size_t d) {
-
   index_t source_index;
   level_t source_level;
   index.get(d, source_level, source_index);
@@ -215,7 +215,7 @@ void HashRefinement::refineGridpoint1D(GridStorage* storage, size_t seq,
 void HashRefinement::refineGridpoint(GridStorage* storage,
                                      size_t refine_index) {
   index_type index(*(*storage)[refine_index]);
-  //Sets leaf property of index, which is refined to false
+  // Sets leaf property of index, which is refined to false
   (*storage)[refine_index]->setLeaf(false);
 
   for (size_t d = 0; d < storage->dim(); d++) {

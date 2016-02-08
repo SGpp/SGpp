@@ -21,9 +21,9 @@ namespace combigrid {
 
 class ProcessGroupManager {
 
-public:
+ public:
   ProcessGroupManager(RankType managerID, RankType pgroupRootID,
-      CommunicatorType globalComm);
+                      CommunicatorType globalComm);
 
   virtual
   ~ProcessGroupManager();
@@ -70,14 +70,14 @@ public:
 
   bool recompute( Task* );
 
-private:
+ private:
 
   RankType managerID_; // rank of manager
 
   RankType pgroupRootID_; // rank of the root process of the pgroup
 
   CommunicatorType gcomm_; // global communicator which includes at least
-                           // manager and pgroup roots
+  // manager and pgroup roots
 
   TaskContainer tasks_;
 
@@ -133,7 +133,7 @@ bool ProcessGroupManager::gridEval(FullGrid<FG_ELEMENT>& fg) {
   // send levelvector
   std::vector<int> tmp(fg.getLevels().begin(), fg.getLevels().end());
   MPI_Send(&tmp[0], static_cast<int>(tmp.size()), MPI_INT, pgroupRootID_, 0,
-      gcomm_);
+           gcomm_);
 
   return true;
 }
@@ -149,7 +149,7 @@ bool ProcessGroupManager::combineFG(FullGrid<FG_ELEMENT>& fg) {
   // send levelvector
   std::vector<int>& tmp = fg.getLevels();
   MPI_Send(&tmp[0], static_cast<int>(tmp.size()), MPI_INT, pgroupRootID_, 0,
-      gcomm_);
+           gcomm_);
 
   return true;
 }
@@ -166,7 +166,7 @@ bool ProcessGroupManager::gridGather(LevelVector& leval) {
   // send levelvector
   std::vector<int> tmp(leval.begin(), leval.end());
   MPI_Send(&tmp[0], static_cast<int>(tmp.size()), MPI_INT, pgroupRootID_, 0,
-      gcomm_);
+           gcomm_);
 
   return true;
 }

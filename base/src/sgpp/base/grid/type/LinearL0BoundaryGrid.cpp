@@ -15,7 +15,6 @@ namespace base {
 
 LinearL0BoundaryGrid::LinearL0BoundaryGrid(std::istream& istr) :
   Grid(istr) {
-
 }
 
 LinearL0BoundaryGrid::LinearL0BoundaryGrid(size_t dim) :

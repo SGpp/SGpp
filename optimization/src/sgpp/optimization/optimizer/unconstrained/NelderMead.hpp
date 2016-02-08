@@ -55,9 +55,9 @@ class NelderMead : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~NelderMead() override;
+  ~NelderMead() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return          reflection coefficient

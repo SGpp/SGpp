@@ -3,16 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-#include <iostream>
-
 #include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/common/IndexInSubspaceGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 namespace SGPP {
 namespace base {
@@ -22,9 +21,8 @@ void SubspaceRefinement::addElementToCollection(
   AbstractRefinement::refinement_list_type current_value_list,
   size_t refinements_num,
   AbstractRefinement::refinement_container_type& collection) {
-
-  for (AbstractRefinement::refinement_pair_type key_value : current_value_list) {
-
+  for (AbstractRefinement::refinement_pair_type key_value :
+       current_value_list) {
     if (key_value.second == 0) continue;
 
     auto predicat = [key_value](const AbstractRefinement::refinement_pair_type &
@@ -45,7 +43,8 @@ void SubspaceRefinement::addElementToCollection(
           collection.end(), predicat);
 
     if (iter != collection.end()) {
-      // subspace with this level is already in collection, hence increase the value
+      // subspace with this level is already in collection,
+      // hence increase the value
       iter->second += key_value.second;
     } else {
       // subspace is not yet in the collection, hence add it
@@ -85,18 +84,19 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
        iter != end_iter; iter++) {
     index = *(iter->first);
 
-    //std::cout <<"grid point " << iter->second << std::endl;
+    // std::cout <<"grid point " << iter->second << std::endl;
 
     GridStorage::grid_map_iterator child_iter;
 
-    // check for each grid point whether it can be refined (i.e., whether not all kids exist yet)
+    // check for each grid point whether it can be refined
+    // (i.e., whether not all kids exist yet)
     // if yes, check whether it belongs to the refinements_num largest ones
     for (size_t d = 0; d < storage->dim(); d++) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
 
-      //std::cout << "processing dimension " << d << std::endl;
+      // std::cout << "processing dimension " << d << std::endl;
 
       // test existence of left child
       index.set(d, source_level + 1, 2 * source_index - 1);
@@ -108,7 +108,8 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
           getIndicator(storage, iter,
                        functor);
 
-        //std::cout << "size of the list " << current_value_list.empty() << std::endl;
+        // std::cout << "size of the list " << current_value_list.empty() <<
+        // std::endl;
 
         addElementToCollection(iter, current_value_list,
                                refinements_num, collection);
@@ -137,13 +138,14 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage* storage,
 
 
 
-  // nth_element makes sure that the first refinements_num elements in the vector are larger
-  // then the rest
+  // nth_element makes sure that the first refinements_num elements in the
+  // vector are larger then the rest
   std::nth_element(collection.begin(),
                    collection.begin() + refinements_num,
                    collection.end(), AbstractRefinement::compare_pairs);
 
-  // clear the collection and populated it only with those elements that will be refined
+  // clear the collection and populated it only with those elements
+  // that will be refined
   for (size_t diff = collection.size() - refinements_num; diff > 0; diff--) {
     collection.pop_back();
   }
@@ -169,7 +171,6 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage* storage,
 
       refineGridpoint(storage, storage->seq(&grid_index));
     }
-
   }
 }
 

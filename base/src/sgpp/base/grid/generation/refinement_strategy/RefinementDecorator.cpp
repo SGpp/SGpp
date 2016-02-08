@@ -80,7 +80,6 @@ bool RefinementDecorator::checkAdmissibility(GridStorage* storage,
   */
 
   return isAdmissible;
-
 }
 
 

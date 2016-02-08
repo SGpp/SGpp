@@ -7,8 +7,6 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
 #include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
@@ -19,7 +17,6 @@ namespace base {
 
 LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(std::istream& istr) :
   Grid(istr) {
-
 }
 
 LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(size_t dim) :
@@ -45,6 +42,7 @@ const SBasis& LinearTruncatedBoundaryGrid::getBasis() {
 Grid* LinearTruncatedBoundaryGrid::unserialize(std::istream& istr) {
   return new LinearTruncatedBoundaryGrid(istr);
 }
+
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types

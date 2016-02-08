@@ -6,10 +6,10 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <vector>
 #include <cmath>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -21,8 +21,8 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
     throw generation_exception("storage empty");
   }
 
-  //Algorithm should be able to look for several points in grid to refine
-  //So we store an array with refinements_num maximal points
+  // Algorithm should be able to look for several points in grid to refine
+  // So we store an array with refinements_num maximal points
   size_t refinements_num = functor->getRefinementsNum();
   RefinementFunctor::value_type* max_values = new
   RefinementFunctor::value_type[refinements_num];
@@ -61,7 +61,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
     }
 
     // DEBUG
-    //std::cout << index.toString() << " " << refineCandidate << std::endl;
+    // std::cout << index.toString() << " " << refineCandidate << std::endl;
 
     if (refineCandidate == true) {
       for (size_t d = 0; d < storage->dim(); d++) {
@@ -76,12 +76,15 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
 
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
-            RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+            RefinementFunctor::value_type current_value =
+              (*functor)(storage, iter->second);
 
             // DEBUG
-            //std::cout << "iter-second: " << iter->second << " current_value: " << current_value << std::endl;
+            // std::cout << "iter-second: " << iter->second <<
+            // " current_value: " << current_value << std::endl;
             if (current_value > max_value) {
-              //Replace the minimal point in result array, find the new  minimal point
+              // Replace the minimal point in result array,
+              // find the new minimal point
               max_values[min_idx] = current_value;
               max_indexes[min_idx] = iter->second;
               min_idx = getIndexOfMin(max_values, refinements_num);
@@ -96,12 +99,15 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
 
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
-            RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+            RefinementFunctor::value_type current_value =
+              (*functor)(storage, iter->second);
 
             // DEBUG
-            //std::cout << "iter-second: " << iter->second << " current_value: " << current_value << std::endl;
+            // std::cout << "iter-second: " << iter->second <<
+            // " current_value: " << current_value << std::endl;
             if (current_value > max_value) {
-              //Replace the minimal point in result array, find the new  minimal point
+              // Replace the minimal point in result array,
+              // find the new  minimal point
               max_values[min_idx] = current_value;
               max_indexes[min_idx] = iter->second;
               min_idx = getIndexOfMin(max_values, refinements_num);
@@ -115,12 +121,15 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
           child_iter = storage->find(&index);
 
           if (child_iter == end_iter) {
-            RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
+            RefinementFunctor::value_type current_value =
+              (*functor)(storage, iter->second);
 
             // DEBUG
-            //std::cout << "iter-second: " << iter->second << " current_value: " << current_value << std::endl;
+            // std::cout << "iter-second: " << iter->second <<
+            // " current_value: " << current_value << std::endl;
             if (current_value > max_value) {
-              //Replace the minimal point in result array, find the new minimal point
+              // Replace the minimal point in result array,
+              // find the new minimal point
               max_values[min_idx] = current_value;
               max_indexes[min_idx] = iter->second;
               min_idx = getIndexOfMin(max_values, refinements_num);
@@ -136,9 +145,9 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
   }
 
   // DEBUG
-  //std::cout << "Num refinements: "  << refinements_num << std::endl;
+  // std::cout << "Num refinements: "  << refinements_num << std::endl;
 
-  //can refine grid on several points
+  // can refine grid on several points
   float_t threshold = functor->getRefinementThreshold();
 
   for (size_t i = 0; i < refinements_num; i++) {
@@ -146,17 +155,16 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
     max_index = max_indexes[i];
 
     // DEBUG
-    //std::cout << "Num: " << i << " Max-value: " << max_value << std::endl;
+    // std::cout << "Num: " << i << " Max-value: " << max_value << std::endl;
     if (max_value != functor->start() && fabs(max_value) >= threshold) {
       // DEBUG
-      //std::cout << "Start refining..." << std::endl;
+      // std::cout << "Start refining..." << std::endl;
       refineGridpoint(storage, max_index, maxLevel);
     }
   }
 
   delete[] max_values;
   delete[] max_indexes;
-
 }
 
 
@@ -233,7 +241,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
   }
 
   // DEBUG
-  //std::cout << counter << std::endl;
+  // std::cout << counter << std::endl;
 
   return counter;
 }
@@ -281,7 +289,7 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint(GridStorage* storage,
     size_t refine_index, unsigned int maxLevel) {
   index_type index(*(*storage)[refine_index]);
 
-  //Sets leaf property of index, which is refined to false
+  // Sets leaf property of index, which is refined to false
   (*storage)[refine_index]->setLeaf(false);
 
   for (size_t d = 0; d < storage->dim(); d++) {

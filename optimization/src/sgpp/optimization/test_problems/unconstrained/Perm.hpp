@@ -34,7 +34,7 @@ class PermObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~PermObjective() override;
+  ~PermObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -72,12 +72,12 @@ class Perm : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Perm() override;
+  ~Perm() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

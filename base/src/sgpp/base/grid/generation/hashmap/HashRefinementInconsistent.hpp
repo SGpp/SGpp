@@ -20,11 +20,7 @@ namespace base {
  * Free refinement class for sparse grids
  */
 class HashRefinementInconsistent: public HashRefinement {
-
-  //using HashRefinement::HashRefinement;
-
  protected:
-
   /**
    * This method creates a new point on the grid. It checks if some parents or
    * children are needed in other dimensions.
@@ -33,10 +29,9 @@ class HashRefinementInconsistent: public HashRefinement {
    * @param index The point that should be inserted
    */
   void createGridpoint(GridStorage* storage, index_type& index) override;
-
-
 };
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HASHREFINEMENTINCONSISTENT_HPP */

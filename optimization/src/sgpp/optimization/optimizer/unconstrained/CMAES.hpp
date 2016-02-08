@@ -37,9 +37,9 @@ class CMAES : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~CMAES() override;
+  ~CMAES() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @param[out] clone pointer to cloned object

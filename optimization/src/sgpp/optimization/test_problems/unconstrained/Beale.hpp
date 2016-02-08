@@ -33,7 +33,7 @@ class BealeObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~BealeObjective() override;
+  ~BealeObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -69,12 +69,12 @@ class Beale : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Beale() override;
+  ~Beale() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

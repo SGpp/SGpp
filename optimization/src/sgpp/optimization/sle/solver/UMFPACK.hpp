@@ -25,7 +25,7 @@ class UMFPACK : public SLESolver {
   /**
    * Destructor.
    */
-  virtual ~UMFPACK() override;
+  ~UMFPACK() override;
 
   /**
    * @param       system  system to be solved

@@ -4,9 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 
 namespace SGPP {
@@ -23,7 +23,8 @@ SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor() {
 
 float_t SurplusVolumeRefinementFunctor::operator()(GridStorage* storage,
     size_t seq) const {
-  return pow(2, static_cast<float_t>(-((int)storage->get(seq)->getLevelSum()))) *
+  return pow(2, static_cast<float_t>(
+               -(static_cast<int>(storage->get(seq)->getLevelSum())))) *
          fabs(alpha->get(seq));
 }
 

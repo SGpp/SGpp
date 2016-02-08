@@ -6,13 +6,11 @@
 #ifndef SURPLUSREFINEMENTFUNCTOR_HPP
 #define SURPLUSREFINEMENTFUNCTOR_HPP
 
-#include <iostream>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace base {
@@ -35,12 +33,12 @@ class SurplusRefinementFunctor : public RefinementFunctor {
   /**
    * Destructor
    */
-  virtual ~SurplusRefinementFunctor() override;
+  ~SurplusRefinementFunctor() override;
 
-  virtual float_t operator()(GridStorage* storage, size_t seq) const override;
+  float_t operator()(GridStorage* storage, size_t seq) const override;
 
 
-  virtual float_t start() const override;
+  float_t start() const override;
 
 
   size_t getRefinementsNum() const;
@@ -54,7 +52,10 @@ class SurplusRefinementFunctor : public RefinementFunctor {
   /// number of grid points to refine
   size_t refinements_num;
 
-  /// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
+  /**
+   * threshold, only the points with greater to equal absolute values of the
+   * refinement criterion (e.g. alpha or error) will be refined
+   */
   float_t threshold;
 };
 

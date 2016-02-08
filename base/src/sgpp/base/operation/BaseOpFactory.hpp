@@ -138,8 +138,8 @@ base::OperationNaiveEvalHessian* createOperationNaiveEvalHessian(
  */
 base::OperationNaiveEvalPartialDerivative*
 createOperationNaiveEvalPartialDerivative(base::Grid& grid);
-}
 
-}
+}  // namespace op_factory
+}  // namespace SGPP
 
 #endif /*BASE_OP_FACTORY_HPP*/

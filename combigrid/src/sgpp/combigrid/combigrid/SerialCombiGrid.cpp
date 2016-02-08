@@ -4,10 +4,11 @@
 
 /** sets the domain of all the full grids, this is the correct way for extrapolation */
 template <typename _Tp>
-void combigrid::SerialCombiGrid< _Tp >::setDomainAllFG(GridDomain* gridDomain) const{
-	for (unsigned int i = 0; i < this->_fgrids.size(); i++) {
-		this->_fgrids[i]->fg()->setDomain(gridDomain);
-	}
+void combigrid::SerialCombiGrid< _Tp >::setDomainAllFG(GridDomain* gridDomain)
+const {
+  for (unsigned int i = 0; i < this->_fgrids.size(); i++) {
+    this->_fgrids[i]->fg()->setDomain(gridDomain);
+  }
 }
 
 /** create the actual vector for the full grids. <br>
@@ -15,9 +16,9 @@ void combigrid::SerialCombiGrid< _Tp >::setDomainAllFG(GridDomain* gridDomain) c
 template <typename _Tp>
 void combigrid::SerialCombiGrid<_Tp>::createFullGrids() {
 
-	for (unsigned int i = 0; i < this->_fgrids.size(); i++) {
-		this->_fgrids[i]->createFullGrid();
-	}
+  for (unsigned int i = 0; i < this->_fgrids.size(); i++) {
+    this->_fgrids[i]->createFullGrid();
+  }
 }
 
 

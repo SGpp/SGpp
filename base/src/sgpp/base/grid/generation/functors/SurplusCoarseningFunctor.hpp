@@ -34,11 +34,11 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
   /**
    * Destructor
    */
-  virtual ~SurplusCoarseningFunctor() override;
+  ~SurplusCoarseningFunctor() override;
 
-  virtual float_t operator()(GridStorage* storage, size_t seq) override;
+  float_t operator()(GridStorage* storage, size_t seq) override;
 
-  virtual float_t start() const override;
+  float_t start() const override;
 
   size_t getRemovementsNum() const;
 
@@ -51,7 +51,10 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
   /// number of grid points to remove
   size_t removements_num;
 
-  /// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
+  /**
+   * threshold, only the points with greater to equal absolute values of the
+   * refinement criterion (e.g. alpha or error) will be refined
+   */
   float_t threshold;
 };
 

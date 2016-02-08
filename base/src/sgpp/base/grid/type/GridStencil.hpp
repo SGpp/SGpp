@@ -9,9 +9,9 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace SGPP {
@@ -22,10 +22,9 @@ namespace base {
  */
 class GridStencil : public Grid {
  protected:
-  GridStencil(std::istream& istr);
+  explicit GridStencil(std::istream& istr);
 
  public:
-
   typedef std::vector<unsigned int> IndexStencil;
 
   typedef std::vector<float>      WeightStencil;
@@ -36,19 +35,19 @@ class GridStencil : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  GridStencil(size_t dim);
+  explicit GridStencil(size_t dim);
 
   /**
    * Constructor Linear Grid
    *
    * @param BB the BoundingBox of the grid
    */
-  GridStencil(BoundingBox& BB);
+  explicit GridStencil(BoundingBox& BB);
 
   /**
    * Destructor
    */
-  virtual ~GridStencil() override;
+  ~GridStencil() override;
 
   /**
    * Get the surplus stencil, in fact an array of unsigned ints.
@@ -70,7 +69,6 @@ class GridStencil : public Grid {
 
 
  protected:
-
   IndexStencil surplusStencil;
   IndexStencil neighborStencil;
   WeightStencil weightStencil;

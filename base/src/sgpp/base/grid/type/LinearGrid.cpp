@@ -14,8 +14,6 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -24,7 +22,6 @@ namespace base {
 
 LinearGrid::LinearGrid(std::istream& istr) :
   Grid(istr) {
-
 }
 
 LinearGrid::LinearGrid(size_t dim) :

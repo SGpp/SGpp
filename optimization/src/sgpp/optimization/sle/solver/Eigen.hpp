@@ -23,7 +23,7 @@ class Eigen : public SLESolver {
   /**
    * Destructor.
    */
-  virtual ~Eigen() override;
+  ~Eigen() override;
 
   /**
    * @param       system  system to be solved

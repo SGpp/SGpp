@@ -32,13 +32,12 @@ class RefinementDecorator: public AbstractRefinement {
    * @param refinement object implementing the core functionality (e.g.
    * refinement with or without boundaries).
    */
-  RefinementDecorator(AbstractRefinement* refinement) {
+  explicit RefinementDecorator(AbstractRefinement* refinement) {
     decorated_refinement_ = refinement;
-  };
+  }
 
   virtual ~RefinementDecorator() {
   }
-  ;
 
   /**
    * Refines a grid according to a RefinementFunctor provided.
@@ -68,7 +67,8 @@ class RefinementDecorator: public AbstractRefinement {
    * @param index point to refine
    * @param d direction
    */
-  //virtual void strategy_refine(GridStorage* storage, RefinementStrategy& refinement_strategy);
+  // virtual void strategy_refine(GridStorage* storage,
+  // RefinementStrategy& refinement_strategy);
 
   /**
    * Refine one grid point along a single direction
@@ -82,7 +82,6 @@ class RefinementDecorator: public AbstractRefinement {
   bool checkAdmissibility(GridStorage* storage, index_type& subspace);
 
  protected:
-
   /**
    * Returns the pointer to decorated Refinement object
    */
@@ -125,9 +124,10 @@ class RefinementDecorator: public AbstractRefinement {
   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
   * @param collection container that contains elements to refine (empty initially)
   */
-  virtual void collectRefinablePoints(GridStorage* storage,
-                                      RefinementFunctor* functor,
-                                      AbstractRefinement::refinement_container_type& collection);
+  virtual void collectRefinablePoints(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection);
 
 
   /**
@@ -137,9 +137,10 @@ class RefinementDecorator: public AbstractRefinement {
    * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
    * @param collection container that contains elements to refine (empty initially)
    */
-  virtual void refineGridpointsCollection(GridStorage* storage,
-                                          RefinementFunctor* functor,
-                                          AbstractRefinement::refinement_container_type& collection);
+  virtual void refineGridpointsCollection(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection);
 
 
 

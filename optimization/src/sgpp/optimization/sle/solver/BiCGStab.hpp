@@ -43,7 +43,7 @@ class BiCGStab : public SLESolver {
   /**
    * Destructor.
    */
-  virtual ~BiCGStab() override;
+  ~BiCGStab() override;
 
   /**
    * @param       system  system to be solved

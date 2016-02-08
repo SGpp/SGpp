@@ -35,7 +35,7 @@ class OperationFirstMomentLinear : public OperationFirstMoment {
    *
    * @param alpha Coefficient vector for current grid
    */
-  virtual float_t doQuadrature(const DataVector& alpha) override;
+  float_t doQuadrature(const DataVector& alpha) override;
 
  protected:
   // Pointer to the grid's GridStorage object

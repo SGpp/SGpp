@@ -5,14 +5,16 @@
 
 #include <sgpp/base/grid/common/Stretching.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <stdlib.h>
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <stdlib.h>
-
-using namespace SGPP::base;
-
-#include <sgpp/globaldef.hpp>
+#include <string>
+#include <algorithm>
+#include <vector>
 
 
 namespace SGPP {
@@ -302,12 +304,11 @@ static int rightIdx[2047] = {
 
 Stretching::Stretching(size_t dim, DimensionBoundary* boundaries,
                        Stretching1D* t) : BoundingBox(dim, boundaries ) {
-
   nDim = dim;
   bTrivialCube = true;
   stretching1Ds = new Stretching1D[nDim];
   dimensionBoundaries = new DimensionBoundary[nDim];
-  discreteVectorLevel = new int [nDim];
+  discreteVectorLevel = new int[nDim];
   stretchingMode = new std::string("analytic");
 
   for (size_t i = 0; i < nDim; i++) {
@@ -327,12 +328,11 @@ Stretching::Stretching(size_t dim, DimensionBoundary* boundaries,
 
 Stretching::Stretching(size_t dim, std::vector<DimensionBoundary> boundaries,
                        std::vector<Stretching1D> t) : BoundingBox(dim) {
-
   nDim = dim;
   bTrivialCube = true;
   stretching1Ds = new Stretching1D[nDim];
   dimensionBoundaries = new DimensionBoundary[nDim];
-  discreteVectorLevel = new int [nDim];
+  discreteVectorLevel = new int[nDim];
   stretchingMode = new std::string("analytic");
 
   for (size_t i = 0; i < nDim; i++) {
@@ -356,12 +356,12 @@ Stretching::Stretching(size_t dim,
   bTrivialCube = true;
   stretching1Ds = new Stretching1D[nDim];
   dimensionBoundaries = new DimensionBoundary[nDim];
-  discreteVectorLevel = new int [nDim];
+  discreteVectorLevel = new int[nDim];
   stretchingMode = new std::string("discrete");
   int _1DArrayLength = 0;
 
   for (size_t i = 0; i < nDim; i++) {
-    _1DArrayLength = (int)(coordinates[i].size());
+    _1DArrayLength = static_cast<int>(coordinates[i].size());
     dimensionBoundaries[i].leftBoundary = coordinates[i][0];
     dimensionBoundaries[i].rightBoundary = coordinates[i][_1DArrayLength - 1];
     dimensionBoundaries[i].bDirichletLeft = true;
@@ -377,8 +377,8 @@ Stretching::Stretching(size_t dim,
     generateLeftRightArrays(stretching1Ds[i], i);
   }
 
-  //No need to generate lookup table, as it is done in parseVectorToLookupTable
-
+  // No need to generate lookup table,
+  // as it is done in parseVectorToLookupTable
 }
 
 Stretching::Stretching(Stretching& copyStretching) : BoundingBox(
@@ -387,7 +387,7 @@ Stretching::Stretching(Stretching& copyStretching) : BoundingBox(
   bTrivialCube = true;
   dimensionBoundaries = new DimensionBoundary[nDim];
   stretching1Ds = new Stretching1D[nDim];
-  discreteVectorLevel = new int [nDim];
+  discreteVectorLevel = new int[nDim];
   stretchingMode = new std::string(*(copyStretching.getStretchingMode()));
 
 
@@ -400,8 +400,8 @@ Stretching::Stretching(Stretching& copyStretching) : BoundingBox(
     }
 
     discreteVectorLevel[i] = copyStretching.discreteVectorLevel[i];
-    stretching1Ds[i] = copyStretching.getStretching1D(*reinterpret_cast<int*>(&i));
-
+    stretching1Ds[i] =
+      copyStretching.getStretching1D(*reinterpret_cast<int*>(&i));
   }
 }
 
@@ -417,8 +417,6 @@ Stretching::~Stretching() {
   if (stretchingMode != NULL) {
     delete stretchingMode;
   }
-
-
 }
 
 
@@ -429,26 +427,25 @@ void Stretching::generateLookupTable() {
       logXform(stretching1Ds[i], i);
     } else if (stretching1Ds[i].type == "sinh") {
       leentvaarXform(stretching1Ds[i], i);
-    }
-    /*
-     * This means we copied this type using a copy constructor,
-     *  no need for calculation necessary
-     *  Should not occur in a normal operation.
-     */
-    else if (stretching1Ds[i].type == "fitob") {
+    } else if (stretching1Ds[i].type == "fitob") {
+      /*
+       * This means we copied this type using a copy constructor,
+       *  no need for calculation necessary
+       *  Should not occur in a normal operation.
+       */
     } else {
-      //std::cout << "Stretching::generateLookupTable : analytic stretching type not supported!" << std::endl;
-      //throw new application_exception("Stretching::generateLookupTable : analytic stretching type not supported!");
-      noXform(stretching1Ds[i], i); // in case of discrete stretching
+      // std::cout << "Stretching::generateLookupTable :
+      // analytic stretching type not supported!" << std::endl;
+      // throw new application_exception("Stretching::generateLookupTable :
+      // analytic stretching type not supported!");
+      noXform(stretching1Ds[i], i);  // in case of discrete stretching
     }
 
     generateLeftRightArrays(stretching1Ds[i], i);
   }
-
 }
 
 void Stretching::generateLeftRightArrays(Stretching1D& str1D, size_t dim) {
-
   int idx = 0;
   int lidx = 0, ridx = 0;
 
@@ -456,8 +453,7 @@ void Stretching::generateLeftRightArrays(Stretching1D& str1D, size_t dim) {
     int elemPerLevel = static_cast<int>(pow(2.0, l - 1));
 
     for (int i = 1; i <= elemPerLevel; i++) {
-
-      //Create left neighbors table
+      // Create left neighbors table
       lidx = leftIdx[idx];
 
       if (lidx >= 0) {
@@ -466,7 +462,7 @@ void Stretching::generateLeftRightArrays(Stretching1D& str1D, size_t dim) {
         str1D.lookup[idx][1] =  dimensionBoundaries[dim].leftBoundary;
       }
 
-      //Create right neighbors table
+      // Create right neighbors table
       ridx = rightIdx[idx];
 
       if (ridx >= 0) {
@@ -482,19 +478,17 @@ void Stretching::generateLeftRightArrays(Stretching1D& str1D, size_t dim) {
 
 float_t Stretching::stretchingXform(int level, int index, size_t dim) {
   float_t temp = -1;
-  //must be updated!!!!!!
+  // must be updated!!!!!!
 
   std::string t = stretching1Ds[dim].type;
 
-  ///refer to the lookup table
+  // refer to the lookup table
   if (level <= LOOKUPMAX) {
     temp = stretching1Ds[dim].lookup[calculateLookupIndex(level, index)][0];
-  }
-  /// calculate using the appropriate function
-  else if (t == "log") {
+  } else if (t == "log") {
+    // calculate using the appropriate function
     temp = logXform(level, index, dim);
   } else if (t == "sinh") {
-
     temp = leentvaarXform(level, index, dim);
   } else if (t == "fitob") {
     int pow2deltaL = static_cast<int>(pow(2.0, (level - LOOKUPMAX)));
@@ -502,8 +496,8 @@ float_t Stretching::stretchingXform(int level, int index, size_t dim) {
                      static_cast<float_t>(pow2deltaL);
     bool leftContinue = false, rightContinue = false;
     int rightLevel = LOOKUPMAX, leftLevel = LOOKUPMAX;
-    int leftIndex = (int)floor(dIndex);
-    int rightIndex = (int)ceil(dIndex);
+    int leftIndex = static_cast<int>(floor(dIndex));
+    int rightIndex = static_cast<int>(ceil(dIndex));
 
     if (leftIndex % 2 == 0) {
       leftContinue = true;
@@ -516,12 +510,11 @@ float_t Stretching::stretchingXform(int level, int index, size_t dim) {
     bool loopContinue = leftContinue || rightContinue;
 
     while (loopContinue) {
-
       if (leftContinue) {
         leftIndex = leftIndex / 2;
         leftLevel = leftLevel - 1;
 
-        //if left index odd, or left level 0, stop calculating left part
+        // if left index odd, or left level 0, stop calculating left part
         if (((leftIndex % 2 != 0)) || (leftLevel == 0)) {
           if (leftLevel == 0) {
             leftIndex = 0;
@@ -535,7 +528,7 @@ float_t Stretching::stretchingXform(int level, int index, size_t dim) {
         rightIndex = rightIndex / 2;
         rightLevel = rightLevel - 1;
 
-        //if right index odd, or right level 0, stop calculating right part
+        // if right index odd, or right level 0, stop calculating right part
         if (((rightIndex % 2) != 0) || (rightLevel == 0)) {
           if (rightLevel == 0) {
             rightIndex = 1;
@@ -553,7 +546,6 @@ float_t Stretching::stretchingXform(int level, int index, size_t dim) {
     float_t step = (posr - posl) / static_cast<float_t>(pow2deltaL);
     temp = posl + step * (dIndex - floor(dIndex)) * pow2deltaL;
   } else {
-
     temp = noXform(level, index, dim);
   }
 
@@ -571,8 +563,8 @@ void Stretching::logXform(Stretching1D& str1D, size_t dim) {
 
     for (int i = 1; i <= elemPerLevel; i++) {
       str1D.lookup[idx++][0] =
-        exp (f_a + static_cast<float_t>(2 * i - 1) /
-             static_cast<float_t>(2 * elemPerLevel) * (f_b - f_a));
+        exp(f_a + static_cast<float_t>(2 * i - 1) /
+            static_cast<float_t>(2 * elemPerLevel) * (f_b - f_a));
     }
   }
 }
@@ -587,7 +579,7 @@ float_t Stretching::logXform(int l, int i, size_t dim) {
 }
 
 void Stretching::leentvaarXform(Stretching1D& str1D, size_t dim) {
-  //f_inv(sinh(x))= log(x+sqrt(x²+1))
+  // f_inv(sinh(x))= log(x+sqrt(x²+1))
   int idx = 0;
   float_t a = (getBoundary(dim).leftBoundary);
   float_t b = (getBoundary(dim).rightBoundary);
@@ -608,11 +600,13 @@ void Stretching::leentvaarXform(Stretching1D& str1D, size_t dim) {
   }
 }
 
-float_t Stretching::leentvaarXform (int l, int i, size_t dim) {
+float_t Stretching::leentvaarXform(int l, int i, size_t dim) {
   float_t a = (getBoundary(dim).leftBoundary);
   float_t b = (getBoundary(dim).rightBoundary);
-  float_t sinhArgumenta = ((a - stretching1Ds[dim].x_0) * stretching1Ds[dim].xsi);
-  float_t sinhArgumentb = ((b - stretching1Ds[dim].x_0) * stretching1Ds[dim].xsi);
+  float_t sinhArgumenta = ((a - stretching1Ds[dim].x_0) *
+                           stretching1Ds[dim].xsi);
+  float_t sinhArgumentb = ((b - stretching1Ds[dim].x_0) *
+                           stretching1Ds[dim].xsi);
   float_t f_a = log(sinhArgumenta + sqrt(sinhArgumenta * sinhArgumenta + 1));
   float_t f_b = log(sinhArgumentb + sqrt(sinhArgumentb * sinhArgumentb + 1));
   int elemPerLevel = static_cast<int>(pow(2.0, l - 1));
@@ -650,12 +644,11 @@ float_t Stretching::noXform(int l, int i, size_t dim) {
 
 
 int Stretching::calculateLookupIndex(int l, int i) {
-  //Note: indices are always odd ;)
+  // Note: indices are always odd ;)
   return static_cast<int>((pow(2.0, l - 1) - 1 + (i - 1) / 2));
 }
 
 float_t Stretching::getCoordinates(int level, int index, size_t dim) {
-
   if (level == 0) {
     if (index == 0) {
       return dimensionBoundaries[dim].leftBoundary;
@@ -666,7 +659,7 @@ float_t Stretching::getCoordinates(int level, int index, size_t dim) {
     return stretchingXform(level, index, dim);
   }
 
-  //should not happen
+  // should not happen
   return 0.0;
 }
 
@@ -683,12 +676,12 @@ void Stretching::printLookupTable() {
     }
 
     std::cout << std::endl;
-
   }
 }
 
 void Stretching::getAdjacentPositions(int level, int index, size_t dim,
-                                      float_t& posc, float_t& posl, float_t& posr) {
+                                      float_t& posc, float_t& posl,
+                                      float_t& posr) {
   if (level <= LOOKUPMAX) {
     int idx = calculateLookupIndex(level, index);
     posc = stretching1Ds[dim].lookup[idx][0];
@@ -705,7 +698,8 @@ void Stretching::getAdjacentPositions(int level, int index, size_t dim,
 }
 
 void Stretching::calculateNeighborSpecs(int level, int index, int& leftLevel,
-                                        int& leftIndex, int& rightLevel, int& rightIndex) {
+                                        int& leftIndex, int& rightLevel,
+                                        int& rightIndex) {
   bool loopContinue = true;
   bool leftContinue = true, rightContinue = true;
 
@@ -728,12 +722,11 @@ void Stretching::calculateNeighborSpecs(int level, int index, int& leftLevel,
   loopContinue = leftContinue || rightContinue;
 
   while (loopContinue) {
-
     if (leftContinue) {
       leftIndex = leftIndex / 2;
       leftLevel = leftLevel - 1;
 
-      //if left index odd, or left level 0, stop calculating left part
+      // if left index odd, or left level 0, stop calculating left part
       if (((leftIndex % 2 != 0)) || (leftLevel == 0)) {
         if (leftLevel == 0) {
           leftIndex = 0;
@@ -747,7 +740,7 @@ void Stretching::calculateNeighborSpecs(int level, int index, int& leftLevel,
       rightIndex = rightIndex / 2;
       rightLevel = rightLevel - 1;
 
-      //if right index odd, or right level 0, stop calculating right part
+      // if right index odd, or right level 0, stop calculating right part
       if (((rightIndex % 2) == 1) || (rightLevel == 0)) {
         if (rightLevel == 0) {
           rightIndex = 1;
@@ -762,14 +755,12 @@ void Stretching::calculateNeighborSpecs(int level, int index, int& leftLevel,
 }
 void Stretching::parseVectorToLookupTable(std::vector<float_t> vec,
     Stretching1D& stretch1d, size_t dim, int& discreteVectorLevel ) {
-
-
   int level = static_cast<int>(log(static_cast<float_t>(vec.size() - 1)) / log(
-                                 2.0)); // log2(vec.size()-1);
+                                 2.0));  // log2(vec.size()-1);
 
   if (pow(2.0, level) + 1 != vec.size()) {
-    std::cout <<
-              "parseVectorToLookupTable: Vector Size does not match, should be 2^l+1\n";
+    std::cout << "parseVectorToLookupTable: "
+              "Vector Size does not match, should be 2^l+1\n";
     return;
   }
 
@@ -780,7 +771,7 @@ void Stretching::parseVectorToLookupTable(std::vector<float_t> vec,
 
   stretch1d.type = "fitob";
 
-  //Handle current and lower levels
+  // Handle current and lower levels
   for (int l = level; l > 0; l--) {
     elemPerLevel = static_cast<int>(pow(2.0, l));
 
@@ -793,8 +784,8 @@ void Stretching::parseVectorToLookupTable(std::vector<float_t> vec,
     idx = 0;
   }
 
-  //Handle upper levels (up to LOOKUPMAX)
-  //Note: Takes a long time due to getAdjacentPositions
+  // Handle upper levels (up to LOOKUPMAX)
+  // Note: Takes a long time due to getAdjacentPositions
   for (int l = level + 1; l <= LOOKUPMAX; l++) {
     elemPerLevel = static_cast<int>(pow(2.0, l));
 
@@ -802,10 +793,10 @@ void Stretching::parseVectorToLookupTable(std::vector<float_t> vec,
       calculateNeighborSpecs(l, i, lLevel, lIndex, rLevel, rIndex);
       posl = getCoordinates(lLevel, lIndex, dim);
       posr = getCoordinates(rLevel, rIndex, dim);
-      stretch1d.lookup[calculateLookupIndex(l, i)][0] = posl + 0.5 * (posr - posl);
+      stretch1d.lookup[calculateLookupIndex(l, i)][0] =
+        posl + 0.5 * (posr - posl);
     }
   }
-
 }
 
 std::string* Stretching::getStretchingMode() {
@@ -850,8 +841,6 @@ int* Stretching::getDiscreteVectorLevel() {
 }
 
 void Stretching::calculateNeighborLookup(int maxlevel) {
-
-
   //  std::string file1 = "leftIndex.txt";
   //  std::string file2 = "rightIndex.txt";
   std::ofstream outfile1;
@@ -873,7 +862,7 @@ void Stretching::calculateNeighborLookup(int maxlevel) {
     for (int i = 1; i < elemPerLevel; i = i + 2) {
       calculateNeighborSpecs(l, i, lLevel, lIndex, rLevel, rIndex);
 
-      //Left position
+      // Left position
       if (lLevel == 0) {
         if (lIndex == 1)
           temp = -1;
@@ -887,7 +876,7 @@ void Stretching::calculateNeighborLookup(int maxlevel) {
       outfile1 << temp;
       outfile1 << ", ";
 
-      //Right position
+      // Right position
       if (rLevel == 0) {
         if (rIndex == 1)
           temp = -1;
@@ -901,7 +890,6 @@ void Stretching::calculateNeighborLookup(int maxlevel) {
       outfile2 << temp;
       outfile2 << ", ";
     }
-
   }
 
   outfile1 << "}";

@@ -17,33 +17,33 @@ namespace combigrid {
  octave:30> y = tan(x); <br>
  * */
 class TanStretching: public AbstractStretchingMaker {
-public:
-	/** Ctor
-	 * @param intFact must be smaller than one*/
-	TanStretching(double intFact = 1.0 / 7.0) :
-			AbstractStretchingMaker(), intFact_(intFact) {
-		if (intFact_ > 1.5)
-			intFact_ = 1.0 / 1.5;
+ public:
+  /** Ctor
+   * @param intFact must be smaller than one*/
+  TanStretching(double intFact = 1.0 / 7.0) :
+    AbstractStretchingMaker(), intFact_(intFact) {
+    if (intFact_ > 1.5)
+      intFact_ = 1.0 / 1.5;
 
-		if (intFact_ < 0.01)
-			intFact_ = 1.0 / 10.0;
-	}
+    if (intFact_ < 0.01)
+      intFact_ = 1.0 / 10.0;
+  }
 
-	virtual ~TanStretching() {
-		;
-	}
+  virtual ~TanStretching() {
+    ;
+  }
 
-	void get1DStretching(int level, double min, double max,
-				std::vector<double>& stretching,
-				std::vector<double>& jacobian) const;
+  void get1DStretching(int level, double min, double max,
+                       std::vector<double>& stretching,
+                       std::vector<double>& jacobian) const;
 
-	Stretching getStretchingType() const {
-		return TAN;
-	}
+  Stretching getStretchingType() const {
+    return TAN;
+  }
 
-private:
-	/** internal factor for the formula */
-	double intFact_;
+ private:
+  /** internal factor for the formula */
+  double intFact_;
 
 };
 

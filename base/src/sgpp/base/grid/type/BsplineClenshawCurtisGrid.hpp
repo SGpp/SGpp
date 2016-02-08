@@ -9,8 +9,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -27,7 +25,7 @@ class BsplineClenshawCurtisGrid : public Grid {
    *
    * @param istr inputstream that contains the grid information
    */
-  BsplineClenshawCurtisGrid(std::istream& istr);
+  explicit BsplineClenshawCurtisGrid(std::istream& istr);
 
  public:
   /**
@@ -46,22 +44,22 @@ class BsplineClenshawCurtisGrid : public Grid {
   /**
    * Destructor.
    */
-  virtual ~BsplineClenshawCurtisGrid() override;
+  ~BsplineClenshawCurtisGrid() override;
 
   /**
    * @return string that identifies the grid type uniquely
    */
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
   /**
    * @return B-spline basis
    */
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   /**
    * @return pointer to a GridGenerator object
    */
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   /**
    * reads a grid out of a string
@@ -76,7 +74,7 @@ class BsplineClenshawCurtisGrid : public Grid {
    *
    * @param ostr stream to which the grid is written
    */
-  virtual void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr) override;
 
   /**
    * @return B-spline degree

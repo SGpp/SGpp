@@ -36,8 +36,8 @@ class OperationStencilHierarchisationLinear : public
    */
   virtual ~OperationStencilHierarchisationLinear() override {}
 
-  virtual void doHierarchisation(DataVector& node_values) override;
-  virtual void doDehierarchisation(DataVector& alpha) override;
+  void doHierarchisation(DataVector& node_values) override;
+  void doDehierarchisation(DataVector& alpha) override;
 
 
   virtual const IndexStencil&

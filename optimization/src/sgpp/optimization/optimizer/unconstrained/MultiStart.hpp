@@ -58,9 +58,9 @@ class MultiStart : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~MultiStart() override;
+  ~MultiStart() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return                  number of individual points

@@ -42,7 +42,7 @@ class TremblingParabolaObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~TremblingParabolaObjective() override;
+  ~TremblingParabolaObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -89,12 +89,12 @@ class TremblingParabola : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~TremblingParabola() override;
+  ~TremblingParabola() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

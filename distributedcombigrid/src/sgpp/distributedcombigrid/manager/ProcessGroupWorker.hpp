@@ -17,9 +17,9 @@
 namespace combigrid {
 
 class ProcessGroupWorker {
-public:
+ public:
   ProcessGroupWorker(MPI_Comm gcomm, MPI_Comm lcomm, RankType grank,
-      RankType lrank, RankType manager, RankType lroot = 0);
+                     RankType lrank, RankType manager, RankType lroot = 0);
 
   virtual ~ProcessGroupWorker();
 
@@ -52,7 +52,7 @@ public:
 
    inline RankType getLocalID() const; */
 
-private:
+ private:
   MPI_Comm gcomm_; // global communicator which includes manager
 
   MPI_Comm lcomm_;  // local communicator of pgroup

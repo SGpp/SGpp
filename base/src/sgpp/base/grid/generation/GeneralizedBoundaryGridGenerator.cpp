@@ -22,7 +22,7 @@ GeneralizedBoundaryGridGenerator::~GeneralizedBoundaryGridGenerator() {
 }
 
 void GeneralizedBoundaryGridGenerator::regular(size_t level) {
-  this->truncated( static_cast<HashGenerator::level_t>(level), 1);
+  this->truncated(static_cast<HashGenerator::level_t>(level), 1);
 }
 
 void GeneralizedBoundaryGridGenerator::cliques(size_t level,
@@ -37,41 +37,45 @@ void GeneralizedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
                 static_cast<HashGenerator::level_t>(l_user));
 }
 
-//void L0BoundaryGridGenerator::refine(RefinementFunctor* func)
-//{
-//  HashRefinementBoundaries refine;
-//  refine.free_refine(this->storage, func);
-//}
+// void L0BoundaryGridGenerator::refine(RefinementFunctor* func)
+// {
+//   HashRefinementBoundaries refine;
+//   refine.free_refine(this->storage, func);
+// }
 //
-//size_t L0BoundaryGridGenerator::getNumberOfRefinablePoints()
-//{
-//  HashRefinementBoundaries refine;
-//  return refine.getNumberOfRefinablePoints(this->storage);
-//}
+// size_t L0BoundaryGridGenerator::getNumberOfRefinablePoints()
+// {
+//   HashRefinementBoundaries refine;
+//   return refine.getNumberOfRefinablePoints(this->storage);
+// }
 //
-//void L0BoundaryGridGenerator::coarsen(CoarseningFunctor* func, DataVector* alpha)
-//{
-//  HashCoarsening coarsen;
-//  coarsen.free_coarsen(this->storage, func, alpha);
-//}
+// void L0BoundaryGridGenerator::coarsen(CoarseningFunctor* func,
+// DataVector* alpha)
+// {
+//   HashCoarsening coarsen;
+//   coarsen.free_coarsen(this->storage, func, alpha);
+// }
 //
-//size_t L0BoundaryGridGenerator::getNumberOfRemovablePoints()
-//{
-//  HashCoarsening coarsen;
-//  return coarsen.getNumberOfRemovablePoints(this->storage);
-//}
+// size_t L0BoundaryGridGenerator::getNumberOfRemovablePoints()
+// {
+//   HashCoarsening coarsen;
+//   return coarsen.getNumberOfRemovablePoints(this->storage);
+// }
 //
-//void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func, unsigned int maxLevel)
-//{
-//  HashRefinementBoundariesMaxLevel refine;
-//  refine.refineToMaxLevel(this->storage, func, maxLevel);
-//}
+// void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func,
+// unsigned int maxLevel)
+// {
+//   HashRefinementBoundariesMaxLevel refine;
+//   refine.refineToMaxLevel(this->storage, func, maxLevel);
+// }
 //
-//size_t L0BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(unsigned int maxLevel)
-//{
-//  HashRefinementBoundariesMaxLevel refine;
-//  return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, maxLevel);
-//}
+// size_t L0BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
+// unsigned int maxLevel)
+// {
+//   HashRefinementBoundariesMaxLevel refine;
+//   return refine.getNumberOfRefinablePointsToMaxLevel(
+//   this->storage, maxLevel);
+// }
 
 }  // namespace base
 }  // namespace SGPP

@@ -14,8 +14,6 @@
 
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 

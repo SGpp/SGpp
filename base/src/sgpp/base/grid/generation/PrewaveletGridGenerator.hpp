@@ -28,7 +28,6 @@ class PrewaveletGridGenerator: public GridGenerator {
   typedef index_type::level_type level_t;
 
  private:
-
   /**
    * For the shadow storage, the two left and two right neighbors in each
    * dimension of the refined point are required. This function only adds
@@ -75,22 +74,21 @@ class PrewaveletGridGenerator: public GridGenerator {
   /**
    * Destructor
    */
-  virtual ~PrewaveletGridGenerator() override;
+  ~PrewaveletGridGenerator() override;
 
-  virtual void regular(size_t level) override;
-  virtual void cliques(size_t level, size_t clique_size) override;
-  virtual void full(size_t level) override;
-  virtual void refine(RefinementFunctor* func) override;
-  virtual size_t getNumberOfRefinablePoints() override;
+  void regular(size_t level) override;
+  void cliques(size_t level, size_t clique_size) override;
+  void full(size_t level) override;
+  void refine(RefinementFunctor* func) override;
+  size_t getNumberOfRefinablePoints() override;
 
-  virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
-  virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
-                                 size_t numFirstOnly) override;
-  virtual size_t getNumberOfRemovablePoints() override;
+  void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
+  void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+                         size_t numFirstOnly) override;
+  size_t getNumberOfRemovablePoints() override;
 
-  virtual void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
-  virtual size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
-
+  void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
+  size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 };
 
 }  // namespace base

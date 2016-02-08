@@ -8,8 +8,6 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -21,7 +19,7 @@ namespace base {
  */
 class ModLinearGrid : public Grid {
  protected:
-  ModLinearGrid(std::istream& istr);
+  explicit ModLinearGrid(std::istream& istr);
 
  public:
   /**
@@ -29,21 +27,20 @@ class ModLinearGrid : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  ModLinearGrid(size_t dim);
+  explicit ModLinearGrid(size_t dim);
 
   /**
    * Destructor
    */
-  virtual ~ModLinearGrid() override;
+  ~ModLinearGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
-
 };
 
 }  // namespace base

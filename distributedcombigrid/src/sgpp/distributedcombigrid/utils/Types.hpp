@@ -83,19 +83,24 @@ inline DataType getabstractionDataType<std::complex<float> >() {
 
 static MPI_Datatype getMPIDatatype(abstraction::DataType type) {
   switch (type) {
-  case abstraction::type_float:
-    return MPI_FLOAT;
-  case abstraction::type_double:
-    return MPI_DOUBLE;
-  case abstraction::type_double_complex:
-    return MPI_DOUBLE_COMPLEX;
-  case abstraction::type_float_complex:
-    return MPI_COMPLEX;
-  case abstraction::type_unknown:
-    throw new std::invalid_argument("Type unknown ConvertType!");
+    case abstraction::type_float:
+      return MPI_FLOAT;
+
+    case abstraction::type_double:
+      return MPI_DOUBLE;
+
+    case abstraction::type_double_complex:
+      return MPI_DOUBLE_COMPLEX;
+
+    case abstraction::type_float_complex:
+      return MPI_COMPLEX;
+
+    case abstraction::type_unknown:
+      throw new std::invalid_argument("Type unknown ConvertType!");
   };
+
   throw new std::invalid_argument(
-      "MPI_Datatype Convert(abstraction::DataType) failed!");
+    "MPI_Datatype Convert(abstraction::DataType) failed!");
 }
 
 }

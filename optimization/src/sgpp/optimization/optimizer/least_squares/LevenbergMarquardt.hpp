@@ -81,9 +81,9 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
   /**
    * Destructor.
    */
-  virtual ~LevenbergMarquardt() override;
+  ~LevenbergMarquardt() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return phi gradient

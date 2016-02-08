@@ -9,8 +9,6 @@
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -22,7 +20,7 @@ namespace base {
  */
 class ModLinearGridStencil : public GridStencil {
  protected:
-  ModLinearGridStencil(std::istream& istr);
+  explicit ModLinearGridStencil(std::istream& istr);
 
  public:
   /**
@@ -30,29 +28,27 @@ class ModLinearGridStencil : public GridStencil {
    *
    * @param dim the dimension of the grid
    */
-  ModLinearGridStencil(size_t dim);
+  explicit ModLinearGridStencil(size_t dim);
 
   /**
    * Constructor Linear Grid
    *
    * @param BB the BoundingBox of the grid
    */
-  ModLinearGridStencil(BoundingBox& BB);
+  explicit ModLinearGridStencil(BoundingBox& BB);
 
   /**
    * Destructor
    */
-  virtual ~ModLinearGridStencil() override;
+  ~ModLinearGridStencil() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
-
-
 };
 
 }  // namespace base

@@ -33,7 +33,7 @@ class MladineoObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~MladineoObjective() override;
+  ~MladineoObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -69,12 +69,12 @@ class Mladineo : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Mladineo() override;
+  ~Mladineo() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point
@@ -91,7 +91,7 @@ class Mladineo : public UnconstrainedTestProblem {
    *
    * @return whether the current displacement is feasible
    */
-  virtual bool isDisplacementFeasible() override;
+  bool isDisplacementFeasible() override;
 
   /// objective function
   MladineoObjective f;

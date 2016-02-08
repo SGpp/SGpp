@@ -42,7 +42,7 @@ class TestVectorFunction : public VectorFunction {
   /**
    * Destructor.
    */
-  virtual ~TestVectorFunction() override;
+  ~TestVectorFunction() override;
 
   /**
    * Evaluate displaced function.

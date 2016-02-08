@@ -10,19 +10,15 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <exception>
-
-
-#include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace base {
 
 LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {
-
 }
 
 LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim) {

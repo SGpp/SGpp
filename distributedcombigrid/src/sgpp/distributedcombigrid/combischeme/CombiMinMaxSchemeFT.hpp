@@ -13,16 +13,17 @@
 namespace combigrid {
 
 class CombiMinMaxSchemeFT: public CombiMinMaxScheme {
-public:
+ public:
 
   CombiMinMaxSchemeFT(DimType dim, LevelVector& lmin, LevelVector& lmax) :
-      CombiMinMaxScheme(dim, lmin, lmax) {
+    CombiMinMaxScheme(dim, lmin, lmax) {
 
     // Add extra combiSpaces to ensure fault tolerance
     for (size_t i = 0; i < levels_.size(); ++i) {
       LevelVector& l = levels_[i];
+
       for (LevelType p = LevelType(effDim_);
-          p < LevelType(effDim_) + extraDiags_; ++p) {
+           p < LevelType(effDim_) + extraDiags_; ++p) {
         if (l >= lmin && sum(l) == n_ - p) {
           combiSpaces_.push_back(l);
           coefficients_.push_back(0.0);
@@ -34,7 +35,7 @@ public:
   virtual ~CombiMinMaxSchemeFT() {
   }
 
-private:
+ private:
 
   // Number of extra diagonals for fault tolerance. Recommended = 2
   const int extraDiags_ = 2;

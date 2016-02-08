@@ -19,14 +19,14 @@
 namespace combigrid {
 
 class ProcessManager {
-public:
+ public:
   ProcessManager(ProcessGroupManagerContainer& pgroups,
-      TaskContainer& instances, CombiParameters& params, RankType managerID,
-      CommunicatorType globalComm);
+                 TaskContainer& instances, CombiParameters& params, RankType managerID,
+                 CommunicatorType globalComm);
 
   // todo: add remove function
   inline void
-  addGroup(const ProcessGroupManager &pgroup);
+  addGroup(const ProcessGroupManager& pgroup);
 
   // todo: use general class AppInstance here
   // todo: add remove function
@@ -72,7 +72,7 @@ public:
 
   void recompute( std::vector<int>& taskID );
 
-private:
+ private:
   ProcessGroupManagerContainer& pgroups_;
 
   TaskContainer& tasks_;
@@ -89,7 +89,7 @@ private:
   wait();
 };
 
-inline void ProcessManager::addGroup(const ProcessGroupManager &pgroup) {
+inline void ProcessManager::addGroup(const ProcessGroupManager& pgroup) {
   pgroups_.push_back(pgroup);
 }
 
@@ -112,8 +112,10 @@ inline FG_ELEMENT ProcessManager::eval(const std::vector<real>& coords) {
   // wait until all process groups are in wait state
   // after sending the exit signal checking the status might not be possible
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;
@@ -139,8 +141,10 @@ void ProcessManager::combine() {
   // wait until all process groups are in wait state
   // after sending the exit signal checking the status might not be possible
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;
@@ -164,8 +168,10 @@ void ProcessManager::combineFG(FullGrid<FG_ELEMENT>& fg) {
   // wait until all process groups are in wait state
   // after sending the exit signal checking the status might not be possible
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;
@@ -190,8 +196,10 @@ void ProcessManager::gridEval(FullGrid<FG_ELEMENT>& fg) {
   // wait until all process groups are in wait state
   // after sending the exit signal checking the status might not be possible
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;

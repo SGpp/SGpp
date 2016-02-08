@@ -17,9 +17,9 @@ Task::Task() {
 }
 
 Task::Task(DimType dim, LevelVector& l, LevelVector& nmax, LevelVector& lmin,
-    std::vector<bool>& boundary, real coeff, LoadModel* loadModel) :
-    dim_(dim), l_(l), boundary_(boundary), id_(count++), loadModel_(
-        loadModel), isFinished_(false) {
+           std::vector<bool>& boundary, real coeff, LoadModel* loadModel) :
+  dim_(dim), l_(l), boundary_(boundary), id_(count++), loadModel_(
+    loadModel), isFinished_(false) {
   assert(dim_ > 0);
   assert(l_.size() == dim_);
 }
@@ -75,6 +75,7 @@ void Task::broadcast(Task** t, RankType root, CommunicatorType& comm) {
 
   // root writes object data into buffer
   std::string s;
+
   if (myID == root) {
     // save data to archive
     std::stringstream ss;
@@ -94,6 +95,7 @@ void Task::broadcast(Task** t, RankType root, CommunicatorType& comm) {
 
   // non-root procs create buffer which is large enough
   std::vector<char> tmp(bsize);
+
   if (myID != root) {
     buf = &tmp[0];
   }

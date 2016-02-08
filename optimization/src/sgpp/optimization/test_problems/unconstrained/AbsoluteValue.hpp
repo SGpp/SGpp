@@ -32,7 +32,7 @@ class AbsoluteValueObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~AbsoluteValueObjective() override;
+  ~AbsoluteValueObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -70,12 +70,12 @@ class AbsoluteValue : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~AbsoluteValue() override;
+  ~AbsoluteValue() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

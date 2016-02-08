@@ -12,8 +12,8 @@
 namespace combigrid {
 ProcessGroupManager::ProcessGroupManager(RankType managerID,
     RankType pgroupRootID, CommunicatorType globalComm) :
-    managerID_(managerID), pgroupRootID_(pgroupRootID), gcomm_(globalComm), status_(
-        PROCESS_GROUP_WAIT), statusRequest_(MPI_Request()) {
+  managerID_(managerID), pgroupRootID_(pgroupRootID), gcomm_(globalComm), status_(
+    PROCESS_GROUP_WAIT), statusRequest_(MPI_Request()) {
 }
 
 ProcessGroupManager::~ProcessGroupManager() {
@@ -42,7 +42,7 @@ bool ProcessGroupManager::runfirst(Task* t) {
 
   // start non-blocking call to receive status
   MPI_Irecv(&status_, 1, MPI_INT, pgroupRootID_, statusTag, gcomm_,
-      &statusRequest_);
+            &statusRequest_);
 
   // only return true if task successfully send to pgroup
   return true;
@@ -65,7 +65,7 @@ bool ProcessGroupManager::runnext() {
 
   // start non-blocking call to receive status
   MPI_Irecv(&status_, 1, MPI_INT, pgroupRootID_, statusTag, gcomm_,
-      &statusRequest_);
+            &statusRequest_);
 
   return true;
 }
@@ -123,7 +123,7 @@ bool ProcessGroupManager::updateCombiParameters(CombiParameters& params) {
   return true;
 }
 
-bool ProcessGroupManager::addTask( Task* t ){
+bool ProcessGroupManager::addTask( Task* t ) {
   // first check status
   // tying to add a task to a busy group is an invalid operation
   // and should be avoided
@@ -145,14 +145,14 @@ bool ProcessGroupManager::addTask( Task* t ){
 
   // start non-blocking call to receive status
   MPI_Irecv(&status_, 1, MPI_INT, pgroupRootID_, statusTag, gcomm_,
-      &statusRequest_);
+            &statusRequest_);
 
   // only return true if task successfully send to pgroup
   return true;
 }
 
 
-bool ProcessGroupManager::recompute( Task* t ){
+bool ProcessGroupManager::recompute( Task* t ) {
   // first check status
   // tying to add a task to a busy group is an invalid operation
   // and should be avoided
@@ -174,7 +174,7 @@ bool ProcessGroupManager::recompute( Task* t ){
 
   // start non-blocking call to receive status
   MPI_Irecv(&status_, 1, MPI_INT, pgroupRootID_, statusTag, gcomm_,
-      &statusRequest_);
+            &statusRequest_);
 
   // only return true if task successfully send to pgroup
   return true;

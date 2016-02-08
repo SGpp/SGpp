@@ -17,19 +17,20 @@
 namespace combigrid {
 
 class LinearLoadModel: public LoadModel {
-public:
-  LinearLoadModel(){
+ public:
+  LinearLoadModel() {
   }
 
-  inline real eval(const LevelVector &l) const;
+  inline real eval(const LevelVector& l) const;
 
-  virtual ~LinearLoadModel(){
+  virtual ~LinearLoadModel() {
   }
 };
 
-inline real LinearLoadModel::eval(const LevelVector &l) const {
+inline real LinearLoadModel::eval(const LevelVector& l) const {
   // todo does not hold in general case
   real ret(1.0);
+
   for (size_t i = 0; i < l.size(); ++i) {
     ret *= std::pow(real(2.0), static_cast<real>(l[i]));
   }

@@ -37,8 +37,8 @@ class OperationMultipleEvalModLinear : public OperationMultipleEval {
    */
   virtual ~OperationMultipleEvalModLinear() override {}
 
-  virtual void mult(DataVector& alpha, DataVector& result) override;
-  virtual void multTranspose(DataVector& source, DataVector& result) override;
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
 
  protected:
   /// Pointer to GridStorage object

@@ -9,8 +9,6 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
@@ -21,7 +19,6 @@ namespace base {
 
 LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(std::istream& istr) :
   Grid(istr) {
-
 }
 
 LinearStretchedBoundaryGrid::LinearStretchedBoundaryGrid(size_t dim) :

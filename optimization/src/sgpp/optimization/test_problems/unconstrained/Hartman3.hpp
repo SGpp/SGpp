@@ -48,7 +48,7 @@ class Hartman3Objective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~Hartman3Objective() override;
+  ~Hartman3Objective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -84,12 +84,12 @@ class Hartman3 : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Hartman3() override;
+  ~Hartman3() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

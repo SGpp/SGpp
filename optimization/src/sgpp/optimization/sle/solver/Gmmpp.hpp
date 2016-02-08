@@ -23,7 +23,7 @@ class Gmmpp : public SLESolver {
   /**
    * Destructor.
    */
-  virtual ~Gmmpp() override;
+  ~Gmmpp() override;
 
   /**
    * @param       system  system to be solved

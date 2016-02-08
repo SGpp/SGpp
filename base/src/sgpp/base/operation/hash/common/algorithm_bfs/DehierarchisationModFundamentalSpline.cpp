@@ -14,7 +14,8 @@ DehierarchisationModFundamentalSpline::DehierarchisationModFundamentalSpline(
   storage(grid->getStorage()) {
 }
 
-DehierarchisationModFundamentalSpline::~DehierarchisationModFundamentalSpline() {
+DehierarchisationModFundamentalSpline::
+~DehierarchisationModFundamentalSpline() {
 }
 
 void DehierarchisationModFundamentalSpline::operator()(
@@ -135,5 +136,6 @@ void DehierarchisationModFundamentalSpline::operator()(
     }
   }
 }
-}
-}
+
+}  // namespace base
+}  // namespace SGPP

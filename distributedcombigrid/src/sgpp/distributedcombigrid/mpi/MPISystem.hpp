@@ -18,13 +18,13 @@ namespace combigrid {
  * The MPISystem class represents the MPI communication system.
  */
 class MPISystem {
-private:
+ private:
   /** Constructor
    *
    */
   explicit MPISystem();
 
-public:
+ public:
   /** Destructor
    *
    */
@@ -54,7 +54,7 @@ public:
   //@}
 
   inline bool checkActive(RankType rank) const;
-private:
+ private:
   friend MPISystemID theMPISystem();
 
   CommunicatorType globalComm_;   //!< The global MPI communicator

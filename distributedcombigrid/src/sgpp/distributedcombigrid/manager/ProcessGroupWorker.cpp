@@ -21,11 +21,12 @@
 namespace combigrid {
 
 ProcessGroupWorker::ProcessGroupWorker(MPI_Comm gcomm, MPI_Comm lcomm,
-    RankType grank, RankType lrank, RankType manager, RankType lroot) :
-    gcomm_(gcomm), lcomm_(lcomm), globalID_(grank), localID_(lrank), managerID_(
-        manager), localRootID_(lroot), currentTask_( NULL), status_(
-        PROCESS_GROUP_WAIT), combinedFG_( NULL), combinedFGexists_(false), combiParametersSet_(
-        false), combinedUniDSG_( NULL) {
+                                       RankType grank, RankType lrank, RankType manager, RankType lroot) :
+  gcomm_(gcomm), lcomm_(lcomm), globalID_(grank), localID_(lrank), managerID_(
+    manager), localRootID_(lroot), currentTask_( NULL), status_(
+      PROCESS_GROUP_WAIT), combinedFG_( NULL), combinedFGexists_(false),
+  combiParametersSet_(
+    false), combinedUniDSG_( NULL) {
 }
 
 ProcessGroupWorker::~ProcessGroupWorker() {
@@ -44,7 +45,7 @@ SignalType ProcessGroupWorker::wait() {
   if (localID_ == localRootID_) {
     // receive signal from manager
     MPI_Recv(&signal, 1, MPI_INT, managerID_, signalTag, gcomm_,
-    MPI_STATUS_IGNORE);
+             MPI_STATUS_IGNORE);
   }
 
   // distribute signal to other processes of pgroup
@@ -116,7 +117,7 @@ SignalType ProcessGroupWorker::wait() {
     */
 
     // check if task already exists on this group
-    for( auto tmp : tasks_ )
+    for ( auto tmp : tasks_ )
       assert( tmp->getID() != t->getID() );
 
     // initalize task
@@ -153,12 +154,12 @@ SignalType ProcessGroupWorker::wait() {
   } else if (signal == UPDATE_COMBI_PARAMETERS) {
     std::cout << "updating combi parameters " << std::endl;
     updateCombiParameters();
-  } else if (signal == RECOMPUTE){
+  } else if (signal == RECOMPUTE) {
     Task* t;
 
     // local root receives task
     if (localID_ == localRootID_) {
-     Task::receive(&t, managerID_, gcomm_);
+      Task::receive(&t, managerID_, gcomm_);
     }
 
     // broadcast task to other process of pgroup
@@ -273,12 +274,13 @@ void ProcessGroupWorker::combineUniform() {
       lmax[i] -= 1;
 
   // todo: delete old dsg
-  if(combinedUniDSG_ != NULL)
+  if (combinedUniDSG_ != NULL)
     delete combinedUniDSG_;
 
   theStatsContainer()->setTimerStart("combine_create_dsg");
   // erzeug dsg
-  combinedUniDSG_ = new DistributedSparseGridUniform<CombiDataType>(dim, lmax, lmin, boundary,
+  combinedUniDSG_ = new DistributedSparseGridUniform<CombiDataType>(dim, lmax,
+      lmin, boundary,
       lcomm_);
   theStatsContainer()->setTimerStop("combine_create_dsg");
 
@@ -294,6 +296,7 @@ void ProcessGroupWorker::combineUniform() {
   real taddtosg = 0.0;
 
   theStatsContainer()->setTimerStart("combine_local_reduce");
+
   for (Task* t : tasks_) {
     DistributedFullGrid<CombiDataType>& dfg = t->getDistributedFullGrid();
 
@@ -307,10 +310,11 @@ void ProcessGroupWorker::combineUniform() {
     dfg.addToUniformSG( *combinedUniDSG_, combiParameters_.getCoeff( t->getID() ) );
     taddtosg += MPI_Wtime() - taddtosg_start;
   }
+
   theStatsContainer()->setTimerStop("combine_local_reduce");
 
   theStatsContainer()->setValue("combine_local_reduce_hierarchization",
-      thierarchization);
+                                thierarchization);
   theStatsContainer()->setValue("combine_local_reduce_addtosg", taddtosg);
 
   theStatsContainer()->setTimerStart("combine_global_reduce");
@@ -318,6 +322,7 @@ void ProcessGroupWorker::combineUniform() {
   theStatsContainer()->setTimerStop("combine_global_reduce");
 
   theStatsContainer()->setTimerStart("combine_local_scatter");
+
   for (Task* t : tasks_) {
     // get handle to dfg
     DistributedFullGrid<CombiDataType>& dfg = t->getDistributedFullGrid();
@@ -328,6 +333,7 @@ void ProcessGroupWorker::combineUniform() {
     // dehierarchize dfg
     DistributedHierarchization::dehierarchize<CombiDataType>( dfg );
   }
+
   theStatsContainer()->setTimerStop("combine_local_scatter");
 }
 
@@ -374,6 +380,7 @@ void ProcessGroupWorker::gridEval() {
     Task* t = tasks_[i];
 
     FullGrid<CombiDataType> fg(t->getDim(), t->getLevelVector(), boundary );
+
     if (localID_ == localRootID_) {
       fg.createFullGrid();
     }
@@ -417,7 +424,7 @@ void ProcessGroupWorker::updateCombiParameters() {
 }
 
 
-void ProcessGroupWorker::setCombinedSolutionUniform( Task* t ){
+void ProcessGroupWorker::setCombinedSolutionUniform( Task* t ) {
   assert( combinedUniDSG_ != NULL );
 
   // get handle to dfg

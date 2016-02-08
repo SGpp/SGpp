@@ -30,7 +30,7 @@ class Auto : public SLESolver {
   /**
    * Destructor.
    */
-  virtual ~Auto() override;
+  ~Auto() override;
 
   /**
    * @param       system  system to be solved

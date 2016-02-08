@@ -9,8 +9,6 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>

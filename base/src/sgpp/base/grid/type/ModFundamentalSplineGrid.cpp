@@ -12,8 +12,6 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 

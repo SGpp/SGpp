@@ -6,13 +6,13 @@
 #ifndef SUBSPACEREFINEMENT_HPP_
 #define SUBSPACEREFINEMENT_HPP_
 
-#include <iostream>
-
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 
 
 namespace SGPP {
@@ -25,15 +25,14 @@ namespace base {
  */
 class SubspaceRefinement: public RefinementDecorator {
  public:
-
   /**
    * Constructor
    *
    * @param refinement decorated refinement object
    */
-  SubspaceRefinement(AbstractRefinement* refinement): RefinementDecorator(
-      refinement) {
-  };
+  explicit SubspaceRefinement(AbstractRefinement* refinement):
+    RefinementDecorator(refinement) {
+  }
 
 
   /**
@@ -45,17 +44,16 @@ class SubspaceRefinement: public RefinementDecorator {
   * @param storage hashmap that stores the grid points
   * @param functor a RefinementFunctor specifying the refinement criteria
   */
-  virtual void free_refine(GridStorage* storage,
-                           RefinementFunctor* functor) override;
+  void free_refine(GridStorage* storage,
+                   RefinementFunctor* functor) override;
 
 
   /**
    * Destructor
    */
-  virtual ~SubspaceRefinement() override {}
+  ~SubspaceRefinement() override {}
 
  protected:
-
   /**
    * Examines the grid points and stores the indices those that can be refined
    * and have maximal indicator values.
@@ -64,9 +62,10 @@ class SubspaceRefinement: public RefinementDecorator {
    * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
    * @param collection container that contains elements to refine (empty initially)
    */
-  virtual void collectRefinablePoints(GridStorage* storage,
-                                      RefinementFunctor* functor,
-                                      AbstractRefinement::refinement_container_type& collection) override;
+  void collectRefinablePoints(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
 
   /**
@@ -76,9 +75,10 @@ class SubspaceRefinement: public RefinementDecorator {
    * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
    * @param collection container that contains elements to refine (empty initially)
    */
-  virtual void refineGridpointsCollection(GridStorage* storage,
-                                          RefinementFunctor* functor,
-                                          AbstractRefinement::refinement_container_type& collection) override;
+  void refineGridpointsCollection(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
 
   /**

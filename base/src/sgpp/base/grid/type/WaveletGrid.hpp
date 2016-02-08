@@ -8,8 +8,6 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -21,7 +19,7 @@ namespace base {
  */
 class WaveletGrid : public Grid {
  protected:
-  WaveletGrid(std::istream& istr);
+  explicit WaveletGrid(std::istream& istr);
 
  public:
   /**
@@ -29,21 +27,20 @@ class WaveletGrid : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  WaveletGrid(size_t dim);
+  explicit WaveletGrid(size_t dim);
 
   /**
    * Destructor
    */
-  virtual ~WaveletGrid() override;
+  ~WaveletGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
-
 };
 
 }  // namespace base

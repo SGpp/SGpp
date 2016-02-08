@@ -23,7 +23,7 @@ class Armadillo : public SLESolver {
   /**
    * Destructor.
    */
-  virtual ~Armadillo() override;
+  ~Armadillo() override;
 
   /**
    * @param       system  system to be solved

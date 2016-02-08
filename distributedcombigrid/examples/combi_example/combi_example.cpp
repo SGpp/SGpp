@@ -74,9 +74,11 @@ int main(int argc, char** argv) {
   MPI_Comm_group(MPI_COMM_WORLD, &worldGroup);
 
   std::vector<int> ranks(ngroup + 1);
+
   for (size_t i = 0; i < ngroup; i++) {
     ranks[i] = i * nprocs;
   }
+
   ranks.back() = managerIDworld;
 
   MPI_Group rootGroup;
@@ -87,6 +89,7 @@ int main(int argc, char** argv) {
 
   int managerIDgcomm = MPI_PROC_NULL;
   int grank;
+
   if (gcomm != MPI_COMM_NULL) {
     int gcommSize;
     MPI_Comm_size(gcomm, &gcommSize);
@@ -102,6 +105,7 @@ int main(int argc, char** argv) {
      * a pgroup is identified by the ID in gcomm
      */
     ProcessGroupManagerContainer pgroups;
+
     for (size_t i = 0; i < ngroup; ++i) {
       int pgroupRootID(i);
       ProcessGroupManager grp(managerIDgcomm, pgroupRootID, gcomm);
@@ -132,8 +136,10 @@ int main(int argc, char** argv) {
 
     // check parallelization vector p agrees with nprocs
     IndexType checkProcs = 1;
+
     for (auto k : p)
       checkProcs *= k;
+
     assert(checkProcs == IndexType(nprocs));
 
     CombiMinMaxScheme combischeme(dim, lmin, lmax);
@@ -151,9 +157,10 @@ int main(int argc, char** argv) {
     // create Tasks
     TaskContainer tasks;
     std::vector<int> taskIDs;
+
     for (size_t i = 0; i < levels.size(); i++) {
       Task* t = new TaskExample(dim, levels[i], lmax, lmin, boundary, coeffs[i],
-          loadmodel, dt, nsteps, p);
+                                loadmodel, dt, nsteps, p);
       tasks.push_back(t);
       taskIDs.push_back( t->getID() );
     }
@@ -183,14 +190,17 @@ int main(int argc, char** argv) {
 
       // write solution to file
       std::vector<double> coords(dim, 0.0);
+
       for (int i = 0; i < fg_eval.getNrElements(); i++) {
         if (i % fg_eval.length(0) == 0 && i > 0) {
           myfile << std::endl;
         }
+
         fg_eval.getCoords(i, coords);
         myfile << coords[0] << "\t" << coords[1] << "\t"
-            << fg_eval.getElementVector()[i] << std::endl;
+               << fg_eval.getElementVector()[i] << std::endl;
       }
+
       myfile << std::endl << std::endl;
 
       // run tasks for next time interval
@@ -210,6 +220,7 @@ int main(int argc, char** argv) {
 
     // wait for instructions from manager
     SignalType signal = -1;
+
     while (signal != EXIT)
       signal = pgroup.wait();
   }

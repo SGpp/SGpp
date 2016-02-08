@@ -31,7 +31,7 @@ class SolandObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~SolandObjective() override;
+  ~SolandObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -63,7 +63,7 @@ class SolandInequalityConstraint :
   /**
    * Destructor.
    */
-  virtual ~SolandInequalityConstraint() override;
+  ~SolandInequalityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -97,7 +97,7 @@ class SolandEqualityConstraint :
   /**
    * Destructor.
    */
-  virtual ~SolandEqualityConstraint() override;
+  ~SolandEqualityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -135,22 +135,22 @@ class Soland : public ConstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Soland() override;
+  ~Soland() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @return  inequality function of the test problem
    */
-  virtual TestVectorFunction& getInequalityConstraintFunction() override;
+  TestVectorFunction& getInequalityConstraintFunction() override;
 
   /**
    * @return  equality constraint function of the test problem
    */
-  virtual TestVectorFunction& getEqualityConstraintFunction() override;
+  TestVectorFunction& getEqualityConstraintFunction() override;
 
   /**
    * @param[out] x minimal point

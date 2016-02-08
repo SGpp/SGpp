@@ -35,7 +35,7 @@ class DehierarchisationLinear {
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    */
-  DehierarchisationLinear(GridStorage* storage);
+  explicit DehierarchisationLinear(GridStorage* storage);
   /**
    * Destructor
    */

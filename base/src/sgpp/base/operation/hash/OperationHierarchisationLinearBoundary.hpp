@@ -34,8 +34,8 @@ class OperationHierarchisationLinearBoundary : public OperationHierarchisation {
    */
   virtual ~OperationHierarchisationLinearBoundary() override {}
 
-  virtual void doHierarchisation(DataVector& node_values) override;
-  virtual void doDehierarchisation(DataVector& alpha) override;
+  void doHierarchisation(DataVector& node_values) override;
+  void doDehierarchisation(DataVector& alpha) override;
 
  protected:
   /// Pointer to GridStorage object

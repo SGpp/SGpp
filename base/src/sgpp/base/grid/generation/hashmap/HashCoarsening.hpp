@@ -13,14 +13,12 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <vector>
 #include <list>
 #include <cmath>
 #include <utility>
-
-//#include <iostream>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -89,7 +87,8 @@ class HashCoarsening {
         CoarseningFunctor::value_type current_value = (*functor)(storage, z);
 
         if (current_value < removePoints[max_idx].second) {
-          //Replace the maximum point array of removable candidates, find the new maximal point
+          // Replace the maximum point array of removable candidates,
+          // find the new maximal point
           removePoints[max_idx].second = current_value;
           removePoints[max_idx].first = z;
 
@@ -105,12 +104,13 @@ class HashCoarsening {
       }
     }
 
-    //DEBUG : print list of removable candidates
-    //for (size_t i = 0; i < remove_num; i++)
-    //{
-    //  std::cout << "Index: " << removePoints[i].first << " with surplus " << removePoints[i].second << std::endl;
-    //}
-    //std::cout << std::endl;
+    // DEBUG : print list of removable candidates
+    // for (size_t i = 0; i < remove_num; i++)
+    // {
+    //   std::cout << "Index: " << removePoints[i].first <<
+    //   " with surplus " << removePoints[i].second << std::endl;
+    // }
+    // std::cout << std::endl;
 
     // remove the marked grid point if their surplus
     // is below the given threshold
@@ -124,26 +124,28 @@ class HashCoarsening {
     std::list<size_t> deletePoints;
 
     for (size_t i = 0; i < remove_num; i++) {
-      if (removePoints[i].second < initValue && removePoints[i].second <= threshold) {
+      if (removePoints[i].second < initValue &&
+          removePoints[i].second <= threshold) {
         deletePoints.push_back(removePoints[i].first);
       }
     }
 
-    //DEBUG : print list points to delete
-    //for(std::list<size_t>::iterator iter = deletePoints.begin(); iter != deletePoints.end(); iter++)
-    //{
-    //  std::cout << "Index: " << *iter << std::endl;
-    //}
+    // DEBUG : print list points to delete
+    // for(std::list<size_t>::iterator iter = deletePoints.begin();
+    // iter != deletePoints.end(); iter++)
+    // {
+    //   std::cout << "Index: " << *iter << std::endl;
+    // }
 
     remainingIndex = storage->deletePoints(deletePoints);
 
     // DEBUG
-    //std::cout << "List of remaining GridPoints (indices)" << std::endl;
-    //for (size_t i = 0; i < remainingIndex.size(); i++)
-    //{
-    //  std::cout << remainingIndex[i] << " ";
-    //}
-    //std::cout << std::endl << std::endl;
+    // std::cout << "List of remaining GridPoints (indices)" << std::endl;
+    // for (size_t i = 0; i < remainingIndex.size(); i++)
+    // {
+    //   std::cout << remainingIndex[i] << " ";
+    // }
+    // std::cout << std::endl << std::endl;
 
     // Drop Elements from DataVector
     alpha->restructure(remainingIndex);
@@ -185,7 +187,8 @@ class HashCoarsening {
     index_type index;
     GridStorage::grid_map_iterator end_iter = storage->end();
 
-    for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
+    for (GridStorage::grid_map_iterator iter = storage->begin();
+         iter != end_iter;
          iter++) {
       index = *(iter->first);
 

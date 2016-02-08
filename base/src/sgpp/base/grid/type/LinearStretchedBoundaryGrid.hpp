@@ -8,8 +8,6 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -21,7 +19,7 @@ namespace base {
  */
 class LinearStretchedBoundaryGrid : public Grid {
  protected:
-  LinearStretchedBoundaryGrid(std::istream& istr);
+  explicit LinearStretchedBoundaryGrid(std::istream& istr);
 
  public:
   /**
@@ -29,25 +27,25 @@ class LinearStretchedBoundaryGrid : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  LinearStretchedBoundaryGrid(size_t dim);
+  explicit LinearStretchedBoundaryGrid(size_t dim);
 
   /**
    * Constructor Linear Truncated Boundary Grid
    *
    * @param BB the Stretching of the grid
    */
-  LinearStretchedBoundaryGrid(Stretching& BB);
+  explicit LinearStretchedBoundaryGrid(Stretching& BB);
 
   /**
    * Destructor
    */
-  virtual ~LinearStretchedBoundaryGrid() override;
+  ~LinearStretchedBoundaryGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
 };

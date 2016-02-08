@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cmath>
-#include <vector>
-#include <memory>
-
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
+#include <vector>
+#include <memory>
 
 
 namespace SGPP {
@@ -22,7 +22,6 @@ void HashRefinementBoundaries::addElementToCollection(
   AbstractRefinement::refinement_list_type current_value_list,
   size_t refinements_num,
   AbstractRefinement::refinement_container_type& collection) {
-
   for (AbstractRefinement::refinement_list_type::iterator it =
          current_value_list.begin();
        it != current_value_list.end(); it++) {
@@ -81,9 +80,10 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
-          AbstractRefinement::refinement_list_type current_value_list = getIndicator(
-                storage, iter, functor);
-          addElementToCollection(iter, current_value_list, refinements_num, collection);
+          AbstractRefinement::refinement_list_type current_value_list =
+            getIndicator(storage, iter, functor);
+          addElementToCollection(iter, current_value_list, refinements_num,
+                                 collection);
           break;
         }
       } else {
@@ -93,9 +93,10 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
 
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
-          AbstractRefinement::refinement_list_type current_value_list = getIndicator(
-                storage, iter, functor);
-          addElementToCollection(iter, current_value_list, refinements_num, collection);
+          AbstractRefinement::refinement_list_type current_value_list =
+            getIndicator(storage, iter, functor);
+          addElementToCollection(iter, current_value_list, refinements_num,
+                                 collection);
           break;
         }
 
@@ -104,9 +105,10 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage* storage,
         child_iter = storage->find(&index);
 
         if (child_iter == end_iter) {
-          AbstractRefinement::refinement_list_type current_value_list = getIndicator(
-                storage, iter, functor);
-          addElementToCollection(iter, current_value_list, refinements_num, collection);
+          AbstractRefinement::refinement_list_type current_value_list =
+            getIndicator(storage, iter, functor);
+          addElementToCollection(iter, current_value_list, refinements_num,
+                                 collection);
           break;
         }
       }
@@ -137,7 +139,7 @@ void HashRefinementBoundaries::free_refine(GridStorage* storage,
 
   AbstractRefinement::refinement_container_type collection;
   collectRefinablePoints(storage, functor, collection);
-  //can refine grid on several points
+  // can refine grid on several points
   refineGridpointsCollection(storage, functor, collection);
 }
 
@@ -198,7 +200,6 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
   }
 
   return counter;
-
 }
 
 
@@ -242,7 +243,7 @@ void HashRefinementBoundaries::refineGridpoint(GridStorage* storage,
     size_t refine_index) {
   index_type index(*(*storage)[refine_index]);
 
-  //Sets leaf property of index, which is refined to false
+  // Sets leaf property of index, which is refined to false
   (*storage)[refine_index]->setLeaf(false);
 
   for (size_t d = 0; d < storage->dim(); d++) {
@@ -261,11 +262,13 @@ void HashRefinementBoundaries::createGridpoint(GridStorage* storage,
 }
 
 void HashRefinementBoundaries::createGridpoint1D(index_type& index,
-    size_t d, GridStorage* storage, index_t& source_index, level_t& source_level) {
+    size_t d, GridStorage* storage, index_t& source_index,
+    level_t& source_level) {
   index.get(d, source_level, source_index);
 
   if (source_level == 1) {
-    // check if we need some additional points on the boundaries, only needed on a N dim grid
+    // check if we need some additional points on the boundaries,
+    // only needed on a N dim grid
     if (storage->dim() > 1) {
       // test if there are boundaries in every dimension for this grid point
       // left boundary
@@ -283,7 +286,6 @@ void HashRefinementBoundaries::createGridpoint1D(index_type& index,
 
   AbstractRefinement::createGridpoint1D(index, d, storage, source_index,
                                         source_level);
-
 }
 
 void HashRefinementBoundaries::createGridpointGeneral(GridStorage* storage,
@@ -309,7 +311,8 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
     // Assure that we have always a consistent grid with both functions
     // 0,0 and 0,1 on level zero
     if (source_level == 0) {
-      // check if we need some additional points on the boundaries, only needed on a N dim grid
+      // check if we need some additional points on the boundaries,
+      // only needed on a N dim grid
       if (storage->dim() > 1) {
         // if we have already a left boundary...
         index.set(d, 0, 0);

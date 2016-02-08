@@ -70,12 +70,15 @@ size_t StandardGridGenerator::getNumberOfRemovablePoints() {
 
 void StandardGridGenerator::refineMaxLevel(RefinementFunctor* func,
     size_t maxLevel) {
-  throw generation_exception("StandardGridGenerator::refineMaxLevel is not implemented");
+  throw generation_exception(
+    "StandardGridGenerator::refineMaxLevel is not implemented");
 }
 
 size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(
   size_t maxLevel) {
-  throw generation_exception("StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel is not implemented");
+  throw generation_exception(
+    "StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel "
+    "is not implemented");
   return 0;
 }
 

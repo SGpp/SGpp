@@ -34,7 +34,8 @@ size_t AbstractRefinement::getIndexOfMin(RefinementFunctor::value_type* array,
 
 
 void AbstractRefinement::createGridpoint1D(index_type& index,
-    size_t d, GridStorage* storage, index_t& source_index, level_t& source_level) {
+    size_t d, GridStorage* storage, index_t& source_index,
+    level_t& source_level) {
   index.get(d, source_level, source_index);
 
   if (source_level > 1) {
