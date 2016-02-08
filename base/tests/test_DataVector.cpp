@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 
 BOOST_AUTO_TEST_CASE(testOps) {
 
-  float_t tol = 1e-5;
+  double tol = 0.00001;
 
   DataVector d = d_rand;
   DataVector d2 = DataVector(N);
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataVector(d_rand);
   d.normalize();
   SGPP::float_t border = 0.0;
-  float_t delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
+  SGPP::float_t delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
   for (int i = 0; i < N; i++){
 	  BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min())/delta + border, tol);
   }
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   for (int i = 0; i < N; ++i){
 	  rmsNormSquaredExpected += d_rand[i]*d_rand[i];
   }
-  rmsNormSquaredExpected *= 1/N;
+  rmsNormSquaredExpected *= 1.0/N;
   BOOST_CHECK_CLOSE(rmsNormSquaredActual, rmsNormSquaredExpected, tol);
 
   //sub
