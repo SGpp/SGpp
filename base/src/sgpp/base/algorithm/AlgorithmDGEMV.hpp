@@ -81,38 +81,38 @@ class AlgorithmDGEMV {
     }
   }
   /*
-  // implementation requires OpenMP 4.0 support
-  //        void mult_transposed(GridStorage* storage, BASIS& basis, const DataVector& source, DataMatrix& x, DataVector& result) {
-  //          typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
-  //
-  //          result.setAll(0.0);
-  //          #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
-  //          initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
-  //
-  //
-  //          #pragma omp parallel
-  //          {
-  //            size_t source_size = source.getSize();
-  //            DataVector line(x.getNcols());
-  //            IndexValVector vec;
-  //            GetAffectedBasisFunctions<BASIS> ga(storage);
-  //
-  //
-  //            #pragma omp for reduction(accumulate:result) schedule(static)
-  //
-  //            for (size_t i = 0; i < source_size; i++) {
-  //              vec.clear();
-  //
-  //              x.getRow(i, line);
-  //
-  //              ga(basis, line, vec);
-  //
-  //              for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
-  //                result[iter->first] += iter->second * source[i];
-  //              }
-  //            }
-  //          }
-  //        }
+   implementation requires OpenMP 4.0 support
+          void mult_transposed(GridStorage* storage, BASIS& basis, const DataVector& source, DataMatrix& x, DataVector& result) {
+            typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+  
+            result.setAll(0.0);
+            #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in)) \
+            initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
+  
+  
+            #pragma omp parallel
+            {
+              size_t source_size = source.getSize();
+              DataVector line(x.getNcols());
+              IndexValVector vec;
+              GetAffectedBasisFunctions<BASIS> ga(storage);
+  
+  
+              #pragma omp for reduction(accumulate:result) schedule(static)
+  
+              for (size_t i = 0; i < source_size; i++) {
+                vec.clear();
+  
+                x.getRow(i, line);
+  
+                ga(basis, line, vec);
+  
+                for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
+                  result[iter->first] += iter->second * source[i];
+                }
+              }
+            }
+          }
   */
 
   /**
