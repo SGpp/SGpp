@@ -6,10 +6,10 @@
 #ifndef DATA_EXCEPTION_HPP
 #define DATA_EXCEPTION_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <exception>
 #include <cstddef>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -26,7 +26,7 @@ class data_exception : public std::exception {
    *
    * @param msg The exception message
    */
-  data_exception(const char* msg) throw() : msg(msg) {
+  explicit data_exception(const char* msg) throw() : msg(msg) {
   }
 
   /**
@@ -37,14 +37,14 @@ class data_exception : public std::exception {
   /**
    * Destructor
    */
-  virtual ~data_exception() throw() override { }
+  ~data_exception() throw() override { }
 
   /**
    * Return message of exception object.
    *
    * @return Returns the message specified in the constructor, otherwise a general text
    */
-  virtual const char* what() const throw() override {
+  const char* what() const throw() override {
     if (msg) {
       return msg;
     } else {
@@ -55,7 +55,6 @@ class data_exception : public std::exception {
  protected:
   /// the exception message
   const char* msg;
-
 };
 
 }  // namespace base

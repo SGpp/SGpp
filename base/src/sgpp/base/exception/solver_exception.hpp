@@ -6,10 +6,10 @@
 #ifndef SOLVER_EXCEPTION_HPP
 #define SOLVER_EXCEPTION_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <exception>
 #include <cstddef>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -26,7 +26,7 @@ class solver_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  solver_exception(const char* msg) throw() : msg(msg) {
+  explicit solver_exception(const char* msg) throw() : msg(msg) {
   }
 
   /**
@@ -37,14 +37,14 @@ class solver_exception : public std::exception {
   /**
    * Destructor
    */
-  virtual ~solver_exception() throw() override { }
+  ~solver_exception() throw() override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  virtual const char* what() const throw() override {
+  const char* what() const throw() override {
     if (msg) {
       return msg;
     } else {
@@ -55,7 +55,6 @@ class solver_exception : public std::exception {
  protected:
   /// the exception message
   const char* msg;
-
 };
 
 }  // namespace base

@@ -6,10 +6,10 @@
 #ifndef FACTORY_EXCEPTION_HPP
 #define FACTORY_EXCEPTION_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <exception>
 #include <cstddef>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -26,7 +26,7 @@ class factory_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  factory_exception(const char* msg) throw() : msg(msg) {
+  explicit factory_exception(const char* msg) throw() : msg(msg) {
   }
 
   /**
@@ -37,14 +37,14 @@ class factory_exception : public std::exception {
   /**
    * Destructor
    */
-  virtual ~factory_exception() throw() override { }
+  ~factory_exception() throw() override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  virtual const char* what() const throw() override {
+  const char* what() const throw() override {
     if (msg) {
       return msg;
     } else {
