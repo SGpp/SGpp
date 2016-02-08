@@ -6,9 +6,9 @@
 #ifndef ALGORITHM_EXCEPTION_HPP
 #define ALGORITHM_EXCEPTION_HPP
 
-#include <exception>
-
 #include <sgpp/globaldef.hpp>
+
+#include <exception>
 
 
 namespace SGPP {
@@ -25,7 +25,7 @@ class algorithm_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  algorithm_exception(const char* msg) throw() : msg(msg) {
+  explicit algorithm_exception(const char* msg) throw() : msg(msg) {
   }
 
   /**
@@ -36,14 +36,14 @@ class algorithm_exception : public std::exception {
   /**
    * Destructor
    */
-  virtual ~algorithm_exception() throw() override { }
+  ~algorithm_exception() throw() override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  virtual const char* what() const throw() override {
+  const char* what() const throw() override {
     if (msg) {
       return msg;
     } else {
@@ -54,7 +54,6 @@ class algorithm_exception : public std::exception {
  protected:
   /// the exception message
   const char* msg;
-
 };
 
 }  // namespace base

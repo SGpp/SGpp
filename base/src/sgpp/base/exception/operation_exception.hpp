@@ -6,11 +6,11 @@
 #ifndef OPERATION_EXCEPTION_HPP
 #define OPERATION_EXCEPTION_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <exception>
 #include <cstddef>
 #include <string>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -27,7 +27,7 @@ class operation_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  operation_exception(const char* msg) throw() : msg(msg) {
+  explicit operation_exception(const char* msg) throw() : msg(msg) {
   }
 
   /**
@@ -35,7 +35,7 @@ class operation_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  operation_exception(std::string msg) throw() : stringMsg(msg),
+  explicit operation_exception(std::string msg) throw() : stringMsg(msg),
     msg(stringMsg.c_str()) {
   }
 
@@ -47,14 +47,14 @@ class operation_exception : public std::exception {
   /**
    * Destructor
    */
-  virtual ~operation_exception() throw() override { }
+  ~operation_exception() throw() override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  virtual const char* what() const throw() override {
+  const char* what() const throw() override {
     if (msg) {
       return msg;
     } else {
@@ -67,7 +67,6 @@ class operation_exception : public std::exception {
   std::string stringMsg;
   /// the exception message as C string
   const char* msg;
-
 };
 
 }  // namespace base
