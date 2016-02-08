@@ -453,7 +453,8 @@ HashGridIndex::typeVerboseMap() {
     verboseMap->insert(std::make_pair(HashGridIndex::PointDistribution::Normal,
                                       "Normal"));
     verboseMap->insert(std::make_pair(
-                         HashGridIndex::PointDistribution::ClenshawCurtis, "ClenshawCurtis"));
+                         HashGridIndex::PointDistribution::ClenshawCurtis,
+                         "ClenshawCurtis"));
 #endif
   }
 

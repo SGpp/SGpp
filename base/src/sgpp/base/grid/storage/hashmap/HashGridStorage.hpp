@@ -9,7 +9,6 @@
 #include <sgpp/base/exception/generation_exception.hpp>
 
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridIterator.hpp>
 #include <sgpp/base/grid/storage/hashmap/SerializationVersion.hpp>
 
 #include <sgpp/base/grid/common/BoundingBox.hpp>
@@ -531,7 +530,7 @@ unsigned int
 inline HashGridStorage::store(index_pointer index) {
   list.push_back(index);
   return static_cast<unsigned int>(
-      map[index] = static_cast<unsigned int>(this->seq() - 1));
+           map[index] = static_cast<unsigned int>(this->seq() - 1));
 }
 
 HashGridStorage::grid_map_iterator
