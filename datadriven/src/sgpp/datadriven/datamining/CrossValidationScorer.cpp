@@ -11,12 +11,9 @@
 namespace SGPP {
 namespace datadriven {
 
-CrossValidationScorer::CrossValidationScorer(Dataset& dataset, Metric& metric, double trainPortion):Scorer(metric),
-		trainPortion(trainPortion) {
-	int trainPoints = static_cast<int>(dataset.getNumberInstances()*trainPortion);
-	int testPoints = dataset.getNumberInstances() - trainPoints;
-	trainDataset = Dataset(trainPoints, dataset.getDimension());
-	testDataset = Dataset(testPoints, dataset.getDimension());
+CrossValidationScorer::CrossValidationScorer(Dataset& dataset, Metric& metric, size_t kFold):Scorer(metric),
+		kFold(kFold) {
+
 
 }
 
