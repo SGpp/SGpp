@@ -66,6 +66,12 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 }
 
 BOOST_AUTO_TEST_CASE(testOps) {
+#if USE_DOUBLE_PRECISION == 1
+	float_t tol = 1e-12;
+#else
+    float_t tol = 1e-5;
+#endif
+
   DataVector d = d_rand;
   DataVector d2 = DataVector(N);
   SGPP::float_t scalar = 0.213;
@@ -104,7 +110,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   for (int i = 0; i < N; ++i){
 	  lTwoNormSquaredExact += d_rand[i]*d_rand[i];
   }
-  BOOST_CHECK_EQUAL(lTwoNormSquaredActual, lTwoNormSquaredExact);
+  BOOST_CHECK_CLOSE(lTwoNormSquaredActual, lTwoNormSquaredExact, tol);
 
   //max
   d = DataVector(d_rand);
@@ -118,7 +124,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   for (int i = 1; i < N; ++i){
 	  maxNormExpected = maxNormExpected < fabs(d_rand[i]) ? fabs(d_rand[i]) : maxNormExpected;
   }
-  BOOST_CHECK_EQUAL(maxNormActual, maxNormExpected);
+  BOOST_CHECK_CLOSE(maxNormActual, maxNormExpected, tol);
 
   //min
   d = DataVector(d_rand);
@@ -136,7 +142,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   SGPP::float_t border = 0.0;
   float_t delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
   for (int i = 0; i < N; i++){
-	  BOOST_CHECK_EQUAL(d[i], (d_rand[i] - d_rand.min())/delta + border);
+	  BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min())/delta + border, tol);
   }
 
   //normalize with border
@@ -145,7 +151,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.normalize(border);
   delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
   for (int i = 0; i < N; i++){
-	  BOOST_CHECK_EQUAL(d[i], (d_rand[i] - d_rand.min())/delta + border);
+	  BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min())/delta + border, tol);
   }
 
   //RMSNorm
@@ -156,7 +162,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	  rmsNormSquaredExpected += d_rand[i]*d_rand[i];
   }
   rmsNormSquaredExpected *= 1/N;
-  BOOST_CHECK_EQUAL(rmsNormSquaredActual, rmsNormSquaredExpected);
+  BOOST_CHECK_CLOSE(rmsNormSquaredActual, rmsNormSquaredExpected, tol);
 
   //sub
   d = DataVector(d_rand);
@@ -188,7 +194,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.sqr();
   d.sqrt();
   for (int i = 0; i < N; ++i){
-	    BOOST_CHECK_EQUAL(d[i], d_rand[i]);
+	    BOOST_CHECK_CLOSE(d[i], d_rand[i], tol);
   }
 
   //abs
