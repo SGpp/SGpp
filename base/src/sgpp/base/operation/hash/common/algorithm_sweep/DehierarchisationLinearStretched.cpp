@@ -26,10 +26,12 @@ void DehierarchisationLinearStretched::operator()(DataVector& source,
 }
 
 void DehierarchisationLinearStretched::rec(DataVector& source,
-    DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+    DataVector& result, grid_iterator& index, size_t dim,
+    float_t fl, float_t fr) {
   // current position on the grid
   size_t seq = index.seq();
-  // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+  // value in the middle, needed for recursive call and
+  // calculation of the hierarchical surplus
   float_t fm = source[seq];
 
   // dehierarchisation
@@ -37,10 +39,12 @@ void DehierarchisationLinearStretched::rec(DataVector& source,
   GridStorage::index_type::index_type current_index;
   index.get(dim, current_level, current_index);
 
-  //get the positions of the current index as well as its left and right neighbors
+  // get the positions of the current index as
+  // well as its left and right neighbors
   float_t posl = 0, posr = 0, posc = 0;
-  storage->getStretching()->getAdjacentPositions(static_cast<int>(current_level),
-      static_cast<int>(current_index), dim, posc, posl, posr );
+  storage->getStretching()->getAdjacentPositions(
+    static_cast<int>(current_level),
+    static_cast<int>(current_index), dim, posc, posl, posr);
 
   float_t fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
   fm += fcurr;
@@ -68,7 +72,5 @@ void DehierarchisationLinearStretched::rec(DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

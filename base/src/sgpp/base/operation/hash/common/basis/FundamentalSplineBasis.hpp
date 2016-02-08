@@ -6,13 +6,15 @@
 #ifndef FUNDAMENTAL_SPLINE_BASE_HPP
 #define FUNDAMENTAL_SPLINE_BASE_HPP
 
-#include <algorithm>
-#include <cmath>
-#include <stdexcept>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <algorithm>
+#include <cmath>
+#include <stdexcept>
+#include <vector>
 
 namespace SGPP {
 namespace base {
@@ -36,7 +38,7 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
    * @param degree    spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  FundamentalSplineBasis(size_t degree) :
+  explicit FundamentalSplineBasis(size_t degree) :
     bsplineBasis(BsplineBasis<LT, IT>(degree)) {
     switch (bsplineBasis.getDegree()) {
       case 1:
@@ -273,7 +275,7 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~FundamentalSplineBasis() override {
+  ~FundamentalSplineBasis() override {
   }
 
   /**
@@ -282,7 +284,7 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of fundamental spline basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     const size_t p = bsplineBasis.getDegree();
     const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
     const float_t t = x * hInv - static_cast<float_t>(i) +
@@ -413,7 +415,8 @@ class FundamentalSplineBasis: public Basis<LT, IT> {
 // default type-def (unsigned int for level and index)
 typedef FundamentalSplineBasis<unsigned int, unsigned int>
 SFundamentalSplineBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* FUNDAMENTAL_SPLINE_BASE_HPP */

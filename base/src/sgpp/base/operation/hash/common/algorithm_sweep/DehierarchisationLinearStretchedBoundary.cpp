@@ -13,11 +13,13 @@ namespace base {
 
 
 
-DehierarchisationLinearStretchedBoundary::DehierarchisationLinearStretchedBoundary(
+DehierarchisationLinearStretchedBoundary::
+DehierarchisationLinearStretchedBoundary(
   GridStorage* storage) : DehierarchisationLinearStretched(storage) {
 }
 
-DehierarchisationLinearStretchedBoundary::~DehierarchisationLinearStretchedBoundary() {
+DehierarchisationLinearStretchedBoundary::
+~DehierarchisationLinearStretchedBoundary() {
 }
 
 void DehierarchisationLinearStretchedBoundary::operator()(DataVector& source,
@@ -47,7 +49,5 @@ void DehierarchisationLinearStretchedBoundary::operator()(DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

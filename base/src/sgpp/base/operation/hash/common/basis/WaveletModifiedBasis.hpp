@@ -6,10 +6,11 @@
 #ifndef WAVELET_MODIFIED_BASE_HPP
 #define WAVELET_MODIFIED_BASE_HPP
 
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 namespace SGPP {
 namespace base {
@@ -23,7 +24,7 @@ class WaveletModifiedBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~WaveletModifiedBasis() override {
+  ~WaveletModifiedBasis() override {
   }
 
   /**
@@ -32,7 +33,7 @@ class WaveletModifiedBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of modified wavelet basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 1) {
       // first level
       return 1.0;
@@ -44,8 +45,8 @@ class WaveletModifiedBasis: public Basis<LT, IT> {
 
     if ((i == 1) && (x < 1.560231504260063 * h)) {
       // left modified basis function
-      return 0.501309319347014 + 1.38033323862282 * (0.560231504260063 - x * hInvDbl +
-             1.0);
+      return 0.501309319347014 + 1.38033323862282 *
+             (0.560231504260063 - x * hInvDbl + 1.0);
     } else if ((i == hInv - 1) && (x > 1.0 - 1.560231504260063 * h)) {
       // right modified basis function
       return 0.501309319347014 + 1.38033323862282 * (0.560231504260063 +
@@ -136,14 +137,16 @@ class WaveletModifiedBasis: public Basis<LT, IT> {
 
       const float_t t2 = t * t;
       const float_t t4 = t2 * t2;
-      return -2.0 * (2.0 * t4 - 7.0 * t2 + 2.0) * std::exp(-t2) * hInvDbl * hInvDbl;
+      return -2.0 * (2.0 * t4 - 7.0 * t2 + 2.0) *
+             std::exp(-t2) * hInvDbl * hInvDbl;
     }
   }
 };
 
 // default type-def (unsigned int for level and index)
 typedef WaveletModifiedBasis<unsigned int, unsigned int> SWaveletModifiedBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* WAVELET_MODIFIED_BASE_HPP */

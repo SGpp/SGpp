@@ -40,7 +40,7 @@ class DehierarchisationPoly {
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    * @param base Polynomial basis
    */
-  DehierarchisationPoly(GridStorage* storage, SPolyBase* base);
+  explicit DehierarchisationPoly(GridStorage* storage, SPolyBase* base);
   /**
    * Destructor
    */
@@ -59,7 +59,6 @@ class DehierarchisationPoly {
                   grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * Recursive dehierarchisation algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -73,7 +72,7 @@ class DehierarchisationPoly {
            size_t dim, DataVector& coeffs);
 };
 
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DEHIERARCHISATIONPOLY_HPP */

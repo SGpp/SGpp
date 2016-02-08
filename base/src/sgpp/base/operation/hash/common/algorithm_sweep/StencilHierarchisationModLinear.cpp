@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -38,7 +36,7 @@ void StencilHierarchisationModLinear::operator()(DataVector& source,
 void StencilHierarchisationModLinear::rec(DataVector& source,
     DataVector& result, grid_iterator& index, size_t dim, int seql, int seqr) {
   // current position on the grid
-  int seqm = (int) index.seq();
+  int seqm = static_cast<int>(index.seq());
 
   GridStorage::index_type::level_type l;
   GridStorage::index_type::index_type i;
@@ -49,7 +47,8 @@ void StencilHierarchisationModLinear::rec(DataVector& source,
   bool isLeaf = index.hint();
 
 
-  // When we descend the hierarchical basis we have to modify the boundary values
+  // When we descend the hierarchical basis
+  // we have to modify the boundary values
   // in case the index is 1 or (2^l)-1 or we are on the first level
   // level 1, constant function
   if (l == 1) {
@@ -77,9 +76,7 @@ void StencilHierarchisationModLinear::rec(DataVector& source,
     }
 
     // no hierarchisation necessary for root
-  }
-  // left boundary
-  else if (i == 1) {
+  } else if (i == 1) {  // left boundary
     if (!isLeaf) {
       // descend left
       index.leftChild(dim);
@@ -119,9 +116,8 @@ void StencilHierarchisationModLinear::rec(DataVector& source,
       _neighborStencil.push_back(seqr);
       _weightStencil.push_back(-1.0f);
     }
-  }
-  // right boundary
-  else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+  } else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+    // right boundary
     if (!isLeaf) {
       // descend left
       index.leftChild(dim);
@@ -161,9 +157,7 @@ void StencilHierarchisationModLinear::rec(DataVector& source,
       _neighborStencil.push_back(seql);
       _weightStencil.push_back(-1.0f);
     }
-  }
-  // inner functions
-  else {
+  } else {  // inner functions
     if (!isLeaf) {
       // descend left
       index.leftChild(dim);
@@ -197,7 +191,5 @@ void StencilHierarchisationModLinear::rec(DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

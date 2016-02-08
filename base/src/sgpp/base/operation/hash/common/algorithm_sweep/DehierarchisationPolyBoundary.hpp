@@ -59,7 +59,6 @@ class DehierarchisationPolyBoundary {
                   size_t dim);
 
  protected:
-
   /**
    * Recursive dehierarchisation algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -73,9 +72,7 @@ class DehierarchisationPolyBoundary {
            size_t dim, DataVector& coeffs);
 };
 
-// namespace detail
-
-} // namespace sg
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DEHIERARCHISATIONPOLYBOUNDARY_HPP */

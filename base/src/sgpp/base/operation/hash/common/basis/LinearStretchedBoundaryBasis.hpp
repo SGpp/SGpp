@@ -6,11 +6,12 @@
 #ifndef LINEARSTRETCHEDBOUNDARYBASE_HPP
 #define LINEARSTRETCHEDBOUNDARYBASE_HPP
 
-#include <cmath>
 #include <sgpp/base/grid/common/Stretching.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 
 namespace SGPP {
@@ -27,7 +28,7 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~LinearStretchedBoundaryBasis() override {
+  ~LinearStretchedBoundaryBasis() override {
   }
 
   /*  *
@@ -105,8 +106,8 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
    * Has a dependence on the position of two grid points with values 1 and 0 and the
    * support position
    */
-  virtual float_t eval(LT level, IT index, float_t p, float_t pos0,
-                       float_t pos1) override {
+  float_t eval(LT level, IT index, float_t p, float_t pos0,
+               float_t pos1) override {
     //    if(level == 0){
     //      if(index == 0){
     //
@@ -123,13 +124,13 @@ class LinearStretchedBoundaryBasis: public LinearBoundaryBasis<LT, IT> {
     //    return 0.0;
     return (p - pos0) / (pos1 - pos0);
   }
-
 };
 
 // default type-def (unsigned int for level and index)
 typedef LinearStretchedBoundaryBasis<unsigned int, unsigned int>
 SLinearStretchedBoundaryBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARSTRETCHEDBOUNDARYBASE_HPP */

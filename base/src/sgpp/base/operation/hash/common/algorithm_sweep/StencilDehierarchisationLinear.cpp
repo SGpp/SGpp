@@ -33,7 +33,7 @@ void StencilDehierarchisationLinear::operator()(DataVector& source,
 void StencilDehierarchisationLinear::rec(DataVector& source, DataVector& result,
     grid_iterator& index, size_t dim, int seql, int seqr) {
   // current position on the grid
-  int seqm = (int) index.seq();
+  int seqm = static_cast<int>(index.seq());
 
   // dehierarchisation
   if (seql >= 0) {
@@ -69,7 +69,5 @@ void StencilDehierarchisationLinear::rec(DataVector& source, DataVector& result,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

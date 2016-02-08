@@ -6,10 +6,11 @@
 #ifndef WAVELET_BASE_HPP
 #define WAVELET_BASE_HPP
 
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 namespace SGPP {
 namespace base {
@@ -23,7 +24,7 @@ class WaveletBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~WaveletBasis() override {
+  ~WaveletBasis() override {
   }
 
   /**
@@ -32,7 +33,7 @@ class WaveletBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of wavelet basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     const float_t hInv = static_cast<float_t>(static_cast<IT>(1) << l);
     const float_t t = x * hInv - static_cast<float_t>(i);
 
@@ -80,13 +81,15 @@ class WaveletBasis: public Basis<LT, IT> {
     }
 
     const float_t t2 = t * t;
-    return -2.0 * (2.0 * t2 * t2 - 7.0 * t2 + 2.0) * std::exp(-t2) * hInv * hInv;
+    return -2.0 * (2.0 * t2 * t2 - 7.0 * t2 + 2.0) *
+           std::exp(-t2) * hInv * hInv;
   }
 };
 
 // default type-def (unsigned int for level and index)
 typedef WaveletBasis<unsigned int, unsigned int> SWaveletBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* WAVELET_BASE_HPP */

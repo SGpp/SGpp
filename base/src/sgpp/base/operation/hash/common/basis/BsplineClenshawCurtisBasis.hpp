@@ -6,12 +6,14 @@
 #ifndef BSPLINE_CLENSHAW_CURTIS_BASE_HPP
 #define BSPLINE_CLENSHAW_CURTIS_BASE_HPP
 
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
+#include <vector>
 
 namespace SGPP {
 namespace base {
@@ -35,7 +37,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @param degree        B-spline degree, must be odd
    *                      (if it's even, degree - 1 is used)
    */
-  BsplineClenshawCurtisBasis(size_t degree)
+  explicit BsplineClenshawCurtisBasis(size_t degree)
     : bsplineBasis(BsplineBasis<LT, IT>(degree)),
       xi(std::vector<float_t>(degree + 2, 0.0)) {
   }
@@ -43,7 +45,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~BsplineClenshawCurtisBasis() override {
+  ~BsplineClenshawCurtisBasis() override {
   }
 
   /**
@@ -149,7 +151,8 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
       size_t a = (p + 1) / 2 - i;
 
       for (size_t j = a; j < (p + 1) / 2; j++) {
-        xi[j] = ClenshawCurtisTable::getInstance().getPoint(l, static_cast<IT>(j - a));
+        xi[j] = ClenshawCurtisTable::
+                getInstance().getPoint(l, static_cast<IT>(j - a));
       }
 
       float_t h = xi[a + 1] - xi[a];
@@ -196,7 +199,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of Clenshaw-Curtis B-spline basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 0) {
       return bsplineBasis.uniformBSpline(
                x - static_cast<float_t>(i)
@@ -263,7 +266,8 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
 // default type-def (unsigned int for level and index)
 typedef BsplineClenshawCurtisBasis<unsigned int, unsigned int>
 SBsplineClenshawCurtisBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* BSPLINE_CLENSHAW_CURTIS_BASE_HPP */

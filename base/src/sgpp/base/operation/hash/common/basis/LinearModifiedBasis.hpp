@@ -6,11 +6,12 @@
 #ifndef LINEAR_MODIFIED_BASE_HPP
 #define LINEAR_MODIFIED_BASE_HPP
 
-#include <algorithm>
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <algorithm>
+#include <cmath>
 
 namespace SGPP {
 namespace base {
@@ -24,7 +25,7 @@ class LinearModifiedBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~LinearModifiedBasis() override {
+  ~LinearModifiedBasis() override {
   }
 
   /**
@@ -33,7 +34,7 @@ class LinearModifiedBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of modified linear basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     const IT hInv = static_cast<IT>(1) << l;
     const float_t hInvDbl = static_cast<float_t>(hInv);
 
@@ -57,7 +58,8 @@ class LinearModifiedBasis: public Basis<LT, IT> {
 
 // default type-def (unsigned int for level and index)
 typedef LinearModifiedBasis<unsigned int, unsigned int> SLinearModifiedBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEAR_MODIFIED_BASE_HPP */

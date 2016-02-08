@@ -37,10 +37,11 @@ class StencilHierarchisationModLinear {
    * @param neighborStencil neighboring stencils
    * @param weightStencil weighted stencil
    */
-  StencilHierarchisationModLinear(GridStorage* storage,
-                                  OperationStencilHierarchisation::IndexStencil& surplusStencil,
-                                  OperationStencilHierarchisation::IndexStencil& neighborStencil,
-                                  OperationStencilHierarchisation::WeightStencil& weightStencil);
+  StencilHierarchisationModLinear(
+    GridStorage* storage,
+    OperationStencilHierarchisation::IndexStencil& surplusStencil,
+    OperationStencilHierarchisation::IndexStencil& neighborStencil,
+    OperationStencilHierarchisation::WeightStencil& weightStencil);
 
   /**
    * Destructor
@@ -60,7 +61,6 @@ class StencilHierarchisationModLinear {
                   size_t dim);
 
  protected:
-
   /**
    * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -80,9 +80,7 @@ class StencilHierarchisationModLinear {
   OperationStencilHierarchisation::WeightStencil& _weightStencil;
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* STENCILHIERARCHISATIONMODLINEAR_HPP */

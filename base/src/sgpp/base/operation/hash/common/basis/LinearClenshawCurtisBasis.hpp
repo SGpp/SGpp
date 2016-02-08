@@ -6,11 +6,12 @@
 #ifndef LINEAR_CLENSHAW_CURTIS_BASE_HPP
 #define LINEAR_CLENSHAW_CURTIS_BASE_HPP
 
-#include <cmath>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 namespace SGPP {
 namespace base {
@@ -24,7 +25,7 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~LinearClenshawCurtisBasis() override {
+  ~LinearClenshawCurtisBasis() override {
   }
 
   /**
@@ -33,7 +34,7 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of Clenshaw-Curtis linear basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x) override {
+  inline float_t eval(LT l, IT i, float_t x) override {
     if (l == 0) {
       // first level
       if (i == 0) {
@@ -67,7 +68,8 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
 // default type-def (unsigned int for level and index)
 typedef LinearClenshawCurtisBasis<unsigned int, unsigned int>
 SLinearClenshawCurtisBase;
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEAR_CLENSHAW_CURTIS_BASE_HPP */

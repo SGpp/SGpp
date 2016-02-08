@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -36,9 +34,10 @@ void StencilHierarchisationLinear::operator()(DataVector& source,
 }
 
 void StencilHierarchisationLinear::rec(DataVector& source, DataVector& result,
-                                       grid_iterator& index, size_t dim, int seql, int seqr) {
+                                       grid_iterator& index, size_t dim,
+                                       int seql, int seqr) {
   // current position on the grid
-  int seqm = (int) index.seq();
+  int seqm = static_cast<int>(index.seq());
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
@@ -75,7 +74,5 @@ void StencilHierarchisationLinear::rec(DataVector& source, DataVector& result,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

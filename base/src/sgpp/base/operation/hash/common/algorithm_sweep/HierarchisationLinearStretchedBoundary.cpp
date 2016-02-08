@@ -13,11 +13,13 @@ namespace base {
 
 
 
-HierarchisationLinearStretchedBoundary::HierarchisationLinearStretchedBoundary(
+HierarchisationLinearStretchedBoundary::
+HierarchisationLinearStretchedBoundary(
   GridStorage* storage) : HierarchisationLinearStretched(storage) {
 }
 
-HierarchisationLinearStretchedBoundary::~HierarchisationLinearStretchedBoundary() {
+HierarchisationLinearStretchedBoundary::
+~HierarchisationLinearStretchedBoundary() {
 }
 
 void HierarchisationLinearStretchedBoundary::operator()(DataVector& source,
@@ -47,7 +49,5 @@ void HierarchisationLinearStretchedBoundary::operator()(DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

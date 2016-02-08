@@ -39,10 +39,11 @@ class StencilDehierarchisationModLinear {
    * @param neighborStencil stencil for neighbors
    * @param weightStencil weighted stencil
    */
-  StencilDehierarchisationModLinear(GridStorage* storage,
-                                    OperationStencilHierarchisation::IndexStencil& surplusStencil,
-                                    OperationStencilHierarchisation::IndexStencil& neighborStencil,
-                                    OperationStencilHierarchisation::WeightStencil& weightStencil);
+  StencilDehierarchisationModLinear(
+    GridStorage* storage,
+    OperationStencilHierarchisation::IndexStencil& surplusStencil,
+    OperationStencilHierarchisation::IndexStencil& neighborStencil,
+    OperationStencilHierarchisation::WeightStencil& weightStencil);
   /**
    * Destructor
    */
@@ -62,7 +63,6 @@ class StencilDehierarchisationModLinear {
 
 
  protected:
-
   /**
    * Recursive dehierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -82,9 +82,7 @@ class StencilDehierarchisationModLinear {
   OperationStencilHierarchisation::WeightStencil& _weightStencil;
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* STENCILDEHIERARCHISATIONMODLINEAR_HPP */

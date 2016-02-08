@@ -47,7 +47,5 @@ void HierarchisationLinearBoundary::operator()(DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

@@ -32,7 +32,7 @@ class DehierarchisationLinearStretchedBoundary : public
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    */
-  DehierarchisationLinearStretchedBoundary(GridStorage* storage);
+  explicit DehierarchisationLinearStretchedBoundary(GridStorage* storage);
 
   /**
    * Destructor
@@ -57,9 +57,7 @@ class DehierarchisationLinearStretchedBoundary : public
                           grid_iterator& index, size_t dim) override;
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DEHIERARCHISATIONLINEARSTRETCHEDBOUNDARY_HPP */

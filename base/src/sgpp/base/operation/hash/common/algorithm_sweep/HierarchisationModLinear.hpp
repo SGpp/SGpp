@@ -35,7 +35,7 @@ class HierarchisationModLinear {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  HierarchisationModLinear(GridStorage* storage);
+  explicit HierarchisationModLinear(GridStorage* storage);
 
   /**
    * Destructor
@@ -55,7 +55,6 @@ class HierarchisationModLinear {
                   size_t dim);
 
  protected:
-
   /**
    * Recursive hierarchisaton algorithm, this algorithms works in-place -> source should be equal to result
    *
@@ -70,9 +69,7 @@ class HierarchisationModLinear {
            size_t dim, float_t fl, float_t fr);
 };
 
-// namespace base
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HIERARCHISATIONMODLINEAR_HPP */

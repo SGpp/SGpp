@@ -6,12 +6,13 @@
 #ifndef LINEARSTRETCHED_BASE_HPP
 #define LINEARSTRETCHED_BASE_HPP
 
-#include <cmath>
-#include <algorithm>
 #include <sgpp/base/grid/common/Stretching.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
+#include <algorithm>
 
 
 namespace SGPP {
@@ -27,7 +28,7 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
   /**
    * Destructor.
    */
-  virtual ~LinearStretchedBasis() override {
+  ~LinearStretchedBasis() override {
   }
 
   /**

@@ -32,7 +32,8 @@ void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result,
     grid_iterator& index, size_t dim, float_t fl, float_t fr) {
   // current position on the grid
   size_t seq = index.seq();
-  // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+  // value in the middle,
+  // needed for recursive call and calculation of the hierarchical surplus
   float_t fm = source[seq];
 
   // recursive calls for the right and left side of the current node
@@ -68,15 +69,13 @@ void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result,
 
 
   stretch->getAdjacentPositions(static_cast<int>(current_level),
-                                static_cast<int>(current_index), dim, posc, posl, posr );
+                                static_cast<int>(current_index),
+                                dim, posc, posl, posr);
 
 
   float_t fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
   result[seq] = fm - fcurr;
-
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
