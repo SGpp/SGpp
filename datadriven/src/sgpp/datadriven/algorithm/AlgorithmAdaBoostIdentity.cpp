@@ -49,5 +49,6 @@ void AlgorithmAdaBoostIdentity::alphaSolver(float_t& lambda,
   delete C;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

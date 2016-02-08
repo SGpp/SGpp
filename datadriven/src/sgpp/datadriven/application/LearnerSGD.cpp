@@ -5,14 +5,13 @@
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
-#include <cmath>
-
 
 #include <sgpp/globaldef.hpp>
 
+#include <cmath>
+
 
 namespace SGPP {
-
 namespace datadriven {
 
 LearnerSGD::LearnerSGD(SGPP::datadriven::RegularizationType& regularization,
@@ -21,15 +20,15 @@ LearnerSGD::LearnerSGD(SGPP::datadriven::RegularizationType& regularization,
 }
 
 void LearnerSGD::train(
-  SGPP::base::DataMatrix& trainDataset,
-  SGPP::base::DataVector& classes,
-  SGPP::base::RegularGridConfiguration& GridConfig,
-  size_t maxIterations,
-  float_t eps,
-  float_t lambda,
-  float_t gamma
-) {
-  using namespace SGPP::base;
+    SGPP::base::DataMatrix& trainDataset,
+    SGPP::base::DataVector& classes,
+    SGPP::base::RegularGridConfiguration& GridConfig,
+    size_t maxIterations,
+    float_t eps,
+    float_t lambda,
+    float_t gamma) {
+  // using namespace SGPP::base;
+  using SGPP::base::DataVector;
 
   // Initialize Grid
   InitializeGrid(GridConfig);
@@ -47,7 +46,7 @@ void LearnerSGD::train(
 
   while (numIterations < maxIterations) {
     // Get random x and y pair
-    int k = getRandom((int) trainDataset.getNrows() - 1);
+    int k = getRandom(static_cast<int>(trainDataset.getNrows()) - 1);
     DataVector x(dim);
     trainDataset.getRow((size_t)k, x);
     float_t y = classes[k];
@@ -66,8 +65,7 @@ void LearnerSGD::train(
       unit_alpha.setAll(0.0);
       unit_alpha[i] = 1;
 
-      delta[i] = 2 * gamma * ( grid_->eval(unit_alpha,
-                                           x) * tmp1 + lambda * (*alpha_)[i]  );
+      delta[i] = 2 * gamma * (grid_->eval(unit_alpha, x) * tmp1 + lambda * (*alpha_)[i]);
     }
 
     // update alpha
@@ -117,5 +115,7 @@ SGPP::base::Grid* LearnerSGD::getGrid() {
 
 LearnerSGD::~LearnerSGD() {
 }
-}
-}
+
+}  // namespace datadriven
+}  // namespace SGPP
+

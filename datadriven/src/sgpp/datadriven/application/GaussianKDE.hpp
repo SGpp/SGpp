@@ -12,6 +12,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace SGPP {
 namespace datadriven {
 
@@ -22,8 +24,8 @@ namespace datadriven {
 class GaussianKDE: public DensityEstimator {
  public:
   GaussianKDE();
-  GaussianKDE(std::vector<base::DataVector*>& samplesVec);
-  GaussianKDE(base::DataMatrix& samples);
+  explicit GaussianKDE(std::vector<base::DataVector*>& samplesVec);
+  explicit GaussianKDE(base::DataMatrix& samples);
   virtual ~GaussianKDE();
 
   virtual void initialize(base::DataMatrix& samples);
@@ -76,6 +78,6 @@ class GaussianKDE: public DensityEstimator {
 };
 
 }  // namespace datadriven
-}  // namespace sg
+}  // namespace SGPP
 
 #endif /* GAUSSIANGAUSSIANKDE_HPP_ */

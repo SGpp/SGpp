@@ -23,22 +23,22 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
  protected:
   /**
    * Performs a solver to get alpha use DMWeightMatrix as the System Matrix
-  *
+   *
    * @param lambda the regularisation parameter
-  * @param weight the weights of examples
-  * @param alpha output the coefficients of the sparse grid's basis functions
-  * @param final judgement the final step of this base learner
-  */
-  virtual void alphaSolver(float_t& lambda, SGPP::base::DataVector& weight,
-                           SGPP::base::DataVector& alpha, bool final);
+   * @param weight the weights of examples
+   * @param alpha output the coefficients of the sparse grid's basis functions
+   * @param final judgement the final step of this base learner
+   */
+  virtual void alphaSolver(float_t& lambda, base::DataVector& weight,
+                           base::DataVector& alpha, bool final);
 
  public:
-
   /**
    * Std-Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 3 = ModLinear Grid)
+   * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 
+   *   3 = ModLinear Grid)
    * @param gridLevel reference to the level of grid
    * @param trainData reference to the training dataset
    * @param trainDataClass reference to the class of training dataset
@@ -49,25 +49,26 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
    * @param IMAX_final the parameter for ConjugateGradients used for last refinement step
    * @param eps_final the parameter for ConjugateGradients used for last refinement step
    * @param firstLabel one label from training dataset
-  * @param secondLabel another label from training dataset
-  * @param threshold the parameter for predicting a class
-  * @param maxLambda the max lambda used in searching optimal lambda
-  * @param minLambda the min lambda used in searching optimal lambda
-  * @param searchNum the searching times used in searching for optimal lambda
-  * @param refine the judgement of refine
-  * @param refineMode Select the refine mode
-  * @param refineNum the Number of refinement with a certain percentage of Grid points
-  * @param numberOfAda the number of Grid points to refine
-  * @param percentOfAda the percentage of Grid points to refine
-  * @param mode the adaboost type to choose
+   * @param secondLabel another label from training dataset
+   * @param threshold the parameter for predicting a class
+   * @param maxLambda the max lambda used in searching optimal lambda
+   * @param minLambda the min lambda used in searching optimal lambda
+   * @param searchNum the searching times used in searching for optimal lambda
+   * @param refine the judgement of refine
+   * @param refineMode Select the refine mode
+   * @param refineNum the Number of refinement with a certain percentage of Grid points
+   * @param numberOfAda the number of Grid points to refine
+   * @param percentOfAda the percentage of Grid points to refine
+   * @param mode the adaboost type to choose
    */
-  AlgorithmAdaBoostIdentity(SGPP::base::Grid& SparseGrid, size_t gridType,
-                            SGPP::base::HashGenerator::level_t gridLevel, SGPP::base::DataMatrix& trainData,
-                            SGPP::base::DataVector& trainDataClass, size_t NUM, float_t lambda, size_t IMAX,
-                            float_t eps, size_t IMAX_final, float_t eps_final, float_t firstLabel,
-                            float_t secondLabel, float_t threshold, float_t maxLambda, float_t minLambda,
-                            size_t searchNum, bool refine, size_t refineMode, size_t refineNum,
-                            size_t numberOfAda, float_t percentOfAda, size_t mode);
+  AlgorithmAdaBoostIdentity(base::Grid& SparseGrid, size_t gridType,
+                            base::HashGenerator::level_t gridLevel, base::DataMatrix& trainData,
+                            base::DataVector& trainDataClass, size_t NUM, float_t lambda,
+                            size_t IMAX, float_t eps, size_t IMAX_final, float_t eps_final,
+                            float_t firstLabel, float_t secondLabel, float_t threshold,
+                            float_t maxLambda, float_t minLambda, size_t searchNum, bool refine,
+                            size_t refineMode, size_t refineNum, size_t numberOfAda,
+                            float_t percentOfAda, size_t mode);
 
   /**
    * Std-Deconstructor
@@ -75,8 +76,8 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
   virtual ~AlgorithmAdaBoostIdentity();
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif
 
 

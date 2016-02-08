@@ -4,12 +4,13 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
-#include <cmath>
 
 #include <sgpp/globaldef.hpp>
 
-using namespace std;
-using namespace SGPP::base;
+#include <cmath>
+
+// using namespace std;
+// busing namespace SGPP::base;
 
 namespace SGPP {
 namespace datadriven {
@@ -19,7 +20,7 @@ DensityEstimator::DensityEstimator() :
   samples(0, 0) {
 }
 
-DensityEstimator::DensityEstimator(DataMatrix& samples) :
+DensityEstimator::DensityEstimator(base::DataMatrix& samples) :
   samples(samples) {
 }
 
@@ -27,7 +28,7 @@ DensityEstimator::~DensityEstimator() {
 }
 // ----------------------------------------------------------------------
 
-DataMatrix* DensityEstimator::getSamples() {
+base::DataMatrix* DensityEstimator::getSamples() {
   return &samples;
 }
 
@@ -35,7 +36,7 @@ float_t DensityEstimator::std_deviation() {
   return std::sqrt(variance());
 }
 
-void DensityEstimator::corrcoef(DataMatrix& corr) {
+void DensityEstimator::corrcoef(base::DataMatrix& corr) {
   // get covariance matrix and ...
   cov(corr);
 
@@ -61,4 +62,4 @@ void DensityEstimator::corrcoef(DataMatrix& corr) {
 }
 
 }  // namespace datadriven
-}  // namespace sg
+}  // namespace SGPP

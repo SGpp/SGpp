@@ -19,11 +19,11 @@
 
 #include <sgpp/datadriven/application/LearnerBaseSP.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 
+#include <iostream>
+#include <string>
 
 namespace SGPP {
 
@@ -41,7 +41,8 @@ LearnerBaseSP::LearnerBaseSP(const std::string tGridFilename,
   alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression),
   isTrained_(false), execTime_(
     0.0), GFlop_(0.0), GByte_(0.0) {
-  throw base::application_exception("LearnerBaseSP::LearnerBaseSP: This construct isn't implemented, yet!");
+  throw base::application_exception("LearnerBaseSP::LearnerBaseSP: This construct isn't "
+    "implemented, yet!");
 }
 
 bool isVerbose_;
@@ -97,7 +98,8 @@ void LearnerBaseSP::InitializeGrid(const SGPP::base::RegularGridConfiguration&
     grid_ = new SGPP::base::LinearGrid(GridConfig.dim_);
   } else {
     grid_ = NULL;
-    throw base::application_exception("LearnerBaseSP::InitializeGrid: An unsupported grid type was chosen!");
+    throw base::application_exception("LearnerBaseSP::InitializeGrid: An unsupported grid type was "
+      "chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
@@ -129,11 +131,13 @@ LearnerTiming LearnerBaseSP::train(SGPP::base::DataMatrixSP& trainDataset,
                                    const SGPP::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                    const SGPP::solver::SLESolverSPConfiguration& SolverConfigFinal,
                                    const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                                   const bool testAccDuringAdapt, const float lambdaRegularization) {
+                                   const bool testAccDuringAdapt,
+                                   const float lambdaRegularization) {
   LearnerTiming result;
 
   if (trainDataset.getNrows() != classes.getSize()) {
-    throw base::application_exception("LearnerBaseSP::train: length of classes vector does not match to dataset!");
+    throw base::application_exception("LearnerBaseSP::train: length of classes vector does not "
+      "match to dataset!");
   }
 
   result.timeComplete_ = 0.0;
@@ -184,7 +188,8 @@ LearnerTiming LearnerBaseSP::train(SGPP::base::DataMatrixSP& trainDataset,
     myCG = new SGPP::solver::BiCGStabSP(SolverConfigRefine.maxIterations_,
                                         SolverConfigRefine.eps_);
   } else {
-    throw base::application_exception("LearnerBaseSP::train: An unsupported SLE solver type was chosen!");
+    throw base::application_exception("LearnerBaseSP::train: An unsupported SLE solver type was "
+      "chosen!");
   }
 
   // Pre-Procession
@@ -366,11 +371,13 @@ double LearnerBaseSP::getAccuracy(SGPP::base::DataMatrixSP& testDataset,
 
 double LearnerBaseSP::getAccuracy(const SGPP::base::DataVectorSP&
                                   classesComputed,
-                                  const SGPP::base::DataVectorSP& classesReference, const float threshold) {
+                                  const SGPP::base::DataVectorSP& classesReference,
+                                  const float threshold) {
   double result = -1.0;
 
   if (classesComputed.getSize() != classesReference.getSize()) {
-    throw base::application_exception("LearnerBaseSP::getAccuracy: lengths of classes vectors do not match!");
+    throw base::application_exception("LearnerBaseSP::getAccuracy: lengths of classes vectors do "
+      "not match!");
   }
 
   if (isRegression_) {
@@ -434,7 +441,7 @@ ClassificatorQuality LearnerBaseSP::getCassificatorQuality(
     } else if ((classesComputed.get(i) >= threshold
                 && classesReference.get(i) < 0.0f)) {
       result.falsePositive_++;
-    } else { // ( (classesComputed.get(i) < threshold && classesReference.get(i) >= 0) )
+    } else {  // ( (classesComputed.get(i) < threshold && classesReference.get(i) >= 0) )
       result.falseNegative_++;
     }
   }
@@ -474,6 +481,6 @@ void LearnerBaseSP::setIsVerbose(const bool isVerbose) {
   isVerbose_ = isVerbose;
 }
 
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
-}

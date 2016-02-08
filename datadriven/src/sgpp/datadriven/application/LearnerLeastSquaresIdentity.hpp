@@ -12,9 +12,11 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <string>
+#include <vector>
 
 namespace SGPP {
-
 namespace datadriven {
 
 /**
@@ -32,8 +34,8 @@ class LearnerLeastSquaresIdentity: public SGPP::datadriven::LearnerBase {
 
   SGPP::datadriven::OperationMultipleEvalConfiguration
   implementationConfiguration;
- protected:
 
+ protected:
   virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(
     SGPP::base::DataMatrix& trainDataset, float_t lambda);
 
@@ -81,8 +83,7 @@ class LearnerLeastSquaresIdentity: public SGPP::datadriven::LearnerBase {
   }
 };
 
-}
-
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* LEARNERLEASTSQUARESIDENTITY_HPP */

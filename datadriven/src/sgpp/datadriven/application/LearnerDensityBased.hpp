@@ -15,23 +15,24 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 
+#include <map>
+#include <vector>
 
 namespace SGPP {
-
 namespace datadriven {
 
 
 class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
  protected:
-  //Mapping from class index to class number:
+  // Mapping from class index to class number:
   std::map<int, float_t> index_to_class_;
-  //Stores the coefficients for every class
+  // Stores the coefficients for every class
   std::vector<SGPP::base::DataVector> alphaVec_;
   /// regularization mode
   SGPP::datadriven::RegularizationType CMode_;
-  //with prior
+  // with prior
   bool withPrior;
-  //number of classes
+  // number of classes
   size_t nrClasses;
   // prior of data
   std::vector<float_t> prior;
@@ -39,6 +40,7 @@ class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
   std::vector<SGPP::base::Grid*> gridVec_;
   // vector of regterms
   std::vector<SGPP::base::OperationMatrix*> CVec_;
+
  public:
   LearnerDensityBased(SGPP::datadriven::RegularizationType&,
                       const bool isRegression,
@@ -59,10 +61,12 @@ class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
    * @param testDataset the training dataset
    * @param classes classes corresponding to the training dataset
    * @param GridConfig configuration of the regular start grid
-   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of the grid
+   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of
+   *   the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
    * @param AdaptConfig configuration of the adaptivity strategy
-   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
+   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert
+   *   refinement step
    * @param lambda regularization parameter lambda
    */
   virtual LearnerTiming train(SGPP::base::DataMatrix& testDataset,
@@ -123,13 +127,10 @@ class LearnerDensityBased: public SGPP::datadriven::LearnerBase {
     nrClasses = c;
     return nrClasses;
   }
-
-
-
 };
 
-}
-
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* LEARNERDENSITYBASED_HPP_ */
+

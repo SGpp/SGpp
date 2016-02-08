@@ -5,12 +5,6 @@
 
 #include <sgpp/datadriven/application/MetaLearner.hpp>
 
-#include <random>
-
-#include <fstream>
-#include <iomanip>
-#include <cstdio>
-
 #include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
@@ -20,6 +14,13 @@
 #include <sgpp/datadriven/tools/DatasetTools.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <random>
+#include <fstream>
+#include <iomanip>
+#include <cstdio>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -54,9 +55,8 @@ void MetaLearner::learn(SGPP::datadriven::OperationMultipleEvalConfiguration&
 }
 
 void MetaLearner::learnString(
-  SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-  std::string& content, float_t lambda, bool isRegression) {
-
+    SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+    std::string& content, float_t lambda, bool isRegression) {
   Dataset dataset = ARFFTools::readARFFFromString(content);
 
   this->gridConfig.dim_ = dataset.getDimension();
@@ -69,7 +69,8 @@ void MetaLearner::learnString(
   base::DataVector& classesVector = dataset.getClasses();
   base::DataMatrix& trainingData = dataset.getTrainingData();
 
-  //    bool isRegression = true; // treat everything as if it were a regression, as classification is not fully supported by Learner
+  //    bool isRegression = true; // treat everything as if it were a regression, as classification
+  // is not fully supported by Learner
   auto myLearner = std::make_shared<LearnerLeastSquaresIdentity>(isRegression,
                    this->verbose);
   myLearner->setImplementation(operationConfiguration);
@@ -108,7 +109,6 @@ void MetaLearner::learnReference(std::string& datasetFileName, float_t lambda,
 
 void MetaLearner::learnReferenceString(std::string& content, float_t lambda,
                                        bool isRegression) {
-
   Dataset dataset = ARFFTools::readARFFFromString(content);
   this->gridConfig.dim_ = dataset.getDimension();
   this->instances = dataset.getNumberInstances();
@@ -120,7 +120,8 @@ void MetaLearner::learnReferenceString(std::string& content, float_t lambda,
   base::DataVector& classesVector = dataset.getClasses();
   base::DataMatrix& trainingData = dataset.getTrainingData();
 
-  //    // treat everything as if it were a regression, as classification is not fully supported by Learner
+  // treat everything as if it were a regression, as classification is not fully
+  // supported by Learner
   //    bool isRegression = true;
   auto referenceLearner = std::make_shared<LearnerLeastSquaresIdentity>
                           (isRegression, this->verbose);
@@ -135,7 +136,7 @@ void MetaLearner::learnReferenceString(std::string& content, float_t lambda,
   this->referenceTiming = timings;
   this->ExecTimesOnStepReference = referenceLearner->getRefinementExecTimes();
 
-  //referenceLearner->dumpFunction("referenceGridFunction", 50);
+  // referenceLearner->dumpFunction("referenceGridFunction", 50);
   this->referenceLearner = referenceLearner;
 }
 
@@ -154,13 +155,12 @@ void MetaLearner::learnAndTest(
                            bufferTestString, isRegression);
 }
 
-//learn and test against test dataset and measure hits/mse
+// learn and test against test dataset and measure hits/mse
 void MetaLearner::learnAndTestString(
   SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
   std::string& dataContent, std::string& testContent, float_t lambda,
   bool isRegression) {
-
-  //always to this first
+  // always to this first
   this->learnString(operationConfiguration, dataContent, lambda);
 
   Dataset testDataset = ARFFTools::readARFFFromString(testContent);
@@ -223,7 +223,7 @@ void MetaLearner::learnAndTestString(
   }
 }
 
-//learn and test against the streaming implemenation
+// learn and test against the streaming implemenation
 float_t MetaLearner::learnAndCompare(
   SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
   std::string& datasetFileName, float_t lambda, size_t gridGranularity) {
@@ -240,11 +240,11 @@ float_t MetaLearner::learnAndCompare(
                                      gridGranularity);
 }
 
-//learn and test against the streaming implemenation
+// learn and test against the streaming implemenation
 float_t MetaLearner::learnAndCompareString(
   SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
   std::string& content, float_t lambda, size_t gridGranularity) {
-  //always do this first
+  // always do this first
   this->learnString(operationConfiguration, content, lambda);
   this->learnReferenceString(content, lambda);
 
@@ -268,11 +268,10 @@ float_t MetaLearner::learnAndCompareString(
     float_t prior = testPoint[index] + increment;
 
     if (prior < 1.0) {
-
       testPoint[index] += increment;
 
       for (size_t i = 0; i < index; i++) {
-        testPoint[i] = 0.0 + increment; //skip border
+        testPoint[i] = 0.0 + increment;  // skip border
       }
 
       testTrainingData.appendRow(testPoint);
@@ -354,7 +353,6 @@ void MetaLearner::optimizeLambdaLog(SGPP::base::DataMatrix& dataset,
 float_t MetaLearner::optimizeLambdaLog(SGPP::base::DataMatrix& dataset,
                                        SGPP::base::DataVector& values, size_t kFold,
                                        size_t maxLevel) {
-
   std::vector<base::DataMatrix> trainingSets;
   std::vector<base::DataVector> trainingSetsValues;
   std::vector<base::DataMatrix> testSets;
@@ -363,7 +361,7 @@ float_t MetaLearner::optimizeLambdaLog(SGPP::base::DataMatrix& dataset,
   datadriven::DatasetTools::splitset(dataset, values, kFold, trainingSets,
                                      trainingSetsValues, testSets, testSetsValues);
 
-  //initial values are pure dummy values
+  // initial values are pure dummy values
   float_t bestLambda = 0.0;
   float_t bestMSE = 0.0;
 
@@ -382,13 +380,14 @@ float_t MetaLearner::optimizeLambdaLog(SGPP::base::DataMatrix& dataset,
 
 void MetaLearner::optimizeLambdaLog_(SGPP::base::DataMatrix& dataset,
                                      SGPP::base::DataVector& datasetValues,
-                                     size_t kFold, size_t maxLevel, std::vector<base::DataMatrix>& trainingSets,
+                                     size_t kFold, size_t maxLevel,
+                                     std::vector<base::DataMatrix>& trainingSets,
                                      std::vector<base::DataVector>& trainingSetsValues,
                                      std::vector<base::DataMatrix>& testSets,
-                                     std::vector<base::DataVector>& testSetsValues, size_t curLevel,
+                                     std::vector<base::DataVector>& testSetsValues,
+                                     size_t curLevel,
                                      float_t lambdaLogStepSize,
                                      float_t& bestLogLambda, float_t& bestMSE) {
-
   if (verbose) {
     std::cout << "entering level=" << curLevel << " with lambda=" << pow(10.0,
               -bestLogLambda) << std::endl;
@@ -420,12 +419,11 @@ void MetaLearner::optimizeLambdaLog_(SGPP::base::DataMatrix& dataset,
     float_t curMeanMSE = 0.0;
 
     for (size_t j = 0; j < kFold; j++) {
-
       std::shared_ptr<base::Grid> grid;
       std::shared_ptr<base::DataVector> alpha;
       datadriven::LearnerTiming timing;
 
-      //compute density
+      // compute density
       train(trainingSets[j], trainingSetsValues[j], curLambda, grid, alpha, timing);
 
       float_t mse = this->calculateMSE(*grid, *alpha, testSets[j], testSetsValues[j]);
@@ -460,7 +458,8 @@ void MetaLearner::optimizeLambdaLog_(SGPP::base::DataMatrix& dataset,
   if (curLevel < maxLevel) {
     this->optimizeLambdaLog_(dataset, datasetValues, kFold, maxLevel, trainingSets,
                              trainingSetsValues, testSets,
-                             testSetsValues, curLevel + 1, lambdaLogStepSize / 2.0, bestLogLambda, bestMSE);
+                             testSetsValues, curLevel + 1, lambdaLogStepSize / 2.0,
+                             bestLogLambda, bestMSE);
   }
 }
 
@@ -468,7 +467,6 @@ void MetaLearner::train(base::DataMatrix& train, base::DataVector& trainValues,
                         float_t lambda,
                         std::shared_ptr<base::Grid>& grid, std::shared_ptr<base::DataVector>& alpha,
                         datadriven::LearnerTiming& timing) {
-
   if (verbose) {
     std::cout << "training..." << std::endl;
   }
@@ -500,7 +498,6 @@ void MetaLearner::train(base::DataMatrix& train, base::DataVector& trainValues,
 float_t MetaLearner::calculateMSE(base::Grid& grid, base::DataVector& alpha,
                                   base::DataMatrix& testSubset,
                                   base::DataVector& valuesTestSubset, bool verbose) {
-
   size_t dim = testSubset.getNcols();
   float_t mse = 0.0;
 
@@ -522,6 +519,6 @@ float_t MetaLearner::calculateMSE(base::Grid& grid, base::DataVector& alpha,
   return mse;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 

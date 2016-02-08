@@ -6,8 +6,6 @@
 #ifndef DMSYSTEMMATRIXSUBSPACES_HPP
 #define DMSYSTEMMATRIXSUBSPACES_HPP
 
-#include <string>
-
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
@@ -16,16 +14,18 @@
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-//#include <AbstractOperationMultipleEval.hpp>
+// #include <AbstractOperationMultipleEval.hpp>
 
 #include <sgpp/globaldef.hpp>
+
+#include <string>
 
 
 namespace SGPP {
 namespace datadriven {
 
 /**
- * Class that implements the virtual class SGPP::base::OperationMatrix for the
+ * Class that implements the virtual class base::OperationMatrix for the
  * application of classification for the Systemmatrix
  *
  * The Identity matrix is used as regularization operator.
@@ -33,22 +33,21 @@ namespace datadriven {
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-class SystemMatrixLeastSquaresIdentity: public
-  SGPP::datadriven::DMSystemMatrixBase {
+class SystemMatrixLeastSquaresIdentity: public datadriven::DMSystemMatrixBase {
  private:
   /// vectorization mode
-  //ComputeKernelType kernelType;
+  // ComputeKernelType kernelType;
   /// Number of orignal training instances
   size_t instances;
   /// Number of patched and used training instances
   size_t paddedInstances;
   /// OperationB for calculating the data matrix
-  //AbstractOperationMultipleEval* B;
-  SGPP::base::OperationMultipleEval* B;
+  // AbstractOperationMultipleEval* B;
+  base::OperationMultipleEval* B;
 
-  SGPP::base::Grid& grid;
+  base::Grid& grid;
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration
+  datadriven::OperationMultipleEvalConfiguration
   implementationConfiguration;
 
  public:
@@ -56,34 +55,34 @@ class SystemMatrixLeastSquaresIdentity: public
    * Std-Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param trainData reference to SGPP::base::DataMatrix that contains the training data
+   * @param trainData reference to base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
    */
-  SystemMatrixLeastSquaresIdentity(SGPP::base::Grid& SparseGrid,
-                                   SGPP::base::DataMatrix& trainData, float_t lambda);
+  SystemMatrixLeastSquaresIdentity(base::Grid& SparseGrid,
+                                   base::DataMatrix& trainData, float_t lambda);
 
   /**
    * Std-Destructor
    */
   virtual ~SystemMatrixLeastSquaresIdentity();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(base::DataVector& alpha,
+                    base::DataVector& result);
 
-  virtual void generateb(SGPP::base::DataVector& classes,
-                         SGPP::base::DataVector& b);
+  virtual void generateb(base::DataVector& classes,
+                         base::DataVector& b);
 
   virtual void prepareGrid();
 
-  void setImplementation(SGPP::datadriven::OperationMultipleEvalConfiguration
+  void setImplementation(datadriven::OperationMultipleEvalConfiguration
                          operationConfiguration) {
     this->implementationConfiguration = operationConfiguration;
-    this->B = SGPP::op_factory::createOperationMultipleEval(this->grid,
+    this->B = op_factory::createOperationMultipleEval(this->grid,
               *(this->dataset_), this->implementationConfiguration);
   }
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* DMSYSTEMMATRIXSUBSPACES_HPP */

@@ -5,9 +5,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -22,12 +19,16 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
+
 namespace SGPP {
 namespace datadriven {
 
 class MetaLearner {
  private:
-
   size_t instances;
 
   std::string csvSep;
@@ -52,9 +53,11 @@ class MetaLearner {
   std::vector<std::pair<size_t, float_t> > ExecTimesOnStepReference;
 
   void writeRefinementResults(std::string fileName, std::string fileHeader,
-                              std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > >
+                              std::vector<std::pair<std::string,
+                              std::vector<std::pair<size_t, float_t> > > >
                               datasetDetails,
-                              std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > >
+                              std::vector<std::pair<std::string,
+                              std::vector<std::pair<size_t, float_t> > > >
                               datasetDetailsReference,
                               bool referenceComparison);
 
@@ -91,24 +94,24 @@ class MetaLearner {
   void learnReferenceString(std::string& content, float_t lambda,
                             bool isRegression = true);
 
-  //learn and test against test dataset and measure hits/mse
+  // learn and test against test dataset and measure hits/mse
   void learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration&
                     operationConfiguration,
                     std::string& datasetFileName, std::string& testFileName,
                     bool isRegression = true);
 
-  //learn and test against test dataset and measure hits/mse
+  // learn and test against test dataset and measure hits/mse
   void learnAndTestString(SGPP::datadriven::OperationMultipleEvalConfiguration&
                           operationConfiguration,
                           std::string& dataContent, std::string& testContent, float_t lambda,
                           bool isRegression = true);
 
-  //learn and test against the streaming implementation
+  // learn and test against the streaming implementation
   float_t learnAndCompare(SGPP::datadriven::OperationMultipleEvalConfiguration&
                           operationConfiguration,
                           std::string& datasetFileName, float_t lambda, size_t gridGranularity);
 
-  //learn and test against the streaming implementation
+  // learn and test against the streaming implementation
   float_t learnAndCompareString(
     SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
     std::string& content, float_t lambda, size_t gridGranularity);
@@ -137,8 +140,8 @@ class MetaLearner {
   float_t calculateMSE(base::Grid& grid, base::DataVector& alpha,
                        base::DataMatrix& testSubset,
                        base::DataVector& valuesTestSubset, bool verbose = false);
-
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

@@ -1,11 +1,13 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 /*
  * DensityRegressionMetaLearner.hpp
  *
  *  Created on: Jan 7, 2016
  *      Author: pfandedd
  */
-
-#include <vector>
 
 #include <sgpp/globaldef.hpp>
 
@@ -14,6 +16,8 @@
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -36,13 +40,16 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
    */
   base::Grid* createRegularGrid(size_t dim);
 
-  //    void splitset(std::vector<base::DataMatrix *>& strain, std::vector<base::DataVector *>& strainValues,
-  //            std::vector<base::DataMatrix *>& stest, std::vector<base::DataVector *>& stestValues, size_t kFold,
-  //            bool shuffleDataset, uint32_t shuffleSeed);
+  //    void splitset(std::vector<base::DataMatrix *>& strain, std::vector<base::DataVector *>&
+  //  strainValues,
+  // std::vector<base::DataMatrix *>& stest, std::vector<base::DataVector *>& stestValues,
+  //  size_t kFold,
+  // bool shuffleDataset, uint32_t shuffleSeed);
 
   void optimizeLambdaLog_(size_t kFold, size_t maxLevel,
                           float_t fastApproximationMSE,
-                          size_t fastApproximationMaxLevel, std::vector<base::DataMatrix>& trainingSets,
+                          size_t fastApproximationMaxLevel,
+                          std::vector<base::DataMatrix>& trainingSets,
                           std::vector<base::DataVector>& trainingSetsValues,
                           std::vector<base::DataMatrix>& testSets,
                           std::vector<base::DataVector>& testSetsValues, size_t curLevel,
@@ -50,7 +57,6 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
                           float_t& bestLogLambda, float_t& bestMSE);
 
  public:
-
   PiecewiseConstantSmoothedRegressionMetaLearner(bool verbose,
       base::DataMatrix& trainingDataSet, base::DataVector& valuesDataSet,
       base::RegularGridConfiguration gridConfig,
@@ -74,7 +80,8 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
    * @param trainValues training values
    * @param lambda regularization parameter
    * @param fastApproximationMSE mse for stopping piecewise constant approximation tree creation
-   * @param fastApproximationMaxLevel maximum level for stopping piecewise constant approximation tree creation
+   * @param fastApproximationMaxLevel maximum level for stopping piecewise constant approximation
+   *   tree creation
    * @param grid grid
    * @param alpha grid coefficients
    */
@@ -88,5 +95,6 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
                        base::DataVector& valuesTestSubset, bool verbose = false);
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

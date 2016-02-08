@@ -17,6 +17,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace SGPP {
 namespace datadriven {
 
@@ -24,7 +26,6 @@ namespace datadriven {
 
 class LearnerPiecewiseConstantSmoothedRegression {
  private:
-
   SGPP::base::RegularGridConfiguration gridConfig;
 
   SGPP::base::AdpativityConfiguration adaptivityConfig;
@@ -34,8 +35,8 @@ class LearnerPiecewiseConstantSmoothedRegression {
   SGPP::datadriven::RegularizationConfiguration regularizationConfig;
 
   bool verbose;
- public:
 
+ public:
   /**
    * Constructor
    *
@@ -85,8 +86,8 @@ class LearnerPiecewiseConstantSmoothedRegression {
    */
   void splitset(std::vector<SGPP::base::DataMatrix*>& strain,
                 std::vector<SGPP::base::DataMatrix*>& stest);
-
 };
 
 }  // namespace datadriven
 }  // namespace SGPP
+

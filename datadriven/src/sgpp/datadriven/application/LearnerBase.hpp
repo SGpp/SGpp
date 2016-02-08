@@ -17,9 +17,12 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <string>
+#include <vector>
+
 
 namespace SGPP {
-
 namespace datadriven {
 
 /**
@@ -106,14 +109,13 @@ class LearnerBase {
     SGPP::base::DataMatrix& trainDataset, float_t lambda) = 0;
 
  public:
-
   /**
    * Constructor
    *
    * @param isRegression flag for regression
    * @param isVerbose flag for verbose output
    */
-  LearnerBase(const bool isRegression, const bool isVerbose = true);
+  explicit LearnerBase(const bool isRegression, const bool isVerbose = true);
 
   /**
    * Constructor
@@ -145,10 +147,12 @@ class LearnerBase {
    * @param testDataset the training dataset
    * @param classes classes corresponding to the training dataset
    * @param GridConfig configuration of the regular start grid
-   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of the grid
+   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of
+   *  the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
    * @param AdaptConfig configuration of the adaptivity strategy
-   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
+   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert
+   *   refinement step
    * @param lambdaRegularization regularization parameter lambda
    */
   virtual LearnerTiming train(SGPP::base::DataMatrix& testDataset,
@@ -156,8 +160,8 @@ class LearnerBase {
                               const SGPP::base::RegularGridConfiguration& GridConfig,
                               const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                               const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                              const SGPP::base::AdpativityConfiguration& AdaptConfig, bool testAccDuringAdapt,
-                              const float_t lambdaRegularization);
+                              const SGPP::base::AdpativityConfiguration& AdaptConfig,
+                              bool testAccDuringAdapt, const float_t lambdaRegularization);
 
   /**
    * Learning a dataset with regular sparse grids
@@ -215,7 +219,8 @@ class LearnerBase {
    * @return accuracy, percent or MSE, depending on the execution mode
    */
   virtual float_t getAccuracy(const SGPP::base::DataVector& classesComputed,
-                              const SGPP::base::DataVector& classesReference, const float_t threshold = 0.0);
+                              const SGPP::base::DataVector& classesReference,
+                              const float_t threshold = 0.0);
 
   /**
    * compute the quality for given testDataset, classification ONLY!
@@ -303,8 +308,7 @@ class LearnerBase {
   std::shared_ptr<base::DataVector> getAlphaCopy();
 };
 
-}
-
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* LEARNERBASE_HPP */

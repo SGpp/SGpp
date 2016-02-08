@@ -10,10 +10,9 @@
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace datadriven {
@@ -25,7 +24,6 @@ namespace datadriven {
  */
 class LearnerDensityBasedReg: public LearnerBase {
  public:
-
   /**
    * Constructor
    *
@@ -98,9 +96,10 @@ class LearnerDensityBasedReg: public LearnerBase {
    */
   virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(
     SGPP::base::DataMatrix& trainDataset, float_t lambda);
-
 };
 
 }  // namespace datadriven
 }  // namespace SGPP
+
 #endif /* LEARNERDENSITYBASEDREG_HPP_ */
+

@@ -7,13 +7,16 @@
 
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
-//#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+// #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -112,5 +115,6 @@ LearnerLeastSquaresIdentity::getRefinementExecTimes() {
   return this->ExecTimeOnStep;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

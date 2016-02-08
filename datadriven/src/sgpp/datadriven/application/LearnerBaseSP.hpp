@@ -18,9 +18,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 
 namespace SGPP {
-
 namespace datadriven {
 
 /**
@@ -100,7 +101,7 @@ class LearnerBaseSP {
    * @param isRegression flag for regression
    * @param isVerbose flag for verbose output
    */
-  LearnerBaseSP(const bool isRegression, const bool isVerbose = true);
+  explicit LearnerBaseSP(const bool isRegression, const bool isVerbose = true);
 
   /**
    * Constructor
@@ -131,10 +132,12 @@ class LearnerBaseSP {
    * @param testDataset the training dataset
    * @param classes classes corresponding to the training dataset
    * @param GridConfig configuration of the regular start grid
-   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of the grid
+   * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of
+   *   the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
    * @param AdaptConfig configuration of the adaptivity strategy
-   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert refinement step
+   * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert 
+   *   refinement step
    * @param lambdaRegularization regularization parameter lambda
    */
   virtual LearnerTiming train(SGPP::base::DataMatrixSP& testDataset,
@@ -182,7 +185,8 @@ class LearnerBaseSP {
    * @return accuracy, percent or MSE, depending on the execution mode
    */
   virtual double getAccuracy(SGPP::base::DataMatrixSP& testDataset,
-                             const SGPP::base::DataVectorSP& classesReference, const float threshold = 0.0);
+                             const SGPP::base::DataVectorSP& classesReference,
+                             const float threshold = 0.0);
 
   /**
    * compute the accuracy for given testDataset.
@@ -197,7 +201,8 @@ class LearnerBaseSP {
    * @return accuracy, percent or MSE, depending on the execution mode
    */
   virtual double getAccuracy(const SGPP::base::DataVectorSP& classesComputed,
-                             const SGPP::base::DataVectorSP& classesReference, const float threshold = 0.0);
+                             const SGPP::base::DataVectorSP& classesReference,
+                             const float threshold = 0.0);
 
   /**
    * compute the quality for given testDataset, classification ONLY!
@@ -279,8 +284,8 @@ class LearnerBaseSP {
   void setIsVerbose(const bool isVerbose);
 };
 
-}
-
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* LEARNERBASESP_HPP */
+

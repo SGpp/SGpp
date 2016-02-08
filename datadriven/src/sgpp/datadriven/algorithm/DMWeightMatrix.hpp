@@ -64,7 +64,8 @@ class DMWeightMatrix : public SGPP::base::OperationMatrix {
   void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* DMWEIGHTMATRIX_HPP */
+

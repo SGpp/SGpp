@@ -12,6 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace datadriven {
@@ -55,6 +56,6 @@ SGPP::datadriven::DMSystemMatrixBase* Learner::createDMSystem(
          lambda);
 }
 
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
-}

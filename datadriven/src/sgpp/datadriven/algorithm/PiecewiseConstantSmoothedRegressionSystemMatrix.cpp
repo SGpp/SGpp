@@ -19,19 +19,19 @@ namespace SGPP {
 namespace datadriven {
 
 PiecewiseConstantSmoothedRegressionSystemMatrix::PiecewiseConstantSmoothedRegressionSystemMatrix(
-  SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
-  SGPP::base::Grid& grid, SGPP::base::OperationMatrix& C,
+  datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
+  base::Grid& grid, base::OperationMatrix& C,
   float_t lambdaRegression) :
   piecewiseRegressor(piecewiseRegressor), grid(grid) {
   this->lambda = lambdaRegression;
 
-  this->A = SGPP::op_factory::createOperationLTwoDotProduct(grid);
-  //      this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->data));
+  this->A = op_factory::createOperationLTwoDotProduct(grid);
+  //      this->B = op_factory::createOperationMultipleEval(grid, *(this->data));
   this->C = &C;
 }
 
 void PiecewiseConstantSmoothedRegressionSystemMatrix::mult(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+  base::DataVector& alpha, base::DataVector& result) {
   result.setAll(0.0);
 
   // A * alpha
@@ -47,15 +47,14 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::mult(
 
 // Matrix-Multiplikation verwenden
 void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
-  SGPP::base::DataVector& rhs) {
-
-  //store result in rhs!
-  SGPP::base::GridStorage* storage = grid.getStorage();
+  base::DataVector& rhs) {
+  // store result in rhs!
+  base::GridStorage* storage = grid.getStorage();
   uint64_t totalIntegratedNodes = 0;
   #pragma omp parallel for
 
   for (size_t gridIndex = 0; gridIndex < storage->size(); gridIndex++) {
-    SGPP::base::GridIndex* gridPoint = storage->get(gridIndex);
+    base::GridIndex* gridPoint = storage->get(gridIndex);
     size_t integratedNodes;
     rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint, integratedNodes);
     #pragma omp atomic
@@ -68,9 +67,11 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
                 (storage->size())) << std::endl;
 }
 
-PiecewiseConstantSmoothedRegressionSystemMatrix::~PiecewiseConstantSmoothedRegressionSystemMatrix() {
+PiecewiseConstantSmoothedRegressionSystemMatrix::
+  ~PiecewiseConstantSmoothedRegressionSystemMatrix() {
   delete this->A;
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

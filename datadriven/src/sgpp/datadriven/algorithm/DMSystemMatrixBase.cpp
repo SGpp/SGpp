@@ -41,6 +41,6 @@ void DMSystemMatrixBase::getTimers(float_t& timeMult, float_t& computeMult,
   computeMultTrans = computeTimeMultTrans_;
 }
 
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
-}

@@ -5,7 +5,7 @@
 
 #include <list>
 #include <vector>
-using namespace std;
+// using namespace std;
 #include <iostream>
 
 class Graph {
@@ -14,7 +14,7 @@ class Graph {
   void dfs(int v, std::vector<int>& components, int label);
   std::vector<int>* components = NULL;
  public:
-  Graph(int V);
+  explicit Graph(int V);
   ~Graph();
   void addEdge(int v, int w);
   std::vector<int> getComponents();
@@ -31,8 +31,7 @@ Graph::~Graph() {
 }
 
 void Graph::addEdge(int v, int w) {
-
-  adj->at(v).push_back(w); // Add w to v’s list.
+  adj->at(v).push_back(w);  // Add w to v’s list.
   adj->at(v).push_back(v);
 }
 

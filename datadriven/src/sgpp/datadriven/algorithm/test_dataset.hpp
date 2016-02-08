@@ -11,11 +11,11 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <vector>
 #include <utility>
 #include <iostream>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -31,8 +31,8 @@ namespace datadriven {
  * @param classes the reference classes
  */
 template<class BASIS>
-float_t test_dataset( base::GridStorage* storage, BASIS& basis,
-                      base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
+float_t test_dataset(base::GridStorage* storage, BASIS& basis,
+                     base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes) {
   typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
   float_t correct = 0;
@@ -48,7 +48,6 @@ float_t test_dataset( base::GridStorage* storage, BASIS& basis,
     #pragma omp for schedule(static)
 
     for (size_t i = 0; i < size; i++) {
-
       IndexValVector vec;
       float_t result = 0;
 
@@ -82,8 +81,9 @@ float_t test_dataset( base::GridStorage* storage, BASIS& basis,
  * @param refValues the function values at the evaluation points
  */
 template<class BASIS>
-float_t test_dataset_mse( base::GridStorage* storage, BASIS& basis,
-                          base::DataVector& alpha, base::DataMatrix& data, base::DataVector& refValues) {
+float_t test_dataset_mse(base::GridStorage* storage, BASIS& basis,
+                         base::DataVector& alpha, base::DataMatrix& data,
+                         base::DataVector& refValues) {
   typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
   base::DataVector result(refValues.getSize());
   float_t mse = 0;
@@ -97,7 +97,6 @@ float_t test_dataset_mse( base::GridStorage* storage, BASIS& basis,
     #pragma omp for schedule(static)
 
     for (size_t i = 0; i < size; i++) {
-
       IndexValVector vec;
       float_t res = 0;
 
@@ -129,11 +128,12 @@ float_t test_dataset_mse( base::GridStorage* storage, BASIS& basis,
  * @param alpha the coefficients of the grid points
  * @param data the data the should be tested
  * @param classes the reference classes
- * @param charaNumbers the number of true positives, true negatives, false positives, false negatives (Vector of length 4)
+ * @param charaNumbers the number of true positives, true negatives, false positives,
+ *   false negatives (Vector of length 4)
  * @param threshold threshold which decides if an instance belongs a given class
  */
 template<class BASIS>
-float_t test_datasetWithCharacteristicNumber( base::GridStorage* storage,
+float_t test_datasetWithCharacteristicNumber(base::GridStorage* storage,
     BASIS& basis, base::DataVector& alpha, base::DataMatrix& data,
     base::DataVector& classes, base::DataVector& charaNumbers, float_t threshold) {
   typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
@@ -155,7 +155,6 @@ float_t test_datasetWithCharacteristicNumber( base::GridStorage* storage,
     #pragma omp for schedule(static)
 
     for (size_t i = 0; i < size; i++) {
-
       IndexValVector vec;
       float_t result = 0;
 
@@ -184,7 +183,7 @@ float_t test_datasetWithCharacteristicNumber( base::GridStorage* storage,
         {
           fp++;
         }
-      } else { // ( (result < threshold && classes[i] >= 0) )
+      } else {  // ( (result < threshold && classes[i] >= 0) )
         #pragma omp critical
         {
           fn++;
@@ -217,9 +216,10 @@ float_t test_datasetWithCharacteristicNumber( base::GridStorage* storage,
  * @param ROC_curve DataMatrix into which the ROC curve is stored
  */
 template<class BASIS>
-void test_calculateROCcurve( base::GridStorage* storage, BASIS& basis,
-                             base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes,
-                             SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) {
+void test_calculateROCcurve(base::GridStorage* storage, BASIS& basis,
+                            base::DataVector& alpha, base::DataMatrix& data,
+                            base::DataVector& classes, base::DataVector& thresholds,
+                            base::DataMatrix& ROC_curve) {
   size_t num_points = thresholds.getSize();
 
   if (ROC_curve.getNrows() != num_points) {
@@ -229,8 +229,8 @@ void test_calculateROCcurve( base::GridStorage* storage, BASIS& basis,
   base::DataVector charNum(4);
 
   for (size_t i = 0; i < num_points; i++) {
-    test_datasetWithCharacteristicNumber( storage, basis, alpha, data, classes,
-                                          charNum, thresholds.get(i));
+    test_datasetWithCharacteristicNumber(storage, basis, alpha, data, classes,
+                                         charNum, thresholds.get(i));
 
     float_t tp = charNum.get(0);
     float_t tn = charNum.get(1);
@@ -243,7 +243,8 @@ void test_calculateROCcurve( base::GridStorage* storage, BASIS& basis,
     ROC_curve.set(i, 1, (tp / (tp + fn)));
   }
 }
-}
-}
+
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* TEST_dataset_HPP */

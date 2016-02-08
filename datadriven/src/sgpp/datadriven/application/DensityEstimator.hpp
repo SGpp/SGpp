@@ -8,9 +8,10 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <iostream>
 
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 
 namespace SGPP {
 namespace datadriven {
@@ -18,7 +19,7 @@ namespace datadriven {
 class DensityEstimator {
  public:
   DensityEstimator();
-  DensityEstimator(base::DataMatrix& samples);
+  explicit DensityEstimator(base::DataMatrix& samples);
   virtual ~DensityEstimator();
 
   virtual void initialize(base::DataMatrix& samples) = 0;
@@ -43,6 +44,7 @@ class DensityEstimator {
 };
 
 }  // namespace datadriven
-}  // namespace sg
+}  // namespace SGPP
 
 #endif /* DENSITYESTIMATOR_HPP_ */
+
