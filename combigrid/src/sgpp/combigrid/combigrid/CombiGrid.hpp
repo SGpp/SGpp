@@ -8,7 +8,6 @@
 #ifndef COMBIGRID_HPP_
 #define COMBIGRID_HPP_
 
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 
@@ -16,9 +15,10 @@
 //#include "base/datatypes/DataVector.hpp"
 //#include "base/grid/GridStorage.hpp"
 #include <sgpp/combigrid/combischeme/AbstractCombiScheme.hpp>
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include <sgpp/combigrid/fullgrid/GridContainer.hpp>
 #include <stdlib.h>
+#include "../utils/combigrid_utils.hpp"
+#include "../utils/combigrid_utils.hpp"
 
 
 namespace combigrid {

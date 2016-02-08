@@ -35,14 +35,14 @@ using namespace combigrid;
  */
 namespace {
 
-real get1dSubspaceCoord(LevelType l, bool boundary, IndexType i) {
+combigrid::real get1dSubspaceCoord(LevelType l, bool boundary, IndexType i) {
   if (l == 1) {
     if (boundary)
-      return real(i) * oneOverPowOfTwo[l];
+      return combigrid::real(i) * oneOverPowOfTwo[l];
     else
-      return real(i + 1) * oneOverPowOfTwo[l];
+      return combigrid::real(i + 1) * oneOverPowOfTwo[l];
   } else {
-    return real(2 * i + 1) * oneOverPowOfTwo[l];
+    return combigrid::real(2 * i + 1) * oneOverPowOfTwo[l];
   }
 }
 

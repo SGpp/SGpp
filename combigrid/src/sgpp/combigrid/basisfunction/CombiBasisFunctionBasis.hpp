@@ -8,7 +8,7 @@
 #ifndef COMBIBASISFUNCTION_HPP_
 #define COMBIBASISFUNCTION_HPP_
 
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include "../utils/combigrid_utils.hpp"
 
 namespace combigrid {
 

@@ -10,7 +10,7 @@
 
 
 #include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include "../utils/combigrid_utils.hpp"
 
 
 /***

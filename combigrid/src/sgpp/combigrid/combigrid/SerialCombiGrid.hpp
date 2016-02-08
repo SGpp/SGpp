@@ -9,7 +9,7 @@
 
 #include <sgpp/combigrid/combigrid/CombiGrid.hpp>
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include "../utils/combigrid_utils.hpp"
 
 namespace combigrid {
 template<typename _Tp>

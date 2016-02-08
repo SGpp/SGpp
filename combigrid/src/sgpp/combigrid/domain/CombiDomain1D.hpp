@@ -7,9 +7,9 @@
 #ifndef COMBIDOMAIN1D_HPP_
 #define COMBIDOMAIN1D_HPP_
 
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
 #include <sgpp/combigrid/domain/CombiEquidistantStretching.hpp>
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
+#include "../utils/combigrid_utils.hpp"
 
 namespace combigrid {
 
