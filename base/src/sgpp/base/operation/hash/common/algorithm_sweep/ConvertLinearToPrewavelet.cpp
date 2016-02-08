@@ -33,9 +33,9 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
   size_t _seq;
   float_t _val;
 
-  float_t* temp = new float_t[1 << (level + 1)]; // The temp values
-  float_t* r = new float_t[1 << (level -
-                                 1)]; // The following arrays are required for the triangulation
+  float_t* temp = new float_t[1 << (level + 1)];  // The temp values
+  float_t* r = new float_t[1 << (level - 1)];
+  // The following arrays are required for the triangulation
   float_t* gam = new float_t[1 << (level - 1)];
   float_t* u = new float_t[1 << (level - 1)];
 
@@ -50,8 +50,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
   }
 
   for (level = max_level; level >= 2; --level) {
-
-    //First, we set the right-hand side of the triangular eqaution system
+    // First, we set the right-hand side of the triangular eqaution system
 
     // special treatment for the first point in the row
     index.set(dim, level, 1);
@@ -59,16 +58,15 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
     _val = storage->end(_seq) ? 0.0 : result[_seq];
     r[0] = _val - temp[1] + 0.5 * temp[3];
 
-    //special treatment for the last point in the row
+    // special treatment for the last point in the row
     index.set(dim, level, (1 << level) - 1);
     _seq = index.seq();
     _val = storage->end(_seq) ? 0.0 : result[_seq];
     r[(1 << (level - 1)) - 1] = _val - temp[(1 << (level + 1)) - 3]
                                 + 0.5 * temp[(1 << (level + 1)) - 5];
 
-    //normal treatment for the middle
+    // normal treatment for the middle
     if (level > 2) {
-
       for (index_type ind = 3; ind
            < (unsigned int) ((1 << level) - 1); ind = ind + 2) {
         index.set(dim, level, ind);
@@ -79,11 +77,12 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
       }
     }
 
-    //Run the actual triangulation
+    // Run the actual triangulation
 
     float_t bet = 0.0;
 
-    for (int i = 0; i < 1 << (level - 1); i++) { // This is the forward-reduction
+    // This is the forward-reduction
+    for (int i = 0; i < 1 << (level - 1); i++) {
       index.set(dim, level, i * 2 + 1);
 
       if (storage->end(index.seq())) {
@@ -123,7 +122,8 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
       }
     }
 
-    for (int i = (1 << (level - 1)) - 2; i >= 0; --i) { //Backward-Reduction
+    // Backward-Reduction
+    for (int i = (1 << (level - 1)) - 2; i >= 0; --i) {
       u[i] = u[i] - gam[i + 1] * u[i + 1];
     }
 
@@ -137,10 +137,10 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
         result[_seq] = u[i];
     }
 
-    //create new temp valuesand the normal start. Please note, this is done in that strange
+    // create new temp valuesand the normal start.
+    // Please note, this is done in that strange
     for (index_type ind = 1; ind < (unsigned int) ((1 << level) - 2); ind
          = ind + 2) {
-
       index.set(dim, level, ind);
       _seq = index.seq();
       _val = storage->end(_seq) ? 0.0 : result[_seq];
@@ -157,10 +157,9 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 
       temp[ind] = temp[ind] - 0.6 * _val;
     }
-
   }
 
-  //Treatment of the top-point in this dimension
+  // Treatment of the top-point in this dimension
   index.set(dim, init_level, init_index);
   _seq = index.seq();
   _val = storage->end(_seq) ? 0.0 : result[_seq];
@@ -178,7 +177,5 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
   u = 0;
 }
 
-
-}
-
-}
+}  // namespace base
+}  // namespace SGPP

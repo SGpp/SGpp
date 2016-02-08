@@ -35,7 +35,7 @@ class GriewankObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~GriewankObjective() override;
+  ~GriewankObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -73,12 +73,12 @@ class Griewank : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Griewank() override;
+  ~Griewank() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

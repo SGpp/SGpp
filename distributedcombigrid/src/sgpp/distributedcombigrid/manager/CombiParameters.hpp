@@ -14,14 +14,14 @@
 namespace combigrid {
 
 class CombiParameters {
-public:
+ public:
   CombiParameters() {
   }
 
   CombiParameters(DimType dim, LevelVector lmin, LevelVector lmax,
-      std::vector<bool>& boundary, std::vector<LevelVector>& levels,
-      std::vector<real>& coeffs, std::vector<int>& taskIDs ) :
-  dim_(dim), lmin_(lmin), lmax_(lmax), boundary_(boundary) {
+                  std::vector<bool>& boundary, std::vector<LevelVector>& levels,
+                  std::vector<real>& coeffs, std::vector<int>& taskIDs ) :
+    dim_(dim), lmin_(lmin), lmax_(lmax), boundary_(boundary) {
     setLevelsCoeffs( taskIDs, levels, coeffs );
   }
 
@@ -56,7 +56,7 @@ public:
   }
 
   inline void setLevelsCoeffs(std::vector<int>& taskIDs,
-      std::vector<LevelVector>& levels, std::vector<real>& coeffs) {
+                              std::vector<LevelVector>& levels, std::vector<real>& coeffs) {
     assert(taskIDs.size() == coeffs.size());
     assert(taskIDs.size() == levels.size());
 
@@ -66,7 +66,7 @@ public:
     }
   }
 
-  inline const LevelVector& getLevel( int taskID ){
+  inline const LevelVector& getLevel( int taskID ) {
     return levels_[ taskID ];
   }
 
@@ -74,7 +74,7 @@ public:
     return dim_;
   }
 
-private:
+ private:
   DimType dim_;
 
   LevelVector lmin_;
@@ -91,17 +91,17 @@ private:
 
   // serialize
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version);
+  void serialize(Archive& ar, const unsigned int version);
 };
 
 template<class Archive>
-void CombiParameters::serialize(Archive & ar, const unsigned int version) {
-  ar & dim_;
-  ar & lmin_;
-  ar & lmax_;
-  ar & boundary_;
-  ar & levels_;
-  ar & coeffs_;
+void CombiParameters::serialize(Archive& ar, const unsigned int version) {
+  ar& dim_;
+  ar& lmin_;
+  ar& lmax_;
+  ar& boundary_;
+  ar& levels_;
+  ar& coeffs_;
 }
 
 }

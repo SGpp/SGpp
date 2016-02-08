@@ -30,7 +30,7 @@ class HierarchisationModFundamentalSpline {
    *
    * @param grid grid
    */
-  HierarchisationModFundamentalSpline(ModFundamentalSplineGrid* grid);
+  explicit HierarchisationModFundamentalSpline(ModFundamentalSplineGrid* grid);
 
   /**
    * Destructor.

@@ -58,7 +58,7 @@ class GridGenerator {
   /**
    * Creates a grid which doesn't contain the fullgrids with li<l_user, for any li level_t
    * */
-  virtual void truncated(size_t level, size_t l_user) {};
+  virtual void truncated(size_t level, size_t l_user) {}
 
   /**
    * Refines a grid according to the settings of the RefinementFunctor func.

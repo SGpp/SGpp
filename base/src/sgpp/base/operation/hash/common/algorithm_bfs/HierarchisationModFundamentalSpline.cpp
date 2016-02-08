@@ -135,5 +135,6 @@ void HierarchisationModFundamentalSpline::operator()(
     }
   }
 }
-}
-}
+
+}  // namespace base
+}  // namespace SGPP

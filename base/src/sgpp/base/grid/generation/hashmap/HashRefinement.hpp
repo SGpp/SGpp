@@ -20,9 +20,7 @@ namespace base {
  * Free refinement class for sparse grids
  */
 class HashRefinement: public AbstractRefinement {
-
  public:
-
   /**
    * Refines a grid according to a RefinementFunctor provided.
    * Refines up to RefinementFunctor::getRefinementsNum() grid points if
@@ -52,7 +50,7 @@ class HashRefinement: public AbstractRefinement {
   void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
   void refineGridpoint1D(GridStorage* storage, size_t seq, size_t d);
 
-  virtual ~HashRefinement() {};
+  virtual ~HashRefinement() {}
 
 
  protected:
@@ -82,9 +80,10 @@ class HashRefinement: public AbstractRefinement {
   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
   * @param collection container that contains elements to refine (empty initially)
   */
-  virtual void collectRefinablePoints(GridStorage* storage,
-                                      RefinementFunctor* functor,
-                                      AbstractRefinement::refinement_container_type& collection) override;
+  void collectRefinablePoints(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
   /**
    * Extends the grid adding elements defined in collection
@@ -93,9 +92,10 @@ class HashRefinement: public AbstractRefinement {
    * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
    * @param collection container that contains elements to refine (empty initially)
    */
-  virtual void refineGridpointsCollection(GridStorage* storage,
-                                          RefinementFunctor* functor,
-                                          AbstractRefinement::refinement_container_type& collection) override;
+  void refineGridpointsCollection(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
 
 
@@ -129,7 +129,8 @@ class HashRefinement: public AbstractRefinement {
     const GridStorage::grid_map_iterator& iter,
     const RefinementFunctor* functor) const;
 };
-}
-}
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HASHREFINEMENT_HPP */

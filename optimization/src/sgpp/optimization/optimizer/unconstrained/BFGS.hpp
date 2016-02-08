@@ -54,9 +54,9 @@ class BFGS : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~BFGS() override;
+  ~BFGS() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return objective function gradient

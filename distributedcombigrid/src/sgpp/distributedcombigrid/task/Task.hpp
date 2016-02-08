@@ -21,16 +21,16 @@
 
 namespace combigrid {
 
-/** 
+/**
  * Interface for tasks
  */
 class Task {
-protected:
+ protected:
   Task();
 
   Task(DimType dim, LevelVector& l, LevelVector& nmax, LevelVector& lmin,
-      std::vector<bool>& boundary, real coeff, LoadModel* loadModel);
-public:
+       std::vector<bool>& boundary, real coeff, LoadModel* loadModel);
+ public:
   virtual ~Task();
   // pgroup receive task
   static void receive(Task** t, RankType source, CommunicatorType& comm);
@@ -60,18 +60,18 @@ public:
   inline void setFinished(bool finished);
 
   virtual void getFullGrid(FullGrid<CombiDataType>& fg, RankType lroot,
-      CommunicatorType& lcomm) = 0;
+                           CommunicatorType& lcomm) = 0;
 
   virtual DistributedFullGrid<CombiDataType>& getDistributedFullGrid() = 0;
 
-private:
+ private:
   friend class boost::serialization::access;
 
   // serialize
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version);
+  void serialize(Archive& ar, const unsigned int version);
 
-protected:
+ protected:
   DimType dim_;
 
   LevelVector l_;       // levelvector of partial solution
@@ -90,11 +90,11 @@ protected:
 typedef std::vector<Task*> TaskContainer;
 
 template<class Archive>
-void Task::serialize(Archive & ar, const unsigned int version) {
-  ar & dim_;
-  ar & id_;
-  ar & l_;
-  ar & boundary_;
+void Task::serialize(Archive& ar, const unsigned int version) {
+  ar& dim_;
+  ar& id_;
+  ar& l_;
+  ar& boundary_;
 }
 
 inline DimType Task::getDim() const {

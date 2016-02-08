@@ -10,8 +10,6 @@
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -23,7 +21,7 @@ namespace base {
  */
 class LinearGridStencil : public GridStencil {
  protected:
-  LinearGridStencil(std::istream& istr);
+  explicit LinearGridStencil(std::istream& istr);
 
  public:
   /**
@@ -31,29 +29,27 @@ class LinearGridStencil : public GridStencil {
    *
    * @param dim the dimension of the grid
    */
-  LinearGridStencil(size_t dim);
+  explicit LinearGridStencil(size_t dim);
 
   /**
    * Constructor Linear Grid
    *
    * @param BB the BoundingBox of the grid
    */
-  LinearGridStencil(BoundingBox& BB);
+  explicit LinearGridStencil(BoundingBox& BB);
 
   /**
    * Destructor
    */
-  virtual ~LinearGridStencil() override;
+  ~LinearGridStencil() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
-
-
 };
 
 }  // namespace base

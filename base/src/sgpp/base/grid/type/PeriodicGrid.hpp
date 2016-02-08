@@ -8,8 +8,6 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -21,7 +19,7 @@ namespace base {
  */
 class PeriodicGrid : public Grid {
  protected:
-  PeriodicGrid(std::istream& istr);
+  explicit PeriodicGrid(std::istream& istr);
 
  public:
   /**
@@ -29,21 +27,20 @@ class PeriodicGrid : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  PeriodicGrid(size_t dim);
+  explicit PeriodicGrid(size_t dim);
 
   /**
    * Destructor
    */
-  virtual ~PeriodicGrid() override;
+  ~PeriodicGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   static Grid* unserialize(std::istream& istr);
-
 };
 
 }  // namespace base

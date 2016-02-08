@@ -16,74 +16,78 @@ namespace combigrid {
 /** grid domain*/
 class GridDomain {
 
-public:
+ public:
 
-	/** Constructor for homogeneously stretched griddomain*/
-	GridDomain(int dim, const std::vector<int>& levels,
-			const std::vector<double>& min, const std::vector<double>& max,
-			AbstractStretchingMaker& stretchingMaker);
-	/** constructor for heterogeneously stretched griddomain*/
-	GridDomain(int dim, const std::vector<int>& levels,
-			const std::vector<double>& min, const std::vector<double>& max,
-			std::vector<AbstractStretchingMaker*> stretchingMakers);
+  /** Constructor for homogeneously stretched griddomain*/
+  GridDomain(int dim, const std::vector<int>& levels,
+             const std::vector<double>& min, const std::vector<double>& max,
+             AbstractStretchingMaker& stretchingMaker);
+  /** constructor for heterogeneously stretched griddomain*/
+  GridDomain(int dim, const std::vector<int>& levels,
+             const std::vector<double>& min, const std::vector<double>& max,
+             std::vector<AbstractStretchingMaker*> stretchingMakers);
 
-	/* copy constructor*/
-	GridDomain(const GridDomain& domain);
+  /* copy constructor*/
+  GridDomain(const GridDomain& domain);
 
-	/**
-	 * Destructor!
-	 */
-	virtual ~GridDomain() {
+  /**
+   * Destructor!
+   */
+  virtual ~GridDomain() {
 
-		;
+    ;
 
-	}
+  }
 
-	int getDim() const {
-		return (int)_axisDomains.size();
-	}
-	/** transform from real coordinate into unit coordinates
-	 * @param coords [IN/OUT]
-	 * @param levels_in [IN] the required levels
-	 * @param boundaryFlag [IN] for each dimensions if there are boundary points*/
-	void transformRealToUnit(std::vector<double>& coords,
-			const std::vector<int>& levels_in,
-			const std::vector<bool>& boundaryFlag) const;
+  int getDim() const {
+    return (int)_axisDomains.size();
+  }
+  /** transform from real coordinate into unit coordinates
+   * @param coords [IN/OUT]
+   * @param levels_in [IN] the required levels
+   * @param boundaryFlag [IN] for each dimensions if there are boundary points*/
+  void transformRealToUnit(std::vector<double>& coords,
+                           const std::vector<int>& levels_in,
+                           const std::vector<bool>& boundaryFlag) const;
 
-	/** return 1D axis, can be used for back transformation for each dimension
-	 * @param d [IN] the dimension */
-	const Domain1D& get1DDomain(int d) const {
-		return _axisDomains[d];
-	}
-	/*Tell, to whoever is asking, which stretching type does this domain define...
-	 *
-	 **/
+  /** return 1D axis, can be used for back transformation for each dimension
+   * @param d [IN] the dimension */
+  const Domain1D& get1DDomain(int d) const {
+    return _axisDomains[d];
+  }
+  /*Tell, to whoever is asking, which stretching type does this domain define...
+   *
+   **/
 
-	Stretching getStretchingType() const {
+  Stretching getStretchingType() const {
 
-		return _stretching_type;
+    return _stretching_type;
 
-	}
+  }
 
-	inline std::vector<double> getMin() const {return _min;}
+  inline std::vector<double> getMin() const {
+    return _min;
+  }
 
-	inline std::vector<double> getMax() const {return _max;}
+  inline std::vector<double> getMax() const {
+    return _max;
+  }
 
-	void printDomain();
+  void printDomain();
 
-private:
+ private:
 
-	/** dimension of the domain */
-	int dim_;
+  /** dimension of the domain */
+  int dim_;
 
-	/** Domain needs to know about the underlying stretching of its grid points */
-	Stretching _stretching_type;
+  /** Domain needs to know about the underlying stretching of its grid points */
+  Stretching _stretching_type;
 
-	/** array to store the maping for each axis */
-	std::vector<Domain1D> _axisDomains;
+  /** array to store the maping for each axis */
+  std::vector<Domain1D> _axisDomains;
 
-	std::vector<double> _min;
-	std::vector<double> _max;
+  std::vector<double> _min;
+  std::vector<double> _max;
 
 };
 

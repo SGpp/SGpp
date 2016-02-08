@@ -19,10 +19,11 @@ bool compareInstances(const Task* instance1, const Task* instance2) {
 }
 
 ProcessManager::ProcessManager(ProcessGroupManagerContainer& pgroups,
-    TaskContainer& tasks, CombiParameters& params, RankType managerID,
-    CommunicatorType globalComm) :
-    pgroups_(pgroups), tasks_(tasks), params_(params), managerID_(managerID), gcomm_(
-        globalComm) {
+                               TaskContainer& tasks, CombiParameters& params, RankType managerID,
+                               CommunicatorType globalComm) :
+  pgroups_(pgroups), tasks_(tasks), params_(params), managerID_(managerID),
+  gcomm_(
+    globalComm) {
 }
 
 ProcessManager::~ProcessManager() {
@@ -43,8 +44,10 @@ void ProcessManager::runfirst() {
   std::cout << "ALL TASKS ASSIGNED" << std::endl;
 
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;
@@ -59,9 +62,12 @@ void ProcessManager::runnext() {
   for (size_t i = 0; i < pgroups_.size(); ++i) {
     pgroups_[i].runnext();
   }
+
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;
@@ -75,8 +81,10 @@ void ProcessManager::exit() {
   // wait until all process groups are in wait state
   // after sending the exit signal checking the status might not be possible
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;
@@ -94,8 +102,10 @@ void ProcessManager::sync() {
   std::vector<bool> isGroupSynced(pgroups_.size(), false);
 
   size_t numSynced(0);
+
   while (numSynced != pgroups_.size()) {
     numSynced = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       // check only those which are not yet synced
       if (!isGroupSynced[i]) {
@@ -118,8 +128,10 @@ void ProcessManager::updateCombiParameters() {
   std::vector<bool> isGroupSynced(pgroups_.size(), false);
 
   size_t numSynced(0);
+
   while (numSynced != pgroups_.size()) {
     numSynced = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       // check only those which are not yet synced
       if (!isGroupSynced[i]) {
@@ -138,16 +150,18 @@ void ProcessManager::updateCombiParameters() {
 }
 
 
-void ProcessManager::redistribute( std::vector<int>& taskID ){
+void ProcessManager::redistribute( std::vector<int>& taskID ) {
   for (size_t i = 0; i < taskID.size(); ++i) {
     // find id in list of tasks
     Task* t = NULL;
-    for( Task* tmp : tasks_ ){
-      if( tmp->getID() == taskID[i] ){
+
+    for ( Task* tmp : tasks_ ) {
+      if ( tmp->getID() == taskID[i] ) {
         t = tmp;
         break;
       }
     }
+
     assert( t != NULL );
 
     // wait for available process group
@@ -158,8 +172,10 @@ void ProcessManager::redistribute( std::vector<int>& taskID ){
   }
 
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;
@@ -171,16 +187,18 @@ void ProcessManager::redistribute( std::vector<int>& taskID ){
 }
 
 
-void ProcessManager::recompute( std::vector<int>& taskID ){
+void ProcessManager::recompute( std::vector<int>& taskID ) {
   for (size_t i = 0; i < taskID.size(); ++i) {
     // find id in list of tasks
     Task* t = NULL;
-    for( Task* tmp : tasks_ ){
-      if( tmp->getID() == taskID[i] ){
+
+    for ( Task* tmp : tasks_ ) {
+      if ( tmp->getID() == taskID[i] ) {
         t = tmp;
         break;
       }
     }
+
     assert( t != NULL );
 
     // wait for available process group
@@ -191,8 +209,10 @@ void ProcessManager::recompute( std::vector<int>& taskID ){
   }
 
   size_t numWaiting = 0;
+
   while (numWaiting != pgroups_.size()) {
     numWaiting = 0;
+
     for (size_t i = 0; i < pgroups_.size(); ++i) {
       if (pgroups_[i].getStatus() == PROCESS_GROUP_WAIT)
         ++numWaiting;

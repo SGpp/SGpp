@@ -6,17 +6,17 @@
 #ifndef ABSTRACTREFINEMENT_HPP
 #define ABSTRACTREFINEMENT_HPP
 
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+
+#include <sgpp/globaldef.hpp>
+
 #include <forward_list>
 #include <iosfwd>
 #include <vector>
 #include <unordered_map>
 #include <utility>
 #include <memory>
-
-#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -27,7 +27,6 @@ namespace base {
  */
 class AbstractRefinement_refinement_key {
  public:
-
   /***
    * Constructor
    *
@@ -42,7 +41,7 @@ class AbstractRefinement_refinement_key {
   /***
    * Destructor
    */
-  virtual ~AbstractRefinement_refinement_key() {};
+  virtual ~AbstractRefinement_refinement_key() {}
 
 
   /***
@@ -102,13 +101,13 @@ class AbstractRefinement {
   * Type of the identifier of the refinement atom (e.g. a grid point or a subspace)
   */
   typedef AbstractRefinement_refinement_key refinement_key_type;
-  //typedef std::pair<size_t, size_t> refinement_key_type;
+  // typedef std::pair<size_t, size_t> refinement_key_type;
 
 
   /**
    * Type of functor value assigned to each refinement atom
    */
-  typedef float_t refinement_value_type; // refinement functor value
+  typedef float_t refinement_value_type;  // refinement functor value
 
 
   /**
@@ -147,7 +146,8 @@ class AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  virtual void free_refine(GridStorage* storage, RefinementFunctor* functor) = 0;
+  virtual void free_refine(GridStorage* storage,
+                           RefinementFunctor* functor) = 0;
 
 
   /**
@@ -191,7 +191,6 @@ class AbstractRefinement {
    */
   virtual ~AbstractRefinement() {
   }
-  ;
 
   /**
    * Returns the index of the first occurrence of minimal element in array.
@@ -246,7 +245,7 @@ class AbstractRefinement {
       // set stored index to false
       (storage->get((storage->find(&index))->second))->setLeaf(false);
     }
-  };
+  }
 
 
   /**
@@ -258,9 +257,10 @@ class AbstractRefinement {
    * @param source_index index value in the dimension d
    * @param source_level level value in the dimension d
    */
-  virtual void createGridpoint1D(index_type& index,
-                                 size_t d, GridStorage* storage,
-                                 index_t& source_index, level_t& source_level);
+  virtual void createGridpoint1D(
+    index_type& index,
+    size_t d, GridStorage* storage,
+    index_t& source_index, level_t& source_level);
 
 
   /**
@@ -272,9 +272,10 @@ class AbstractRefinement {
    * @param collection container with grid element identifiers (e.g. sequence number, grid index)
    *  and corresponding refinement values (usually empty)
    */
-  virtual void collectRefinablePoints(GridStorage* storage,
-                                      RefinementFunctor* functor,
-                                      refinement_container_type& collection) = 0;
+  virtual void collectRefinablePoints(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    refinement_container_type& collection) = 0;
 
 
   /**
@@ -285,9 +286,10 @@ class AbstractRefinement {
    * @param collection container with grid element identifiers (e.g. sequence number, grid index)
    *  and corresponding refinement values
    */
-  virtual void refineGridpointsCollection(GridStorage* storage,
-                                          RefinementFunctor* functor,
-                                          refinement_container_type& collection) = 0;
+  virtual void refineGridpointsCollection(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    refinement_container_type& collection) = 0;
 
 
   /***
@@ -308,7 +310,9 @@ class AbstractRefinement {
     const RefinementFunctor* functor) const = 0;
 
   friend class
-    RefinementDecorator; //need to be a friend since it delegates the calls to protected class methods
+  // need to be a friend since it delegates the calls to
+  // protected class methods
+    RefinementDecorator;
 };
 
 

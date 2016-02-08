@@ -23,7 +23,6 @@ namespace base {
  */
 class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
  public:
-
   /**
    * Performs the refinement on grid
    *
@@ -68,8 +67,6 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    */
   void refineGridpoint(GridStorage* storage, size_t refine_index,
                        unsigned int maxLevel);
-
-
 };
 
 }  // namespace base

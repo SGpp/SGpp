@@ -7,8 +7,6 @@
 #define SQUAREROOTGRID_HPP_
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -20,7 +18,7 @@ namespace base {
  */
 class SquareRootGrid : public Grid {
  protected:
-  SquareRootGrid(std::istream& istr);
+  explicit SquareRootGrid(std::istream& istr);
 
  public:
   /**
@@ -28,25 +26,25 @@ class SquareRootGrid : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  SquareRootGrid(size_t dim);
+  explicit SquareRootGrid(size_t dim);
 
   /**
    * Constructor Linear Truncated Boundary Grid
    *
    * @param BB the BoundingBox of the grid
    */
-  SquareRootGrid(BoundingBox& BB);
+  explicit SquareRootGrid(BoundingBox& BB);
 
   /**
    * Destructor
    */
-  virtual ~SquareRootGrid() override;
+  ~SquareRootGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
 };

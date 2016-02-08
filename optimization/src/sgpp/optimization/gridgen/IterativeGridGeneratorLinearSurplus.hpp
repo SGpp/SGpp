@@ -49,14 +49,14 @@ class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
   /**
    * Destructor.
    */
-  virtual ~IterativeGridGeneratorLinearSurplus() override;
+  ~IterativeGridGeneratorLinearSurplus() override;
 
   /**
    * Generate the grid.
    *
    * @return true on success, otherwise false
    */
-  virtual bool generate() override;
+  bool generate() override;
 
   /**
    * @return            adaptivity between 0 and 1

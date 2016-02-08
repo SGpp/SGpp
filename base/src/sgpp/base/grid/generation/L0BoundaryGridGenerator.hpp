@@ -26,26 +26,26 @@ class L0BoundaryGridGenerator : public GridGenerator {
    *
    * @param storage template type that holds the grid points
    */
-  L0BoundaryGridGenerator(GridStorage* storage);
+  explicit L0BoundaryGridGenerator(GridStorage* storage);
 
   /**
    * Destructor
    */
-  virtual ~L0BoundaryGridGenerator() override;
+  ~L0BoundaryGridGenerator() override;
 
-  virtual void regular(size_t level) override;
-  virtual void cliques(size_t level, size_t clique_size) override;
-  virtual void full(size_t level) override;
-  virtual void refine(RefinementFunctor* func) override;
-  virtual size_t getNumberOfRefinablePoints() override;
+  void regular(size_t level) override;
+  void cliques(size_t level, size_t clique_size) override;
+  void full(size_t level) override;
+  void refine(RefinementFunctor* func) override;
+  size_t getNumberOfRefinablePoints() override;
 
-  virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
-  virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
-                                 size_t numFirstOnly) override;
-  virtual size_t getNumberOfRemovablePoints() override;
+  void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
+  void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+                         size_t numFirstOnly) override;
+  size_t getNumberOfRemovablePoints() override;
 
-  virtual void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
-  virtual size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
+  void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
+  size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
  protected:
   /// Pointer to the grid's storage object

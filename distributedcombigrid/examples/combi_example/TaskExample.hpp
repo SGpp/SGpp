@@ -15,20 +15,20 @@ namespace combigrid {
 
 class TaskExample: public Task {
 
-public:
+ public:
   /* if the constructor of the base task class is not sufficient we can provide an
    * own implementation. here, we add dt, nsteps, and p as a new parameters.
    */
   TaskExample(DimType dim, LevelVector& l, LevelVector& nmax, LevelVector& lmin,
-      std::vector<bool>& boundary, real coeff, LoadModel* loadModel, real dt,
-      size_t nsteps, IndexVector p = IndexVector(0)) :
-      Task(dim, l, nmax, lmin, boundary, coeff, loadModel), dt_(dt), nsteps_(
-          nsteps), p_(p), dfg_(NULL) {
+              std::vector<bool>& boundary, real coeff, LoadModel* loadModel, real dt,
+              size_t nsteps, IndexVector p = IndexVector(0)) :
+    Task(dim, l, nmax, lmin, boundary, coeff, loadModel), dt_(dt), nsteps_(
+      nsteps), p_(p), dfg_(NULL) {
   }
 
   void init(CommunicatorType& lcomm) {
     assert(!initialized_);
-    assert(dfg_==NULL);
+    assert(dfg_ == NULL);
 
     int lrank;
     MPI_Comm_rank(lcomm, &lrank);
@@ -47,21 +47,27 @@ public:
     DimType dim = this->getDim();
     IndexVector p(dim, 1);
     const LevelVector& l = this->getLevelVector();
+
     if (p_.size() == 0) {
       // compute domain decomposition
       IndexType prod_p(1);
+
       while (prod_p != static_cast<IndexType>(np)) {
         DimType dimMaxRatio = 0;
         real maxRatio = 0.0;
+
         for (DimType k = 0; k < dim; ++k) {
           real ratio = std::pow(2.0, l[k]) / p[k];
+
           if (ratio > maxRatio) {
             maxRatio = ratio;
             dimMaxRatio = k;
           }
         }
+
         p[dimMaxRatio] *= 2;
         prod_p = 1;
+
         for (DimType k = 0; k < dim; ++k)
           prod_p *= p[k];
       }
@@ -71,7 +77,7 @@ public:
 
     if (lrank == 0) {
       std::cout << "computing task " << this->getID() << " with l = "
-          << this->getLevelVector() << " and p = " << p << std::endl;
+                << this->getLevelVector() << " and p = " << p << std::endl;
     }
 
     // create local subgrid on each process
@@ -80,6 +86,7 @@ public:
 
     /* loop over local subgrid and set initial values */
     std::vector<CombiDataType>& elements = dfg_->getElementVector();
+
     for (size_t i = 0; i < elements.size(); ++i) {
       IndexType globalLinearIndex = dfg_->getGlobalLinearIndex(i);
       std::vector<real> globalCoords(dim);
@@ -105,6 +112,7 @@ public:
     /* pseudo timestepping to demonstrate the behaviour of your typical
      * time-dependent simulation problem. */
     std::vector<CombiDataType>& elements = dfg_->getElementVector();
+
     for (size_t step = stepsTotal_; step < stepsTotal_ + nsteps_; ++step) {
       real time = step * dt_;
 
@@ -129,7 +137,7 @@ public:
    * the DistributedFullGrid class offers a convenient function to do this.
    */
   void getFullGrid(FullGrid<CombiDataType>& fg, RankType r,
-      CommunicatorType& lcomm) {
+                   CommunicatorType& lcomm) {
     assert(fg.getLevels() == dfg_->getLevels());
 
     dfg_->gatherFullGrid(fg, r);
@@ -158,14 +166,14 @@ public:
     */
   }
 
-protected:
+ protected:
   /* if there are local variables that have to be initialized at construction
    * you have to do it here. the worker processes will create the task using
    * this constructor before overwriting the variables that are set by the
    * manager. here we need to set the initialized variable to make sure it is
    * set to false. */
   TaskExample() :
-      initialized_(false), stepsTotal_(1), dfg_(NULL) {
+    initialized_(false), stepsTotal_(1), dfg_(NULL) {
   }
 
   ~TaskExample() {
@@ -173,7 +181,7 @@ protected:
       delete dfg_;
   }
 
-private:
+ private:
   friend class boost::serialization::access;
 
   // new variables that are set by manager. need to be added to serialize
@@ -195,14 +203,14 @@ private:
    * registered with the BOOST_CLASS_EXPORT macro.
    */
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
+  void serialize(Archive& ar, const unsigned int version) {
     // handles serialization of base class
-    ar & boost::serialization::base_object<Task>(*this);
+    ar& boost::serialization::base_object<Task>(*this);
 
     // add our new variables
-    ar & dt_;
-    ar & nsteps_;
-    ar & p_;
+    ar& dt_;
+    ar& nsteps_;
+    ar& p_;
   }
 };
 

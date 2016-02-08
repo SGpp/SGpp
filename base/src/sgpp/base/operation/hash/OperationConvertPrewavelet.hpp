@@ -41,8 +41,8 @@ class OperationConvertPrewavelet : public OperationConvert {
   virtual ~OperationConvertPrewavelet() override {
   }
 
-  virtual void doConvertToLinear(DataVector& alpha) override;
-  virtual void doConvertFromLinear(DataVector& alpha) override;
+  void doConvertToLinear(DataVector& alpha) override;
+  void doConvertFromLinear(DataVector& alpha) override;
 
  protected:
   /// Pointer to the grid's GridStorage object

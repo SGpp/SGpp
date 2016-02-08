@@ -35,7 +35,7 @@ class OperationQuadratureLinearBoundary : public OperationQuadrature {
    *
    * @param alpha Coefficient vector for current grid
    */
-  virtual float_t doQuadrature(DataVector& alpha) override;
+  float_t doQuadrature(DataVector& alpha) override;
 
  protected:
   // Pointer to the grid's GridStorage object

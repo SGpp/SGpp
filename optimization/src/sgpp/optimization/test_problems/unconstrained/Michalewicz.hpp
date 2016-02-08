@@ -32,7 +32,7 @@ class MichalewiczObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~MichalewiczObjective() override;
+  ~MichalewiczObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -68,12 +68,12 @@ class Michalewicz : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Michalewicz() override;
+  ~Michalewicz() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

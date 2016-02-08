@@ -35,12 +35,12 @@ class SurplusVolumeRefinementFunctor : public RefinementFunctor {
   /**
    * Destructor
    */
-  virtual ~SurplusVolumeRefinementFunctor() override;
+  ~SurplusVolumeRefinementFunctor() override;
 
-  virtual float_t operator()(GridStorage* storage, size_t seq) const override;
+  float_t operator()(GridStorage* storage, size_t seq) const override;
 
 
-  virtual float_t start() const override;
+  float_t start() const override;
 
 
   size_t getRefinementsNum() const;
@@ -54,7 +54,10 @@ class SurplusVolumeRefinementFunctor : public RefinementFunctor {
   /// number of grid points to refine
   size_t refinements_num;
 
-  /// threshold, only the points with greater to equal absolute values of the refinement criterion (e.g. alpha or error) will be refined
+  /**
+   * threshold, only the points with greater to equal absolute values of the
+   * refinement criterion (e.g. alpha or error) will be refined
+   */
   float_t threshold;
 };
 

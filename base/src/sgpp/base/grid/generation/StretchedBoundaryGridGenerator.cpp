@@ -36,7 +36,8 @@ void StretchedBoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
 
 void StretchedBoundaryGridGenerator::full(size_t level) {
   HashGenerator gen;
-  gen.fullWithBoundary(this->storage, static_cast<HashGenerator::level_t>(level));
+  gen.fullWithBoundary(this->storage,
+                       static_cast<HashGenerator::level_t>(level));
 }
 
 void StretchedBoundaryGridGenerator::refine(RefinementFunctor* func) {

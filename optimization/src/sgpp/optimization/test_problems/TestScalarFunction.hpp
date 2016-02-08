@@ -44,7 +44,7 @@ class TestScalarFunction : public ScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~TestScalarFunction() override;
+  ~TestScalarFunction() override;
 
   /**
    * Evaluate displaced function.
@@ -53,7 +53,7 @@ class TestScalarFunction : public ScalarFunction {
    * @return  \f$f(\vec{x} + \vec{d})\f$
    *          with displacement \f$\vec{d}\f$
    */
-  virtual float_t eval(const base::DataVector& x) override;
+  float_t eval(const base::DataVector& x) override;
 
   /**
    * Pure virtual method for evaluating the undisplaced function.

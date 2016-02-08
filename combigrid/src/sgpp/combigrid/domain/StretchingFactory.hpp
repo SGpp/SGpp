@@ -16,37 +16,37 @@
 #include <sgpp/combigrid/domain/CombiLegendreStretching.hpp>
 #include <sgpp/combigrid/domain/CombiTanStretching.hpp>
 
-namespace combigrid{
+namespace combigrid {
 
-	AbstractStretchingMaker* createStretchingMaker(combigrid::Stretching str);
+AbstractStretchingMaker* createStretchingMaker(combigrid::Stretching str);
 //
-//		AbstractStretchingMaker* maker = NULL;
+//    AbstractStretchingMaker* maker = NULL;
 //
-//		switch (str){
-//		case ATAN:
-//			maker = new AtanSpecialStretching();
-//			break;
-//		case TAN:
-//			maker = new TanStretching();
-//			break;
-//		case CHEBYSHEV:
-//			maker = new CombiChebyshevStretching();
-//			break;
-//		case EQUIDISTANT:
-//			maker = new CombiEquidistantStretching();
-//			break;
-//		case LEGENDRE:
-//			maker = new CombiLegendreStretching();
-//			break;
-//		case BASU:
-//			maker = new CombiBasuStretching();
-//			break;
-//		default:
-//			break;
-//		}
+//    switch (str){
+//    case ATAN:
+//      maker = new AtanSpecialStretching();
+//      break;
+//    case TAN:
+//      maker = new TanStretching();
+//      break;
+//    case CHEBYSHEV:
+//      maker = new CombiChebyshevStretching();
+//      break;
+//    case EQUIDISTANT:
+//      maker = new CombiEquidistantStretching();
+//      break;
+//    case LEGENDRE:
+//      maker = new CombiLegendreStretching();
+//      break;
+//    case BASU:
+//      maker = new CombiBasuStretching();
+//      break;
+//    default:
+//      break;
+//    }
 //
-//		return maker;
-//	}
+//    return maker;
+//  }
 
 }
 

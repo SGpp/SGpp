@@ -64,9 +64,9 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~AugmentedLagrangian() override;
+  ~AugmentedLagrangian() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * Try to find a feasible initial point by solving an auxiliary

@@ -23,7 +23,7 @@ class GaussianElimination : public SLESolver {
   /**
    * Destructor.
    */
-  virtual ~GaussianElimination() override;
+  ~GaussianElimination() override;
 
   /**
    * @param       system  system to be solved

@@ -45,19 +45,19 @@ struct SubspaceSGU {
 namespace combigrid {
 
 template<typename FG_ELEMENT>
-class DistributedSparseGridUniform{
+class DistributedSparseGridUniform {
 
-public:
+ public:
   /** create sparse grid of dimension d and specify for each dimension the
    *  the maximum discretization level and whether there is a boundary or not
    */
   DistributedSparseGridUniform(DimType dim, const LevelVector& lmax,
-      const LevelVector& lmin, const std::vector<bool>& boundary,
-      CommunicatorType comm, size_t procsPerNode = 0);
+                               const LevelVector& lmin, const std::vector<bool>& boundary,
+                               CommunicatorType comm, size_t procsPerNode = 0);
 
   virtual ~DistributedSparseGridUniform();
 
-  void print(std::ostream &os) const;
+  void print(std::ostream& os) const;
 
   // return level vector of subspace i
   inline const LevelVector& getLevelVector(size_t i) const;
@@ -68,7 +68,7 @@ public:
   inline const std::vector<bool>& getBoundaryVector() const;
 
   // get pointer to first element in subspace with l
-  inline FG_ELEMENT* getData(const LevelVector &l);
+  inline FG_ELEMENT* getData(const LevelVector& l);
 
   // get pointer to first element in subspace i
   inline FG_ELEMENT* getData(size_t i);
@@ -77,7 +77,7 @@ public:
   inline std::vector<FG_ELEMENT>& getDataVector(size_t i);
 
   // get reference to data vector of subspace with l.
-  inline std::vector<FG_ELEMENT>& getDataVector(const LevelVector &l);
+  inline std::vector<FG_ELEMENT>& getDataVector(const LevelVector& l);
 
   inline size_t getDim() const;
 
@@ -116,12 +116,12 @@ public:
 
   inline int getCommunicatorSize() const;
 
-private:
+ private:
   void createLevels(DimType dim, const LevelVector& nmax,
-      const LevelVector& lmin);
+                    const LevelVector& lmin);
 
-  void createLevelsRec(size_t dim, size_t n, size_t d, LevelVector &l,
-      const LevelVector& nmax);
+  void createLevelsRec(size_t dim, size_t n, size_t d, LevelVector& l,
+                       const LevelVector& nmax);
 
   void setSizes();
 
@@ -155,17 +155,19 @@ namespace combigrid {
 // at construction create only levels, no data
 template<typename FG_ELEMENT>
 DistributedSparseGridUniform<FG_ELEMENT>::DistributedSparseGridUniform(
-    DimType dim, const LevelVector& lmax, const LevelVector& lmin,
-    const std::vector<bool>& boundary, CommunicatorType comm,
-    size_t procsPerNode) :
-    dim_(dim) {
+  DimType dim, const LevelVector& lmax, const LevelVector& lmin,
+  const std::vector<bool>& boundary, CommunicatorType comm,
+  size_t procsPerNode) :
+  dim_(dim) {
   assert(dim > 0);
 
   assert(lmax.size() == dim);
+
   for (size_t i = 0; i < lmax.size(); ++i)
     assert(lmax[i] > 0);
 
   assert(lmin.size() == dim);
+
   for (size_t i = 0; i < lmin.size(); ++i)
     assert(lmin[i] > 0);
 
@@ -184,6 +186,7 @@ DistributedSparseGridUniform<FG_ELEMENT>::DistributedSparseGridUniform(
   createLevels(dim, nmax_, lmin_);
 
   subspaces_.resize(levels_.size());
+
   for (size_t i = 0; i < levels_.size(); ++i)
     subspaces_[i].level_ = levels_[i];
 
@@ -201,17 +204,17 @@ DistributedSparseGridUniform<FG_ELEMENT>::DistributedSparseGridUniform(
 }
 
 template<typename FG_ELEMENT>
-void DistributedSparseGridUniform<FG_ELEMENT>::print(std::ostream &os) const {
+void DistributedSparseGridUniform<FG_ELEMENT>::print(std::ostream& os) const {
   for (size_t i = 0; i < subspaces_.size(); ++i) {
     std::cout << i << " " << subspaces_[i].level_ << " " << subspaces_[i].sizes_
-        << " " << subspaces_[i].dataSize_ << " " << "r " << subspaceToProc_[i]
-        << std::endl;
+              << " " << subspaces_[i].dataSize_ << " " << "r " << subspaceToProc_[i]
+              << std::endl;
   }
 }
 
 template<typename FG_ELEMENT>
 std::ostream& operator<<(std::ostream& os,
-    const DistributedSparseGridUniform<FG_ELEMENT>& sg) {
+                         const DistributedSparseGridUniform<FG_ELEMENT>& sg) {
   sg.print(os);
   return os;
 }
@@ -223,15 +226,17 @@ DistributedSparseGridUniform<FG_ELEMENT>::~DistributedSparseGridUniform() {
 // start recursion by setting dim=d=dimensionality of the vector space
 template<typename FG_ELEMENT>
 void DistributedSparseGridUniform<FG_ELEMENT>::createLevelsRec(size_t dim,
-    size_t n, size_t d, LevelVector &l, const LevelVector& nmax) {
+    size_t n, size_t d, LevelVector& l, const LevelVector& nmax) {
   // sum rightmost entries of level vector
   LevelType lsum(0);
+
   for (size_t i = dim; i < l.size(); ++i)
     lsum += l[i];
 
   for (LevelType ldim = 1; ldim <= LevelType(n) + LevelType(d) - 1 - lsum;
-      ++ldim) {
+       ++ldim) {
     l[dim - 1] = ldim;
+
     if (dim == 1) {
       if (l <= nmax) {
         levels_.push_back(l);
@@ -253,16 +258,20 @@ void DistributedSparseGridUniform<FG_ELEMENT>::createLevels(DimType dim,
 
   LevelVector ltmp(nmax);
   LevelType c = 0;
+
   while (ltmp > lmin) {
     ++c;
+
     for (size_t i = 0; i < dim; ++i) {
       ltmp[i] = nmax[i] - c;
+
       if (ltmp[i] < 1)
         ltmp[i] = 1;
     }
   }
 
   LevelVector rlmin(dim);
+
   for (size_t i = 0; i < rlmin.size(); ++i) {
     rlmin[i] = nmax[i] - c;
   }
@@ -290,8 +299,10 @@ void DistributedSparseGridUniform<FG_ELEMENT>::setSizes() {
     }
 
     IndexType tmp(1);
+
     for (auto s : sizes)
       tmp *= s;
+
     subspaces_[i].dataSize_ = size_t(tmp);
   }
 }
@@ -304,7 +315,7 @@ DistributedSparseGridUniform<FG_ELEMENT>::getLevelVector(size_t i) const {
 
 template<typename FG_ELEMENT>
 void DistributedSparseGridUniform<FG_ELEMENT>::calcProcAssignment(
-    int procsPerNode) {
+  int procsPerNode) {
   if (procsPerNode == 0) {
     for (size_t i = 0; i < subspaces_.size(); ++i)
       subspaceToProc_[i] = int(i) % commSize_;
@@ -326,7 +337,7 @@ void DistributedSparseGridUniform<FG_ELEMENT>::calcProcAssignment(
   else {
     // todo: ceil
     int numNodes = static_cast<int>(std::ceil(
-        real(commSize_) / real(procsPerNode)));
+                                      real(commSize_) / real(procsPerNode)));
 
     for (int i = 0; i < int(subspaces_.size()); ++i) {
       int nodeID = i % numNodes;
@@ -338,7 +349,7 @@ void DistributedSparseGridUniform<FG_ELEMENT>::calcProcAssignment(
 /* get index of subspace with l. returns -1 if not included */
 template<typename FG_ELEMENT>
 IndexType DistributedSparseGridUniform<FG_ELEMENT>::getIndex(
-    const LevelVector &l) const {
+  const LevelVector& l) const {
   // get index of l
   for (IndexType i = 0; i < IndexType(levels_.size()); ++i) {
     if (levels_[i] == l) {
@@ -357,12 +368,12 @@ DistributedSparseGridUniform<FG_ELEMENT>::getBoundaryVector() const {
 
 template<typename FG_ELEMENT>
 inline FG_ELEMENT*
-DistributedSparseGridUniform<FG_ELEMENT>::getData(const LevelVector &l) {
+DistributedSparseGridUniform<FG_ELEMENT>::getData(const LevelVector& l) {
   IndexType i = getIndex(l);
 
   if (i < 0) {
     std::cout << "l = " << l << " not included in distributed sparse grid"
-        << std::endl;
+              << std::endl;
     assert(false);
   }
 
@@ -383,12 +394,12 @@ DistributedSparseGridUniform<FG_ELEMENT>::getDataVector(size_t i) {
 
 template<typename FG_ELEMENT>
 inline std::vector<FG_ELEMENT>&
-DistributedSparseGridUniform<FG_ELEMENT>::getDataVector(const LevelVector &l) {
+DistributedSparseGridUniform<FG_ELEMENT>::getDataVector(const LevelVector& l) {
   IndexType i = getIndex(l);
 
   if (i < 0) {
     std::cout << "l = " << l << " not included in distributed sparse grid"
-        << std::endl;
+              << std::endl;
     assert(false);
   }
 
@@ -401,25 +412,29 @@ inline DimType DistributedSparseGridUniform<FG_ELEMENT>::getDim() const {
 }
 
 template<typename FG_ELEMENT>
-inline const LevelVector& DistributedSparseGridUniform<FG_ELEMENT>::getNMax() const {
+inline const LevelVector& DistributedSparseGridUniform<FG_ELEMENT>::getNMax()
+const {
   return nmax_;
 }
 
 template<typename FG_ELEMENT>
-inline const LevelVector& DistributedSparseGridUniform<FG_ELEMENT>::getNMin() const {
+inline const LevelVector& DistributedSparseGridUniform<FG_ELEMENT>::getNMin()
+const {
   return lmin_;
 }
 
 template<typename FG_ELEMENT>
-inline size_t DistributedSparseGridUniform<FG_ELEMENT>::getNumSubspaces() const {
+inline size_t DistributedSparseGridUniform<FG_ELEMENT>::getNumSubspaces()
+const {
   return subspaces_.size();
 }
 
 template<typename FG_ELEMENT>
 bool DistributedSparseGridUniform<FG_ELEMENT>::isContained(
-    const LevelVector& l) const {
+  const LevelVector& l) const {
   // get index of l
   bool found = false;
+
   for (size_t i = 0; i < levels_.size(); ++i) {
     if (levels_[i] == l) {
       found = true;
@@ -439,12 +454,12 @@ DistributedSparseGridUniform<FG_ELEMENT>::getSubspaceSizes(size_t i) const {
 template<typename FG_ELEMENT>
 const IndexVector&
 DistributedSparseGridUniform<FG_ELEMENT>::getSubspaceSizes(
-    const LevelVector& l) const {
+  const LevelVector& l) const {
   IndexType i = getIndex(l);
 
   if (i < 0) {
     std::cout << "l = " << l << " not included in distributed sparse grid"
-        << std::endl;
+              << std::endl;
     assert(false);
   }
 
@@ -453,18 +468,18 @@ DistributedSparseGridUniform<FG_ELEMENT>::getSubspaceSizes(
 
 template<typename FG_ELEMENT>
 size_t DistributedSparseGridUniform<FG_ELEMENT>::getSubspaceSize(
-    size_t i) const {
+  size_t i) const {
   return subspaces_[i].dataSize_;
 }
 
 template<typename FG_ELEMENT>
 size_t DistributedSparseGridUniform<FG_ELEMENT>::getSubspaceSize(
-    const LevelVector& l) const {
+  const LevelVector& l) const {
   IndexType i = getIndex(l);
 
   if (i < 0) {
     std::cout << "l = " << l << " not included in distributed sparse grid"
-        << std::endl;
+              << std::endl;
     assert(false);
   }
 
@@ -478,12 +493,12 @@ size_t DistributedSparseGridUniform<FG_ELEMENT>::getDataSize(size_t i) const {
 
 template<typename FG_ELEMENT>
 size_t DistributedSparseGridUniform<FG_ELEMENT>::getDataSize(
-    const LevelVector& l) const {
+  const LevelVector& l) const {
   IndexType i = getIndex(l);
 
   if (i < 0) {
     std::cout << "l = " << l << " not included in distributed sparse grid"
-        << std::endl;
+              << std::endl;
     assert(false);
   }
 
@@ -491,12 +506,14 @@ size_t DistributedSparseGridUniform<FG_ELEMENT>::getDataSize(
 }
 
 template<typename FG_ELEMENT>
-CommunicatorType DistributedSparseGridUniform<FG_ELEMENT>::getCommunicator() const {
+CommunicatorType DistributedSparseGridUniform<FG_ELEMENT>::getCommunicator()
+const {
   return comm_;
 }
 
 template<typename FG_ELEMENT>
-inline int DistributedSparseGridUniform<FG_ELEMENT>::getCommunicatorSize() const {
+inline int DistributedSparseGridUniform<FG_ELEMENT>::getCommunicatorSize()
+const {
   return commSize_;
 }
 

@@ -37,7 +37,7 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
    */
   virtual ~OperationMultipleEvalPeriodic() override {}
 
-  virtual void mult(DataVector& alpha, DataVector& result) override;
+  void mult(DataVector& alpha, DataVector& result) override;
   virtual void multTranspose(DataVector& source, DataVector& result);
 
  protected:

@@ -18,10 +18,10 @@
 namespace combigrid {
 
 class AnisotropyLoadModel: public LoadModel {
-public:
+ public:
   AnisotropyLoadModel();
 
-  inline real eval(const LevelVector &l) const;
+  inline real eval(const LevelVector& l) const;
 
   virtual ~AnisotropyLoadModel();
 };
@@ -55,6 +55,7 @@ inline real AnisotropyLoadModel::eval(const LevelVector& l) const {
 
   // anisotropy vector
   std::vector<real> s(l.size(), 0.0);
+
   for (size_t i = 0; i < s.size(); ++i)
     s[i] = static_cast<real>(l[i]) / static_cast<real>(lsum);
 
@@ -71,7 +72,7 @@ inline real AnisotropyLoadModel::eval(const LevelVector& l) const {
 
   // p=2 polynomial contribution
   h += c11 * s1 * s1 + c21 * s2 * s1 + c31 * s3 * s1 + c22 * s2 * s2
-      + c32 * s3 * s2 + c33 * s3 * s3;
+       + c32 * s3 * s2 + c33 * s3 * s3;
 
   return r * h;
 }

@@ -19,25 +19,25 @@
 namespace json {
 
 class JSON: public DictNode {
-private:
+ private:
 
   std::string fileName;
 
-  std::vector<Token> tokenize(std::string &input);
+  std::vector<Token> tokenize(std::string& input);
 
-public:
+ public:
 
-  JSON(const std::string &fileName);
+  JSON(const std::string& fileName);
 
   JSON();
 
-  JSON(const JSON &original);
+  JSON(const JSON& original);
 
-  virtual JSON *clone();
+  virtual JSON* clone();
 
   void clear();
 
-  void serialize(const std::string &outFileName);
+  void serialize(const std::string& outFileName);
 
   using DictNode::serialize;
 

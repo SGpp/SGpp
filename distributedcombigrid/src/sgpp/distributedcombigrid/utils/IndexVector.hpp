@@ -21,15 +21,16 @@ namespace combigrid {
 
 typedef std::vector<IndexType> IndexVector;
 
-inline IndexType sum(const IndexVector &l) {
+inline IndexType sum(const IndexVector& l) {
   IndexType lsum(0);
+
   for (std::size_t d = 0; d < l.size(); ++d)
     lsum += l[d];
 
   return lsum;
 }
 
-inline bool operator==(const IndexVector &l1, const IndexVector &l2) {
+inline bool operator==(const IndexVector& l1, const IndexVector& l2) {
   assert(l1.size() == l2.size());
 
   for (std::size_t i = 0; i < l1.size(); ++i) {
@@ -41,7 +42,7 @@ inline bool operator==(const IndexVector &l1, const IndexVector &l2) {
 }
 
 // a l1 < l2 if each entry l1,i < l2,i
-inline bool operator<=(const IndexVector &l1, const IndexVector &l2) {
+inline bool operator<=(const IndexVector& l1, const IndexVector& l2) {
   assert(l1.size() == l2.size());
 
   for (std::size_t i = 0; i < l1.size(); ++i) {
@@ -53,7 +54,7 @@ inline bool operator<=(const IndexVector &l1, const IndexVector &l2) {
 }
 
 // a l1 < l2 if each entry l1,i < l2,i
-inline bool operator<(const IndexVector &l1, const IndexVector &l2) {
+inline bool operator<(const IndexVector& l1, const IndexVector& l2) {
   assert(l1.size() == l2.size());
 
   for (std::size_t i = 0; i < l1.size(); ++i) {
@@ -65,7 +66,7 @@ inline bool operator<(const IndexVector &l1, const IndexVector &l2) {
 }
 
 // a l1 > l2 if each entry l1,i > l2,i
-inline bool operator>(const IndexVector &l1, const IndexVector &l2) {
+inline bool operator>(const IndexVector& l1, const IndexVector& l2) {
   assert(l1.size() == l2.size());
 
   for (std::size_t i = 0; i < l1.size(); ++i) {
@@ -78,7 +79,7 @@ inline bool operator>(const IndexVector &l1, const IndexVector &l2) {
 
 // a l1 >= l2 if each entry l1,i >= l2,i
 // todo replace some of these operators by using contrast operators
-inline bool operator>=(const IndexVector &l1, const IndexVector &l2) {
+inline bool operator>=(const IndexVector& l1, const IndexVector& l2) {
   assert(l1.size() == l2.size());
 
   for (std::size_t i = 0; i < l1.size(); ++i) {
@@ -89,7 +90,7 @@ inline bool operator>=(const IndexVector &l1, const IndexVector &l2) {
   return true;
 }
 
-inline IndexVector operator+(const IndexVector &l1, const IndexVector &l2) {
+inline IndexVector operator+(const IndexVector& l1, const IndexVector& l2) {
   assert(l1.size() == l2.size());
 
   IndexVector tmp(l1.size());
@@ -102,14 +103,16 @@ inline IndexVector operator+(const IndexVector &l1, const IndexVector &l2) {
 
 inline std::ostream& operator<<(std::ostream& os, const IndexVector& l) {
   os << "[";
+
   for (size_t i = 0; i < l.size(); ++i)
     os << l[i] << " ";
+
   os << "]";
 
   return os;
 }
 
-inline IndexVector operator-(const IndexVector &l1, const IndexVector &l2) {
+inline IndexVector operator-(const IndexVector& l1, const IndexVector& l2) {
   assert(l1.size() == l2.size());
   assert(l1 >= l2);
 

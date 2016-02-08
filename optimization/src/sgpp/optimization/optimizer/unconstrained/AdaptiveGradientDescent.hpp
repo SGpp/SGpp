@@ -54,9 +54,9 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~AdaptiveGradientDescent() override;
+  ~AdaptiveGradientDescent() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return objective function gradient

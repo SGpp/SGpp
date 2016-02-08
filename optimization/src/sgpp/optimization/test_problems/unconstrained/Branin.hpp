@@ -34,7 +34,7 @@ class BraninObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~BraninObjective() override;
+  ~BraninObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -70,12 +70,12 @@ class Branin : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Branin() override;
+  ~Branin() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

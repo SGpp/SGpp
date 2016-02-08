@@ -25,6 +25,7 @@ MPISystem::MPISystem() {
   // check if MPI was initialized (e.g. by MPI_Init or similar)
   int mpiInitialized(0);
   MPI_Initialized(&mpiInitialized);
+
   if (!mpiInitialized)
     throw std::runtime_error("MPI was not initialized");
 
@@ -32,7 +33,8 @@ MPISystem::MPISystem() {
   globalComm_ = MPI_COMM_WORLD;
 
   // Reinitializing the total number of processes and the rank of this process
-  MPI_Comm_size(globalComm_, &globalSize_); // Setting the total number of MPI processes
+  MPI_Comm_size(globalComm_,
+                &globalSize_); // Setting the total number of MPI processes
   MPI_Comm_rank(globalComm_, &globalRank_);  // Setting the rank of this process
 
   // Setting the root process to rank 0
@@ -56,10 +58,10 @@ MPISystem::~MPISystem() {
  */
 void MPISystem::print(std::ostream& os) const {
   os << " Number of MPI processes in global communicator = " << globalSize_
-      << "\n" << " My rank in global communicator = " << globalRank_ << "\n"
-      << " \n" << " Number of MPI processes in local communicator = "
-      << localSize_ << "\n" << " My rank in local communicator = " << localRank_
-      << "\n";
+     << "\n" << " My rank in global communicator = " << globalRank_ << "\n"
+     << " \n" << " Number of MPI processes in local communicator = "
+     << localSize_ << "\n" << " My rank in local communicator = " << localRank_
+     << "\n";
 }
 
 /*!\brief Sets the root process in the global communicator
@@ -93,7 +95,8 @@ void MPISystem::setGlobalComm(CommunicatorType communicator) {
   globalComm_ = communicator;
 
   // Reinitializing the total number of processes and the rank of this process
-  MPI_Comm_size(globalComm_, &globalSize_); // Estimating the total number of MPI processes
+  MPI_Comm_size(globalComm_,
+                &globalSize_); // Estimating the total number of MPI processes
   MPI_Comm_rank(globalComm_, &globalRank_); // Estimating the rank of this process
 
   // Reset root process to zero
@@ -131,7 +134,8 @@ void MPISystem::setLocalComm(CommunicatorType communicator) {
   localComm_ = communicator;
 
   // Reinitializing the total number of processes and the rank of this process
-  MPI_Comm_size(localComm_, &localSize_); // Estimating the total number of MPI processes
+  MPI_Comm_size(localComm_,
+                &localSize_); // Estimating the total number of MPI processes
   MPI_Comm_rank(localComm_, &localRank_); // Estimating the rank of this process
 
   // Reset root process to zero
@@ -147,7 +151,7 @@ void MPISystem::setLocalComm(CommunicatorType communicator) {
  */
 std::ostream& operator<<(std::ostream& os, const MPISystem& ms) {
   os << "--" << "MPI SYSTEM PARAMETERS"
-      << "---------------------------------------------------------\n";
+     << "---------------------------------------------------------\n";
   ms.print(os);
   os
       << "--------------------------------------------------------------------------------\n"
@@ -164,7 +168,7 @@ std::ostream& operator<<(std::ostream& os, const MPISystem& ms) {
  */
 std::ostream& operator<<(std::ostream& os, const MPISystemID& ms) {
   os << "--" << "MPI SYSTEM PARAMETERS"
-      << "---------------------------------------------------------\n";
+     << "---------------------------------------------------------\n";
   ms->print(os);
   os
       << "--------------------------------------------------------------------------------\n"
@@ -181,7 +185,7 @@ std::ostream& operator<<(std::ostream& os, const MPISystemID& ms) {
  */
 std::ostream& operator<<(std::ostream& os, const ConstMPISystemID& ms) {
   os << "--" << "MPI SYSTEM PARAMETERS"
-      << "---------------------------------------------------------\n";
+     << "---------------------------------------------------------\n";
   ms->print(os);
   os
       << "--------------------------------------------------------------------------------\n"

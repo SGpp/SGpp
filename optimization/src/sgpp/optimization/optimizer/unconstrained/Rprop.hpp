@@ -54,9 +54,9 @@ class Rprop : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~Rprop() override;
+  ~Rprop() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return objective function gradient

@@ -36,7 +36,7 @@ class DehierarchisationLinearBoundary : public DehierarchisationLinear {
   /**
    * Destructor
    */
-  virtual ~DehierarchisationLinearBoundary() override;
+  ~DehierarchisationLinearBoundary() override;
 
   /**
    * Implements operator() needed by the sweep class during the grid traversal. This function

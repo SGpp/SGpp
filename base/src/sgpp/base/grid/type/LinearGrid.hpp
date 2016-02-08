@@ -9,8 +9,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -22,7 +20,7 @@ namespace base {
  */
 class LinearGrid : public Grid {
  protected:
-  LinearGrid(std::istream& istr);
+  explicit LinearGrid(std::istream& istr);
 
  public:
   /**
@@ -30,25 +28,25 @@ class LinearGrid : public Grid {
    *
    * @param dim the dimension of the grid
    */
-  LinearGrid(size_t dim);
+  explicit LinearGrid(size_t dim);
 
   /**
    * Constructor Linear Grid
    *
    * @param BB the BoundingBox of the grid
    */
-  LinearGrid(BoundingBox& BB);
+  explicit LinearGrid(BoundingBox& BB);
 
   /**
    * Destructor
    */
-  virtual ~LinearGrid() override;
+  ~LinearGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
 };

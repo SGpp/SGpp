@@ -14,16 +14,20 @@
 namespace combigrid {
 template<typename _Tp>
 class SerialCombiGrid: public CombiGrid<_Tp> {
-public:
+ public:
 
-	SerialCombiGrid(int in_dim, const std::vector<bool>& in_hasBoundaryPts) : CombiGrid<_Tp>(in_dim,in_hasBoundaryPts){/**QUE NADA*/}
+  SerialCombiGrid(int in_dim,
+                  const std::vector<bool>& in_hasBoundaryPts) : CombiGrid<_Tp>(in_dim,
+                        in_hasBoundaryPts) {
+    /**QUE NADA*/
+  }
 
-	/** sets the domain of all the full grids, this is the correct way for extrapolation */
-	void setDomainAllFG(GridDomain* gridDomain) const;
+  /** sets the domain of all the full grids, this is the correct way for extrapolation */
+  void setDomainAllFG(GridDomain* gridDomain) const;
 
-	/** create the actual vector for the full grids. <br>
-	 * This is be different for serial and parallel implementations */
-	void createFullGrids();
+  /** create the actual vector for the full grids. <br>
+   * This is be different for serial and parallel implementations */
+  void createFullGrids();
 
 
 };

@@ -8,9 +8,10 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <iostream>
 
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 
 
 namespace SGPP {
@@ -53,7 +54,7 @@ class ConvertPrewaveletToLinear {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  ConvertPrewaveletToLinear(GridStorage* storage);
+  explicit ConvertPrewaveletToLinear(GridStorage* storage);
 
   /**
    * Destructor
@@ -66,9 +67,7 @@ class ConvertPrewaveletToLinear {
                   grid_iterator& index, size_t dim);
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* CONVERTPREWAVELETTOLINEAR_HPP */

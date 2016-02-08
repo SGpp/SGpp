@@ -31,7 +31,7 @@ class FloudasObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~FloudasObjective() override;
+  ~FloudasObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -69,7 +69,7 @@ class FloudasInequalityConstraint :
   /**
    * Destructor.
    */
-  virtual ~FloudasInequalityConstraint() override;
+  ~FloudasInequalityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -101,7 +101,7 @@ class FloudasEqualityConstraint :
   /**
    * Destructor.
    */
-  virtual ~FloudasEqualityConstraint() override;
+  ~FloudasEqualityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -139,22 +139,22 @@ class Floudas : public ConstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Floudas() override;
+  ~Floudas() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @return  inequality function of the test problem
    */
-  virtual TestVectorFunction& getInequalityConstraintFunction() override;
+  TestVectorFunction& getInequalityConstraintFunction() override;
 
   /**
    * @return  equality constraint function of the test problem
    */
-  virtual TestVectorFunction& getEqualityConstraintFunction() override;
+  TestVectorFunction& getEqualityConstraintFunction() override;
 
   /**
    * @param[out] x minimal point

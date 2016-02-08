@@ -36,7 +36,8 @@ void L0BoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
 
 void L0BoundaryGridGenerator::full(size_t level) {
   HashGenerator gen;
-  gen.fullWithBoundary(this->storage, static_cast<HashGenerator::level_t>(level));
+  gen.fullWithBoundary(this->storage,
+                       static_cast<HashGenerator::level_t>(level));
 }
 
 void L0BoundaryGridGenerator::refine(RefinementFunctor* func) {

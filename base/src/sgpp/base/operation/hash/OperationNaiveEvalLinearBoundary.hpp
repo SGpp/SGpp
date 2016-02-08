@@ -36,7 +36,7 @@ class OperationNaiveEvalLinearBoundary : public OperationNaiveEval {
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
+  float_t eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid

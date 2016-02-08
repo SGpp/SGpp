@@ -33,7 +33,7 @@ class SchwefelObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~SchwefelObjective() override;
+  ~SchwefelObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -71,12 +71,12 @@ class Schwefel : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Schwefel() override;
+  ~Schwefel() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

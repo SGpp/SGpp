@@ -77,10 +77,9 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
         _val = storage->end(_seq) ? 0.0 : source[_seq];
         temp_current[t] = temp_current[t] - 0.6 * _val;
       }
-
     }
 
-    //Special treatment for first index
+    // Special treatment for first index
     index.set(dim, level, 1);
     _seq = index.seq();
     _val = storage->end(_seq) ? 0.0 : source[_seq];
@@ -121,7 +120,7 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
       }
     }
 
-    //Special treatment for last index
+    // Special treatment for last index
     index_type last = (1 << static_cast<index_type>(level)) - 1;
     index.set(dim, level, last);
     _seq = index.seq();
@@ -133,7 +132,6 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
       result[_seq] += temp_old[last * 2] - 0.5 * temp_current[last
                       - 1];
     }
-
   }
 
   index.set(dim, init_level, init_index);
@@ -145,10 +143,7 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
   temp_old = 0;
   delete[] temp_current;
   temp_current = 0;
-
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

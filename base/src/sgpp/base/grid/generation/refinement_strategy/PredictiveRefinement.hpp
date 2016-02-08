@@ -8,11 +8,12 @@
 
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
-#include <vector>
-#include <utility>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
+
+#include <vector>
+#include <utility>
 
 
 namespace SGPP {
@@ -24,7 +25,6 @@ namespace base {
 class PredictiveRefinement_refinement_key : public
   AbstractRefinement_refinement_key {
  public:
-
   /**
    * Constructor
    *
@@ -32,8 +32,8 @@ class PredictiveRefinement_refinement_key : public
    * @param seq sequence number in the hash grid storage
    * @param dim dimensionality
    */
-  PredictiveRefinement_refinement_key (const AbstractRefinement::index_type&
-                                       index, size_t seq, size_t dim):
+  PredictiveRefinement_refinement_key(const AbstractRefinement::index_type&
+                                      index, size_t seq, size_t dim):
     AbstractRefinement_refinement_key(index, seq), dim(dim) {}
 
   /**
@@ -66,9 +66,9 @@ class PredictiveRefinement: public virtual RefinementDecorator {
  public:
   typedef PredictiveRefinement_refinement_key refinement_key_type;
 
-  PredictiveRefinement(AbstractRefinement* refinement): RefinementDecorator(
-      refinement),
-    iThreshold_(0.0), alpha_(NULL) {};
+  explicit PredictiveRefinement(AbstractRefinement* refinement):
+    RefinementDecorator(refinement),
+    iThreshold_(0.0), alpha_(NULL) {}
 
 
   /**
@@ -80,7 +80,8 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  void free_refine(GridStorage* storage, PredictiveRefinementIndicator* functor);
+  void free_refine(GridStorage* storage,
+                   PredictiveRefinementIndicator* functor);
 
 
 
@@ -95,7 +96,6 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   }
 
  protected:
-
   /**
   * Examines the grid points and stores the indices those that can be refined
   * and have maximal indicator values.
@@ -104,9 +104,10 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
   * @param collection container that contains elements to refine (empty initially)
   */
-  virtual void collectRefinablePoints(GridStorage* storage,
-                                      RefinementFunctor* functor,
-                                      AbstractRefinement::refinement_container_type&  collection) override;
+  void collectRefinablePoints(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type&  collection) override;
 
 
   /**
@@ -116,9 +117,10 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
    * @param collection container that contains elements to refine (empty initially)
    */
-  virtual void refineGridpointsCollection(GridStorage* storage,
-                                          RefinementFunctor* functor,
-                                          AbstractRefinement::refinement_container_type& collection);
+  virtual void refineGridpointsCollection(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection);
 
 
   /**

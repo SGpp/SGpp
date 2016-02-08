@@ -13,8 +13,6 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -23,7 +21,6 @@ namespace base {
 
 LinearStretchedGrid::LinearStretchedGrid(std::istream& istr) :
   Grid(istr) {
-
 }
 
 LinearStretchedGrid::LinearStretchedGrid(size_t dim) :
@@ -57,5 +54,6 @@ Grid* LinearStretchedGrid::unserialize(std::istream& istr) {
 GridGenerator* LinearStretchedGrid::createGridGenerator() {
   return new StandardGridGenerator(this->storage);
 }
-}
-}
+
+}  // namespace base
+}  // namespace SGPP

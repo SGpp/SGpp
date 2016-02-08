@@ -60,9 +60,9 @@ class NLCG : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~NLCG() override;
+  ~NLCG() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return objective function gradient

@@ -9,8 +9,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -27,7 +25,7 @@ class ModBsplineGrid : public Grid {
    *
    * @param istr inputstream that contains the grid information
    */
-  ModBsplineGrid(std::istream& istr);
+  explicit ModBsplineGrid(std::istream& istr);
 
  public:
   /**
@@ -36,27 +34,27 @@ class ModBsplineGrid : public Grid {
    * @param dim the dimension of the grid
      * @param degree the bspline's degree
    */
-  ModBsplineGrid(size_t dim, size_t degree);
+  explicit ModBsplineGrid(size_t dim, size_t degree);
 
   /**
    * Destructor.
    */
-  virtual ~ModBsplineGrid() override;
+  ~ModBsplineGrid() override;
 
   /**
    * @return string that identifies the grid type uniquely
    */
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
   /**
    * @return B-spline basis
    */
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   /**
    * @return pointer to a GridGenerator object
    */
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   /**
    * reads a grid out of a string
@@ -71,7 +69,7 @@ class ModBsplineGrid : public Grid {
    *
    * @param ostr stream to which the grid is written
    */
-  virtual void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr) override;
 
   /**
    * @return B-spline degree
@@ -83,8 +81,6 @@ class ModBsplineGrid : public Grid {
   size_t degree;
   /// B-spline basis
   const SBsplineModifiedBase* basis_;
-
-
 };
 
 }  // namespace base

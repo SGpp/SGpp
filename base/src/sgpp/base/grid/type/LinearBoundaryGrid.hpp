@@ -8,8 +8,6 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -21,7 +19,7 @@ namespace base {
  */
 class LinearBoundaryGrid : public Grid {
  protected:
-  LinearBoundaryGrid(std::istream& istr);
+  explicit LinearBoundaryGrid(std::istream& istr);
 
  public:
   /**
@@ -32,7 +30,7 @@ class LinearBoundaryGrid : public Grid {
    *                      inserted (default = 1: boundary has same level
    *                      as main axes)
    */
-  LinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+  explicit LinearBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * Constructor Linear Truncated Boundary Grid
@@ -42,22 +40,22 @@ class LinearBoundaryGrid : public Grid {
    *                      inserted (default = 1: boundary has same level
    *                      as main axes)
    */
-  LinearBoundaryGrid(BoundingBox& BB, level_t boundaryLevel = 1);
+  explicit LinearBoundaryGrid(BoundingBox& BB, level_t boundaryLevel = 1);
 
   /**
    * Destructor
    */
-  virtual ~LinearBoundaryGrid() override;
+  ~LinearBoundaryGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
 
-  virtual void serialize(std::ostream& ostr) override;
+  void serialize(std::ostream& ostr) override;
 
  protected:
   /// level at which the boundary points should be inserted

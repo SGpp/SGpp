@@ -26,7 +26,7 @@ namespace combigrid {
 template<typename FG_ELEMENT>
 class SGrid {
 
-public:
+ public:
   /** create sparse grid of dimension d and level n with or without boundary
    *  in all dimensions
    */
@@ -36,19 +36,19 @@ public:
    *  the maximum discretization level and whether there is a boundary or not
    */
   SGrid(DimType dim, const LevelVector& nmax, const LevelVector& lmin,
-      const std::vector<bool>& boundary);
+        const std::vector<bool>& boundary);
 
   virtual ~SGrid();
 
-  void print(std::ostream &os) const;
+  void print(std::ostream& os) const;
 
-  void initHierarchicalSpace(const LevelVector &l, const FG_ELEMENT& val);
+  void initHierarchicalSpace(const LevelVector& l, const FG_ELEMENT& val);
 
   void initAll(FG_ELEMENT val);
 
-  void initCombiSpace(const LevelVector &l, const FG_ELEMENT& val);
+  void initCombiSpace(const LevelVector& l, const FG_ELEMENT& val);
 
-  void add(const SGrid<FG_ELEMENT> &sg);
+  void add(const SGrid<FG_ELEMENT>& sg);
 
   void add(const FullGrid<FG_ELEMENT>& hfg, real coeff);
 
@@ -57,7 +57,7 @@ public:
   // however, this is analogous to the std::vector::data of C++11
   // the advantage is that we are decoupled from the actual way how data is
   // organised.
-  inline FG_ELEMENT* getData(LevelVector &l);
+  inline FG_ELEMENT* getData(LevelVector& l);
 
   inline FG_ELEMENT* getData(size_t i);
 
@@ -67,7 +67,7 @@ public:
 
   inline size_t getDataSize(size_t i) const;
 
-  int getInitList(std::vector<int> &list) const;
+  int getInitList(std::vector<int>& list) const;
 
   size_t getLevelIndex(const LevelVector& l) const;
 
@@ -94,12 +94,12 @@ public:
 
   inline const IndexVector& getSubspaceSizes(IndexType i) const;
 
-private:
+ private:
   void createLevels(DimType dim, const LevelVector& nmax,
-      const LevelVector& lmin);
+                    const LevelVector& lmin);
 
-  void createLevelsRec(size_t dim, size_t n, size_t d, LevelVector &l,
-      const LevelVector& nmax);
+  void createLevelsRec(size_t dim, size_t n, size_t d, LevelVector& l,
+                       const LevelVector& nmax);
 
   void setSizes();
 
@@ -151,7 +151,7 @@ inline void SGrid<FG_ELEMENT>::initHierarchicalSpace(size_t i,
 }
 
 template<typename FG_ELEMENT>
-inline FG_ELEMENT* SGrid<FG_ELEMENT>::getData(LevelVector &l) {
+inline FG_ELEMENT* SGrid<FG_ELEMENT>::getData(LevelVector& l) {
   return &data_[getLevelIndex(l)][0];
 }
 
@@ -203,7 +203,7 @@ inline size_t SGrid<FG_ELEMENT>::getCombinedDataSize() const {
 // at construction create only levels, no data
 template<typename FG_ELEMENT>
 SGrid<FG_ELEMENT>::SGrid(DimType dim, LevelType n, bool boundary) :
-    dim_(dim), combinedDataSize_(0) {
+  dim_(dim), combinedDataSize_(0) {
   assert(dim > 0);
   assert(n > 0);
 
@@ -221,15 +221,17 @@ SGrid<FG_ELEMENT>::SGrid(DimType dim, LevelType n, bool boundary) :
 // at construction create only levels, no data
 template<typename FG_ELEMENT>
 SGrid<FG_ELEMENT>::SGrid(DimType dim, const LevelVector& nmax,
-    const LevelVector& lmin, const std::vector<bool>& boundary) :
-    dim_(dim), combinedDataSize_(0) {
+                         const LevelVector& lmin, const std::vector<bool>& boundary) :
+  dim_(dim), combinedDataSize_(0) {
   assert(dim > 0);
 
   assert(nmax.size() == dim);
+
   for (size_t i = 0; i < nmax.size(); ++i)
     assert(nmax[i] > 0);
 
   assert(lmin.size() == dim);
+
   for (size_t i = 0; i < lmin.size(); ++i)
     assert(lmin[i] > 0);
 
@@ -247,7 +249,7 @@ SGrid<FG_ELEMENT>::SGrid(DimType dim, const LevelVector& nmax,
 }
 
 template<typename FG_ELEMENT>
-void SGrid<FG_ELEMENT>::print(std::ostream &os) const {
+void SGrid<FG_ELEMENT>::print(std::ostream& os) const {
   for (size_t i = 0; i < levels_.size(); ++i) {
     for (size_t j = 0; j < levels_[i].size(); ++j)
       os << levels_[i][j] << " ";
@@ -281,7 +283,7 @@ void SGrid<FG_ELEMENT>::initAll(FG_ELEMENT val) {
  */
 template<typename FG_ELEMENT>
 void SGrid<FG_ELEMENT>::initCombiSpace(const LevelVector& l,
-    const FG_ELEMENT& val) {
+                                       const FG_ELEMENT& val) {
   assert(l.size() == dim_);
 
   // check if level vector contained in levels
@@ -321,6 +323,7 @@ void SGrid<FG_ELEMENT>::add(const SGrid<FG_ELEMENT>& sg) {
 
     // add subspaces
     assert(data_[i].size() == sg.data_[i].size());
+
     for (size_t j = 0; j < data_[i].size(); ++j)
       data_[i][j] += sg.data_[i][j];
   }
@@ -349,6 +352,7 @@ void SGrid<FG_ELEMENT>::add(const FullGrid<FG_ELEMENT>& hfg, real coeff) {
   // create iterator for each subspace of sgrid and set to begin
   typedef typename std::vector<FG_ELEMENT>::iterator SubspaceIterator;
   typename std::vector<SubspaceIterator> it_sub(getSize());
+
   for (size_t i = 0; i < it_sub.size(); ++i)
     it_sub[i] = data_[i].begin();
 
@@ -378,10 +382,11 @@ void SGrid<FG_ELEMENT>::add(const FullGrid<FG_ELEMENT>& hfg, real coeff) {
 }
 
 template<typename FG_ELEMENT>
-size_t SGrid<FG_ELEMENT>::getLevelIndex(const LevelVector &l) const {
+size_t SGrid<FG_ELEMENT>::getLevelIndex(const LevelVector& l) const {
   // get index of l
   bool found = false;
   size_t i;
+
   for (i = 0; i < levels_.size(); ++i) {
     if (levels_[i] == l) {
       found = true;
@@ -401,6 +406,7 @@ template<typename FG_ELEMENT>
 bool SGrid<FG_ELEMENT>::isContained(const LevelVector& l, size_t& index) const {
   // get index of l
   bool found = false;
+
   for (size_t i = 0; i < levels_.size(); ++i) {
     if (levels_[i] == l) {
       found = true;
@@ -419,7 +425,7 @@ bool SGrid<FG_ELEMENT>::isContained(const LevelVector& l) const {
 }
 
 template<typename FG_ELEMENT>
-int SGrid<FG_ELEMENT>::getInitList(std::vector<int> &list) const {
+int SGrid<FG_ELEMENT>::getInitList(std::vector<int>& list) const {
   // TODO: check list size????
   int count(0);
 
@@ -442,15 +448,17 @@ SGrid<FG_ELEMENT>::~SGrid() {
 // start recursion by setting dim=d=dimensionality of the vector space
 template<typename FG_ELEMENT>
 void SGrid<FG_ELEMENT>::createLevelsRec(size_t dim, size_t n, size_t d,
-    LevelVector &l, const LevelVector& nmax) {
+                                        LevelVector& l, const LevelVector& nmax) {
   // sum rightmost entries of level vector
   LevelType lsum(0);
+
   for (size_t i = dim; i < l.size(); ++i)
     lsum += l[i];
 
   for (LevelType ldim = 1; ldim <= LevelType(n) + LevelType(d) - 1 - lsum;
-      ++ldim) {
+       ++ldim) {
     l[dim - 1] = ldim;
+
     if (dim == 1) {
       if (l <= nmax) {
         levels_.push_back(l);
@@ -464,7 +472,7 @@ void SGrid<FG_ELEMENT>::createLevelsRec(size_t dim, size_t n, size_t d,
 
 template<typename FG_ELEMENT>
 void SGrid<FG_ELEMENT>::createLevels(DimType dim, const LevelVector& nmax,
-    const LevelVector& lmin) {
+                                     const LevelVector& lmin) {
   assert(nmax.size() == dim);
   assert(lmin.size() == dim);
 
@@ -472,16 +480,20 @@ void SGrid<FG_ELEMENT>::createLevels(DimType dim, const LevelVector& nmax,
 
   LevelVector ltmp(nmax);
   LevelType c = 0;
+
   while (ltmp > lmin) {
     ++c;
+
     for (size_t i = 0; i < dim; ++i) {
       ltmp[i] = nmax[i] - c;
+
       if (ltmp[i] < 1)
         ltmp[i] = 1;
     }
   }
 
   LevelVector rlmin(dim);
+
   for (size_t i = 0; i < rlmin.size(); ++i) {
     rlmin[i] = nmax[i] - c;
   }

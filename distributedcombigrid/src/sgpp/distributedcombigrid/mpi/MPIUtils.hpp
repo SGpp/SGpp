@@ -18,7 +18,7 @@ namespace combigrid {
 
 class MPIUtils {
 
-public:
+ public:
   template<typename T>
   static void sendClass(T* t, RankType dst, CommunicatorType& comm) {
     // save data to archive
@@ -68,6 +68,7 @@ public:
 
     // root writes object data into buffer
     std::string s;
+
     if (myID == root) {
       // save data to archive
       std::stringstream ss;
@@ -87,6 +88,7 @@ public:
 
     // non-root procs create buffer which is large enough
     std::vector<char> tmp(bsize);
+
     if (myID != root) {
       buf = &tmp[0];
     }

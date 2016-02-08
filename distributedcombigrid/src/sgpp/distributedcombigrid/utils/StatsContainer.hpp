@@ -35,7 +35,7 @@ namespace combigrid {
  */
 class StatsContainer {
 
-public:
+ public:
   inline void setTimerStart(const std::string& timerName);
 
   inline void setTimerStop(const std::string& timerName);
@@ -44,24 +44,26 @@ public:
 
   inline void setValue(const std::string& valueName, double value);
 
-  inline double getValue(const std::string &valueName) const;
+  inline double getValue(const std::string& valueName) const;
 
-  virtual ~StatsContainer(){
+  virtual ~StatsContainer() {
 
   };
 
   inline void save(const std::string& filename) const;
 
-private:
+ private:
   friend StatsContainerID theStatsContainer();
 
-  explicit StatsContainer(){
+  explicit StatsContainer() {
 
   }
 
-  std::map<std::string, std::chrono::high_resolution_clock::time_point> startTimes_;
+  std::map<std::string, std::chrono::high_resolution_clock::time_point>
+  startTimes_;
 
-  std::map<std::string, std::chrono::high_resolution_clock::time_point> stopTimes_;
+  std::map<std::string, std::chrono::high_resolution_clock::time_point>
+  stopTimes_;
 
   std::map<std::string, double> durations_;
 
@@ -73,11 +75,12 @@ inline void StatsContainer::setTimerStart(const std::string& timerName) {
   using namespace std::chrono;
   // check if timer has already been started
   std::map<std::string, high_resolution_clock::time_point>::const_iterator found =
-      startTimes_.find(timerName);
+    startTimes_.find(timerName);
+
   //assert( found == startTimes_.end() && "timer already started" );
   if (!(found == startTimes_.end())) {
     std::cout << "Warning: timer " << timerName << " already started"
-        << std::endl;
+              << std::endl;
   }
 
   startTimes_[timerName] = high_resolution_clock::now();
@@ -87,20 +90,23 @@ inline void StatsContainer::setTimerStop(const std::string& timerName) {
   using namespace std::chrono;
   // check if timer has been started
   std::map<std::string, high_resolution_clock::time_point>::const_iterator found =
-      startTimes_.find(timerName);
+    startTimes_.find(timerName);
+
   //assert( found != startTimes_.end() && "timer has not been started" );
   if (found == startTimes_.end()) {
     std::cout << "Warning: timer " << timerName << "  has not been started"
-        << std::endl;
+              << std::endl;
   }
 
   // check if timer has already been stopped
-  std::map<std::string, high_resolution_clock::time_point>::const_iterator found2 =
+  std::map<std::string, high_resolution_clock::time_point>::const_iterator found2
+    =
       stopTimes_.find(timerName);
+
   //assert( found2 == stopTimes_.end() && "timer was already stopped" );
   if (found2 != stopTimes_.end()) {
     std::cout << "Warning: timer " << timerName << " timer was already stopped"
-        << std::endl;
+              << std::endl;
   }
 
   high_resolution_clock::time_point stopTime = high_resolution_clock::now();
@@ -116,10 +122,11 @@ inline double StatsContainer::getDuration(const std::string& timerName) const {
   // check if timer exists
   // check if timer has already been stopped
   std::map<std::string, double>::const_iterator found = durations_.find(
-      timerName);
+        timerName);
+
   if (found == durations_.end()) {
     std::cout << "Error: value " << timerName << " does not exist!"
-        << std::endl;
+              << std::endl;
     return -1;
   }
 
@@ -127,7 +134,7 @@ inline double StatsContainer::getDuration(const std::string& timerName) const {
 }
 
 inline void StatsContainer::setValue(const std::string& valueName,
-    double value) {
+                                     double value) {
   // check if value exists
   std::map<std::string, double>::const_iterator found = stats_.find(valueName);
   //assert( found == stats_.end() && "value already exists" );
@@ -138,9 +145,10 @@ inline void StatsContainer::setValue(const std::string& valueName,
 inline double StatsContainer::getValue(const std::string& valueName) const {
   // check if value exists
   std::map<std::string, double>::const_iterator found = stats_.find(valueName);
+
   if (found == stats_.end()) {
     std::cout << "Error: value " << valueName << " does not exist!"
-        << std::endl;
+              << std::endl;
     return -1;
   }
 
@@ -151,12 +159,12 @@ inline void StatsContainer::save(const std::string& filename) const {
   std::ofstream ofs(filename.c_str());
 
   for (std::map<std::string, double>::const_iterator it = durations_.begin();
-      it != durations_.end(); ++it) {
+       it != durations_.end(); ++it) {
     ofs << it->first << "\t" << it->second << std::endl;
   }
 
   for (std::map<std::string, double>::const_iterator it = stats_.begin();
-      it != stats_.end(); ++it) {
+       it != stats_.end(); ++it) {
     ofs << it->first << "\t" << it->second << std::endl;
   }
 
@@ -175,12 +183,13 @@ inline void StatsContainer::setTimerStart( const std::string& timerName ) {}
 
 inline void StatsContainer::setTimerStop( const std::string& timerName ) {}
 
-inline double StatsContainer::getDuration( const std::string& timerName ) const {
+inline double StatsContainer::getDuration( const std::string& timerName )
+const {
   return 0.0;
 }
 
 inline void StatsContainer::setValue( const std::string& valueName,
-    double value ) {}
+                                      double value ) {}
 
 inline double StatsContainer::getValue( const std::string& valueName) const {
   return 0.0;
@@ -191,14 +200,13 @@ inline void StatsContainer::save( const std::string& filename ) const {}
 /* returns a handle to the (global) StatsContainer. when always using this
  * handle only one StatsContainer
  */
-inline StatsContainerID theStatsContainer()
-{
+inline StatsContainerID theStatsContainer() {
   static StatsContainerID stats( new StatsContainer() );
   return stats;
 }
 #endif
 
 }
- //end namespace combigrid
+//end namespace combigrid
 
 #endif /* STATSCONTAINER_HPP_ */

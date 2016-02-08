@@ -8,8 +8,6 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -21,7 +19,7 @@ namespace base {
  */
 class WaveletBoundaryGrid : public Grid {
  protected:
-  WaveletBoundaryGrid(std::istream& istr);
+  explicit WaveletBoundaryGrid(std::istream& istr);
 
  public:
   /**
@@ -32,18 +30,18 @@ class WaveletBoundaryGrid : public Grid {
    *                      inserted (default = 1: boundary has same level
    *                      as main axes)
    */
-  WaveletBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
+  explicit WaveletBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * Destructor
    */
-  virtual ~WaveletBoundaryGrid() override;
+  ~WaveletBoundaryGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
 

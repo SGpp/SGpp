@@ -19,18 +19,18 @@ namespace base {
  */
 class PrewaveletGrid : public Grid {
  protected:
-  PrewaveletGrid(std::istream& istr);
+  explicit PrewaveletGrid(std::istream& istr);
   GridStorage* shadowStorage;
 
  public:
-  PrewaveletGrid(size_t dim);
-  virtual ~PrewaveletGrid() override;
+  explicit PrewaveletGrid(size_t dim);
+  ~PrewaveletGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
 
@@ -40,7 +40,6 @@ class PrewaveletGrid : public Grid {
    * @return pointer to the GridStorage object
    */
   GridStorage* getShadowStorage();
-
 };
 
 }  // namespace base

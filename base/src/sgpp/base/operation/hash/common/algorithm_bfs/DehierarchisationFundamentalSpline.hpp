@@ -30,7 +30,7 @@ class DehierarchisationFundamentalSpline {
    *
    * @param grid grid
    */
-  DehierarchisationFundamentalSpline(FundamentalSplineGrid* grid);
+  explicit DehierarchisationFundamentalSpline(FundamentalSplineGrid* grid);
 
   /**
    * Destructor.

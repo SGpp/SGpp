@@ -26,10 +26,12 @@ void DehierarchisationLinear::operator()(DataVector& source, DataVector& result,
 }
 
 void DehierarchisationLinear::rec(DataVector& source, DataVector& result,
-                                  grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+                                  grid_iterator& index, size_t dim,
+                                  float_t fl, float_t fr) {
   // current position on the grid
   size_t seq = index.seq();
-  // value in the middle, needed for recursive call and calculation of the hierarchical surplus
+  // value in the middle,
+  // needed for recursive call and calculation of the hierarchical surplus
   float_t fm = source[seq];
 
   // dehierarchisation
@@ -57,7 +59,5 @@ void DehierarchisationLinear::rec(DataVector& source, DataVector& result,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP

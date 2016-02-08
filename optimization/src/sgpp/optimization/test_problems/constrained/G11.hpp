@@ -31,7 +31,7 @@ class G11Objective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~G11Objective() override;
+  ~G11Objective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -63,7 +63,7 @@ class G11InequalityConstraint :
   /**
    * Destructor.
    */
-  virtual ~G11InequalityConstraint() override;
+  ~G11InequalityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -97,7 +97,7 @@ class G11EqualityConstraint :
   /**
    * Destructor.
    */
-  virtual ~G11EqualityConstraint() override;
+  ~G11EqualityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -135,22 +135,22 @@ class G11 : public ConstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~G11() override;
+  ~G11() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @return  inequality function of the test problem
    */
-  virtual TestVectorFunction& getInequalityConstraintFunction() override;
+  TestVectorFunction& getInequalityConstraintFunction() override;
 
   /**
    * @return  equality constraint function of the test problem
    */
-  virtual TestVectorFunction& getEqualityConstraintFunction() override;
+  TestVectorFunction& getEqualityConstraintFunction() override;
 
   /**
    * @param[out] x minimal point

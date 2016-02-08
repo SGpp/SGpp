@@ -16,7 +16,7 @@ enum class TokenType {
 };
 
 class Token {
-public:
+ public:
   TokenType type;
   std::string value;
   size_t lineNumber;

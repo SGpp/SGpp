@@ -63,9 +63,9 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~DifferentialEvolution() override;
+  ~DifferentialEvolution() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return                  number of individuals

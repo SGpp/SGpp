@@ -34,7 +34,7 @@ static int hierCount = 0;
  */
 template<typename FG_ELEMENT>
 class RemoteDataContainer {
-public:
+ public:
   /** Constructor
    *
    * \param[in] sizes d-dimensional vector specifying the extent in each dim
@@ -45,9 +45,10 @@ public:
    *            comes from. this is required for address calculations
    */
   RemoteDataContainer(const IndexVector& sizes, DimType dim1d,
-      IndexType keyIndex, const IndexVector& lowerBounds) {
+                      IndexType keyIndex, const IndexVector& lowerBounds) {
     assert(sizes.size() > 0);
     assert(lowerBounds.size() == sizes.size());
+
     for (DimType i = 0; i < sizes.size(); ++i) {
       assert(sizes[i] > 0);
     }
@@ -66,6 +67,7 @@ public:
     // compute num of elements and offsets
     nrElements_ = 1;
     offsets_.resize(dim_);
+
     for (DimType j = 0; j < dim_; j++) {
       offsets_[j] = nrElements_;
       nrElements_ = nrElements_ * nrPoints_[j];
@@ -98,6 +100,7 @@ public:
     }
 
     IndexType idx = 0;
+
     for (DimType i = 0; i < dim_; ++i) {
       idx = idx + offsets_[i] * localIndexVector[i];
     }
@@ -125,6 +128,7 @@ public:
     }
 
     IndexType idx = 0;
+
     for (DimType i = 0; i < dim_; ++i) {
       idx = idx + offsets_[i] * localIndexVector[i];
     }
@@ -164,7 +168,7 @@ public:
     return dim1d_;
   }
 
-private:
+ private:
   // dimensionality of the container. although only one point in dim1d, we
   // always use the full dimensionality
   DimType dim_;
@@ -197,7 +201,7 @@ private:
  */
 template<typename FG_ELEMENT>
 class LookupTable {
-public:
+ public:
   /** Constructor
    *
    * \param[in] remoteData  list with remote data
@@ -206,8 +210,8 @@ public:
    *                        stored in remoteData have been reduced
    */
   LookupTable(std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData,
-      DistributedFullGrid<FG_ELEMENT>& dfg, DimType keyDim) :
-      remoteData_(remoteData), dfg_(dfg), keyDim_(keyDim) {
+              DistributedFullGrid<FG_ELEMENT>& dfg, DimType keyDim) :
+    remoteData_(remoteData), dfg_(dfg), keyDim_(keyDim) {
     if (remoteData_.size() > 0) {
       for (size_t i = 0; i < remoteData.size(); ++i) {
         assert(remoteData_[i].getDimension() == dfg_.getDimension());
@@ -232,13 +236,16 @@ public:
     } else {
       // find subarray remote data wich corresponds to key index
       bool found = false;
+
       for (size_t i = 0; i < remoteData_.size(); ++i) {
         DimType keyDim = remoteData_[i].getKeyDimension();
+
         if (remoteData_[i].getKeyIndex() == globalIndexVector[keyDim]) {
           // translate globalIndexVector to IndexVector for remote Data
           return remoteData_[i].getData(globalIndexVector);
         }
       }
+
       assert(found && "subarray not found in remote data");
     }
   }
@@ -247,7 +254,7 @@ public:
   getRDCVector() const {
     return remoteData_;
   }
-private:
+ private:
   std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData_;
 
   DistributedFullGrid<FG_ELEMENT>& dfg_;
@@ -257,55 +264,55 @@ private:
 
 template<typename FG_ELEMENT>
 static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
-    std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData);
+                           std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData);
 
 template<typename FG_ELEMENT>
 static void exchangeData1dDehierarchization(
-    DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
-    std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData);
+  DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
+  std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData);
 
 template<typename FG_ELEMENT>
 static void checkLeftSuccesors(IndexType checkIdx, IndexType rootIdx,
-    DimType dim, DistributedFullGrid<FG_ELEMENT>& dfg,
-    std::vector<IndexVector>& send1dIndices);
+                               DimType dim, DistributedFullGrid<FG_ELEMENT>& dfg,
+                               std::vector<IndexVector>& send1dIndices);
 
 template<typename FG_ELEMENT>
 static void checkRightSuccesors(IndexType checkIdx, IndexType rootIdx,
-    DimType dim, DistributedFullGrid<FG_ELEMENT>& dfg,
-    std::vector<IndexVector>& send1dIndices);
+                                DimType dim, DistributedFullGrid<FG_ELEMENT>& dfg,
+                                std::vector<IndexVector>& send1dIndices);
 
 template<typename FG_ELEMENT>
 static IndexType checkPredecessors(IndexType idx, DimType dim,
-    DistributedFullGrid<FG_ELEMENT>& dfg,
-    std::vector<IndexVector>& recv1dIndices);
+                                   DistributedFullGrid<FG_ELEMENT>& dfg,
+                                   std::vector<IndexVector>& recv1dIndices);
 
 template<typename FG_ELEMENT>
 static RankType getNeighbor1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType d,
-    IndexType idx1d);
+                              IndexType idx1d);
 
 template<typename FG_ELEMENT>
 static IndexType getNextIndex1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType d,
-    IndexType idx1d);
+                                IndexType idx1d);
 
 template<typename FG_ELEMENT>
 static IndexType getFirstIndexOfLevel1d(DistributedFullGrid<FG_ELEMENT>& dfg,
-    DimType d, LevelType l);
+                                        DimType d, LevelType l);
 
 template<typename FG_ELEMENT>
 static void hierarchizeX(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable);
+                         LookupTable<FG_ELEMENT>& lookupTable);
 
 template<typename FG_ELEMENT>
 static void hierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable);
+                                      LookupTable<FG_ELEMENT>& lookupTable);
 
 template<typename FG_ELEMENT>
 static void dehierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable);
+                                        LookupTable<FG_ELEMENT>& lookupTable);
 
 template<typename FG_ELEMENT>
 static void hierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable);
+                                        LookupTable<FG_ELEMENT>& lookupTable);
 
 template<typename FG_ELEMENT>
 inline void hierarchizeX_opt_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
@@ -321,20 +328,20 @@ inline void hierarchizeX_inner_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
 
 template<typename FG_ELEMENT>
 void hierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim);
+                             LookupTable<FG_ELEMENT>& lookupTable, DimType dim);
 
 template<typename FG_ELEMENT>
 void hierarchizeN_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim);
+                           LookupTable<FG_ELEMENT>& lookupTable, DimType dim);
 
 template<typename FG_ELEMENT>
 void dehierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim);
+                                 LookupTable<FG_ELEMENT>& lookupTable, DimType dim);
 
 // exchange data in dimension dim
 template<typename FG_ELEMENT>
 static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
-    std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData) {
+                           std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData) {
   CommunicatorType comm = dfg.getCommunicator();
   int rank, size;
   MPI_Comm_rank(comm, &rank);
@@ -352,18 +359,19 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
     RankType leftPreRank = getNeighbor1d( dfg, dim, fleftpre );
     RankType rightPreRank = getNeighbor1d( dfg, dim, frightpre );
 
-    if( rank == 0) std::cout << "first point:" << std::endl;
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+    if ( rank == 0) std::cout << "first point:" << std::endl;
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " "
-        << "coords " << coords << " "
-        << "idx " << fidx << " "
-        << "lvl " << flvl << " "
-        << "leftpre " << fleftpre << " "
-        << "right pre " << frightpre << " "
-        << "rank of left pre " << leftPreRank << " "
-        << "rank of righ pre " << rightPreRank << " "
-        << std::endl;
+                  << "coords " << coords << " "
+                  << "idx " << fidx << " "
+                  << "lvl " << flvl << " "
+                  << "leftpre " << fleftpre << " "
+                  << "right pre " << frightpre << " "
+                  << "rank of left pre " << leftPreRank << " "
+                  << "rank of righ pre " << rightPreRank << " "
+                  << std::endl;
       }
 
       MPI_Barrier( comm );
@@ -373,24 +381,26 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
   MPI_Barrier( comm );
 
   {
-    if( rank == 0) std::cout << "\n last point:" << std::endl;
+    if ( rank == 0) std::cout << "\n last point:" << std::endl;
+
     IndexType lidx = dfg.getLastGlobal1dIndex(dim);
     LevelType llvl = dfg.getLevel( dim, lidx );
     IndexType lleftpre = dfg.getLeftPredecessor( dim, lidx );
     IndexType lrightpre = dfg.getRightPredecessor( dim, lidx );
     RankType leftPreRank = getNeighbor1d( dfg, dim, lleftpre );
     RankType rightPreRank = getNeighbor1d( dfg, dim, lrightpre );
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " "
-        << "coords " << coords << " "
-        << "idx " << lidx << " "
-        << "lvl " << llvl << " "
-        << "leftpre " << lleftpre << " "
-        << "rightpre " << lrightpre << " "
-        << "rank of left pre " << leftPreRank << " "
-        << "rank of righ pre " << rightPreRank << " "
-        << std::endl;
+                  << "coords " << coords << " "
+                  << "idx " << lidx << " "
+                  << "lvl " << llvl << " "
+                  << "leftpre " << lleftpre << " "
+                  << "rightpre " << lrightpre << " "
+                  << "rank of left pre " << leftPreRank << " "
+                  << "rank of righ pre " << rightPreRank << " "
+                  << std::endl;
       }
 
       MPI_Barrier( comm );
@@ -401,7 +411,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
   //time to calculate dependencies
   if (hierCount == 0)
     theStatsContainer()->setTimerStart(
-        "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
+      "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
 
   // create buffers for every rank
   std::vector<IndexVector> recv1dIndices(dfg.getCommunicatorSize());
@@ -413,6 +423,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
   LevelType lmax = dfg.getLevels()[dim];
 
   IndexType idx = idxMin;
+
   while (idx <= idxMax) {
     // check if successors of idx outside local domain
     {
@@ -430,16 +441,19 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
           int r = getNeighbor1d(dfg, dim, lsIdx);
 
           assert(r < dfg.getCommunicatorSize());
+
           if (r >= 0)
             send1dIndices[r].push_back(idx);
         }
 
         //right successor
         IndexType rsIdx = idx + idiff;
+
         if (rsIdx > idxMax) {
           // get rank which has rsIdx and add to send list
           int r = getNeighbor1d(dfg, dim, rsIdx);
           assert(r < dfg.getCommunicatorSize());
+
           if (r >= 0)
             send1dIndices[r].push_back(idx);
         }
@@ -449,6 +463,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
     // check if left predecessor outside local domain
     // if returns negative value there's no left predecessor
     IndexType lpIdx = dfg.getLeftPredecessor(dim, idx);
+
     if (lpIdx >= 0 && lpIdx < idxMin) {
       // get rank which has left predecessor and add to list of indices to recv
       int r = getNeighbor1d(dfg, dim, lpIdx);
@@ -458,6 +473,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
     // check if right predecessor outside local domain
     // if returns negative value there's no right predecessor
     IndexType rpIdx = dfg.getRightPredecessor(dim, idx);
+
     if (rpIdx < 0) {
       idx = getNextIndex1d(dfg, dim, idx);
       continue;
@@ -492,17 +508,18 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
 
   if (hierCount == 0)
     theStatsContainer()->setTimerStop(
-        "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
+      "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
 
 #ifdef DEBUG_OUTPUT
   // print recvindices
   {
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " recv: " << std::endl;
-        for( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
-          if( recv1dIndices[k].size() > 0 )
-          std::cout << "\t" << k << ": " << recv1dIndices[k] << std::endl;
+
+        for ( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
+          if ( recv1dIndices[k].size() > 0 )
+            std::cout << "\t" << k << ": " << recv1dIndices[k] << std::endl;
         }
       }
 
@@ -510,17 +527,18 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
     }
   }
 
-  if( rank == 0 )
-  std::cout << std::endl;
+  if ( rank == 0 )
+    std::cout << std::endl;
 
   // print sendindices
   {
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " send: " << std::endl;
-        for( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
-          if( send1dIndices[k].size() > 0 )
-          std::cout << "\t" << k << ": " << send1dIndices[k] << std::endl;
+
+        for ( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
+          if ( send1dIndices[k].size() > 0 )
+            std::cout << "\t" << k << ": " << send1dIndices[k] << std::endl;
         }
       }
 
@@ -555,7 +573,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
   //time to exchange data
   if (hierCount == 0)
     theStatsContainer()->setTimerStart(
-        "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
+      "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
 
   std::vector<MPI_Request> sendRequests;
   std::vector<MPI_Request> recvRequests;
@@ -567,6 +585,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
   for (size_t r = 0; r < send1dIndices.size(); ++r) {
     // for each index i in index list
     IndexVector& indices = send1dIndices[r];
+
     for (IndexType k = 0; k < indices.size(); ++k) {
       // convert global 1d index i to local 1d index
       IndexVector lidxvec(dfg.getDimension(), 0);
@@ -582,7 +601,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
       {
         // sizes of local grid
         IndexVector sizes(dfg.getLocalSizes().begin(),
-            dfg.getLocalSizes().end());
+                          dfg.getLocalSizes().end());
 
         // sizes of subarray ( full size except dimension d )
         IndexVector subsizes = sizes;
@@ -591,19 +610,20 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
         //compute size of subarray for stats
         {
           IndexType subarraySize = 1;
+
           for (DimType i = 0; i < subsizes.size(); ++i)
             subarraySize *= subsizes[i];
 
           totalSendSize += subarraySize;
 
           std::string valName = "subarray_send_size_dim_"
-              + boost::lexical_cast<std::string>(dim) + "_rank_"
-              + boost::lexical_cast<std::string>(r) + "_index_"
-              + boost::lexical_cast<std::string>(indices[k]);
+                                + boost::lexical_cast<std::string>(dim) + "_rank_"
+                                + boost::lexical_cast<std::string>(r) + "_index_"
+                                + boost::lexical_cast<std::string>(indices[k]);
 
           if (hierCount == 0)
             theStatsContainer()->setValue(valName,
-                static_cast<double>(subarraySize * sizeof(FG_ELEMENT)));
+                                          static_cast<double>(subarraySize * sizeof(FG_ELEMENT)));
         }
 
         // start
@@ -619,8 +639,8 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
 
         // create subarray view on data
         MPI_Type_create_subarray(static_cast<int>(dfg.getDimension()),
-            &csizes[0], &csubsizes[0], &cstarts[0],
-            MPI_ORDER_C, dfg.getMPIDatatype(), &mysubarray);
+                                 &csizes[0], &csubsizes[0], &cstarts[0],
+                                 MPI_ORDER_C, dfg.getMPIDatatype(), &mysubarray);
         MPI_Type_commit(&mysubarray);
       }
 
@@ -631,12 +651,12 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
         MPI_Request req;
         sendRequests.push_back(req);
         MPI_Isend(dfg.getData(), 1, mysubarray, dest, tag,
-            dfg.getCommunicator(), &sendRequests.back());
+                  dfg.getCommunicator(), &sendRequests.back());
 
 #ifdef DEBUG_OUTPUT
         // print info: dest, size, index
         std::cout << "rank " << rank << ": send gindex " << indices[k]
-        << " dest "<< dest << std::endl;
+                  << " dest " << dest << std::endl;
 #endif
       }
 
@@ -650,7 +670,8 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
     for (size_t r = 0; r < recv1dIndices.size(); ++r) {
       const IndexVector& indices = recv1dIndices[r];
       const IndexVector& lowerBoundsNeighbor = dfg.getLowerBounds(
-          static_cast<int>(r));
+            static_cast<int>(r));
+
       for (size_t k = 0; k < indices.size(); ++k) {
         // create RemoteDataContainer to store the subarray
         IndexVector sizes = dfg.getLocalSizes();
@@ -668,17 +689,17 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
           int bsize = static_cast<int>(remoteData.back().getSize());
 
           MPI_Irecv(buf, bsize, dfg.getMPIDatatype(), src, tag,
-              dfg.getCommunicator(), &recvRequests.back());
+                    dfg.getCommunicator(), &recvRequests.back());
 
           {
             std::string valName = "subarray_recv_size_dim_"
-                + boost::lexical_cast<std::string>(dim) + "_rank_"
-                + boost::lexical_cast<std::string>(r) + "_index_"
-                + boost::lexical_cast<std::string>(indices[k]);
+                                  + boost::lexical_cast<std::string>(dim) + "_rank_"
+                                  + boost::lexical_cast<std::string>(r) + "_index_"
+                                  + boost::lexical_cast<std::string>(indices[k]);
 
             if (hierCount == 0)
               theStatsContainer()->setValue(valName,
-                  static_cast<int>(bsize * sizeof(FG_ELEMENT)));
+                                            static_cast<int>(bsize * sizeof(FG_ELEMENT)));
 
             totalRecvSize += bsize;
           }
@@ -686,7 +707,7 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
 #ifdef DEBUG_OUTPUT
           // print info: dest, size, index
           std::cout << "rank " << rank << ": recv gindex " << indices[k]
-          << " src "<< src << " size: " << bsize << std::endl;
+                    << " src " << src << " size: " << bsize << std::endl;
 #endif
         }
       }
@@ -695,31 +716,31 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
 
   // wait for finish of communication
   MPI_Waitall(static_cast<int>(sendRequests.size()), &sendRequests[0],
-      MPI_STATUSES_IGNORE);
+              MPI_STATUSES_IGNORE);
   MPI_Waitall(static_cast<int>(recvRequests.size()), &recvRequests[0],
-      MPI_STATUSES_IGNORE);
+              MPI_STATUSES_IGNORE);
 
   if (hierCount == 0)
     theStatsContainer()->setTimerStop(
-        "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
+      "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
 
   {
     std::string valName = "total_send_size_dim_"
-        + boost::lexical_cast<std::string>(dim);
+                          + boost::lexical_cast<std::string>(dim);
 
     if (hierCount == 0)
       theStatsContainer()->setValue(valName,
-          static_cast<double>(totalSendSize * sizeof(FG_ELEMENT)));
+                                    static_cast<double>(totalSendSize * sizeof(FG_ELEMENT)));
 
   }
 
   {
     std::string valName = "total_recv_size_dim_"
-        + boost::lexical_cast<std::string>(dim);
+                          + boost::lexical_cast<std::string>(dim);
 
     if (hierCount == 0)
       theStatsContainer()->setValue(valName,
-          static_cast<double>(totalRecvSize * sizeof(FG_ELEMENT)));
+                                    static_cast<double>(totalRecvSize * sizeof(FG_ELEMENT)));
 
   }
 
@@ -729,8 +750,9 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
   // print array after data exchange
   {
     int size = dfg.getCommunicatorSize();
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << r << ":" << std::endl;
         std::cout << dfg;
       }
@@ -742,14 +764,18 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
   // print buffers
   {
     int size = dfg.getCommunicatorSize();
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << r << ":" << std::endl;
-        for( size_t i=0; i<remoteData.size(); ++i ) {
+
+        for ( size_t i = 0; i < remoteData.size(); ++i ) {
           assert( remoteData[i].getKeyIndex() == recv1dIndicesUnique[i] );
           std::cout << "\t" << recv1dIndicesUnique[i] << ": ";
-          for( IndexType k=0; k<remoteData[i].getElementVector().size(); ++k)
-          std::cout << "\t " << remoteData[i].getElementVector()[k];
+
+          for ( IndexType k = 0; k < remoteData[i].getElementVector().size(); ++k)
+            std::cout << "\t " << remoteData[i].getElementVector()[k];
+
           std::cout << std::endl;
         }
       }
@@ -763,8 +789,8 @@ static void exchangeData1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
 // exchange data in dimension dim
 template<typename FG_ELEMENT>
 static void exchangeData1dDehierarchization(
-    DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
-    std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData) {
+  DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
+  std::vector<RemoteDataContainer<FG_ELEMENT> >& remoteData) {
   CommunicatorType comm = dfg.getCommunicator();
   int rank, size;
   MPI_Comm_rank(comm, &rank);
@@ -782,18 +808,19 @@ static void exchangeData1dDehierarchization(
     RankType leftPreRank = getNeighbor1d( dfg, dim, fleftpre );
     RankType rightPreRank = getNeighbor1d( dfg, dim, frightpre );
 
-    if( rank == 0) std::cout << "first point:" << std::endl;
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+    if ( rank == 0) std::cout << "first point:" << std::endl;
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " "
-        << "coords " << coords << " "
-        << "idx " << fidx << " "
-        << "lvl " << flvl << " "
-        << "leftpre " << fleftpre << " "
-        << "right pre " << frightpre << " "
-        << "rank of left pre " << leftPreRank << " "
-        << "rank of righ pre " << rightPreRank << " "
-        << std::endl;
+                  << "coords " << coords << " "
+                  << "idx " << fidx << " "
+                  << "lvl " << flvl << " "
+                  << "leftpre " << fleftpre << " "
+                  << "right pre " << frightpre << " "
+                  << "rank of left pre " << leftPreRank << " "
+                  << "rank of righ pre " << rightPreRank << " "
+                  << std::endl;
       }
 
       MPI_Barrier( comm );
@@ -803,24 +830,26 @@ static void exchangeData1dDehierarchization(
   MPI_Barrier( comm );
 
   {
-    if( rank == 0) std::cout << "\n last point:" << std::endl;
+    if ( rank == 0) std::cout << "\n last point:" << std::endl;
+
     IndexType lidx = dfg.getLastGlobal1dIndex(dim);
     LevelType llvl = dfg.getLevel( dim, lidx );
     IndexType lleftpre = dfg.getLeftPredecessor( dim, lidx );
     IndexType lrightpre = dfg.getRightPredecessor( dim, lidx );
     RankType leftPreRank = getNeighbor1d( dfg, dim, lleftpre );
     RankType rightPreRank = getNeighbor1d( dfg, dim, lrightpre );
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " "
-        << "coords " << coords << " "
-        << "idx " << lidx << " "
-        << "lvl " << llvl << " "
-        << "leftpre " << lleftpre << " "
-        << "rightpre " << lrightpre << " "
-        << "rank of left pre " << leftPreRank << " "
-        << "rank of righ pre " << rightPreRank << " "
-        << std::endl;
+                  << "coords " << coords << " "
+                  << "idx " << lidx << " "
+                  << "lvl " << llvl << " "
+                  << "leftpre " << lleftpre << " "
+                  << "rightpre " << lrightpre << " "
+                  << "rank of left pre " << leftPreRank << " "
+                  << "rank of righ pre " << rightPreRank << " "
+                  << std::endl;
       }
 
       MPI_Barrier( comm );
@@ -831,7 +860,7 @@ static void exchangeData1dDehierarchization(
   //time to calculate dependencies
   if (hierCount == 0)
     theStatsContainer()->setTimerStart(
-        "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
+      "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
 
   // create buffers for every rank
   std::vector<IndexVector> recv1dIndices(dfg.getCommunicatorSize());
@@ -843,6 +872,7 @@ static void exchangeData1dDehierarchization(
   LevelType lmax = dfg.getLevels()[dim];
 
   IndexType idx = idxMin;
+
   while (idx <= idxMax) {
     checkLeftSuccesors(idx, idx, dim, dfg, send1dIndices);
 
@@ -870,19 +900,20 @@ static void exchangeData1dDehierarchization(
 
   if (hierCount == 0)
     theStatsContainer()->setTimerStop(
-        "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
+      "calc_dependencies_dim_" + boost::lexical_cast<std::string>(dim));
 
 #ifdef DEBUG_OUTPUT
   MPI_Barrier( comm );
 
   // print recvindices
   {
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " recv: " << std::endl;
-        for( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
-          if( recv1dIndices[k].size() > 0 )
-          std::cout << "\t" << k << ": " << recv1dIndices[k] << std::endl;
+
+        for ( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
+          if ( recv1dIndices[k].size() > 0 )
+            std::cout << "\t" << k << ": " << recv1dIndices[k] << std::endl;
         }
       }
 
@@ -890,17 +921,18 @@ static void exchangeData1dDehierarchization(
     }
   }
 
-  if( rank == 0 )
-  std::cout << std::endl;
+  if ( rank == 0 )
+    std::cout << std::endl;
 
   // print sendindices
   {
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << rank << " send: " << std::endl;
-        for( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
-          if( send1dIndices[k].size() > 0 )
-          std::cout << "\t" << k << ": " << send1dIndices[k] << std::endl;
+
+        for ( RankType k = 0; k < dfg.getCommunicatorSize(); ++k ) {
+          if ( send1dIndices[k].size() > 0 )
+            std::cout << "\t" << k << ": " << send1dIndices[k] << std::endl;
         }
       }
 
@@ -935,7 +967,7 @@ static void exchangeData1dDehierarchization(
   //time to exchange data
   if (hierCount == 0)
     theStatsContainer()->setTimerStart(
-        "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
+      "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
 
   std::vector<MPI_Request> sendRequests;
   std::vector<MPI_Request> recvRequests;
@@ -947,6 +979,7 @@ static void exchangeData1dDehierarchization(
   for (size_t r = 0; r < send1dIndices.size(); ++r) {
     // for each index i in index list
     IndexVector& indices = send1dIndices[r];
+
     for (IndexType k = 0; k < indices.size(); ++k) {
       // convert global 1d index i to local 1d index
       IndexVector lidxvec(dfg.getDimension(), 0);
@@ -962,7 +995,7 @@ static void exchangeData1dDehierarchization(
       {
         // sizes of local grid
         IndexVector sizes(dfg.getLocalSizes().begin(),
-            dfg.getLocalSizes().end());
+                          dfg.getLocalSizes().end());
 
         // sizes of subarray ( full size except dimension d )
         IndexVector subsizes = sizes;
@@ -971,19 +1004,20 @@ static void exchangeData1dDehierarchization(
         //compute size of subarray for stats
         {
           IndexType subarraySize = 1;
+
           for (DimType i = 0; i < subsizes.size(); ++i)
             subarraySize *= subsizes[i];
 
           totalSendSize += subarraySize;
 
           std::string valName = "subarray_send_size_dim_"
-              + boost::lexical_cast<std::string>(dim) + "_rank_"
-              + boost::lexical_cast<std::string>(r) + "_index_"
-              + boost::lexical_cast<std::string>(indices[k]);
+                                + boost::lexical_cast<std::string>(dim) + "_rank_"
+                                + boost::lexical_cast<std::string>(r) + "_index_"
+                                + boost::lexical_cast<std::string>(indices[k]);
 
           if (hierCount == 0)
             theStatsContainer()->setValue(valName,
-                static_cast<double>(subarraySize * sizeof(FG_ELEMENT)));
+                                          static_cast<double>(subarraySize * sizeof(FG_ELEMENT)));
 
         }
 
@@ -1000,8 +1034,8 @@ static void exchangeData1dDehierarchization(
 
         // create subarray view on data
         MPI_Type_create_subarray(static_cast<int>(dfg.getDimension()),
-            &csizes[0], &csubsizes[0], &cstarts[0],
-            MPI_ORDER_C, dfg.getMPIDatatype(), &mysubarray);
+                                 &csizes[0], &csubsizes[0], &cstarts[0],
+                                 MPI_ORDER_C, dfg.getMPIDatatype(), &mysubarray);
         MPI_Type_commit(&mysubarray);
       }
 
@@ -1012,12 +1046,12 @@ static void exchangeData1dDehierarchization(
         MPI_Request req;
         sendRequests.push_back(req);
         MPI_Isend(dfg.getData(), 1, mysubarray, dest, tag,
-            dfg.getCommunicator(), &sendRequests.back());
+                  dfg.getCommunicator(), &sendRequests.back());
 
 #ifdef DEBUG_OUTPUT
         // print info: dest, size, index
         std::cout << "rank " << rank << ": send gindex " << indices[k]
-        << " dest "<< dest << std::endl;
+                  << " dest " << dest << std::endl;
 #endif
       }
 
@@ -1031,7 +1065,8 @@ static void exchangeData1dDehierarchization(
     for (size_t r = 0; r < recv1dIndices.size(); ++r) {
       const IndexVector& indices = recv1dIndices[r];
       const IndexVector& lowerBoundsNeighbor = dfg.getLowerBounds(
-          static_cast<int>(r));
+            static_cast<int>(r));
+
       for (size_t k = 0; k < indices.size(); ++k) {
         // create RemoteDataContainer to store the subarray
         IndexVector sizes = dfg.getLocalSizes();
@@ -1049,24 +1084,24 @@ static void exchangeData1dDehierarchization(
           int bsize = static_cast<int>(remoteData.back().getSize());
 
           MPI_Irecv(buf, bsize, dfg.getMPIDatatype(), src, tag,
-              dfg.getCommunicator(), &recvRequests.back());
+                    dfg.getCommunicator(), &recvRequests.back());
 
           {
             std::string valName = "subarray_recv_size_dim_"
-                + boost::lexical_cast<std::string>(dim) + "_rank_"
-                + boost::lexical_cast<std::string>(r) + "_index_"
-                + boost::lexical_cast<std::string>(indices[k]);
+                                  + boost::lexical_cast<std::string>(dim) + "_rank_"
+                                  + boost::lexical_cast<std::string>(r) + "_index_"
+                                  + boost::lexical_cast<std::string>(indices[k]);
 
             if (hierCount == 0)
               theStatsContainer()->setValue(valName,
-                  static_cast<int>(bsize * sizeof(FG_ELEMENT)));
+                                            static_cast<int>(bsize * sizeof(FG_ELEMENT)));
 
             totalRecvSize += bsize;
           }
 
           // print info: dest, size, index
           std::cout << "rank " << rank << ": recv gindex " << indices[k]
-              << " src " << src << " size: " << bsize << std::endl;
+                    << " src " << src << " size: " << bsize << std::endl;
 
         }
       }
@@ -1075,31 +1110,31 @@ static void exchangeData1dDehierarchization(
 
   // wait for finish of communication
   MPI_Waitall(static_cast<int>(sendRequests.size()), &sendRequests[0],
-      MPI_STATUSES_IGNORE);
+              MPI_STATUSES_IGNORE);
   MPI_Waitall(static_cast<int>(recvRequests.size()), &recvRequests[0],
-      MPI_STATUSES_IGNORE);
+              MPI_STATUSES_IGNORE);
 
   if (hierCount == 0)
     theStatsContainer()->setTimerStop(
-        "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
+      "data_transfer_dim_" + boost::lexical_cast<std::string>(dim));
 
   {
     std::string valName = "total_send_size_dim_"
-        + boost::lexical_cast<std::string>(dim);
+                          + boost::lexical_cast<std::string>(dim);
 
     if (hierCount == 0)
       theStatsContainer()->setValue(valName,
-          static_cast<double>(totalSendSize * sizeof(FG_ELEMENT)));
+                                    static_cast<double>(totalSendSize * sizeof(FG_ELEMENT)));
 
   }
 
   {
     std::string valName = "total_recv_size_dim_"
-        + boost::lexical_cast<std::string>(dim);
+                          + boost::lexical_cast<std::string>(dim);
 
     if (hierCount == 0)
       theStatsContainer()->setValue(valName,
-          static_cast<double>(totalRecvSize * sizeof(FG_ELEMENT)));
+                                    static_cast<double>(totalRecvSize * sizeof(FG_ELEMENT)));
 
   }
 
@@ -1109,8 +1144,9 @@ static void exchangeData1dDehierarchization(
   // print array after data exchange
   {
     int size = dfg.getCommunicatorSize();
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << r << ":" << std::endl;
         std::cout << dfg;
       }
@@ -1122,14 +1158,18 @@ static void exchangeData1dDehierarchization(
   // print buffers
   {
     int size = dfg.getCommunicatorSize();
-    for( int r=0; r < size; ++r ) {
-      if( r == rank ) {
+
+    for ( int r = 0; r < size; ++r ) {
+      if ( r == rank ) {
         std::cout << "rank " << r << ":" << std::endl;
-        for( size_t i=0; i<remoteData.size(); ++i ) {
+
+        for ( size_t i = 0; i < remoteData.size(); ++i ) {
           assert( remoteData[i].getKeyIndex() == recv1dIndicesUnique[i] );
           std::cout << "\t" << recv1dIndicesUnique[i] << ": ";
-          for( IndexType k=0; k<remoteData[i].getElementVector().size(); ++k)
-          std::cout << "\t " << remoteData[i].getElementVector()[k];
+
+          for ( IndexType k = 0; k < remoteData[i].getElementVector().size(); ++k)
+            std::cout << "\t " << remoteData[i].getElementVector()[k];
+
           std::cout << std::endl;
         }
       }
@@ -1142,8 +1182,8 @@ static void exchangeData1dDehierarchization(
 
 template<typename FG_ELEMENT>
 void checkLeftSuccesors(IndexType checkIdx, IndexType rootIdx, DimType dim,
-    DistributedFullGrid<FG_ELEMENT>& dfg,
-    std::vector<IndexVector>& send1dIndices) {
+                        DistributedFullGrid<FG_ELEMENT>& dfg,
+                        std::vector<IndexVector>& send1dIndices) {
   LevelType lidx = dfg.getLevel(dim, checkIdx);
   IndexType idxMin = dfg.getFirstGlobal1dIndex(dim);
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
@@ -1161,6 +1201,7 @@ void checkLeftSuccesors(IndexType checkIdx, IndexType rootIdx, DimType dim,
       int r = getNeighbor1d(dfg, dim, lsIdx);
 
       assert(r < dfg.getCommunicatorSize());
+
       if (r >= 0)
         send1dIndices[r].push_back(rootIdx);
     }
@@ -1172,8 +1213,8 @@ void checkLeftSuccesors(IndexType checkIdx, IndexType rootIdx, DimType dim,
 
 template<typename FG_ELEMENT>
 void checkRightSuccesors(IndexType checkIdx, IndexType rootIdx, DimType dim,
-    DistributedFullGrid<FG_ELEMENT>& dfg,
-    std::vector<IndexVector>& send1dIndices) {
+                         DistributedFullGrid<FG_ELEMENT>& dfg,
+                         std::vector<IndexVector>& send1dIndices) {
   LevelType lidx = dfg.getLevel(dim, checkIdx);
   IndexType idxMin = dfg.getFirstGlobal1dIndex(dim);
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
@@ -1190,6 +1231,7 @@ void checkRightSuccesors(IndexType checkIdx, IndexType rootIdx, DimType dim,
       // get rank which has rsIdx and add to send list
       int r = getNeighbor1d(dfg, dim, rsIdx);
       assert(r < dfg.getCommunicatorSize());
+
       if (r >= 0)
         send1dIndices[r].push_back(rootIdx);
     }
@@ -1201,14 +1243,15 @@ void checkRightSuccesors(IndexType checkIdx, IndexType rootIdx, DimType dim,
 
 template<typename FG_ELEMENT>
 IndexType checkPredecessors(IndexType idx, DimType dim,
-    DistributedFullGrid<FG_ELEMENT>& dfg,
-    std::vector<IndexVector>& recv1dIndices) {
+                            DistributedFullGrid<FG_ELEMENT>& dfg,
+                            std::vector<IndexVector>& recv1dIndices) {
   IndexType idxMin = dfg.getFirstGlobal1dIndex(dim);
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
 
   // check if left predecessor outside local domain
   // if returns negative value there's no left predecessor
   IndexType lpIdx = dfg.getLeftPredecessor(dim, idx);
+
   if (lpIdx >= 0 && lpIdx < idxMin) {
     // get rank which has left predecessor and add to list of indices to recv
     int r = getNeighbor1d(dfg, dim, lpIdx);
@@ -1221,6 +1264,7 @@ IndexType checkPredecessors(IndexType idx, DimType dim,
   // check if right predecessor outside local domain
   // if returns negative value there's no right predecessor
   IndexType rpIdx = dfg.getRightPredecessor(dim, idx);
+
   if (rpIdx < 0) {
     idx = getNextIndex1d(dfg, dim, idx);
     return idx;
@@ -1246,13 +1290,14 @@ IndexType checkPredecessors(IndexType idx, DimType dim,
  */
 template<typename FG_ELEMENT>
 RankType getNeighbor1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
-    IndexType idx1d) {
+                       IndexType idx1d) {
   // if global index is outside of domain return negative value
   {
     if (idx1d < 0)
       return -1;
 
     IndexType numElementsD = dfg.getGlobalSizes()[dim];
+
     if (idx1d > numElementsD - 1)
       return -1;
   }
@@ -1275,13 +1320,15 @@ RankType getNeighbor1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
 // min( lmax, l(idx1d) + 1 )
 template<typename FG_ELEMENT>
 IndexType getNextIndex1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
-    IndexType idx1d) {
+                         IndexType idx1d) {
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
   LevelType lmax = dfg.getLevels()[dim];
 
   LevelType lold = dfg.getLevel(dim, idx1d);
+
   for (IndexType i = idx1d + 1; i <= idxMax; ++i) {
     LevelType l = dfg.getLevel(dim, i);
+
     if (l == lmax || l == lold + 1) {
       return i;
     }
@@ -1293,7 +1340,7 @@ IndexType getNextIndex1d(DistributedFullGrid<FG_ELEMENT>& dfg, DimType dim,
 
 template<typename FG_ELEMENT>
 static IndexType getFirstIndexOfLevel1d(DistributedFullGrid<FG_ELEMENT>& dfg,
-    DimType dim, LevelType l) {
+                                        DimType dim, LevelType l) {
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
   IndexType idxMin = dfg.getFirstGlobal1dIndex(dim);
 
@@ -1308,7 +1355,7 @@ static IndexType getFirstIndexOfLevel1d(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 static void hierarchizeX(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable) {
+                         LookupTable<FG_ELEMENT>& lookupTable) {
   const DimType dim = 0;
 
   LevelType lmax = dfg.getLevels()[dim];
@@ -1319,6 +1366,7 @@ static void hierarchizeX(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // loop over all xBlocks of local domain -> linearIndex with stride localndim[0]
   IndexType nbrxBlocks = dfg.getNrLocalElements() / ndim;
+
   for (IndexType xBlock = 0; xBlock < nbrxBlocks; ++xBlock) {
     // get globalIndexVector of block start
     // this is the base IndexVector of this block
@@ -1334,6 +1382,7 @@ static void hierarchizeX(DistributedFullGrid<FG_ELEMENT>& dfg,
     IndexVector globalIndexVectorCenter = baseGlobalIndexVector;
     IndexVector globalIndexVectorLeft = baseGlobalIndexVector;
     IndexVector globalIndexVectorRight = baseGlobalIndexVector;
+
     for (LevelType l = lmax; l > 0; --l) {
       // get first local point of level and corresponding stride
       IndexType firstOfLevel = getFirstIndexOfLevel1d(dfg, dim, l);
@@ -1382,7 +1431,7 @@ static void hierarchizeX(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 static void hierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable) {
+                                        LookupTable<FG_ELEMENT>& lookupTable) {
   const DimType dim = 0;
   assert(dfg.returnBoundaryFlags()[dim] == false);
 
@@ -1401,6 +1450,7 @@ static void hierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // loop over all xBlocks of local domain -> linearIndex with stride localndim[0]
   IndexType nbrxBlocks = dfg.getNrLocalElements() / ndim;
+
   for (IndexType xBlock = 0; xBlock < nbrxBlocks; ++xBlock) {
     // get globalIndexVector of block start
     // this is the base IndexVector of this block
@@ -1419,8 +1469,9 @@ static void hierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
     IndexVector tmpGlobalIndexVector = baseGlobalIndexVector;
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -1486,6 +1537,7 @@ static void dehierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // loop over all xBlocks of local domain -> linearIndex with stride localndim[0]
   IndexType nbrxBlocks = dfg.getNrLocalElements() / ndim;
+
   for (IndexType xBlock = 0; xBlock < nbrxBlocks; ++xBlock) {
     // get globalIndexVector of block start
     // this is the base IndexVector of this block
@@ -1504,8 +1556,9 @@ static void dehierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
     IndexVector tmpGlobalIndexVector = baseGlobalIndexVector;
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -1524,7 +1577,7 @@ static void dehierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
       // loop over points of this level with level specific stride
       // as long as inside domain
       for (IndexType idx = first; idx < dfg.getGlobalSizes()[dim]; idx +=
-          levelStride) {
+             levelStride) {
         // when no boundary in this dimension we have to check if
         // 1d indices outside domain
         FG_ELEMENT left(0.0);
@@ -1553,7 +1606,7 @@ static void dehierarchizeX_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 static void hierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable) {
+                                      LookupTable<FG_ELEMENT>& lookupTable) {
   const DimType dim = 0;
   assert(dfg.returnBoundaryFlags()[dim] == true);
 
@@ -1576,6 +1629,7 @@ static void hierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
   // first global index for hierarchization kernel
   // first nonboundary point
   IndexType idxstart = gstart;
+
   if (gstart == 0)
     idxstart += 1;
 
@@ -1588,6 +1642,7 @@ static void hierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // loop over all xBlocks of local domain -> linearIndex with stride localndim[0]
   IndexType nbrxBlocks = dfg.getNrLocalElements() / ndim;
+
   for (IndexType xBlock = 0; xBlock < nbrxBlocks; ++xBlock) {
     // get globalIndexVector of block start
     // this is the base IndexVector of this block
@@ -1604,7 +1659,8 @@ static void hierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -1615,7 +1671,7 @@ static void hierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
     }
 
     hierarchizeX_inner_boundary_kernel(&tmp[0], lmax, idxstart, idxend,
-        level_idxend);
+                                       level_idxend);
     //hierarchizeX_opt_boundary_kernel( &tmp[0], lmax, 0, 1 );
 
     // copy local data back
@@ -1626,7 +1682,7 @@ static void hierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 static void dehierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable) {
+                                        LookupTable<FG_ELEMENT>& lookupTable) {
   const DimType dim = 0;
   assert(dfg.returnBoundaryFlags()[dim] == true);
 
@@ -1649,6 +1705,7 @@ static void dehierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
   // first global index for hierarchization kernel
   // first nonboundary point
   IndexType idxstart = gstart;
+
   if (gstart == 0)
     idxstart += 1;
 
@@ -1661,6 +1718,7 @@ static void dehierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // loop over all xBlocks of local domain -> linearIndex with stride localndim[0]
   IndexType nbrxBlocks = dfg.getNrLocalElements() / ndim;
+
   for (IndexType xBlock = 0; xBlock < nbrxBlocks; ++xBlock) {
     // get globalIndexVector of block start
     // this is the base IndexVector of this block
@@ -1677,7 +1735,8 @@ static void dehierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -1688,7 +1747,7 @@ static void dehierarchizeX_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
     }
 
     //hierarchizeX_inner_boundary_kernel( &tmp[0], lmax,
-    //				    idxstart, idxend,level_idxend );
+    //            idxstart, idxend,level_idxend );
     dehierarchizeX_opt_boundary_kernel(&tmp[0], lmax, 0, 1);
 
     // copy local data back
@@ -1718,10 +1777,12 @@ inline void hierarchizeX_opt_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
   stepsize = 2;
   parentOffset = 1;
 
-  for (ll--; ll > -1; ll--) { // hier is index um 1 geschiftet da vorher level 2 manuell behandelt wurde
+  for (ll--; ll > -1;
+       ll--) { // hier is index um 1 geschiftet da vorher level 2 manuell behandelt wurde
     parOffsetStrided = parentOffset * stride;
     parL = 0.5 * val[start + offset * stride - parOffsetStrided];
     ;
+
     for (ctr = 0; ctr < steps; ctr++) {
       val1 = val[start + offset * stride];
       parR = 0.5 * val[start + offset * stride + parOffsetStrided];
@@ -1731,11 +1792,13 @@ inline void hierarchizeX_opt_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
       parL = parR;
       offset += stepsize;
     }
+
     steps = steps >> 1;
     offset = (1 << (lmaxi - ll)); // boundary case
     parentOffset = stepsize;
     stepsize = stepsize << 1;
   }
+
   return;
 }
 
@@ -1754,8 +1817,8 @@ inline void dehierarchizeX_opt_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
   // ssa variables
   FG_ELEMENT val1 = -100, val2 = -100, val3 = -100, parL = -100, parR = -100;
 
-  //				int maxL = l[dim];
-  //			start = start +stride; // nun mit offset = 1;start war vorher der erste gitterpunkt (welcher randpunkt ist) und ist nun der erste zu hierarchisierende Gitterpunkt.
+  //        int maxL = l[dim];
+  //      start = start +stride; // nun mit offset = 1;start war vorher der erste gitterpunkt (welcher randpunkt ist) und ist nun der erste zu hierarchisierende Gitterpunkt.
   int maxL = int(lmax);
   int ll;
   steps = 1;
@@ -1763,11 +1826,13 @@ inline void dehierarchizeX_opt_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
   stepsize = (1 << maxL);
   parentOffset = (1 << (maxL - 1));
 
-  for (LevelType ll = 1; ll <= maxL; ll++) { // couting with offset of one as level 2 was hierarchized manually before
+  for (LevelType ll = 1; ll <= maxL;
+       ll++) { // couting with offset of one as level 2 was hierarchized manually before
     // just convers setting of strides and co.
     parOffsetStrided = parentOffset * stride;
     parL = 0.5 * val[start + offset * stride - parOffsetStrided];
     ;
+
     for (ctr = 0; ctr < steps; ctr++) {
       val1 = val[start + offset * stride];
       parR = 0.5 * val[start + offset * stride + parOffsetStrided];
@@ -1777,12 +1842,14 @@ inline void dehierarchizeX_opt_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
       parL = parR;
       offset += stepsize;
     }
-    //				val[start+offset*stride] -= parR;
+
+    //        val[start+offset*stride] -= parR;
     steps = steps << 1;
     offset = (1 << (maxL - (ll + 1))); // boundary case
     parentOffset = parentOffset >> 1;
     stepsize = stepsize >> 1;
   }
+
   return;
 }
 
@@ -1821,9 +1888,11 @@ inline void hierarchizeX_inner_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
   IndexType parentOffset = 1;
   IndexType offset = 0;
 
-  for (ll--; ll > -1; ll--) { // hier is index um 1 geschiftet da vorher level 2 manuell behandelt wurde
+  for (ll--; ll > -1;
+       ll--) { // hier is index um 1 geschiftet da vorher level 2 manuell behandelt wurde
     IndexType idx = start + offset;
     parL = 0.5 * val[idx - parentOffset];
+
     while (idx < idxMax) {
       val1 = val[idx];
       parR = 0.5 * val[idx + parentOffset];
@@ -1833,6 +1902,7 @@ inline void hierarchizeX_inner_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
       parL = parR;
       idx += stepsize;
     }
+
     offset = (1 << (lmaxi - ll)) - 1; // no boundary case
     parentOffset = stepsize;
     stepsize = stepsize << 1;
@@ -1854,7 +1924,7 @@ inline void hierarchizeX_inner_boundary_kernel(FG_ELEMENT* data, LevelType lmax,
 // function hierarchizeN
 template<typename FG_ELEMENT>
 void hierarchizeN_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
+                           LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
   assert(dfg.returnBoundaryFlags()[dim] == true);
   LevelType lmax = dfg.getLevels()[dim];
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
@@ -1862,7 +1932,7 @@ void hierarchizeN_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // number of xblocks for the hierarchization of one point of dim
   IndexType nbrxBlocks = dfg.getNrLocalElements()
-      / (dfg.getLocalSizes()[0] * ndim);
+                         / (dfg.getLocalSizes()[0] * ndim);
   // size of xBlcok
   IndexType xSize = dfg.getLocalSizes()[0];
 
@@ -1880,14 +1950,15 @@ void hierarchizeN_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
     IndexType firstOfLevel = getFirstIndexOfLevel1d(dfg, dim, l);
     IndexType parentOffset = static_cast<IndexType>(std::pow(2, lmax - l));
     IndexType levelStride = parentOffset * 2;
+
     for (IndexType idx = firstOfLevel; idx <= idxMax; idx += levelStride) {
       // get local 1d idx
       IndexType lidx = idx - dfg.getLowerBounds()[dim];
 
       // loop over all possible xBlocks
       for (IndexType localLinIdxBlockStart = 0;
-          localLinIdxBlockStart < dfg.getNrLocalElements();
-          localLinIdxBlockStart += xSize) {
+           localLinIdxBlockStart < dfg.getNrLocalElements();
+           localLinIdxBlockStart += xSize) {
         // get localIndexVector of block start
         dfg.getLocalVectorIndex(localLinIdxBlockStart, localIndexVector);
 
@@ -1923,7 +1994,7 @@ void hierarchizeN_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 void hierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
+                               LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
   assert(dfg.returnBoundaryFlags()[dim] == true);
 
   LevelType lmax = dfg.getLevels()[dim];
@@ -1946,6 +2017,7 @@ void hierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // first global index for hierarchization kernel. may not be a boundary point
   IndexType idxstart = gstart;
+
   if (gstart == 0)
     idxstart += 1;
 
@@ -1953,9 +2025,11 @@ void hierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
   IndexType idxend = dfg.getUpperBounds()[dim] - 1;
   LevelType level_idxend = dfg.getLevel(dim, idxend);
 
-  for (IndexType nn = 0; nn < nbrOfPoles; ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
+  for (IndexType nn = 0; nn < nbrOfPoles;
+       ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
     divresult = std::lldiv(nn, stride);
-    start = divresult.quot * jump + divresult.rem; // localer lin index start of pole
+    start = divresult.quot * jump +
+            divresult.rem; // localer lin index start of pole
 
     // compute global vector index of start
     dfg.getLocalVectorIndex(start, localIndexVector);
@@ -1964,7 +2038,8 @@ void hierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -1981,7 +2056,7 @@ void hierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
     // hierarchize tmp array with hupp function
     //hierarchizeX_opt_boundary_kernel( &tmp[0], lmax, 0, 1 );
     hierarchizeX_inner_boundary_kernel(&tmp[0], lmax, idxstart, idxend,
-        level_idxend);
+                                       level_idxend);
 
     // copy pole back
     for (IndexType i = 0; i < ndim; ++i)
@@ -1991,7 +2066,7 @@ void hierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 void hierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
+                                 LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
   assert(dfg.returnBoundaryFlags()[dim] == false);
 
   LevelType lmax = dfg.getLevels()[dim];
@@ -2014,6 +2089,7 @@ void hierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // first global index for hierarchization kernel. may not be a boundary point
   IndexType idxstart = gstart;
+
   if (gstart == 0)
     idxstart += 1;
 
@@ -2021,9 +2097,11 @@ void hierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
   IndexType idxend = dfg.getUpperBounds()[dim] - 1;
   LevelType level_idxend = dfg.getLevel(dim, idxend);
 
-  for (IndexType nn = 0; nn < nbrOfPoles; ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
+  for (IndexType nn = 0; nn < nbrOfPoles;
+       ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
     divresult = std::lldiv(nn, stride);
-    start = divresult.quot * jump + divresult.rem; // localer lin index start of pole
+    start = divresult.quot * jump +
+            divresult.rem; // localer lin index start of pole
 
     // compute global vector index of start
     dfg.getLocalVectorIndex(start, localIndexVector);
@@ -2032,7 +2110,8 @@ void hierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -2048,6 +2127,7 @@ void hierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // hierarchization kernel
     IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
+
     for (LevelType l = lmax; l > 0; --l) {
       // get first local point of level and corresponding stride
       IndexType firstOfLevel = getFirstIndexOfLevel1d(dfg, dim, l);
@@ -2085,7 +2165,7 @@ void hierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 void dehierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
+                                 LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
   assert(dfg.returnBoundaryFlags()[dim] == true);
 
   LevelType lmax = dfg.getLevels()[dim];
@@ -2108,6 +2188,7 @@ void dehierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // first global index for hierarchization kernel. may not be a boundary point
   IndexType idxstart = gstart;
+
   if (gstart == 0)
     idxstart += 1;
 
@@ -2115,9 +2196,11 @@ void dehierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
   IndexType idxend = dfg.getUpperBounds()[dim] - 1;
   LevelType level_idxend = dfg.getLevel(dim, idxend);
 
-  for (IndexType nn = 0; nn < nbrOfPoles; ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
+  for (IndexType nn = 0; nn < nbrOfPoles;
+       ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
     divresult = std::lldiv(nn, stride);
-    start = divresult.quot * jump + divresult.rem; // localer lin index start of pole
+    start = divresult.quot * jump +
+            divresult.rem; // localer lin index start of pole
 
     // compute global vector index of start
     dfg.getLocalVectorIndex(start, localIndexVector);
@@ -2126,7 +2209,8 @@ void dehierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -2143,7 +2227,7 @@ void dehierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
     // hierarchize tmp array with hupp function
     dehierarchizeX_opt_boundary_kernel(&tmp[0], lmax, 0, 1);
     //hierarchizeX_inner_boundary_kernel( &tmp[0], lmax,
-    //				idxstart, idxend, level_idxend );
+    //        idxstart, idxend, level_idxend );
 
     // copy pole back
     for (IndexType i = 0; i < ndim; ++i)
@@ -2153,7 +2237,7 @@ void dehierarchizeN_opt_boundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 void dehierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
+                                   LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
   assert(dfg.returnBoundaryFlags()[dim] == false);
 
   LevelType lmax = dfg.getLevels()[dim];
@@ -2176,6 +2260,7 @@ void dehierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // first global index for hierarchization kernel. may not be a boundary point
   IndexType idxstart = gstart;
+
   if (gstart == 0)
     idxstart += 1;
 
@@ -2183,9 +2268,11 @@ void dehierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
   IndexType idxend = dfg.getUpperBounds()[dim] - 1;
   LevelType level_idxend = dfg.getLevel(dim, idxend);
 
-  for (IndexType nn = 0; nn < nbrOfPoles; ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
+  for (IndexType nn = 0; nn < nbrOfPoles;
+       ++nn) { // integer operations form bottleneck here -- nested loops are twice as slow
     divresult = std::lldiv(nn, stride);
-    start = divresult.quot * jump + divresult.rem; // localer lin index start of pole
+    start = divresult.quot * jump +
+            divresult.rem; // localer lin index start of pole
 
     // compute global vector index of start
     dfg.getLocalVectorIndex(start, localIndexVector);
@@ -2194,7 +2281,8 @@ void dehierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
     // copy remote data to tmp
     std::vector<RemoteDataContainer<FG_ELEMENT> >& rdcs =
-        lookupTable.getRDCVector();
+      lookupTable.getRDCVector();
+
     if (rdcs.size() > 0) {
       // go through remote containers
       for (size_t i = 0; i < rdcs.size(); ++i) {
@@ -2218,7 +2306,7 @@ void dehierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
       // loop over points of this level with level specific stride
       // as long as inside domain
       for (IndexType idx = first; idx < dfg.getGlobalSizes()[dim]; idx +=
-          levelStride) {
+             levelStride) {
         // when no boundary in this dimension we have to check if
         // 1d indices outside domain
         FG_ELEMENT left(0.0);
@@ -2247,7 +2335,7 @@ void dehierarchizeN_opt_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 void hierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
+                             LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
   assert(dfg.returnBoundaryFlags()[dim] == false);
   LevelType lmax = dfg.getLevels()[dim];
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
@@ -2255,7 +2343,7 @@ void hierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // number of xblocks for the hierarchization of one point of dim
   IndexType nbrxBlocks = dfg.getNrLocalElements()
-      / (dfg.getLocalSizes()[0] * ndim);
+                         / (dfg.getLocalSizes()[0] * ndim);
   // size of xBlcok
   IndexType xSize = dfg.getLocalSizes()[0];
 
@@ -2273,14 +2361,15 @@ void hierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
     IndexType firstOfLevel = getFirstIndexOfLevel1d(dfg, dim, l);
     IndexType parentOffset = static_cast<IndexType>(std::pow(2, lmax - l));
     IndexType levelStride = parentOffset * 2;
+
     for (IndexType idx = firstOfLevel; idx <= idxMax; idx += levelStride) {
       // get local 1d idx
       IndexType lidx = idx - dfg.getLowerBounds()[dim];
 
       // loop over all possible xBlocks
       for (IndexType localLinIdxBlockStart = 0;
-          localLinIdxBlockStart < dfg.getNrLocalElements();
-          localLinIdxBlockStart += xSize) {
+           localLinIdxBlockStart < dfg.getNrLocalElements();
+           localLinIdxBlockStart += xSize) {
         // get localIndexVector of block start
         dfg.getLocalVectorIndex(localLinIdxBlockStart, localIndexVector);
 
@@ -2345,7 +2434,7 @@ void hierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
 template<typename FG_ELEMENT>
 void dehierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
-    LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
+                               LookupTable<FG_ELEMENT>& lookupTable, DimType dim) {
   assert(dfg.returnBoundaryFlags()[dim] == false);
   LevelType lmax = dfg.getLevels()[dim];
   IndexType idxMax = dfg.getLastGlobal1dIndex(dim);
@@ -2353,7 +2442,7 @@ void dehierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
 
   // number of xblocks for the hierarchization of one point of dim
   IndexType nbrxBlocks = dfg.getNrLocalElements()
-      / (dfg.getLocalSizes()[0] * ndim);
+                         / (dfg.getLocalSizes()[0] * ndim);
   // size of xBlcok
   IndexType xSize = dfg.getLocalSizes()[0];
 
@@ -2371,14 +2460,15 @@ void dehierarchizeN_noboundary(DistributedFullGrid<FG_ELEMENT>& dfg,
     IndexType firstOfLevel = getFirstIndexOfLevel1d(dfg, dim, l);
     IndexType parentOffset = static_cast<IndexType>(std::pow(2, lmax - l));
     IndexType levelStride = parentOffset * 2;
+
     for (IndexType idx = firstOfLevel; idx <= idxMax; idx += levelStride) {
       // get local 1d idx
       IndexType lidx = idx - dfg.getLowerBounds()[dim];
 
       // loop over all possible xBlocks
       for (IndexType localLinIdxBlockStart = 0;
-          localLinIdxBlockStart < dfg.getNrLocalElements();
-          localLinIdxBlockStart += xSize) {
+           localLinIdxBlockStart < dfg.getNrLocalElements();
+           localLinIdxBlockStart += xSize) {
         // get localIndexVector of block start
         dfg.getLocalVectorIndex(localLinIdxBlockStart, localIndexVector);
 
@@ -2448,12 +2538,12 @@ namespace combigrid {
 //template<typename FG_ELEMENT>
 class DistributedHierarchization {
 
-public:
-// whereever references possible, use references
-// here using a reference avoids the possibility of passing a NULL pointer
-// which would lead to a segfault for sure
+ public:
+  // whereever references possible, use references
+  // here using a reference avoids the possibility of passing a NULL pointer
+  // which would lead to a segfault for sure
 
-// inplace hierarchization
+  // inplace hierarchization
   template<typename FG_ELEMENT>
   static void hierarchize(DistributedFullGrid<FG_ELEMENT>& dfg) {
     // hierarchize first dimension
@@ -2489,7 +2579,7 @@ public:
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStart(
-            "exchange_dim_" + boost::lexical_cast<std::string>(dim));
+          "exchange_dim_" + boost::lexical_cast<std::string>(dim));
 
       // exchange data
       std::vector<RemoteDataContainer<FG_ELEMENT> > remoteData;
@@ -2498,11 +2588,11 @@ public:
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStop(
-            "exchange_dim_" + boost::lexical_cast<std::string>(dim));
+          "exchange_dim_" + boost::lexical_cast<std::string>(dim));
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStart(
-            "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
+          "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
 
       if (dfg.returnBoundaryFlags()[dim] == true) {
         //hierarchizeN_boundary( dfg, lookupTable, dim );
@@ -2513,16 +2603,16 @@ public:
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStop(
-            "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
+          "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
 
       ++hierCount;
     }
 
   }
 
-// inplace dehierarchization
+  // inplace dehierarchization
   template<typename FG_ELEMENT>
-  static void dehierarchize(DistributedFullGrid<FG_ELEMENT> & dfg) {
+  static void dehierarchize(DistributedFullGrid<FG_ELEMENT>& dfg) {
     // dehierarchize first dimension
     {
       DimType dim = 0;
@@ -2556,7 +2646,7 @@ public:
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStart(
-            "exchange_dim_" + boost::lexical_cast<std::string>(dim));
+          "exchange_dim_" + boost::lexical_cast<std::string>(dim));
 
       // exchange data
       std::vector<RemoteDataContainer<FG_ELEMENT> > remoteData;
@@ -2565,11 +2655,11 @@ public:
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStop(
-            "exchange_dim_" + boost::lexical_cast<std::string>(dim));
+          "exchange_dim_" + boost::lexical_cast<std::string>(dim));
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStart(
-            "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
+          "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
 
       if (dfg.returnBoundaryFlags()[dim] == true) {
         dehierarchizeN_opt_boundary(dfg, lookupTable, dim);
@@ -2579,7 +2669,7 @@ public:
 
       if (hierCount == 0)
         theStatsContainer()->setTimerStop(
-            "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
+          "hierarchize_dim_" + boost::lexical_cast<std::string>(dim));
     }
   }
 

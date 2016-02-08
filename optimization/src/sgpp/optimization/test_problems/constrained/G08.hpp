@@ -32,7 +32,7 @@ class G08Objective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~G08Objective() override;
+  ~G08Objective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -69,7 +69,7 @@ class G08InequalityConstraint :
   /**
    * Destructor.
    */
-  virtual ~G08InequalityConstraint() override;
+  ~G08InequalityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -101,7 +101,7 @@ class G08EqualityConstraint :
   /**
    * Destructor.
    */
-  virtual ~G08EqualityConstraint() override;
+  ~G08EqualityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -139,22 +139,22 @@ class G08 : public ConstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~G08() override;
+  ~G08() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @return  inequality function of the test problem
    */
-  virtual TestVectorFunction& getInequalityConstraintFunction() override;
+  TestVectorFunction& getInequalityConstraintFunction() override;
 
   /**
    * @return  equality constraint function of the test problem
    */
-  virtual TestVectorFunction& getEqualityConstraintFunction() override;
+  TestVectorFunction& getEqualityConstraintFunction() override;
 
   /**
    * @param[out] x minimal point

@@ -70,14 +70,14 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   /**
    * Destructor.
    */
-  virtual ~IterativeGridGeneratorRitterNovak() override;
+  ~IterativeGridGeneratorRitterNovak() override;
 
   /**
    * Generate the grid.
    *
    * @return true on success, otherwise false
    */
-  virtual bool generate() override;
+  bool generate() override;
 
   /**
    * @return            adaptivity between 0 and 1

@@ -19,7 +19,7 @@ namespace base {
  */
 class PolyGrid : public Grid {
  protected:
-  PolyGrid(std::istream& istr);
+  explicit PolyGrid(std::istream& istr);
 
  public:
   /**
@@ -33,13 +33,13 @@ class PolyGrid : public Grid {
   /**
    * Destructor
    */
-  virtual ~PolyGrid() override;
+  ~PolyGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
-  virtual const SBasis& getBasis() override;
-  virtual void serialize(std::ostream& ostr) override;
+  SGPP::base::GridType getType() override;
+  const SBasis& getBasis() override;
+  void serialize(std::ostream& ostr) override;
 
-  virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
   static Grid* unserialize(std::istream& istr);
   size_t getDegree() const;

@@ -54,9 +54,9 @@ class LogBarrier : public ConstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~LogBarrier() override;
+  ~LogBarrier() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return objective function gradient

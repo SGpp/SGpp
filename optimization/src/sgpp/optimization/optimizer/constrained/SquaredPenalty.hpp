@@ -64,9 +64,9 @@ class SquaredPenalty : public ConstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~SquaredPenalty() override;
+  ~SquaredPenalty() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return objective function gradient

@@ -3,13 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <limits>
-
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
 
-
 #include <sgpp/globaldef.hpp>
+
+#include <limits>
 
 
 namespace SGPP {

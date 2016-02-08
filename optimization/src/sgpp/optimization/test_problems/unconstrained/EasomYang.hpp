@@ -35,7 +35,7 @@ class EasomYangObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~EasomYangObjective() override;
+  ~EasomYangObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -73,12 +73,12 @@ class EasomYang : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~EasomYang() override;
+  ~EasomYang() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

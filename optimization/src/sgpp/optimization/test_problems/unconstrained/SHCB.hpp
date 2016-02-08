@@ -33,7 +33,7 @@ class SHCBObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~SHCBObjective() override;
+  ~SHCBObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -69,12 +69,12 @@ class SHCB : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~SHCB() override;
+  ~SHCB() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

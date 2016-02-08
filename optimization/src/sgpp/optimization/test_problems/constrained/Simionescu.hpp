@@ -31,7 +31,7 @@ class SimionescuObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~SimionescuObjective() override;
+  ~SimionescuObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -66,7 +66,7 @@ class SimionescuInequalityConstraint :
   /**
    * Destructor.
    */
-  virtual ~SimionescuInequalityConstraint() override;
+  ~SimionescuInequalityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -98,7 +98,7 @@ class SimionescuEqualityConstraint :
   /**
    * Destructor.
    */
-  virtual ~SimionescuEqualityConstraint() override;
+  ~SimionescuEqualityConstraint() override;
 
   /**
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
@@ -136,22 +136,22 @@ class Simionescu : public ConstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Simionescu() override;
+  ~Simionescu() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @return  inequality function of the test problem
    */
-  virtual TestVectorFunction& getInequalityConstraintFunction() override;
+  TestVectorFunction& getInequalityConstraintFunction() override;
 
   /**
    * @return  equality constraint function of the test problem
    */
-  virtual TestVectorFunction& getEqualityConstraintFunction() override;
+  TestVectorFunction& getEqualityConstraintFunction() override;
 
   /**
    * @param[out] x minimal point

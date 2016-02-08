@@ -13,8 +13,6 @@
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -23,7 +21,6 @@ namespace base {
 
 ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(
     istr) {
-
 }
 
 ModLinearGridStencil::ModLinearGridStencil(size_t dim) : GridStencil(dim) {

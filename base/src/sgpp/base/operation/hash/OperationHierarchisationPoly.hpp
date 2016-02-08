@@ -42,7 +42,7 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
    * @param node_values the functions values in the node base
    *
    */
-  virtual void doHierarchisation(DataVector& node_values) override;
+  void doHierarchisation(DataVector& node_values) override;
 
   /**
    * Implements the dehierarchisation on a sprase grid with poly base functions
@@ -50,7 +50,7 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
    * @param alpha the coefficients of the sparse grid's base functions
    *
    */
-  virtual void doDehierarchisation(DataVector& alpha) override;
+  void doDehierarchisation(DataVector& alpha) override;
 
  protected:
   /// Pointer to GridStorage object

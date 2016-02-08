@@ -74,12 +74,9 @@ class ConvertLinearToPrewavelet {
    */
   void operator()(DataVector& source, DataVector& result,
                   grid_iterator& index, size_t dim);
-
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* CONVERTLINEARTOPREWAVELET_HPP */

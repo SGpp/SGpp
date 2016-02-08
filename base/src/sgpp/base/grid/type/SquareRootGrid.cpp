@@ -7,13 +7,12 @@
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 
 #include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
-//#include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
-//#include <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
+// #include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
+// #include \
+// <sgpp/base/operation/hash/OperationHierarchisationLinearBoundary.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
-
-#include <iostream>
 
 #include <sgpp/globaldef.hpp>
 
@@ -23,7 +22,6 @@ namespace base {
 
 SquareRootGrid::SquareRootGrid(std::istream& istr) :
   Grid(istr) {
-
 }
 
 SquareRootGrid::SquareRootGrid(size_t dim) :
@@ -56,19 +54,19 @@ Grid* SquareRootGrid::unserialize(std::istream& istr) {
 GridGenerator* SquareRootGrid::createGridGenerator() {
   return new SquareRootGridGenerator(this->storage);
 }
-//OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
-//{
-//  return new OperationHierarchisationLinearBoundary(this->storage);
-//}
-//OperationEval* SquareRootGrid::createOperationEval()
-//{
-//  return new OperationEvalLinearBoundary(this->storage);
-//}
+// OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
+// {
+//   return new OperationHierarchisationLinearBoundary(this->storage);
+// }
+// OperationEval* SquareRootGrid::createOperationEval()
+// {
+//   return new OperationEvalLinearBoundary(this->storage);
+// }
 
-//OperationConvert* SquareRootGrid::createOperationConvert()
-//{
-//  throw factory_exception("Unsupported operation");
-//}
+// OperationConvert* SquareRootGrid::createOperationConvert()
+// {
+//   throw factory_exception("Unsupported operation");
+// }
 
 }  // namespace base
 }  // namespace SGPP

@@ -35,7 +35,7 @@ class EggholderObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~EggholderObjective() override;
+  ~EggholderObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -74,12 +74,12 @@ class Eggholder : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Eggholder() override;
+  ~Eggholder() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point
@@ -97,7 +97,7 @@ class Eggholder : public UnconstrainedTestProblem {
    *
    * @return whether the current displacement is feasible
    */
-  virtual bool isDisplacementFeasible() override;
+  bool isDisplacementFeasible() override;
 
   /// objective function
   EggholderObjective f;

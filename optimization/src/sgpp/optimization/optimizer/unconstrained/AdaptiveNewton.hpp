@@ -96,9 +96,9 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   /**
    * Destructor.
    */
-  virtual ~AdaptiveNewton() override;
+  ~AdaptiveNewton() override;
 
-  virtual void optimize() override;
+  void optimize() override;
 
   /**
    * @return objective function Hessian

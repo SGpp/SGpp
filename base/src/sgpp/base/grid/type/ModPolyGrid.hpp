@@ -10,8 +10,6 @@
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -23,7 +21,7 @@ namespace base {
  */
 class ModPolyGrid : public Grid {
  protected:
-  ModPolyGrid(std::istream& istr);
+  explicit ModPolyGrid(std::istream& istr);
 
  public:
   /**
@@ -37,12 +35,12 @@ class ModPolyGrid : public Grid {
   /**
    * Destructor
    */
-  virtual ~ModPolyGrid() override;
+  ~ModPolyGrid() override;
 
-  virtual SGPP::base::GridType getType() override;
-  virtual void serialize(std::ostream& ostr) override;
+  SGPP::base::GridType getType() override;
+  void serialize(std::ostream& ostr) override;
 
-  virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
   virtual GridGenerator* createGridGenerator();
 

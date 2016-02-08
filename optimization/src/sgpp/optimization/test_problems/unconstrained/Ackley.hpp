@@ -34,7 +34,7 @@ class AckleyObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~AckleyObjective() override;
+  ~AckleyObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -72,12 +72,12 @@ class Ackley : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Ackley() override;
+  ~Ackley() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

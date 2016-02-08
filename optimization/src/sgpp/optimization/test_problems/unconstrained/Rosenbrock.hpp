@@ -34,7 +34,7 @@ class RosenbrockObjective : public TestScalarFunction {
   /**
    * Destructor.
    */
-  virtual ~RosenbrockObjective() override;
+  ~RosenbrockObjective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -72,12 +72,12 @@ class Rosenbrock : public UnconstrainedTestProblem {
   /**
    * Destructor.
    */
-  virtual ~Rosenbrock() override;
+  ~Rosenbrock() override;
 
   /**
    * @return  objective function of the test problem
    */
-  virtual TestScalarFunction& getObjectiveFunction() override;
+  TestScalarFunction& getObjectiveFunction() override;
 
   /**
    * @param[out] x minimal point

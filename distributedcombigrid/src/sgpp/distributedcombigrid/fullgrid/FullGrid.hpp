@@ -55,26 +55,26 @@ class Hierarchization;
 template<typename FG_ELEMENT>
 class FullGrid {
 
-public:
+ public:
 
   /** simplest Ctor with homogeneous  levels */
   FullGrid(DimType dim, LevelType level, bool hasBdrPoints = true,
-      const BasisFunctionBasis* basis = NULL);
+           const BasisFunctionBasis* basis = NULL);
 
   /** dimension adaptive Ctor */
   FullGrid(DimType dim, const LevelVector& levels, bool hasBdrPoints = true,
-      const BasisFunctionBasis* basis = NULL);
+           const BasisFunctionBasis* basis = NULL);
 
   /** dimension adaptive Ctor */
   FullGrid(DimType dim, const LevelVector& levels,
-      const std::vector<bool>& hasBdrPoints, const BasisFunctionBasis* basis =
-          NULL);
+           const std::vector<bool>& hasBdrPoints, const BasisFunctionBasis* basis =
+             NULL);
 
   // load archived fg from file
   FullGrid(const char* filename, const BasisFunctionBasis* basis = NULL);
 
   /* create hierarchized fullgrid from SGrid */
-  FullGrid(const LevelVector& levels, const SGrid<FG_ELEMENT> & sg);
+  FullGrid(const LevelVector& levels, const SGrid<FG_ELEMENT>& sg);
 
   virtual
   ~FullGrid();
@@ -105,7 +105,7 @@ public:
    * @param indexes [OUT] the indexes of the point in the LI notation */
   void
   getLI(IndexType elementIndex, LevelVector& levels,
-      IndexVector& indexes) const;
+        IndexVector& indexes) const;
 
   /** returns the vector index for one linear index
    * @param linIndex [IN] the linear index
@@ -238,7 +238,7 @@ public:
 
   inline void print(std::ostream& os) const;
 
-private:
+ private:
   /** dimension of the full grid */
   DimType dim_;
 
@@ -277,7 +277,7 @@ private:
   // serialize
   template<class Archive>
   void
-  serialize(Archive & ar, const unsigned int version);
+  serialize(Archive& ar, const unsigned int version);
 
   // the hierarchization class should be the only class to modify the
   // isHierarchized flag
@@ -302,7 +302,7 @@ namespace combigrid {
 
 template<typename FG_ELEMENT>
 FullGrid<FG_ELEMENT>::FullGrid(DimType dim, LevelType level, bool hasBdrPoints,
-    const BasisFunctionBasis* basis) {
+                               const BasisFunctionBasis* basis) {
   // set the basis function for the full grid
   if (basis == NULL)
     basis_ = LinearBasisFunction::getDefaultBasis();
@@ -324,14 +324,14 @@ FullGrid<FG_ELEMENT>::FullGrid(DimType dim, LevelType level, bool hasBdrPoints,
 
   for (DimType j = 0; j < dim_; j++) {
     nrPoints_[j] = (
-        (hasBoundaryPoints_[j] == true) ?
-            (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
+                     (hasBoundaryPoints_[j] == true) ?
+                     (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
     offsets_[j] = nrElements_;
     nrElements_ = nrElements_ * nrPoints_[j];
 
     // ADDED
     nrElementsNoBoundary_ = nrElementsNoBoundary_
-        * (powerOfTwo[levels_[j]] - 1);
+                            * (powerOfTwo[levels_[j]] - 1);
   }
 
   isHierarchized_ = false;
@@ -340,7 +340,7 @@ FullGrid<FG_ELEMENT>::FullGrid(DimType dim, LevelType level, bool hasBdrPoints,
 /** dimension adaptive Ctor */
 template<typename FG_ELEMENT>
 FullGrid<FG_ELEMENT>::FullGrid(DimType dim, const LevelVector& levels,
-    bool hasBdrPoints, const BasisFunctionBasis* basis) {
+                               bool hasBdrPoints, const BasisFunctionBasis* basis) {
   // set the basis function for the full grid
   if (basis == NULL)
     basis_ = LinearBasisFunction::getDefaultBasis();
@@ -361,14 +361,14 @@ FullGrid<FG_ELEMENT>::FullGrid(DimType dim, const LevelVector& levels,
 
   for (DimType j = 0; j < dim_; j++) {
     nrPoints_[j] = (
-        (hasBoundaryPoints_[j] == true) ?
-            (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
+                     (hasBoundaryPoints_[j] == true) ?
+                     (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
     offsets_[j] = nrElements_;
     nrElements_ = nrElements_ * nrPoints_[j];
 
     // ADDED
     nrElementsNoBoundary_ = nrElementsNoBoundary_
-        * (powerOfTwo[levels_[j]] - 1);
+                            * (powerOfTwo[levels_[j]] - 1);
   }
 
   isHierarchized_ = false;
@@ -377,7 +377,7 @@ FullGrid<FG_ELEMENT>::FullGrid(DimType dim, const LevelVector& levels,
 /** dimension adaptive Ctor */
 template<typename FG_ELEMENT>
 FullGrid<FG_ELEMENT>::FullGrid(DimType dim, const LevelVector& levels,
-    const std::vector<bool>& hasBdrPoints, const BasisFunctionBasis* basis) {
+                               const std::vector<bool>& hasBdrPoints, const BasisFunctionBasis* basis) {
   assert(levels.size() == dim);
   assert(hasBdrPoints.size() == dim);
 
@@ -401,12 +401,12 @@ FullGrid<FG_ELEMENT>::FullGrid(DimType dim, const LevelVector& levels,
 
   for (DimType j = 0; j < dim_; j++) {
     nrPoints_[j] = (
-        (hasBoundaryPoints_[j] == true) ?
-            (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
+                     (hasBoundaryPoints_[j] == true) ?
+                     (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
     offsets_[j] = nrElements_;
     nrElements_ = nrElements_ * nrPoints_[j];
     nrElementsNoBoundary_ = nrElementsNoBoundary_
-        * (powerOfTwo[levels_[j]] - 1);
+                            * (powerOfTwo[levels_[j]] - 1);
   }
 
   isHierarchized_ = false;
@@ -414,7 +414,7 @@ FullGrid<FG_ELEMENT>::FullGrid(DimType dim, const LevelVector& levels,
 
 template<typename FG_ELEMENT>
 FullGrid<FG_ELEMENT>::FullGrid(const char* filename,
-    const BasisFunctionBasis* basis) {
+                               const BasisFunctionBasis* basis) {
   // set the basis function for the full grid
   if (basis == NULL)
     basis_ = LinearBasisFunction::getDefaultBasis();
@@ -436,7 +436,7 @@ FullGrid<FG_ELEMENT>::FullGrid(const char* filename,
 /* create hierarchized fullgrid from SGrid */
 template<typename FG_ELEMENT>
 FullGrid<FG_ELEMENT>::FullGrid(const LevelVector& levels,
-    const SGrid<FG_ELEMENT> & sg) {
+                               const SGrid<FG_ELEMENT>& sg) {
   SGrid<FG_ELEMENT>& sg2 = const_cast<SGrid<FG_ELEMENT>&>(sg);
 
   assert(levels.size() == sg2.getDim());
@@ -463,13 +463,13 @@ FullGrid<FG_ELEMENT>::FullGrid(const LevelVector& levels,
 
   for (DimType j = 0; j < dim_; j++) {
     nrPoints_[j] = (
-        (hasBoundaryPoints_[j] == true) ?
-            (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
+                     (hasBoundaryPoints_[j] == true) ?
+                     (powerOfTwo[levels_[j]] + 1) : (powerOfTwo[levels_[j]] - 1));
     offsets_[j] = nrElements_;
     nrElements_ = nrElements_ * nrPoints_[j];
     // ADDED
     nrElementsNoBoundary_ = nrElementsNoBoundary_
-        * (powerOfTwo[levels_[j]] - 1);
+                            * (powerOfTwo[levels_[j]] - 1);
   }
 
   createFullGrid();
@@ -477,6 +477,7 @@ FullGrid<FG_ELEMENT>::FullGrid(const LevelVector& levels,
   // create iterator for each subspace of sgrid and set to begin
   typedef typename std::vector<FG_ELEMENT>::iterator SubspaceIterator;
   typename std::vector<SubspaceIterator> it_sub(sg2.getSize());
+
   for (size_t i = 0; i < it_sub.size(); ++i)
     it_sub[i] = sg2.getDataVector(i).begin();
 
@@ -571,14 +572,14 @@ FG_ELEMENT FullGrid<FG_ELEMENT>::eval(std::vector<real>& coords) {
     if (hasBoundaryPoints_[ii] == true) {
       aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
       aindex[ii] =
-          (aindex[ii] >= (nrPoints_[ii] - 1)) ?
-              (nrPoints_[ii] - 2) : aindex[ii];
+        (aindex[ii] >= (nrPoints_[ii] - 1)) ?
+        (nrPoints_[ii] - 2) : aindex[ii];
       //calculate the coordinates
       normcoord = normcoord - static_cast<real>(aindex[ii]);
     } else {
       aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
       aindex[ii] =
-          (aindex[ii] >= (nrPoints_[ii])) ? (nrPoints_[ii]) : aindex[ii];
+        (aindex[ii] >= (nrPoints_[ii])) ? (nrPoints_[ii]) : aindex[ii];
       normcoord = normcoord - static_cast<real>(aindex[ii]);
 
       if (aindex[ii] <= 0) {
@@ -591,7 +592,7 @@ FG_ELEMENT FullGrid<FG_ELEMENT>::eval(std::vector<real>& coords) {
           aindex[ii] = nrPoints_[ii] - 1;
           // extrapolation to the right this will be a >=1 number
           normcoord = coords[ii] * powerOfTwo[levels_[ii]]
-              - static_cast<real>(aindex[ii]); // this should be 1 + ...
+                      - static_cast<real>(aindex[ii]); // this should be 1 + ...
         }
       }
 
@@ -618,7 +619,9 @@ FG_ELEMENT FullGrid<FG_ELEMENT>::eval(std::vector<real>& coords) {
 
     // compute the "dim" dimensional basis function value(for one node) and the corresponding vector index
     for (jj = dim_ - 1; jj >= 0; jj--) {
-      vv = (nrPoints_[jj] > 1) ? (tmp_val & 1) : 0; // if we have only one point then use the same
+      vv = (nrPoints_[jj] > 1) ? (tmp_val & 1) :
+           0; // if we have only one point then use the same
+
       // todo: find bug or reimplement eval
       // quick fix for the following bug: no boundary and l=1
       // always evals zero. i think the intersect values are not
@@ -634,6 +637,7 @@ FG_ELEMENT FullGrid<FG_ELEMENT>::eval(std::vector<real>& coords) {
           baseVal = baseVal * basis_->functionEval2(coords[jj]);
       } else
         baseVal = baseVal * intersect[2 * jj + vv];
+
       i = i * nrPoints_[jj] + aindex[jj] + vv;
       tmp_val = tmp_val >> 1;
     }
@@ -641,9 +645,9 @@ FG_ELEMENT FullGrid<FG_ELEMENT>::eval(std::vector<real>& coords) {
     // if this is the first point then set directly the value, otherwise add the value
     //COMBIGRID_OUT_LEVEL3( verb , "Vect elem i:" << i << " , vect:" << fullgridVector_[i]);
     ret_val =
-        (ii == 0) ?
-            (baseVal * fullgridVector_[i]) :
-            (ret_val + baseVal * fullgridVector_[i]);
+      (ii == 0) ?
+      (baseVal * fullgridVector_[i]) :
+      (ret_val + baseVal * fullgridVector_[i]);
   }
 
   //COMBIGRID_OUT_LEVEL3( 4 , "FullGrid::eval RET VAL:" << ret_val);
@@ -656,7 +660,7 @@ FG_ELEMENT FullGrid<FG_ELEMENT>::eval(std::vector<real>& coords) {
  * @param coords [OUT] the vector must be resized already*/
 template<typename FG_ELEMENT>
 void FullGrid<FG_ELEMENT>::getCoords(IndexType elemIndex,
-    std::vector<real>& coords) const {
+                                     std::vector<real>& coords) const {
   // temporary variables
   IndexType ind = 0;
   IndexType tmp_add = 0;
@@ -668,7 +672,7 @@ void FullGrid<FG_ELEMENT>::getCoords(IndexType elemIndex,
       // set the coordinate based on if we have boundary points
       tmp_add = (hasBoundaryPoints_[j] == true) ? (0) : (1);
       coords[j] = static_cast<real>(ind + tmp_add)
-          * oneOverPowOfTwo[levels_[j]];
+                  * oneOverPowOfTwo[levels_[j]];
     }
   } else {
     // we have a valid Domain
@@ -689,7 +693,7 @@ void FullGrid<FG_ELEMENT>::getCoords(IndexType elemIndex,
 
 template<typename FG_ELEMENT>
 void FullGrid<FG_ELEMENT>::getLI(IndexType elementIndex, LevelVector& levels,
-    IndexVector& indexes) const {
+                                 IndexVector& indexes) const {
   IndexType startindex, tmp_val;
 
   tmp_val = elementIndex;
@@ -724,9 +728,11 @@ void FullGrid<FG_ELEMENT>::getLI(IndexType elementIndex, LevelVector& levels,
   // the level vectors: the boundary points have level 1 and not level 0
   // as in the standard case
 #ifdef ALT_LEVEL_VECTOR
-  for( DimType k = 0; k < dim_; k++ )
-  if( levels[k] == 0 )
-  levels[k] = 1;
+
+  for ( DimType k = 0; k < dim_; k++ )
+    if ( levels[k] == 0 )
+      levels[k] = 1;
+
 #endif
 }
 
@@ -748,7 +754,7 @@ inline void FullGrid<FG_ELEMENT>::getVectorIndex(const IndexType linIndex,
  * @param axisIndex [IN] the vector index */
 template<typename FG_ELEMENT>
 inline IndexType FullGrid<FG_ELEMENT>::getLinearIndex(
-    const IndexVector& axisIndex) const {
+  const IndexVector& axisIndex) const {
   IndexType tmp = 0;
 
   for (int i = static_cast<int>(dim_) - 1; i >= 0; i--) {
@@ -1014,17 +1020,17 @@ void FullGrid<FG_ELEMENT>::addGENE(const FullGrid<FG_ELEMENT>& fg, real coeff) {
 // serialize
 template<typename FG_ELEMENT>
 template<class Archive>
-void FullGrid<FG_ELEMENT>::serialize(Archive & ar, const unsigned int version) {
-  ar & dim_;
-  ar & nrElements_;
-  ar & nrElementsNoBoundary_;
-  ar & isFGcreated_;
-  ar & levels_;
-  ar & nrPoints_;
-  ar & hasBoundaryPoints_;
-  ar & offsets_;
-  ar & fullgridVector_;
-  ar & isHierarchized_;
+void FullGrid<FG_ELEMENT>::serialize(Archive& ar, const unsigned int version) {
+  ar& dim_;
+  ar& nrElements_;
+  ar& nrElementsNoBoundary_;
+  ar& isFGcreated_;
+  ar& levels_;
+  ar& nrPoints_;
+  ar& hasBoundaryPoints_;
+  ar& offsets_;
+  ar& fullgridVector_;
+  ar& isHierarchized_;
 }
 
 template<typename FG_ELEMENT>
@@ -1036,6 +1042,7 @@ inline real FullGrid<FG_ELEMENT>::getlpNorm(int p) {
   if (p == 0) {
     std::vector<FG_ELEMENT>& data = getElementVector();
     real max = 0.0;
+
     for (size_t i = 0; i < data.size(); ++i) {
       if (std::abs(data[i]) > max)
         max = std::abs(data[i]);
@@ -1046,6 +1053,7 @@ inline real FullGrid<FG_ELEMENT>::getlpNorm(int p) {
     real p_f = static_cast<real>(p);
     std::vector<FG_ELEMENT>& data = getElementVector();
     real res = 0.0;
+
     for (size_t i = 0; i < data.size(); ++i) {
       real abs = std::abs(data[i]);
       res += std::pow(abs, p_f);
@@ -1078,9 +1086,11 @@ void FullGrid<FG_ELEMENT>::print2D(std::ostream& os) const {
   // loop over rows i -> dim2
   for (IndexType i = 0; i < nrPoints_[1]; ++i) {
     IndexType offset = offsets_[1] * i;
+
     for (IndexType j = 0; j < nrPoints_[0]; ++j) {
       os << fullgridVector_[offset + j] << "\t";
     }
+
     os << std::endl;
   }
 }
@@ -1093,6 +1103,7 @@ void FullGrid<FG_ELEMENT>::print1D(std::ostream& os) const {
   for (IndexType j = 0; j < nrPoints_[0]; ++j) {
     os << fullgridVector_[j] << "\t";
   }
+
   os << std::endl;
 }
 
@@ -1107,9 +1118,11 @@ void FullGrid<FG_ELEMENT>::print3D(std::ostream& os) const {
     // loop over rows i -> dim2
     for (IndexType i = 0; i < nrPoints_[1]; ++i) {
       IndexType offset = offsetZ + offsets_[1] * i;
+
       for (IndexType j = 0; j < nrPoints_[0]; ++j) {
         os << fullgridVector_[offset + j] << "\t";
       }
+
       os << std::endl;
     }
   }
@@ -1130,7 +1143,7 @@ inline void FullGrid<FG_ELEMENT>::print(std::ostream& os) const {
 // output operator
 template<typename FG_ELEMENT>
 inline std::ostream& operator<<(std::ostream& os,
-    const FullGrid<FG_ELEMENT>& fg) {
+                                const FullGrid<FG_ELEMENT>& fg) {
   fg.print(os);
 
   return os;
