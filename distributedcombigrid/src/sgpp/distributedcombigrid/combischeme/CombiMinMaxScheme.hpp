@@ -46,7 +46,6 @@ public:
 
   ~CombiMinMaxScheme() {
   }
-  ;
 
   inline const std::vector<LevelVector>& getCombiSpaces() const {
     return combiSpaces_;
