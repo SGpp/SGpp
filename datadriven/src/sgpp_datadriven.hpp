@@ -40,5 +40,7 @@
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+
 
 #endif /* DATADRIVEN_HPP */

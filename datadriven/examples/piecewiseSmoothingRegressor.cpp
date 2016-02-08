@@ -186,8 +186,8 @@ int main(int argc, char** argv) {
   solverConfig.threshold_ = -1.0;
   solverConfig.type_ = SGPP::solver::SLESolverType::CG;
 
-  SGPP::pde::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = SGPP::pde::RegularizationType::Laplace;
+  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
 
   //  SGPP::float_t lambda = 0.1;
   SGPP::float_t lambda = 0.0005;

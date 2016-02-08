@@ -22,7 +22,7 @@ namespace SGPP {
 namespace datadriven {
 
 LearnerDensityBasedReg::LearnerDensityBasedReg(
-  SGPP::pde::RegularizationType& regularization,
+  SGPP::datadriven::RegularizationType& regularization,
   float_t border) :
   LearnerBase(true), CMode_(regularization), C_(NULL), maxValue_(0.), minValue_(
     0.), border_(border) {
@@ -165,9 +165,9 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
     if (C_ != NULL)
       delete C_;
 
-    if (this->CMode_ == SGPP::pde::RegularizationType::Laplace) {
+    if (this->CMode_ == SGPP::datadriven::RegularizationType::Laplace) {
       C_ = SGPP::op_factory::createOperationLaplace(*grid_);
-    } else if (this->CMode_ == SGPP::pde::RegularizationType::Identity) {
+    } else if (this->CMode_ == SGPP::datadriven::RegularizationType::Identity) {
       C_ = SGPP::op_factory::createOperationIdentity(*grid_);
     } else {
       // should not happen

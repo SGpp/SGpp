@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -53,7 +53,7 @@ class LearnerSGDE: public datadriven::DensityEstimator {
   LearnerSGDE(SGPP::base::RegularGridConfiguration& gridConfig,
               SGPP::base::AdpativityConfiguration& adaptivityConfig,
               SGPP::solver::SLESolverConfiguration& solverConfig,
-              SGPP::pde::RegularizationConfiguration& regularizationConfig,
+              SGPP::datadriven::RegularizationConfiguration& regularizationConfig,
               LearnerSGDEConfiguration& learnerSGDEConfig);
   virtual ~LearnerSGDE();
 
@@ -192,7 +192,7 @@ class LearnerSGDE: public datadriven::DensityEstimator {
   SGPP::base::RegularGridConfiguration gridConfig;
   SGPP::base::AdpativityConfiguration adaptivityConfig;
   SGPP::solver::SLESolverConfiguration solverConfig;
-  SGPP::pde::RegularizationConfiguration regularizationConfig;
+  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
   LearnerSGDEConfiguration learnerSGDEConfig;
 };
 

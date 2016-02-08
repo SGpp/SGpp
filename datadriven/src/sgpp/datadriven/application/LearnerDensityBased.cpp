@@ -21,7 +21,7 @@ namespace SGPP {
 
 namespace datadriven {
 
-LearnerDensityBased::LearnerDensityBased(SGPP::pde::RegularizationType&
+LearnerDensityBased::LearnerDensityBased(SGPP::datadriven::RegularizationType&
     regularization, const bool isRegression,
     const bool isVerbose) :
   LearnerBase(isRegression, isVerbose), CMode_(regularization) {
@@ -257,9 +257,9 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     }
 
     for (size_t ii = 0; ii < class_indeces.size(); ii++) {
-      if (this->CMode_ == SGPP::pde::RegularizationType::Laplace) {
+      if (this->CMode_ == SGPP::datadriven::RegularizationType::Laplace) {
         CVec_.push_back(SGPP::op_factory::createOperationLaplace(*this->gridVec_[ii]));
-      } else if (this->CMode_ == SGPP::pde::RegularizationType::Identity) {
+      } else if (this->CMode_ == SGPP::datadriven::RegularizationType::Identity) {
         CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]));
       } else {
         throw base::application_exception("LearnerDensityBased::train: Unknown regularization operator");

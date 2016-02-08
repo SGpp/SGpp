@@ -23,7 +23,7 @@ PiecewiseConstantSmoothedRegressionMetaLearner::PiecewiseConstantSmoothedRegress
   base::DataVector& valuesDataSet, base::RegularGridConfiguration gridConfig,
   base::AdpativityConfiguration adaptConfig,
   solver::SLESolverConfiguration solverConfig,
-  pde::RegularizationConfiguration regularizationConfig) :
+  datadriven::RegularizationConfiguration regularizationConfig) :
   verbose(verbose), dataset(trainingDataSet), datasetValues(valuesDataSet),
   gridConfig(gridConfig), adaptConfig(
     adaptConfig), solverConfig(solverConfig),

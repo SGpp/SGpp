@@ -7,7 +7,7 @@
 #define LEARNER_HPP
 
 #include <sgpp/datadriven/application/LearnerBase.hpp>
-#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 
@@ -22,7 +22,7 @@ namespace datadriven {
 class Learner : public LearnerBase {
  protected:
   /// regularization mode
-  SGPP::pde::RegularizationType CMode_;
+  SGPP::datadriven::RegularizationType CMode_;
   /// regularization operator
   SGPP::base::OperationMatrix* C_;
 
@@ -38,7 +38,7 @@ class Learner : public LearnerBase {
    * @param isRegression flag for regression
    * @param isVerbose flag for verbose output
    */
-  Learner(SGPP::pde::RegularizationType& regularization, const bool isRegression,
+  Learner(SGPP::datadriven::RegularizationType& regularization, const bool isRegression,
           const bool isVerbose = true);
 
   /**
@@ -51,7 +51,7 @@ class Learner : public LearnerBase {
    * @param isVerbose set to true in order to allow console output
    */
   Learner(const std::string tGridFilename, const std::string tAlphaFilename,
-          SGPP::pde::RegularizationType& regularization,
+          SGPP::datadriven::RegularizationType& regularization,
           const bool isRegression, const bool isVerbose = true);
 
   /**

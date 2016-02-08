@@ -6,7 +6,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/pde/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/globaldef.hpp>
@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
 
   // configure regularization
   cout << "# create regularization config" << endl;
-  SGPP::pde::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = SGPP::pde::RegularizationType::Laplace;
+  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
 
   // configure learner
   cout << "# create learner config" << endl;
