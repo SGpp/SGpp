@@ -304,10 +304,13 @@ if env['PYDOC'] and env['SG_PYTHON']:
     if not env['SG_' + module.upper()]:
       continue
 
-    if env.getOption("clean"):
-      os.remove(os.path.join(module, 'Doxyfile'))
-      for file in os.listdir(os.path.join(module, 'doc/xml/')):
-        os.remove(file)
+    if env.GetOption("clean"):
+      if os.path.exists(os.path.join(module, 'Doxyfile')):
+        os.remove(os.path.join(module, 'Doxyfile'))
+      doxypath = os.path.join(module, 'doc/xml/')
+      if os.path.exists(doxypath):
+        for file in os.listdir(doxypath):
+          os.remove(os.path.join(doxypath, file))
     else:
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
         doxyFile.write(data.replace('$modname', module).replace('$quiet', 'YES'))
