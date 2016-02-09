@@ -9,9 +9,7 @@
 
 namespace combigrid {
 
-
 AbstractStretchingMaker* createStretchingMaker(combigrid::Stretching str) {
-
   AbstractStretchingMaker* maker = NULL;
 
   switch (str) {
@@ -41,13 +39,12 @@ AbstractStretchingMaker* createStretchingMaker(combigrid::Stretching str) {
 
     case UNKNOWN:
     default:
-      COMBIGRID_OUT_WRN("Input stretching type unknown! Returning a NULL stretching maker!",
-                        __FILE__, __LINE__)
+      COMBIGRID_OUT_WRN(
+          "Input stretching type unknown! Returning a NULL stretching maker!",
+          __FILE__, __LINE__)
       break;
   }
 
   return maker;
-
 }
-
 }

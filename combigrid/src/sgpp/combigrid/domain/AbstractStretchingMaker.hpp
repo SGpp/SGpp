@@ -12,9 +12,7 @@
 namespace combigrid {
 
 /** Different 1D stretching's enum type */
-enum Stretching {
-  EQUIDISTANT, CHEBYSHEV , LEGENDRE, BASU, UNKNOWN, ATAN, TAN
-};
+enum Stretching { EQUIDISTANT, CHEBYSHEV, LEGENDRE, BASU, UNKNOWN, ATAN, TAN };
 
 /**
  * enum specifying the type of coordinate transformation that has to be done to
@@ -22,19 +20,23 @@ enum Stretching {
  *
  */
 enum TRANSFORMATION_TYPE {
-  FINITE, SEMI_INFINITE_NINF, SEMI_INFINITE_PINF, INFINITE
+  FINITE,
+  SEMI_INFINITE_NINF,
+  SEMI_INFINITE_PINF,
+  INFINITE
 };
-
 
 /** class to create stretching in 1D*/
 class AbstractStretchingMaker {
  public:
   /**
-   * @param level - integer specifying the current grid level . the corresponding nr of points is 2^level + 1
+   * @param level - integer specifying the current grid level . the
+   * corresponding nr of points is 2^level + 1
    * @param min - the left boundary of the interval
    * @param max - the right boundary of the interval
    * @param stretching - the output vector of pre-computed grid points...
-   * @param jacobian - the evaluated jacobian at all points of the stretching , taking into consideration
+   * @param jacobian - the evaluated jacobian at all points of the stretching ,
+   * taking into consideration
    * size of the interval and underlying tranformations.
    */
 
@@ -42,17 +44,15 @@ class AbstractStretchingMaker {
                                std::vector<double>& stretching,
                                std::vector<double>& jacobian) const = 0;
 
-  virtual ~AbstractStretchingMaker() {};
+  virtual ~AbstractStretchingMaker(){};
 
   virtual Stretching getStretchingType() const = 0;
 
   double transforminterval(double min, double max, double point,
                            TRANSFORMATION_TYPE tp) const {
-
     double result = point;
 
     switch (tp) {
-
       case SEMI_INFINITE_NINF: {
         result = max - (1.0 - point) / (1.0 + point);
         break;
@@ -79,20 +79,16 @@ class AbstractStretchingMaker {
     }
 
     return result;
-
   }
 
   double transformationJacobian(double min, double max, double pt,
                                 TRANSFORMATION_TYPE type) const {
-
     double result = 1.0;
 
     // the if's are in order to avoid singularities
     switch (type) {
-
       case SEMI_INFINITE_NINF: {
-        if (pt != -1.0)
-          result = 2.0 / ((1.0 + pt) * (1 + pt));
+        if (pt != -1.0) result = 2.0 / ((1.0 + pt) * (1 + pt));
 
         break;
       }
@@ -125,9 +121,7 @@ class AbstractStretchingMaker {
     }
 
     return result;
-
   }
-
 };
 }
 

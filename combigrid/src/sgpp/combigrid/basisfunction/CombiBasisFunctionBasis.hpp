@@ -22,20 +22,20 @@ namespace combigrid {
 
 class BasisFunctionBasis {
  public:
-
   /** empty Ctror */
-  BasisFunctionBasis() {
-    ;
-  }
+  BasisFunctionBasis() { ; }
 
-  /** first method which returns the contribution of the first point in the 1D cell
-   * @param coord  1D coordonate idealy should be [0,1] but for extrapolation could be different [-1,2]*/
+  /** first method which returns the contribution of the first point in the 1D
+   * cell
+   * @param coord  1D coordonate idealy should be [0,1] but for extrapolation
+   * could be different [-1,2]*/
   virtual double functionEval1(double coord) const = 0;
 
-  /** second method which returns the contribution of the second point in the 1D cell
-   * @param coord  1D coordonate idealy should be [0,1] but for extrapolation could be different [-1,2]*/
+  /** second method which returns the contribution of the second point in the 1D
+   * cell
+   * @param coord  1D coordonate idealy should be [0,1] but for extrapolation
+   * could be different [-1,2]*/
   virtual double functionEval2(double coord) const = 0;
-
 };
 }
 

@@ -19,24 +19,21 @@
 
 namespace combigrid {
 
-class CombiBasuStretching: public AbstractStretchingMaker {
-
+class CombiBasuStretching : public AbstractStretchingMaker {
  public:
   /// do nada ...
-  CombiBasuStretching() {
-    ;
-  }
+  CombiBasuStretching() { ; }
 
-  virtual ~CombiBasuStretching() {
-    ;
-  }
+  virtual ~CombiBasuStretching() { ; }
 
   /**
-   * @param level - integer specifying the current grid level . the corresponding nr of points is 2^level + 1
+   * @param level - integer specifying the current grid level . the
+   * corresponding nr of points is 2^level + 1
    * @param min - the left boundary of the interval
    * @param max - the right boundary of the interval
    * @param stretching - the output vector of pre-computed grid points...
-   * @param jacobian - the evaluated jacobian at all points of the stretching , taking into consideration
+   * @param jacobian - the evaluated jacobian at all points of the stretching ,
+   * taking into consideration
    * size of the interval and underlying tranformations.
    */
 
@@ -44,13 +41,8 @@ class CombiBasuStretching: public AbstractStretchingMaker {
                        std::vector<double>& stretching,
                        std::vector<double>& jacobian) const;
 
-  Stretching getStretchingType() const {
-    return BASU;
-  }
-
+  Stretching getStretchingType() const { return BASU; }
 };
-
 }
-
 
 #endif /* COMBIBASISTRETCHING_HPP_ */

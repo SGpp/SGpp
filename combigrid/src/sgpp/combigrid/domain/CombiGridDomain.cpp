@@ -6,10 +6,10 @@
 // @author Janos Benk (benk@in.tum.de)
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 
-combigrid::GridDomain::GridDomain(int dim, const std::vector<int>& levels,
-                                  const std::vector<double>& min, const std::vector<double>& max,
-                                  combigrid::AbstractStretchingMaker& stretchingMaker) {
-
+combigrid::GridDomain::GridDomain(
+    int dim, const std::vector<int>& levels, const std::vector<double>& min,
+    const std::vector<double>& max,
+    combigrid::AbstractStretchingMaker& stretchingMaker) {
   dim_ = dim;
   _stretching_type = UNKNOWN;
   _min = min;
@@ -18,18 +18,16 @@ combigrid::GridDomain::GridDomain(int dim, const std::vector<int>& levels,
   // add for each dimension
   for (int d = 0; d < dim_; d++) {
     _axisDomains.push_back(
-      combigrid::Domain1D(levels[d], _min[d], _max[d],
-                          stretchingMaker));
+        combigrid::Domain1D(levels[d], _min[d], _max[d], stretchingMaker));
   }
 
   _stretching_type = stretchingMaker.getStretchingType();
-
 }
 
-combigrid::GridDomain::GridDomain(int dim, const std::vector<int>& levels,
-                                  const std::vector<double>& min, const std::vector<double>& max,
-                                  std::vector<AbstractStretchingMaker*> stretchingMaker) {
-
+combigrid::GridDomain::GridDomain(
+    int dim, const std::vector<int>& levels, const std::vector<double>& min,
+    const std::vector<double>& max,
+    std::vector<AbstractStretchingMaker*> stretchingMaker) {
   dim_ = dim;
   _stretching_type = UNKNOWN;
   _min = min;
@@ -38,37 +36,35 @@ combigrid::GridDomain::GridDomain(int dim, const std::vector<int>& levels,
   // add for each dimension
   for (int d = 0; d < dim_; d++) {
     _axisDomains.push_back(
-      combigrid::Domain1D(levels[d], _min[d], _max[d],
-                          *stretchingMaker[d]));
+        combigrid::Domain1D(levels[d], _min[d], _max[d], *stretchingMaker[d]));
   }
 
   _stretching_type = UNKNOWN;
-
 }
 
 /* copy constructor*/
 combigrid::GridDomain::GridDomain(const GridDomain& domain) {
-
-  dim_ =  domain.getDim();
+  dim_ = domain.getDim();
   _stretching_type = domain.getStretchingType();
   _max = domain.getMax();
   _min = domain.getMin();
 
-  for (int d = 0 ; d < dim_; d++) {
-    Domain1D newDomain(domain.get1DDomain(d)); // invoke the copy constructor of
+  for (int d = 0; d < dim_; d++) {
+    Domain1D newDomain(
+        domain.get1DDomain(d));  // invoke the copy constructor of
     _axisDomains.push_back(newDomain);
-
   }
 }
 
-void combigrid::GridDomain::transformRealToUnit(std::vector<double>& coords,
-    const std::vector<int>& levels_in,
+void combigrid::GridDomain::transformRealToUnit(
+    std::vector<double>& coords, const std::vector<int>& levels_in,
     const std::vector<bool>& boundaryFlag) const {
   // for each dimension make the transformation
-  //int verb = 6;
+  // int verb = 6;
   double tmp = 0.0;
 
-  //COMBIGRID_OUT_LEVEL3( verb , " combigrid::GridDomain::transformRealToUnit() ");
+  // COMBIGRID_OUT_LEVEL3( verb , " combigrid::GridDomain::transformRealToUnit()
+  // ");
   for (int d = 0; d < dim_; d++) {
     _axisDomains[d].transformRealToUnit(coords[d], tmp, levels_in[d],
                                         boundaryFlag[d]);
@@ -87,4 +83,3 @@ void combigrid::GridDomain::printDomain() {
 
   std::cout << "------------------" << std::endl;
 }
-
