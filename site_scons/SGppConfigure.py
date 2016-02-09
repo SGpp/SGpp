@@ -245,7 +245,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
             config.env.AppendUnique(CPPFLAGS=["-mfma"])
         else:
             print "You must specify a valid ARCH value for gnu."
-            print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
+            print "Available configurations are: sse3, sse42, avx, fma4, avx2, avx512"
             sys.exit(1)
         
         # check if using MinGW (g++ on win32)
