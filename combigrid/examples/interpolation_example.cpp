@@ -28,8 +28,7 @@ double f_2D(const std::vector<double> &coords) {
 }
 
 int main() {
-  // Fix dimension asdfasdfas f a sf asdf a sdf asd fasdf asd fasdf asdf asdf
-  // asdf asdf asdf asdf asdf asdf asd fasdf asd fasdf asdf asdf asdf
+  // Fix dimension
   int dim = 2;
   double (*func)(const std::vector<double> &);
 
