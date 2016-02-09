@@ -12,70 +12,72 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
 #ifndef M_SQRT2PI
 #define M_SQRT2PI       2.506628274631000241612355239340    /* sqrt(2*pi) */
 #endif
 
-    class GaussianKDE: public DensityEstimator {
-      public:
-        GaussianKDE();
-        GaussianKDE(std::vector<base::DataVector*>& samplesVec);
-        GaussianKDE(base::DataMatrix& samples);
-        virtual ~GaussianKDE();
+class GaussianKDE: public DensityEstimator {
+ public:
+  GaussianKDE();
+  explicit GaussianKDE(std::vector<base::DataVector*>& samplesVec);
+  explicit GaussianKDE(base::DataMatrix& samples);
+  virtual ~GaussianKDE();
 
-        virtual void initialize(base::DataMatrix& samples);
-        virtual void initialize(std::vector<base::DataVector*>& samplesVec);
+  virtual void initialize(base::DataMatrix& samples);
+  virtual void initialize(std::vector<base::DataVector*>& samplesVec);
 
-        float_t mean();
-        float_t variance();
-        float_t std_deviation();
+  float_t mean();
+  float_t variance();
+  float_t std_deviation();
 
-        void cov(base::DataMatrix& cov);
+  void cov(base::DataMatrix& cov);
 
-        float_t pdf(base::DataVector& x);
-        void pdf(base::DataMatrix& points, base::DataVector& res);
+  float_t pdf(base::DataVector& x);
+  void pdf(base::DataMatrix& points, base::DataVector& res);
 
-        /// getter and setter functions
-        void getConditionalizationFactor(base::DataVector& pcond);
-        void setConditionalizationFactor(base::DataVector& pcond);
-        void updateConditionalizationFactors(base::DataVector& x,
-                                             std::vector<size_t>& dims, base::DataVector& pcond);
+  /// getter and setter functions
+  void getConditionalizationFactor(base::DataVector& pcond);
+  void setConditionalizationFactor(base::DataVector& pcond);
+  void updateConditionalizationFactors(base::DataVector& x,
+                                       std::vector<size_t>& dims, base::DataVector& pcond);
 
-        void getBandwidths(base::DataVector& sigma);
+  void getBandwidths(base::DataVector& sigma);
 
-        virtual base::DataMatrix* getSamples();
-        virtual base::DataVector* getSamples(size_t dim);
+  virtual base::DataMatrix* getSamples();
+  virtual base::DataVector* getSamples(size_t dim);
 
-        size_t getDim();
-        size_t getNsamples();
+  size_t getDim();
+  size_t getNsamples();
 
-      private:
-        /// samples
-        std::vector<base::DataVector*> samplesVec;
+ private:
+  /// samples
+  std::vector<base::DataVector*> samplesVec;
 
-        size_t nsamples;
-        size_t ndim;
+  size_t nsamples;
+  size_t ndim;
 
-        /// standard deviations for the kernels in 1d
-        base::DataVector bandwidths;
-        /// normalization factor for 1d kernels
-        base::DataVector norm;
-        /// conditionalization factors
-        base::DataVector cond;
-        float_t sumCond;
+  /// standard deviations for the kernels in 1d
+  base::DataVector bandwidths;
+  /// normalization factor for 1d kernels
+  base::DataVector norm;
+  /// conditionalization factors
+  base::DataVector cond;
+  float_t sumCond;
 
-        void computeOptKDEbdwth();
-        void computeNormalizationFactors();
+  void computeOptKDEbdwth();
+  void computeNormalizationFactors();
 
-        float_t getSampleMean(base::DataVector& data);
-        float_t getSampleVariance(base::DataVector& data);
-        float_t getSampleStd(base::DataVector& data);
-    };
+  float_t getSampleMean(base::DataVector& data);
+  float_t getSampleVariance(base::DataVector& data);
+  float_t getSampleStd(base::DataVector& data);
+};
 
-  } /* namespace datadriven */
-} /* namespace sg */
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* GAUSSIANGAUSSIANKDE_HPP_ */

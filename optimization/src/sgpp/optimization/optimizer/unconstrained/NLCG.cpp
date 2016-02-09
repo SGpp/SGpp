@@ -12,171 +12,174 @@
 #include <numeric>
 
 namespace SGPP {
-  namespace optimization {
-    namespace optimizer {
+namespace optimization {
+namespace optimizer {
 
-      NLCG::NLCG(ScalarFunction& f,
-                 ScalarFunctionGradient& fGradient,
-                 size_t maxItCount, float_t beta, float_t gamma,
-                 float_t tolerance, float_t epsilon,
-                 float_t restartThreshold) :
-        UnconstrainedOptimizer(f, maxItCount),
-        fGradient(fGradient),
-        beta(beta),
-        gamma(gamma),
-        tol(tolerance),
-        eps(epsilon),
-        alpha(restartThreshold) {
-      }
+NLCG::NLCG(ScalarFunction& f,
+           ScalarFunctionGradient& fGradient,
+           size_t maxItCount, float_t beta, float_t gamma,
+           float_t tolerance, float_t epsilon,
+           float_t restartThreshold) :
+  UnconstrainedOptimizer(f, maxItCount),
+  fGradient(fGradient),
+  beta(beta),
+  gamma(gamma),
+  tol(tolerance),
+  eps(epsilon),
+  alpha(restartThreshold) {
+}
 
-      void NLCG::optimize() {
-        Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
+NLCG::~NLCG() {
+}
 
-        const size_t d = f.getNumberOfParameters();
+void NLCG::optimize() {
+  Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
 
-        xOpt.resize(0);
-        fOpt = NAN;
-        xHist.resize(0, d);
-        fHist.resize(0);
+  const size_t d = f.getNumberOfParameters();
 
-        base::DataVector x(x0);
-        float_t fx;
-        float_t fy;
+  xOpt.resize(0);
+  fOpt = NAN;
+  xHist.resize(0, d);
+  fHist.resize(0);
 
-        base::DataVector gradFx(d);
-        base::DataVector gradFy(d);
-        base::DataVector s(d);
-        base::DataVector sNormalized(d);
-        base::DataVector y(d);
+  base::DataVector x(x0);
+  float_t fx;
+  float_t fy;
 
-        fx = fGradient.eval(x0, gradFx);
-        float_t gradFxNorm = gradFx.l2Norm();
+  base::DataVector gradFx(d);
+  base::DataVector gradFy(d);
+  base::DataVector s(d);
+  base::DataVector sNormalized(d);
+  base::DataVector y(d);
 
-        xHist.appendRow(x);
-        fHist.append(fx);
+  fx = fGradient.eval(x0, gradFx);
+  float_t gradFxNorm = gradFx.l2Norm();
 
-        size_t k = 1;
+  xHist.appendRow(x);
+  fHist.append(fx);
 
-        // negated gradient as starting search direction
-        for (size_t t = 0; t < d; t++) {
-          s[t] = -gradFx[t];
-        }
+  size_t k = 1;
 
-        while (k < N) {
-          // exit if norm small enough
-          if (gradFxNorm < tol) {
-            break;
-          }
-
-          // normalize search direction
-          const float_t sNorm = s.l2Norm();
-
-          for (size_t t = 0; t < d; t++) {
-            sNormalized[t] = s[t] / sNorm;
-          }
-
-          // line search
-          if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
-                                gradFx, sNormalized, y, k)) {
-            // line search failed ==> exit
-            // (either a "real" error occured or the improvement achieved is
-            // too small)
-            break;
-          }
-
-          // calculate gradient and norm
-          fy = fGradient.eval(y, gradFy);
-          k++;
-
-          const float_t gradFyNorm = gradFy.l2Norm();
-
-          float_t beta = 0.0;
-
-          // the method is restarted (beta = 0), if the following criterion
-          // is *not* met
-          if (std::abs(gradFy.dotProduct(gradFx)) /
-              (gradFyNorm * gradFyNorm) < alpha) {
-            // Polak-Ribiere coefficient
-            for (size_t t = 0; t < d; t++) {
-              beta += gradFy[t] * (gradFy[t] - gradFx[t]);
-            }
-
-            beta /= gradFxNorm * gradFxNorm;
-          }
-
-          // new search direction
-          for (size_t t = 0; t < d; t++) {
-            s[t] = beta * s[t] - gradFy[t];
-          }
-
-          x = y;
-          fx = fy;
-          gradFx = gradFy;
-          gradFxNorm = gradFyNorm;
-          xHist.appendRow(x);
-          fHist.append(fx);
-
-          // status printing
-          Printer::getInstance().printStatusUpdate(
-            std::to_string(k) + " evaluations, x = " + x.toString() +
-            ", f(x) = " + std::to_string(fx));
-        }
-
-        xOpt.resize(d);
-        xOpt = x;
-        fOpt = fx;
-        Printer::getInstance().printStatusEnd();
-      }
-
-      ScalarFunctionGradient& NLCG::getObjectiveGradient() const {
-        return fGradient;
-      }
-
-      float_t NLCG::getBeta() const {
-        return beta;
-      }
-
-      void NLCG::setBeta(float_t beta) {
-        this->beta = beta;
-      }
-
-      float_t NLCG::getGamma() const {
-        return gamma;
-      }
-
-      void NLCG::setGamma(float_t gamma) {
-        this->gamma = gamma;
-      }
-
-      float_t NLCG::getTolerance() const {
-        return tol;
-      }
-
-      void NLCG::setTolerance(float_t tolerance) {
-        tol = tolerance;
-      }
-
-      float_t NLCG::getEpsilon() const {
-        return eps;
-      }
-
-      void NLCG::setEpsilon(float_t epsilon) {
-        eps = epsilon;
-      }
-
-      float_t NLCG::getRestartThreshold() const {
-        return alpha;
-      }
-
-      void NLCG::setRestartThreshold(float_t restartThreshold) {
-        alpha = restartThreshold;
-      }
-
-      void NLCG::clone(
-        std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-        clone = std::unique_ptr<UnconstrainedOptimizer>(
-                  new NLCG(*this));
-      }
-    }
+  // negated gradient as starting search direction
+  for (size_t t = 0; t < d; t++) {
+    s[t] = -gradFx[t];
   }
+
+  while (k < N) {
+    // exit if norm small enough
+    if (gradFxNorm < tol) {
+      break;
+    }
+
+    // normalize search direction
+    const float_t sNorm = s.l2Norm();
+
+    for (size_t t = 0; t < d; t++) {
+      sNormalized[t] = s[t] / sNorm;
+    }
+
+    // line search
+    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
+                          gradFx, sNormalized, y, k)) {
+      // line search failed ==> exit
+      // (either a "real" error occured or the improvement achieved is
+      // too small)
+      break;
+    }
+
+    // calculate gradient and norm
+    fy = fGradient.eval(y, gradFy);
+    k++;
+
+    const float_t gradFyNorm = gradFy.l2Norm();
+
+    float_t beta = 0.0;
+
+    // the method is restarted (beta = 0), if the following criterion
+    // is *not* met
+    if (std::abs(gradFy.dotProduct(gradFx)) /
+        (gradFyNorm * gradFyNorm) < alpha) {
+      // Polak-Ribiere coefficient
+      for (size_t t = 0; t < d; t++) {
+        beta += gradFy[t] * (gradFy[t] - gradFx[t]);
+      }
+
+      beta /= gradFxNorm * gradFxNorm;
+    }
+
+    // new search direction
+    for (size_t t = 0; t < d; t++) {
+      s[t] = beta * s[t] - gradFy[t];
+    }
+
+    x = y;
+    fx = fy;
+    gradFx = gradFy;
+    gradFxNorm = gradFyNorm;
+    xHist.appendRow(x);
+    fHist.append(fx);
+
+    // status printing
+    Printer::getInstance().printStatusUpdate(
+      std::to_string(k) + " evaluations, x = " + x.toString() +
+      ", f(x) = " + std::to_string(fx));
+  }
+
+  xOpt.resize(d);
+  xOpt = x;
+  fOpt = fx;
+  Printer::getInstance().printStatusEnd();
+}
+
+ScalarFunctionGradient& NLCG::getObjectiveGradient() const {
+  return fGradient;
+}
+
+float_t NLCG::getBeta() const {
+  return beta;
+}
+
+void NLCG::setBeta(float_t beta) {
+  this->beta = beta;
+}
+
+float_t NLCG::getGamma() const {
+  return gamma;
+}
+
+void NLCG::setGamma(float_t gamma) {
+  this->gamma = gamma;
+}
+
+float_t NLCG::getTolerance() const {
+  return tol;
+}
+
+void NLCG::setTolerance(float_t tolerance) {
+  tol = tolerance;
+}
+
+float_t NLCG::getEpsilon() const {
+  return eps;
+}
+
+void NLCG::setEpsilon(float_t epsilon) {
+  eps = epsilon;
+}
+
+float_t NLCG::getRestartThreshold() const {
+  return alpha;
+}
+
+void NLCG::setRestartThreshold(float_t restartThreshold) {
+  alpha = restartThreshold;
+}
+
+void NLCG::clone(
+  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(
+            new NLCG(*this));
+}
+}
+}
 }

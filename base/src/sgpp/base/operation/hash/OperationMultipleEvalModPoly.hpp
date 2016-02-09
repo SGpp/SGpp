@@ -13,43 +13,44 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grids with mod poly basis ansatzfunctions
-     *
-     */
-    class OperationMultipleEvalModPoly: public OperationMultipleEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid grid
-         * @param degree the polynom's max. degree
-         * @param dataset the dataset that should be evaluated
-         */
-        OperationMultipleEvalModPoly(Grid& grid, size_t degree, DataMatrix& dataset) :
-          OperationMultipleEval(grid, dataset), base(degree) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalModPoly() {
-        }
-
-        virtual void mult(DataVector& alpha, DataVector& result);
-        virtual void multTranspose(DataVector& source, DataVector& result);
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-        /// Mod Poly Basis object
-        SPolyModifiedBase base;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grids with mod poly basis ansatzfunctions
+ *
+ */
+class OperationMultipleEvalModPoly: public OperationMultipleEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid grid
+   * @param degree the polynom's max. degree
+   * @param dataset the dataset that should be evaluated
+   */
+  OperationMultipleEvalModPoly(Grid& grid, size_t degree,
+                               DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), base(degree) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationMultipleEvalModPoly() override {
+  }
+
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+  /// Mod Poly Basis object
+  SPolyModifiedBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALMODPOLY_HPP */

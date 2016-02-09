@@ -14,50 +14,50 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating modified B-spline linear combinations on Noboundary grids,
-     * their gradients and their Hessians.
-     */
-    class OperationNaiveEvalHessianModBspline : public OperationNaiveEvalHessian {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    B-spline degree
-         */
-        OperationNaiveEvalHessianModBspline(GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
-
-        /**
-         * Virtual destructor.
-         */
-        virtual ~OperationNaiveEvalHessianModBspline() {
-        }
-
-        /**
-         * @param       alpha       coefficient vector
-         * @param       point       evaluation point
-         * @param[out]  gradient    gradient vector of linear combination
-         * @param[out]  hessian     Hessian matrix of linear combination
-         * @return                  value of linear combination
-         */
-        virtual float_t evalHessian(const DataVector& alpha,
-                                    const DataVector& point,
-                                    DataVector& gradient,
-                                    DataMatrix& hessian);
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SBsplineModifiedBase base;
-    };
-
+/**
+ * Operation for evaluating modified B-spline linear combinations on Noboundary grids,
+ * their gradients and their Hessians.
+ */
+class OperationNaiveEvalHessianModBspline : public OperationNaiveEvalHessian {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    B-spline degree
+   */
+  OperationNaiveEvalHessianModBspline(GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  ~OperationNaiveEvalHessianModBspline() override {
+  }
+
+  /**
+   * @param       alpha       coefficient vector
+   * @param       point       evaluation point
+   * @param[out]  gradient    gradient vector of linear combination
+   * @param[out]  hessian     Hessian matrix of linear combination
+   * @return                  value of linear combination
+   */
+  float_t evalHessian(const DataVector& alpha,
+                      const DataVector& point,
+                      DataVector& gradient,
+                      DataMatrix& hessian) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SBsplineModifiedBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONEVALHESSIANMODBSPLINE_HPP */

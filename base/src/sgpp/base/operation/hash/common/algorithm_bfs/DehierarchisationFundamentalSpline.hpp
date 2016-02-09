@@ -13,66 +13,66 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Functor for dehierarchization with fundamental splines via
-     * BreadthFirstSearch.
-     */
-    class DehierarchisationFundamentalSpline {
-      protected:
-        /// grid iterator
-        typedef GridStorage::grid_iterator grid_iterator;
+/**
+ * Functor for dehierarchization with fundamental splines via
+ * BreadthFirstSearch.
+ */
+class DehierarchisationFundamentalSpline {
+ protected:
+  /// grid iterator
+  typedef GridStorage::grid_iterator grid_iterator;
 
-      public:
-        /**
-         * Constructor.
-         *
-         * @param grid grid
-         */
-        DehierarchisationFundamentalSpline(FundamentalSplineGrid* grid);
+ public:
+  /**
+   * Constructor.
+   *
+   * @param grid grid
+   */
+  explicit DehierarchisationFundamentalSpline(FundamentalSplineGrid* grid);
 
-        /**
-         * Destructor.
-         */
-        virtual ~DehierarchisationFundamentalSpline();
+  /**
+   * Destructor.
+   */
+  virtual ~DehierarchisationFundamentalSpline();
 
-        /**
-         * Functor operator.
-         * For each grid point, add the value of basis function at
-         * the given iterator to the entry in result corresponding to the
-         * grid point.
-         *
-         * @param[in]  source     node values
-         * @param[out] result     result of the functor
-         * @param      iterator   current grid point
-         */
-        virtual void operator()(const DataVector& source,
-                                DataVector& result,
-                                const grid_iterator& iterator);
+  /**
+   * Functor operator.
+   * For each grid point, add the value of basis function at
+   * the given iterator to the entry in result corresponding to the
+   * grid point.
+   *
+   * @param[in]  source     node values
+   * @param[out] result     result of the functor
+   * @param      iterator   current grid point
+   */
+  void operator()(const DataVector& source,
+                  DataVector& result,
+                  const grid_iterator& iterator);
 
-        /**
-         * Functor operator.
-         * For each grid point, add the value of basis function at
-         * the given iterator to the row in result corresponding to the
-         * grid point.
-         *
-         * @param[in]  source     node values
-         * @param[out] result     result of the functor
-         * @param      iterator   current grid point
-         */
-        virtual void operator()(const DataMatrix& source,
-                                DataMatrix& result,
-                                const grid_iterator& iterator);
+  /**
+   * Functor operator.
+   * For each grid point, add the value of basis function at
+   * the given iterator to the row in result corresponding to the
+   * grid point.
+   *
+   * @param[in]  source     node values
+   * @param[out] result     result of the functor
+   * @param      iterator   current grid point
+   */
+  void operator()(const DataMatrix& source,
+                  DataMatrix& result,
+                  const grid_iterator& iterator);
 
-      protected:
-        /// grid
-        FundamentalSplineGrid* grid;
-        /// grid storage
-        GridStorage* storage;
-    };
+ protected:
+  /// grid
+  FundamentalSplineGrid* grid;
+  /// grid storage
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DEHIERARCHISATIONFUNDAMENTALSPLINE_HPP */

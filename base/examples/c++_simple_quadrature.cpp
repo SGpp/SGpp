@@ -46,7 +46,8 @@ int main() {
     alpha[i] = f(2, p, NULL);
   }
 
-  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
+    alpha);
 
   // direct quadrature
   OperationQuadrature* opQ = SGPP::op_factory::createOperationQuadrature(*grid);

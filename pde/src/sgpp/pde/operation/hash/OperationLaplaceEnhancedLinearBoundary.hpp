@@ -12,56 +12,59 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * Implements the Laplace operator based on
-     * the UpDownOneOpDimEnhanced method.
-     *
-     */
-    class OperationLaplaceEnhancedLinearBoundary: public UpDownOneOpDimEnhanced {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's SGPP::base::GridStorage object
-         */
-        OperationLaplaceEnhancedLinearBoundary(SGPP::base::GridStorage* storage);
+/**
+ * Implements the Laplace operator based on
+ * the UpDownOneOpDimEnhanced method.
+ *
+ */
+class OperationLaplaceEnhancedLinearBoundary: public UpDownOneOpDimEnhanced {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's SGPP::base::GridStorage object
+   */
+  OperationLaplaceEnhancedLinearBoundary(SGPP::base::GridStorage* storage);
 
-        /**
-         * Constructor of OperationLaplaceLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
-         */
-        OperationLaplaceEnhancedLinearBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef);
+  /**
+   * Constructor of OperationLaplaceLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
+   */
+  OperationLaplaceEnhancedLinearBoundary(SGPP::base::GridStorage* storage,
+                                         SGPP::base::DataVector& coef);
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationLaplaceEnhancedLinearBoundary();
+  /**
+   * Destructor
+   */
+  virtual ~OperationLaplaceEnhancedLinearBoundary();
 
-      protected:
-        /**
-         * Up-step
-         *
-         * @param dim dimension in which to apply the up-part
-         * @param alpha vector of coefficients
-         * @param result vector to store the results in
-         */
-        virtual void up(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim);
+ protected:
+  /**
+   * Up-step
+   *
+   * @param dim dimension in which to apply the up-part
+   * @param alpha vector of coefficients
+   * @param result vector to store the results in
+   */
+  virtual void up(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
+                  size_t dim);
 
-        /**
-         * Down-step
-         *
-         * @param dim dimension in which to apply the down-part
-         * @param alpha vector of coefficients
-         * @param result vector to store the results in
-         */
-        virtual void down(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim);
-    };
+  /**
+   * Down-step
+   *
+   * @param dim dimension in which to apply the down-part
+   * @param alpha vector of coefficients
+   * @param result vector to store the results in
+   */
+  virtual void down(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
+                    size_t dim);
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONLAPLACEENHANCEDLINEARBOUNDARY_HPP */

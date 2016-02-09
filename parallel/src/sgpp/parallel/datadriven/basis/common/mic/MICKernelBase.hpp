@@ -47,28 +47,28 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    class MICKernelBase {
-      public:
-        static inline size_t getChunkGridPoints() {
-          return 12;
-        }
-        static inline size_t getChunkDataPoints() {
-          return MIC_UNROLLING_WIDTH;
-        }
-    };
-
-    class SPMICKernelBase {
-      public:
-        static inline size_t getChunkGridPoints() {
-          return 24;
-        }
-        static inline size_t getChunkDataPoints() {
-          return MIC_UNROLLING_WIDTH_SP; // must be divisible by 96
-        }
-    };
+class MICKernelBase {
+ public:
+  static inline size_t getChunkGridPoints() {
+    return 12;
   }
+  static inline size_t getChunkDataPoints() {
+    return MIC_UNROLLING_WIDTH;
+  }
+};
+
+class SPMICKernelBase {
+ public:
+  static inline size_t getChunkGridPoints() {
+    return 24;
+  }
+  static inline size_t getChunkDataPoints() {
+    return MIC_UNROLLING_WIDTH_SP; // must be divisible by 96
+  }
+};
+}
 }
 
 #ifdef __INTEL_OFFLOAD

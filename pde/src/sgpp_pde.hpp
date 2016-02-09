@@ -21,8 +21,6 @@
 #include "sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp"
 #include "sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp"
 
-#include "sgpp/pde/application/RegularizationConfiguration.hpp"
-
-#include "sgpp/pde/operation/PdeOpFactory.hpp"
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #endif /* PDE_HPP */

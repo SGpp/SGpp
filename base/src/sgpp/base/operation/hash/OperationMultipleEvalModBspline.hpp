@@ -14,44 +14,44 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grid with modified Bspline basis functions
-     *
-     */
-    class OperationMultipleEvalModBspline: public OperationMultipleEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid grid
-         * @param degree the Bspline's degree
-         * @param dataset the dataset that should be evaluated
-         */
-        OperationMultipleEvalModBspline(Grid& grid, size_t degree,
-                                        DataMatrix& dataset) :
-          OperationMultipleEval(grid, dataset), base(degree) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalModBspline() {
-        }
-
-        virtual void mult(DataVector& alpha, DataVector& result);
-        virtual void multTranspose(DataVector& source, DataVector& result);
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-        /// Mod Bspline Basis object
-        SBsplineModifiedBase base;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grid with modified Bspline basis functions
+ *
+ */
+class OperationMultipleEvalModBspline: public OperationMultipleEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid grid
+   * @param degree the Bspline's degree
+   * @param dataset the dataset that should be evaluated
+   */
+  OperationMultipleEvalModBspline(Grid& grid, size_t degree,
+                                  DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), base(degree) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationMultipleEvalModBspline() override {
+  }
+
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+  /// Mod Bspline Basis object
+  SBsplineModifiedBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALMODBSPLINE_HPP */

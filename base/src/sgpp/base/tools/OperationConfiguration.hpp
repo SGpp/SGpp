@@ -1,33 +1,30 @@
-/*
- * ConfigurationParser.hpp
- *
- *  Created on: Mar 25, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
-
-#include <vector>
-#include <map>
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/tools/json/JSON.hpp>
 
+#include <vector>
+#include <map>
+#include <string>
+
 namespace SGPP {
 namespace base {
 
 class OperationConfiguration: public json::JSON {
-public:
+ public:
+  OperationConfiguration();
 
-    OperationConfiguration();
+  explicit OperationConfiguration(const std::string& fileName);
 
-    OperationConfiguration(const std::string &fileName);
-
-    virtual OperationConfiguration *clone();
-
+  virtual OperationConfiguration* clone();
 };
 
-}
-}
+}  // namespace base
+}  // namespace SGPP
 

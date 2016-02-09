@@ -15,76 +15,76 @@
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Abstract base class for iterative grid generation methods.
-     */
-    class IterativeGridGenerator {
-      public:
-        /**
-         * Constructor.
-         * Do not destruct the grid before this object!
-         *
-         * @param f     objective function
-         * @param grid  grid (should be empty)
-         * @param N     maximal number of grid points
-         */
-        IterativeGridGenerator(
-          ScalarFunction& f, base::Grid& grid, size_t N);
+/**
+ * Abstract base class for iterative grid generation methods.
+ */
+class IterativeGridGenerator {
+ public:
+  /**
+   * Constructor.
+   * Do not destruct the grid before this object!
+   *
+   * @param f     objective function
+   * @param grid  grid (should be empty)
+   * @param N     maximal number of grid points
+   */
+  IterativeGridGenerator(
+    ScalarFunction& f, base::Grid& grid, size_t N);
 
-        /**
-         * Virtual destructor.
-         */
-        virtual ~IterativeGridGenerator();
+  /**
+   * Destructor.
+   */
+  virtual ~IterativeGridGenerator();
 
-        /**
-         * Pure virtual method for iterative grid generation.
-         *
-         * @return true on success, otherwise false
-         */
-        virtual bool generate() = 0;
+  /**
+   * Pure virtual method for iterative grid generation.
+   *
+   * @return true on success, otherwise false
+   */
+  virtual bool generate() = 0;
 
-        /**
-         * @return underlying grid
-         */
-        base::Grid& getGrid() const;
+  /**
+   * @return underlying grid
+   */
+  base::Grid& getGrid() const;
 
-        /**
-         * @return vector of function values at the grid points
-         */
-        const base::DataVector& getFunctionValues() const;
+  /**
+   * @return vector of function values at the grid points
+   */
+  const base::DataVector& getFunctionValues() const;
 
-      protected:
-        /// objective function
-        ScalarFunction& f;
-        /// underlying grid
-        base::Grid& grid;
-        /// maximal number of grid points
-        size_t N;
-        /// vector of function values at the grid points
-        base::DataVector functionValues;
+ protected:
+  /// objective function
+  ScalarFunction& f;
+  /// underlying grid
+  base::Grid& grid;
+  /// maximal number of grid points
+  size_t N;
+  /// vector of function values at the grid points
+  base::DataVector functionValues;
 
-        /**
-         * Removes grid points with indices
-         * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
-         * from the grid.
-         *
-         * @param oldGridSize   number of grid points after removal
-         */
-        void undoRefinement(size_t oldGridSize);
+  /**
+   * Removes grid points with indices
+   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+   * from the grid.
+   *
+   * @param oldGridSize   number of grid points after removal
+   */
+  void undoRefinement(size_t oldGridSize);
 
-        /**
-         * Evaluates the objective function at grid points with indices
-         * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
-         * and saves values in functionValues.
-         *
-         * @param oldGridSize   number of grid points already evaluated
-         */
-        void evalFunction(size_t oldGridSize = 0);
-    };
+  /**
+   * Evaluates the objective function at grid points with indices
+   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+   * and saves values in functionValues.
+   *
+   * @param oldGridSize   number of grid points already evaluated
+   */
+  void evalFunction(size_t oldGridSize = 0);
+};
 
-  }
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP */

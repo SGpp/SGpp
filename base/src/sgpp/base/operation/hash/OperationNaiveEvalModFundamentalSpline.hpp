@@ -13,44 +13,44 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating modified B-spline linear combinations on Noboundary grids.
-     */
-    class OperationNaiveEvalModFundamentalSpline : public OperationNaiveEval {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    B-spline degree
-         */
-        OperationNaiveEvalModFundamentalSpline(GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
-
-        /**
-         * Virtual destructor.
-         */
-        virtual ~OperationNaiveEvalModFundamentalSpline() {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @return          value of linear combination
-         */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point) override;
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SFundamentalSplineModifiedBase base;
-    };
-
+/**
+ * Operation for evaluating modified B-spline linear combinations on Noboundary grids.
+ */
+class OperationNaiveEvalModFundamentalSpline : public OperationNaiveEval {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    B-spline degree
+   */
+  OperationNaiveEvalModFundamentalSpline(GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  ~OperationNaiveEvalModFundamentalSpline() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of linear combination
+   */
+  float_t eval(const DataVector& alpha, const DataVector& point) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SFundamentalSplineModifiedBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALMODFUNDAMENTALSPLINE_HPP */

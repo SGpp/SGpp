@@ -12,37 +12,39 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Sampling on all dimensions
-     */
+/**
+ * Sampling on all dimensions
+ */
 
-    class OperationDensitySampling {
-      public:
-        OperationDensitySampling() {}
-        virtual ~OperationDensitySampling() {}
+class OperationDensitySampling {
+ public:
+  OperationDensitySampling() {}
+  virtual ~OperationDensitySampling() {}
 
-        /**
-         * Sampling with mixed starting dimensions
-         *
-         * @param alpha Coefficient vector for current grid
-         * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
-         * @param num_samples # of samples to draw
-         */
-        virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples) = 0;
+  /**
+   * Sampling with mixed starting dimensions
+   *
+   * @param alpha Coefficient vector for current grid
+   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+   * @param num_samples # of samples to draw
+   */
+  virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
+                          size_t num_samples) = 0;
 
-        /**
-         * Sampling with specified starting dimension
-         *
-         * @param alpha Coefficient vector for current grid
-         * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
-         * @param num_samples # of samples to draw
-         * @param dim_x Starting dimension
-         */
-        virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples, size_t dim_x) = 0;
-    };
+  /**
+   * Sampling with specified starting dimension
+   *
+   * @param alpha Coefficient vector for current grid
+   * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
+   * @param num_samples # of samples to draw
+   * @param dim_x Starting dimension
+   */
+  virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
+                          size_t num_samples, size_t dim_x) = 0;
+};
 
-  }
+}
 }
 #endif /* OPERATIONDENSITYSAMPLING_HPP_ */

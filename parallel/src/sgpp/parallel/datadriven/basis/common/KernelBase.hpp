@@ -78,13 +78,13 @@
 
 
 namespace SGPP {
-  namespace parallel {
-    enum KernelType {
-      Standard,
-      Mask
-    };
+namespace parallel {
+enum KernelType {
+  Standard,
+  Mask
+};
 
-  }
+}
 }
 
 #endif // KERNELBASE_HPP

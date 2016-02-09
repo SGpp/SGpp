@@ -9,105 +9,107 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
 
 
-    XdPhiPhiDownBBLinearBoundary::XdPhiPhiDownBBLinearBoundary(SGPP::base::GridStorage* storage) : XdPhiPhiDownBBLinear(storage) {
+XdPhiPhiDownBBLinearBoundary::XdPhiPhiDownBBLinearBoundary(
+  SGPP::base::GridStorage* storage) : XdPhiPhiDownBBLinear(storage) {
+}
+
+XdPhiPhiDownBBLinearBoundary::~XdPhiPhiDownBBLinearBoundary() {
+}
+
+void XdPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
+    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+  float_t q = this->boundingBox->getIntervalWidth(dim);
+  float_t t = this->boundingBox->getIntervalOffset(dim);
+
+  bool useBB = false;
+
+  if (q != 1.0 || t != 0.0) {
+    useBB = true;
+  }
+
+  // get boundary values
+  float_t left_boundary;
+  float_t right_boundary;
+  size_t seq_left;
+  size_t seq_right;
+
+  /*
+   * Handle Level 0
+   */
+  // This handles the diagonal only
+  //////////////////////////////////////
+  // left boundary
+  index.resetToLeftLevelZero(dim);
+  seq_left = index.seq();
+  left_boundary = source[seq_left];
+
+  // right boundary
+  index.resetToRightLevelZero(dim);
+  seq_right = index.seq();
+  right_boundary = source[seq_right];
+
+  if (useBB) {
+    // check boundary conditions
+    if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
+      result[seq_left] = 0.0; //left_boundary;
+    } else {
+      result[seq_left] = left_boundary * (((-1.0 / 6.0) * q) - (0.5 * t));
     }
 
-    XdPhiPhiDownBBLinearBoundary::~XdPhiPhiDownBBLinearBoundary() {
-    }
-
-    void XdPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      float_t q = this->boundingBox->getIntervalWidth(dim);
-      float_t t = this->boundingBox->getIntervalOffset(dim);
-
-      bool useBB = false;
-
-      if (q != 1.0 || t != 0.0) {
-        useBB = true;
-      }
-
-      // get boundary values
-      float_t left_boundary;
-      float_t right_boundary;
-      size_t seq_left;
-      size_t seq_right;
-
-      /*
-       * Handle Level 0
-       */
-      // This handles the diagonal only
+    if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
+      result[seq_right] = 0.0; //right_boundary;
+    } else {
+      result[seq_right] = right_boundary * (((1.0 / 3.0) * q) + (0.5 * t));
+      // down
       //////////////////////////////////////
-      // left boundary
-      index.resetToLeftLevelZero(dim);
-      seq_left = index.seq();
-      left_boundary = source[seq_left];
-
-      // right boundary
-      index.resetToRightLevelZero(dim);
-      seq_right = index.seq();
-      right_boundary = source[seq_right];
-
-      if (useBB) {
-        // check boundary conditions
-        if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-          result[seq_left] = 0.0; //left_boundary;
-        } else {
-          result[seq_left] = left_boundary * (((-1.0 / 6.0) * q) - (0.5 * t));
-        }
-
-        if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-          result[seq_right] = 0.0; //right_boundary;
-        } else {
-          result[seq_right] = right_boundary * (((1.0 / 3.0) * q) + (0.5 * t));
-          // down
-          //////////////////////////////////////
-          result[seq_right] += (left_boundary * (((-1.0 / 3.0) * q) - (0.5 * t)));
-        }
-
-        // move to root
-        if (!index.hint()) {
-          index.resetToLevelOne(dim);
-
-          if (!this->storage->end(index.seq())) {
-            recBB(source, result, index, dim, left_boundary, right_boundary, q, t);
-          }
-
-          index.resetToLeftLevelZero(dim);
-        }
-      } else {
-        // check boundary conditions
-        if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-          result[seq_left] = 0.0; //left_boundary;
-        } else {
-          result[seq_left] = left_boundary * (-1.0 / 3.0);
-        }
-
-        if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-          result[seq_right] = 0.0; //right_boundary;
-        } else {
-          result[seq_right] = right_boundary * (1.0 / 3.0);
-          // down
-          //////////////////////////////////////
-          result[seq_right] += (left_boundary * (1.0 / 6.0));
-        }
-
-        // move to root
-        if (!index.hint()) {
-          index.resetToLevelOne(dim);
-
-          if (!this->storage->end(index.seq())) {
-            rec(source, result, index, dim, left_boundary, right_boundary);
-          }
-
-          index.resetToLeftLevelZero(dim);
-        }
-      }
+      result[seq_right] += (left_boundary * (((-1.0 / 3.0) * q) - (0.5 * t)));
     }
 
-    // namespace detail
+    // move to root
+    if (!index.hint()) {
+      index.resetToLevelOne(dim);
 
-  } // namespace SGPP
+      if (!this->storage->end(index.seq())) {
+        recBB(source, result, index, dim, left_boundary, right_boundary, q, t);
+      }
+
+      index.resetToLeftLevelZero(dim);
+    }
+  } else {
+    // check boundary conditions
+    if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
+      result[seq_left] = 0.0; //left_boundary;
+    } else {
+      result[seq_left] = left_boundary * (-1.0 / 3.0);
+    }
+
+    if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
+      result[seq_right] = 0.0; //right_boundary;
+    } else {
+      result[seq_right] = right_boundary * (1.0 / 3.0);
+      // down
+      //////////////////////////////////////
+      result[seq_right] += (left_boundary * (1.0 / 6.0));
+    }
+
+    // move to root
+    if (!index.hint()) {
+      index.resetToLevelOne(dim);
+
+      if (!this->storage->end(index.seq())) {
+        rec(source, result, index, dim, left_boundary, right_boundary);
+      }
+
+      index.resetToLeftLevelZero(dim);
+    }
+  }
+}
+
+// namespace detail
+
+} // namespace SGPP
 }

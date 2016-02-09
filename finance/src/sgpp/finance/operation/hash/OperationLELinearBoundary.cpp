@@ -14,25 +14,28 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
-    OperationLELinearBoundary::OperationLELinearBoundary(SGPP::base::GridStorage* storage) : SGPP::pde::StdUpDown(storage) {
-    }
+OperationLELinearBoundary::OperationLELinearBoundary(SGPP::base::GridStorage*
+    storage) : SGPP::pde::StdUpDown(storage) {
+}
 
-    OperationLELinearBoundary::~OperationLELinearBoundary() {
-    }
+OperationLELinearBoundary::~OperationLELinearBoundary() {
+}
 
-    void OperationLELinearBoundary::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // Dphi * dphi
-      SGPP::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
-      myUp(alpha, result, dim);
-    }
+void OperationLELinearBoundary::up(SGPP::base::DataVector& alpha,
+                                   SGPP::base::DataVector& result, size_t dim) {
+  // Dphi * dphi
+  SGPP::pde::UpdPhidPhiBBIterativeLinearBoundary myUp(this->storage);
+  myUp(alpha, result, dim);
+}
 
-    void OperationLELinearBoundary::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // Dphi * dphi
-      SGPP::pde::DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
-      myDown(alpha, result, dim);
-    }
+void OperationLELinearBoundary::down(SGPP::base::DataVector& alpha,
+                                     SGPP::base::DataVector& result, size_t dim) {
+  // Dphi * dphi
+  SGPP::pde::DowndPhidPhiBBIterativeLinearBoundary myDown(this->storage);
+  myDown(alpha, result, dim);
+}
 
-  }
+}
 }

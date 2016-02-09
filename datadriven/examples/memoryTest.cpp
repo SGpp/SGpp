@@ -23,54 +23,59 @@
 
 using namespace SGPP::base;
 
-void doStuffOld(std::shared_ptr<OCLManager> manager, double *values, size_t valueSize) {
-//    OCLClonedBuffer buffer(manager);
-//    buffer.initializeBuffer(values, sizeof(double), valueSize);
+void doStuffOld(std::shared_ptr<OCLManager> manager, double* values,
+                size_t valueSize) {
+  //    OCLClonedBuffer buffer(manager);
+  //    buffer.initializeBuffer(values, sizeof(double), valueSize);
 
-    OCLStretchedBuffer stretched(manager);
-    stretched.initializeBuffer(sizeof(double), valueSize);
+  OCLStretchedBuffer stretched(manager);
+  stretched.initializeBuffer(sizeof(double), valueSize);
 }
 
-void doStuff(std::shared_ptr<OCLManagerMultiPlatform> manager, double *values, size_t valueSize) {
-//    OCLClonedBufferMultiPlatform buffer(manager);
-//    buffer.initializeBuffer(values, sizeof(double), valueSize);
+void doStuff(std::shared_ptr<OCLManagerMultiPlatform> manager, double* values,
+             size_t valueSize) {
+  //    OCLClonedBufferMultiPlatform buffer(manager);
+  //    buffer.initializeBuffer(values, sizeof(double), valueSize);
 
-    OCLStretchedBufferMultiPlatform stretched(manager);
-    stretched.freeBuffer();
-    stretched.initializeBuffer(sizeof(double), valueSize);
-    stretched.freeBuffer();
-    stretched.initializeBuffer(sizeof(double), valueSize);
+  OCLStretchedBufferMultiPlatform stretched(manager);
+  stretched.freeBuffer();
+  stretched.initializeBuffer(sizeof(double), valueSize);
+  stretched.freeBuffer();
+  stretched.initializeBuffer(sizeof(double), valueSize);
 }
 
 int main(int argc, char** argv) {
 
-    auto parameters = std::make_shared<OCLOperationConfiguration>();
+  auto parameters = std::make_shared<OCLOperationConfiguration>();
 
-    auto manager = std::make_shared<OCLManagerMultiPlatform>(parameters);
+  auto manager = std::make_shared<OCLManagerMultiPlatform>(parameters);
 
-    const size_t valueSize = 100000000;
+  const size_t valueSize = 100000000;
 
-    double *values = new double[valueSize];
-    for (size_t i = 0; i < valueSize; i++) {
-        values[i] = static_cast<double>(i);
-    }
+  double* values = new double[valueSize];
 
-    const size_t iterations = 10000;
+  for (size_t i = 0; i < valueSize; i++) {
+    values[i] = static_cast<double>(i);
+  }
 
-    auto managerOld = std::make_shared<OCLManager>(parameters);
+  const size_t iterations = 10000;
 
-    for (size_t i = 0; i < iterations; i++) {
-        std::cout << "it: " << i << std::endl;
-        doStuff(manager, values, valueSize);
-//        doStuffOld(managerOld, values, valueSize);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
+  auto managerOld = std::make_shared<OCLManager>(parameters);
+
+  for (size_t i = 0; i < iterations; i++) {
+    std::cout << "it: " << i << std::endl;
+    doStuff(manager, values, valueSize);
+    //        doStuffOld(managerOld, values, valueSize);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
 
 }
 #else
 #include <iostream>
 int main(int argc, char** argv) {
-    std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
-	return 0;
+  std::cout <<
+            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
+            std::endl;
+  return 0;
 }
 #endif

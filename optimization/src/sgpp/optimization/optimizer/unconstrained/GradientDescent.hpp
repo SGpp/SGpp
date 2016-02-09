@@ -14,111 +14,117 @@
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace optimizer {
+namespace optimization {
+namespace optimizer {
 
-      /**
-       * Gradient-based method of steepest descent.
-       */
-      class GradientDescent : public UnconstrainedOptimizer {
-        public:
-          /// default maximal number of iterations
-          static const size_t DEFAULT_MAX_IT_COUNT = 2000;
-          /// default beta (parameter for Armijo's rule)
-          static constexpr float_t DEFAULT_BETA = 0.5;
-          /// default gamma (parameter for Armijo's rule)
-          static constexpr float_t DEFAULT_GAMMA = 1e-2;
-          /// default tolerance (parameter for Armijo's rule)
-          static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
-          /// default epsilon (parameter for Armijo's rule)
-          static constexpr float_t DEFAULT_EPSILON = 1e-18;
+/**
+ * Gradient-based method of steepest descent.
+ */
+class GradientDescent : public UnconstrainedOptimizer {
+ public:
+  /// default maximal number of iterations
+  static const size_t DEFAULT_MAX_IT_COUNT = 2000;
+  /// default beta (parameter for Armijo's rule)
+  static constexpr float_t DEFAULT_BETA = 0.5;
+  /// default gamma (parameter for Armijo's rule)
+  static constexpr float_t DEFAULT_GAMMA = 1e-2;
+  /// default tolerance (parameter for Armijo's rule)
+  static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
+  /// default epsilon (parameter for Armijo's rule)
+  static constexpr float_t DEFAULT_EPSILON = 1e-18;
 
-          /**
-           * Constructor.
-           *
-           * @param f             objective function
-           * @param fGradient     objective function gradient
-           * @param maxItCount    maximal number of iterations
-           * @param beta          beta (parameter for Armijo's rule)
-           * @param gamma         gamma (parameter for Armijo's rule)
-           * @param tolerance     tolerance (parameter for Armijo's rule)
-           * @param epsilon       epsilon (parameter for Armijo's rule)
-           */
-          GradientDescent(ScalarFunction& f,
-                          ScalarFunctionGradient& fGradient,
-                          size_t maxItCount = DEFAULT_MAX_IT_COUNT,
-                          float_t beta = DEFAULT_BETA,
-                          float_t gamma = DEFAULT_GAMMA,
-                          float_t tolerance = DEFAULT_TOLERANCE,
-                          float_t epsilon = DEFAULT_EPSILON);
+  /**
+   * Constructor.
+   *
+   * @param f             objective function
+   * @param fGradient     objective function gradient
+   * @param maxItCount    maximal number of iterations
+   * @param beta          beta (parameter for Armijo's rule)
+   * @param gamma         gamma (parameter for Armijo's rule)
+   * @param tolerance     tolerance (parameter for Armijo's rule)
+   * @param epsilon       epsilon (parameter for Armijo's rule)
+   */
+  GradientDescent(ScalarFunction& f,
+                  ScalarFunctionGradient& fGradient,
+                  size_t maxItCount = DEFAULT_MAX_IT_COUNT,
+                  float_t beta = DEFAULT_BETA,
+                  float_t gamma = DEFAULT_GAMMA,
+                  float_t tolerance = DEFAULT_TOLERANCE,
+                  float_t epsilon = DEFAULT_EPSILON);
 
-          void optimize();
+  /**
+   * Destructor.
+   */
+  ~GradientDescent() override;
 
-          /**
-           * @return objective function gradient
-           */
-          ScalarFunctionGradient& getObjectiveGradient() const;
+  void optimize() override;
 
-          /**
-           * @return              beta (parameter for Armijo's rule)
-           */
-          float_t getBeta() const;
+  /**
+   * @return objective function gradient
+   */
+  ScalarFunctionGradient& getObjectiveGradient() const;
 
-          /**
-           * @param beta          beta (parameter for Armijo's rule)
-           */
-          void setBeta(float_t beta);
+  /**
+   * @return              beta (parameter for Armijo's rule)
+   */
+  float_t getBeta() const;
 
-          /**
-           * @return              gamma (parameter for Armijo's rule)
-           */
-          float_t getGamma() const;
+  /**
+   * @param beta          beta (parameter for Armijo's rule)
+   */
+  void setBeta(float_t beta);
 
-          /**
-           * @param gamma         gamma (parameter for Armijo's rule)
-           */
-          void setGamma(float_t gamma);
+  /**
+   * @return              gamma (parameter for Armijo's rule)
+   */
+  float_t getGamma() const;
 
-          /**
-           * @return              tolerance (parameter for Armijo's rule)
-           */
-          float_t getTolerance() const;
+  /**
+   * @param gamma         gamma (parameter for Armijo's rule)
+   */
+  void setGamma(float_t gamma);
 
-          /**
-           * @param tolerance     tolerance (parameter for Armijo's rule)
-           */
-          void setTolerance(float_t tolerance);
+  /**
+   * @return              tolerance (parameter for Armijo's rule)
+   */
+  float_t getTolerance() const;
 
-          /**
-           * @return              epsilon (parameter for Armijo's rule)
-           */
-          float_t getEpsilon() const;
+  /**
+   * @param tolerance     tolerance (parameter for Armijo's rule)
+   */
+  void setTolerance(float_t tolerance);
 
-          /**
-           * @param epsilon       epsilon (parameter for Armijo's rule)
-           */
-          void setEpsilon(float_t epsilon);
+  /**
+   * @return              epsilon (parameter for Armijo's rule)
+   */
+  float_t getEpsilon() const;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+  /**
+   * @param epsilon       epsilon (parameter for Armijo's rule)
+   */
+  void setEpsilon(float_t epsilon);
 
-        protected:
-          /// objective function gradient
-          ScalarFunctionGradient& fGradient;
-          /// beta (parameter for Armijo's rule)
-          float_t beta;
-          /// gamma (parameter for Armijo's rule)
-          float_t gamma;
-          /// tolerance (parameter for Armijo's rule)
-          float_t tol;
-          /// epsilon (parameter for Armijo's rule)
-          float_t eps;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
-    }
-  }
+ protected:
+  /// objective function gradient
+  ScalarFunctionGradient& fGradient;
+  /// beta (parameter for Armijo's rule)
+  float_t beta;
+  /// gamma (parameter for Armijo's rule)
+  float_t gamma;
+  /// tolerance (parameter for Armijo's rule)
+  float_t tol;
+  /// epsilon (parameter for Armijo's rule)
+  float_t eps;
+};
+
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_GRADIENTDESCENT_HPP */

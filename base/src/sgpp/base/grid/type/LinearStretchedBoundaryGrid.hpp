@@ -8,51 +8,49 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with linear base functions with boundaries, pentagon cut
-     */
-    class LinearStretchedBoundaryGrid : public Grid {
-      protected:
-        LinearStretchedBoundaryGrid(std::istream& istr);
+/**
+ * grid with linear base functions with boundaries, pentagon cut
+ */
+class LinearStretchedBoundaryGrid : public Grid {
+ protected:
+  explicit LinearStretchedBoundaryGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor Linear Truncated Boundary Grid
-         *
-         * @param dim the dimension of the grid
-         */
-        LinearStretchedBoundaryGrid(size_t dim);
+ public:
+  /**
+   * Constructor Linear Truncated Boundary Grid
+   *
+   * @param dim the dimension of the grid
+   */
+  explicit LinearStretchedBoundaryGrid(size_t dim);
 
-        /**
-         * Constructor Linear Truncated Boundary Grid
-         *
-         * @param BB the Stretching of the grid
-         */
-        LinearStretchedBoundaryGrid(Stretching& BB);
+  /**
+   * Constructor Linear Truncated Boundary Grid
+   *
+   * @param BB the Stretching of the grid
+   */
+  explicit LinearStretchedBoundaryGrid(Stretching& BB);
 
-        /**
-         * Destructor
-         */
-        virtual ~LinearStretchedBoundaryGrid();
+  /**
+   * Destructor
+   */
+  ~LinearStretchedBoundaryGrid() override;
 
-        virtual SGPP::base::GridType getType();
+  SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis();
+  const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator();
+  GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
-    };
+  static Grid* unserialize(std::istream& istr);
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARSTRETCHEDTRUNCATEDBOUNDARYGRID_HPP */

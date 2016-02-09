@@ -13,35 +13,39 @@
 
 
 namespace SGPP {
-  namespace datadriven {
-    class DatasetGenerator {
-      public:
-        virtual ~DatasetGenerator();
-        virtual float_t uniform(float_t a, float_t b);
-        virtual float_t normal(float_t mean, float_t stddev);
-        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trainingData, SGPP::base::DataVector& classes) = 0;
-        virtual size_t getDims() = 0;
-    };
+namespace datadriven {
+class DatasetGenerator {
+ public:
+  virtual ~DatasetGenerator();
+  virtual float_t uniform(float_t a, float_t b);
+  virtual float_t normal(float_t mean, float_t stddev);
+  virtual void createData(size_t offset, size_t size, base::DataMatrix& trainingData,
+    base::DataVector& classes) = 0;
+  virtual size_t getDims() = 0;
+};
 
-    class Friedman1Generator : public DatasetGenerator {
-      public:
-        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trData, SGPP::base::DataVector& classes);
-        virtual size_t getDims();
-    };
+class Friedman1Generator : public DatasetGenerator {
+ public:
+  virtual void createData(size_t offset, size_t size,
+                          base::DataMatrix& trData, base::DataVector& classes);
+  virtual size_t getDims();
+};
 
-    class Friedman2Generator : public DatasetGenerator {
-      public:
-        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trData, SGPP::base::DataVector& classes);
-        virtual size_t getDims();
-    };
+class Friedman2Generator : public DatasetGenerator {
+ public:
+  virtual void createData(size_t offset, size_t size,
+                          base::DataMatrix& trData, base::DataVector& classes);
+  virtual size_t getDims();
+};
 
-    class Friedman3Generator : public DatasetGenerator {
-      public:
-        virtual void createData(size_t offset, size_t size, SGPP::base::DataMatrix& trData, SGPP::base::DataVector& classes);
-        virtual size_t getDims();
-    };
+class Friedman3Generator : public DatasetGenerator {
+ public:
+  virtual void createData(size_t offset, size_t size,
+                          base::DataMatrix& trData, base::DataVector& classes);
+  virtual size_t getDims();
+};
 
-  }
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
-#endif // DATASETGENERATOR_HPP
+#endif  // DATASETGENERATOR_HPP

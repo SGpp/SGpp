@@ -14,48 +14,49 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating modified wavelet linear combinations on Noboundary grids,
-     * their gradients and their Hessians.
-     */
-    class OperationNaiveEvalHessianModWavelet : public OperationNaiveEvalHessian {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         */
-        OperationNaiveEvalHessianModWavelet(GridStorage* storage) : storage(storage) {
-        }
-
-        /**
-         * Virtual destructor.
-         */
-        virtual ~OperationNaiveEvalHessianModWavelet() {
-        }
-
-        /**
-         * @param       alpha       coefficient vector
-         * @param       point       evaluation point
-         * @param[out]  gradient    gradient vector of linear combination
-         * @param[out]  hessian     Hessian matrix of linear combination
-         * @return                  value of linear combination
-         */
-        virtual float_t evalHessian(const DataVector& alpha,
-                                    const DataVector& point,
-                                    DataVector& gradient,
-                                    DataMatrix& hessian);
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D wavelet basis
-        SWaveletModifiedBase base;
-    };
-
+/**
+ * Operation for evaluating modified wavelet linear combinations on Noboundary grids,
+ * their gradients and their Hessians.
+ */
+class OperationNaiveEvalHessianModWavelet : public OperationNaiveEvalHessian {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   */
+  explicit OperationNaiveEvalHessianModWavelet(GridStorage* storage) : storage(
+      storage) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  ~OperationNaiveEvalHessianModWavelet() override {
+  }
+
+  /**
+   * @param       alpha       coefficient vector
+   * @param       point       evaluation point
+   * @param[out]  gradient    gradient vector of linear combination
+   * @param[out]  hessian     Hessian matrix of linear combination
+   * @return                  value of linear combination
+   */
+  float_t evalHessian(const DataVector& alpha,
+                      const DataVector& point,
+                      DataVector& gradient,
+                      DataMatrix& hessian) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D wavelet basis
+  SWaveletModifiedBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALHESSIANMODWAVELET_HPP */

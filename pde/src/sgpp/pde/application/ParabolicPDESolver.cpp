@@ -9,13 +9,13 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    ParabolicPDESolver::ParabolicPDESolver() : PDESolver() {
-    }
+ParabolicPDESolver::ParabolicPDESolver() : PDESolver() {
+}
 
-    ParabolicPDESolver::~ParabolicPDESolver() {
-    }
+ParabolicPDESolver::~ParabolicPDESolver() {
+}
 
-  }
+}
 }

@@ -16,50 +16,55 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Copies data from DataVector objects into DataVectorSP objects and vice versa.
-     * Copies data from DataMatrix objects into DataMatrixSP objects and vice versa.
-     *
-     */
-    class PrecisionConverter {
-      public:
-        /**
-         * Copies data from DataVector object into DataVectorSP object
-         *
-         * @param src source DataVector, double precision
-         * @param dest destination DataVectorSP, single precision
-         */
-        static void convertDataVectorToDataVectorSP(const SGPP::base::DataVector& src, SGPP::base::DataVectorSP& dest);
+/**
+ * Copies data from DataVector objects into DataVectorSP objects and vice versa.
+ * Copies data from DataMatrix objects into DataMatrixSP objects and vice versa.
+ *
+ */
+class PrecisionConverter {
+ public:
+  /**
+   * Copies data from DataVector object into DataVectorSP object
+   *
+   * @param src source DataVector, double precision
+   * @param dest destination DataVectorSP, single precision
+   */
+  static void convertDataVectorToDataVectorSP(const SGPP::base::DataVector& src,
+      SGPP::base::DataVectorSP& dest);
 
-        /**
-         * Copies data from DataVectorSP object into DataVector object
-         *
-         * @param src source DataVectorSP, single precision
-         * @param dest destination DataVector, double precision
-         */
-        static void convertDataVectorSPToDataVector(const SGPP::base::DataVectorSP& src, SGPP::base::DataVector& dest);
+  /**
+   * Copies data from DataVectorSP object into DataVector object
+   *
+   * @param src source DataVectorSP, single precision
+   * @param dest destination DataVector, double precision
+   */
+  static void convertDataVectorSPToDataVector(
+    const SGPP::base::DataVectorSP& src,
+    SGPP::base::DataVector& dest);
 
-        /**
-         * Copies data from DataMatrix object into DataMatrixSP object
-         *
-         * @param src source DataMatrix, double precision
-         * @param dest destination DataMatrixSP, single precision
-         */
-        static void convertDataMatrixToDataMatrixSP(const SGPP::base::DataMatrix& src, SGPP::base::DataMatrixSP& dest);
+  /**
+   * Copies data from DataMatrix object into DataMatrixSP object
+   *
+   * @param src source DataMatrix, double precision
+   * @param dest destination DataMatrixSP, single precision
+   */
+  static void convertDataMatrixToDataMatrixSP(const SGPP::base::DataMatrix& src,
+      SGPP::base::DataMatrixSP& dest);
 
-        /**
-         * Copies data from DataMatrixSP object into DataMatrix object
-         *
-         * @param src source DataMatrixSP, single precision
-         * @param dest destination DataMatrix, double precision
-         */
-        static void convertDataMatrixSPToDataMatrix(const SGPP::base::DataMatrixSP& src, SGPP::base::DataMatrix& dest);
-    };
+  /**
+   * Copies data from DataMatrixSP object into DataMatrix object
+   *
+   * @param src source DataMatrixSP, single precision
+   * @param dest destination DataMatrix, double precision
+   */
+  static void convertDataMatrixSPToDataMatrix(
+    const SGPP::base::DataMatrixSP& src,
+    SGPP::base::DataMatrix& dest);
+};
 
-  }
-
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* PRECISIONCONVERTER_HPP */

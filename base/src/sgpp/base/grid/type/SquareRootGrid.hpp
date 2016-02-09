@@ -7,51 +7,49 @@
 #define SQUAREROOTGRID_HPP_
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with linear base functions with boundaries, pentagon cut
-     */
-    class SquareRootGrid : public Grid {
-      protected:
-        SquareRootGrid(std::istream& istr);
+/**
+ * grid with linear base functions with boundaries, pentagon cut
+ */
+class SquareRootGrid : public Grid {
+ protected:
+  explicit SquareRootGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor Linear Truncated Boundary Grid
-         *
-         * @param dim the dimension of the grid
-         */
-        SquareRootGrid(size_t dim);
+ public:
+  /**
+   * Constructor Linear Truncated Boundary Grid
+   *
+   * @param dim the dimension of the grid
+   */
+  explicit SquareRootGrid(size_t dim);
 
-        /**
-         * Constructor Linear Truncated Boundary Grid
-         *
-         * @param BB the BoundingBox of the grid
-         */
-        SquareRootGrid(BoundingBox& BB);
+  /**
+   * Constructor Linear Truncated Boundary Grid
+   *
+   * @param BB the BoundingBox of the grid
+   */
+  explicit SquareRootGrid(BoundingBox& BB);
 
-        /**
-         * Destructor
-         */
-        virtual ~SquareRootGrid();
+  /**
+   * Destructor
+   */
+  ~SquareRootGrid() override;
 
-        virtual SGPP::base::GridType getType();
+  SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis();
+  const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator();
+  GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
-    };
+  static Grid* unserialize(std::istream& istr);
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* SQUAREROOTGRID_HPP_ */

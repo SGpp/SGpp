@@ -12,37 +12,41 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * Implementation of Laplace for mod linear functions
-     *
-     */
-    class OperationLaplaceModLinear : public UpDownOneOpDim {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's SGPP::base::GridStorage object
-         */
-        OperationLaplaceModLinear(SGPP::base::GridStorage* storage);
+/**
+ * Implementation of Laplace for mod linear functions
+ *
+ */
+class OperationLaplaceModLinear : public UpDownOneOpDim {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's SGPP::base::GridStorage object
+   */
+  OperationLaplaceModLinear(SGPP::base::GridStorage* storage);
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationLaplaceModLinear();
+  /**
+   * Destructor
+   */
+  virtual ~OperationLaplaceModLinear();
 
-      protected:
-        virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+ protected:
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                  size_t dim);
 
-        virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                    size_t dim);
 
-        virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(SGPP::base::DataVector& alpha,
+                         SGPP::base::DataVector& result, size_t dim);
 
-        virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
-    };
+  virtual void upOpDim(SGPP::base::DataVector& alpha,
+                       SGPP::base::DataVector& result, size_t dim);
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONLAPLACEMODLINEAR_HPP */

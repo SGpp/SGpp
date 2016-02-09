@@ -8,34 +8,35 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    Dataset::Dataset() :
-      numberInstances(0), dimension(0), classes(0), trainingData(0, 0) {
-    }
-
-    Dataset::Dataset(size_t numberInstances, size_t dimension) :
-      numberInstances(numberInstances),
-      dimension(dimension),
-      classes(numberInstances),
-      trainingData(numberInstances, dimension) {
-    }
-
-    size_t Dataset::getNumberInstances() const {
-      return numberInstances;
-    }
-
-    size_t Dataset::getDimension() const {
-      return dimension;
-    }
-
-    SGPP::base::DataVector &Dataset::getClasses() {
-      return classes;
-    }
-
-    SGPP::base::DataMatrix &Dataset::getTrainingData() {
-      return trainingData;
-    }
-
-  }
+Dataset::Dataset() :
+  numberInstances(0), dimension(0), classes(0), trainingData(0, 0) {
 }
+
+Dataset::Dataset(size_t numberInstances, size_t dimension) :
+  numberInstances(numberInstances),
+  dimension(dimension),
+  classes(numberInstances),
+  trainingData(numberInstances, dimension) {
+}
+
+size_t Dataset::getNumberInstances() const {
+  return numberInstances;
+}
+
+size_t Dataset::getDimension() const {
+  return dimension;
+}
+
+SGPP::base::DataVector& Dataset::getClasses() {
+  return classes;
+}
+
+SGPP::base::DataMatrix& Dataset::getTrainingData() {
+  return trainingData;
+}
+
+}  // namespace datadriven
+}  // namespace SGPP
+

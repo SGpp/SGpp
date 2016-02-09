@@ -20,6 +20,7 @@
 using namespace SGPP::base;
 using namespace std::chrono;
 
+<<<<<<< HEAD
 void testCloned(std::shared_ptr<OCLManager> manager, double *values, size_t valueSize) {
     OCLClonedBuffer cloned(manager);
     cloned.initializeBuffer(values, sizeof(double), valueSize);
@@ -29,6 +30,19 @@ void testStretched(std::shared_ptr<OCLManager> manager, double *values, size_t v
     OCLStretchedBuffer stretched(manager);
     stretched.initializeBuffer(sizeof(double), valueSize);
     double* mappedBuffer = (double*)stretched.getMappedHostBuffer();
+=======
+void testCloned(std::shared_ptr<OCLManager> manager, double* values,
+                size_t valueSize) {
+  OCLClonedBuffer cloned(manager);
+  cloned.initializeBuffer(values, sizeof(double), valueSize);
+}
+
+void testStretched(std::shared_ptr<OCLManager> manager, double* values,
+                   size_t valueSize) {
+  OCLStretchedBuffer stretched(manager);
+  stretched.initializeBuffer(sizeof(double), valueSize);
+  double* mappedBuffer = (double*)stretched.getMappedHostBuffer();
+>>>>>>> origin/master
 
     for (size_t i = 0; i < valueSize; i++)
     {
@@ -36,9 +50,16 @@ void testStretched(std::shared_ptr<OCLManager> manager, double *values, size_t v
     }
 }
 
+<<<<<<< HEAD
 void testZeroCopyReadOnly(std::shared_ptr<OCLManager> manager, double *values, size_t valueSize) {
     OCLZeroCopyBuffer buffer(manager);
     buffer.initializeBuffer( values, sizeof(double), valueSize, true);
+=======
+void testZeroCopyReadOnly(std::shared_ptr<OCLManager> manager, double* values,
+                          size_t valueSize) {
+  OCLZeroCopyBuffer buffer(manager);
+  buffer.initializeBuffer( values, sizeof(double), valueSize, true);
+>>>>>>> origin/master
 }
 
 int main(int argc, char** argv) {
@@ -82,14 +103,30 @@ int main(int argc, char** argv) {
     sum = 0;
     std::cout << std::endl;
 
+<<<<<<< HEAD
     std::cout << "Stretched Buffer" << std::endl;
     for (size_t i = 0; i < iterations; i++) {
         std::cout << ".";
         std::cout.flush();
+=======
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>
+                    ( t2 - t1 ).count();
+    //std::cout << "duration: " << duration << std::endl;
+    sum += duration;
+>>>>>>> origin/master
 
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
+<<<<<<< HEAD
         testStretched(manager,values,valueSize);
+=======
+  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 *
+        0.001;
+  std::cout << "Average: " << avg << std::endl;
+  sum = 0;
+  std::cout << std::endl;
+>>>>>>> origin/master
 
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
@@ -110,13 +147,22 @@ int main(int argc, char** argv) {
 
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
+<<<<<<< HEAD
         testZeroCopyReadOnly(manager,values,valueSize);
+=======
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>
+                    ( t2 - t1 ).count();
+    //std::cout << "duration: " << duration << std::endl;
+    sum += duration;
+>>>>>>> origin/master
 
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
         //std::cout << "duration: " << duration << std::endl;
         sum += duration;
 
+<<<<<<< HEAD
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     avg = (static_cast<double>(sum)/static_cast<double>(iterations)) * 0.001 * 0.001;
@@ -127,6 +173,44 @@ int main(int argc, char** argv) {
 int main(int argc, char** argv) {
     std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
         return 0;
+=======
+  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 *
+        0.001;
+  std::cout << "Average: " << avg << std::endl;
+  sum = 0;
+  std::cout << std::endl;
+
+  std::cout << "ZeroCopy Buffer" << std::endl;
+
+  for (size_t i = 0; i < iterations; i++) {
+    std::cout << ".";
+    std::cout.flush();
+
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
+    testZeroCopyReadOnly(manager, values, valueSize);
+
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>
+                    ( t2 - t1 ).count();
+    //std::cout << "duration: " << duration << std::endl;
+    sum += duration;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+
+  avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 *
+        0.001;
+  std::cout << "Average: " << avg << std::endl;
+  sum = 0;
+}
+#else
+int main(int argc, char** argv) {
+  std::cout <<
+            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
+            std::endl;
+  return 0;
+>>>>>>> origin/master
 }
 #endif
 

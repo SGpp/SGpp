@@ -12,63 +12,65 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <vector>
+
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    float_t OperationEvalPrewavelet::eval(const DataVector& alpha,
-                                          const DataVector& point) {
-      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+float_t OperationEvalPrewavelet::eval(const DataVector& alpha,
+                                      const DataVector& point) {
+  typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
-      IndexValVector vec;
-      PrewaveletBasis<unsigned int, unsigned int> base;
-      GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(
-        storage);
+  IndexValVector vec;
+  PrewaveletBasis<unsigned int, unsigned int> base;
+  GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(
+    storage);
 
-      ga(base, point, vec);
+  ga(base, point, vec);
 
-      float_t result = 0.0;
+  float_t result = 0.0;
 
-      for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
-        result += iter->second * alpha[iter->first];
-      }
-
-      return result;
-    }
-
-    float_t OperationEvalPrewavelet::test(const DataVector& alpha,
-                                          const DataVector& data,
-                                          const DataVector& classes) {
-      return 0;
-    }
-
-    float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
-      float_t result = 0.0;
-
-      for (size_t i = 0; i < storage->size(); i++) {
-        float_t temp_result = 1;
-
-        for (size_t d = 0; d < storage->dim(); d++) {
-          GridStorage::index_type::level_type level;
-          GridStorage::index_type::index_type index;
-          (*storage)[i]->get(d, level, index);
-
-          if (index != 1 && index != (unsigned int)((1 << level) - 1)) {
-            temp_result = 0.0;
-            break;
-          } else if (level == 1) {
-            temp_result *= 1.0 / 2.0;
-          } else {
-            temp_result *= 0.4 * (1.0 / (1 << level));
-          }
-
-        }
-
-        result += alpha[i] * temp_result;
-      }
-
-      return result;
-    }
-
+  for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
+    result += iter->second * alpha[iter->first];
   }
+
+  return result;
 }
+
+float_t OperationEvalPrewavelet::test(const DataVector& alpha,
+                                      const DataVector& data,
+                                      const DataVector& classes) {
+  return 0;
+}
+
+float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
+  float_t result = 0.0;
+
+  for (size_t i = 0; i < storage->size(); i++) {
+    float_t temp_result = 1;
+
+    for (size_t d = 0; d < storage->dim(); d++) {
+      GridStorage::index_type::level_type level;
+      GridStorage::index_type::index_type index;
+      (*storage)[i]->get(d, level, index);
+
+      if (index != 1 && index != (unsigned int)((1 << level) - 1)) {
+        temp_result = 0.0;
+        break;
+      } else if (level == 1) {
+        temp_result *= 1.0 / 2.0;
+      } else {
+        temp_result *= 0.4 * (1.0 / (1 << level));
+      }
+    }
+
+    result += alpha[i] * temp_result;
+  }
+
+  return result;
+}
+
+}  // namespace base
+}  // namespace SGPP

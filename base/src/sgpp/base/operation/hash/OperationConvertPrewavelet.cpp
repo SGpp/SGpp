@@ -16,29 +16,27 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationConvertPrewavelet::doConvertToLinear(
-      DataVector& alpha) {
+void OperationConvertPrewavelet::doConvertToLinear(
+  DataVector& alpha) {
+  ConvertPrewaveletToLinear func(this->storage);
+  sweep<ConvertPrewaveletToLinear> s(func, this->storage);
 
-      ConvertPrewaveletToLinear func(this->storage);
-      sweep<ConvertPrewaveletToLinear> s(func, this->storage);
 
-
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
-      }
-
-    }
-
-    void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha) {
-      ConvertLinearToPrewavelet func(this->storage, this->shadowstorage);
-      sweep<ConvertLinearToPrewavelet> s(func, this->storage);
-
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
-      }
-    }
-
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(alpha, alpha, i);
   }
 }
+
+void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha) {
+  ConvertLinearToPrewavelet func(this->storage, this->shadowstorage);
+  sweep<ConvertLinearToPrewavelet> s(func, this->storage);
+
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(alpha, alpha, i);
+  }
+}
+
+}  // namespace base
+}  // namespace SGPP

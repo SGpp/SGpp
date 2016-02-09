@@ -26,150 +26,153 @@ typedef arma::fmat ArmadilloMatrix;
 #include <iostream>
 
 namespace SGPP {
-  namespace optimization {
-    namespace sle_solver {
+namespace optimization {
+namespace sle_solver {
 
-      bool Armadillo::solve(SLE& system, base::DataVector& b,
-                            base::DataVector& x) const {
-        base::DataMatrix B(b.getPointer(), b.getSize(), 1);
-        base::DataMatrix X(B.getNrows(), B.getNcols());
+Armadillo::~Armadillo() {
+}
 
-        // call version for multiple RHSs
-        if (solve(system, B, X)) {
-          x.resize(X.getNrows());
-          X.getColumn(0, x);
-          return true;
-        } else {
-          return false;
-        }
-      }
+bool Armadillo::solve(SLE& system, base::DataVector& b,
+                      base::DataVector& x) const {
+  base::DataMatrix B(b.getPointer(), b.getSize(), 1);
+  base::DataMatrix X(B.getNrows(), B.getNcols());
 
-      bool Armadillo::solve(SLE& system,
-                            base::DataMatrix& B,
-                            base::DataMatrix& X) const {
+  // call version for multiple RHSs
+  if (solve(system, B, X)) {
+    x.resize(X.getNrows());
+    X.getColumn(0, x);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool Armadillo::solve(SLE& system,
+                      base::DataMatrix& B,
+                      base::DataMatrix& X) const {
 #ifdef USE_ARMADILLO
-        Printer::getInstance().printStatusBegin("Solving linear system (Armadillo)...");
+  Printer::getInstance().printStatusBegin("Solving linear system (Armadillo)...");
 
-        const arma::uword n = static_cast<arma::uword>(system.getDimension());
-        ArmadilloMatrix A(n, n);
-        size_t nnz = 0;
+  const arma::uword n = static_cast<arma::uword>(system.getDimension());
+  ArmadilloMatrix A(n, n);
+  size_t nnz = 0;
 
-        A.zeros();
+  A.zeros();
 
-        // parallelize only if the system is cloneable
-        #pragma omp parallel if (system.isCloneable()) \
-        shared(system, A, nnz) default(none)
-        {
-          SLE* system2 = &system;
+  // parallelize only if the system is cloneable
+  #pragma omp parallel if (system.isCloneable()) \
+  shared(system, A, nnz) default(none)
+  {
+    SLE* system2 = &system;
 #ifdef _OPENMP
-          std::unique_ptr<CloneableSLE> clonedSLE;
+    std::unique_ptr<CloneableSLE> clonedSLE;
 
-          if (system.isCloneable() && (omp_get_max_threads() > 1)) {
-            dynamic_cast<CloneableSLE&>(system).clone(clonedSLE);
-            system2 = clonedSLE.get();
-          }
+    if (system.isCloneable() && (omp_get_max_threads() > 1)) {
+      dynamic_cast<CloneableSLE&>(system).clone(clonedSLE);
+      system2 = clonedSLE.get();
+    }
 
 #endif /* _OPENMP */
 
-          // copy system matrix to Armadillo matrix object
-          #pragma omp for ordered schedule(dynamic)
+    // copy system matrix to Armadillo matrix object
+    #pragma omp for ordered schedule(dynamic)
 
-          for (arma::uword i = 0; i < n; i++) {
-            for (arma::uword j = 0; j < n; j++) {
-              A(i, j) = system2->getMatrixEntry(i, j);
+    for (arma::uword i = 0; i < n; i++) {
+      for (arma::uword j = 0; j < n; j++) {
+        A(i, j) = system2->getMatrixEntry(i, j);
 
-              // count nonzero entries
-              // (not necessary, you can also remove that if you like)
-              if (A(i, j) != 0) {
-                #pragma omp atomic
-                nnz++;
-              }
-            }
-
-            // status message
-            if (i % 100 == 0) {
-              #pragma omp ordered
-              {
-                char str[10];
-                snprintf(str, 10, "%.1f%%",
-                static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
-                Printer::getInstance().printStatusUpdate("constructing matrix (" +
-                std::string(str) + ")");
-              }
-            }
-          }
+        // count nonzero entries
+        // (not necessary, you can also remove that if you like)
+        if (A(i, j) != 0) {
+          #pragma omp atomic
+          nnz++;
         }
-
-        Printer::getInstance().printStatusUpdate("constructing matrix (100.0%)");
-        Printer::getInstance().printStatusNewLine();
-
-        // print ratio of nonzero entries
-        {
-          char str[10];
-          float_t nnzRatio = static_cast<float_t>(nnz) /
-                             (static_cast<float_t>(n) *
-                              static_cast<float_t>(n));
-          snprintf(str, 10, "%.1f%%", nnzRatio * 100.0);
-          Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
-          Printer::getInstance().printStatusNewLine();
-        }
-
-        if (B.getNcols() == 1) {
-          // only one RHS ==> use vector version of arma::solve
-          ArmadilloVector bArmadillo(B.getPointer(), n);
-          ArmadilloVector xArmadillo(n);
-
-          Printer::getInstance().printStatusUpdate("solving with Armadillo");
-
-          if (arma::solve(xArmadillo, A, bArmadillo)) {
-            base::DataVector x(xArmadillo.memptr(), n);
-            X.resize(n, 1);
-            X.setColumn(0, x);
-            Printer::getInstance().printStatusEnd();
-            return true;
-          } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
-            return false;
-          }
-        } else {
-          // multiple RHSs ==> use matrix version of arma::solve
-          const arma::uword B_count = static_cast<arma::uword>(B.getNcols());
-          ArmadilloMatrix BArmadillo(n, B_count);
-          ArmadilloMatrix XArmadillo(n, B_count);
-          base::DataVector b(n);
-
-          // copy RHSs to Armadillo matrix
-          for (arma::uword i = 0; i < B_count; i++) {
-            B.getColumn(i, b);
-            BArmadillo.col(i) = ArmadilloVector(b.getPointer(), n);
-          }
-
-          Printer::getInstance().printStatusUpdate("solving with Armadillo");
-
-          if (arma::solve(XArmadillo, A, BArmadillo)) {
-            X.resize(n, B_count);
-
-            // convert solutions to base::DataVector
-            for (arma::uword i = 0; i < B_count; i++) {
-              base::DataVector x(XArmadillo.colptr(i), n);
-              X.setColumn(i, x);
-            }
-
-            Printer::getInstance().printStatusEnd();
-            return true;
-          } else {
-            Printer::getInstance().printStatusEnd("error: could not solve linear system!");
-            return false;
-          }
-        }
-
-#else
-        std::cerr << "Error in sle_solver::Armadillo::solve: "
-                  << "SG++ was compiled without Armadillo support!\n";
-        return false;
-#endif /* USE_ARMADILLO */
       }
 
+      // status message
+      if (i % 100 == 0) {
+        #pragma omp ordered
+        {
+          char str[10];
+          snprintf(str, 10, "%.1f%%",
+          static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+          Printer::getInstance().printStatusUpdate("constructing matrix (" +
+          std::string(str) + ")");
+        }
+      }
     }
   }
+
+  Printer::getInstance().printStatusUpdate("constructing matrix (100.0%)");
+  Printer::getInstance().printStatusNewLine();
+
+  // print ratio of nonzero entries
+  {
+    char str[10];
+    float_t nnzRatio = static_cast<float_t>(nnz) /
+                       (static_cast<float_t>(n) *
+                        static_cast<float_t>(n));
+    snprintf(str, 10, "%.1f%%", nnzRatio * 100.0);
+    Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
+    Printer::getInstance().printStatusNewLine();
+  }
+
+  if (B.getNcols() == 1) {
+    // only one RHS ==> use vector version of arma::solve
+    ArmadilloVector bArmadillo(B.getPointer(), n);
+    ArmadilloVector xArmadillo(n);
+
+    Printer::getInstance().printStatusUpdate("solving with Armadillo");
+
+    if (arma::solve(xArmadillo, A, bArmadillo)) {
+      base::DataVector x(xArmadillo.memptr(), n);
+      X.resize(n, 1);
+      X.setColumn(0, x);
+      Printer::getInstance().printStatusEnd();
+      return true;
+    } else {
+      Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
+      return false;
+    }
+  } else {
+    // multiple RHSs ==> use matrix version of arma::solve
+    const arma::uword B_count = static_cast<arma::uword>(B.getNcols());
+    ArmadilloMatrix BArmadillo(n, B_count);
+    ArmadilloMatrix XArmadillo(n, B_count);
+    base::DataVector b(n);
+
+    // copy RHSs to Armadillo matrix
+    for (arma::uword i = 0; i < B_count; i++) {
+      B.getColumn(i, b);
+      BArmadillo.col(i) = ArmadilloVector(b.getPointer(), n);
+    }
+
+    Printer::getInstance().printStatusUpdate("solving with Armadillo");
+
+    if (arma::solve(XArmadillo, A, BArmadillo)) {
+      X.resize(n, B_count);
+
+      // convert solutions to base::DataVector
+      for (arma::uword i = 0; i < B_count; i++) {
+        base::DataVector x(XArmadillo.colptr(i), n);
+        X.setColumn(i, x);
+      }
+
+      Printer::getInstance().printStatusEnd();
+      return true;
+    } else {
+      Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
+      return false;
+    }
+  }
+
+#else
+  std::cerr << "Error in sle_solver::Armadillo::solve: "
+            << "SG++ was compiled without Armadillo support!\n";
+  return false;
+#endif /* USE_ARMADILLO */
+}
+
+}
+}
 }

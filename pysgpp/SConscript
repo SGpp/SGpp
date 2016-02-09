@@ -28,9 +28,15 @@ elif env['PLATFORM'] == 'darwin':
     py_env['SHLIBSUFFIX'] = '.so'
 
 # build python module with swig
-swigflags = ['-c++', '-python', '-fvirtual'] + ['-D' + c for c in py_env['CPPDEFINES']]
-if env['PLATFORM'] == 'win32':
-    # scons/swig does not seem to set this flag automatically
+swigflags = ['-c++', '-python', '-fvirtual']
+
+print  'py_env CPPDEFINES',py_env['CPPDEFINES']
+
+swigflags.extend(['-D' + c + "=" + py_env['CPPDEFINES'][c] for c in py_env['CPPDEFINES']])
+
+# tell SWIG that we're on Windows
+# (SCons/SWIG do not seem to set this flag automatically)
+if env['COMPILER'] == 'vcc':
     swigflags.append('-DSWIGWIN')
 
 py_env.AppendUnique(SWIGFLAGS=swigflags)
@@ -69,8 +75,7 @@ def setupPython(target, source, env):
 
     # create symlinks in extensions folder of pysgpp
     for pythonModuleFolder in pythonModuleFolders:
-        src = Dir(os.path.join(env['OUTPUT_PATH'],
-                               pythonModuleFolder,
+        src = Dir(os.path.join(pythonModuleFolder,
                                "python")).abspath
         dst = os.path.join(extensionsPath, pythonModuleFolder)
         if not os.path.exists(dst):

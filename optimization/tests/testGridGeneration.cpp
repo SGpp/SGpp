@@ -84,7 +84,8 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     IterativeGridGeneratorLinearSurplus gridGenLS(f, *grid, N, 0.85);
     IterativeGridGeneratorSOO gridGenSOO(f, *grid, N, 0.85);
 
-    gridGenRNFastPow.setPowMethod(IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW);
+    gridGenRNFastPow.setPowMethod(
+      IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW);
 
     std::vector<IterativeGridGenerator*> gridGens = {
       &gridGenRN, &gridGenRNFastPow, &gridGenLS, &gridGenSOO

@@ -12,21 +12,22 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationMultipleEvalLinear::mult(DataVector& alpha, DataVector& result) {
-      AlgorithmMultipleEvaluation<SLinearBase> op;
-      LinearBasis<unsigned int, unsigned int> base;
+void OperationMultipleEvalLinear::mult(DataVector& alpha, DataVector& result) {
+  AlgorithmMultipleEvaluation<SLinearBase> op;
+  LinearBasis<unsigned int, unsigned int> base;
 
-      op.mult(storage, base, alpha, this->dataset, result);
-    }
-
-    void OperationMultipleEvalLinear::multTranspose(DataVector& alpha, DataVector& result) {
-      AlgorithmMultipleEvaluation<SLinearBase> op;
-      LinearBasis<unsigned int, unsigned int> base;
-
-      op.mult_transpose(storage, base, alpha, this->dataset, result);
-    }
-
-  }
+  op.mult(storage, base, alpha, this->dataset, result);
 }
+
+void OperationMultipleEvalLinear::multTranspose(DataVector& alpha,
+    DataVector& result) {
+  AlgorithmMultipleEvaluation<SLinearBase> op;
+  LinearBasis<unsigned int, unsigned int> base;
+
+  op.mult_transpose(storage, base, alpha, this->dataset, result);
+}
+
+}  // namespace base
+}  // namespace SGPP

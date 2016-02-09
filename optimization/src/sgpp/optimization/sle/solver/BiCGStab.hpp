@@ -14,83 +14,89 @@
 #include <vector>
 
 namespace SGPP {
-  namespace optimization {
-    namespace sle_solver {
+namespace optimization {
+namespace sle_solver {
 
-      /**
-       * Linear system solver implementing the iterative BiCGStab method.
-       */
-      class BiCGStab : public SLESolver {
-        public:
-          /// default maximal number of iterations
-          static const size_t DEFAULT_MAX_IT_COUNT = 1000;
-          /// default tolerance
-          static constexpr float_t DEFAULT_TOLERANCE = 1e-10;
+/**
+ * Linear system solver implementing the iterative BiCGStab method.
+ */
+class BiCGStab : public SLESolver {
+ public:
+  /// default maximal number of iterations
+  static const size_t DEFAULT_MAX_IT_COUNT = 1000;
+  /// default tolerance
+  static constexpr float_t DEFAULT_TOLERANCE = 1e-10;
 
-          /**
-           * Constructor.
-           */
-          BiCGStab();
+  /**
+   * Constructor.
+   */
+  BiCGStab();
 
-          /**
-           * @param maxItCount        maximal number of iterations
-           * @param tolerance         tolerance
-           * @param startingPoint     starting vector
-           */
-          BiCGStab(size_t maxItCount, float_t tolerance,
-                   const base::DataVector& startingPoint);
+  /**
+   * @param maxItCount        maximal number of iterations
+   * @param tolerance         tolerance
+   * @param startingPoint     starting vector
+   */
+  BiCGStab(size_t maxItCount, float_t tolerance,
+           const base::DataVector& startingPoint);
 
-          /**
-           * @param       system  system to be solved
-           * @param       b       right-hand side
-           * @param[out]  x       solution to the system
-           * @return              whether all went well
-           *                      (false if errors occurred)
-           */
-          bool solve(SLE& system, base::DataVector& b,
-                     base::DataVector& x) const;
+  /**
+   * Destructor.
+   */
+  ~BiCGStab() override;
 
-          /**
-           * @return              maximal number of iterations
-           */
-          size_t getMaxItCount() const;
+  /**
+   * @param       system  system to be solved
+   * @param       b       right-hand side
+   * @param[out]  x       solution to the system
+   * @return              whether all went well
+   *                      (false if errors occurred)
+   */
+  virtual bool solve(SLE& system,
+                     base::DataVector& b,
+                     base::DataVector& x) const override;
 
-          /**
-           * @param maxItCount   maximal number of iterations
-           */
-          void setMaxItCount(size_t maxItCount);
+  /**
+   * @return              maximal number of iterations
+   */
+  size_t getMaxItCount() const;
 
-          /**
-           * @return              tolerance
-           */
-          float_t getTolerance() const;
+  /**
+   * @param maxItCount   maximal number of iterations
+   */
+  void setMaxItCount(size_t maxItCount);
 
-          /**
-           * @param tolerance     tolerance
-           */
-          void setTolerance(float_t tolerance);
+  /**
+   * @return              tolerance
+   */
+  float_t getTolerance() const;
 
-          /**
-           * @return                  starting vector
-           */
-          const base::DataVector& getStartingPoint() const;
+  /**
+   * @param tolerance     tolerance
+   */
+  void setTolerance(float_t tolerance);
 
-          /**
-           * @param startingPoint     starting vector
-           */
-          void setStartingPoint(const base::DataVector& startingPoint);
+  /**
+   * @return                  starting vector
+   */
+  const base::DataVector& getStartingPoint() const;
 
-        protected:
-          /// maximal number of iterations
-          size_t N;
-          /// tolerance
-          float_t tol;
-          /// starting vector
-          base::DataVector x0;
-      };
+  /**
+   * @param startingPoint     starting vector
+   */
+  void setStartingPoint(const base::DataVector& startingPoint);
 
-    }
-  }
+ protected:
+  /// maximal number of iterations
+  size_t N;
+  /// tolerance
+  float_t tol;
+  /// starting vector
+  base::DataVector x0;
+};
+
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_BICGSTAB_HPP */

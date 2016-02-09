@@ -9,43 +9,45 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
 
 
-    DehierarchisationLinearStretchedBoundary::DehierarchisationLinearStretchedBoundary(GridStorage* storage) : DehierarchisationLinearStretched(storage) {
-    }
-
-    DehierarchisationLinearStretchedBoundary::~DehierarchisationLinearStretchedBoundary() {
-    }
-
-    void DehierarchisationLinearStretchedBoundary::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
-      float_t left_boundary;
-      float_t right_boundary;
-      size_t seq;
-
-      // left boundary
-      index.resetToLeftLevelZero(dim);
-      seq = index.seq();
-      left_boundary = source[seq];
-      // right boundary
-      index.resetToRightLevelZero(dim);
-      seq = index.seq();
-      right_boundary = source[seq];
-
-      // move to root
-      if (!index.hint()) {
-        index.resetToLevelOne(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, left_boundary, right_boundary);
-        }
-
-        index.resetToLeftLevelZero(dim);
-      }
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+DehierarchisationLinearStretchedBoundary::
+DehierarchisationLinearStretchedBoundary(
+  GridStorage* storage) : DehierarchisationLinearStretched(storage) {
 }
+
+DehierarchisationLinearStretchedBoundary::
+~DehierarchisationLinearStretchedBoundary() {
+}
+
+void DehierarchisationLinearStretchedBoundary::operator()(DataVector& source,
+    DataVector& result, grid_iterator& index, size_t dim) {
+  float_t left_boundary;
+  float_t right_boundary;
+  size_t seq;
+
+  // left boundary
+  index.resetToLeftLevelZero(dim);
+  seq = index.seq();
+  left_boundary = source[seq];
+  // right boundary
+  index.resetToRightLevelZero(dim);
+  seq = index.seq();
+  right_boundary = source[seq];
+
+  // move to root
+  if (!index.hint()) {
+    index.resetToLevelOne(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, left_boundary, right_boundary);
+    }
+
+    index.resetToLeftLevelZero(dim);
+  }
+}
+
+}  // namespace base
+}  // namespace SGPP

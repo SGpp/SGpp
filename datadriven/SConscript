@@ -70,35 +70,10 @@ if env['USE_STATICLIB']:
 else:
     # building shared libraries differ
     libsuffix = env['SHLIBSUFFIX']
-    if env['PLATFORM'] in ['cygwin', 'win32']:
-        # remove old moduleDependencies if they exist already
-        for ext in ['lib', 'exp', 'dll', 'def']:
-            newlibFilename = "%s.%s" % (libname, ext)
-            if os.path.exists(newlibFilename):
-                os.remove(newlibFilename)
-
-        def buildDefFile(target, source, env):
-            # load all object files
-            win32objs = []
-            for currentFolder, subdirNames, fileNames in os.walk(os.path.join(moduleName, "src")):
-                for fileName in fnmatch.filter(fileNames, '*.obj'):
-                    win32objs.append(os.path.join(currentFolder, fileName))
-            # build windows module definition file (def-file)
-            subprocess.call(['bindexplib.exe', '-o', os.path.join(moduleName, '%s.def' % libname), os.path.join(moduleName, '%s.dll' % libname)] + win32objs)
-
-        cmd = env.Command('buildDefFile', [], buildDefFile)
-        lib = env.SharedLibrary(target=libname,
-                                source=objs,
-                                LIBPATH=BUILD_DIR,
-                                LIBS=moduleDependencies,
-                                LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
-        env.Depends(cmd, objs)
-        env.Depends(lib, cmd)
-    else:    
-        lib = env.SharedLibrary(target=libname,
-                                source=objs,
-                                LIBPATH=BUILD_DIR,
-                                LIBS=moduleDependencies)
+    lib = env.SharedLibrary(target=libname,
+                            source=objs,
+                            LIBPATH=BUILD_DIR,
+                            LIBS=moduleDependencies)
 
 for lib_str in moduleDependencies:
     if lib_str.startswith("sgpp"):
@@ -124,7 +99,7 @@ if env["ARCH"].upper() != "MIC":
             example = example_env.Program(source=os.path.join("examples", fileName))
             example_env.Requires(example, libInstall)
             exampleTargetList.append(example)
-            
+
 # build examples for mic
 if env["ARCH"].upper() == "MIC":
     example_env = env.Clone()
@@ -151,7 +126,7 @@ if env['COMPILE_BOOST_TESTS']:
         if env['RUN_BOOST_TESTS']:
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
-            
+
 # build unit tests
 if env['COMPILE_BOOST_PERFORMANCE_TESTS']:
     test_env = env.Clone()

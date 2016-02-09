@@ -13,41 +13,41 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    class OperationNaiveEvalLinearClenshawCurtis : public OperationNaiveEval {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage       storage of the sparse grid
-         */
-        OperationNaiveEvalLinearClenshawCurtis(
-          GridStorage* storage)
-          : storage(storage) {
-        }
-
-        /**
-         * Virtual destructor.
-         */
-        virtual ~OperationNaiveEvalLinearClenshawCurtis() {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @return          value of linear combination
-         */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point);
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D linear basis
-        SLinearClenshawCurtisBase base;
-    };
-
+class OperationNaiveEvalLinearClenshawCurtis : public OperationNaiveEval {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage       storage of the sparse grid
+   */
+  OperationNaiveEvalLinearClenshawCurtis(
+    GridStorage* storage)
+    : storage(storage) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  ~OperationNaiveEvalLinearClenshawCurtis() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of linear combination
+   */
+  float_t eval(const DataVector& alpha, const DataVector& point) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D linear basis
+  SLinearClenshawCurtisBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALLINEARCLENSHAWCURTIS_HPP */

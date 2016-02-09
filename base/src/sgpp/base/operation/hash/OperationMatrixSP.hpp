@@ -12,39 +12,39 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Abstract definition of a matrix operator interface.
-     * Everytime you need to apply a matrix to the ansatzfunction's
-     * coefficients in single precision derive a class from OperationMatrixSP.
-     *
-     * This is an re-implementation of the standard OperationMatrix
-     * for single precision floating point numbers in order to
-     * increase support for GPUs.
-     */
-    class OperationMatrixSP {
-      public:
-        /**
-         * Constructor
-         */
-        OperationMatrixSP() {}
+/**
+ * Abstract definition of a matrix operator interface.
+ * Everytime you need to apply a matrix to the ansatzfunction's
+ * coefficients in single precision derive a class from OperationMatrixSP.
+ *
+ * This is an re-implementation of the standard OperationMatrix
+ * for single precision floating point numbers in order to
+ * increase support for GPUs.
+ */
+class OperationMatrixSP {
+ public:
+  /**
+   * Constructor
+   */
+  OperationMatrixSP() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationMatrixSP() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationMatrixSP() {}
 
-        /**
-         * starts the Multiplication with the Laplace matrix
-         *
-         * @param alpha DataVectorSP that contains the ansatzfunctions' coefficients
-         * @param result DataVectorSP into which the result of the Laplace operation is stored
-         */
-        virtual void mult(DataVectorSP& alpha, DataVectorSP& result) = 0;
-    };
+  /**
+   * starts the Multiplication with the Laplace matrix
+   *
+   * @param alpha DataVectorSP that contains the ansatzfunctions' coefficients
+   * @param result DataVectorSP into which the result of the Laplace operation is stored
+   */
+  virtual void mult(DataVectorSP& alpha, DataVectorSP& result) = 0;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMATRIXSP_HPP */

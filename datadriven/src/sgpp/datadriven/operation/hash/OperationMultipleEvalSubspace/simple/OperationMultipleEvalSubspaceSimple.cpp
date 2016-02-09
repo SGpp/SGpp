@@ -57,8 +57,9 @@ void printSubspace(size_t* base, size_t dim, size_t cur, int subspaceSize) {
 
 }
 
-OperationMultipleEvalSubspaceSimple::OperationMultipleEvalSubspaceSimple(base::Grid& grid, base::DataMatrix& dataset) :
-    AbstractOperationMultipleEvalSubspace(grid, dataset) {
+OperationMultipleEvalSubspaceSimple::OperationMultipleEvalSubspaceSimple(
+  base::Grid& grid, base::DataMatrix& dataset) :
+  AbstractOperationMultipleEvalSubspace(grid, dataset) {
   this->dim = this->dataset.getNcols();
 }
 
@@ -138,7 +139,8 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
       maxIndex[d] = 1 << curLevel;
     }
 
-    size_t flatLevel = OperationMultipleEvalSubspaceSimple::flattenLevel(this->dim, maxLevel, level);
+    size_t flatLevel = OperationMultipleEvalSubspaceSimple::flattenLevel(this->dim,
+                       maxLevel, level);
 
     if (allLevelsMap.find(flatLevel) == allLevelsMap.end()) {
       SubspaceNodeSimple newNode(level, maxIndex, index);
@@ -206,8 +208,9 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
   size_t i = 0;
   uint32_t linearLevelIndexCounter = 0;
 
-  for (typename std::map<size_t, SubspaceNodeSimple>::iterator it = allLevelsMap.begin(); it != allLevelsMap.end();
-      ++it) {
+  for (typename std::map<size_t, SubspaceNodeSimple>::iterator it =
+         allLevelsMap.begin(); it != allLevelsMap.end();
+       ++it) {
     SubspaceNodeSimple& subspace = it->second;
 
     for (size_t j = 0; j < this->dim; j++) {
@@ -223,7 +226,8 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     uint32_t linearLevelIndex = linearLevelIndexCounter;
 
     allSubspaces[i * subspaceSize + (2 * this->dim) + 1] = linearLevelIndex;
-    this->allSurplussesIndexMap[static_cast<uint32_t>(flatLevel)] = linearLevelIndex;
+    this->allSurplussesIndexMap[static_cast<uint32_t>(flatLevel)] =
+      linearLevelIndex;
     linearLevelIndexCounter += static_cast<uint32_t>(subspace.gridPointsOnLevel);
 
     //these diffs tell, which components (diff to <dim) of the index have to be recomputed
@@ -239,12 +243,15 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
   }
 
   x86simple::problemDimForSorting = this->dim;
-  qsort(allSubspaces, subspaceCount, subspaceSize * sizeof(size_t), x86simple::subspaceComparator);
+  qsort(allSubspaces, subspaceCount, subspaceSize * sizeof(size_t),
+        x86simple::subspaceComparator);
 
   size_t computationFinishedMarker = subspaceCount * subspaceSize;
 
-  allSubspaces[(subspaceCount - 1) * subspaceSize + (2 * this->dim)] = computationFinishedMarker;
-  size_t* lastChangeIndex = new size_t[this->dim]; //(size_t *) malloc(sizeof(size_t) * this->dim);
+  allSubspaces[(subspaceCount - 1) * subspaceSize + (2 * this->dim)] =
+    computationFinishedMarker;
+  size_t* lastChangeIndex = new
+  size_t[this->dim]; //(size_t *) malloc(sizeof(size_t) * this->dim);
 
   for (size_t i = 0; i < this->dim; i++) {
     lastChangeIndex[i] = computationFinishedMarker;
@@ -254,7 +261,8 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     size_t currentItemIndex = ((size_t) i) * subspaceSize;
     size_t lastItemIndex = ((size_t) i - 1) * subspaceSize;
     size_t nextItemIndex = ((size_t) i + 1) * subspaceSize;
-    size_t lastDiff = x86simple::getHighestDifferentIndex(allSubspaces, currentItemIndex, lastItemIndex);
+    size_t lastDiff = x86simple::getHighestDifferentIndex(allSubspaces,
+                      currentItemIndex, lastItemIndex);
 
     // diff to the next element, if no jump is taken, required to get (near) O(1) index calculation
     size_t nextDiff = this->dim; //will result in doing nothing for the padding
@@ -262,11 +270,13 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
     size_t jumpDiff = this->dim;
 
     if (i != subspaceCount - 1) {
-      nextDiff = x86simple::getHighestDifferentIndex(allSubspaces, currentItemIndex, nextItemIndex);
+      nextDiff = x86simple::getHighestDifferentIndex(allSubspaces, currentItemIndex,
+                 nextItemIndex);
       size_t jumpDestination = lastChangeIndex[lastDiff];
 
       if (jumpDestination != computationFinishedMarker) {
-        jumpDiff = x86simple::getHighestDifferentIndex(allSubspaces, currentItemIndex, jumpDestination);
+        jumpDiff = x86simple::getHighestDifferentIndex(allSubspaces, currentItemIndex,
+                   jumpDestination);
       }
     }
 
@@ -292,7 +302,8 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
   allSubspaces[2 * this->dim + 3] = 0;
 
   if (subspaceCount > 1) {
-    allSubspaces[2 * this->dim + 2] = x86simple::getHighestDifferentIndex(allSubspaces, 0, subspaceSize);
+    allSubspaces[2 * this->dim + 2] = x86simple::getHighestDifferentIndex(
+                                        allSubspaces, 0, subspaceSize);
   }
 
   // setup padding subspace - last (pseudo) subspace
@@ -340,7 +351,8 @@ void OperationMultipleEvalSubspaceSimple::createFlatStorage() {
   this->allSurplusses = new float_t[totalGridPoints];
 }
 
-void OperationMultipleEvalSubspaceSimple::setCoefficients(base::DataVector& surplusVector) {
+void OperationMultipleEvalSubspaceSimple::setCoefficients(
+  base::DataVector& surplusVector) {
   std::vector<size_t> level(dim);
   std::vector<size_t> maxIndex(dim);
   std::vector<size_t> index(dim);
@@ -393,20 +405,24 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector& result) {
   }
 }
 
-void OperationMultipleEvalSubspaceSimple::setSurplus(std::vector<size_t>& level, std::vector<size_t>& maxIndices,
+void OperationMultipleEvalSubspaceSimple::setSurplus(std::vector<size_t>& level,
+    std::vector<size_t>& maxIndices,
     std::vector<size_t>& index, float_t value) {
   size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
   size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
-  uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>(levelFlat)];
+  uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>
+                              (levelFlat)];
   float_t* levelArray = &(this->allSurplusses[linearLevelIndex]);
   levelArray[indexFlat] = value;
 }
 
-void OperationMultipleEvalSubspaceSimple::getSurplus(std::vector<size_t>& level, std::vector<size_t>& maxIndices,
+void OperationMultipleEvalSubspaceSimple::getSurplus(std::vector<size_t>& level,
+    std::vector<size_t>& maxIndices,
     std::vector<size_t>& index, float_t& value, bool& isVirtual) {
   size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
   size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
-  uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>(levelFlat)];
+  uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>
+                              (levelFlat)];
   float_t* levelArray = &(this->allSurplusses[linearLevelIndex]);
   value = levelArray[indexFlat];
 
@@ -417,7 +433,8 @@ void OperationMultipleEvalSubspaceSimple::getSurplus(std::vector<size_t>& level,
   }
 }
 
-size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t dim, std::vector<size_t>& maxIndices,
+size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t dim,
+    std::vector<size_t>& maxIndices,
     std::vector<size_t>& index) {
   size_t indexFlat = index[0];
   indexFlat >>= 1;
@@ -434,7 +451,8 @@ size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t dim, std::vector
   return indexFlat;
 }
 
-size_t OperationMultipleEvalSubspaceSimple::flattenLevel(size_t dim, size_t maxLevel, std::vector<size_t>& level) {
+size_t OperationMultipleEvalSubspaceSimple::flattenLevel(size_t dim,
+    size_t maxLevel, std::vector<size_t>& level) {
   size_t levelFlat = 0;
   levelFlat += (size_t) level[dim - 1];
 
@@ -447,8 +465,9 @@ size_t OperationMultipleEvalSubspaceSimple::flattenLevel(size_t dim, size_t maxL
   return levelFlat;
 }
 
-size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t* intermediates, size_t dim, size_t* maxIndicesPtr,
-    size_t* indexPtr, __attribute__((unused)) size_t toRecalc) {
+size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t* intermediates,
+    size_t dim, size_t* maxIndicesPtr,
+    size_t* indexPtr, size_t toRecalc) {
 
 #if X86SIMPLE_ENABLE_PARTIAL_RESULT_REUSAGE == 1
   size_t indexFlat = intermediates[toRecalc]; // toRecalc 0 -> indexFlat 0
@@ -456,6 +475,7 @@ size_t OperationMultipleEvalSubspaceSimple::flattenIndex(size_t* intermediates, 
   for (size_t i = toRecalc; i < dim; i++) {
 #else
 
+  (void)toRecalc;
   size_t indexFlat = 0;
 
   for (size_t i = 0; i < dim; i++) {

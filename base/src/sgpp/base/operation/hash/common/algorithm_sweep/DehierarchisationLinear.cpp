@@ -9,52 +9,55 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
 
 
-    DehierarchisationLinear::DehierarchisationLinear(GridStorage* storage) : storage(storage) {
-    }
-
-    DehierarchisationLinear::~DehierarchisationLinear() {
-    }
-
-    void DehierarchisationLinear::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
-      rec(source, result, index, dim, 0.0, 0.0);
-    }
-
-    void DehierarchisationLinear::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
-      // current position on the grid
-      size_t seq = index.seq();
-      // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      float_t fm = source[seq];
-
-      // dehierarchisation
-      fm += ((fl + fr) / 2.0);
-      result[seq] = fm;
-
-      // recursive calls for the right and left side of the current node
-      if (index.hint() == false) {
-        // descend left
-        index.leftChild(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fm);
-        }
-
-        // descend right
-        index.stepRight(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fm, fr);
-        }
-
-        // ascend
-        index.up(dim);
-      }
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+DehierarchisationLinear::DehierarchisationLinear(GridStorage* storage) :
+  storage(storage) {
 }
+
+DehierarchisationLinear::~DehierarchisationLinear() {
+}
+
+void DehierarchisationLinear::operator()(DataVector& source, DataVector& result,
+    grid_iterator& index, size_t dim) {
+  rec(source, result, index, dim, 0.0, 0.0);
+}
+
+void DehierarchisationLinear::rec(DataVector& source, DataVector& result,
+                                  grid_iterator& index, size_t dim,
+                                  float_t fl, float_t fr) {
+  // current position on the grid
+  size_t seq = index.seq();
+  // value in the middle,
+  // needed for recursive call and calculation of the hierarchical surplus
+  float_t fm = source[seq];
+
+  // dehierarchisation
+  fm += ((fl + fr) / 2.0);
+  result[seq] = fm;
+
+  // recursive calls for the right and left side of the current node
+  if (index.hint() == false) {
+    // descend left
+    index.leftChild(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fm);
+    }
+
+    // descend right
+    index.stepRight(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fm, fr);
+    }
+
+    // ascend
+    index.up(dim);
+  }
+}
+
+}  // namespace base
+}  // namespace SGPP

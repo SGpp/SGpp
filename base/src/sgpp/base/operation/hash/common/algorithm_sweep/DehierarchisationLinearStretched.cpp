@@ -9,62 +9,68 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
 
 
-    DehierarchisationLinearStretched::DehierarchisationLinearStretched(GridStorage* storage) : storage(storage) {
-    }
-
-    DehierarchisationLinearStretched::~DehierarchisationLinearStretched() {
-    }
-
-    void DehierarchisationLinearStretched::operator()(DataVector& source, DataVector& result, grid_iterator& index, size_t dim) {
-      rec(source, result, index, dim, 0.0, 0.0);
-    }
-
-    void DehierarchisationLinearStretched::rec(DataVector& source, DataVector& result, grid_iterator& index, size_t dim, float_t fl, float_t fr) {
-      // current position on the grid
-      size_t seq = index.seq();
-      // value in the middle, needed for recursive call and calculation of the hierarchical surplus
-      float_t fm = source[seq];
-
-      // dehierarchisation
-      GridStorage::index_type::level_type current_level;
-      GridStorage::index_type::index_type current_index;
-      index.get(dim, current_level, current_index);
-
-      //get the positions of the current index as well as its left and right neighbors
-      float_t posl = 0, posr = 0, posc = 0;
-      storage->getStretching()->getAdjacentPositions(static_cast<int>(current_level), static_cast<int>(current_index), dim, posc, posl, posr );
-
-      float_t fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
-      fm += fcurr;
-      result[seq] = fm;
-
-
-      // recursive calls for the right and left side of the current node
-      if (index.hint() == false) {
-        // descend left
-        index.leftChild(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fm);
-        }
-
-        // descend right
-        index.stepRight(dim);
-
-        if (!storage->end(index.seq())) {
-          rec(source, result, index, dim, fm, fr);
-        }
-
-        // ascend
-        index.up(dim);
-      }
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+DehierarchisationLinearStretched::DehierarchisationLinearStretched(
+  GridStorage* storage) : storage(storage) {
 }
+
+DehierarchisationLinearStretched::~DehierarchisationLinearStretched() {
+}
+
+void DehierarchisationLinearStretched::operator()(DataVector& source,
+    DataVector& result, grid_iterator& index, size_t dim) {
+  rec(source, result, index, dim, 0.0, 0.0);
+}
+
+void DehierarchisationLinearStretched::rec(DataVector& source,
+    DataVector& result, grid_iterator& index, size_t dim,
+    float_t fl, float_t fr) {
+  // current position on the grid
+  size_t seq = index.seq();
+  // value in the middle, needed for recursive call and
+  // calculation of the hierarchical surplus
+  float_t fm = source[seq];
+
+  // dehierarchisation
+  GridStorage::index_type::level_type current_level;
+  GridStorage::index_type::index_type current_index;
+  index.get(dim, current_level, current_index);
+
+  // get the positions of the current index as
+  // well as its left and right neighbors
+  float_t posl = 0, posr = 0, posc = 0;
+  storage->getStretching()->getAdjacentPositions(
+    static_cast<int>(current_level),
+    static_cast<int>(current_index), dim, posc, posl, posr);
+
+  float_t fcurr = (fr - fl) * (posc - posl) / (posr - posl) + fl;
+  fm += fcurr;
+  result[seq] = fm;
+
+
+  // recursive calls for the right and left side of the current node
+  if (index.hint() == false) {
+    // descend left
+    index.leftChild(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fm);
+    }
+
+    // descend right
+    index.stepRight(dim);
+
+    if (!storage->end(index.seq())) {
+      rec(source, result, index, dim, fm, fr);
+    }
+
+    // ascend
+    index.up(dim);
+  }
+}
+
+}  // namespace base
+}  // namespace SGPP

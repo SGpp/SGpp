@@ -14,15 +14,16 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    float_t OperationEvalLinearStretched::eval(const DataVector& alpha,
-        const DataVector& point) {
-      LinearStretchedBasis<unsigned int, unsigned int> base;
-      AlgorithmEvaluation<LinearStretchedBasis<unsigned int, unsigned int> > AlgoEval(storage);
+float_t OperationEvalLinearStretched::eval(const DataVector& alpha,
+    const DataVector& point) {
+  LinearStretchedBasis<unsigned int, unsigned int> base;
+  AlgorithmEvaluation <
+  LinearStretchedBasis<unsigned int, unsigned int> > AlgoEval(storage);
 
-      return AlgoEval(base, point, alpha);
-    }
-
-  }
+  return AlgoEval(base, point, alpha);
 }
+
+}  // namespace base
+}  // namespace SGPP

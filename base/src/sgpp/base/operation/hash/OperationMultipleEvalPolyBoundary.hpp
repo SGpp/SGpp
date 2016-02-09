@@ -6,50 +6,50 @@
 #ifndef OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP
 #define OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP
 
-#include "OperationMultipleEval.hpp"
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
-     */
-    class OperationMultipleEvalPolyBoundary: public OperationMultipleEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid the grid
-         * @param degree the polynom's max. degree
-         * @param dataset Dataset
-         */
-        OperationMultipleEvalPolyBoundary(Grid& grid, size_t degree,
-                                          DataMatrix& dataset) :
-          OperationMultipleEval(grid, dataset), base(degree) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalPolyBoundary() {
-        }
-
-        virtual void mult(DataVector& alpha, DataVector& result);
-        virtual void multTranspose(DataVector& source, DataVector& result);
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-        /// Poly Basis object
-        SPolyBoundaryBase base;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
+ */
+class OperationMultipleEvalPolyBoundary: public OperationMultipleEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid the grid
+   * @param degree the polynom's max. degree
+   * @param dataset Dataset
+   */
+  OperationMultipleEvalPolyBoundary(Grid& grid, size_t degree,
+                                    DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), base(degree) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationMultipleEvalPolyBoundary() override {
+  }
+
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+  /// Poly Basis object
+  SPolyBoundaryBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALPOLYBOUNDARY_HPP */
