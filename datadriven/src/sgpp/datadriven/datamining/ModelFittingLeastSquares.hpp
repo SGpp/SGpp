@@ -55,9 +55,7 @@ public:
 	 */
 	virtual ~ModelFittingLeastSquares();
 
-	virtual base::DataVector predict(base::DataMatrix& testDataset);
-
-	std::vector<std::pair<size_t, float_t> > getRefinementExecTimes();
+    void fit() override;
 
 	void setImplementation(
 			datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
