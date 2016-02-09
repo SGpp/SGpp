@@ -3,7 +3,7 @@
 
 stages:
   - build
-  - tests
+  - platforms
   - switches
   - doc
 
@@ -20,10 +20,12 @@ Compile Standard:
     - avx
   only:
     - branches
+  except:
+    - master
 
 
 #Compile Intel:
-#  stage: tests
+#  stage: platforms
 #  script:
 #    - . /opt/intel/bin/compilervars.sh intel64
 #    - scons -j $(nproc) VERBOSE=1 COMPILER=Intel ARCH=avx OPT=1 PYDOC=0
@@ -33,13 +35,13 @@ Compile Standard:
 #    - scons
 #    - swig
 #    - avx
-#  only:
+#  except:
 #    - master
 
 
 #TODO validate scons flags
 #Compile OSX:
-#  stage: tests
+#  stage: platforms
 #  script:
 #    - scons -j4 CXX="g++-5" CC="g++-5" COMPILER=GNU ARCH=SSE3 VERBOSE=1 OPT=1 PYDOC=0 NO_UNIT_TESTS=1 SG_JAVA=0 CPPFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0" RUN_BOOST_TESTS=0
 #  tags:
@@ -48,7 +50,7 @@ Compile Standard:
 #    - scons
 #    - swig
 #    - sse3
-#  only:
+#  except:
 #    - master
 
 
@@ -62,7 +64,7 @@ Test PYDOC:
     - scons
     - swig
     - avx
-  only:
+  except:
     - master
 
 
@@ -76,7 +78,7 @@ Test SinglePrecision:
     - scons
     - swig
     - avx
-  only:
+  except:
     - master
 
 
@@ -90,7 +92,7 @@ Test StaticLib:
     - scons
     - swig
     - avx
-  only:
+  except:
     - master
 
 
@@ -99,7 +101,7 @@ Test StaticLib:
 ##############################################
 
 #Compile Win32-msvc:
-#  stage: tests
+#  stage: platforms
 #  script:
 #    - scons COMPILER=vcc ARCH=sse3 PYDOC=0 VERBOSE=1 SG_PARALLEL=0 SG_COMBIGRID=0 MSVC_USE_SCRIPT="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 #  tags:
@@ -108,7 +110,7 @@ Test StaticLib:
 #    - scons
 #    - swig
 #    - sse3
-#  only:
+#  except:
 #    - master
 
 #Test Win32-msvc-StaticLib:
@@ -121,7 +123,7 @@ Test StaticLib:
 #    - scons
 #    - swig
 #    - sse3
-#  only:
+#  except:
 #    - master
 
 
@@ -134,7 +136,7 @@ Build Documentation:
   tags:
     - doxygen
     - scons
-  only:
+  except:
     - master
 
 
@@ -144,7 +146,7 @@ Build Documentation:
 #    - exit 1
 #  tags:
 #    - someflagforstylechecking
-#  only:
+#  except:
 #    - master
 
 
