@@ -42,7 +42,7 @@ class AbstractStretchingMaker {
                                std::vector<double>& stretching,
                                std::vector<double>& jacobian) const = 0;
 
-  virtual ~AbstractStretchingMaker(){};
+  virtual ~AbstractStretchingMaker() {};
 
   virtual Stretching getStretchingType() const = 0;
 
