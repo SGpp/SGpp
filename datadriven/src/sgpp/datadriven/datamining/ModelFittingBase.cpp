@@ -47,7 +47,7 @@ namespace SGPP {
       } else if (gridConfig.type_ == GridType::LinearBoundary) {
         grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_));
       } else {
-        throw application_exception("ModelFittingDensityEstimation::createRegularGrid: grid type is not supported");
+        throw application_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
       }
 
       GridGenerator* gridGen = grid->createGridGenerator();
