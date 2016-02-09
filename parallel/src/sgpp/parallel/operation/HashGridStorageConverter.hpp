@@ -44,6 +44,7 @@ public:
 	*
 	* The generated arrays are made in format optimized for minimizing page faults
 	 *
+	 * @param storage GridStorage, which should be converted
 	 * @param level DataMatrix to store the grid's level to the power of two
 	 * @param index DataMatrix to store the grid's indices
 	 * @param vectorizationType Vectorization type
@@ -93,6 +94,7 @@ public:
      * won't contain the levels, it contains 2 to the neagative power of the level.
      * Additional blocking for better TLB usage is provided.
      *
+     * @param storage GridStorage, which should be converted
      * @param level DataMatrix to store the grid's modified level
      * @param vectorizationType Vectorization type
      * @param blocking_length parameter for an additional blocking length to avoid TLB misses
