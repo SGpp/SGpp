@@ -76,11 +76,10 @@ BOOST_AUTO_TEST_CASE( gridEval )
   for (unsigned int i = 0; i < nr_FG; i++) {
     FullGrid<float>* fgrid = grid->getFullGrid(i)->fg();
     std::vector<float> data = (fgrid->getElementVector()); // get the points vector
-    unsigned int size = data.size();
 
-    for (unsigned int j = 0; j < fgrid->getNrElements(); j++) { // should be the same as data.size()
+    for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) { // should be the same as data.size()
       fgrid->getCoords(j, coords); // working on unit square ...
-      fgrid->getElementVector()[j] = f_2D(coords); // evaluate f on the corresponding point.
+      fgrid->getElementVector()[j] = static_cast<float>(f_2D(coords)); // evaluate f on the corresponding point.
     }
   }
 
@@ -91,7 +90,6 @@ BOOST_AUTO_TEST_CASE( gridEval )
   std::vector<double> eval_coordinates(dim, 0.5);
   double f_val = f_2D(eval_coordinates);
   double n_val = grid->eval(eval_coordinates);
-  double err = abs(f_val - n_val);
 
   BOOST_CHECK_CLOSE( n_val, f_val, 1e-10 );
 
@@ -115,9 +113,9 @@ BOOST_AUTO_TEST_CASE( gridEval )
     FullGrid<float>* fgrid = grid->getFullGrid(i)->fg();
     std::vector<float> data = (fgrid->getElementVector());
 
-    for (unsigned int j = 0; j < fgrid->getNrElements(); j++) {
+    for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
       fgrid->getCoords(j, coords);
-      fgrid->getElementVector()[j] = f_2D(coords);
+      fgrid->getElementVector()[j] = static_cast<float>(f_2D(coords));
     }
   }
 
@@ -127,7 +125,6 @@ BOOST_AUTO_TEST_CASE( gridEval )
   std::cout.precision(8);
   f_val = f_2D(eval_coordinates);
   n_val = grid->eval(eval_coordinates);
-  err = abs(f_val - n_val);
 
   BOOST_CHECK_CLOSE( n_val, f_val, 1e-10 );
 
@@ -153,9 +150,9 @@ BOOST_AUTO_TEST_CASE( gridEval )
     FullGrid<float>* fgrid = grid->getFullGrid(i)->fg();
     std::vector<float> data = (fgrid->getElementVector());
 
-    for (unsigned int j = 0; j < fgrid->getNrElements(); j++) {
+    for (unsigned int j = 0; j < static_cast<size_t>(fgrid->getNrElements()); j++) {
       fgrid->getCoords(j, coords);
-      fgrid->getElementVector()[j] = f_2D(coords);
+      fgrid->getElementVector()[j] = static_cast<float>(f_2D(coords));
     }
   }
 
@@ -164,7 +161,6 @@ BOOST_AUTO_TEST_CASE( gridEval )
    */
   f_val = f_2D(eval_coordinates);
   n_val = grid->eval(eval_coordinates);
-  err = abs(f_val - n_val);
 
   BOOST_CHECK_CLOSE( n_val, f_val, 1e-10 );
   grid->deleteFullGrids();
