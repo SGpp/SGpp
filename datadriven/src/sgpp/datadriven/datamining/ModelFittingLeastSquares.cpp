@@ -18,9 +18,9 @@ namespace SGPP {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(
-		DataMiningConfigurationLeastSquares &configuration) :
-		datadriven::ModelFittingBase(configuration), configuration(
-				configuration) {
+SGPP::datadriven::SampleProvider& sampleProvider,
+SGPP::datadriven::DataMiningConfigurationLeastSquares config) :
+		datadriven::ModelFittingBase(sampleProvider), configuration(config) {
 }
 
 ModelFittingLeastSquares::~ModelFittingLeastSquares() {
