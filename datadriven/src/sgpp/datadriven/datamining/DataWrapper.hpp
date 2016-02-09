@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "../datamining/SampleProvider.hpp"
+#include <sgpp/datadriven/datamining/SampleProvider.hpp>
 
 #include <sgpp/globaldef.hpp>
 
