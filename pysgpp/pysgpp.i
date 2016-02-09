@@ -55,8 +55,10 @@ import_array();
 
 
 %{
+#ifdef SG_BASE
 #include "sgpp/globaldef.hpp"
 #include "sgpp_base.hpp"
+#endif
 #ifdef SG_DATADRIVEN
 #include "sgpp_datadriven.hpp"
 #endif
@@ -87,11 +89,13 @@ import_array();
 %}
 
 
+#ifdef SG_BASE
 #ifdef PYDOC
 %include "base_doc.i"
 #endif
 
 %include "base/build/pysgpp/base.i"
+#endif
 
 #ifdef SG_DATADRIVEN
 #ifdef PYDOC
