@@ -25,7 +25,7 @@ ModelFittingDensityEstimation::~ModelFittingDensityEstimation() {
 }
 
 void ModelFittingDensityEstimation::fit(datadriven::Dataset& dataset) {
-	DataMatrix samples = dataset.getTrainingData();
+	DataMatrix samples = dataset.getData();
 	size_t numSamples = samples.getNrows();
 	size_t numDims = samples.getNcols();
 

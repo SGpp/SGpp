@@ -17,29 +17,51 @@ using namespace SGPP::base;
 namespace SGPP {
 namespace datadriven {
 
-SimpleSplittingScorer::SimpleSplittingScorer(Dataset& dataset, Metric* metric,
-    double trainPortion, int seed): Scorer(metric),
+SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
+    std::shared_ptr<ModelFittingBase> fitter,
+    double trainPortion, int seed): Scorer(metric, fitter),
   trainPortion(trainPortion), seed(seed) {
-	if(this->seed){
-		this->seed = std::time(NULL);
-	}
+  if (this->seed) {
+    this->seed = std::time(NULL);
+  }
 
 }
+
 
 SimpleSplittingScorer::~SimpleSplittingScorer() {
   // TODO Auto-generated destructor stub
 }
 
-void SimpleSplittingScorer::splitset(const DataMatrix& dataset,
-                                     const DataVector& datasetValues, double trainPortion,
-                                     DataMatrix& trainingSet,
-									 DataVector& trainingValues,
-									 DataMatrix& testSet,
-									 DataVector& testValues, bool permute) {
-  size_t dim = dataset.getNcols();
-  size_t datasetSize = dataset.getNrows();  // size of data
+
+double SimpleSplittingScorer::getScore(Dataset& dataset) {
+
+  // initialize data structures
+  size_t dim = dataset.getDimension();
+  size_t datasetSize = dataset.getNumberInstances();  // size of data
   size_t trainSize = static_cast<size_t>(static_cast<double>(datasetSize) * trainPortion);
   size_t testSize = datasetSize - trainSize;
+  Dataset trainingSet(trainSize, dim);
+  Dataset testSet(testSize, dim);
+  splitset(dataset, trainingSet, testSet);
+
+  // fit the model to the training dataset
+  fitter->fit(trainingSet);
+
+  // evaluate the model on the test set and return the metric
+  DataVector predictedValues(testSize);
+  fitter->evaluate(testSet.getData(), predictedValues);
+  return (*metric)(predictedValues, testSet.getTargets());
+}
+
+
+void SimpleSplittingScorer::splitset(Dataset& dataset,
+                                     Dataset& trainingSet,
+                                     Dataset& testSet,
+                                     bool permute) {
+  size_t dim = dataset.getDimension();
+  size_t datasetSize = dataset.getNumberInstances();  // size of data
+  size_t trainSize = trainingSet.getNumberInstances();
+  size_t testSize = testSet.getNumberInstances();
 
   // generate range of all indices and permute them if required
   std::vector<size_t> indices(datasetSize);
@@ -56,33 +78,33 @@ void SimpleSplittingScorer::splitset(const DataMatrix& dataset,
   // fill data
   // first initialize data structures
   DataVector tmpLine(dim);
-  trainingSet.resize(trainSize, dim);
-  trainingValues.resize(trainSize);
-  testSet.resize(testSize, dim);
-  testValues.resize(testSize);
+  trainingSet.getData().resize(trainSize, dim);
+  trainingSet.getTargets().resize(trainSize);
+  testSet.getData().resize(testSize, dim);
+  testSet.getTargets().resize(testSize);
 
   // fill training data
   for (size_t j = 0; j < trainSize; j++) {
     size_t idx = indices[j];
-    dataset.getRow(idx, tmpLine);
+    dataset.getData().getRow(idx, tmpLine);
 
     for (size_t d = 0; d < dim; d++) {
-      trainingSet.set(j, d, tmpLine[d]);
+      trainingSet.getData().set(j, d, tmpLine[d]);
     }
 
-    trainingValues.set(j, tmpLine[dim]);
+    trainingSet.getTargets().set(j, tmpLine[dim]);
   }
 
   // fill test data
   for (size_t j = trainSize; j < datasetSize; j++) {
     size_t idx = indices[j];
-    dataset.getRow(idx, tmpLine);
+    dataset.getData().getRow(idx, tmpLine);
 
     for (size_t d = 0; d < dim; d++) {
-      testSet.set(j - trainSize, d, tmpLine[d]);
+      testSet.getData().set(j - trainSize, d, tmpLine[d]);
     }
 
-    testValues.set(j - trainSize, tmpLine[dim]);
+    testSet.getTargets().set(j - trainSize, tmpLine[dim]);
   }
 
 }

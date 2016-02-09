@@ -8,7 +8,12 @@
 #ifndef SCORER_HPP_
 #define SCORER_HPP_
 
+
+#include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/datamining/Metric.hpp>
+#include <sgpp/datadriven/datamining/ModelFittingBase.hpp>
+
+#include <memory>
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,11 +25,13 @@ namespace datadriven {
  */
 class Scorer {
 public:
-	Scorer(Metric* metric):metric(metric){};
+	Scorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter):metric(metric), fitter(fitter){};
 	virtual ~Scorer();
+	virtual double getScore(const Dataset& dataset) = 0;
 
-private:
-	Metric* metric;
+protected:
+	std::shared_ptr<Metric> metric;
+	std::shared_ptr<ModelFittingBase> fitter;
 };
 
 } /* namespace datadriven */
