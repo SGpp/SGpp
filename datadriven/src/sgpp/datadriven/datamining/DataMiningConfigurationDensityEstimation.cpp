@@ -16,6 +16,8 @@ DataMiningConfigurationDensityEstimation::DataMiningConfigurationDensityEstimati
   gridConfig->dim_ = 0;
   gridConfig->level_ = 2;
   gridConfig->type_ = SGPP::base::GridType::Linear;
+  gridConfig->maxDegree = 1;
+  gridConfig->boundaryLevel = 0;
 
   // configure adaptive refinement
   adaptivityConfig->numRefinements_ = 0;

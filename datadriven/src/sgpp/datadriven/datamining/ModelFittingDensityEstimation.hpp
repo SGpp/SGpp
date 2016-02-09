@@ -23,15 +23,16 @@ namespace SGPP {
     class ModelFittingDensityEstimation: public SGPP::datadriven::ModelFittingBase {
       public:
         ModelFittingDensityEstimation(SGPP::datadriven::SampleProvider& sampleProvider,
-                                      SGPP::datadriven::DataMiningConfiguration config);
+                                      SGPP::datadriven::DataMiningConfigurationDensityEstimation config);
 
         virtual ~ModelFittingDensityEstimation();
 
         void fit() override;
 
       private:
-        SGPP::datadriven::SampleProvider& sampleProvider;
-        DataMiningConfigurationDensityEstimation config;
+//        void createRegularGrid();
+
+        SGPP::datadriven::DataMiningConfigurationDensityEstimation& configuration;
     };
 
   } /* namespace datadriven */
