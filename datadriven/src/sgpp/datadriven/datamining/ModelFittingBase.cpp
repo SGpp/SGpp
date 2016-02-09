@@ -43,7 +43,7 @@ namespace SGPP {
         grid = std::shared_ptr<Grid>(Grid::createLinearGrid(gridConfig.dim_));
       } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
         grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_,
-            gridConfig.boundaryLevel_));
+            static_cast<GridIndex::level_type>(gridConfig.boundaryLevel_)));
       } else if (gridConfig.type_ == GridType::LinearBoundary) {
         grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_));
       } else {
