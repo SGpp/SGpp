@@ -13,10 +13,10 @@
 #include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
 #include <sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <utility>
 #include <iostream>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -35,7 +35,6 @@ namespace base {
 template<class BASIS>
 class AlgorithmMultipleEvaluation {
  public:
-
   /**
    * Performs a transposed mass evaluation
    *
@@ -81,7 +80,8 @@ class AlgorithmMultipleEvaluation {
   //          result.setAll(0.0);
   //          size_t source_size = source.getSize();
   //
-  //          #pragma omp declare reduction(accumulate : SGPP::base::DataVector : omp_out.add(omp_in))
+  //          #pragma omp declare reduction(accumulate :
+  // ...      SGPP::base::DataVector : omp_out.add(omp_in))
   // ...      initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
   //
   //          #pragma omp parallel
@@ -129,10 +129,9 @@ class AlgorithmMultipleEvaluation {
       }
     }
   }
-
 };
 
-}
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* ALGORTIHMMULTIPLEEVALUATION_HPP */

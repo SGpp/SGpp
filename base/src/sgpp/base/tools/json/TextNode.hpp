@@ -8,6 +8,8 @@
 #include <sgpp/base/tools/json/Node.hpp>
 
 #include <fstream>
+#include <string>
+#include <vector>
 
 namespace json {
 
@@ -35,4 +37,4 @@ class TextNode: public Node {
   Node* clone() override;
 };
 
-}
+}  // namespace json
