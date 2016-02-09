@@ -184,7 +184,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # make settings case-insensitive
     env['COMPILER'] = env['COMPILER'].lower()
     env['ARCH'] = env['ARCH'].lower()
-    
+
     if env['COMPILER'] == 'gnu':
         gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
         gcc_ver = env._get_major_minor_revision(gcc_ver_str)
@@ -247,7 +247,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
             print "You must specify a valid ARCH value for gnu."
             print "Available configurations are: sse3, sse42, avx, fma4, avx2, avx512"
             sys.exit(1)
-        
+
         # check if using MinGW (g++ on win32)
         if env['PLATFORM'] == 'win32':
             # disable warnings which occur when including Boost in the tests
@@ -393,11 +393,11 @@ Please install the corresponding package, e.g. using command on Ubuntu
           (not env['SG_' + moduleFolder.upper()]):
         continue
       env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
-    
+
     # check for mpic++
     if not env['CXX']=='mpic++':
         env['SG_PARALLEL'] = 0
-        print 'Warning: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
+        print 'Hint: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
     elif env['SG_PARALLEL'] != 0:
         env['CPPDEFINES']['USE_MPI'] = '1'
         print 'Parallel module ("SG_PARALLEL") enabled'
