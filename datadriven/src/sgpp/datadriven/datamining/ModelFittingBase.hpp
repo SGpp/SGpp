@@ -6,13 +6,15 @@
 
 #pragma once
 
-#include "DataMiningConfiguration.hpp"
+#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+
 
 namespace SGPP {
   namespace datadriven {
@@ -45,6 +47,8 @@ namespace SGPP {
         virtual std::shared_ptr<SGPP::base::DataVector> getSurpluses();
 
       protected:
+        SGPP::base::OperationMatrix* getRegularizationMatrix(SGPP::datadriven::RegularizationType regType);
+
         SGPP::datadriven::DataMiningConfiguration &config;
         std::shared_ptr<SGPP::base::Grid> grid;
         std::shared_ptr<SGPP::base::DataVector> alpha;
