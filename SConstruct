@@ -205,7 +205,7 @@ if env['PLATFORM'] == 'win32':
     env["ENV"]["PATH"] = os.pathsep.join([
         env["ENV"].get("PATH", ""),
         BUILD_DIR.abspath])
-    
+
     # also add the Boost library path to the PATH
     # so that the Boost test *.dll can be found when running the tests
     if env['RUN_BOOST_TESTS']:
@@ -294,7 +294,7 @@ if env['PYDOC'] and env['SG_PYTHON']:
         continue
       print module
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
-        doxyFile.write(data.replace('$modname', module).replace('$quiet', 'NO' if env['VERBOSE'] else 'YES'))
+        doxyFile.write(data.replace('$modname', module).replace('$quiet', 'YES'))
 
       doxy_env = env.Clone()
 
