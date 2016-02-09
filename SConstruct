@@ -110,7 +110,7 @@ env['LIBDIR'] = env.get( 'LIBDIR', os.path.join( env['EPREFIX'], "lib" ) )
 env['INCLUDEDIR'] = env.get( 'INCLUDEDIR', os.path.join( env['PREFIX'], "include" ) )
 
 # no docu if clean:
-if not env['PYDOC'] and not env.GetOption('clean'):
+if not env.GetOption('clean'):
   prepareDoxyfile(moduleFolders)
 
 if 'CXX' in ARGUMENTS:
