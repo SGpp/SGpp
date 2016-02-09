@@ -56,7 +56,7 @@ vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (mu
 vars.Add('CPPPATH', 'Set paths where to look for additional headers', '')
 vars.Add('LIBPATH', 'Set paths where to look for additional libs', '')
 # define the target
-vars.Add('ARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', 'avx')
+vars.Add('ARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', 'sse3')
 vars.Add('COMPILER', "Sets the processor you are compiling for. 'gnu' means using gcc with standard configuration. Also available are: 'intel', here Intel Compiler in version 11 or higher must be used", 'gnu')
 vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
