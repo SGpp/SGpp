@@ -10,6 +10,8 @@ import fnmatch
 Import('env')
 Import('BUILD_DIR')
 Import('moduleName')
+Import('headerSourceList')
+Import('headerDestList')
 
 env_parallel = env.Clone()
 # can only build without mpi support, skip those files
@@ -119,6 +121,10 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
             if fileName in ArBBOnlyFiles:
                  continue
             srcs.append(os.path.join(currentFolder, fileName))
+    if currentFolder != 'src':
+      for fileName in fnmatch.filter(fileNames, '*.hpp'):
+        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
+        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
 
 objs = []
 for sourceFile in srcs:
