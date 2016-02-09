@@ -14,6 +14,8 @@ Import('moduleName')
 Import('libraryTargetList')
 Import('installTargetList')
 Import('exampleTargetList')
+Import('headerSourceList')
+Import('headerDestList')
 
 moduleDependencies = ['sgppsolver', 'sgppbase']
 Export('moduleDependencies')
@@ -29,6 +31,10 @@ srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("src"):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
         srcs.append(os.path.join(currentFolder, fileName))
+    if currentFolder != 'src':
+      for fileName in fnmatch.filter(fileNames, '*.hpp'):
+        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
+        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
 
 objs = []
 for sourceFile in srcs:

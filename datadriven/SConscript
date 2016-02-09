@@ -15,6 +15,8 @@ Import('moduleName')
 Import('libraryTargetList')
 Import('installTargetList')
 Import('exampleTargetList')
+Import('headerSourceList')
+Import('headerDestList')
 
 avxFolders = ['src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/', 'src/sgpp/datadriven/operation/hash/OperationMultiEvalStreaming']
 
@@ -58,6 +60,10 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
+    if currentFolder != 'src':
+      for fileName in fnmatch.filter(fileNames, '*.hpp'):
+        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
+        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
 
 env.AppendUnique(LIBPATH=[BUILD_DIR])
 

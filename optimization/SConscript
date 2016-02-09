@@ -15,7 +15,8 @@ Import("libraryTargetList")
 Import("installTargetList")
 Import("exampleTargetList")
 Import("config")
-
+Import('headerSourceList')
+Import('headerDestList')
 
 
 moduleDependencies = ["sgppbase"]
@@ -33,20 +34,20 @@ if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
     if config.CheckHeader("suitesparse/umfpack.h", language="C++") and \
             config.CheckLib("umfpack", language="C++"):
         moduleDependencies.append("umfpack")
-        env.Append(CPPDEFINES=["USE_UMFPACK"])
+        env["CPPDEFINES"]["USE_UMFPACK"] = "1"
         print "SGPP::optimization will be compiled with UMFPACK."
     else:
-        env.Append(CPPDEFINES=["DONT_USE_UMFPACK"])
+        env["CPPDEFINES"]["DONT_USE_UMFPACK"] = "1"
         print "SGPP::optimization will be compiled without UMFPACK (not found)."
 else:
     print "SGPP::optimization will be compiled without UMFPACK."
 
 if ("USE_EIGEN" in config.env) and config.env["USE_EIGEN"]:
     if config.CheckHeader("eigen3/Eigen/Dense", language="C++"):
-        env.Append(CPPDEFINES=["USE_EIGEN"])
+        env["CPPDEFINES"]["USE_EIGEN"] = "1"
         print "SGPP::optimization will be compiled with Eigen."
     else:
-        env.Append(CPPDEFINES=["DONT_USE_EIGEN"])
+        env["CPPDEFINES"]["DONT_USE_EIGEN"] = "1"
         print "SGPP::optimization will be compiled without Eigen (not found)."
 else:
     print "SGPP::optimization will be compiled without Eigen."
@@ -55,20 +56,20 @@ if ("USE_ARMADILLO" in config.env) and config.env["USE_ARMADILLO"]:
     if config.CheckHeader("armadillo", language="C++") and \
             config.CheckLib("armadillo", language="C++"):
         moduleDependencies.append("armadillo")
-        env.Append(CPPDEFINES=["USE_ARMADILLO"])
+        env["CPPDEFINES"]["USE_ARMADILLO"] = "1"
         print "SGPP::optimization will be compiled with Armadillo."
     else:
-        env.Append(CPPDEFINES=["DONT_USE_ARMADILLO"])
+        env["CPPDEFINES"]["DONT_USE_ARMADILLO"] = "1"
         print "SGPP::optimization will be compiled without Armadillo (not found)."
 else:
     print "SGPP::optimization will be compiled without Armadillo."
 
 if ("USE_GMMPP" in config.env) and config.env["USE_GMMPP"]:
     if config.CheckHeader("gmm/gmm.h", language="C++"):
-        env.Append(CPPDEFINES=["USE_GMMPP"])
+        env["CPPDEFINES"]["USE_GMMPP"] = "1"
         print "SGPP::optimization will be compiled with Gmm++."
     else:
-        env.Append(CPPDEFINES=["DONT_USE_GMMPP"])
+        env["CPPDEFINES"]["DONT_USE_GMMPP"] = "1"
         print "SGPP::optimization will be compiled without Gmm++ (not found)."
 else:
     print "SGPP::optimization will be compiled without Gmm++."
@@ -81,6 +82,10 @@ srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("src"):
     for fileName in fnmatch.filter(fileNames, "*.cpp"):
         srcs.append(os.path.join(currentFolder, fileName))
+    if currentFolder != 'src':
+      for fileName in fnmatch.filter(fileNames, '*.hpp'):
+        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
+        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
 
 objs = []
 for sourceFile in srcs:

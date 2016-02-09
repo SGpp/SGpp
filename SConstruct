@@ -194,12 +194,9 @@ if env['PLATFORM'] == 'win32':
 env.Append(LIBPATH=[BUILD_DIR])
 
 # # add C++ defines for all modules
-cppdefines = []
 for module in moduleNames:
     if env[module]:
         env['CPPDEFINES'][module] = '1'
-#         cppdefines.append(module)
-# env.Append(CPPDEFINES=cppdefines)
 
 # environement setup finished, export environment
 Export('env')
@@ -265,18 +262,24 @@ if env['COMPILE_BOOST_TESTS']:
     builder = Builder(action="./$SOURCE")
     env.Append(BUILDERS={'BoostTest' : builder})
 
+
+
 libraryTargetList = []
 installTargetList = []
 testTargetList = []
 boostTestTargetList = []
 exampleTargetList = []
 pydocTargetList = []
+headerSourceList = []
+headerDestList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
 env.Export('testTargetList')
 env.Export('boostTestTargetList')
 env.Export('exampleTargetList')
 env.Export('pydocTargetList')
+env.Export('headerSourceList')
+env.Export('headerDestList')
 
 # compile selected modules
 flattenedDependencyGraph = []
@@ -410,10 +413,19 @@ dependencies.append(env.Command('printFinished', [], printFinished))
 for i in range(len(dependencies) - 1):
   env.Depends(dependencies[i + 1], dependencies[i])
 
+# Stuff needed for system install
 env.Clean("distclean",
   [
     "config.log",
   ])
 Default(libraryTargetList, dependencies)
 
-env.Alias('install-lib-sgpp', Install(os.path.join( env.get('LIBDIR'), 'sgpp'), libraryTargetList))
+ils = env.Alias('install-lib-sgpp', Install(os.path.join( env.get('LIBDIR'), 'sgpp'), libraryTargetList))
+
+headerFinalDestList = []
+for headerDest in headerDestList:
+  headerFinalDestList.append(os.path.join( env.get('INCLUDEDIR'), headerDest))
+
+iis = env.Alias('install-inc-sgpp', InstallAs(headerFinalDestList, headerSourceList))
+
+env.Alias('install', [ils, iis])
