@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #pragma once
 
 #include <sgpp/globaldef.hpp>
@@ -12,13 +11,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-//#include "ModelFittingDensityEstimation.hpp"
-
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 namespace SGPP {
   namespace datadriven {
-
-  class ModelFittingDensityEstimation;
 
     struct DataMiningConfigurationDensityEstimationType {
       // parameters for cross-validation
@@ -37,7 +33,11 @@ namespace SGPP {
     };
 
 
-    class DataMiningConfigurationDensityEstimation: public SGPP::datadriven::DataMiningConfiguration {
+    // forward declaration for friend declaration
+    class ModelFittingDensityEstimation;
+
+
+    class DataMiningConfigurationDensityEstimation : public SGPP::datadriven::DataMiningConfiguration {
 
         friend class ModelFittingDensityEstimation;
 
@@ -48,12 +48,18 @@ namespace SGPP {
 
         virtual DataMiningConfiguration* clone();
 
+        std::shared_ptr<SGPP::base::RegularGridConfiguration> getGridConfig();
+        std::shared_ptr<SGPP::base::AdpativityConfiguration> getRefinementConfig();
+        std::shared_ptr<SGPP::solver::SLESolverConfiguration> getSolverConfig();
+        std::shared_ptr<SGPP::datadriven::RegularizationConfiguration> getRegularizationConfig();
+        std::shared_ptr<SGPP::datadriven::DataMiningConfigurationDensityEstimationType> getSGDEConfig();
+
       private:
-        SGPP::base::RegularGridConfiguration gridConfig;
-        SGPP::base::AdpativityConfiguration adaptivityConfig;
-        SGPP::solver::SLESolverConfiguration solverConfig;
-        SGPP::datadriven::RegularizationConfiguration regularizationConfig;
-        SGPP::datadriven::DataMiningConfigurationDensityEstimationType sgdeConfig;
+        std::shared_ptr<SGPP::base::RegularGridConfiguration> gridConfig;
+        std::shared_ptr<SGPP::base::AdpativityConfiguration> adaptivityConfig;
+        std::shared_ptr<SGPP::solver::SLESolverConfiguration> solverConfig;
+        std::shared_ptr<SGPP::datadriven::RegularizationConfiguration> regularizationConfig;
+        std::shared_ptr<SGPP::datadriven::DataMiningConfigurationDensityEstimationType> sgdeConfig;
     };
 
   } /* namespace datadriven */
