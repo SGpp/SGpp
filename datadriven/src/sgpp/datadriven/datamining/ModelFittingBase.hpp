@@ -14,6 +14,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/SampleProvider.hpp>
 
 
 namespace SGPP {
@@ -21,7 +22,8 @@ namespace SGPP {
 
     class ModelFittingBase {
       public:
-        ModelFittingBase(SGPP::datadriven::DataMiningConfiguration config);
+        ModelFittingBase(SGPP::datadriven::SampleProvider& sampleProvider);
+
         virtual ~ModelFittingBase();
 
         /**
@@ -49,7 +51,7 @@ namespace SGPP {
       protected:
         SGPP::base::OperationMatrix* getRegularizationMatrix(SGPP::datadriven::RegularizationType regType);
 
-        SGPP::datadriven::DataMiningConfiguration &config;
+        SGPP::datadriven::SampleProvider& sampleProvider;
         std::shared_ptr<SGPP::base::Grid> grid;
         std::shared_ptr<SGPP::base::DataVector> alpha;
     };
