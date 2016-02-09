@@ -66,8 +66,8 @@ void MetaLearner::learnString(
     std::cout << "instances: " << this->instances << std::endl;
   }
 
-  base::DataVector& classesVector = dataset.getClasses();
-  base::DataMatrix& trainingData = dataset.getTrainingData();
+  base::DataVector& classesVector = dataset.getTargets();
+  base::DataMatrix& trainingData = dataset.getData();
 
   //    bool isRegression = true; // treat everything as if it were a regression, as classification
   // is not fully supported by Learner
@@ -117,8 +117,8 @@ void MetaLearner::learnReferenceString(std::string& content, float_t lambda,
     std::cout << "instances: " << this->instances << std::endl;
   }
 
-  base::DataVector& classesVector = dataset.getClasses();
-  base::DataMatrix& trainingData = dataset.getTrainingData();
+  base::DataVector& classesVector = dataset.getTargets();
+  base::DataMatrix& trainingData = dataset.getData();
 
   // treat everything as if it were a regression, as classification is not fully
   // supported by Learner
@@ -167,8 +167,8 @@ void MetaLearner::learnAndTestString(
   size_t testDim = testDataset.getDimension();
   size_t testInstances = testDataset.getNumberInstances();
 
-  base::DataVector& testClassesVector = testDataset.getClasses();
-  base::DataMatrix& testTrainingData = testDataset.getTrainingData();
+  base::DataVector& testClassesVector = testDataset.getTargets();
+  base::DataMatrix& testTrainingData = testDataset.getData();
 
   if (verbose && testDim != this->gridConfig.dim_) {
     std::cout << "dim of test dataset and training dataset doesn't match" <<

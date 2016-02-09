@@ -50,7 +50,6 @@ DataMatrix* generateBBTMatrix(Grid* grid, DataMatrix& training) {
   return m;
 }
 
-
 void compareBBTMatrices(DataMatrix* m1, DataMatrix* m2) {
 
 #if USE_DOUBLE_PRECISION
@@ -151,7 +150,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   //  for (size_t i = 0; i < trainingData->getNrows(); i++) {
   //    for (size_t j = 0; j < trainingData->getNcols(); j++) {
@@ -183,7 +182,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -208,7 +207,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -233,7 +232,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -263,7 +262,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -273,7 +272,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   GridStorage* gridStorage = grid->getStorage();
 
   DataMatrix* m = generateBBTMatrix(grid, trainingData);
-
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -290,7 +288,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -315,7 +313,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -340,7 +338,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -369,7 +367,7 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -394,7 +392,7 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -419,7 +417,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -444,7 +442,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -470,7 +468,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -509,7 +507,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -559,7 +557,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -584,7 +582,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -613,7 +611,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -638,7 +636,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -663,7 +661,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -688,7 +686,7 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string content = uncompressFile(fileName);
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
-  DataMatrix &trainingData = dataset.getTrainingData();
+  DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 

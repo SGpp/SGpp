@@ -1,0 +1,114 @@
+/*
+ * CrossValidationScorer.cpp
+ *
+ *  Created on: Feb 8, 2016
+ *      Author: perun
+ */
+
+#include <iostream>
+#include <random>
+#include <ctime>
+
+#include <sgpp/globaldef.hpp>
+#include "SimpleSplittingScorer.hpp"
+
+using namespace SGPP::base;
+
+namespace SGPP {
+namespace datadriven {
+
+SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
+    std::shared_ptr<ModelFittingBase> fitter,
+    double trainPortion, int seed): Scorer(metric, fitter),
+  trainPortion(trainPortion), seed(seed) {
+  if (this->seed) {
+    this->seed = std::time(NULL);
+  }
+
+}
+
+
+SimpleSplittingScorer::~SimpleSplittingScorer() {
+  // TODO Auto-generated destructor stub
+}
+
+
+double SimpleSplittingScorer::getScore(Dataset& dataset) {
+
+  // initialize data structures
+  size_t dim = dataset.getDimension();
+  size_t datasetSize = dataset.getNumberInstances();  // size of data
+  size_t trainSize = static_cast<size_t>(static_cast<double>(datasetSize) * trainPortion);
+  size_t testSize = datasetSize - trainSize;
+  Dataset trainingSet(trainSize, dim);
+  Dataset testSet(testSize, dim);
+  splitset(dataset, trainingSet, testSet);
+
+  // fit the model to the training dataset
+  fitter->fit(trainingSet);
+
+  // evaluate the model on the test set and return the metric
+  DataVector predictedValues(testSize);
+  fitter->evaluate(testSet.getData(), predictedValues);
+  return (*metric)(predictedValues, testSet.getTargets());
+}
+
+
+void SimpleSplittingScorer::splitset(Dataset& dataset,
+                                     Dataset& trainingSet,
+                                     Dataset& testSet,
+                                     bool permute) {
+  size_t dim = dataset.getDimension();
+  size_t datasetSize = dataset.getNumberInstances();  // size of data
+  size_t trainSize = trainingSet.getNumberInstances();
+  size_t testSize = testSet.getNumberInstances();
+
+  // generate range of all indices and permute them if required
+  std::vector<size_t> indices(datasetSize);
+
+  for (size_t i = 0; i < datasetSize; i++ ) {
+    indices.push_back(i);
+  }
+
+  if (permute == true) {
+    std::mt19937 rndGen(seed);
+    std::shuffle(indices.begin(), indices.end(), rndGen);
+  }
+
+  // fill data
+  // first initialize data structures
+  DataVector tmpLine(dim);
+  trainingSet.getData().resize(trainSize, dim);
+  trainingSet.getTargets().resize(trainSize);
+  testSet.getData().resize(testSize, dim);
+  testSet.getTargets().resize(testSize);
+
+  // fill training data
+  for (size_t j = 0; j < trainSize; j++) {
+    size_t idx = indices[j];
+    dataset.getData().getRow(idx, tmpLine);
+
+    for (size_t d = 0; d < dim; d++) {
+      trainingSet.getData().set(j, d, tmpLine[d]);
+    }
+
+    trainingSet.getTargets().set(j, tmpLine[dim]);
+  }
+
+  // fill test data
+  for (size_t j = trainSize; j < datasetSize; j++) {
+    size_t idx = indices[j];
+    dataset.getData().getRow(idx, tmpLine);
+
+    for (size_t d = 0; d < dim; d++) {
+      testSet.getData().set(j - trainSize, d, tmpLine[d]);
+    }
+
+    testSet.getTargets().set(j - trainSize, tmpLine[dim]);
+  }
+
+}
+
+
+} /* namespace datadriven */
+} /* namespace SGPP */
