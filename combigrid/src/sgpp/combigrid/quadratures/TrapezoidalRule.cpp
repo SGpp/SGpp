@@ -7,12 +7,13 @@
 
 #include <sgpp/combigrid/quadratures/TrapezoidalRule.hpp>
 #include <iostream>
+#include <vector>
 
 template <typename _Tp>
 combigrid::TrapezoidalRule<_Tp>::TrapezoidalRule(int max_lvl) {
   if (max_lvl >= 2) {  // 5 pts?
     MAX_LEVELS = max_lvl;
-} else {
+  } else {
     COMBIGRID_OUT_WRN(
         "\n"
         " If your max level is not from 2 GREATER,\n"
@@ -28,7 +29,7 @@ combigrid::TrapezoidalRule<_Tp>::TrapezoidalRule(int max_lvl) {
     MAX_LEVELS = 10;
   }
 
-  coefficients = (_Tp**)malloc(sizeof(_Tp*) * MAX_LEVELS);
+  coefficients = reinterpret_cast<_Tp**>(malloc(sizeof(_Tp*) * MAX_LEVELS));
 #pragma omp parallel for schedule(dynamic, 1)
 
   for (int d = 1; d <= MAX_LEVELS; d++) {
@@ -107,22 +108,20 @@ _Tp combigrid::TrapezoidalRule<_Tp>::integrate(CombiGrid<_Tp>* grids,
       // if error has occured simply skip through all the iterations until you
       // reach the end...
       if (grids->getFullGrid(j)->isActive()) {
-        if (grids->getFullGrid(j)->getMaxLevel() >
-            MAX_LEVELS)  // problem with parallelization - if this error occurs
-                         // the
-                         // end result might not be set
-        {
+        if (grids->getFullGrid(j)->getMaxLevel() > MAX_LEVELS) {
+          // problem with parallelization - if this error occurs
+          // the end result might not be set
           COMBIGRID_OUT_ERR(
               "TRAPEZOIDAL QUADRATURE FAILED: Active full-grid has level "
               "greater than the currently "
               "supported MAX level. ABORTING",
               __FILE__, __LINE__);
           error_flag++;
-
-        } else
+        } else {
           result +=
               (_Tp)grids->getCoef(j) *
               trapz_full_grid(dim, f, grids->getFullGrid(j), badstretching);
+        }
       }
     }
   }
@@ -181,7 +180,7 @@ template <typename _Tp>
 void combigrid::TrapezoidalRule<_Tp>::calculateCoefficients(int in_level,
                                                             _Tp** out_coefs) {
   int N = powerOfTwo[in_level] + 1;
-  *out_coefs = (_Tp*)malloc(N * sizeof(_Tp));
+  *out_coefs = reinterpret_cast<_Tp*>(malloc(N * sizeof(_Tp)));
 
   double base_omega = 2.0;
   base_omega /= (N > 1) ? N - 1.0 : 1.0;

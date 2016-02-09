@@ -1,17 +1,18 @@
-/*
- * BasuQuadrature.cpp
- *
- *  Created on: 26 Sep 2014
- *      Author: kenny
- */
+/* ****************************************************************************
+* Copyright (C) 2015 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Petar Tzenov
 
 #include <sgpp/combigrid/quadratures/BasuQuadrature.hpp>
+#include <vector>
 
 template <typename _Tp>
 combigrid::BasuQuadrature<_Tp>::BasuQuadrature(int max_lvl) {
-  if (max_lvl >= 2)  // 5 pts?
+  if (max_lvl >= 2) {  // 5 pts?
     MAX_LEVELS = max_lvl;
-  else {
+  } else {
     COMBIGRID_OUT_WRN(
         "\n"
         " If your max level is not from 2 GREATER,\n"
@@ -27,7 +28,7 @@ combigrid::BasuQuadrature<_Tp>::BasuQuadrature(int max_lvl) {
     MAX_LEVELS = 9;
   }
 
-  coefficients = (_Tp**)malloc(sizeof(_Tp*) * MAX_LEVELS);
+  coefficients = reinterpret_cast<_Tp**>(malloc(sizeof(_Tp*) * MAX_LEVELS));
 #pragma omp parallel for schedule(dynamic, 1)
 
   for (int d = 1; d <= MAX_LEVELS; d++) {
@@ -99,22 +100,20 @@ _Tp combigrid::BasuQuadrature<_Tp>::integrate(CombiGrid<_Tp>* grids,
       // if error has occured simply skip through all the iterations until you
       // reach the end...
       if (grids->getFullGrid(j)->isActive()) {
-        if ((int)grids->getFullGrid(j)->getMaxLevel() >
-            MAX_LEVELS)  // problem with parallelization - if this error occurs
-                         // the
-                         // end result might not be set
-        {
+        if (static_cast<int>(grids)->getFullGrid(j)->getMaxLevel() > MAX_LEVELS) {
+          // problem with parallelization - if this error occurs
+          // the end result might not be set
           COMBIGRID_OUT_ERR(
               "BASU QUADRATURE FAILED: Active full-grid has level greater than "
               "the currently "
               "supported MAX level. ABORTING",
               __FILE__, __LINE__);
           error_flag++;
-
-        } else
+        } else {
           result +=
               (_Tp)grids->getCoef(j) *
               basu_full_grid(dim, f, grids->getFullGrid(j), badstretching);
+        }
       }
     }
   }
@@ -201,7 +200,7 @@ void combigrid::BasuQuadrature<_Tp>::calculateCoefficients(int in_level,
                                                            _Tp** out_coefs) {
   int N = powerOfTwo[in_level];
   int n = powerOfTwo[in_level - 1];  // is equal to (N-1)/2;
-  *out_coefs = (_Tp*)malloc((N + 1) * sizeof(_Tp));
+  *out_coefs = reinterpret_cast<_Tp*>(malloc((N + 1) * sizeof(_Tp)));
 
   for (int s = 0; s <= N; s++) {
     double factor = 2 * M_PI * s / N;
