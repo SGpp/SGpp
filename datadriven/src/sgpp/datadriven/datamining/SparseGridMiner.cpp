@@ -27,9 +27,8 @@ namespace SGPP {
 
     void SparseGridMiner::run() {
       // 1. find lambda
-      SGPP::float_t lambda = 1e-5;
       SGPP::float_t threshold = config["scorer_threshold"].getDouble();
-      uint32_t maxRefinenum = config["maxRefinenum"].getUInt();
+      uint64_t maxRefinenum = config["maxRefinenum"].getUInt();
 
       // 2. read data set
       datadriven::ARFFWrapper dataWrapper(config);
