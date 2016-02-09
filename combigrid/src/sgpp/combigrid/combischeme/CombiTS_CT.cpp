@@ -143,15 +143,7 @@ void combigrid::CombiTS_CT<_Tp>::re_initCombiGrid(
  *  Exemplary use cases could be the addition or removal of a fullgrid to/from
  * the combigrid container.
  * @param in_dim - dimension of the problem
-<<<<<<< 886d73fcb49970ff742568a9d7eb9449b4e2f842
  * @param out_fgrids - (out) vector of full grids
-=======
- * @param in_levels_vector - the vector containing the selected levels for each
- * fullgrid of the caller combigrid
- * @param out_coeffs - (out) vector containing the combigrid coefficients
- * (usually +1 or -1) -> the method stors the new
- * recomputed coefficients in the out_coeffs vector
->>>>>>> reformatted combigrid with clang-format-3.5 and google style
  * */
 template <typename _Tp>
 void combigrid::CombiTS_CT<_Tp>::recomputeCoefficients(
