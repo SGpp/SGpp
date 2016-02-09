@@ -9,10 +9,10 @@
 #include <math.h>
 
 void combigrid::TanStretching::get1DStretching(
-    int level, double min, double max, std::vector<double>& stretching,
-    std::vector<double>& jacobian) const {
+    int level, double min, double max, std::vector<double>* stretching,
+    std::vector<double>* jacobian) const {
   int nrPoints = combigrid::powerOfTwo[level] + 1;
-  stretching.resize(nrPoints);
+  stretching->resize(nrPoints);
   std::vector<double> tmpPoints(nrPoints);
 
   for (int ii = 0; ii < nrPoints; ii++)
@@ -21,13 +21,13 @@ void combigrid::TanStretching::get1DStretching(
 
   for (int ii = 0; ii < nrPoints; ii++)
     // pi/2 = 1.57079632679490
-    stretching[ii] = tan((1.57079632679490 - intFact_) * tmpPoints[ii]);
+    (*stretching)[ii] = tan((1.57079632679490 - intFact_) * tmpPoints[ii]);
 
   // do the scaling
   for (int ii = 0; ii < nrPoints; ii++)
-    stretching[ii] =
+    (*stretching)[ii] =
         min +
-        (max - min) * 0.5 * (1 + (stretching[ii] / stretching[nrPoints - 1]));
+        (max - min) * 0.5 * (1 + ((*stretching)[ii] / (*stretching)[nrPoints - 1]));
 
   // PeTz
   // TODO:: CALCULATE the tan stretching's JACOBIAN!!!

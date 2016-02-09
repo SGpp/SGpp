@@ -1,10 +1,9 @@
-/*
- * CombiChebyshevStretching.hpp
- *
- *  Created on: 28 Jul 2014
- *      Author: kenny
- *
- */
+/* ****************************************************************************
+* Copyright (C) 2015 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Petar Tzenov
 
 #ifndef COMBICHEBYSHEVSTRETCHING_HPP_
 #define COMBICHEBYSHEVSTRETCHING_HPP_
@@ -24,6 +23,7 @@
  **/
 
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
+#include <vector>
 
 namespace combigrid {
 
@@ -44,11 +44,11 @@ class CombiChebyshevStretching : public AbstractStretchingMaker {
    *
    */
   void get1DStretching(int level, double min, double max,
-                       std::vector<double>& stretching,
-                       std::vector<double>& jacobian) const;
+                       std::vector<double>* stretching,
+                       std::vector<double>* jacobian) const;
 
   Stretching getStretchingType() const { return CHEBYSHEV; }
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBICHEBYSHEVSTRETCHING_HPP_ */

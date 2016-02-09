@@ -7,6 +7,7 @@
 #ifndef ABSTRACTSTRETCHINGMAKER_HPP_
 #define ABSTRACTSTRETCHINGMAKER_HPP_
 
+#include <vector>
 #include "sgpp/combigrid/utils/combigrid_utils.hpp"
 
 namespace combigrid {
@@ -41,10 +42,10 @@ class AbstractStretchingMaker {
    */
 
   virtual void get1DStretching(int level, double min, double max,
-                               std::vector<double>& stretching,
-                               std::vector<double>& jacobian) const = 0;
+                               std::vector<double>* stretching,
+                               std::vector<double>* jacobian) const = 0;
 
-  virtual ~AbstractStretchingMaker(){};
+  virtual ~AbstractStretchingMaker() {}
 
   virtual Stretching getStretchingType() const = 0;
 
@@ -123,6 +124,6 @@ class AbstractStretchingMaker {
     return result;
   }
 };
-}
+}  // namespace combigrid
 
 #endif /* ABSTRACTSTRETCHINGMAKER_HPP_ */

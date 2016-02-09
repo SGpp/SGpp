@@ -139,7 +139,7 @@ _Tp combigrid::GaussPattersonQuadrature<_Tp>::gauss_patterson_fullGrid(
   std::vector<_Tp> f_values;
   CombiLegendreStretching stretching = CombiLegendreStretching();
   AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching,
-                                             f_values, f);
+                                             &f_values, f);
 
   /***
    * At this point of the evaluation we already have the functional values

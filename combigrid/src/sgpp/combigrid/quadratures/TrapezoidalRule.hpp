@@ -1,21 +1,22 @@
-/*
- * TrapezoidalRule.hpp
+/* ****************************************************************************
+* Copyright (C) 2015 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Petar Tzenov
 
- *
- *  Created on: 21 Jul 2014
- *      Author: kenny
- */
 #ifndef TRAPEZOIDAL_QUADRATURE__HPP
 #define TRAPEZOIDAL_QUADRATURE__HPP
 
 #include <sgpp/combigrid/quadratures/AbstractQuadrature.hpp>
 #include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
+#include <vector>
 
 namespace combigrid {
 template <typename _Tp>
 class TrapezoidalRule : public AbstractQuadratureRule<_Tp> {
  public:
-  TrapezoidalRule(int max_lvl = 9);
+  explicit TrapezoidalRule(int max_lvl = 9);
 
   virtual ~TrapezoidalRule();
 
@@ -82,5 +83,5 @@ class TrapezoidalRule : public AbstractQuadratureRule<_Tp> {
    * grid of size 2^(d+1) + 1*/
   _Tp** coefficients;
 };
-}
+}  // namespace combigrid
 #endif

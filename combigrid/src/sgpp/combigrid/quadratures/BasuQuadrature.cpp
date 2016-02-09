@@ -100,7 +100,7 @@ _Tp combigrid::BasuQuadrature<_Tp>::integrate(CombiGrid<_Tp>* grids,
       // if error has occured simply skip through all the iterations until you
       // reach the end...
       if (grids->getFullGrid(j)->isActive()) {
-        if (static_cast<int>(grids)->getFullGrid(j)->getMaxLevel() > MAX_LEVELS) {
+        if (static_cast<int>(grids->getFullGrid(j)->getMaxLevel()) > MAX_LEVELS) {
           // problem with parallelization - if this error occurs
           // the end result might not be set
           COMBIGRID_OUT_ERR(
@@ -133,7 +133,7 @@ _Tp combigrid::BasuQuadrature<_Tp>::basu_full_grid(
   std::vector<_Tp> f_values;
   CombiBasuStretching stretching = CombiBasuStretching();
   AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching,
-                                             f_values, f);
+                                             &f_values, f);
 
   /**check if we have a fully infinite interval to integrate over!!! */
   std::vector<Domain1D> domains;

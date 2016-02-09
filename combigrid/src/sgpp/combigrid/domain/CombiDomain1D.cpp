@@ -19,7 +19,7 @@ combigrid::Domain1D::Domain1D(int level, double min, double max,
 
   _isStretched = true;
   _level = level;
-  stretching.get1DStretching(level, min, max, _stretching, _jacobian);
+  stretching.get1DStretching(level, min, max, &_stretching, &_jacobian);
   _min = min;
   _max = max;
   _stretching_type = stretching.getStretchingType();

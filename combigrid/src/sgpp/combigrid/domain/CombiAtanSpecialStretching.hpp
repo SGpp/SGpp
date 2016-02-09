@@ -28,8 +28,8 @@ class AtanSpecialStretching : public AbstractStretchingMaker {
   virtual ~AtanSpecialStretching() { ; }
 
   void get1DStretching(int level, double min, double max,
-                       std::vector<double>& stretching,
-                       std::vector<double>& jacobian) const;
+                       std::vector<double>* stretching,
+                       std::vector<double>* jacobian) const;
 
   Stretching getStretchingType() const { return ATAN; }
 };

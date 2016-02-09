@@ -1,21 +1,22 @@
-/*
- * BasuQuadrature.hpp
- *
- *  Created on: 26 Sep 2014
- *      Author: kenny
- */
+/* ****************************************************************************
+* Copyright (C) 2015 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Petar Tzenov
 
 #ifndef BASUQUADRATURE_HPP_
 #define BASUQUADRATURE_HPP_
 #include <sgpp/combigrid/quadratures/AbstractQuadrature.hpp>
 #include <sgpp/combigrid/domain/CombiBasuStretching.hpp>
+#include <vector>
 
 namespace combigrid {
 
 template <typename _Tp>
 class BasuQuadrature : public AbstractQuadratureRule<_Tp> {
  public:
-  BasuQuadrature(int max_lvl = 9);
+  explicit BasuQuadrature(int max_lvl = 9);
 
   /*Destructor -> Make sure that all memory allocated for the coefs is deleted*/
   virtual ~BasuQuadrature();
@@ -49,6 +50,6 @@ class BasuQuadrature : public AbstractQuadratureRule<_Tp> {
   _Tp basu_full_grid(int dim, _Tp (*f)(std::vector<double>),
                      FGridContainer<_Tp>* gridContainer, bool interpolate);
 };
-}
+}  // namespace combigrid
 
 #endif /* BASUQUADRATURE_HPP_ */
