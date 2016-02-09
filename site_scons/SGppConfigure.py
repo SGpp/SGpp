@@ -70,7 +70,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
 
-      config.env.AppendUnique(CPPDEFINES=["USE_OCL"])
+      config.env["CPPDEFINES"]["USE_OCL"] = "1"
     else:
       print "Info: OpenCL is not enabled"
 
@@ -409,5 +409,5 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['SG_PARALLEL'] = 0
         print "Warning: not using mpic++, parallel module disabled, since it requires mpic++"
     elif env['SG_PARALLEL'] != 0:
-        env['CPPDEFINES']['USE_MPI'] = 1
+        env['CPPDEFINES']['USE_MPI'] = '1'
         print "Parallel module enabled"
