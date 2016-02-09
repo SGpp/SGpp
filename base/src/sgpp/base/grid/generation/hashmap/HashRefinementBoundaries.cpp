@@ -175,6 +175,7 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
           counter++;
+	  break;
         }
       } else {
         // left child
@@ -184,6 +185,7 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
         // if there no more grid points --> test if we should refine the grid
         if (child_iter == end_iter) {
           counter++;
+	  break;
         }
 
         // right child
@@ -192,6 +194,7 @@ size_t HashRefinementBoundaries::getNumberOfRefinablePoints(
 
         if (child_iter == end_iter) {
           counter++;
+	  break;
         }
       }
 

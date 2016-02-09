@@ -21,9 +21,9 @@ namespace combigrid {
 class CombiEquidistantStretching: public AbstractStretchingMaker {
  public:
 
-//  CombiEquidistantStretching(){}
+  //  CombiEquidistantStretching(){}
 
-  ~CombiEquidistantStretching(){}
+  ~CombiEquidistantStretching() {}
 
   /**
    * @param level - integer specifying the current grid level . the corresponding nr of points is 2^level + 1

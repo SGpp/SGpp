@@ -29,7 +29,10 @@ elif env['PLATFORM'] == 'darwin':
 
 # build python module with swig
 swigflags = ['-c++', '-python', '-fvirtual']
-swigflags.extend(['-D' + c[0] + "=" + c[1] for c in py_env['CPPDEFINES']])
+
+print  'py_env CPPDEFINES',py_env['CPPDEFINES']
+
+swigflags.extend(['-D' + c + "=" + py_env['CPPDEFINES'][c] for c in py_env['CPPDEFINES']])
 
 # tell SWIG that we're on Windows
 # (SCons/SWIG do not seem to set this flag automatically)

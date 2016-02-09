@@ -12,7 +12,6 @@ Import('BUILD_DIR')
 Import('moduleName')
 
 env_parallel = env.Clone()
-
 # can only build without mpi support, skip those files
 # required define: -DUSE_MPI
 # requires mpicxx
@@ -107,15 +106,14 @@ if env['USE_STATICLIB']:
     for i, _ in enumerate(moduleDependencies):
         moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
 Export('libname')
-
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith(os.path.join(".", "src", "sgpp", "parallel", "exampleApplication")):
-        continue
+        continue #  ignore exampleApplication from build
     if currentFolder.startswith(os.path.join(".", "src")):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            if fileName in MPIOnlyFiles:
-                 continue
+            #if fileName in MPIOnlyFiles:
+            #     continue
             if fileName in OCLOnlyFiles:
                  continue
             if fileName in ArBBOnlyFiles:

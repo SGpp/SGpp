@@ -123,13 +123,12 @@ if 'CPPFLAGS' in ARGUMENTS:
   env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(",")
 if 'CFLAGS' in ARGUMENTS:
   env['CFLAGS'] = ARGUMENTS['CFLAGS']
+env.AppendUnique(CPPDEFINES = {})
 if 'CPPDEFINES' in ARGUMENTS:
-  defineDict = {}
   for define in ARGUMENTS['CPPDEFINES'].split(","):
     key, value = define.split("=")
-    defineDict[key] = value
-  env.AppendUnique(CPPDEFINES = defineDict)
-  print env['CPPDEFINES']
+    env['CPPDEFINES'][key] = value
+
 if 'CPPPATH' in ARGUMENTS:
     env['CPPPATH'] = ARGUMENTS['CPPPATH'].split(",")
 if 'LIBPATH' in ARGUMENTS:
@@ -194,12 +193,13 @@ if env['PLATFORM'] == 'win32':
 # (to add corresponding -L... flags to linker calls)
 env.Append(LIBPATH=[BUILD_DIR])
 
-# add C++ defines for all modules
+# # add C++ defines for all modules
 cppdefines = []
 for module in moduleNames:
     if env[module]:
-        cppdefines.append(module)
-env.Append(CPPDEFINES=cppdefines)
+        env['CPPDEFINES'][module] = '1'
+#         cppdefines.append(module)
+# env.Append(CPPDEFINES=cppdefines)
 
 # environement setup finished, export environment
 Export('env')
