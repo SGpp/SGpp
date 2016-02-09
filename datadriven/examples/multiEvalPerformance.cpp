@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
   //SGPP::base::DataVector *classes = dataset.getClasses();
-  SGPP::base::DataMatrix& trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix& trainingData = dataset.getData();
 
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();

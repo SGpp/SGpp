@@ -506,10 +506,10 @@ int main(int argc, char* argv[]) {
     size_t nInstancesTestNo = testdataset.getNumberInstances();
 
     // Define DP data
-    SGPP::base::DataMatrix data = dataset.getTrainingData();
-    SGPP::base::DataVector classes = dataset.getClasses();
-    SGPP::base::DataMatrix testdata = testdataset.getTrainingData();
-    SGPP::base::DataVector testclasses = testdataset.getClasses();
+    SGPP::base::DataMatrix data = dataset.getData();
+    SGPP::base::DataVector classes = dataset.getTargets();
+    SGPP::base::DataMatrix testdata = testdataset.getData();
+    SGPP::base::DataVector testclasses = testdataset.getTargets();
 
     // Define SP data
     SGPP::base::DataMatrixSP dataSP(nInstancesNo, nDim);

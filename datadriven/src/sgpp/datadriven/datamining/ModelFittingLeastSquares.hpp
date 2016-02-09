@@ -39,7 +39,6 @@ protected:
 	virtual datadriven::DMSystemMatrixBase* createDMSystem(
 			base::DataMatrix& trainDataset, float_t lambda);
 
-
 public:
 	/**
 	 * Constructor
@@ -47,16 +46,15 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param isVerbose set to true in order to allow console output
 	 */
-	ModelFittingLeastSquares(DataMiningConfigurationLeastSquares &configuration);
+	ModelFittingLeastSquares(
+	SGPP::datadriven::DataMiningConfigurationLeastSquares config);
 
 	/**
 	 * Destructor
 	 */
 	virtual ~ModelFittingLeastSquares();
 
-	virtual base::DataVector predict(base::DataMatrix& testDataset);
-
-	std::vector<std::pair<size_t, float_t> > getRefinementExecTimes();
+	void fit(datadriven::Dataset& dataset) override;
 
 	void setImplementation(
 			datadriven::OperationMultipleEvalConfiguration operationConfiguration) {

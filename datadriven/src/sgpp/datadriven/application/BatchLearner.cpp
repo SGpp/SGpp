@@ -219,7 +219,8 @@ base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
     } else if (batchConf.wMode == 1) {
       factors.push_back((float_t)(i + 1)*batchConf.wArgument);  // linear
     } else if (batchConf.wMode == 2) {
-      factors.push_back((float_t)pow(batchConf.wArgument, (i + 1)));  // exp
+      factors.push_back((float_t)pow(batchConf.wArgument,
+                                     static_cast<float_t>(i + 1)));  // exp
     } else if (batchConf.wMode == 3) {
       factors.push_back((float_t)batchConf.wArgument / (float_t)(
                           i + 1));  // 1/x bzw arg/x
@@ -273,7 +274,7 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
                                   p.first));
         float_t temp = opEval->eval(*alphaVectors.at(p.first), pt);
 
-        if (batchConf.verbose && abs(temp) > 100)
+        if (batchConf.verbose && fabs(temp) > 100)
           cout << "warning abs>100: " << temp << " for " << pt.toString() << endl;
 
         evalsum += temp;

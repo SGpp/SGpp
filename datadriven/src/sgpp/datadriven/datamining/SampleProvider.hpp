@@ -36,6 +36,15 @@ public:
 	 */
 	virtual Dataset allSamples() = 0;
 
+	/**
+	 * Returns the dimensionality of the data source
+	 * @return dimensionality
+	 */
+	size_t getDim(){ return dim;}
+
+protected:
+	size_t dim;
+
 };
 }
 }

@@ -8,6 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include "DataMiningConfiguration.hpp"
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
 #include <vector>
 #include <map>
@@ -17,12 +18,38 @@ namespace SGPP {
 namespace datadriven {
 
 class DataMiningConfigurationLeastSquares: public DataMiningConfiguration {
+
+	friend class ModelFittingDensityEstimation;
+
+private:
+	base::RegularGridConfiguration gridConfig;
+	base::AdpativityConfiguration adaptivityConfig;
+	solver::SLESolverConfiguration solverRefineConfig;
+	solver::SLESolverConfiguration solverFinalConfig;
+	datadriven::RegularizationConfiguration regularizationConfig;
+	float_t lambda;
+
 public:
 	DataMiningConfigurationLeastSquares();
 
 	explicit DataMiningConfigurationLeastSquares(const std::string& fileName);
 
-//	virtual DataMiningConfiguration* clone() override;
+	base::RegularGridConfiguration &getGridConfig();
+	base::AdpativityConfiguration &getRefinementConfig();
+	solver::SLESolverConfiguration &getSolverRefineConfig();
+	solver::SLESolverConfiguration &getSolverFinalConfig();
+	datadriven::RegularizationConfiguration &getRegularizationConfig();
+
+	void setGridConfig(base::RegularGridConfiguration &gridConfig);
+	void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
+	void setSolverRefineConfig(
+			solver::SLESolverConfiguration &solverRefineConfig);
+	void setSolverFinalConfig(
+			solver::SLESolverConfiguration &solverFinalConfig);
+	void setRegularizationConfig(
+			datadriven::RegularizationConfiguration &regularizationConfig);
+
+	virtual DataMiningConfiguration* clone() override;
 };
 
 }  // namespace base

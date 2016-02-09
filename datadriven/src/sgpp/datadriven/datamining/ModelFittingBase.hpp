@@ -14,7 +14,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
-#include <sgpp/datadriven/datamining/SampleProvider.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 
 namespace SGPP {
@@ -22,21 +22,21 @@ namespace SGPP {
 
     class ModelFittingBase {
       public:
-        ModelFittingBase(SGPP::datadriven::SampleProvider& sampleProvider);
+        ModelFittingBase();
 
         virtual ~ModelFittingBase();
 
         /**
          *
          */
-        virtual void fit() = 0;
+        virtual void fit(datadriven::Dataset& dataset) = 0;
 
         /**
          *
          * @param sample
          * @return
          */
-        virtual SGPP::float_t evaluate(SGPP::base::DataVector& sample);
+        virtual SGPP::float_t evaluate(base::DataVector& sample);
 
         /**
          *
@@ -45,15 +45,15 @@ namespace SGPP {
          */
         virtual void evaluate(SGPP::base::DataMatrix& samples, SGPP::base::DataVector& result);
 
-        virtual std::shared_ptr<SGPP::base::Grid> getGrid();
-        virtual std::shared_ptr<SGPP::base::DataVector> getSurpluses();
+        virtual std::shared_ptr<base::Grid> getGrid();
+        virtual std::shared_ptr<base::DataVector> getSurpluses();
 
       protected:
-        SGPP::base::OperationMatrix* getRegularizationMatrix(SGPP::datadriven::RegularizationType regType);
+        std::shared_ptr<base::OperationMatrix> getRegularizationMatrix(SGPP::datadriven::RegularizationType regType);
+        void initializeGrid(base::RegularGridConfiguration gridConfig);
 
-        SGPP::datadriven::SampleProvider& sampleProvider;
-        std::shared_ptr<SGPP::base::Grid> grid;
-        std::shared_ptr<SGPP::base::DataVector> alpha;
+        std::shared_ptr<base::Grid> grid;
+        std::shared_ptr<base::DataVector> alpha;
     };
 
   } /* namespace datadriven */

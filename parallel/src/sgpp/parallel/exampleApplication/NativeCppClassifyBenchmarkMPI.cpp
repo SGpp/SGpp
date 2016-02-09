@@ -658,8 +658,8 @@ int main(int argc, char* argv[]) {
     // Define DP data
     SGPP::base::DataMatrix data(0,0);
     SGPP::base::DataVector classes(0);
-    SGPP::base::DataMatrix& testdata = testdataset.getTrainingData();
-    SGPP::base::DataVector& testclasses = testdataset.getClasses();
+    SGPP::base::DataMatrix& testdata = testdataset.getData();
+    SGPP::base::DataVector& testclasses = testdataset.getTargets();
 
     // Define SP data
     SGPP::base::DataMatrixSP dataSP(nInstancesNo, nDim);
@@ -674,8 +674,8 @@ int main(int argc, char* argv[]) {
     } else {
       // Read data from file
       dataset = SGPP::datadriven::ARFFTools::readARFF(tfileTrain);
-      data = dataset.getTrainingData();
-      classes = dataset.getClasses();
+      data = dataset.getData();
+      classes = dataset.getTargets();
     }
 
     SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);

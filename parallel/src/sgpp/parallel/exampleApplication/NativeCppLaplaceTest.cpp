@@ -103,17 +103,17 @@ int main(int argc, char* argv[]) {
   if (lmb == 1) {
     updown = SGPP::op_factory::createOperationLaplace(*myGrid, lambda);
     vect = SGPP::op_factory::createOperationLaplaceVectorized(*myGrid, lambda,
-    		SGPP::parallel::X86SIMD);/// @TODO: check for parallelization type
+    		SGPP::parallel::X86SIMD);/// @todo: check for parallelization type
   } else {
     updown = SGPP::op_factory::createOperationLaplace(*myGrid);
     vect = SGPP::op_factory::createOperationLaplaceVectorized(*myGrid,
-    		SGPP::parallel::X86SIMD);/// @TODO: check for parallelization type
+    		SGPP::parallel::X86SIMD);/// @todo: check for parallelization type
   }
 
   std::cout << std::endl;
   std::cout << "Laplace Test Application" << std::endl;
   std::cout << "========================" << std::endl << std::endl;
-  std::cout << "Gridtype:     " << (int)myGrid->getType() << std::endl;/// @TODO:output for gridtype
+  std::cout << "Gridtype:     " << (int)myGrid->getType() << std::endl;/// @todo:output for gridtype
   std::cout << "Dimensions:   " << dim << std::endl;
   std::cout << "Levels:       " << level << std::endl;
   std::cout << "Left Bound.:  " << bound_left << std::endl;

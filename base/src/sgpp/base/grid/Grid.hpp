@@ -63,9 +63,9 @@ struct RegularGridConfiguration {
   /// number of levels
   int level_;
   /// max. polynomial degree for poly basis
-  size_t maxDegree;
+  size_t maxDegree_;
   /// level of boundary grid
-  size_t boundaryLevel;
+  size_t boundaryLevel_;
 };
 
 /**
