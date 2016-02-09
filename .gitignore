@@ -40,4 +40,6 @@ base/doc/doxygen/modules.doxy
 *.dblite
 .sconf_temp/*
 
-
+.cproject
+.project
+.settings/*
