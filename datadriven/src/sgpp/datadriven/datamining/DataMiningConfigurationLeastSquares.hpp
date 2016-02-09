@@ -34,11 +34,12 @@ public:
 
 	explicit DataMiningConfigurationLeastSquares(const std::string& fileName);
 
-	base::RegularGridConfiguration &getGridConfig();
-	base::AdpativityConfiguration &getRefinementConfig();
-	solver::SLESolverConfiguration &getSolverRefineConfig();
-	solver::SLESolverConfiguration &getSolverFinalConfig();
-	datadriven::RegularizationConfiguration &getRegularizationConfig();
+	base::RegularGridConfiguration getGridConfig();
+	base::AdpativityConfiguration getRefinementConfig();
+	solver::SLESolverConfiguration getSolverRefineConfig();
+	solver::SLESolverConfiguration getSolverFinalConfig();
+	datadriven::RegularizationConfiguration getRegularizationConfig();
+	double getLambda();
 
 	void setGridConfig(base::RegularGridConfiguration &gridConfig);
 	void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
@@ -48,6 +49,8 @@ public:
 			solver::SLESolverConfiguration &solverFinalConfig);
 	void setRegularizationConfig(
 			datadriven::RegularizationConfiguration &regularizationConfig);
+  void setLambda(double lambda);
+
 
 	virtual DataMiningConfiguration* clone() override;
 };
