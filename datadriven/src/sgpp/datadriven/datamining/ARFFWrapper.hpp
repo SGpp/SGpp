@@ -35,7 +35,7 @@ protected:
    * Reads an ARFF file.
    *
    * @param filename filename of the file to be read
-   * @return ARFF as Dataset
+   * @param[out] dataset ARFF as Dataset
    */
   static void readARFF(const std::string& filename, Dataset& dataset);
 

@@ -45,6 +45,7 @@ namespace SGPP {
         /**
          *
          * @param samples
+         * @param result
          * @return
          */
         virtual void evaluate(SGPP::base::DataMatrix& samples, SGPP::base::DataVector& result);

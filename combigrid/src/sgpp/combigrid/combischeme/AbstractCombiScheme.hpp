@@ -142,7 +142,7 @@ class AbstractCombiScheme {
    * which might be faster than one evaluation point.
    * @param in_fgrids - a list of FGridContainers, to be evaluated onto the in_coords
    * @param in_coords - a list of coordinates to be evaluated
-   * @param out_result - vector storing the combigrid evaluation results.
+   * @param out_results - vector storing the combigrid evaluation results.
    */
   void evalCombiGrid( const std::vector<FGridContainer<_Tp>*>& in_fgrids,
                       const std::vector<std::vector<double> >& in_coords,

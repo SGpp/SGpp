@@ -7,12 +7,12 @@
 
 #ifndef COMBIEQUIDISTANTSTRETCHING_HPP_
 #define COMBIEQUIDISTANTSTRETCHING_HPP_
-/**
+/*
  *
  * Create an equidistant  grid..
  *
  *
- **/
+ */
 
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
 
@@ -20,9 +20,6 @@ namespace combigrid {
 
 class CombiEquidistantStretching: public AbstractStretchingMaker {
  public:
-
-  //  CombiEquidistantStretching(){}
-
   ~CombiEquidistantStretching() {}
 
   /**
