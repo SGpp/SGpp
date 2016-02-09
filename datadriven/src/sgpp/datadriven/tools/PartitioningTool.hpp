@@ -100,24 +100,7 @@ class PartitioningTool {
    */
   static void calcDistribution(size_t totalSize, size_t numChunks, int* sizes,
                                int* offsets, size_t blocksize = 1);
-#ifdef USE_MPI
-  static void calcMPIChunkedDistribution(size_t totalSize,
-                                         size_t numChunksPerProc, int* sizes, int* offsets,
-                                         size_t blocksize);
 
-  /**
-   * @brief getMPIPartitionSegment uses the number of MPI processes and the MPI rank for
-        segmentCount and segmentNumber
-   *
-   * This function can also be used if MPI is disabled, then the result is one single partition.
-   */
-  static void getMPIPartitionSegment(size_t totalSize, size_t* size,
-                                     size_t* offset, size_t blocksize = 1);
-  static void getMPIPartitionSegment(size_t start, size_t end,
-                                     size_t* segmentStart, size_t* segmentEnd,
-                                     size_t blocksize = 1);
-
-#endif
 
   static void calcAlmostBlockedDistribution(size_t totalSize,
       size_t numChunksPerProc, int* sizes, int* offsets, size_t blocksize);
