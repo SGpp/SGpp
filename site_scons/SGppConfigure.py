@@ -403,3 +403,11 @@ Please install the corresponding package, e.g. using command on Ubuntu
     with open(env['CMD_LOGFILE'], 'a') as logFile:
         logFile.seek(0)
         logFile.truncate()
+        
+    # check for mpic++
+    if not env['CXX']=='mpic++':
+        env['SG_PARALLEL'] = 0
+        print "Warning: not using mpic++, parallel module disabled, since it requires mpic++"
+    elif env['SG_PARALLEL'] != 0:
+        env['CPPDEFINES']['USE_MPI'] = 1
+        print "Parallel module enabled"
