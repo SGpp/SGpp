@@ -399,7 +399,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['SG_PARALLEL'] = 0
         print 'Warning: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
     elif env['SG_PARALLEL'] != 0:
-        env['CPPDEFINES']['USE_MPI'] = 1
+        env['CPPDEFINES']['USE_MPI'] = '1'
         print 'Parallel module ("SG_PARALLEL") enabled'
     else:
         print 'Parallel module ("SG_PARALLEL") disabled'
