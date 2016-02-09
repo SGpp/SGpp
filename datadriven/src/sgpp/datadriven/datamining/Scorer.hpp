@@ -27,7 +27,7 @@ class Scorer {
 public:
 	Scorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter):metric(metric), fitter(fitter){};
 	virtual ~Scorer();
-	virtual double getScore(const Dataset& dataset) = 0;
+	virtual double getScore(Dataset& dataset) = 0;
 
 protected:
 	std::shared_ptr<Metric> metric;

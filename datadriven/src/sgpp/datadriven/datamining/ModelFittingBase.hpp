@@ -26,10 +26,14 @@ namespace SGPP {
 
         virtual ~ModelFittingBase();
 
-        /**
-         *
-         */
+        /// new grid and new data set
         virtual void fit(datadriven::Dataset& dataset) = 0;
+
+        /// reuse the grid and assume old data set
+        virtual void refine() = 0;
+
+        /// reuse grid and new data set
+        virtual void update(datadriven::Dataset& dataset) = 0;
 
         /**
          *
