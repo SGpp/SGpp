@@ -1,18 +1,18 @@
-/*
- * TrapezoidalRule.cpp
- *
- *  Created on: 21 Jul 2014
- *      Author: kenny
- */
+/* ****************************************************************************
+* Copyright (C) 2015 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Petar Tzenov
 
 #include <sgpp/combigrid/quadratures/TrapezoidalRule.hpp>
 #include <iostream>
 
 template <typename _Tp>
 combigrid::TrapezoidalRule<_Tp>::TrapezoidalRule(int max_lvl) {
-  if (max_lvl >= 2)  // 5 pts?
+  if (max_lvl >= 2) {  // 5 pts?
     MAX_LEVELS = max_lvl;
-  else {
+} else {
     COMBIGRID_OUT_WRN(
         "\n"
         " If your max level is not from 2 GREATER,\n"

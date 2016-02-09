@@ -1,14 +1,15 @@
-/*
- * GaussPattersonQuadrature.hpp
- *
- *  Created on: 21 Aug 2014
- *      Author: kenny
- */
+/* ****************************************************************************
+* Copyright (C) 2015 Technische Universitaet Muenchen                         *
+* This file is part of the SG++ project. For conditions of distribution and   *
+* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
+**************************************************************************** */
+// @author Petar Tzenov
 
 #ifndef GAUSSPATTERSONQUADRATURE_HPP_
 #define GAUSSPATTERSONQUADRATURE_HPP_
 
 #include <sgpp/combigrid/quadratures/AbstractQuadrature.hpp>
+#include <vector>
 
 namespace combigrid {
 
@@ -30,7 +31,7 @@ class GaussPattersonQuadrature : public AbstractQuadratureRule<_Tp> {
      * of the GP Quadrature should be 3*(N/2) + 1.
      *
      **/
-  GaussPattersonQuadrature(int max_lvl = 9);
+  explicit GaussPattersonQuadrature(int max_lvl = 9);
 
   /*Destructor -> Make sure that all memory allocated for the coefs is deleted*/
   virtual ~GaussPattersonQuadrature();
@@ -79,6 +80,6 @@ class GaussPattersonQuadrature : public AbstractQuadratureRule<_Tp> {
                                FGridContainer<_Tp>* gridContainer,
                                bool interpolate);
 };
-}
+}  // namespace combigrid
 
 #endif /* GAUSSPATTERSONQUADRATURE_HPP_ */
