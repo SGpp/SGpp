@@ -20,7 +20,9 @@ float_t OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
   for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
        iter++) {
     //    index = *(iter->first);
-    //    std::cout << iter->second << " " << iter->first->getLevelSum() << " " << pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) << std::endl;
+    //    std::cout << iter->second << " " << iter->first->getLevelSum() <<
+    //    " " << pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) <<
+    //    std::endl;
     res += pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) * alpha.get(
              iter->second);
   }
@@ -28,5 +30,5 @@ float_t OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
   return res;
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

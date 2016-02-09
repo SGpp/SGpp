@@ -8,9 +8,10 @@
 
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <vector>
 
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace SGPP {
@@ -30,7 +31,6 @@ namespace base {
  */
 class OperationStencilHierarchisation : public OperationHierarchisation {
  public:
-
   typedef std::vector<unsigned int> IndexStencil;
 
   typedef std::vector<float>      WeightStencil;

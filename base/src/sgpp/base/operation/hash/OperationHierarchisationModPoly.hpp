@@ -31,8 +31,8 @@ class OperationHierarchisationModPoly : public OperationHierarchisation {
    * @param degree the polynom's max. degree
    */
   OperationHierarchisationModPoly(
-      GridStorage* storage, size_t degree) :
-        storage(storage), base(degree) {}
+    GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {}
 
   /**
    * Destructor

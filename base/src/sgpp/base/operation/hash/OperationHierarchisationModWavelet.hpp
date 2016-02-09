@@ -26,7 +26,7 @@ class OperationHierarchisationModWavelet : public OperationHierarchisation {
    * @param storage the grid's GridStorage object
    */
   explicit OperationHierarchisationModWavelet(GridStorage* storage) :
-  storage(storage) {}
+    storage(storage) {}
 
   /**
    * Destructor

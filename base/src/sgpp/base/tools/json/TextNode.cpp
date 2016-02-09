@@ -1,15 +1,14 @@
-/*
- * JSONStringNode.cpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "TextNode.hpp"
+#include <sgpp/base/tools/json/TextNode.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <fstream>
-
-#include "json_exception.hpp"
+#include <string>
+#include <vector>
 
 namespace json {
 
@@ -24,7 +23,7 @@ Node& TextNode::operator=(const Node& right) {
 }
 
 void TextNode::parse(std::vector<Token>& stream) {
-  //create new text node
+  // create new text node
   if (stream[0].type == TokenType::STRING) {
     this->value = stream[0].value;
     stream.erase(stream.begin());
@@ -54,4 +53,4 @@ Node* TextNode::clone() {
   return newNode;
 }
 
-}
+}  // namespace json

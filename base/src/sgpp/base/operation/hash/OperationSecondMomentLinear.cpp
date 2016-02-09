@@ -21,7 +21,9 @@ float_t OperationSecondMomentLinear::doQuadrature(DataVector& alpha) {
   for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
        iter++) {
     //    index = *(iter->first);
-    //    std::cout << iter->second << " " << iter->first->getLevelSum() << " " << pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) << std::endl;
+    //    std::cout << iter->second << " " << iter->first->getLevelSum() <<
+    //    " " << pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) <<
+    //    std::endl;
     tmpres = 1.;
 
     for (size_t dim = 0; dim < storage->dim(); dim++)
@@ -34,5 +36,5 @@ float_t OperationSecondMomentLinear::doQuadrature(DataVector& alpha) {
   return res;
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

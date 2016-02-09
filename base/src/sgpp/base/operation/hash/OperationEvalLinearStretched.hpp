@@ -26,7 +26,7 @@ class OperationEvalLinearStretched : public OperationEval {
    * @param storage Pointer to the grid's gridstorage obejct
    */
   explicit OperationEvalLinearStretched(GridStorage* storage) :
-  storage(storage) {}
+    storage(storage) {}
 
   /**
    * Destructor

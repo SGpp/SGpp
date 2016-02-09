@@ -1,23 +1,22 @@
-/*
- * JSONDictNode.cpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "DictNode.hpp"
+#include <sgpp/base/tools/json/DictNode.hpp>
+
+#include <sgpp/base/tools/json/IDNode.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
+#include <sgpp/base/tools/json/ListNode.hpp>
+#include <sgpp/base/tools/json/TextNode.hpp>
 
 #include <fstream>
-
-#include "IDNode.hpp"
-#include "json_exception.hpp"
-#include "ListNode.hpp"
-#include "TextNode.hpp"
+#include <string>
+#include <vector>
 
 namespace json {
 
 DictNode::DictNode() {
-
 }
 
 DictNode::DictNode(const DictNode& original) {
@@ -55,15 +54,14 @@ Node& DictNode::operator=(const Node& right) {
 }
 
 void DictNode::parse(std::vector<Token>& stream) {
-
-  //special case for initial and final brace
+  // special case for initial and final brace
   if (stream[0].type != TokenType::LBRACE) {
     throw json_exception(stream[0], "expected \"{\"");
   }
 
   stream.erase(stream.begin());
 
-  //special case for empty dict
+  // special case for empty dict
   if (stream[0].type != TokenType::RBRACE) {
     this->parseAttributes(stream);
   }
@@ -142,7 +140,8 @@ void DictNode::parseAttributes(std::vector<Token>& stream) {
         state = State::COMMAFINISH;
       } else {
         throw json_exception(stream[0],
-                             "expected attribute value type (string, id, list or dict)");
+                             "expected attribute value type "
+                             "(string, id, list or dict)");
       }
     } else if (state == State::COMMAFINISH) {
       if (stream[0].type == TokenType::COMMA) {
@@ -157,7 +156,6 @@ void DictNode::parseAttributes(std::vector<Token>& stream) {
   }
 
   throw json_exception("unexpected end-of-file");
-
 }
 
 Node& DictNode::operator[](const std::string& key) {
@@ -183,8 +181,8 @@ void DictNode::serialize(std::ostream& outFile, size_t indentWidth) {
     }
 
     outFile << attrIndentation << "\"" << key << "\": ";
-    this->attributes[key]->serialize(outFile, indentWidth + Node::SERIALIZE_INDENT);
-
+    this->attributes[key]->serialize(outFile,
+                                     indentWidth + Node::SERIALIZE_INDENT);
   }
 
   outFile << std::endl << indentation << "}";
@@ -204,7 +202,8 @@ void DictNode::addAttribute(const std::string& name,
   if (node->parent != nullptr) {
     throw json_exception("addAttribute(): attribute was already added");
   } else if (this->attributes.count(name) > 0) {
-    throw json_exception("addAttribute(): attribute with same name already exists");
+    throw json_exception(
+        "addAttribute(): attribute with same name already exists");
   }
 
   node->parent = this;
@@ -283,7 +282,7 @@ Node& DictNode::addIDAttr(const std::string& name, const bool& value) {
 // returns created dict node
 Node& DictNode::addDictAttr(const std::string& name) {
   auto dictNode = std::unique_ptr<DictNode>(new DictNode());
-  auto& reference = *dictNode; // because dictNode will be invalidated
+  auto& reference = *dictNode;  // because dictNode will be invalidated
   this->addAttribute(name, std::move(dictNode));
   return reference;
 }
@@ -291,13 +290,14 @@ Node& DictNode::addDictAttr(const std::string& name) {
 // returns created list node
 Node& DictNode::addListAttr(const std::string& name) {
   auto listNode = std::unique_ptr<ListNode>(new ListNode());
-  auto& reference = *listNode; // because listNode will be invalidated
+  auto& reference = *listNode;  // because listNode will be invalidated
   this->addAttribute(name, std::move(listNode));
   return reference;
 }
 
 // returns the node to which the attribute was added
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceTextAttr(const std::string& name,
                                 const std::string& value) {
   if (this->attributes.count(name) > 0) {
@@ -309,7 +309,8 @@ Node& DictNode::replaceTextAttr(const std::string& name,
 }
 
 // returns the node to which the attribute was added
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceIDAttr(const std::string& name,
                               const std::string& value) {
   if (this->attributes.count(name) > 0) {
@@ -321,7 +322,8 @@ Node& DictNode::replaceIDAttr(const std::string& name,
 }
 
 // returns the node to which the attribute was added
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceIDAttr(const std::string& name, const double& value) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
@@ -332,7 +334,8 @@ Node& DictNode::replaceIDAttr(const std::string& name, const double& value) {
 }
 
 // returns the node to which the attribute was added
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceIDAttr(const std::string& name, const uint64_t& value) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
@@ -343,7 +346,8 @@ Node& DictNode::replaceIDAttr(const std::string& name, const uint64_t& value) {
 }
 
 // returns the node to which the attribute was added
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceIDAttr(const std::string& name, const int64_t& value) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
@@ -354,7 +358,8 @@ Node& DictNode::replaceIDAttr(const std::string& name, const int64_t& value) {
 }
 
 // returns the node to which the attribute was added
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceIDAttr(const std::string& name, const bool& value) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
@@ -365,7 +370,8 @@ Node& DictNode::replaceIDAttr(const std::string& name, const bool& value) {
 }
 
 // returns created dict node
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceDictAttr(const std::string& name) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
@@ -376,7 +382,8 @@ Node& DictNode::replaceDictAttr(const std::string& name) {
 }
 
 // returns created list node
-// replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
 Node& DictNode::replaceListAttr(const std::string& name) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
@@ -409,4 +416,4 @@ std::vector<std::string>& DictNode::keys() {
   return this->keyOrder;
 }
 
-}
+}  // namespace json

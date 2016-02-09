@@ -31,7 +31,7 @@ class OperationHierarchisationModBspline : public OperationHierarchisation {
    * @param degree the bsplinenom's max. degree
    */
   explicit OperationHierarchisationModBspline(
-      GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+    GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
   /**
    * Destructor

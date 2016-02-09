@@ -44,7 +44,6 @@ class OperationQuadraturePoly : public OperationQuadrature {
   GridStorage* storage;
   /// Poly Basis object
   SPolyBase base;
-
 };
 
 }  // namespace base

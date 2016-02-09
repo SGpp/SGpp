@@ -28,7 +28,7 @@ class OperationEvalLinearBoundary : public OperationEval {
    * @param storage the grid's GridStorage object
    */
   explicit OperationEvalLinearBoundary(GridStorage* storage) :
-  storage(storage) {}
+    storage(storage) {}
 
   /**
    * Destructor

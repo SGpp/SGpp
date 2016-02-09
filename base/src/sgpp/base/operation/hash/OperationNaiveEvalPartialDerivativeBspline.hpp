@@ -46,8 +46,8 @@ class OperationNaiveEvalPartialDerivativeBspline :
    * @return          value of the partial derivative of the linear combination
    */
   float_t evalPartialDerivative(const DataVector& alpha,
-                                        const DataVector& point,
-                                        size_t derivDim) override;
+                                const DataVector& point,
+                                size_t derivDim) override;
 
  protected:
   /// storage of the sparse grid

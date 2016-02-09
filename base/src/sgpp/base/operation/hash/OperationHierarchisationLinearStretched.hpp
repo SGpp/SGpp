@@ -27,7 +27,7 @@ class OperationHierarchisationLinearStretched : public
    * @param storage Pointer to the grid's gridstorage obejct
    */
   explicit OperationHierarchisationLinearStretched(GridStorage* storage) :
-  storage(storage) {}
+    storage(storage) {}
 
   /**
    * Destructor

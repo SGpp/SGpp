@@ -28,7 +28,8 @@ class OperationNaiveEvalHessianWaveletBoundary : public
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalHessianWaveletBoundary(GridStorage* storage) : storage(
+  explicit OperationNaiveEvalHessianWaveletBoundary(GridStorage* storage) :
+    storage(
       storage) {
   }
 
@@ -46,9 +47,9 @@ class OperationNaiveEvalHessianWaveletBoundary : public
    * @return                  value of linear combination
    */
   float_t evalHessian(const DataVector& alpha,
-                              const DataVector& point,
-                              DataVector& gradient,
-                              DataMatrix& hessian) override;
+                      const DataVector& point,
+                      DataVector& gradient,
+                      DataMatrix& hessian) override;
 
  protected:
   /// storage of the sparse grid

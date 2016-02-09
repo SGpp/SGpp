@@ -1,16 +1,16 @@
-/*
- * JSONDictNode.hpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
+#include <sgpp/base/tools/json/Node.hpp>
+
 #include <map>
 #include <memory>
-
-#include "Node.hpp"
+#include <string>
+#include <vector>
 
 namespace json {
 
@@ -21,105 +21,112 @@ class DictNode: public Node {
   std::vector<std::string> keyOrder;
 
  public:
-
   DictNode();
 
   DictNode(const DictNode& original);
 
   DictNode& operator=(const DictNode& right);
 
-  virtual Node& operator=(const Node& right) override;
+  Node& operator=(const Node& right) override;
 
-  virtual void parse(std::vector<Token>& stream) override;
+  void parse(std::vector<Token>& stream) override;
 
   void parseAttributes(std::vector<Token>& stream);
 
-  virtual void serialize(std::ostream& outFile, size_t indentWidth) override;
+  void serialize(std::ostream& outFile, size_t indentWidth) override;
 
-  virtual Node& operator[](const std::string& key) override;
+  Node& operator[](const std::string& key) override;
 
-  virtual size_t size() override;
+  size_t size() override;
 
-  virtual Node* clone() override;
+  Node* clone() override;
 
-  virtual void addAttribute(const std::string& name,
+  void addAttribute(const std::string& name,
                             std::unique_ptr<Node> node) override;
 
-  virtual std::unique_ptr<Node> removeAttribute(const std::string& name) override;
+  std::unique_ptr<Node> removeAttribute(const std::string& name) override;
 
   // returns the node to which the attribute was added
-  virtual Node& addTextAttr(const std::string& name,
+  Node& addTextAttr(const std::string& name,
                             const std::string& value) override;
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name,
+  Node& addIDAttr(const std::string& name,
                           const std::string& value) override;
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const double& value) override;
+  Node& addIDAttr(const std::string& name, const double& value) override;
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name,
+  Node& addIDAttr(const std::string& name,
                           const uint64_t& value) override;
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const int64_t& value) override;
+  Node& addIDAttr(const std::string& name, const int64_t& value) override;
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const bool& value) override;
+  Node& addIDAttr(const std::string& name, const bool& value) override;
 
   // returns the node to which the attribute was added
-  virtual Node& addIDAttr(const std::string& name, const char* value) override;
+  Node& addIDAttr(const std::string& name, const char* value) override;
 
   // returns created dict node
-  virtual Node& addDictAttr(const std::string& name) override;
+  Node& addDictAttr(const std::string& name) override;
 
   // returns created list node
-  virtual Node& addListAttr(const std::string& name) override;
+  Node& addListAttr(const std::string& name) override;
 
   // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceTextAttr(const std::string& name,
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceTextAttr(const std::string& name,
                                 const std::string& value) override;
 
   // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name,
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceIDAttr(const std::string& name,
                               const std::string& value) override;
 
   // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name,
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceIDAttr(const std::string& name,
                               const double& value) override;
 
   // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name,
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceIDAttr(const std::string& name,
                               const uint64_t& value) override;
 
   // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name,
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceIDAttr(const std::string& name,
                               const int64_t& value) override;
 
   // returns the node to which the attribute was added
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceIDAttr(const std::string& name,
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceIDAttr(const std::string& name,
                               const bool& value) override;
 
   // returns created dict node
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceDictAttr(const std::string& name) override;
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceDictAttr(const std::string& name) override;
 
   // returns created list node
-  // replaces a node, adds a new node, if the node does not exist, the old node is deleted
-  virtual Node& replaceListAttr(const std::string& name) override;
+  // replaces a node, adds a new node, if the node does not exist,
+  // the old node is deleted
+  Node& replaceListAttr(const std::string& name) override;
 
-  virtual bool contains(const std::string& key) override;
+  bool contains(const std::string& key) override;
 
-  virtual std::unique_ptr<Node> erase(Node& node) override;
+  std::unique_ptr<Node> erase(Node& node) override;
 
-  virtual std::vector<std::string>& keys() override;
+  std::vector<std::string>& keys() override;
 };
 
-}
+}  // namespace json

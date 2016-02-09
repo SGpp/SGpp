@@ -24,7 +24,7 @@ float_t OperationEvalLinearBoundary::eval(const DataVector& alpha,
 
   IndexValVector vec;
   LinearBoundaryBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<
+  GetAffectedBasisFunctions <
   LinearBoundaryBasis<unsigned int, unsigned int> > ga(storage);
 
   ga(base, point, vec);

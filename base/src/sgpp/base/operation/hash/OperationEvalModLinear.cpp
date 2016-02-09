@@ -25,7 +25,7 @@ float_t OperationEvalModLinear::eval(const DataVector& alpha,
 
   IndexValVector vec;
   LinearModifiedBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<
+  GetAffectedBasisFunctions <
   LinearModifiedBasis<unsigned int, unsigned int> > ga(storage);
 
   /* Scale point to bounding box */
@@ -47,7 +47,7 @@ float_t OperationEvalModLinear::eval(const DataVector& alpha,
       }
 
       if (!(dimbb.leftBoundary <= point[d] &&
-          point[d] <= dimbb.rightBoundary)) {
+            point[d] <= dimbb.rightBoundary)) {
         return 0.0;
       }
 
