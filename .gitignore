@@ -43,3 +43,4 @@ base/doc/doxygen/modules.doxy
 .cproject
 .project
 .settings/*
+*.pydevproject
