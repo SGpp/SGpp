@@ -26,7 +26,7 @@ class OperationHierarchisationLinear : public OperationHierarchisation {
    * @param storage Pointer to the grid's gridstorage obejct
    */
   explicit OperationHierarchisationLinear(GridStorage* storage) :
-  storage(storage) {}
+    storage(storage) {}
 
   /**
    * Destructor

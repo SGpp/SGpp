@@ -29,7 +29,7 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
    */
   OperationMultipleEvalPeriodic(Grid& grid,
                                 DataMatrix& dataset) :
-                                OperationMultipleEval(grid, dataset) {
+    OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 

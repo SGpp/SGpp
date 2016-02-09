@@ -1,18 +1,17 @@
-/*
- * JSONListNode.cpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "ListNode.hpp"
+#include <sgpp/base/tools/json/ListNode.hpp>
+#include <sgpp/base/tools/json/DictNode.hpp>
+#include <sgpp/base/tools/json/IDNode.hpp>
+#include <sgpp/base/tools/json/TextNode.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <fstream>
-
-#include "DictNode.hpp"
-#include "IDNode.hpp"
-#include "json_exception.hpp"
-#include "TextNode.hpp"
+#include <string>
+#include <vector>
 
 namespace json {
 
@@ -52,7 +51,6 @@ Node& ListNode::operator=(const Node& right) {
 }
 
 void ListNode::parse(std::vector<Token>& stream) {
-
   list.clear();
 
   enum class State {
@@ -65,7 +63,7 @@ void ListNode::parse(std::vector<Token>& stream) {
 
   stream.erase(stream.begin());
 
-  //special case for empty list
+  // special case for empty list
   if (stream[0].type == TokenType::RBRACKET) {
     stream.erase(stream.begin());
     return;
@@ -225,7 +223,7 @@ Node& ListNode::addIdValue(const bool& value) {
 // returns created dict node
 Node& ListNode::addDictValue() {
   auto dictNode = std::unique_ptr<DictNode>(new DictNode());
-  auto& reference = *dictNode; // because dictNode will be invalidated
+  auto& reference = *dictNode;  // because dictNode will be invalidated
   this->addValue(std::move(dictNode));
   return reference;
 }
@@ -233,7 +231,7 @@ Node& ListNode::addDictValue() {
 // returns created dict node
 Node& ListNode::addListValue() {
   auto listNode = std::unique_ptr<ListNode>(new ListNode());
-  auto& reference = *listNode; // because listNode will be invalidated
+  auto& reference = *listNode;  // because listNode will be invalidated
   this->addValue(std::move(listNode));
   return reference;
 }
@@ -251,4 +249,4 @@ std::unique_ptr<Node> ListNode::erase(Node& node) {
   throw json_exception("erase(node): node not found");
 }
 
-}
+}  // namespace json

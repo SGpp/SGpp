@@ -30,8 +30,8 @@ class OperationMultipleEvalPoly : public OperationMultipleEval {
    */
   OperationMultipleEvalPoly(Grid& grid, size_t degree,
                             DataMatrix& dataset) :
-                              OperationMultipleEval(grid, dataset),
-                              base(degree) {
+    OperationMultipleEval(grid, dataset),
+    base(degree) {
     this->storage = grid.getStorage();
   }
 

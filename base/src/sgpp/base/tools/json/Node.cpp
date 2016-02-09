@@ -1,23 +1,23 @@
-/*
- * JSONNode.cpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "Node.hpp"
+#include <sgpp/base/tools/json/Node.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
-#include "json_exception.hpp"
+#include <string>
+#include <vector>
 
 namespace json {
 
 Node::Node() :
   orderedKeyIndex(0), parent(nullptr) {
-
 }
 
 Node& Node::operator=(const Node& right) {
-  //members of this base class are actually copied in the dervied classes, therefore nothing to do
+  // members of this base class are actually copied
+  // in the dervied classes, therefore nothing to do
   return *this;
 }
 
@@ -245,7 +245,7 @@ std::vector<std::string>& Node::keys() {
   throw json_exception("keys() is only implemented for dict nodes");
 }
 
-}
+}  // namespace json
 
 std::ostream& operator<<(std::ostream& stream, json::Node& node) {
   node.serialize(stream, 0);

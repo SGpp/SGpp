@@ -1,17 +1,15 @@
-/*
- * JSONIDNode.cpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "IDNode.hpp"
+#include <sgpp/base/tools/json/IDNode.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <fstream>
 #include <string>
 #include <sstream>
-
-#include "json_exception.hpp"
+#include <vector>
 
 namespace json {
 
@@ -30,7 +28,7 @@ Node& IDNode::operator=(const Node& right) {
 }
 
 void IDNode::parse(std::vector<Token>& stream) {
-  //create new text node
+  // create new text node
   if (stream[0].type == TokenType::ID) {
     this->value = stream[0].value;
     stream.erase(stream.begin());
@@ -44,7 +42,7 @@ void IDNode::parse(std::vector<Token>& stream) {
 void IDNode::setupInternalType() {
   //    this->internalType = InternalIDType::ID;
 
-  //try validating as bool
+  // try validating as bool
   if (this->value.compare("true") == 0) {
     //        this->internalType = InternalIDType::BOOL;
     this->isBool = true;
@@ -57,7 +55,7 @@ void IDNode::setupInternalType() {
     return;
   }
 
-  //try validating as unsigned integer
+  // try validating as unsigned integer
   try {
     std::string::size_type size;
     uint64_t asUnsigned = stoull(this->value, &size);
@@ -71,7 +69,7 @@ void IDNode::setupInternalType() {
   } catch (std::invalid_argument& e) {
   }
 
-  //try validating as signed integer
+  // try validating as signed integer
   try {
     std::string::size_type size;
     int64_t asSigned = stoll(this->value, &size);
@@ -85,7 +83,7 @@ void IDNode::setupInternalType() {
   } catch (std::invalid_argument& e) {
   }
 
-  //try validating as double
+  // try validating as double
   try {
     std::string::size_type size;
     double asDouble = stod(this->value, &size);
@@ -198,4 +196,4 @@ Node* IDNode::clone() {
   return newNode;
 }
 
-}
+}  // namespace json

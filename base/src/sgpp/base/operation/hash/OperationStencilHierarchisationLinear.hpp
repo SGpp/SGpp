@@ -9,9 +9,9 @@
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-#include <vector>
-
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace SGPP {
@@ -28,7 +28,8 @@ class OperationStencilHierarchisationLinear : public
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationStencilHierarchisationLinear(GridStorage* storage) : storage(storage),
+  explicit OperationStencilHierarchisationLinear(GridStorage* storage) :
+    storage(storage),
     surplusStencil(0), neighborStencil(0), weightStencil(0) {}
 
   /**
@@ -40,23 +41,19 @@ class OperationStencilHierarchisationLinear : public
   void doDehierarchisation(DataVector& alpha) override;
 
 
-  virtual const IndexStencil&
-  getSurplusStencil() const override {
+  const IndexStencil& getSurplusStencil() const override {
     return surplusStencil;
   };
 
-  virtual const IndexStencil&
-  getNeighborStencil() const override {
+  const IndexStencil& getNeighborStencil() const override {
     return neighborStencil;
   };
 
-  virtual const WeightStencil&
-  getWeightStencil() const override {
+  const WeightStencil& getWeightStencil() const override {
     return weightStencil;
   };
 
-  virtual size_t
-  getStencilSize() const override {
+  size_t getStencilSize() const override {
     return surplusStencil.size();
   };
 
@@ -72,7 +69,6 @@ class OperationStencilHierarchisationLinear : public
 
   /// Index array with surplus indices
   WeightStencil weightStencil;
-
 };
 
 }  // namespace base

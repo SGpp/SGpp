@@ -1,9 +1,7 @@
-/*
- * OperationNaiveEvalPolyBoundary.hpp
- *
- *  Created on: Jul 1, 2015
- *      Author: franzefn
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef OPERATIONNAIVEEVALPOLYBOUNDARY_HPP_
 #define OPERATIONNAIVEEVALPOLYBOUNDARY_HPP_
@@ -20,7 +18,6 @@ namespace base {
 
 class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
  public:
-
   /**
    * Constructor.
    *

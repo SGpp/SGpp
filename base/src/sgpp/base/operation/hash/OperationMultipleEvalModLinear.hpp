@@ -29,7 +29,7 @@ class OperationMultipleEvalModLinear : public OperationMultipleEval {
    */
   OperationMultipleEvalModLinear(Grid& grid,
                                  DataMatrix& dataset) :
-                                   OperationMultipleEval(grid, dataset) {
+    OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 

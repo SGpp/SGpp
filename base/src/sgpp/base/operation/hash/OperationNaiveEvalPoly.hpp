@@ -18,7 +18,6 @@ namespace base {
 
 class OperationNaiveEvalPoly: public OperationNaiveEval {
  public:
-
   /**
    * Constructor.
    *

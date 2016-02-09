@@ -15,7 +15,7 @@ namespace base {
 float_t OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
   float_t res = 0;
   float_t tmp;
-  int nr_boundaries = 0; //nr. of boundaries a point touches
+  int nr_boundaries = 0;  // nr. of boundaries a point touches
   int cur_ind, cur_lev;
   GridStorage::index_type index;
   GridStorage::grid_map_iterator end_iter = storage->end();
@@ -45,5 +45,5 @@ float_t OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
   return res;
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

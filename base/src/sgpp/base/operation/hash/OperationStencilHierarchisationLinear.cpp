@@ -46,5 +46,5 @@ void OperationStencilHierarchisationLinear::doDehierarchisation(
   }
 }
 
-}
-}
+}  // namespace base
+}  // namespace SGPP

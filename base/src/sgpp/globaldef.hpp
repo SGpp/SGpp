@@ -28,7 +28,7 @@
 #define USE_DOUBLE_PRECISION 1
 #endif
 
-#if USE_DOUBLE_PRECISION==1
+#if USE_DOUBLE_PRECISION == 1
 #define SGPP sg
 #else
 #define SGPP sgsp
@@ -92,15 +92,15 @@ typedef double float_t;
 typedef float float_t;
 #endif
 
-}
-/* namespace SGPP */
+}  // namespace SGPP
 
 #if __cplusplus == 201103L
 #include <memory>
 
 namespace std {
-//Implementation for "make_unique" in c++11 as it doesn't contain this function.  (see std::make_shared)
-//This function is part of the C++14 (and newer) standard.
+// Implementation for "make_unique" in c++11 as
+// it doesn't contain this function.  (see std::make_shared)
+// This function is part of the C++14 (and newer) standard.
 template<typename T, typename ...Args>
 std::unique_ptr<T> make_unique(Args&& ...args) {
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));

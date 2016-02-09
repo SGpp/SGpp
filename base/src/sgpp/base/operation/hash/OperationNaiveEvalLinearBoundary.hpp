@@ -22,7 +22,8 @@ class OperationNaiveEvalLinearBoundary : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalLinearBoundary(GridStorage* storage) : storage(storage) {
+  explicit OperationNaiveEvalLinearBoundary(GridStorage* storage) : storage(
+      storage) {
   }
 
   /**

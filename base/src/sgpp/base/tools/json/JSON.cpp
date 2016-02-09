@@ -1,20 +1,19 @@
-/*
- * ConfigurationParser.hpp
- *
- *  Created on: Mar 25, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <fstream>
 #include <sstream>
-
-#include "JSON.hpp"
-#include "json_exception.hpp"
+#include <vector>
+#include <string>
 
 namespace json {
 
 JSON::JSON(): fileName("") {
-
 }
 
 JSON::JSON(const std::string& fileName) :
@@ -35,7 +34,6 @@ JSON::JSON(const std::string& fileName) :
   if (tokenStream.size() != 0) {
     throw json_exception(tokenStream[0], "expected end-of-file");
   }
-
 }
 
 JSON::JSON(const JSON& original) : DictNode(original) {
@@ -59,7 +57,7 @@ std::vector<Token> JSON::tokenize(std::string& input) {
       charNumber += 1;
     }
 
-    //skip whitespace while not tokenizing anything
+    // skip whitespace while not tokenizing anything
     if (state == TokenType::NONE) {
       if (input[i] == ' ' || input[i] == '\r' || input[i] == '\n'
           || input[i] == '\t') {
@@ -135,10 +133,10 @@ std::vector<Token> JSON::tokenize(std::string& input) {
         state = TokenType::NONE;
 
         if (input[i] == '\n') {
-          lineNumber -= 1; //as the char will be reprocessed
+          lineNumber -= 1;  // as the char will be reprocessed
         }
 
-        i -= 1; // revert by one
+        i -= 1;  // revert by one
 
       } else {
         token.value.push_back(input[i]);
@@ -194,9 +192,9 @@ void JSON::clear() {
   this->fileName = "";
   this->attributes.clear();
   this->keyOrder.clear();
-  //it shouldn't even be necessary to reset these
+  // it shouldn't even be necessary to reset these
   this->orderedKeyIndex = 0;
   this->parent = nullptr;
 }
 
-}
+}  // namespace json

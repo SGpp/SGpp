@@ -27,7 +27,7 @@ class OperationHierarchisationModLinear : public OperationHierarchisation {
    * @param storage the grid's GridStorage object
    */
   explicit OperationHierarchisationModLinear(GridStorage* storage) :
-  storage(storage) {}
+    storage(storage) {}
 
   /**
    * Destructor

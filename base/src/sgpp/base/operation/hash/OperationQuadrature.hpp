@@ -35,7 +35,6 @@ class OperationQuadrature {
    * @param alpha the function's values in the nodal basis
    */
   virtual float_t doQuadrature(DataVector& alpha) = 0;
-
 };
 
 }  // namespace base

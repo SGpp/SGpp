@@ -8,6 +8,8 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
+#include <vector>
+
 namespace SGPP {
 namespace base {
 

@@ -28,7 +28,7 @@ class OperationMultipleEvalModWavelet : public OperationMultipleEval {
    */
   OperationMultipleEvalModWavelet(Grid& grid,
                                   DataMatrix& dataset) :
-                                    OperationMultipleEval(grid, dataset) {
+    OperationMultipleEval(grid, dataset) {
     this->storage = grid.getStorage();
   }
 

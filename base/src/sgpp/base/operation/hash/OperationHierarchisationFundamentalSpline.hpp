@@ -27,7 +27,7 @@ class OperationHierarchisationFundamentalSpline :
    * @param grid Pointer to the grid
    */
   explicit OperationHierarchisationFundamentalSpline(
-      FundamentalSplineGrid* grid);
+    FundamentalSplineGrid* grid);
 
   /**
    * Destructor.

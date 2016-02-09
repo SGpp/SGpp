@@ -31,7 +31,7 @@ class OperationHierarchisationPolyBoundary : public OperationHierarchisation {
    */
   OperationHierarchisationPolyBoundary(GridStorage* storage,
                                        size_t degree) :
-                                         storage(storage), base(degree) {}
+    storage(storage), base(degree) {}
 
   /**
    * Destructor

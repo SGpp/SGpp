@@ -16,13 +16,13 @@ namespace base {
 void OperationHierarchisationModBspline::doHierarchisation(
   DataVector& node_values) {
   throw new operation_exception(
-      "This operation is not implemented, yet! Sorry ;-)");
+    "This operation is not implemented, yet! Sorry ;-)");
 }
 
 void OperationHierarchisationModBspline::doDehierarchisation(
   DataVector& alpha) {
   throw new operation_exception(
-      "This operation is not implemented, yet! Sorry ;-)");
+    "This operation is not implemented, yet! Sorry ;-)");
 }
 
 }  // namespace base

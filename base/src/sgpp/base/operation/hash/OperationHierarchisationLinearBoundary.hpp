@@ -27,7 +27,7 @@ class OperationHierarchisationLinearBoundary : public OperationHierarchisation {
    * @param storage the grid's GridStorage object
    */
   explicit OperationHierarchisationLinearBoundary(GridStorage* storage) :
-  storage(storage) {}
+    storage(storage) {}
 
   /**
    * Destructor

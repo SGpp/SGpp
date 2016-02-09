@@ -46,8 +46,8 @@ class OperationNaiveEvalGradientModFundamentalSpline : public
    * @return                  value of linear combination
    */
   float_t evalGradient(const DataVector& alpha,
-                               const DataVector& point,
-                               DataVector& gradient) override;
+                       const DataVector& point,
+                       DataVector& gradient) override;
 
  protected:
   /// storage of the sparse grid

@@ -30,7 +30,7 @@ class OperationHierarchisationPoly : public OperationHierarchisation {
    */
   OperationHierarchisationPoly(GridStorage* storage,
                                size_t degree) :
-                                 storage(storage), base(degree) {}
+    storage(storage), base(degree) {}
 
   /**
    * Destructor

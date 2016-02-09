@@ -25,7 +25,8 @@ class OperationQuadratureLinearBoundary : public OperationQuadrature {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationQuadratureLinearBoundary(GridStorage* storage) : storage(storage) {}
+  explicit OperationQuadratureLinearBoundary(GridStorage* storage) : storage(
+      storage) {}
 
   ~OperationQuadratureLinearBoundary() override {}
 

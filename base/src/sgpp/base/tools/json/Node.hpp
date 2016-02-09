@@ -1,29 +1,27 @@
-/*
- * JSONNode.hpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
+#include <sgpp/base/tools/json/Node.hpp>
+
 #include <memory>
 #include <vector>
-
-#include "Token.hpp"
+#include <string>
 
 namespace json {
 
 class Node {
  protected:
-
   static const int SERIALIZE_INDENT = 3;
 
  public:
-  //only relevant if the parent is a DictNode, managed by the DictNode
+  // only relevant if the parent is a DictNode, managed by the DictNode
   size_t orderedKeyIndex;
 
-  //managed by the parent, i.e. DictNode or ListNode
+  // managed by the parent, i.e. DictNode or ListNode
   Node* parent;
 
   Node();
@@ -168,10 +166,9 @@ class Node {
   virtual std::unique_ptr<Node> erase();
 
   virtual std::vector<std::string>& keys();
-
 };
 
-}
+}  // namespace json
 
 std::ostream& operator<<(std::ostream& stream, json::Node& node);
 
