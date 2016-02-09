@@ -19,37 +19,18 @@ using namespace SGPP::base;
 namespace SGPP {
   namespace datadriven {
 
-    ModelFittingDensityEstimation::ModelFittingDensityEstimation(SGPP::datadriven::SampleProvider& sampleProvider,
-        SGPP::datadriven::DataMiningConfigurationDensityEstimation config) : SGPP::datadriven::ModelFittingBase(sampleProvider), configuration(config) {
-      // set the dimensionality of the grid
-      configuration.gridConfig->dim_ = sampleProvider.allSamples().getDimension();
-
-//      // initialize grid
-//      createRegularGrid();
+    ModelFittingDensityEstimation::ModelFittingDensityEstimation(datadriven::DataMiningConfigurationDensityEstimation config) : datadriven::ModelFittingBase(), configuration(config) {
     }
 
     ModelFittingDensityEstimation::~ModelFittingDensityEstimation() {
     }
 
-//    void ModelFittingDensityEstimation::createRegularGrid() {
-//      // load grid
-//      if (configuration.gridConfig->type_ == GridType::Linear) {
-//        grid = Grid::createLinearGrid(configuration.gridConfig->dim_);
-//      } else if (configuration.gridConfig->type_ == GridType::LinearL0Boundary) {
-//        grid = Grid::createLinearBoundaryGrid(configuration.gridConfig->dim_,
-//            configuration.gridConfig->boundaryLevel);
-//      } else if (configuration.gridConfig->type_ == GridType::LinearBoundary) {
-//        grid = Grid::createLinearBoundaryGrid(configuration.gridConfig->dim_);
-//      } else {
-//        throw application_exception("ModelFittingDensityEstimation::createRegularGrid: grid type is not supported");
-//      }
-//
-//      GridGenerator* gridGen = grid->createGridGenerator();
-//      gridGen->regular(configuration.gridConfig->level_);
-//    }
+    void ModelFittingDensityEstimation::fit(datadriven::Dataset& dataset) {
+      DataMatrix samples = dataset.getTrainingData();
+      size_t numSamples = samples.getNrows();
+      size_t numDims = samples.getNcols();
 
-    void ModelFittingDensityEstimation::fit() {
-      size_t numDims = grid->getStorage()->dim();
+      createRegularGrid();
 
       GridStorage* gridStorage = grid->getStorage();
       GridGenerator* gridGen = grid->createGridGenerator();
@@ -64,14 +45,14 @@ namespace SGPP {
       OperationMatrix* C = getRegularizationMatrix(configuration.regularizationConfig->regType_);
 
       for (size_t ref = 0; ref <= configuration.adaptivityConfig->numRefinements_; ref++) {
-        SGPP::datadriven::DensitySystemMatrix SMatrix(*grid, sampleProvider.allSamples().getTrainingData(), *C, 1e-10);
+        datadriven::DensitySystemMatrix SMatrix(*grid, samples, *C, 1e-10);
         SMatrix.generateb(rhs);
 
         if (!configuration.sgdeConfig->silent_) {
           std::cout << "# LearnerSGDE: Solving " << std::endl;
         }
 
-        SGPP::solver::ConjugateGradients myCG(configuration.solverConfig->maxIterations_,
+        solver::ConjugateGradients myCG(configuration.solverConfig->maxIterations_,
                                               configuration.solverConfig->eps_);
         myCG.solve(SMatrix, *alpha, rhs, false, false, configuration.solverConfig->threshold_);
 
@@ -81,7 +62,7 @@ namespace SGPP {
           }
 
           //Weight surplus with function evaluation at grid points
-          OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
+          OperationEval* opEval = op_factory::createOperationEval(*grid);
           GridIndex* gp;
           DataVector p(numDims);
           DataVector alphaWeight(alpha->getSize());
@@ -95,7 +76,7 @@ namespace SGPP {
           delete opEval;
           opEval = NULL;
 
-          SGPP::base::SurplusRefinementFunctor srf(&alphaWeight,
+          base::SurplusRefinementFunctor srf(&alphaWeight,
               configuration.adaptivityConfig->noPoints_,
               configuration.adaptivityConfig->threshold_);
           gridGen->refine(&srf);
