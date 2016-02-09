@@ -10,7 +10,7 @@ using namespace SGPP::base;
 namespace SGPP {
   namespace datadriven {
 
-    ModelFittingBase::ModelFittingBase(SGPP::datadriven::SampleProvider& sampleProvider) : sampleProvider(sampleProvider), grid(nullptr), alpha(0) {
+    ModelFittingBase::ModelFittingBase() : grid(nullptr), alpha(nullptr) {
     }
 
     ModelFittingBase::~ModelFittingBase() {
@@ -23,19 +23,37 @@ namespace SGPP {
     void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& result) {
     }
 
-    OperationMatrix* ModelFittingBase::getRegularizationMatrix(SGPP::datadriven::RegularizationType regType) {
+    std::shared_ptr<OperationMatrix> ModelFittingBase::getRegularizationMatrix(SGPP::datadriven::RegularizationType regType) {
       OperationMatrix* C = NULL;
 
       if (regType == SGPP::datadriven::RegularizationType::Identity) {
-        C = SGPP::op_factory::createOperationIdentity(*grid);
+        C = std::shared_ptr<OperationMatrix>(SGPP::op_factory::createOperationIdentity(*grid));
       } else if (regType == SGPP::datadriven::RegularizationType::Laplace) {
-        C = SGPP::op_factory::createOperationLaplace(*grid);
+        C = std::shared_ptr<OperationMatrix>(SGPP::op_factory::createOperationLaplace(*grid));
       } else {
         throw base::application_exception("ModelFittingBase::getRegularizationMatrix - unknown regularization type");
       }
 
       return C;
     }
+
+    void ModelFittingBase::createRegularGrid() {
+      // load grid
+      if (gridConfig.type_ == GridType::Linear) {
+        grid = std::shared_ptr<Grid>(Grid::createLinearGrid(gridConfig.dim_));
+      } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
+        grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_,
+            gridConfig.boundaryLevel_));
+      } else if (gridConfig.type_ == GridType::LinearBoundary) {
+        grid = std::shared_ptr<Grid>(Grid::createLinearBoundaryGrid(gridConfig.dim_));
+      } else {
+        throw application_exception("ModelFittingDensityEstimation::createRegularGrid: grid type is not supported");
+      }
+
+      GridGenerator* gridGen = grid->createGridGenerator();
+      gridGen->regular(gridConfig.level_);
+    }
+
 
     std::shared_ptr<SGPP::base::Grid> ModelFittingBase::getGrid() {
       return grid;

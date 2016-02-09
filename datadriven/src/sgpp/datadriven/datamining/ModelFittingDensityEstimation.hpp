@@ -20,19 +20,17 @@
 namespace SGPP {
   namespace datadriven {
 
-    class ModelFittingDensityEstimation: public SGPP::datadriven::ModelFittingBase {
+    class ModelFittingDensityEstimation: public datadriven::ModelFittingBase {
       public:
-        ModelFittingDensityEstimation(SGPP::datadriven::SampleProvider& sampleProvider,
-                                      SGPP::datadriven::DataMiningConfigurationDensityEstimation config);
+        ModelFittingDensityEstimation(datadriven::SampleProvider& sampleProvider,
+                                      datadriven::DataMiningConfigurationDensityEstimation config);
 
         virtual ~ModelFittingDensityEstimation();
 
-        void fit() override;
+        void fit(datadriven::Dataset& dataset) override;
 
       private:
-//        void createRegularGrid();
-
-        SGPP::datadriven::DataMiningConfigurationDensityEstimation& configuration;
+        datadriven::DataMiningConfigurationDensityEstimation& configuration;
     };
 
   } /* namespace datadriven */
