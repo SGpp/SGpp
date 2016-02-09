@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #include <sgpp/datadriven/datamining/ModelFittingDensityEstimation.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -11,111 +10,135 @@
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
-
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 using namespace SGPP::base;
 
-
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    ModelFittingDensityEstimation::ModelFittingDensityEstimation(SGPP::datadriven::SampleProvider& sampleProvider,
-        SGPP::datadriven::DataMiningConfigurationDensityEstimation config) : SGPP::datadriven::ModelFittingBase(sampleProvider), configuration(config) {
-      // set the dimensionality of the grid
-      configuration.gridConfig->dim_ = sampleProvider.allSamples().getDimension();
+ModelFittingDensityEstimation::ModelFittingDensityEstimation(datadriven::DataMiningConfiguration config) :
+		datadriven::ModelFittingBase() {
+  // load all the needed variables
+  // ...
+  // TODO: set default values
+  // set default in get like .get("Linear")
+  try {
+    gridConfig.dim_ = 0;
+    gridConfig.level_ = config["grid"]["level"].getUInt();
+    gridConfig.type_ = config.stringToGridType(config["grid"]["type"].get());
 
-//      // initialize grid
-//      createRegularGrid();
-    }
+    // configure adaptive refinement
+    adaptivityConfig.numRefinements_ = config["refinement"]["numSteps"].getUInt();
+    adaptivityConfig.noPoints_ = config["refinement"]["numPoints"].getUInt();
 
-    ModelFittingDensityEstimation::~ModelFittingDensityEstimation() {
-    }
+    // configure solver
+    solverConfig.type_ = config.stringToSolverType(config["solver"]["type"].get());
+    solverConfig.maxIterations_ = config["solver"]["maxIterations"].getUInt();
+    solverConfig.eps_ = config["solver"]["eps"].getDouble();
+    solverConfig.threshold_ = config["solver"]["threshold"].getDouble();
 
-//    void ModelFittingDensityEstimation::createRegularGrid() {
-//      // load grid
-//      if (configuration.gridConfig->type_ == GridType::Linear) {
-//        grid = Grid::createLinearGrid(configuration.gridConfig->dim_);
-//      } else if (configuration.gridConfig->type_ == GridType::LinearL0Boundary) {
-//        grid = Grid::createLinearBoundaryGrid(configuration.gridConfig->dim_,
-//            configuration.gridConfig->boundaryLevel);
-//      } else if (configuration.gridConfig->type_ == GridType::LinearBoundary) {
-//        grid = Grid::createLinearBoundaryGrid(configuration.gridConfig->dim_);
-//      } else {
-//        throw application_exception("ModelFittingDensityEstimation::createRegularGrid: grid type is not supported");
-//      }
-//
-//      GridGenerator* gridGen = grid->createGridGenerator();
-//      gridGen->regular(configuration.gridConfig->level_);
-//    }
+    // configure regularization
+    regularizationConfig.regType_ = config.stringToRegularizationType(config["regularization"]["type"].get());
 
-    void ModelFittingDensityEstimation::fit() {
-      size_t numDims = grid->getStorage()->dim();
+    // configure learner
+    sgdeConfig.doCrossValidation_ = config["crossValidation"]["doCrossValidation"].getBool();
+    sgdeConfig.kfold_ = config["crossValidation"]["kfold"].getUInt();
+    sgdeConfig.lambdaStart_ = config["crossValidation"]["lambdaStart"].getDouble();
+    sgdeConfig.lambdaEnd_ = config["crossValidation"]["lambdaEnd"].getDouble();
+    sgdeConfig.lambdaSteps_ = config["crossValidation"]["lambdaSteps"].getUInt();
+    sgdeConfig.logScale_ = config["crossValidation"]["logScale"].getBool();
+    sgdeConfig.shuffle_ = config["crossValidation"]["shuffle"].getBool();
+    sgdeConfig.seed_ = config["crossValidation"]["seed"].getUInt();
+    sgdeConfig.silent_ = config["crossValidation"]["verbose"].getBool();
+  } catch (json::json_exception& e) {
+    std::cout << e.what() << std::endl;
+  }
+}
 
-      GridStorage* gridStorage = grid->getStorage();
-      GridGenerator* gridGen = grid->createGridGenerator();
-      DataVector rhs(grid->getStorage()->size());
-      alpha->resize(grid->getStorage()->size());
-      alpha->setAll(0.0);
+ModelFittingDensityEstimation::~ModelFittingDensityEstimation() {
+}
 
-      if (!configuration.sgdeConfig->silent_) {
-        std::cout << "# LearnerSGDE: grid points " << grid->getSize() << std::endl;
-      }
+void ModelFittingDensityEstimation::fit(datadriven::Dataset& dataset) {
+	DataMatrix samples = dataset.getData();
+	size_t numDims = samples.getNcols();
 
-      OperationMatrix* C = getRegularizationMatrix(configuration.regularizationConfig->regType_);
+	initializeGrid(gridConfig);
 
-      for (size_t ref = 0; ref <= configuration.adaptivityConfig->numRefinements_; ref++) {
-        SGPP::datadriven::DensitySystemMatrix SMatrix(*grid, sampleProvider.allSamples().getTrainingData(), *C, 1e-10);
-        SMatrix.generateb(rhs);
+	GridStorage* gridStorage = grid->getStorage();
+	GridGenerator* gridGen = grid->createGridGenerator();
+	DataVector rhs(grid->getStorage()->size());
+	alpha->resize(grid->getStorage()->size());
+	alpha->setAll(0.0);
 
-        if (!configuration.sgdeConfig->silent_) {
-          std::cout << "# LearnerSGDE: Solving " << std::endl;
-        }
+	if (!sgdeConfig.silent_) {
+		std::cout << "# LearnerSGDE: grid points " << grid->getSize()
+				<< std::endl;
+	}
 
-        SGPP::solver::ConjugateGradients myCG(configuration.solverConfig->maxIterations_,
-                                              configuration.solverConfig->eps_);
-        myCG.solve(SMatrix, *alpha, rhs, false, false, configuration.solverConfig->threshold_);
+	for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_;
+			ref++) {
+	  std::shared_ptr<OperationMatrix> C = getRegularizationMatrix(
+	      regularizationConfig.regType_);
+	  datadriven::DensitySystemMatrix SMatrix(*grid, samples, *C, 1e-10);
+		SMatrix.generateb(rhs);
 
-        if (ref < configuration.adaptivityConfig->numRefinements_) {
-          if (!configuration.sgdeConfig->silent_) {
-            std::cout << "# LearnerSGDE: Refine grid ... ";
-          }
+		if (!sgdeConfig.silent_) {
+			std::cout << "# LearnerSGDE: Solving " << std::endl;
+		}
 
-          //Weight surplus with function evaluation at grid points
-          OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
-          GridIndex* gp;
-          DataVector p(numDims);
-          DataVector alphaWeight(alpha->getSize());
+		solver::ConjugateGradients myCG(
+				solverConfig.maxIterations_,
+				solverConfig.eps_);
+		myCG.solve(SMatrix, *alpha, rhs, false, false,
+				solverConfig.threshold_);
 
-          for (size_t i = 0; i < gridStorage->size(); i++) {
-            gp = gridStorage->get(i);
-            gp->getCoords(p);
-            alphaWeight[i] = alpha->get(i) * opEval->eval(*alpha, p);
-          }
+		if (ref < adaptivityConfig.numRefinements_) {
+			if (!sgdeConfig.silent_) {
+				std::cout << "# LearnerSGDE: Refine grid ... ";
+			}
 
-          delete opEval;
-          opEval = NULL;
+			//Weight surplus with function evaluation at grid points
+			OperationEval* opEval = op_factory::createOperationEval(*grid);
+			GridIndex* gp;
+			DataVector p(numDims);
+			DataVector alphaWeight(alpha->getSize());
 
-          SGPP::base::SurplusRefinementFunctor srf(&alphaWeight,
-              configuration.adaptivityConfig->noPoints_,
-              configuration.adaptivityConfig->threshold_);
-          gridGen->refine(&srf);
+			for (size_t i = 0; i < gridStorage->size(); i++) {
+				gp = gridStorage->get(i);
+				gp->getCoords(p);
+				alphaWeight[i] = alpha->get(i) * opEval->eval(*alpha, p);
+			}
 
-          if (!configuration.sgdeConfig->silent_) {
-            std::cout << "# LearnerSGDE: ref " << ref << "/"
-                      << configuration.adaptivityConfig->numRefinements_ - 1 << ": "
-                      << grid->getStorage()->size() << std::endl;
-          }
+			delete opEval;
+			opEval = NULL;
 
-          alpha->resize(grid->getStorage()->size());
-          rhs.resize(grid->getStorage()->size());
-          alpha->setAll(0.0);
-          rhs.setAll(0.0);
-        }
-      }
+			base::SurplusRefinementFunctor srf(&alphaWeight,
+					adaptivityConfig.noPoints_,
+					adaptivityConfig.threshold_);
+			gridGen->refine(&srf);
 
-      delete C;
-      return;
-    }
+			if (!sgdeConfig.silent_) {
+				std::cout << "# LearnerSGDE: ref " << ref << "/"
+						<< adaptivityConfig.numRefinements_ - 1
+						<< ": " << grid->getStorage()->size() << std::endl;
+			}
 
-  } /* namespace datadriven */
+			alpha->resize(grid->getStorage()->size());
+			rhs.resize(grid->getStorage()->size());
+			alpha->setAll(0.0);
+			rhs.setAll(0.0);
+		}
+	}
+}
+
+void ModelFittingDensityEstimation::refine() {
+  //TODO implement
+}
+
+void ModelFittingDensityEstimation::update(datadriven::Dataset& dataset) {
+  //TODO implement
+}
+
+} /* namespace datadriven */
 } /* namespace SGPP */
