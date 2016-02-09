@@ -8,7 +8,7 @@
 #ifndef COMBIGRIDLEVELVECTOR_HPP_
 #define COMBIGRIDLEVELVECTOR_HPP_
 
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
 
 namespace combigrid {
 
