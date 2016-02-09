@@ -25,7 +25,7 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation(datadriven::DataMin
   // set default in get like .get("Linear")
   try {
     gridConfig.dim_ = 0;
-    gridConfig.level_ = config["grid"]["level"].getUInt();
+    gridConfig.level_ = static_cast<int>(config["grid"]["level"].getInt());
     gridConfig.type_ = config.stringToGridType(config["grid"]["type"].get());
 
     // configure adaptive refinement
