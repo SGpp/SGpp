@@ -1,23 +1,26 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrixSP.hpp>
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
 using namespace SGPP::base;
 
-struct FixtureDataMatrix {
-	FixtureDataMatrix() :
+struct FixtureDataMatrixSP {
+	FixtureDataMatrixSP() :
     nrows(5), ncols(3), N(nrows * ncols), d_rand(nrows, ncols), min(0), max(0), sum(
       0) {
-    l_rand = new double* [nrows];
+    l_rand = new float* [nrows];
 
     for (int i = 0; i < nrows; ++i) {
-      l_rand[i] = new double[ncols];
+      l_rand[i] = new float[ncols];
     }
 
+    float value;
     for (int i = 0; i < nrows; ++i) {
       for (int j = 0; j < ncols; ++j) {
-        l_rand[i][j] = i * j + i * 0.5 + 2.34 * j;
+    	value = static_cast<float>(i) * static_cast<float>(j) +
+    			static_cast<float>(i) * 0.5f + 2.34f * static_cast<float>(j);
+        l_rand[i][j] = value;
         min = min > l_rand[i][j] ? l_rand[i][j] : min;
         max = max < l_rand[i][j] ? l_rand[i][j] : max;
         sum += l_rand[i][j];
@@ -32,7 +35,7 @@ struct FixtureDataMatrix {
 
     BOOST_TEST_MESSAGE("setup fixture");
   }
-  ~FixtureDataMatrix() {
+  ~FixtureDataMatrixSP() {
 
     for (int i = 0; i < nrows; ++i) {
       delete [] l_rand[i];
@@ -42,15 +45,15 @@ struct FixtureDataMatrix {
     BOOST_TEST_MESSAGE("teardown fixture");
   }
   int nrows, ncols, N;
-  double** l_rand;
-  DataMatrix d_rand;
-  double min, max, sum;
+  float** l_rand;
+  DataMatrixSP d_rand;
+  float min, max, sum;
 };
 
-BOOST_FIXTURE_TEST_SUITE(testDataMatrix, FixtureDataMatrix)
+BOOST_FIXTURE_TEST_SUITE(testDataMatrixSP, FixtureDataMatrixSP)
 
 BOOST_AUTO_TEST_CASE(testConstructor) {
-  DataMatrix d(42,17);
+  DataMatrixSP d(42,17);
   BOOST_CHECK_EQUAL(d.getSize(), 42*17);
   BOOST_CHECK_EQUAL(d.getNrows(), 42);
   BOOST_CHECK_EQUAL(d.getNcols(), 17);
@@ -70,14 +73,14 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 }
 
 BOOST_AUTO_TEST_CASE(testOps) {
-	double tol = 1e-12;
+	float tol = 0.00001f;
 
-	DataMatrix d = d_rand;
-	DataMatrix d2(nrows, ncols);
+	DataMatrixSP d = d_rand;
+	DataMatrixSP d2(nrows, ncols);
 
 	for (int i = 0; i < nrows; ++i) {
 	  for (int j = 0; j < ncols; ++j) {
-	    d2.set(i,j, 1.0+2.123*(static_cast<double>(rand())/static_cast<double>(RAND_MAX))+static_cast<double>(i*j));
+	    d2.set(i,j, 1.0f+2.123f*(static_cast<float>(rand())/static_cast<float>(RAND_MAX))+static_cast<float>(i*j));
 	  }
     }
 
@@ -90,7 +93,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
     }
 
 	//add
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.add(d2);
 	for (int i = 0; i < nrows; ++i) {
 	  for (int j = 0; j < ncols; ++j) {
@@ -99,10 +102,10 @@ BOOST_AUTO_TEST_CASE(testOps) {
     }
 
 	//addReduce
-	d = DataMatrix(d_rand);
-	DataVector reduction(nrows);
+	d = DataMatrixSP(d_rand);
+	DataVectorSP reduction(nrows);
 	d.addReduce(reduction);
-	double reduce_sum = 0.0;
+	float reduce_sum = 0.0;
 	for (int i = 0; i < nrows; ++i) {
 	  reduce_sum = 0.0;
 	  for (int j = 0; j < ncols; ++j) {
@@ -112,7 +115,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//componentwise_div
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.componentwise_div(d2);
 	for (int i = 0; i < nrows; ++i) {
 	  for (int j = 0; j < ncols; ++j) {
@@ -121,7 +124,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//componentwise_mult
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.componentwise_mult(d2);
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
@@ -130,8 +133,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//max column
-	d = DataMatrix(d_rand);
-	double colMax;
+	d = DataMatrixSP(d_rand);
+	float colMax;
 	for (int j = 0; j < ncols; ++j){
 		colMax = d.get(0,j);
 		for (int i = 0; i < nrows; ++i){
@@ -141,13 +144,13 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//total max
-	d = DataMatrix(d_rand);
-	double d_max = d.max();
+	d = DataMatrixSP(d_rand);
+	float d_max = d.max();
 	BOOST_CHECK_EQUAL(d_max, max);
 
 	//min column
-	d = DataMatrix(d_rand);
-	double colMin;
+	d = DataMatrixSP(d_rand);
+	float colMin;
 	for (int j = 0; j < ncols; ++j){
 		colMin = d.get(0,j);
 		for (int i = 0; i < nrows; ++i){
@@ -157,13 +160,13 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//total min
-	d = DataMatrix(d_rand);
-	double d_min = d.min();
+	d = DataMatrixSP(d_rand);
+	float d_min = d.min();
 	BOOST_CHECK_EQUAL(d_min, min);
 
 	//min max column
-	double minActual = 0;
-	double maxActual = 0;
+	float minActual = 0;
+	float maxActual = 0;
 	for (int j = 0; j < ncols; ++j){
 		colMax = d.get(0,j);
 		colMin = d.get(0,j);
@@ -182,8 +185,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	BOOST_CHECK_EQUAL(maxActual, max);
 
 	//mult scalar
-	d = DataMatrix(d_rand);
-	double scalar = 1.3124;
+	d = DataMatrixSP(d_rand);
+	float scalar = 1.3124f;
 	d.mult(scalar);
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
@@ -192,9 +195,9 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//normalize dimension of column j
-	d = DataMatrix(d_rand);
-	double border = 0.0;
-	double delta;
+	d = DataMatrixSP(d_rand);
+	float border = 0.0f;
+	float delta;
 	for (int j = 0; j < ncols; ++j){
 		d.normalizeDimension(j);
 		delta = (d_rand.max(j) - d_rand.min(j)) / (1 - 2 * border);
@@ -204,8 +207,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//normalize dimension with border
-	d = DataMatrix(d_rand);
-	border = 3.1415;
+	d = DataMatrixSP(d_rand);
+	border = 3.1415f;
 	for (int j = 0; j < ncols; ++j){
 		d.normalizeDimension(j, border);
 		delta = (d_rand.max(j) - d_rand.min(j)) / (1 - 2 * border);
@@ -215,20 +218,20 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//resize rows
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	const int newRows = nrows - 1 < 1 ? 1 : nrows - 1;
 	d.resize(newRows);
 	BOOST_CHECK_EQUAL(d.getNrows(), newRows);
 
 	//resizeZero rows
 	d.resize(nrows, ncols);
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.resizeZero(newRows);
 	BOOST_CHECK_EQUAL(d.getNrows(), newRows);
 
 	//resize rows and cols
 	d.resize(nrows, ncols);
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	const int newCols = ncols - 1 < 1 ? 1 : ncols - 1;
 	d.resize(newRows, newCols);
 	BOOST_CHECK_EQUAL(d.getNrows(), newRows);
@@ -236,15 +239,15 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
 	//resizeZero rows and cols
 	d.resize(nrows, ncols);
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.resizeZero(newRows, newCols);
 	BOOST_CHECK_EQUAL(d.getNrows(), newRows);
 	BOOST_CHECK_EQUAL(d.getNcols(), newCols);
 	d.resize(nrows, ncols);
 
 	//setAll
-	d = DataMatrix(d_rand);
-	double setValue = 3.12;
+	d = DataMatrixSP(d_rand);
+	float setValue = 3.12f;
 	d.setAll(setValue);
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
@@ -253,8 +256,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//setColumn
-	d = DataMatrix(d_rand);
-	DataVector setVectorRow(nrows);
+	d = DataMatrixSP(d_rand);
+	DataVectorSP setVectorRow(nrows);
 	setVectorRow.setAll(setValue+1);
 	for (int j = 0; j < ncols; ++j){
 		d.setColumn(j, setVectorRow);
@@ -264,8 +267,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//setRow
-	d = DataMatrix(d_rand);
-	DataVector setVectorCol(ncols);
+	d = DataMatrixSP(d_rand);
+	DataVectorSP setVectorCol(ncols);
 	setVectorCol.setAll(setValue+1);
 	for (int i = 0; i < nrows; ++i){
 		d.setRow(i, setVectorCol);
@@ -275,7 +278,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//sqr
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.sqr();
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
@@ -284,17 +287,18 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//sqrt
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.sqrt();
 	d.sqr();
+	float sqrtTol = 0.0001f;
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
-			BOOST_CHECK_CLOSE(d.get(i,j), d_rand.get(i,j), tol);
+			BOOST_CHECK_CLOSE(d.get(i,j), d_rand.get(i,j), sqrtTol);
 		}
 	}
 
 	//sub
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.sub(d2);
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
@@ -303,9 +307,9 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	}
 
 	//sum
-	d = DataMatrix(d_rand);
-	double actualSum = d.sum();
-	double expectedSum = 0.0;
+	d = DataMatrixSP(d_rand);
+	float actualSum = d.sum();
+	float expectedSum = 0.0f;
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
 			expectedSum += d_rand.get(i,j);
@@ -314,7 +318,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 	BOOST_CHECK_CLOSE(actualSum, expectedSum, tol);
 
 	//transpose
-	d = DataMatrix(d_rand);
+	d = DataMatrixSP(d_rand);
 	d.transpose();
 	for (int i = 0; i < nrows; ++i){
 		for (int j = 0; j < ncols; ++j){
