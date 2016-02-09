@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <sgpp/base/tools/json/Node.hpp>
 #include <sgpp/base/tools/json/Token.hpp>
 
 #include <memory>
