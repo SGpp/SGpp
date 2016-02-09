@@ -12,10 +12,9 @@
  *  simple 1D equidistant grid on the interval (min;max)
  **/
 
-void combigrid::CombiEquidistantStretching::get1DStretching(int level,
-    double min, double max, std::vector<double>& stretching,
+void combigrid::CombiEquidistantStretching::get1DStretching(
+    int level, double min, double max, std::vector<double>& stretching,
     std::vector<double>& jacobian) const {
-
   int nr_pts = powerOfTwo[level] + 1;
   // resize the stretching vector...
   stretching.resize(nr_pts);
@@ -29,14 +28,11 @@ void combigrid::CombiEquidistantStretching::get1DStretching(int level,
 
   TRANSFORMATION_TYPE type = FINITE;
 
-  if (min == n_INF && max < p_INF)
-    type = SEMI_INFINITE_NINF;
+  if (min == n_INF && max < p_INF) type = SEMI_INFINITE_NINF;
 
-  if (min > n_INF && max == p_INF)
-    type = SEMI_INFINITE_PINF;
+  if (min > n_INF && max == p_INF) type = SEMI_INFINITE_PINF;
 
-  if (min == n_INF && max == p_INF)
-    type = INFINITE;
+  if (min == n_INF && max == p_INF) type = INFINITE;
 
   double dt = (2.0) / double(nr_pts - 1);
   // notice that dt is the spacing on the [-1;1] interval...
@@ -50,6 +46,6 @@ void combigrid::CombiEquidistantStretching::get1DStretching(int level,
     jacobian[i] = transformationJacobian(min, max, -1.0 + i * dt, type);
   }
 
-  stretching[loop_len] = max; // seems to be correct ...
+  stretching[loop_len] = max;  // seems to be correct ...
   jacobian[loop_len] = transformationJacobian(min, max, +1.0, type);
 }
