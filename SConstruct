@@ -110,7 +110,7 @@ env['LIBDIR'] = env.get( 'LIBDIR', os.path.join( env['EPREFIX'], "lib" ) )
 env['INCLUDEDIR'] = env.get( 'INCLUDEDIR', os.path.join( env['PREFIX'], "include" ) )
 
 # no docu if clean:
-if not env.GetOption('clean'):
+if not env['PYDOC'] and not env.GetOption('clean'):
   prepareDoxyfile(moduleFolders)
 
 if 'CXX' in ARGUMENTS:
@@ -298,7 +298,7 @@ for moduleFolder in moduleFolders:
 
 Export('flattenedDependencyGraph')
 
-if env['PYDOC'] and env['SG_PYTHON']:
+if env['PYDOC'] and env['SG_PYTHON'] and not env.GetOption('clean'):
   with open('moduleDoxy', 'r') as template:
     data = template.read()
     for module in moduleFolders:
