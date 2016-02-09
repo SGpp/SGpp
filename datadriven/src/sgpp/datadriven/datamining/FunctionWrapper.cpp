@@ -13,9 +13,7 @@
 namespace SGPP {
 namespace datadriven {
 
-FunctionWrapper::FunctionWrapper() {
-	// TODO Auto-generated constructor stub
-
+FunctionWrapper::FunctionWrapper(datadriven::DataMiningConfiguration& config) : SampleProvider(config) {
 }
 
 FunctionWrapper::~FunctionWrapper() {

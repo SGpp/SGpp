@@ -11,7 +11,6 @@
 #include <sgpp/datadriven/datamining/DataWrapper.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -23,7 +22,7 @@ namespace datadriven {
 
 class ARFFWrapper: public DataWrapper {
  public:
-  ARFFWrapper(std::string filename);
+  ARFFWrapper(datadriven::DataMiningConfiguration& config);
 
   virtual ~ARFFWrapper();
 

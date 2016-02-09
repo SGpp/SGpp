@@ -10,6 +10,7 @@
 
 #include "SampleProvider.hpp"
 
+#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 
@@ -18,7 +19,7 @@ namespace datadriven {
 
 class FunctionWrapper: public sg::datadriven::SampleProvider {
 public:
-	FunctionWrapper();
+	FunctionWrapper(datadriven::DataMiningConfiguration& config);
 	virtual ~FunctionWrapper();
 };
 
