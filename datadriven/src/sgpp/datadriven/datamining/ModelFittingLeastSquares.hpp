@@ -47,7 +47,8 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param isVerbose set to true in order to allow console output
 	 */
-	ModelFittingLeastSquares(DataMiningConfigurationLeastSquares &configuration);
+	ModelFittingLeastSquares(SGPP::datadriven::SampleProvider& sampleProvider,
+	SGPP::datadriven::DataMiningConfigurationLeastSquares config);
 
 	/**
 	 * Destructor
