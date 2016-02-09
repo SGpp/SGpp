@@ -10,8 +10,7 @@ using namespace SGPP::base;
 namespace SGPP {
   namespace datadriven {
 
-    ModelFittingBase::ModelFittingBase(SGPP::datadriven::SampleProvider& sampleProvider,
-        DataMiningConfiguration config) : sampleProvider(sampleProvider), grid(nullptr), alpha(0) {
+    ModelFittingBase::ModelFittingBase(SGPP::datadriven::SampleProvider& sampleProvider) : sampleProvider(sampleProvider), grid(nullptr), alpha(0) {
     }
 
     ModelFittingBase::~ModelFittingBase() {
