@@ -50,9 +50,7 @@ namespace SGPP {
 
       protected:
         std::shared_ptr<base::OperationMatrix> getRegularizationMatrix(SGPP::datadriven::RegularizationType regType);
-        void createRegularGrid();
-
-        base::RegularGridConfiguration gridConfig;
+        void initializeGrid(base::RegularGridConfiguration gridConfig);
 
         std::shared_ptr<base::Grid> grid;
         std::shared_ptr<base::DataVector> alpha;

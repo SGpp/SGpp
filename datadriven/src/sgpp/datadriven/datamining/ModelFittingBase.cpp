@@ -37,7 +37,7 @@ namespace SGPP {
       return C;
     }
 
-    void ModelFittingBase::createRegularGrid() {
+    void ModelFittingBase::initializeGrid(base::RegularGridConfiguration gridConfig) {
       // load grid
       if (gridConfig.type_ == GridType::Linear) {
         grid = std::shared_ptr<Grid>(Grid::createLinearGrid(gridConfig.dim_));
@@ -53,7 +53,6 @@ namespace SGPP {
       GridGenerator* gridGen = grid->createGridGenerator();
       gridGen->regular(gridConfig.level_);
     }
-
 
     std::shared_ptr<SGPP::base::Grid> ModelFittingBase::getGrid() {
       return grid;

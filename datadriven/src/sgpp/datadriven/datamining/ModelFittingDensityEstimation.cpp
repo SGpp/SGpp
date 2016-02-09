@@ -29,7 +29,7 @@ void ModelFittingDensityEstimation::fit(datadriven::Dataset& dataset) {
 	size_t numSamples = samples.getNrows();
 	size_t numDims = samples.getNcols();
 
-	createRegularGrid();
+	initializeGrid(configuration.gridConfig);
 
 	GridStorage* gridStorage = grid->getStorage();
 	GridGenerator* gridGen = grid->createGridGenerator();
