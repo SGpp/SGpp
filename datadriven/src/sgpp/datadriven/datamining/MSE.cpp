@@ -26,7 +26,7 @@ double MSE::operator()(DataVector& predictedValues, DataVector& trueValues){
 	DataVector tmp(predictedValues);
 	tmp.sub(trueValues);
 	double error =  tmp.l2Norm();
-	return error*error/tmp.getSize();
+	return error*error/static_cast<double>(tmp.getSize());
 }
 
 } /* namespace datadriven */

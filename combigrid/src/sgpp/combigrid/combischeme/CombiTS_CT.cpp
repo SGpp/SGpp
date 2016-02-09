@@ -138,9 +138,7 @@ void combigrid::CombiTS_CT<_Tp>::re_initCombiGrid(int in_dim,
 /** Implement this method with desired logic to handle situations when recomputation of the coefficients might be necessary.
  *  Exemplary use cases could be the addition or removal of a fullgrid to/from the combigrid container.
  * @param in_dim - dimension of the problem
- * @param in_levels_vector - the vector containing the selected levels for each fullgrid of the caller combigrid
- * @param out_coeffs - (out) vector containing the combigrid coefficients (usually +1 or -1) -> the method stors the new
- * recomputed coefficients in the out_coeffs vector
+ * @param out_fgrids - (out) vector of full grids
  * */
 template<typename _Tp>
 void combigrid::CombiTS_CT<_Tp>::recomputeCoefficients(int in_dim,

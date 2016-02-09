@@ -16,6 +16,8 @@
 #ignoring swig build files
 *.jar
 *doc.i
+doc/html
+doc/xml
 */doc/xml/*
 *.class
 jsgpp/jsgpp_wrap.cc

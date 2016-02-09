@@ -12,6 +12,21 @@ http://sgpp.sparsegrids.org.
 <!-- ############################################################# -->
 @section downloads__history Versions
 
+@subsection downloads_history_110 Version 1.1.0 
+- Download:
+  <a href="http://sgpp.sparsegrids.org/downloads/release_1.1.0.tar.gz">
+  release_1.1.0.tar.gz</a>
+
+- Improved code quality
+- New combigrid package
+- OpenCL data mining
+- Improved Scons support
+- Support for installation (scons install)
+- More unit tests
+- New optimization method (CMA-ES)
+- Some refactoring in sgpp::optimization (may break compatibility)
+- Test problems for sgpp::optimization restructured.
+
 @subsection downloads_history_100 Version 1.0.0 
 - Download:
   <a href="http://sgpp.sparsegrids.org/downloads/release_1.0.0.tgz">

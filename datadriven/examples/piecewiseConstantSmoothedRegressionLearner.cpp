@@ -37,8 +37,8 @@ int main(int argc, char** argv) {
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset arffDataset = arffTools.readARFF(fileName);
 
-  SGPP::base::DataMatrix& dataset = arffDataset.getTrainingData();
-  SGPP::base::DataVector& values = arffDataset.getClasses();
+  SGPP::base::DataMatrix& dataset = arffDataset.getData();
+  SGPP::base::DataVector& values = arffDataset.getTargets();
 
   int maxLevel = 7;
 

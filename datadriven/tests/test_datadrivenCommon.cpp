@@ -211,7 +211,7 @@ double compareToReference(SGPP::base::GridType gridType, std::string fileName,
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-  SGPP::base::DataMatrix& trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
@@ -283,7 +283,7 @@ double compareToReferenceTranspose(SGPP::base::GridType gridType,
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
-  SGPP::base::DataMatrix& trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 

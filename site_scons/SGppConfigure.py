@@ -70,7 +70,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
 
-      config.env.AppendUnique(CPPDEFINES=["USE_OCL"])
+      config.env["CPPDEFINES"]["USE_OCL"] = "1"
     else:
       print "Info: OpenCL is not enabled"
 
@@ -245,7 +245,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
             config.env.AppendUnique(CPPFLAGS=["-mfma"])
         else:
             print "You must specify a valid ARCH value for gnu."
-            print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
+            print "Available configurations are: sse3, sse42, avx, fma4, avx2, avx512"
             sys.exit(1)
         
         # check if using MinGW (g++ on win32)
@@ -393,6 +393,16 @@ Please install the corresponding package, e.g. using command on Ubuntu
           (not env['SG_' + moduleFolder.upper()]):
         continue
       env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
+    
+    # check for mpic++
+    if not env['CXX']=='mpic++':
+        env['SG_PARALLEL'] = 0
+        print 'Warning: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
+    elif env['SG_PARALLEL'] != 0:
+        env['CPPDEFINES']['USE_MPI'] = '1'
+        print 'Parallel module ("SG_PARALLEL") enabled'
+    else:
+        print 'Parallel module ("SG_PARALLEL") disabled'
 
     # detour compiler output
     env['PRINT_CMD_LINE_FUNC'] = Helper.print_cmd_line
@@ -403,11 +413,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
     with open(env['CMD_LOGFILE'], 'a') as logFile:
         logFile.seek(0)
         logFile.truncate()
-        
-    # check for mpic++
-    if not env['CXX']=='mpic++':
-        env['SG_PARALLEL'] = 0
-        print "Warning: not using mpic++, parallel module disabled, since it requires mpic++"
-    elif env['SG_PARALLEL'] != 0:
-        env['CPPDEFINES']['USE_MPI'] = 1
-        print "Parallel module enabled"
+
+
+

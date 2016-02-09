@@ -92,10 +92,13 @@ bool BiCGStab::solve(SLE& system, base::DataVector& b,
     for (size_t i = 0; i < n; i++) {
       s[i] = r[i] - alpha * v[i];
     }
-
     system.matrixVectorMultiplication(s, t);
     omega = t.dotProduct(s) / t.dotProduct(t);
 
+    rNormSquared = s.dotProduct(s);
+	if (rNormSquared < tol*tol*0.1){//if || s || sufficiently small, then set xi = xi−1 + αpi and quit
+	  omega = 0.;
+	}
     if (std::isnan(omega)) {
       Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
       return false;

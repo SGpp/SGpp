@@ -9,6 +9,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/datadriven/datamining/ARFFWrapper.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <ctime>
 #include <fstream>
@@ -21,7 +22,7 @@
 namespace SGPP {
 namespace datadriven {
 
-ARFFWrapper::ARFFWrapper(std::string filename) : DataWrapper(filename), seed(0), dimension(0), numberInstances(0) {
+ARFFWrapper::ARFFWrapper(datadriven::DataMiningConfiguration& config) : DataWrapper(config), seed(0), dimension(0), numberInstances(0) {
 	  std::string line;
 	  std::ifstream myfile(filename.c_str());
 
@@ -85,8 +86,8 @@ void ARFFWrapper::readARFF(const std::string& filename, Dataset& dataset) {
     std::transform(line.begin(), line.end(), line.begin(), toupper);
 
     if (dataReached && !line.empty()) {
-      writeNewClass(line, dataset.getClasses(), instanceNo);
-      writeNewTrainingDataEntry(line, dataset.getTrainingData(), instanceNo);
+      writeNewClass(line, dataset.getTargets(), instanceNo);
+      writeNewTrainingDataEntry(line, dataset.getData(), instanceNo);
       instanceNo++;
     }
 
@@ -148,8 +149,8 @@ void ARFFWrapper::readARFFFromString(const std::string& content, Dataset& datase
     std::transform(line.begin(), line.end(), line.begin(), toupper);
 
     if (dataReached && !line.empty()) {
-      writeNewClass(line, dataset.getClasses(), instanceNo);
-      writeNewTrainingDataEntry(line, dataset.getTrainingData(), instanceNo);
+      writeNewClass(line, dataset.getTargets(), instanceNo);
+      writeNewTrainingDataEntry(line, dataset.getData(), instanceNo);
       instanceNo++;
     }
 

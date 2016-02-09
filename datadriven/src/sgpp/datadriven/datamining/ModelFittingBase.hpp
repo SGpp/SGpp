@@ -14,7 +14,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
-#include <sgpp/datadriven/datamining/SampleProvider.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 
 namespace SGPP {
@@ -22,38 +22,43 @@ namespace SGPP {
 
     class ModelFittingBase {
       public:
-        ModelFittingBase(SGPP::datadriven::SampleProvider& sampleProvider);
+        ModelFittingBase();
 
         virtual ~ModelFittingBase();
 
-        /**
-         *
-         */
-        virtual void fit() = 0;
+        /// new grid and new data set
+        virtual void fit(datadriven::Dataset& dataset) = 0;
+
+        /// reuse the grid and assume old data set
+        virtual void refine() = 0;
+
+        /// reuse grid and new data set
+        virtual void update(datadriven::Dataset& dataset) = 0;
 
         /**
          *
          * @param sample
          * @return
          */
-        virtual SGPP::float_t evaluate(SGPP::base::DataVector& sample);
+        virtual SGPP::float_t evaluate(base::DataVector& sample);
 
         /**
          *
          * @param samples
+         * @param result
          * @return
          */
         virtual void evaluate(SGPP::base::DataMatrix& samples, SGPP::base::DataVector& result);
 
-        virtual std::shared_ptr<SGPP::base::Grid> getGrid();
-        virtual std::shared_ptr<SGPP::base::DataVector> getSurpluses();
+        virtual std::shared_ptr<base::Grid> getGrid();
+        virtual std::shared_ptr<base::DataVector> getSurpluses();
 
       protected:
-        SGPP::base::OperationMatrix* getRegularizationMatrix(SGPP::datadriven::RegularizationType regType);
+        std::shared_ptr<base::OperationMatrix> getRegularizationMatrix(SGPP::datadriven::RegularizationType regType);
+        void initializeGrid(base::RegularGridConfiguration gridConfig);
 
-        SGPP::datadriven::SampleProvider& sampleProvider;
-        std::shared_ptr<SGPP::base::Grid> grid;
-        std::shared_ptr<SGPP::base::DataVector> alpha;
+        std::shared_ptr<base::Grid> grid;
+        std::shared_ptr<base::DataVector> alpha;
     };
 
   } /* namespace datadriven */
