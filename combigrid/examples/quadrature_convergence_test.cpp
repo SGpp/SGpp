@@ -32,7 +32,7 @@ int fcalls = 0;
 
 		fcalls++;
 		double result = 1.0;
-		if (coordinates.size() != dim) {
+		if (coordinates.size() != static_cast<size_t>(dim)) {
 				std::cout << " Size of coordinates vector and specified problem dimension do not match. Aborting \n";
 				exit(EXIT_FAILURE);
 		}
@@ -75,7 +75,7 @@ int main (int argc, char** argv){
 
 	// initialize the combigrid and setup the combischeme...
 
-	int dim = 5; int max_lvl = 7; double max_power = 20;
+	int dim = 5; int max_lvl = 7;
 
 	std::vector<bool> hasbdries(dim,true);
 
