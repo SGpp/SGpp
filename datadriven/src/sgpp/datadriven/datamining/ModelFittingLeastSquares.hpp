@@ -39,7 +39,6 @@ protected:
 	virtual datadriven::DMSystemMatrixBase* createDMSystem(
 			base::DataMatrix& trainDataset, float_t lambda);
 
-
 public:
 	/**
 	 * Constructor
@@ -47,7 +46,7 @@ public:
 	 * @param isRegression set to true if a regression task should be executed
 	 * @param isVerbose set to true in order to allow console output
 	 */
-	ModelFittingLeastSquares(SGPP::datadriven::SampleProvider& sampleProvider,
+	ModelFittingLeastSquares(
 	SGPP::datadriven::DataMiningConfigurationLeastSquares config);
 
 	/**
@@ -55,7 +54,7 @@ public:
 	 */
 	virtual ~ModelFittingLeastSquares();
 
-    void fit() override;
+	void fit(datadriven::Dataset& dataset) override;
 
 	void setImplementation(
 			datadriven::OperationMultipleEvalConfiguration operationConfiguration) {

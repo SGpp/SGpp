@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #pragma once
 
 #include <sgpp/globaldef.hpp>
@@ -16,22 +15,21 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    class ModelFittingDensityEstimation: public datadriven::ModelFittingBase {
-      public:
-        ModelFittingDensityEstimation(datadriven::SampleProvider& sampleProvider,
-                                      datadriven::DataMiningConfigurationDensityEstimation config);
+class ModelFittingDensityEstimation: public datadriven::ModelFittingBase {
+public:
+	ModelFittingDensityEstimation(
+			datadriven::DataMiningConfigurationDensityEstimation config);
 
-        virtual ~ModelFittingDensityEstimation();
+	virtual ~ModelFittingDensityEstimation();
 
-        void fit(datadriven::Dataset& dataset) override;
+	void fit(datadriven::Dataset& dataset) override;
 
-      private:
-        datadriven::DataMiningConfigurationDensityEstimation& configuration;
-    };
+private:
+	datadriven::DataMiningConfigurationDensityEstimation& configuration;
+};
 
-  } /* namespace datadriven */
+} /* namespace datadriven */
 } /* namespace SGPP */

@@ -3,7 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #include <sgpp/datadriven/datamining/ModelFittingDensityEstimation.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
@@ -12,91 +11,93 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
-
 using namespace SGPP::base;
 
-
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    ModelFittingDensityEstimation::ModelFittingDensityEstimation(datadriven::DataMiningConfigurationDensityEstimation config) : datadriven::ModelFittingBase(), configuration(config) {
-    }
+ModelFittingDensityEstimation::ModelFittingDensityEstimation(
+		datadriven::DataMiningConfigurationDensityEstimation config) :
+		datadriven::ModelFittingBase(), configuration(config) {
+}
 
-    ModelFittingDensityEstimation::~ModelFittingDensityEstimation() {
-    }
+ModelFittingDensityEstimation::~ModelFittingDensityEstimation() {
+}
 
-    void ModelFittingDensityEstimation::fit(datadriven::Dataset& dataset) {
-      DataMatrix samples = dataset.getTrainingData();
-      size_t numSamples = samples.getNrows();
-      size_t numDims = samples.getNcols();
+void ModelFittingDensityEstimation::fit(datadriven::Dataset& dataset) {
+	DataMatrix samples = dataset.getTrainingData();
+	size_t numSamples = samples.getNrows();
+	size_t numDims = samples.getNcols();
 
-      createRegularGrid();
+	createRegularGrid();
 
-      GridStorage* gridStorage = grid->getStorage();
-      GridGenerator* gridGen = grid->createGridGenerator();
-      DataVector rhs(grid->getStorage()->size());
-      alpha->resize(grid->getStorage()->size());
-      alpha->setAll(0.0);
+	GridStorage* gridStorage = grid->getStorage();
+	GridGenerator* gridGen = grid->createGridGenerator();
+	DataVector rhs(grid->getStorage()->size());
+	alpha->resize(grid->getStorage()->size());
+	alpha->setAll(0.0);
 
-      if (!configuration.sgdeConfig->silent_) {
-        std::cout << "# LearnerSGDE: grid points " << grid->getSize() << std::endl;
-      }
+	if (!configuration.sgdeConfig.silent_) {
+		std::cout << "# LearnerSGDE: grid points " << grid->getSize()
+				<< std::endl;
+	}
 
-      OperationMatrix* C = getRegularizationMatrix(configuration.regularizationConfig->regType_);
+	std::shared_ptr<OperationMatrix> C = getRegularizationMatrix(
+			configuration.regularizationConfig.regType_);
 
-      for (size_t ref = 0; ref <= configuration.adaptivityConfig->numRefinements_; ref++) {
-        datadriven::DensitySystemMatrix SMatrix(*grid, samples, *C, 1e-10);
-        SMatrix.generateb(rhs);
+	for (size_t ref = 0; ref <= configuration.adaptivityConfig.numRefinements_;
+			ref++) {
+		datadriven::DensitySystemMatrix SMatrix(*grid, samples, *C, 1e-10);
+		SMatrix.generateb(rhs);
 
-        if (!configuration.sgdeConfig->silent_) {
-          std::cout << "# LearnerSGDE: Solving " << std::endl;
-        }
+		if (!configuration.sgdeConfig.silent_) {
+			std::cout << "# LearnerSGDE: Solving " << std::endl;
+		}
 
-        solver::ConjugateGradients myCG(configuration.solverConfig->maxIterations_,
-                                              configuration.solverConfig->eps_);
-        myCG.solve(SMatrix, *alpha, rhs, false, false, configuration.solverConfig->threshold_);
+		solver::ConjugateGradients myCG(
+				configuration.solverConfig.maxIterations_,
+				configuration.solverConfig.eps_);
+		myCG.solve(SMatrix, *alpha, rhs, false, false,
+				configuration.solverConfig.threshold_);
 
-        if (ref < configuration.adaptivityConfig->numRefinements_) {
-          if (!configuration.sgdeConfig->silent_) {
-            std::cout << "# LearnerSGDE: Refine grid ... ";
-          }
+		if (ref < configuration.adaptivityConfig.numRefinements_) {
+			if (!configuration.sgdeConfig.silent_) {
+				std::cout << "# LearnerSGDE: Refine grid ... ";
+			}
 
-          //Weight surplus with function evaluation at grid points
-          OperationEval* opEval = op_factory::createOperationEval(*grid);
-          GridIndex* gp;
-          DataVector p(numDims);
-          DataVector alphaWeight(alpha->getSize());
+			//Weight surplus with function evaluation at grid points
+			OperationEval* opEval = op_factory::createOperationEval(*grid);
+			GridIndex* gp;
+			DataVector p(numDims);
+			DataVector alphaWeight(alpha->getSize());
 
-          for (size_t i = 0; i < gridStorage->size(); i++) {
-            gp = gridStorage->get(i);
-            gp->getCoords(p);
-            alphaWeight[i] = alpha->get(i) * opEval->eval(*alpha, p);
-          }
+			for (size_t i = 0; i < gridStorage->size(); i++) {
+				gp = gridStorage->get(i);
+				gp->getCoords(p);
+				alphaWeight[i] = alpha->get(i) * opEval->eval(*alpha, p);
+			}
 
-          delete opEval;
-          opEval = NULL;
+			delete opEval;
+			opEval = NULL;
 
-          base::SurplusRefinementFunctor srf(&alphaWeight,
-              configuration.adaptivityConfig->noPoints_,
-              configuration.adaptivityConfig->threshold_);
-          gridGen->refine(&srf);
+			base::SurplusRefinementFunctor srf(&alphaWeight,
+					configuration.adaptivityConfig.noPoints_,
+					configuration.adaptivityConfig.threshold_);
+			gridGen->refine(&srf);
 
-          if (!configuration.sgdeConfig->silent_) {
-            std::cout << "# LearnerSGDE: ref " << ref << "/"
-                      << configuration.adaptivityConfig->numRefinements_ - 1 << ": "
-                      << grid->getStorage()->size() << std::endl;
-          }
+			if (!configuration.sgdeConfig.silent_) {
+				std::cout << "# LearnerSGDE: ref " << ref << "/"
+						<< configuration.adaptivityConfig.numRefinements_ - 1
+						<< ": " << grid->getStorage()->size() << std::endl;
+			}
 
-          alpha->resize(grid->getStorage()->size());
-          rhs.resize(grid->getStorage()->size());
-          alpha->setAll(0.0);
-          rhs.setAll(0.0);
-        }
-      }
+			alpha->resize(grid->getStorage()->size());
+			rhs.resize(grid->getStorage()->size());
+			alpha->setAll(0.0);
+			rhs.setAll(0.0);
+		}
+	}
+}
 
-      delete C;
-      return;
-    }
-
-  } /* namespace datadriven */
+} /* namespace datadriven */
 } /* namespace SGPP */

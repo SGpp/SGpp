@@ -24,7 +24,7 @@ namespace SGPP {
     }
 
     std::shared_ptr<OperationMatrix> ModelFittingBase::getRegularizationMatrix(SGPP::datadriven::RegularizationType regType) {
-      OperationMatrix* C = NULL;
+      std::shared_ptr<OperationMatrix> C;
 
       if (regType == SGPP::datadriven::RegularizationType::Identity) {
         C = std::shared_ptr<OperationMatrix>(SGPP::op_factory::createOperationIdentity(*grid));
