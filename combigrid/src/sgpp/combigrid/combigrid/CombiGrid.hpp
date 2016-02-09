@@ -56,7 +56,7 @@ class CombiGrid {
    * @param coords the coordinates to evaluate
    * @return the result from the combigrid evaluation
    * */
-  virtual _Tp eval(std::vector<double>& coords) const {
+  virtual _Tp eval(const std::vector<double>& coords) const {
 
     _Tp res = 0.0;
 

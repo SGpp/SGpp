@@ -126,7 +126,7 @@ class AbstractCombiScheme {
           std::vector<double> coords_tmp = in_coords;
           _Tp coef = in_fgrids[i]->getCoef();
           result += coef
-                    * (_Tp) in_fgrids[i]->fg()->eval(coords_tmp);
+                    *  in_fgrids[i]->fg()->eval(coords_tmp);
         }
 
 
