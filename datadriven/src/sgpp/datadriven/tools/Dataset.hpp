@@ -44,18 +44,22 @@ class Dataset {
   /**
    * @return classes data of the dataset
    */
-  SGPP::base::DataVector& getClasses();
+  SGPP::base::DataVector& getTargets();
 
   /**
    * @return training data of the dataset
    */
-  SGPP::base::DataMatrix& getTrainingData();
+  SGPP::base::DataMatrix& getData();
+
+  void setData(const SGPP::base::DataMatrix&);
+  void setTargets(const SGPP::base::DataVector& targets);
+
 
  protected:
   size_t numberInstances;
   size_t dimension;
-  SGPP::base::DataVector classes;
-  SGPP::base::DataMatrix trainingData;
+  SGPP::base::DataVector targets;
+  SGPP::base::DataMatrix data;
 };
 
 }  // namespace datadriven
