@@ -298,29 +298,33 @@ for moduleFolder in moduleFolders:
 
 Export('flattenedDependencyGraph')
 
-if env['PYDOC'] and env['SG_PYTHON'] and not env.GetOption('clean'):
-  with open('moduleDoxy', 'r') as template:
-    data = template.read()
-    for module in moduleFolders:
-      if not env['SG_' + module.upper()]:
-        continue
-      print module
+if env['PYDOC'] and env['SG_PYTHON']:
+  data = open('moduleDoxy', 'r').read()
+  for module in moduleFolders:
+    if not env['SG_' + module.upper()]:
+      continue
+
+    if env.getOption("clean"):
+      os.remove(os.path.join(module, 'Doxyfile'))
+      for file in os.listdir(os.path.join(module, 'doc/xml/')):
+        os.remove(file)
+    else:
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
         doxyFile.write(data.replace('$modname', module).replace('$quiet', 'YES'))
 
-      doxy_env = env.Clone()
+    doxy_env = env.Clone()
 
-      doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
+    doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
 
-      doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
-      doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
+    doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
+    doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
 
-      for root, dirs, files in os.walk(os.path.join(module, 'src')):
-        for file in files:
-          if 'cpp' in file or 'hpp' in file:
-            doxy_env.Depends(doxygen, os.path.join(root, file))
-            doxy_env.Depends(doxy2swig, os.path.join(root, file))
-      pydocTargetList.append(doxy2swig)
+    for root, dirs, files in os.walk(os.path.join(module, 'src')):
+      for file in files:
+        if 'cpp' in file or 'hpp' in file:
+          doxy_env.Depends(doxygen, os.path.join(root, file))
+          doxy_env.Depends(doxy2swig, os.path.join(root, file))
+    pydocTargetList.append(doxy2swig)
 
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
