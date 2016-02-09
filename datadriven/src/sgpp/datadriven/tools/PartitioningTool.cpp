@@ -14,9 +14,6 @@
 #pragma offload_attribute(pop)
 #endif
 
-#ifdef USE_MPI
-#include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>
-#endif
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -101,26 +98,7 @@ void PartitioningTool::getOpenMPPartitionSegment(size_t start, size_t end,
 #pragma offload_attribute(pop)
 #endif
 
-#ifdef USE_MPI
-void PartitioningTool::getMPIPartitionSegment(size_t totalSize, size_t* size,
-    size_t* offset, size_t blocksize) {
-  size_t end;
-  getMPIPartitionSegment(0, totalSize, offset, &end, blocksize);
-  *size = end - *offset;
-}
 
-void PartitioningTool::getMPIPartitionSegment(size_t start, size_t end,
-    size_t* segmentStart, size_t* segmentEnd, size_t blocksize) {
-  size_t myRank = 0;
-  size_t numRanks = 1;
-
-  myRank = SGPP::parallel::myGlobalMPIComm->getMyRank();
-  numRanks = SGPP::parallel::myGlobalMPIComm->getNumRanks();
-
-  getPartitionSegment(start, end, numRanks, myRank, segmentStart, segmentEnd,
-                      blocksize);
-}
-#endif
 
 void PartitioningTool::calcDistribution(size_t totalSize, size_t numChunks,
                                         int* sizes, int* offsets, size_t blocksize) {
@@ -132,29 +110,6 @@ void PartitioningTool::calcDistribution(size_t totalSize, size_t numChunks,
     offsets[chunkID] = static_cast<int>(offset);
   }
 }
-
-#ifdef USE_MPI
-void PartitioningTool::calcMPIChunkedDistribution(size_t totalSize,
-    size_t numChunksPerProc, int* sizes, int* offsets, size_t blocksize) {
-  size_t numRanks = 1;
-
-      numRanks = SGPP::parallel::myGlobalMPIComm->getNumRanks();
-
-  size_t procSize;
-  size_t procOffset;
-
-  for (size_t proc = 0; proc < numRanks; proc++) {
-    getPartitionSegment(totalSize, numRanks, proc, &procSize, &procOffset,
-                        blocksize);
-    calcDistribution(procSize, numChunksPerProc, &sizes[numChunksPerProc * proc],
-                     &offsets[numChunksPerProc * proc], blocksize);
-
-    for (size_t i = 0; i < numChunksPerProc; i++) {
-      offsets[numChunksPerProc * proc + i] += static_cast<int>(procOffset);
-    }
-  }
-}
-#endif
 
 }  // namespace datadriven
 }  // namespace SGPP
