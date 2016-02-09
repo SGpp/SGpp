@@ -28,7 +28,7 @@ namespace SGPP {
       float_t lambda_; // regularization parameter
       float_t lambdaStart_;  // lower bound for lambda search range
       float_t lambdaEnd_; // upper bound for lambda search range
-      size_t lambdaSteps_; // number of lambdas to be tested within the range defined by lambdaStart and lambdaEdns; must be > 1
+      size_t lambdaSteps_; // number of lambdas to be tested within the range defined by lambdaStart and lambdaEdns; must be  1
       bool logScale_; // search the optimization interval on a log-scale
     };
 
@@ -48,18 +48,24 @@ namespace SGPP {
 
         virtual DataMiningConfiguration* clone();
 
-        std::shared_ptr<SGPP::base::RegularGridConfiguration> getGridConfig();
-        std::shared_ptr<SGPP::base::AdpativityConfiguration> getRefinementConfig();
-        std::shared_ptr<SGPP::solver::SLESolverConfiguration> getSolverConfig();
-        std::shared_ptr<SGPP::datadriven::RegularizationConfiguration> getRegularizationConfig();
-        std::shared_ptr<SGPP::datadriven::DataMiningConfigurationDensityEstimationType> getSGDEConfig();
+        base::RegularGridConfiguration &getGridConfig();
+        base::AdpativityConfiguration &getRefinementConfig();
+        solver::SLESolverConfiguration &getSolverConfig();
+        datadriven::RegularizationConfiguration &getRegularizationConfig();
+        datadriven::DataMiningConfigurationDensityEstimationType &getSGDEConfig();
+
+        void setGridConfig(base::RegularGridConfiguration &gridConfig);
+        void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
+        void setSolverConfig(solver::SLESolverConfiguration &solverConfig);
+        void setRegularizationConfig(datadriven::RegularizationConfiguration &regularizationConfig);
+        void setSGDEConfig(datadriven::DataMiningConfigurationDensityEstimationType &sgdeConfig);
 
       private:
-        std::shared_ptr<SGPP::base::RegularGridConfiguration> gridConfig;
-        std::shared_ptr<SGPP::base::AdpativityConfiguration> adaptivityConfig;
-        std::shared_ptr<SGPP::solver::SLESolverConfiguration> solverConfig;
-        std::shared_ptr<SGPP::datadriven::RegularizationConfiguration> regularizationConfig;
-        std::shared_ptr<SGPP::datadriven::DataMiningConfigurationDensityEstimationType> sgdeConfig;
+        SGPP::base::RegularGridConfiguration gridConfig;
+        SGPP::base::AdpativityConfiguration adaptivityConfig;
+        SGPP::solver::SLESolverConfiguration solverConfig;
+        SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+        SGPP::datadriven::DataMiningConfigurationDensityEstimationType sgdeConfig;
     };
 
   } /* namespace datadriven */
