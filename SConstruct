@@ -194,12 +194,9 @@ if env['PLATFORM'] == 'win32':
 env.Append(LIBPATH=[BUILD_DIR])
 
 # # add C++ defines for all modules
-cppdefines = []
 for module in moduleNames:
     if env[module]:
         env['CPPDEFINES'][module] = '1'
-#         cppdefines.append(module)
-# env.Append(CPPDEFINES=cppdefines)
 
 # environement setup finished, export environment
 Export('env')
@@ -264,6 +261,8 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
 if env['COMPILE_BOOST_TESTS']:
     builder = Builder(action="./$SOURCE")
     env.Append(BUILDERS={'BoostTest' : builder})
+
+
 
 libraryTargetList = []
 installTargetList = []
