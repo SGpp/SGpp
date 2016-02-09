@@ -18,9 +18,8 @@ namespace SGPP {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(
-SGPP::datadriven::SampleProvider& sampleProvider,
 SGPP::datadriven::DataMiningConfigurationLeastSquares config) :
-		datadriven::ModelFittingBase(sampleProvider), configuration(config) {
+		datadriven::ModelFittingBase(), configuration(config) {
 }
 
 ModelFittingLeastSquares::~ModelFittingLeastSquares() {
@@ -41,7 +40,7 @@ ModelFittingLeastSquares::createDMSystem(base::DataMatrix& trainDataset,
 	return systemMatrix;
 }
 
-void ModelFittingLeastSquares::fit() {
+void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
 	/*
 	 LearnerTiming result;
 
