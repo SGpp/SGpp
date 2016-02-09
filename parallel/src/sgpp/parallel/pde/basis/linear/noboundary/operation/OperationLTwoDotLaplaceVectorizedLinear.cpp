@@ -21,6 +21,7 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/parallel/operation/HashGridStorageConverter.hpp>
 
 #include <cmath>
 
@@ -211,16 +212,21 @@ void OperationLTwoDotLaplaceVectorizedLinear::init_grid_storage() {
 
   lcl_q_inv_ = new SGPP::base::DataVector(this->storage->dim());
   double* lcl_q_inv_ptr_ = lcl_q_inv_->getPointer();
-
 #if defined(__MIC__)
-  storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_),
+  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(storage,
+		  *(this->level_),
       *(this->index_), SGPP::parallel::MIC, BLOCK_LENGTH);
-  storage->getLevelForIntegralTLBOptimized(*(this->level_int_),
+  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(storage,
+		  *(this->level_int_),
       SGPP::parallel::MIC, BLOCK_LENGTH);
 #elif defined(__SSE4_2__) || defined(__AVX__)
-  storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_),
-      *(this->index_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
-  storage->getLevelForIntegralTLBOptimized(*(this->level_int_),
+  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
+      storage,
+      *(this->level_),
+      *(this->index_),
+	  SGPP::parallel::X86SIMD, BLOCK_LENGTH);
+  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(storage,
+	  *(this->level_int_),
       SGPP::parallel::X86SIMD, BLOCK_LENGTH);
 #else
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
