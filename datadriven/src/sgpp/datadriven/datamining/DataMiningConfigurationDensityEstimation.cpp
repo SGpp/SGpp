@@ -53,7 +53,7 @@ DataMiningConfigurationDensityEstimation::DataMiningConfigurationDensityEstimati
 	// configure grid
 	try {
 		gridConfig.dim_ = 0;
-		gridConfig.level_ = (*this)["grid"]["level"].getUInt();
+		gridConfig.level_ = static_cast<int>((*this)["grid"]["level"].getUInt());
 		gridConfig.type_ = stringToGridType((*this)["grid"]["type"].get());
 
 		// configure adaptive refinement
