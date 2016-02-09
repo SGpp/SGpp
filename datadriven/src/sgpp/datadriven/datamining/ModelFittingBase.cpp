@@ -1,11 +1,9 @@
-/*
- * ModelFittingBase.cpp
- *
- *  Created on: Feb 8, 2016
- *      Author: franzefn
- */
+#include <sgpp/datadriven/datamining/ModelFittingBase.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
-#include "ModelFittingBase.hpp"
 
 using namespace SGPP::base;
 
@@ -23,6 +21,20 @@ namespace SGPP {
     }
 
     void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& result) {
+    }
+
+    OperationMatrix* ModelFittingBase::getRegularizationMatrix(SGPP::datadriven::RegularizationType regType) {
+      OperationMatrix* C = NULL;
+
+      if (regType == SGPP::datadriven::RegularizationType::Identity) {
+        C = SGPP::op_factory::createOperationIdentity(*grid);
+      } else if (regType == SGPP::datadriven::RegularizationType::Laplace) {
+        C = SGPP::op_factory::createOperationLaplace(*grid);
+      } else {
+        throw base::application_exception("ModelFittingBase::getRegularizationMatrix - unknown regularization type");
+      }
+
+      return C;
     }
 
     std::shared_ptr<SGPP::base::Grid> ModelFittingBase::getGrid() {
