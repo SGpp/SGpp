@@ -84,8 +84,7 @@ def setupPython(target, source, env):
 
     # create symlinks in extensions folder of pysgpp
     for pythonModuleFolder in pythonModuleFolders:
-        src = Dir(os.path.join(env['OUTPUT_PATH'],
-                               pythonModuleFolder,
+        src = Dir(os.path.join(pythonModuleFolder,
                                "python")).abspath
         dst = os.path.join(extensionsPath, pythonModuleFolder)
         if not os.path.exists(dst):
