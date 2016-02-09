@@ -8,10 +8,10 @@
 #include <sgpp/combigrid/domain/CombiLegendreStretching.hpp>
 
 void combigrid::CombiLegendreStretching::get1DStretching(
-    int level, double min, double max, std::vector<double>& stretching,
-    std::vector<double>& jacobian) const {
-  stretching.clear();
-  jacobian.clear();
+    int level, double min, double max, std::vector<double>* stretching,
+    std::vector<double>* jacobian) const {
+  stretching->clear();
+  jacobian->clear();
 
   TRANSFORMATION_TYPE type = FINITE;
 
@@ -26,17 +26,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
       int nr_pts = 3;
       double abscissas[3] = {-1.0, 0.0, 1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
 
       break;
     }
@@ -46,17 +46,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
       double abscissas[5] = {-1.0, -0.77459666924148337704E+00, 0.0E+00,
                              0.77459666924148337704E+00, 1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
 
       break;
     }
@@ -70,17 +70,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           0.77459666924148337704E+00,  0.96049126870802028342E+00,
           1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
 
       break;
     }
@@ -98,17 +98,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           0.96049126870802028342E+00,  0.99383196321275502221E+00,
           1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
 
       break;
     }
@@ -134,17 +134,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           0.99383196321275502221E+00,  0.99909812496766759766E+00,
           1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
 
       break;
     }
@@ -186,17 +186,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           0.99909812496766759766E+00,  0.99987288812035761194E+00,
           +1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
       break;
     }
 
@@ -268,17 +268,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           0.99909812496766759766E+00,   0.99959879967191068325E+00,
           0.99987288812035761194E+00,   0.99998243035489159858E+00,
           1.0};
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
       break;
     }
 
@@ -415,17 +415,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           0.99998243035489159858E+00,   0.99999759637974846462E+00,
           1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
 
       break;
     }
@@ -691,17 +691,17 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           +0.999997596379748464620E+00, +0.999999672956734384381E+00,
           1.0};
 
-      stretching.push_back(min);
-      jacobian.push_back(transformationJacobian(min, max, -1.0, type));
+      stretching->push_back(min);
+      jacobian->push_back(transformationJacobian(min, max, -1.0, type));
 
       for (int d = 1; d < nr_pts - 1; d++) {
-        stretching.push_back(transforminterval(min, max, abscissas[d], type));
-        jacobian.push_back(
+        stretching->push_back(transforminterval(min, max, abscissas[d], type));
+        jacobian->push_back(
             transformationJacobian(min, max, abscissas[d], type));
       }
 
-      stretching.push_back(max);
-      jacobian.push_back(transformationJacobian(min, max, 1.0, type));
+      stretching->push_back(max);
+      jacobian->push_back(transformationJacobian(min, max, 1.0, type));
 
       break;
     }
@@ -722,7 +722,7 @@ void combigrid::CombiLegendreStretching::get1DStretching(
           __FILE__, __LINE__)
 
       int nr_pts = powerOfTwo[level] + 1;
-      stretching.resize(nr_pts, 0.0);
+      stretching->resize(nr_pts, 0.0);
       break;
     }
   }

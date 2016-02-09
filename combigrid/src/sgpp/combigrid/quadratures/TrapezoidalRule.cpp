@@ -141,7 +141,7 @@ _Tp combigrid::TrapezoidalRule<_Tp>::trapz_full_grid(
   std::vector<_Tp> f_values;
   CombiEquidistantStretching stretching = CombiEquidistantStretching();
   AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching,
-                                             f_values, f);
+                                             &f_values, f);
 
   /***
    * At this point of the evaluation we already have the functional values

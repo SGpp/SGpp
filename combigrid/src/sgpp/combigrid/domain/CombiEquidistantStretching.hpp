@@ -36,8 +36,8 @@ class CombiEquidistantStretching : public AbstractStretchingMaker {
    *
    */
   void get1DStretching(int level, double min, double max,
-                       std::vector<double>& stretching,
-                       std::vector<double>& jacobian) const;
+                       std::vector<double>* stretching,
+                       std::vector<double>* jacobian) const;
 
   Stretching getStretchingType() const { return EQUIDISTANT; }
 };

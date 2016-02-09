@@ -8,13 +8,13 @@
 #include <sgpp/combigrid/domain/CombiBasuStretching.hpp>
 
 void combigrid::CombiBasuStretching::get1DStretching(
-    int level, double min, double max, std::vector<double>& stretching,
-    std::vector<double>& jacobian) const {
+    int level, double min, double max, std::vector<double>* stretching,
+    std::vector<double>* jacobian) const {
   int N = powerOfTwo[level];  // N is the number of subintervals... N+1 the
                               // number of points!
-  jacobian.clear();
-  jacobian.resize(N + 1, 1.0);
-  stretching.clear();
+  jacobian->clear();
+  jacobian->resize(N + 1, 1.0);
+  stretching->clear();
 
   TRANSFORMATION_TYPE type = FINITE;
 
@@ -56,7 +56,7 @@ void combigrid::CombiBasuStretching::get1DStretching(
       for (int s = N / 2; s >= 0; s--) {
         double sec_ = 1 / cos(M_PI * s / (N));
         double t_ = log(sec_ * sec_);
-        stretching.push_back(factor * t_);
+        stretching->push_back(factor * t_);
       }
 
       // take positive abscissas
@@ -65,7 +65,7 @@ void combigrid::CombiBasuStretching::get1DStretching(
       for (int s = 1; s <= N / 2; s++) {
         double sec_ = 1 / cos(M_PI * s / (N));
         double t_ = log(sec_ * sec_);
-        stretching.push_back(factor * t_);
+        stretching->push_back(factor * t_);
       }
 
       return;
@@ -83,6 +83,6 @@ void combigrid::CombiBasuStretching::get1DStretching(
   for (int s = 0; s <= N; s++) {
     double sec_ = 1 / cos(M_PI * s / (2 * N));
     double t_ = log(sec_ * sec_);
-    stretching.push_back(add + factor * t_);
+    stretching->push_back(add + factor * t_);
   }
 }
