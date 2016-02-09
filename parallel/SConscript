@@ -111,7 +111,8 @@ Export('libname')
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith(os.path.join(".", "src", "sgpp", "parallel", "exampleApplication")):
-        continue #  ignore exampleApplication from build
+        continue #  ignore exampleApplication when compiling normally. 
+                 #those should probably go into normal example folder.
     if currentFolder.startswith(os.path.join(".", "src")):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
             #if fileName in MPIOnlyFiles:

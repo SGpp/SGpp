@@ -21,6 +21,7 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/parallel/operation/HashGridStorageConverter.hpp>
 
 #include <cmath>
 #include <assert.h>
@@ -281,14 +282,18 @@ void OperationLaplaceVectorizedLinearBoundary::init_grid_storage() {
   }
 
 #ifdef __MIC__
-  storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_),
+  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(storage,
+		  *(this->level_),
       *(this->index_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
-  storage->getLevelForIntegralTLBOptimized(*(this->level_int_),
+  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(storage,
+		  *(this->level_int_),
       SGPP::parallel::X86SIMD, BLOCK_LENGTH);
 #elif defined(__SSE4_2__) || defined(__AVX__)
-  storage->getLevelIndexArraysForEvalTLBOptimized(*(this->level_),
+  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(storage,
+		  *(this->level_),
       *(this->index_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
-  storage->getLevelForIntegralTLBOptimized(*(this->level_int_),
+  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(storage,
+		  *(this->level_int_),
       SGPP::parallel::X86SIMD, BLOCK_LENGTH);
 #else
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
