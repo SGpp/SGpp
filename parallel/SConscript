@@ -44,7 +44,7 @@ MPIOnlyFiles = [
     "OperationLTwoDotLaplaceVectorizedLinear.cpp",
     "OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp",
     ]
-  
+
 # Nvidia OpenCL: -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
 # Intel OpenCL CPU: -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp -DUSEOCL_CPU
 # Intel OpenCL GPU: -I$(IOCLINCLUDE) -DUSEOCL -DUSEOCL_INTEL -fopenmp
@@ -111,7 +111,7 @@ Export('libname')
 srcs = []
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith(os.path.join(".", "src", "sgpp", "parallel", "exampleApplication")):
-        continue #  ignore exampleApplication when compiling normally. 
+        continue #  ignore exampleApplication when compiling normally.
                  #those should probably go into normal example folder.
     if currentFolder.startswith(os.path.join(".", "src")):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
