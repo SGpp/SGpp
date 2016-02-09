@@ -12,3 +12,4 @@
 --mode=c
 --indent=spaces=2
 --max-code-length=100
+--suffix=none
