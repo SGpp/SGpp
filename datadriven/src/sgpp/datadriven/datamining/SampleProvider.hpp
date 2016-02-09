@@ -27,13 +27,13 @@ public:
 	/**
 	 * Selects a certain number of samples
 	 * @param how_many number of samples to return
-	 * @param dataset pointer to the returned dataset
+	 * @return dataset
 	 */
 	virtual Dataset nextSamples(int how_many) = 0;
 
 	/**
 	 * Returns all samples
-	 * @param dataset pointer to the returned dataset
+	 * @return dataset
 	 */
 	virtual Dataset allSamples() = 0;
 
