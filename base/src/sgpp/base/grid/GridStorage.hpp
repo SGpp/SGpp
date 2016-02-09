@@ -14,23 +14,23 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    typedef unsigned int level_t;
-    typedef unsigned int index_t;
+typedef unsigned int level_t;
+typedef unsigned int index_t;
 
-    /**
-     * Main typedef for GridIndex
-     */
-    //typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
-    typedef HashGridIndex GridIndex;
+/**
+ * Main typedef for GridIndex
+ */
+// typedef HashGridIndex<unsigned int, unsigned int> GridIndex;
+typedef HashGridIndex GridIndex;
 
-    /**
-     * Main typedef for GridStorage
-     */
-    typedef HashGridStorage GridStorage;
+/**
+ * Main typedef for GridStorage
+ */
+typedef HashGridStorage GridStorage;
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* GRIDSTORAGE_HPP */

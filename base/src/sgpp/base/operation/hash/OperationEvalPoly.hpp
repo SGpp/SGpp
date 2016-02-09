@@ -15,38 +15,39 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationEval for a grids with poly basis ansatzfunctions with
-     *
-     */
-    class OperationEvalPoly : public OperationEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         * @param degree the polynom's max. degree
-         */
-        OperationEvalPoly(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+/**
+ * This class implements OperationEval for a grids with poly basis ansatzfunctions with
+ *
+ */
+class OperationEvalPoly : public OperationEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's GridStorage object
+   * @param degree the polynom's max. degree
+   */
+  OperationEvalPoly(GridStorage* storage, size_t degree) : storage(storage),
+    base(degree) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationEvalPoly() {}
+  /**
+   * Destructor
+   */
+  ~OperationEvalPoly() override {}
 
-        virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point);
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
 
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-        /// Poly Basis object
-        SPolyBase base;
-    };
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+  /// Poly Basis object
+  SPolyBase base;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONEVALPOLY_HPP */

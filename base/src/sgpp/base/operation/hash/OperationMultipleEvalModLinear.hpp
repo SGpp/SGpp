@@ -13,38 +13,40 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grids with mod linear basis ansatzfunctions
-     *
-     */
-    class OperationMultipleEvalModLinear : public OperationMultipleEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid grid
-         * @param dataset the dataset that should be evaluated
-         */
-        OperationMultipleEvalModLinear(Grid& grid, DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalModLinear() {}
-
-        virtual void mult(DataVector& alpha, DataVector& result);
-        virtual void multTranspose(DataVector& source, DataVector& result);
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grids with mod linear basis ansatzfunctions
+ *
+ */
+class OperationMultipleEvalModLinear : public OperationMultipleEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid grid
+   * @param dataset the dataset that should be evaluated
+   */
+  OperationMultipleEvalModLinear(Grid& grid,
+                                 DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationMultipleEvalModLinear() override {}
+
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALMODLINEAR_HPP */

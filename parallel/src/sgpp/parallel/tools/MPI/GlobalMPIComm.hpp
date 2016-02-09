@@ -12,10 +12,10 @@
 
 
 namespace SGPP {
-  namespace parallel {
-    // Hack, remove if possible
-    extern MPICommunicator* myGlobalMPIComm;
-  }
+namespace parallel {
+// Hack, remove if possible
+extern MPICommunicator* myGlobalMPIComm;
+}
 }
 #endif
 

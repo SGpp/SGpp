@@ -13,36 +13,37 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Quadrature on sparse grid, linear grid without boundaries
-     */
-    class OperationQuadratureLinearBoundary : public OperationQuadrature {
-      public:
-        /**
-         * Constructor of OperationQuadratureLinear
-         *
-         * @param storage Pointer to the grid's GridStorage object
-         */
-        OperationQuadratureLinearBoundary(GridStorage* storage) : storage(storage) {}
+/**
+ * Quadrature on sparse grid, linear grid without boundaries
+ */
+class OperationQuadratureLinearBoundary : public OperationQuadrature {
+ public:
+  /**
+   * Constructor of OperationQuadratureLinear
+   *
+   * @param storage Pointer to the grid's GridStorage object
+   */
+  explicit OperationQuadratureLinearBoundary(GridStorage* storage) : storage(
+      storage) {}
 
-        virtual ~OperationQuadratureLinearBoundary() {}
+  ~OperationQuadratureLinearBoundary() override {}
 
-        /**
-         * Quadrature for piecewise linear hat basis functions. Computes
-         * @f[ \sum_{\vec{l}} 2^{-|\vec{l}|}\alpha_{\vec{l}}. @f]
-         *
-         * @param alpha Coefficient vector for current grid
-         */
-        virtual float_t doQuadrature(DataVector& alpha);
+  /**
+   * Quadrature for piecewise linear hat basis functions. Computes
+   * @f[ \sum_{\vec{l}} 2^{-|\vec{l}|}\alpha_{\vec{l}}. @f]
+   *
+   * @param alpha Coefficient vector for current grid
+   */
+  float_t doQuadrature(DataVector& alpha) override;
 
-      protected:
-        // Pointer to the grid's GridStorage object
-        GridStorage* storage;
-    };
+ protected:
+  // Pointer to the grid's GridStorage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONQUADRATURELINEARBOUND_HPP */

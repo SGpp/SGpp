@@ -13,24 +13,25 @@
 
 
 namespace SGPP {
-  namespace datadriven {
-    class OperationRosenblattTransformation1DLinear: public OperationTransformation1D {
-      protected:
-        base::Grid* grid;
-      public:
-        OperationRosenblattTransformation1DLinear(base::Grid* grid);
-        virtual ~OperationRosenblattTransformation1DLinear();
+namespace datadriven {
+class OperationRosenblattTransformation1DLinear: public
+  OperationTransformation1D {
+ protected:
+  base::Grid* grid;
+ public:
+  OperationRosenblattTransformation1DLinear(base::Grid* grid);
+  virtual ~OperationRosenblattTransformation1DLinear();
 
-        /**
-         * Rosenblatt Transformation 1D
-         * @param alpha1d
-         * @param coord1d
-         * @return
-         */
-        float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d);
-    };
+  /**
+   * Rosenblatt Transformation 1D
+   * @param alpha1d
+   * @param coord1d
+   * @return
+   */
+  float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d);
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONROSENBLATTTRANSFORMATION1DLINEAR_HPP */

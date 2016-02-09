@@ -18,96 +18,103 @@
 #include <cstddef>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Sparse grid interpolant gradient of a vector-valued function.
-     *
-     * @see InterpolantVectorFunction
-     */
-    class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
-      public:
-        /**
-         * Constructor.
-         * Do not destruct the grid before the
-         * InterpolantVectorFunctionGradient object!
-         *
-         * @param grid  sparse grid
-         * @param alpha coefficient matrix
-         *              (j-th column contains hierarchical surplusses
-         *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
-         */
-        InterpolantVectorFunctionGradient(base::Grid& grid,
-                                          const base::DataMatrix& alpha) :
-          VectorFunctionGradient(grid.getStorage()->dim(), alpha.getNcols()),
-          grid(grid),
-          opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
-          alpha(alpha) {
-        }
-
-        /**
-         * Evaluation of the function and its gradient.
-         *
-         * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
-         * @param[out] value    \f$g(\vec{x})\f$
-         * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
-         *                      \mathbb{R}^{m \times d}\f$
-         */
-        inline void eval(const base::DataVector& x,
-                         base::DataVector& value,
-                         base::DataMatrix& gradient) {
-          for (size_t t = 0; t < d; t++) {
-            if ((x[t] < 0.0) || (x[t] > 1.0)) {
-              for (size_t j = 0; j < m; j++) {
-                value[j] = INFINITY;
-              }
-
-              return;
-            }
-          }
-
-          base::DataVector curAlpha(alpha.getNrows());
-          base::DataVector curGradient(d);
-
-          for (size_t j = 0; j < m; j++) {
-            alpha.getColumn(j, curAlpha);
-            value[j] = opEvalGradient->evalGradient(curAlpha, x, curGradient);
-            gradient.setRow(j, curGradient);
-          }
-        }
-
-        /**
-         * @param[out] clone pointer to cloned object
-         */
-        virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
-          clone = std::unique_ptr<VectorFunctionGradient>(
-                    new InterpolantVectorFunctionGradient(grid, alpha));
-        }
-
-        /**
-         * @return coefficient matrix
-         */
-        const base::DataMatrix& getAlpha() const {
-          return alpha;
-        }
-
-        /**
-         * @param alpha coefficient matrix
-         */
-        void setAlpha(const base::DataMatrix& alpha) {
-          this->alpha = alpha;
-        }
-
-      protected:
-        /// sparse grid
-        base::Grid& grid;
-        /// pointer to evaluation operation
-        std::unique_ptr<base::OperationNaiveEvalGradient> opEvalGradient;
-        /// coefficient matrix
-        base::DataMatrix alpha;
-    };
-
+/**
+ * Sparse grid interpolant gradient of a vector-valued function.
+ *
+ * @see InterpolantVectorFunction
+ */
+class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
+ public:
+  /**
+   * Constructor.
+   * Do not destruct the grid before the
+   * InterpolantVectorFunctionGradient object!
+   *
+   * @param grid  sparse grid
+   * @param alpha coefficient matrix
+   *              (j-th column contains hierarchical surplusses
+   *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
+   */
+  InterpolantVectorFunctionGradient(base::Grid& grid,
+                                    const base::DataMatrix& alpha) :
+    VectorFunctionGradient(grid.getStorage()->dim(), alpha.getNcols()),
+    grid(grid),
+    opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
+    alpha(alpha) {
   }
+
+  /**
+   * Destructor.
+   */
+  virtual ~InterpolantVectorFunctionGradient() override {
+  }
+
+  /**
+   * Evaluation of the function and its gradient.
+   *
+   * @param[in]  x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
+   * @param[out] value    \f$g(\vec{x})\f$
+   * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
+   *                      \mathbb{R}^{m \times d}\f$
+   */
+  inline virtual void eval(const base::DataVector& x,
+                           base::DataVector& value,
+                           base::DataMatrix& gradient) override {
+    for (size_t t = 0; t < d; t++) {
+      if ((x[t] < 0.0) || (x[t] > 1.0)) {
+        for (size_t j = 0; j < m; j++) {
+          value[j] = INFINITY;
+        }
+
+        return;
+      }
+    }
+
+    base::DataVector curAlpha(alpha.getNrows());
+    base::DataVector curGradient(d);
+
+    for (size_t j = 0; j < m; j++) {
+      alpha.getColumn(j, curAlpha);
+      value[j] = opEvalGradient->evalGradient(curAlpha, x, curGradient);
+      gradient.setRow(j, curGradient);
+    }
+  }
+
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const
+  override {
+    clone = std::unique_ptr<VectorFunctionGradient>(
+              new InterpolantVectorFunctionGradient(grid, alpha));
+  }
+
+  /**
+   * @return coefficient matrix
+   */
+  const base::DataMatrix& getAlpha() const {
+    return alpha;
+  }
+
+  /**
+   * @param alpha coefficient matrix
+   */
+  void setAlpha(const base::DataMatrix& alpha) {
+    this->alpha = alpha;
+  }
+
+ protected:
+  /// sparse grid
+  base::Grid& grid;
+  /// pointer to evaluation operation
+  std::unique_ptr<base::OperationNaiveEvalGradient> opEvalGradient;
+  /// coefficient matrix
+  base::DataMatrix alpha;
+};
+
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_INTERPOLANTVECTORFUNCTIONGRADIENT_HPP */

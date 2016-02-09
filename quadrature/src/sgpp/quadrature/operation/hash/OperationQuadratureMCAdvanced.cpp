@@ -17,111 +17,129 @@
 #include <sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp>
 
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(
-      SGPP::base::Grid& grid, size_t numberOfSamples) :
-      grid(&grid), numberOfSamples(numberOfSamples) {
-      this->dimensions = grid.getStorage()->dim();
-      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(this->dimensions);
-    }
+OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(
+  SGPP::base::Grid& grid, size_t numberOfSamples, std::uint64_t seed) :
+  grid(&grid), numberOfSamples(numberOfSamples), seed(seed) {
+  dimensions = grid.getStorage()->dim();
+  myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
+}
 
-    OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(size_t dimensions,
-        size_t numberOfSamples) :
-      numberOfSamples(numberOfSamples) {
-      this->dimensions = dimensions;
-      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(this->dimensions);
-      grid = NULL;
-    }
+OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(size_t dimensions,
+    size_t numberOfSamples, std::uint64_t seed) :
+  grid(NULL), numberOfSamples(numberOfSamples), dimensions(dimensions),
+  seed(seed) {
+  myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
+}
 
-    OperationQuadratureMCAdvanced::~OperationQuadratureMCAdvanced() {
-    }
-
-    void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
-      myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions);
-    }
-
-    void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(
-      std::vector<size_t>& strataPerDimension) {
-      myGenerator = new SGPP::quadrature::StratifiedSampleGenerator(
-        strataPerDimension);
-    }
-
-    void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
-      myGenerator = new SGPP::quadrature::LatinHypercubeSampleGenerator(
-        dimensions, numberOfSamples);
-    }
-
-    void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithHaltonSequences() {
-      myGenerator = new SGPP::quadrature::HaltonSampleGenerator(dimensions);
-    }
-
-    float_t OperationQuadratureMCAdvanced::doQuadrature(
-      SGPP::base::DataVector& alpha) {
-
-      SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
-
-      myGenerator->getSamples(dm);
-
-      SGPP::base::OperationMultipleEval* opEval =
-        SGPP::op_factory::createOperationMultipleEval(*grid, dm);
-      SGPP::base::DataVector res = SGPP::base::DataVector(numberOfSamples);
-      opEval->mult(alpha, res);
-      return res.sum() / static_cast<float_t>(numberOfSamples);
-    }
-
-    float_t OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func,
-        void* clientdata) {
-      //float_t* p = new float_t[dimensions];
-
-      SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
-      myGenerator->getSamples(dm);
-
-      // create number of paths (uniformly drawn from [0,1]^d)
-      float_t res = 0;
-
-      for (size_t i = 0; i < numberOfSamples; i++) {
-        SGPP::base::DataVector dv(dimensions);
-        dm.getRow(i, dv);
-        res += func(*reinterpret_cast<int*>(&dimensions), dv.getPointer(),
-                    clientdata);
-      }
-
-      //delete p;
-      return res / static_cast<float_t>(numberOfSamples);
-    }
-
-    float_t OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func,
-        void* clientdata, SGPP::base::DataVector& alpha) {
-      float_t x;
-      float_t* p = new float_t[dimensions];
-
-      SGPP::base::DataVector point(dimensions);
-      SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(
-                                            *grid);
-      // create number of paths (uniformly drawn from [0,1]^d)
-      float_t res = 0;
-
-      for (size_t i = 0; i < numberOfSamples; i++) {
-        for (size_t d = 0; d < dimensions; d++) {
-          x = Random::random_double();
-          p[d] = x;
-          point[d] = x;
-        }
-
-        res += pow(
-                 func(*reinterpret_cast<int*>(&dimensions), p, clientdata)
-                 - opEval->eval(alpha, point), 2);
-      }
-
-      delete p;
-      return sqrt(res / static_cast<float_t>(numberOfSamples));
-    }
-
-    size_t OperationQuadratureMCAdvanced::getDimensions() {
-      return dimensions;
-    }
-
+OperationQuadratureMCAdvanced::~OperationQuadratureMCAdvanced() {
+  if (myGenerator != NULL) {
+    delete myGenerator;
   }
+}
+
+void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
+  if (myGenerator != NULL) {
+    delete myGenerator;
+  }
+
+  myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
+}
+
+void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(
+  std::vector<size_t>& strataPerDimension) {
+  if (myGenerator != NULL) {
+    delete myGenerator;
+  }
+
+  myGenerator = new SGPP::quadrature::StratifiedSampleGenerator(
+    strataPerDimension, seed);
+}
+
+void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
+  if (myGenerator != NULL) {
+    delete myGenerator;
+  }
+
+  myGenerator = new SGPP::quadrature::LatinHypercubeSampleGenerator(
+    dimensions, numberOfSamples, seed);
+}
+
+void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithHaltonSequences() {
+  if (myGenerator != NULL) {
+    delete myGenerator;
+  }
+
+  myGenerator = new SGPP::quadrature::HaltonSampleGenerator(dimensions);
+}
+
+float_t OperationQuadratureMCAdvanced::doQuadrature(
+  SGPP::base::DataVector& alpha) {
+
+  SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
+
+  myGenerator->getSamples(dm);
+
+  SGPP::base::OperationMultipleEval* opEval =
+    SGPP::op_factory::createOperationMultipleEval(*grid, dm);
+  SGPP::base::DataVector res = SGPP::base::DataVector(numberOfSamples);
+  opEval->mult(alpha, res);
+  return res.sum() / static_cast<float_t>(numberOfSamples);
+}
+
+float_t OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func,
+    void* clientdata) {
+  //float_t* p = new float_t[dimensions];
+
+  SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
+  myGenerator->getSamples(dm);
+
+  // create number of paths (uniformly drawn from [0,1]^d)
+  float_t res = 0;
+
+  for (size_t i = 0; i < numberOfSamples; i++) {
+    SGPP::base::DataVector dv(dimensions);
+    dm.getRow(i, dv);
+    res += func(*reinterpret_cast<int*>(&dimensions), dv.getPointer(),
+                clientdata);
+  }
+
+  //delete p;
+  return res / static_cast<float_t>(numberOfSamples);
+}
+
+float_t OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func,
+    void* clientdata, SGPP::base::DataVector& alpha) {
+  float_t x;
+  float_t* p = new float_t[dimensions];
+
+  SGPP::base::DataVector point(dimensions);
+  SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(
+                                        *grid);
+  // create number of paths (uniformly drawn from [0,1]^d)
+  float_t res = 0;
+
+  for (size_t i = 0; i < numberOfSamples; i++) {
+    for (size_t d = 0; d < dimensions; d++) {
+      x = Random::random_double();
+      p[d] = x;
+      point[d] = x;
+    }
+
+    res += pow(
+             func(*reinterpret_cast<int*>(&dimensions), p, clientdata)
+             - opEval->eval(alpha, point), 2);
+  }
+
+  delete p;
+  return sqrt(res / static_cast<float_t>(numberOfSamples));
+}
+
+size_t OperationQuadratureMCAdvanced::getDimensions() {
+  return dimensions;
+}
+
+}
 
 }

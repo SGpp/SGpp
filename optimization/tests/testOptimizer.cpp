@@ -321,28 +321,39 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
     // Test All the Optimizers!
     std::vector<std::unique_ptr<optimizer::UnconstrainedOptimizer>> optimizers;
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::GradientDescent(*curF, *curFGradient, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::NLCG(*curF, *curFGradient, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::Newton(*curF, *curFHessian, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::AdaptiveGradientDescent(*curF, *curFGradient, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::AdaptiveNewton(*curF, *curFHessian, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::BFGS(*curF, *curFGradient, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::Rprop(*curF, *curFGradient, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::NelderMead(*curF, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::MultiStart(*curF, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::DifferentialEvolution(*curF, N))));
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::UnconstrainedOptimizer>(
-                                     new optimizer::CMAES(*curF, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::GradientDescent(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::NLCG(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::Newton(*curF, *curFHessian, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::AdaptiveGradientDescent(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::AdaptiveNewton(*curF, *curFHessian, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::BFGS(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::Rprop(*curF, *curFGradient, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::NelderMead(*curF, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::MultiStart(*curF, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::DifferentialEvolution(*curF, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::UnconstrainedOptimizer>(
+                             new optimizer::CMAES(*curF, N))));
 
     for (auto& optimizer : optimizers) {
       // set starting point
@@ -426,8 +437,9 @@ BOOST_AUTO_TEST_CASE(TestLeastSquaresOptimizers) {
 
     // Test All the Optimizers!
     std::vector<std::unique_ptr<optimizer::LeastSquaresOptimizer>> optimizers;
-    optimizers.push_back(std::move(std::unique_ptr<optimizer::LeastSquaresOptimizer>(
-                                     new optimizer::LevenbergMarquardt(*curPhi, *curPhiGradient, N))));
+    optimizers.push_back(std::move(
+                           std::unique_ptr<optimizer::LeastSquaresOptimizer>(
+                             new optimizer::LevenbergMarquardt(*curPhi, *curPhiGradient, N))));
 
     for (auto& optimizer : optimizers) {
       // optimize

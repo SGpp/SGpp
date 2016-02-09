@@ -13,31 +13,31 @@
 
 namespace SGPP {
 
-  namespace solver {
+namespace solver {
 
-    /**
-     * enum to address different SLE solvers in a standardized way
-     */
-    enum class SLESolverType {
-      CG,
-      BiCGSTAB
-    };
+/**
+ * enum to address different SLE solvers in a standardized way
+ */
+enum class SLESolverType {
+  CG,
+  BiCGSTAB
+};
 
-    struct SLESolverConfiguration {
-      SGPP::solver::SLESolverType type_;
-      float_t eps_;
-      size_t maxIterations_;
-      float_t threshold_;
-    };
+struct SLESolverConfiguration {
+  SGPP::solver::SLESolverType type_;
+  float_t eps_;
+  size_t maxIterations_;
+  float_t threshold_;
+};
 
-    struct SLESolverSPConfiguration {
-      SGPP::solver::SLESolverType type_;
-      float eps_;
-      size_t maxIterations_;
-      float threshold_;
-    };
+struct SLESolverSPConfiguration {
+  SGPP::solver::SLESolverType type_;
+  float eps_;
+  size_t maxIterations_;
+  float threshold_;
+};
 
-  }
+}
 
 }
 

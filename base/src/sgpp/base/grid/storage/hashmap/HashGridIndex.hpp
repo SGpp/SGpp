@@ -11,15 +11,17 @@
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sgpp/base/grid/common/Stretching.hpp>
 
+#include <sgpp/globaldef.hpp>
+
+#include <sys/types.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <sys/types.h>
 #include <cmath>
 #include <algorithm>
 #include <map>
 
-#include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace base {
@@ -33,24 +35,24 @@ namespace base {
  * whole grid.
  */
 class HashGridIndex {
-public:
+ public:
   /// level type
   typedef uint32_t level_type;
   /// index type
   typedef uint32_t index_type;
 
-        /// how the coordinates of the points are calculated
-        enum class PointDistribution {
-          Normal,
-          ClenshawCurtis
-        };
+  /// how the coordinates of the points are calculated
+  enum class PointDistribution {
+    Normal,
+    ClenshawCurtis
+  };
 
   /**
    * Constructor of a n-Dim gridpoint
    *
    * @param dim the dimension of the gridpoint
    */
-  HashGridIndex(size_t dim);
+  explicit HashGridIndex(size_t dim);
 
   /**
    * Standard-Constructor
@@ -390,11 +392,11 @@ public:
    */
   level_type getLevelMin() const;
 
-      protected:
-        typedef std::map<std::string, PointDistribution> pointDistributionMap;
-        typedef std::map<PointDistribution, std::string> pointDistributionVerboseMap;
+ protected:
+  typedef std::map<std::string, PointDistribution> pointDistributionMap;
+  typedef std::map<PointDistribution, std::string> pointDistributionVerboseMap;
 
-private:
+ private:
   /// the dimension of the gridpoint
   size_t DIM;
   /// pointer to array that stores the ansatzfunctions' level
@@ -408,46 +410,41 @@ private:
   /// stores the hashvalue of the gridpoint
   size_t hash_value;
 
-        static pointDistributionMap& typeMap();
-        static pointDistributionVerboseMap& typeVerboseMap();
+  static pointDistributionMap& typeMap();
+  static pointDistributionVerboseMap& typeVerboseMap();
 
 
   friend class HashGridIndexPointerHashFunctor;
   friend class HashGridIndexPointerEqualityFunctor;
   friend class HashGridIndexHashFunctor;
   friend class HashGridIndexEqualityFunctor;
-
 };
 
-class HashGridIndexPointerHashFunctor {
-public:
+struct HashGridIndexPointerHashFunctor {
   size_t operator()(const HashGridIndex* index) const {
     return index->hash();
   }
 };
 
-class HashGridIndexPointerEqualityFunctor {
-public:
+struct HashGridIndexPointerEqualityFunctor {
   size_t operator()(const HashGridIndex* s1, const HashGridIndex* s2) const {
     return s1->equals(*s2);
   }
 };
 
-class HashGridIndexHashFunctor {
-public:
+struct HashGridIndexHashFunctor {
   size_t operator()(const HashGridIndex& index) const {
     return index.hash();
   }
 };
 
-class HashGridIndexEqualityFunctor {
-public:
+struct HashGridIndexEqualityFunctor {
   size_t operator()(const HashGridIndex& s1, const HashGridIndex& s2) const {
     return s1.equals(s2);
   }
 };
 
-}
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HASHGRIDINDEX_HPP */

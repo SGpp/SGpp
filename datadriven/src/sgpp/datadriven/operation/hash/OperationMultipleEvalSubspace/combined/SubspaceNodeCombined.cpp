@@ -14,7 +14,8 @@
 namespace SGPP {
 namespace datadriven {
 
-SubspaceNodeCombined::SubspaceNodeCombined(std::vector<uint32_t>& level, uint32_t flatLevel,
+SubspaceNodeCombined::SubspaceNodeCombined(std::vector<uint32_t>& level,
+    uint32_t flatLevel,
     std::vector<uint32_t>& hInverse, std::vector<uint32_t>& index) {
   size_t dim = level.size();
   this->level = level;
@@ -93,9 +94,11 @@ void SubspaceNodeCombined::printLevel() {
 // this method will decide how to best represent the subspace (list or array type)
 // and prepare the subspace for its representation
 void SubspaceNodeCombined::unpack() {
-  float_t usageRatio = (float_t) this->existingGridPointsOnLevel / (float_t) this->gridPointsOnLevel;
+  float_t usageRatio = (float_t) this->existingGridPointsOnLevel /
+                       (float_t) this->gridPointsOnLevel;
 
-  if (usageRatio < X86COMBINED_LIST_RATIO && this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
+  if (usageRatio < X86COMBINED_LIST_RATIO
+      && this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
     this->type = LIST;
   } else {
     this->type = ARRAY;
@@ -146,8 +149,9 @@ float_t SubspaceNodeCombined::getSurplus(size_t indexFlat) {
   throw;
 }
 
-uint32_t SubspaceNodeCombined::compareLexicographically(SubspaceNodeCombined& current,
-    SubspaceNodeCombined& last) {
+uint32_t SubspaceNodeCombined::compareLexicographically(
+  SubspaceNodeCombined& current,
+  SubspaceNodeCombined& last) {
   for (uint32_t i = 0; i < current.level.size(); i++) {
     if (current.level[i] != last.level[i]) {
       return i;
@@ -157,7 +161,8 @@ uint32_t SubspaceNodeCombined::compareLexicographically(SubspaceNodeCombined& cu
   throw "illegal input";
 }
 
-bool SubspaceNodeCombined::subspaceCompare(SubspaceNodeCombined left, SubspaceNodeCombined right) {
+bool SubspaceNodeCombined::subspaceCompare(SubspaceNodeCombined left,
+    SubspaceNodeCombined right) {
   for (size_t i = 0; i < left.level.size(); i++) {
     if (left.level[i] >= right.level[i]) {
       if (left.level[i] > right.level[i]) {

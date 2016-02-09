@@ -14,22 +14,23 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationMultipleEvalPeriodic::mult(DataVector& alpha, DataVector& result) {
-      AlgorithmDGEMV<SLinearPeriodicBasis> op;
-      LinearPeriodicBasis<unsigned int, unsigned int> base;
+void OperationMultipleEvalPeriodic::mult(DataVector& alpha,
+    DataVector& result) {
+  AlgorithmDGEMV<SLinearPeriodicBasis> op;
+  LinearPeriodicBasis<unsigned int, unsigned int> base;
 
-      op.mult(storage, base, alpha, this->dataset, result);
-
-    }
-
-    void OperationMultipleEvalPeriodic::multTranspose(DataVector& source, DataVector& result) {
-      AlgorithmDGEMV<SLinearPeriodicBasis> op;
-      LinearPeriodicBasis<unsigned int, unsigned int> base;
-
-      op.mult_transposed(storage, base, source, this->dataset, result);
-    }
-
-  }
+  op.mult(storage, base, alpha, this->dataset, result);
 }
+
+void OperationMultipleEvalPeriodic::multTranspose(DataVector& source,
+    DataVector& result) {
+  AlgorithmDGEMV<SLinearPeriodicBasis> op;
+  LinearPeriodicBasis<unsigned int, unsigned int> base;
+
+  op.mult_transposed(storage, base, source, this->dataset, result);
+}
+
+}  // namespace base
+}  // namespace SGPP

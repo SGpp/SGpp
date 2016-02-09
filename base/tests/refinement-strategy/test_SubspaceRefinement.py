@@ -8,8 +8,7 @@
 
 import unittest
 from pysgpp import Grid, HashRefinement, HashGridIndex, \
-    SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
-    SubspaceRefinement
+    SurplusRefinementFunctor, DataVector, SubspaceRefinement
 
 
 class Test_SubspaceANOVA(unittest.TestCase):
@@ -38,7 +37,7 @@ class Test_SubspaceANOVA(unittest.TestCase):
         decorator = SubspaceRefinement(refinement)
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
-        decorator.freeRefineSubspace(self.HashGridStorage,functor)
+        decorator.free_refine(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
             HashGridIndex = self.HashGridStorage.get(i)
             print i, HashGridIndex.toString()
@@ -62,7 +61,7 @@ class Test_SubspaceANOVA(unittest.TestCase):
         decorator = SubspaceRefinement(refinement)
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
-        decorator.freeRefineSubspace(self.HashGridStorage,functor)
+        decorator.free_refine(self.HashGridStorage,functor)
         for i in xrange(self.grid.getSize()):
             HashGridIndex = self.HashGridStorage.get(i)
             print i, HashGridIndex.toString()

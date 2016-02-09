@@ -13,47 +13,48 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Hierarchisation on sparse grid, mod wavelet case
-     */
-    class OperationHierarchisationModWavelet : public OperationHierarchisation {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         */
-        OperationHierarchisationModWavelet(GridStorage* storage) : storage(storage) {}
+/**
+ * Hierarchisation on sparse grid, mod wavelet case
+ */
+class OperationHierarchisationModWavelet : public OperationHierarchisation {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's GridStorage object
+   */
+  explicit OperationHierarchisationModWavelet(GridStorage* storage) :
+    storage(storage) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationHierarchisationModWavelet() {}
+  /**
+   * Destructor
+   */
+  ~OperationHierarchisationModWavelet() override {}
 
-        /**
-         * Implements the hierarchisation on a sprase grid with mod wavelets base functions
-         *
-         * @param node_values the functions values in the node base
-         *
-         */
-        virtual void doHierarchisation(DataVector& node_values);
+  /**
+   * Implements the hierarchisation on a sprase grid with mod wavelets base functions
+   *
+   * @param node_values the functions values in the node base
+   *
+   */
+  void doHierarchisation(DataVector& node_values) override;
 
-        /**
-         * Implements the dehierarchisation on a sprase grid with mod wavelets base functions
-         *
-         * @param alpha the coefficients of the sparse grid's base functions
-         *
-         */
-        virtual void doDehierarchisation(DataVector& alpha);
+  /**
+   * Implements the dehierarchisation on a sprase grid with mod wavelets base functions
+   *
+   * @param alpha the coefficients of the sparse grid's base functions
+   *
+   */
+  void doDehierarchisation(DataVector& alpha) override;
 
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-    };
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONHIERARCHISATIONMODWAVELET_HPP */

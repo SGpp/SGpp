@@ -9,7 +9,7 @@
 
 
 namespace SGPP {
-  namespace parallel {
-    MPICommunicator* myGlobalMPIComm;
-  }
+namespace parallel {
+MPICommunicator* myGlobalMPIComm;
+}
 }

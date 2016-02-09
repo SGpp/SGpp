@@ -14,94 +14,123 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Free refinement class for sparse grids
-     */
-    class HashRefinement: public AbstractRefinement {
+/**
+ * Free refinement class for sparse grids
+ */
+class HashRefinement: public AbstractRefinement {
+ public:
+  /**
+   * Refines a grid according to a RefinementFunctor provided.
+   * Refines up to RefinementFunctor::getRefinementsNum() grid points if
+   * possible, and if their refinement value is larger than RefinementFunctor::start()
+   * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
+   *
+   * @param storage hashmap that stores the grid points
+   * @param functor a RefinementFunctor specifying the refinement criteria
+   */
+  virtual void free_refine(GridStorage* storage, RefinementFunctor* functor);
 
-      public:
+  /**
+   * Computes and returns the number of grid points, which can be refined.
+   * This is the number of grid points that have at least one child missing.
+   *
+   * @param storage hashmap that stores the grid points
+   * @return The number of grid points that can be refined
+   */
+  size_t getNumberOfRefinablePoints(GridStorage* storage);
 
-        /**
-         * Refines a grid according to a RefinementFunctor provided.
-         * Refines up to RefinementFunctor::getRefinementsNum() grid points if
-         * possible, and if their refinement value is larger than RefinementFunctor::start()
-         * and their absolute value is larger or equal than RefinementFunctor::getRefinementThreshold()
-         *
-         * @param storage hashmap that stores the grid points
-         * @param functor a RefinementFunctor specifying the refinement criteria
-         */
-        void free_refine(GridStorage* storage, RefinementFunctor* functor);
+  /**
+   * Refine one grid point along a single direction
+   * @param storage hashmap that stores the grid points
+   * @param index point to refine
+   * @param d direction
+   */
+  void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
+  void refineGridpoint1D(GridStorage* storage, size_t seq, size_t d);
 
-        /**
-         * Computes and returns the number of grid points, which can be refined.
-         * This is the number of grid points that have at least one child missing.
-         *
-         * @param storage hashmap that stores the grid points
-         * @return The number of grid points that can be refined
-         */
-        size_t getNumberOfRefinablePoints(GridStorage* storage);
-
-        /**
-         * Refine one grid point along a single direction
-         * @param storage hashmap that stores the grid points
-         * @param index point to refine
-         * @param d direction
-         */
-        void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
-        void refineGridpoint1D(GridStorage* storage, size_t seq, size_t d);
+  virtual ~HashRefinement() {}
 
 
-      protected:
-        /**
-         * This method refines a grid point by generating the children in every dimension
-         * of the grid and all their missing ancestors by calling create_gridpoint().
-         *
-         * @param storage hashmap that stores the gridpoints
-         * @param refine_index The index in the hashmap of the point that should be refined
-         */
-        void refineGridpoint(GridStorage* storage, size_t refine_index);
+ protected:
+  /**
+   * This method refines a grid point by generating the children in every dimension
+   * of the grid and all their missing ancestors by calling create_gridpoint().
+   *
+   * @param storage hashmap that stores the gridpoints
+   * @param refine_index The index in the hashmap of the point that should be refined
+   */
+  void refineGridpoint(GridStorage* storage, size_t refine_index);
 
-        /**
-         * This method creates a new point on the grid. It checks if some parents or
-         * children are needed in other dimensions.
-         *
-         * @param storage hashmap that stores the gridpoints
-         * @param index The point that should be inserted
-         */
-        void createGridpoint(GridStorage* storage, index_type& index);
+  /**
+   * This method creates a new point on the grid. It checks if some parents or
+   * children are needed in other dimensions.
+   *
+   * @param storage hashmap that stores the gridpoints
+   * @param index The point that should be inserted
+   */
+  void createGridpoint(GridStorage* storage, index_type& index);
 
-        /**
-         * Examines the grid points and stores the indices those that can be refined
-         * and have maximal indicator values.
-         *
-         * @param storage hashmap that stores the grid points
-         * @param functor a RefinementFunctor specifying the refinement criteria
-         * @param refinements_num number of points to refine
-         * @param max_indices the array where the point indices should be stored
-         * @param max_values the array where the corresponding indicator values
-         * should be stored
-         */
-        virtual void collectRefinablePoints(GridStorage* storage,
-                                            RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                            RefinementFunctor::value_type* max_values);
+  /**
+  * Examines the grid points and stores the indices those that can be refined
+  * and have maximal indicator values.
+  *
+  * @param storage hashmap that stores the grid points
+  * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+  * @param collection container that contains elements to refine (empty initially)
+  */
+  void collectRefinablePoints(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
-        /**
-         * Refines the collection of points.
-         *
-         * @param storage hashmap that stores the grid points
-         * @param functor a RefinementFunctor specifying the refinement criteria
-         * @param refinements_num number of points to refine
-         * @param max_indices the array with the indices of points that should be refined
-         * @param max_values the array with the corresponding indicator values
-         */
-        virtual void refineGridpointsCollection(GridStorage* storage,
-                                                RefinementFunctor* functor, size_t refinements_num, size_t* max_indices,
-                                                RefinementFunctor::value_type* max_values);
+  /**
+   * Extends the grid adding elements defined in collection
+   *
+   * @param storage hashmap that stores the grid points
+   * @param functor a PredictiveRefinementIndicator specifying the refinement criteria
+   * @param collection container that contains elements to refine (empty initially)
+   */
+  void refineGridpointsCollection(
+    GridStorage* storage,
+    RefinementFunctor* functor,
+    AbstractRefinement::refinement_container_type& collection) override;
 
-    };
-  }
-}
+
+
+  /**
+  * Adds elements to the collection. This method is responsible for selection
+  * the elements with most important indicators and to limit the size of collection
+  * to refinements_num elements.
+  *
+  * @param iter storage iterator
+  * @param current_value_list list with elements that contain keys and values that specify refinement
+  * @param refinements_num number of elements to refine
+  * @param collection container where element pairs for refinement need to be stored
+  */
+  virtual void addElementToCollection(
+    const GridStorage::grid_map_iterator& iter,
+    AbstractRefinement::refinement_list_type current_value_list,
+    size_t refinements_num,
+    AbstractRefinement::refinement_container_type& collection);
+
+
+  /**
+  * Generates a list with indicator elements
+  *
+  * @param storage grid storage
+  * @param iter iterator
+  * @param functor refinement functor
+  * @return list with indicator elements
+  */
+  AbstractRefinement::refinement_list_type getIndicator(
+    GridStorage* storage,
+    const GridStorage::grid_map_iterator& iter,
+    const RefinementFunctor* functor) const;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* HASHREFINEMENT_HPP */

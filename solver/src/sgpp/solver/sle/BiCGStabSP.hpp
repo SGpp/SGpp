@@ -17,35 +17,37 @@
 
 
 namespace SGPP {
-  namespace solver {
+namespace solver {
 
-    class BiCGStabSP : public SLESolverSP {
-      private:
+class BiCGStabSP : public SLESolverSP {
+ private:
 
 
-      public:
-        /**
-         * Std-Constructor
-         */
-        BiCGStabSP(size_t imax, float epsilon);
+ public:
+  /**
+   * Std-Constructor
+   */
+  BiCGStabSP(size_t imax, float epsilon);
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~BiCGStabSP();
+  /**
+   * Std-Destructor
+   */
+  virtual ~BiCGStabSP();
 
-        /**
-         * max_threashold is ignored in this solver
-         *
-         * Reference:
-         * http://www.iue.tuwien.ac.at/phd/heinreichsberger/node70.html
-         * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
-         * http://netlib.org
-         */
-        virtual void solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b, bool reuse = false, bool verbose = false, float max_threshold = -1.0);
-    };
+  /**
+   * max_threashold is ignored in this solver
+   *
+   * Reference:
+   * http://www.iue.tuwien.ac.at/phd/heinreichsberger/node70.html
+   * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
+   * http://netlib.org
+   */
+  virtual void solve(SGPP::base::OperationMatrixSP& SystemMatrix,
+                     SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b,
+                     bool reuse = false, bool verbose = false, float max_threshold = -1.0);
+};
 
-  }
+}
 }
 
 #endif /* BICGSTABSP_HPP */

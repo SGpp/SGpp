@@ -39,7 +39,8 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
+  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(
+                                  *grid);
   SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
@@ -69,7 +70,8 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   DataVector* alpha = new DataVector(v);
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
+  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(
+                                  *grid);
   SGPP::float_t resDirect = quadOp->doQuadrature(*alpha);
 
   // Monte Carlo quadrature
@@ -110,12 +112,14 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
     HashGridIndex* gp = gS->get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
-    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
+    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<unsigned int>(lvl),
+                             static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
+  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(
+                                  *grid);
   SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
@@ -150,12 +154,14 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
     HashGridIndex* gp = gS->get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
-    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
+    SGPP::float_t quadSGPP = basis->getIntegral(static_cast<unsigned int>(lvl),
+                             static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
+  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(
+                                  *grid);
   SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 

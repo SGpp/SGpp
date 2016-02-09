@@ -13,44 +13,60 @@
 
 namespace SGPP {
 
-  namespace parallel {
+namespace parallel {
 
-    class ArBBKernels2D {
-      private:
-        bool isMultTransSPfirst;
-        bool isMultSPfirst;
-        bool isMultTransfirst;
-        bool isMultfirst;
-        bool isMultModTransSPfirst;
-        bool isMultModSPfirst;
-        bool isMultModTransfirst;
-        bool isMultModfirst;
+class ArBBKernels2D {
+ private:
+  bool isMultTransSPfirst;
+  bool isMultSPfirst;
+  bool isMultTransfirst;
+  bool isMultfirst;
+  bool isMultModTransSPfirst;
+  bool isMultModSPfirst;
+  bool isMultModTransfirst;
+  bool isMultModfirst;
 
-      public:
-        ArBBKernels2D();
+ public:
+  ArBBKernels2D();
 
-        ~ArBBKernels2D();
+  ~ArBBKernels2D();
 
-        double multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
+  double multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel,
+                       double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
+                       size_t storageSize, size_t dims);
 
-        double multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims);
+  double multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel,
+                  double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize,
+                  size_t dims);
 
-        double multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
+  double multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel,
+                         float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize,
+                         size_t dims);
 
-        double multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims);
+  double multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel,
+                    float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize,
+                    size_t dims);
 
-        double multModTransArBB(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
+  double multModTransArBB(double* ptrSource, double* ptrData, double* ptrLevel,
+                          double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
+                          size_t storageSize, size_t dims);
 
-        double multModArBB(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims);
+  double multModArBB(double* ptrAlpha, double* ptrData, double* ptrLevel,
+                     double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize,
+                     size_t dims);
 
-        double multModTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
+  double multModTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel,
+                            float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize,
+                            size_t dims);
 
-        double multModSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims);
+  double multModSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel,
+                       float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize,
+                       size_t dims);
 
-        void resetKernels();
-    };
+  void resetKernels();
+};
 
-  }
+}
 
 }
 

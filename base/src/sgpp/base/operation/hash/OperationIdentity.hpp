@@ -14,29 +14,29 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Implementation of identity Operation for all kinds of grids
-     */
-    class OperationIdentity: public OperationMatrix {
-      public:
-        /**
-         * Constructor of OperationIdentity
-         */
-        OperationIdentity() {
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationIdentity() {}
-
-        void mult(DataVector& alpha, DataVector& result) {
-          result = alpha;
-        }
-    };
-
+/**
+ * Implementation of identity Operation for all kinds of grids
+ */
+class OperationIdentity: public OperationMatrix {
+ public:
+  /**
+   * Constructor of OperationIdentity
+   */
+  OperationIdentity() {
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationIdentity() override {}
+
+  void mult(DataVector& alpha, DataVector& result) override {
+    result = alpha;
+  }
+};
+
+}  // namespace base
+}  // namespace SGPP
 #endif /* OPERATIONIDENTITY_HPP */

@@ -8,51 +8,61 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with Clenshaw-Curtis linear base functions with boundaries, pentagon cut
-     */
-    class LinearClenshawCurtisGrid : public Grid {
-      protected:
-        LinearClenshawCurtisGrid(std::istream& istr);
+/**
+ * grid with Clenshaw-Curtis linear base functions with boundaries, pentagon cut
+ */
+class LinearClenshawCurtisGrid : public Grid {
+ protected:
+  explicit LinearClenshawCurtisGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
-         *
-         * @param dim the dimension of the grid
-         */
-        LinearClenshawCurtisGrid(size_t dim);
+ public:
+  /**
+   * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
+   *
+   * @param dim the dimension of the grid
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted (default = 1: boundary has same level
+   *                      as main axes)
+   */
+  explicit LinearClenshawCurtisGrid(size_t dim, level_t boundaryLevel = 1);
 
-        /**
-         * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
-         *
-         * @param BB the BoundingBox of the grid
-         */
-        LinearClenshawCurtisGrid(BoundingBox& BB);
+  /**
+   * Constructor Linear Truncated Boundary Clenshaw-Curtis Grid
+   *
+   * @param BB the BoundingBox of the grid
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted (default = 1: boundary has same level
+   *                      as main axes)
+   */
+  explicit LinearClenshawCurtisGrid(BoundingBox& BB, level_t boundaryLevel = 1);
 
-        /**
-         * Destructor
-         */
-        virtual ~LinearClenshawCurtisGrid();
+  /**
+   * Destructor
+   */
+  ~LinearClenshawCurtisGrid() override;
 
-        virtual SGPP::base::GridType getType();
+  SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis();
+  const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator();
+  GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
-    };
+  static Grid* unserialize(std::istream& istr);
 
-  }
-}
+  void serialize(std::ostream& ostr) override;
+
+ protected:
+  /// level at which the boundary points should be inserted
+  level_t boundaryLevel;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARCLENSHAWCURTISGRID_HPP */

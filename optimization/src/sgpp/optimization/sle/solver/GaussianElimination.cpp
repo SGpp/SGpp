@@ -13,103 +13,106 @@
 #include <numeric>
 
 namespace SGPP {
-  namespace optimization {
-    namespace sle_solver {
+namespace optimization {
+namespace sle_solver {
 
-      bool GaussianElimination::solve(SLE& system,
-                                      base::DataVector& b,
-                                      base::DataVector& x) const {
-        Printer::getInstance().printStatusBegin(
-          "Solving linear system (Gaussian elimination)...");
+GaussianElimination::~GaussianElimination() {
+}
 
-        // size of the system
-        const size_t n = b.getSize();
-        // working matrix
-        base::DataMatrix W(n, n + 1);
+bool GaussianElimination::solve(SLE& system,
+                                base::DataVector& b,
+                                base::DataVector& x) const {
+  Printer::getInstance().printStatusBegin(
+    "Solving linear system (Gaussian elimination)...");
 
-        // set W := (A, b) at the beginning
-        for (size_t i = 0; i < n; i++) {
-          for (size_t j = 0; j < n; j++) {
-            W(i, j) = system.getMatrixEntry(i, j);
-          }
+  // size of the system
+  const size_t n = b.getSize();
+  // working matrix
+  base::DataMatrix W(n, n + 1);
 
-          W(i, n) = b[i];
-        }
+  // set W := (A, b) at the beginning
+  for (size_t i = 0; i < n; i++) {
+    for (size_t j = 0; j < n; j++) {
+      W(i, j) = system.getMatrixEntry(i, j);
+    }
 
-        // at the beginning of the l-th iteration, W should be of the form
-        // +-----------------------------------------+
-        // |  (1     * - *  |  *)   \                |
-        // |  (  \   | . |  |  *)    | l rows        |
-        // |  (    1 * - *  |  *)   /                |
-        // |  (0 - 0 * - *  |  *)   \                |
-        // |  (|   | | - |  |  *)    | (n-l) rows    |
-        // |  (0 - 0 * - *  |  *)   /                |
-        // |                                         |
-        // |  \----/ \---/    \-/                    |
-        // |    l    (n-l)     1    column(s)        |
-        // +-----------------------------------------+
-        for (size_t l = 0; l < n; l++) {
-          Printer::getInstance().printStatusUpdate("k = " + std::to_string(l));
+    W(i, n) = b[i];
+  }
 
-          // search for pivot entry = maximum of the absolute values
-          // of the entries w_{l,l}, ..., w_{n,l}
-          float_t maxEntry = 0;
-          // row index of maximal absolute value
-          size_t i = l;
+  // at the beginning of the l-th iteration, W should be of the form
+  // +-----------------------------------------+
+  // |  (1     * - *  |  *)   \                |
+  // |  (  \   | . |  |  *)    | l rows        |
+  // |  (    1 * - *  |  *)   /                |
+  // |  (0 - 0 * - *  |  *)   \                |
+  // |  (|   | | - |  |  *)    | (n-l) rows    |
+  // |  (0 - 0 * - *  |  *)   /                |
+  // |                                         |
+  // |  \----/ \---/    \-/                    |
+  // |    l    (n-l)     1    column(s)        |
+  // +-----------------------------------------+
+  for (size_t l = 0; l < n; l++) {
+    Printer::getInstance().printStatusUpdate("k = " + std::to_string(l));
 
-          for (size_t j = l; j < n; j++) {
-            float_t entry = std::abs(W(j, l));
+    // search for pivot entry = maximum of the absolute values
+    // of the entries w_{l,l}, ..., w_{n,l}
+    float_t maxEntry = 0;
+    // row index of maximal absolute value
+    size_t i = l;
 
-            if (entry > maxEntry) {
-              maxEntry = entry;
-              i = j;
-            }
-          }
+    for (size_t j = l; j < n; j++) {
+      float_t entry = std::abs(W(j, l));
 
-          // all entries are zero ==> matrices W and A are rank deficient
-          if (maxEntry == 0) {
-            Printer::getInstance().printStatusEnd(
-              "error: could not solve linear system!");
-            return false;
-          }
-
-          // swap rows l and i
-          for (size_t k = l; k <= n; k++) {
-            const float_t entry = W(l, k);
-            W(l, k) = W(i, k);
-            W(i, k) = entry;
-          }
-
-          // divide l-th row by w_{l,l}
-          {
-            const float_t wll = W(l, l);
-
-            for (size_t k = l; k <= n; k++) {
-              W(l, k) /= wll;
-            }
-          }
-
-          // subtract w_{j,l} times l-th row from all rows j != l
-          for (size_t j = 0; j < n; j++) {
-            if (j != l) {
-              const float_t wjl = W(j, l);
-
-              for (size_t k = l; k <= n; k++) {
-                W(j, k) -= wjl * W(l, k);
-              }
-            }
-          }
-        }
-
-        // x is the last column (right side of the augmented matrix)
-        x.resize(n);
-        W.getColumn(n, x);
-
-        Printer::getInstance().printStatusUpdate("k = " + std::to_string(n));
-        Printer::getInstance().printStatusEnd();
-        return true;
+      if (entry > maxEntry) {
+        maxEntry = entry;
+        i = j;
       }
+    }
 
+    // all entries are zero ==> matrices W and A are rank deficient
+    if (maxEntry == 0) {
+      Printer::getInstance().printStatusEnd(
+        "error: Could not solve linear system!");
+      return false;
+    }
+
+    // swap rows l and i
+    for (size_t k = l; k <= n; k++) {
+      const float_t entry = W(l, k);
+      W(l, k) = W(i, k);
+      W(i, k) = entry;
+    }
+
+    // divide l-th row by w_{l,l}
+    {
+      const float_t wll = W(l, l);
+
+      for (size_t k = l; k <= n; k++) {
+        W(l, k) /= wll;
+      }
+    }
+
+    // subtract w_{j,l} times l-th row from all rows j != l
+    for (size_t j = 0; j < n; j++) {
+      if (j != l) {
+        const float_t wjl = W(j, l);
+
+        for (size_t k = l; k <= n; k++) {
+          W(j, k) -= wjl * W(l, k);
+        }
+      }
     }
   }
+
+  // x is the last column (right side of the augmented matrix)
+  x.resize(n);
+  W.getColumn(n, x);
+
+  Printer::getInstance().printStatusUpdate("k = " + std::to_string(n));
+  Printer::getInstance().printStatusEnd();
+  return true;
+}
+
+}
+}
 }

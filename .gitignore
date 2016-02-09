@@ -1,0 +1,46 @@
+# allowing stuff to be in examples but nowhere else (swig)
+*.java
+
+
+#getting rid of weverything without a . in examples folder and all subfolders (executables on linux)
+*/examples/*
+!*/examples/*/
+!*/examples/*.*
+
+#ignoring c++ build files
+*.o
+*.os
+*.so
+*.exe
+
+#ignoring swig build files
+*.jar
+*doc.i
+*/doc/xml/*
+*.class
+jsgpp/jsgpp_wrap.cc
+jsgpp/jsgpp_wrap.h
+pysgpp/pysgpp_swig.py
+pysgpp/pysgpp_wrap.cc
+pysgpp/pysgpp_wrap.h
+
+#ignoreing build output
+lib/*
+*.log
+Doxyfile
+base/doc/doxygen/examples.doxy
+base/doc/doxygen/modules.doxy
+
+#ignoring tests
+*/tests/test_*_boost
+
+#ignoring tmp files
+*~
+*.pyc
+*.dblite
+.sconf_temp/*
+
+.cproject
+.project
+.settings/*
+*.pydevproject

@@ -54,11 +54,13 @@ int main() {
     }
 
     // hierarchize
-    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
+      alpha);
 
     // refine a single grid point each time
     gridGen->refine(new SurplusRefinementFunctor(&alpha, 1));
-    cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize() << endl;
+    cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
+         << endl;
 
     // extend alpha vector (new entries uninitialized)
     alpha.resize(gridStorage->size());

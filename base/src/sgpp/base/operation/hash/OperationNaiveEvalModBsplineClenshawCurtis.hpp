@@ -13,47 +13,47 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating modified Clenshaw-Curtis B-spline
-     * linear combinations on Noboundary grids.
-     */
-    class OperationNaiveEvalModBsplineClenshawCurtis :
-      public OperationNaiveEval {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    B-spline degree
-         */
-        OperationNaiveEvalModBsplineClenshawCurtis(
-          GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
-
-        /**
-         * Virtual destructor.
-         */
-        virtual ~OperationNaiveEvalModBsplineClenshawCurtis() {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @return          value of linear combination
-         */
-        virtual float_t eval(const DataVector& alpha, const DataVector& point);
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SBsplineModifiedClenshawCurtisBase base;
-    };
-
+/**
+ * Operation for evaluating modified Clenshaw-Curtis B-spline
+ * linear combinations on Noboundary grids.
+ */
+class OperationNaiveEvalModBsplineClenshawCurtis :
+  public OperationNaiveEval {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    B-spline degree
+   */
+  OperationNaiveEvalModBsplineClenshawCurtis(
+    GridStorage* storage, size_t degree) :
+    storage(storage), base(degree) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  ~OperationNaiveEvalModBsplineClenshawCurtis() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @return          value of linear combination
+   */
+  float_t eval(const DataVector& alpha, const DataVector& point) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SBsplineModifiedClenshawCurtisBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALMODBSPLINECLENSHAWCURTIS_HPP */

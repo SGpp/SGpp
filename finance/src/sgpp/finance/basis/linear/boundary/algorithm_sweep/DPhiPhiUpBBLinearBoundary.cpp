@@ -9,62 +9,64 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
 
 
-    DPhiPhiUpBBLinearBoundary::DPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage* storage) : DPhiPhiUpBBLinear(storage) {
+DPhiPhiUpBBLinearBoundary::DPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage*
+    storage) : DPhiPhiUpBBLinear(storage) {
+}
+
+DPhiPhiUpBBLinearBoundary::~DPhiPhiUpBBLinearBoundary() {
+}
+
+void DPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
+    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+  // get boundary values
+  float_t fl = 0.0;
+  float_t fr = 0.0;
+
+  if (!index.hint()) {
+    index.resetToLevelOne(dim);
+
+    if (!this->storage->end(index.seq())) {
+      rec(source, result, index, dim, fl, fr);
     }
 
-    DPhiPhiUpBBLinearBoundary::~DPhiPhiUpBBLinearBoundary() {
-    }
+    index.resetToLeftLevelZero(dim);
+  }
 
-    void DPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      // get boundary values
-      float_t fl = 0.0;
-      float_t fr = 0.0;
+  size_t seq_left;
+  size_t seq_right;
 
-      if (!index.hint()) {
-        index.resetToLevelOne(dim);
+  // left boundary
+  seq_left = index.seq();
 
-        if (!this->storage->end(index.seq())) {
-          rec(source, result, index, dim, fl, fr);
-        }
+  // right boundary
+  index.resetToRightLevelZero(dim);
+  seq_right = index.seq();
 
-        index.resetToLeftLevelZero(dim);
-      }
+  // check boundary conditions
+  if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
+    result[seq_left] = 0.0; // source[seq_left];
+  } else {
+    // up
+    //////////////////////////////////////
+    result[seq_left] = fl;
 
-      size_t seq_left;
-      size_t seq_right;
+    result[seq_left] += source[seq_right] * (0.5);
+  }
 
-      // left boundary
-      seq_left = index.seq();
+  if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
+    result[seq_right] = 0.0; //source[seq_right];
+  } else {
+    result[seq_right] = fr;
+  }
 
-      // right boundary
-      index.resetToRightLevelZero(dim);
-      seq_right = index.seq();
+  index.resetToLeftLevelZero(dim);
+}
 
-      // check boundary conditions
-      if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-        result[seq_left] = 0.0; // source[seq_left];
-      } else {
-        // up
-        //////////////////////////////////////
-        result[seq_left] = fl;
+// namespace detail
 
-        result[seq_left] += source[seq_right] * (0.5);
-      }
-
-      if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-        result[seq_right] = 0.0; //source[seq_right];
-      } else {
-        result[seq_right] = fr;
-      }
-
-      index.resetToLeftLevelZero(dim);
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+} // namespace SGPP
 }

@@ -53,7 +53,8 @@ int main() {
   cout << "alpha before hierarchization: " << alpha.toString() << endl;
 
   // hierarchize
-  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
+  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
+    alpha);
   cout << "alpha after hierarchization:  " << alpha.toString() << endl;
 
   // evaluate

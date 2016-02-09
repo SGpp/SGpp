@@ -12,33 +12,32 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class provides the first moment of a sparse grid function
-     */
-    class OperationFirstMoment {
-      public:
-        /**
-         * Constructor
-         */
-        OperationFirstMoment() {}
+/**
+ * This class provides the first moment of a sparse grid function
+ */
+class OperationFirstMoment {
+ public:
+  /**
+   * Constructor
+   */
+  OperationFirstMoment() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationFirstMoment() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationFirstMoment() {}
 
-        /**
-         * Integrate the sparse grid function
-         *
-         * @param alpha the function's values in the nodal basis
-         */
-        virtual float_t doQuadrature(const DataVector& alpha) = 0;
+  /**
+   * Integrate the sparse grid function
+   *
+   * @param alpha the function's values in the nodal basis
+   */
+  virtual float_t doQuadrature(const DataVector& alpha) = 0;
+};
 
-    };
-
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONFIRSTMOMENT_HPP */

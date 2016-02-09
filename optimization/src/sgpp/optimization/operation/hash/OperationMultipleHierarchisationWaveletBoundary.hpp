@@ -13,64 +13,64 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Hierarchisation operation for wavelet basis functions on
-     * Boundary grids.
-     */
-    class OperationMultipleHierarchisationWaveletBoundary :
-      public OperationMultipleHierarchisation {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param grid      grid
-         */
-        OperationMultipleHierarchisationWaveletBoundary(
-          base::WaveletBoundaryGrid& grid);
+/**
+ * Hierarchisation operation for wavelet basis functions on
+ * Boundary grids.
+ */
+class OperationMultipleHierarchisationWaveletBoundary :
+  public OperationMultipleHierarchisation {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param grid      grid
+   */
+  OperationMultipleHierarchisationWaveletBoundary(
+    base::WaveletBoundaryGrid& grid);
 
-        /**
-         * Virtual destructor.
-         */
-        virtual ~OperationMultipleHierarchisationWaveletBoundary();
+  /**
+   * Destructor.
+   */
+  ~OperationMultipleHierarchisationWaveletBoundary() override;
 
-        /**
-         * @param[in,out] nodeValues before: vector of function values at
-         *                           the grid points,
-         *                           after: vector of hierarchical coefficients
-         * @return                   whether hierarchisation was successful
-         */
-        virtual bool doHierarchisation(base::DataVector& nodeValues);
+  /**
+   * @param[in,out] nodeValues before: vector of function values at
+   *                           the grid points,
+   *                           after: vector of hierarchical coefficients
+   * @return                   whether hierarchisation was successful
+   */
+  bool doHierarchisation(base::DataVector& nodeValues) override;
 
-        /**
-         * @param[in,out] alpha before: vector of hierarchical coefficients,
-         *                      after: vector of function values at
-         *                      the grid points
-         */
-        virtual void doDehierarchisation(base::DataVector& alpha);
+  /**
+   * @param[in,out] alpha before: vector of hierarchical coefficients,
+   *                      after: vector of function values at
+   *                      the grid points
+   */
+  void doDehierarchisation(base::DataVector& alpha) override;
 
-        /**
-         * @param[in,out] nodeValues before: matrix of function values at
-         *                           the grid points,
-         *                           after: matrix of hierarchical coefficients
-         * @return                   whether hierarchisation was successful
-         */
-        virtual bool doHierarchisation(base::DataMatrix& nodeValues);
+  /**
+   * @param[in,out] nodeValues before: matrix of function values at
+   *                           the grid points,
+   *                           after: matrix of hierarchical coefficients
+   * @return                   whether hierarchisation was successful
+   */
+  bool doHierarchisation(base::DataMatrix& nodeValues) override;
 
-        /**
-         * @param[in,out] alpha before: matrix of hierarchical coefficients,
-         *                      after: matrix of function values at
-         *                      the grid points
-         */
-        virtual void doDehierarchisation(base::DataMatrix& alpha);
+  /**
+   * @param[in,out] alpha before: matrix of hierarchical coefficients,
+   *                      after: matrix of function values at
+   *                      the grid points
+   */
+  void doDehierarchisation(base::DataMatrix& alpha) override;
 
-      protected:
-        /// storage of the sparse grid
-        base::WaveletBoundaryGrid& grid;
-    };
+ protected:
+  /// storage of the sparse grid
+  base::WaveletBoundaryGrid& grid;
+};
 
-  }
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONWAVELETBOUNDARY_HPP */

@@ -18,6 +18,14 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config = env.Configure(custom_tests={ 'CheckExec' : SGppConfigureExtend.CheckExec,
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
+
+    # check C++11 support
+    if not config.CheckFlag("-std=c++11"):
+        sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
+        sys.exit(1)  # TODO: exist undefined, fix
+
+    config.env.AppendUnique(CPPFLAGS="-std=c++11")
+
     # boost library
     #TODO: add check and error
     config.env.AppendUnique(CPPPATH=[config.env['BOOST_INCLUDE_PATH']])
@@ -50,7 +58,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       elif 'OCL_INCLUDE_PATH' in config.env:
         config.env.AppendUnique(CPPPATH=[config.env['OCL_INCLUDE_PATH']])
       else:
-        sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")        
+        sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
 
       print config.env['CPPPATH']
 
@@ -64,7 +72,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         config.env.AppendUnique(LIBPATH=[config.env['OCL_LIBRARY_PATH']])
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
-        
+
       if not config.CheckLib('OpenCL', language="c++", autoadd=0):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
@@ -183,7 +191,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
         gcc_ver = env._get_major_minor_revision(gcc_ver_str)
         print "Using default gcc " + gcc_ver_str
-        
+
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
             -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
             -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport  -Winit-self  \
@@ -207,7 +215,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
         # required for profiling
         env.Append(CPPFLAGS=['-fno-omit-frame-pointer'])
-        
+
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
 
@@ -239,7 +247,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         else:
             print "You must specify a valid ARCH value for gnu."
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
-            sys.exit(1)   
+            sys.exit(1)
     elif env['COMPILER'].upper() == 'CLANG':
         print "Using clang"
 
@@ -256,7 +264,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp=libomp'])
         env.Append(LINKFLAGS=['-fopenmp=libomp'])
-        
+
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
 
@@ -268,7 +276,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
             else:
                 # disable all conversion warnings
                 env.Append(CPPFLAGS=['-Wno-conversion'])
-        
+
         if env['ARCH'].upper() == 'SSE3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
         elif env['ARCH'].upper() == 'SSE42':
@@ -288,8 +296,8 @@ Please install the corresponding package, e.g. using command on Ubuntu
         else:
             print "You must specify a valid ARCH value for gnu."
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
-            sys.exit(1)            
-                     
+            sys.exit(1)
+
     elif env['COMPILER'].upper() == 'INTEL':
         print "Using icc"
         env.AppendUnique(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
@@ -303,7 +311,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['CXX'] = ('icpc')
         env.AppendUnique(CPPFLAGS=['-openmp'])
         env.AppendUnique(LINKFLAGS=['-openmp'])
-        
+
         if env['USE_STATICLIB']:
             env.AppendUnique(CPPFLAGS=['-D_USE_STATICLIB'])
 
@@ -334,21 +342,12 @@ Please install the corresponding package, e.g. using command on Ubuntu
         else:
             print "You must specify a valid ARCH value for intel."
             print "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic"
-            sys.exit(1)  
+            sys.exit(1)
 
-        env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
-    elif env['COMPILER'].upper() == 'VCC':
-        print "Using vcc"
-        env.AppendUnique(CPPFLAGS=['/EHsc'])
-        env.AppendUnique(CPPFLAGS=['/DNOMINMAX'])
-        env.AppendUnique(CPPFLAGS=['/D_USE_MATH_DEFINES'])
-        if env['USE_STATICLIB']:
-            env.AppendUnique(CPPFLAGS=['/D_USE_STATICLIB'])
-        # env.Append(CPPFLAGS=['/openmp']) -> does not work due to missing openMP3 support
         env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for Compiler."
-        print "Available configurations are: gnu, clang, vcc and intel"
+        print "Available configurations are: gnu, clang, and intel"
         sys.exit(1)
 
     # special treatment for different platforms
@@ -394,3 +393,11 @@ Please install the corresponding package, e.g. using command on Ubuntu
     with open(env['CMD_LOGFILE'], 'a') as logFile:
         logFile.seek(0)
         logFile.truncate()
+
+    # check for mpic++
+    if not env['CXX']=='mpic++':
+        env['SG_PARALLEL'] = 0
+        print "Warning: not using mpic++, parallel module disabled, since it requires mpic++"
+    elif env['SG_PARALLEL'] != 0:
+        env['CPPDEFINES']['USE_MPI'] = 1
+        print "Parallel module enabled"

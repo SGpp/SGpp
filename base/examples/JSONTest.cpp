@@ -15,23 +15,29 @@ int main(int argc, char **argv) {
   try {
     json::JSON configuration;
 
-    configuration.addDictAttr("parent").addTextAttr("t1", "v1").addTextAttr("t2", "v2").addListAttr("list1").addTextValue(
-        "tv1").addIdValue(96.0).addTextValue("tv2");
+    configuration.addDictAttr("parent").addTextAttr("t1", "v1").addTextAttr("t2",
+        "v2").addListAttr("list1").addTextValue(
+          "tv1").addIdValue(96.0).addTextValue("tv2");
     configuration.addTextAttr("textAttr1", "text1").addIDAttr("numVal1", 36.0);
 
-    std::cout << "value: " << configuration["parent"]["list1"][1].get() << std::endl;
+    std::cout << "value: " << configuration["parent"]["list1"][1].get() <<
+              std::endl;
 
     configuration["parent"]["list1"][1].setDouble(7);
 
-    std::cout << "value: " << configuration["parent"]["list1"][1].get() << std::endl;
+    std::cout << "value: " << configuration["parent"]["list1"][1].get() <<
+              std::endl;
 
-    std::cout << "value: " << configuration["parent"]["list1"][1].getDouble() << std::endl;
+
+    std::cout << "value: " << configuration["parent"]["list1"][1].getDouble() <<
+              std::endl;
 
     configuration["numVal1"].erase();
 
     std::unique_ptr<json::Node> parentNode = configuration["parent"].erase();
 
-    configuration.addDictAttr("parentparent").addAttribute("parent", std::move(parentNode));
+    configuration.addDictAttr("parentparent").addAttribute("parent",
+        std::move(parentNode));
 
     configuration.serialize("write.json");
 

@@ -12,44 +12,51 @@
 #include <vector>
 
 namespace SGPP {
-  namespace optimization {
-    namespace sle_solver {
+namespace optimization {
+namespace sle_solver {
 
-      /**
-       * Automatic choice of external linear solver.
-       */
-      class Auto : public SLESolver {
-        public:
-          /// maximal matrix dimension to allow use of full solvers
-          static const size_t MAX_DIM_FOR_FULL = 30000;
-          /// maximal ratio of non-zero entries for sparse solvers
-          static constexpr float_t MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
-          /// ratio of the rows (e.g. 0.1 = 10%) to use for sparsity estimation
-          static constexpr float_t ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
+/**
+ * Automatic choice of external linear solver.
+ */
+class Auto : public SLESolver {
+ public:
+  /// maximal matrix dimension to allow use of full solvers
+  static const size_t MAX_DIM_FOR_FULL = 30000;
+  /// maximal ratio of non-zero entries for sparse solvers
+  static constexpr float_t MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
+  /// ratio of the rows (e.g. 0.1 = 10%) to use for sparsity estimation
+  static constexpr float_t ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
 
-          /**
-           * @param       system  system to be solved
-           * @param       b       right-hand side
-           * @param[out]  x       solution to the system
-           * @return              whether all went well
-           *                      (false if errors occurred)
-           */
-          bool solve(SLE& system, base::DataVector& b,
-                     base::DataVector& x) const;
+  /**
+   * Destructor.
+   */
+  ~Auto() override;
 
-          /**
-           * @param       system  system to be solved
-           * @param       B       matrix of right-hand sides
-           * @param[out]  X       matrix of solutions to the systems
-           * @return              whether all went well
-           *                      (false if errors occurred)
-           */
-          bool solve(SLE& system, base::DataMatrix& B,
-                     base::DataMatrix& X) const;
-      };
+  /**
+   * @param       system  system to be solved
+   * @param       b       right-hand side
+   * @param[out]  x       solution to the system
+   * @return              whether all went well
+   *                      (false if errors occurred)
+   */
+  virtual bool solve(SLE& system,
+                     base::DataVector& b,
+                     base::DataVector& x) const override;
 
-    }
-  }
+  /**
+   * @param       system  system to be solved
+   * @param       B       matrix of right-hand sides
+   * @param[out]  X       matrix of solutions to the systems
+   * @return              whether all went well
+   *                      (false if errors occurred)
+   */
+  virtual bool solve(SLE& system,
+                     base::DataMatrix& B,
+                     base::DataMatrix& X) const override;
+};
+
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_AUTO_HPP */

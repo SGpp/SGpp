@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 %{
-#include <sgpp/pde/application/RegularizationConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 %}
 
@@ -45,6 +44,8 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp"
+
+%include "datadriven/src/sgpp/datadriven/application/RegularizationConfiguration.hpp"
 
 //-     namespace datadriven ------------------------------------------
 namespace datadriven {

@@ -9,46 +9,51 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
-#include "SampleGenerator.hpp"
+#include <random>
+
+#include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
 
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    /**
-     * The class NaiveSampleGenerator implements a simple MonteCarlo sample
-     * generator. A sample is generated using the standard random number
-     * generator from cmath and transforming the values to float_t range 0.0 to
-     * 1.0.
-     */
-    class NaiveSampleGenerator : public SampleGenerator {
+/**
+ * The class NaiveSampleGenerator implements a simple MonteCarlo sample
+ * generator. A sample is generated using the standard random number
+ * generator from cmath and transforming the values to float_t range 0.0 to
+ * 1.0.
+ */
+class NaiveSampleGenerator : public SampleGenerator {
 
-      public:
+ public:
 
-        /**
-         * Standard constructor
-         *
-         * @param dimension number of dimensions used for sample generation
-         * @param seed seed for random number generator; if it is equal to -1 the current time is taken as seed
-         */
-        NaiveSampleGenerator(size_t dimension, int seed = -1);
+  /**
+   * Standard constructor
+   *
+   * @param dimension number of dimensions used for sample generation
+   * @param seed custom seed (defaults to default seed of mt19937_64)
+   */
+  NaiveSampleGenerator(size_t dimension,
+                       std::uint64_t seed = std::mt19937_64::default_seed);
 
-        /**
-         * Destructor
-         */
-        virtual ~NaiveSampleGenerator();
+  /**
+   * Destructor
+   */
+  virtual ~NaiveSampleGenerator();
 
-        /**
-         * This method generates one sample .
-         * Implementation of the abstract Method getSample from SampelGenerator.
-         *
-         * @param sample DataVector storing the new generated sample vector.
-         */
-        virtual void getSample(SGPP::base::DataVector& sample);
+  /**
+   * This method generates one sample .
+   * Implementation of the abstract Method getSample from SampelGenerator.
+   *
+   * @param sample DataVector storing the new generated sample vector.
+   */
+  virtual void getSample(SGPP::base::DataVector& sample);
 
-    };
+ private:
+  std::uniform_real_distribution<float_t> uniformRealDist;
+};
 
-  }
+}
 }
 
 #endif /* NAIVESAMPLEGENERATOR_HPP */

@@ -22,9 +22,9 @@ Export('moduleDependencies')
 additionalDependencies = []
 if env['USE_OCL']:
     additionalDependencies += ['OpenCL']
-    
+
 moduleDependencies = additionalDependencies + moduleDependencies
-    
+
 objs = []
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
   if os.path.exists(os.path.join(currentFolder, "SConscript")):
@@ -36,6 +36,7 @@ for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
       sourceFile = os.path.join(currentFolder, fileName)
       objs.append(env.SharedObject(sourceFile))
+
 
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:
@@ -50,36 +51,9 @@ if env['USE_STATICLIB']:
                             source=objs,
                             LIBS=moduleDependencies)
 else:
-    # building shared libraries differ
-    if env['PLATFORM'] in ['cygwin', 'win32']:
-        # remove old moduleDependencies if they exist already
-        for ext in ['lib', 'exp', 'dll', 'def']:
-            newlibFilename = "%s.%s" % (libname, ext)
-            if os.path.exists(newlibFilename):
-               os.remove(newlibFilename)
-    
-        def buildDefFile(target, source, env):
-            # load all object files
-            win32objs = []
-            for currentFolder, subdirNames, fileNames in os.walk(os.path.join(moduleName, "src")):
-                for fileName in fnmatch.filter(fileNames, '*.obj'):
-                    win32objs.append(os.path.join(currentFolder, fileName))
-            # build windows module definition file (def-file)
-            subprocess.call(['bindexplib.exe', '-o', os.path.join(moduleName, '%s.def' % libname), os.path.join(moduleName, '%s.dll' % libname)] + win32objs)
-
-        cmd = env.Command('buildDefFile', [], buildDefFile)
-        lib = env.SharedLibrary(target=libname,
-                                source=objs,
-                                LIBPATH=BUILD_DIR,
-                                LIBS=moduleDependencies,
-                                LINKFLAGS=['/DEF:' + os.path.join(moduleName, '%s.def' % libname)])
-
-        env.Depends(cmd, objs)
-        env.Depends(lib, cmd)
-    else:
-        lib = env.SharedLibrary(target=libname,
-                                source=objs,
-                                LIBS=moduleDependencies)
+    lib = env.SharedLibrary(target=libname,
+                            source=objs,
+                            LIBS=moduleDependencies)
 
 
 libInstall = env.Install(BUILD_DIR, lib)
@@ -97,12 +71,8 @@ if env['COMPILE_BOOST_TESTS']:
     Import('boostTestTargetList')
     test_env = env.Clone()
     boostlib = "boost_unit_test_framework"
-    if env['PLATFORM'] == 'win32':
-        test_env.Append(CPPFLAGS=['/DBOOST_ALL_DYN_LINK', '/MD', '/D _WIN32'])
-        test_env.AppendUnique(LIBS=moduleDependencies + [libname])
-    else:
-        test_env.AppendUnique(LIBS=moduleDependencies + [libname, boostlib])
-    
+    test_env.AppendUnique(LIBS=moduleDependencies + [libname, boostlib])
+
     testObjects = []
     for currentFolder, subdirNames, fileNames in os.walk("tests", topdown=True):
       for fileName in fnmatch.filter(fileNames, '*.cpp'):

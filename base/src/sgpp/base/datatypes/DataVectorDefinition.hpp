@@ -10,28 +10,31 @@
 
 
 namespace SGPP {
-  namespace base {
-    /**
-     * This struct is needed for exporting a DataVector
-     * to another address space, so it contains all
-     * information that is needed to reconstruct a
-     * DataVector object
-     *
-     * The space required by a DataVector object is:
-     * (size+unused)*sizeof(float_t)
-     */
-    struct DataVectorDefinition {
-      /// Array to store the data
-      float_t* data;
-      /// Number of elements of the data vector
-      size_t size;
-      /// Number of additional rows for which memory has already been reserved
-      size_t unused;
-      /// Number of elements by which the reserved memory is increased, if adding an element would exceed the storage reserved so far.
-      size_t inc_elems;
+namespace base {
+/**
+ * This struct is needed for exporting a DataVector
+ * to another address space, so it contains all
+ * information that is needed to reconstruct a
+ * DataVector object
+ *
+ * The space required by a DataVector object is:
+ * (size+unused)*sizeof(float_t)
+ */
+struct DataVectorDefinition {
+  /// Array to store the data
+  float_t* data;
+  /// Number of elements of the data vector
+  size_t size;
+  /// Number of additional rows for which memory has already been reserved
+  size_t unused;
+  /**
+   * Number of elements by which the reserved memory is increased,
+   * if adding an element would exceed the storage reserved so far.
+   */
+  size_t inc_elems;
+};
 
-    };
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* DATAVECTORDEFINITION_HPP */

@@ -14,27 +14,28 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationHierarchisationLinear::doHierarchisation(DataVector& node_values) {
-      HierarchisationLinear func(this->storage);
-      sweep<HierarchisationLinear> s(func, this->storage);
+void OperationHierarchisationLinear::doHierarchisation(DataVector&
+    node_values) {
+  HierarchisationLinear func(this->storage);
+  sweep<HierarchisationLinear> s(func, this->storage);
 
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(node_values, node_values, i);
-      }
-    }
-
-    void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha) {
-      DehierarchisationLinear func(this->storage);
-      sweep<DehierarchisationLinear> s(func, this->storage);
-
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
-      }
-    }
-
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(node_values, node_values, i);
   }
 }
+
+void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha) {
+  DehierarchisationLinear func(this->storage);
+  sweep<DehierarchisationLinear> s(func, this->storage);
+
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(alpha, alpha, i);
+  }
+}
+
+}  // namespace base
+}  // namespace SGPP

@@ -12,112 +12,118 @@
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace optimizer {
+namespace optimization {
+namespace optimizer {
 
-      /**
-       * Gradient descent with adaptive step size.
-       */
-      class AdaptiveGradientDescent : public UnconstrainedOptimizer {
-        public:
-          /// default tolerance
-          static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
-          /// default step size increase factor
-          static constexpr float_t DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
-          /// default step size decrease factor
-          static constexpr float_t DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
-          /// default line search accuracy
-          static constexpr float_t DEFAULT_LINE_SEARCH_ACCURACY = 0.01;
+/**
+ * Gradient descent with adaptive step size.
+ */
+class AdaptiveGradientDescent : public UnconstrainedOptimizer {
+ public:
+  /// default tolerance
+  static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
+  /// default step size increase factor
+  static constexpr float_t DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
+  /// default step size decrease factor
+  static constexpr float_t DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
+  /// default line search accuracy
+  static constexpr float_t DEFAULT_LINE_SEARCH_ACCURACY = 0.01;
 
-          /**
-           * Constructor.
-           *
-           * @param f                       objective function
-           * @param fGradient               objective function gradient
-           * @param maxItCount              maximal number of
-           *                                function evaluations
-           * @param tolerance               tolerance
-           * @param stepSizeIncreaseFactor  step size increase factor
-           * @param stepSizeDecreaseFactor  step size decrease factor
-           * @param lineSearchAccuracy      line search accuracy
-           */
-          AdaptiveGradientDescent(ScalarFunction& f,
-                                  ScalarFunctionGradient& fGradient,
-                                  size_t maxItCount = DEFAULT_N,
-                                  float_t tolerance = DEFAULT_TOLERANCE,
-                                  float_t stepSizeIncreaseFactor =
-                                    DEFAULT_STEP_SIZE_INCREASE_FACTOR,
-                                  float_t stepSizeDecreaseFactor =
-                                    DEFAULT_STEP_SIZE_DECREASE_FACTOR,
-                                  float_t lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
+  /**
+   * Constructor.
+   *
+   * @param f                       objective function
+   * @param fGradient               objective function gradient
+   * @param maxItCount              maximal number of
+   *                                function evaluations
+   * @param tolerance               tolerance
+   * @param stepSizeIncreaseFactor  step size increase factor
+   * @param stepSizeDecreaseFactor  step size decrease factor
+   * @param lineSearchAccuracy      line search accuracy
+   */
+  AdaptiveGradientDescent(ScalarFunction& f,
+                          ScalarFunctionGradient& fGradient,
+                          size_t maxItCount = DEFAULT_N,
+                          float_t tolerance = DEFAULT_TOLERANCE,
+                          float_t stepSizeIncreaseFactor =
+                            DEFAULT_STEP_SIZE_INCREASE_FACTOR,
+                          float_t stepSizeDecreaseFactor =
+                            DEFAULT_STEP_SIZE_DECREASE_FACTOR,
+                          float_t lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
 
-          void optimize();
+  /**
+   * Destructor.
+   */
+  ~AdaptiveGradientDescent() override;
 
-          /**
-           * @return objective function gradient
-           */
-          ScalarFunctionGradient& getObjectiveGradient() const;
+  void optimize() override;
 
-          /**
-           * @return tolerance
-           */
-          float_t getTolerance() const;
+  /**
+   * @return objective function gradient
+   */
+  ScalarFunctionGradient& getObjectiveGradient() const;
 
-          /**
-           * @param tolerance tolerance
-           */
-          void setTolerance(float_t tolerance);
+  /**
+   * @return tolerance
+   */
+  float_t getTolerance() const;
 
-          /**
-           * @return step size increase factor
-           */
-          float_t getStepSizeIncreaseFactor() const;
+  /**
+   * @param tolerance tolerance
+   */
+  void setTolerance(float_t tolerance);
 
-          /**
-           * @param stepSizeIncreaseFactor step size increase factor
-           */
-          void setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor);
+  /**
+   * @return step size increase factor
+   */
+  float_t getStepSizeIncreaseFactor() const;
 
-          /**
-           * @return step size decrease factor
-           */
-          float_t getStepSizeDecreaseFactor() const;
+  /**
+   * @param stepSizeIncreaseFactor step size increase factor
+   */
+  void setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor);
 
-          /**
-           * @param stepSizeDecreaseFactor step size decrease factor
-           */
-          void setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor);
+  /**
+   * @return step size decrease factor
+   */
+  float_t getStepSizeDecreaseFactor() const;
 
-          /**
-           * @return line search accuracy
-           */
-          float_t getLineSearchAccuracy() const;
+  /**
+   * @param stepSizeDecreaseFactor step size decrease factor
+   */
+  void setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor);
 
-          /**
-           * @param lineSearchAccuracy line search accuracy
-           */
-          void setLineSearchAccuracy(float_t lineSearchAccuracy);
+  /**
+   * @return line search accuracy
+   */
+  float_t getLineSearchAccuracy() const;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const;
+  /**
+   * @param lineSearchAccuracy line search accuracy
+   */
+  void setLineSearchAccuracy(float_t lineSearchAccuracy);
 
-        protected:
-          /// objective function gradient
-          ScalarFunctionGradient& fGradient;
-          /// tolerance
-          float_t theta;
-          /// step size increase factor
-          float_t rhoAlphaPlus;
-          /// step size decrease factor
-          float_t rhoAlphaMinus;
-          /// line search accuracy
-          float_t rhoLs;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
-    }
-  }
+ protected:
+  /// objective function gradient
+  ScalarFunctionGradient& fGradient;
+  /// tolerance
+  float_t theta;
+  /// step size increase factor
+  float_t rhoAlphaPlus;
+  /// step size decrease factor
+  float_t rhoAlphaMinus;
+  /// line search accuracy
+  float_t rhoLs;
+};
+
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_ADAPTIVEGRADIENTDESCENT_HPP */

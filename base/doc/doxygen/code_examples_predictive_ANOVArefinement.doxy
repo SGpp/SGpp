@@ -1,43 +1,31 @@
 /**
-@page code_examples_predictive_ANOVArefinement Short Code Examples: Predictive ANOVArefinement
+@page code_examples_predictive_ANOVArefinement Predictive ANOVA Refinement Example
 
 The following example shows how to use predictive ANOVArefinement in SG++.
 
 This time, we deal with the function
 @todo Add explanation, choose function
 
-@see @ref code_examples_quick_start
+For instructions how to compile and run the example,
+please see \ref installation.
 
-@section code_examples_predictive_ANOVArefinement__overview Overview
-- @ref code_examples_predictive_ANOVArefinement__python
-- @ref code_examples_predictive_ANOVArefinement__cpp
+@see @ref code_examples_tutorial
 
-@section code_examples_predictive_ANOVArefinement__python Python
 
-First, the example in Python.
 
-@include python_simple_predictive_ANOVArefinement.py
-which can be executed by
-@code
-> python python_simple_predictive_ANOVArefinement.py
-@endcode
-in the directory @c examples/.
+@section code_examples_predictive_ANOVArefinement_overview Overview
+
+- @ref code_examples_predictive_ANOVArefinement_python
+
+
+
+@section code_examples_predictive_ANOVArefinement_python Python
+
+The example in Python looks as follows:
+
+@include predictive_ANOVArefinement.py
 
 This results in an output similar to
-@include all_simple_predictive_ANOVArefinement.output.txt
 
-@section code_examples_predictive_ANOVArefinement__cpp C++
-
-Now, the very same in C++.
-
-@include c++_simple_predictive_ANOVArefinement.cpp
-which can be executed by
-@code
-> g++ -std=c++11 -O3 -I../src -L../../lib/sgpp -o c++_simple_predictive_ANOVArefinement c++_simple_predictive_ANOVArefinement.cpp -lsgppbase
-> ./c++_simple_predictive_ANOVArefinement
-@endcode
-in the directory @c examples/.
-
-This results in an output similar to the Python example output from above.
-
+@include predictive_ANOVArefinement.output.txt
 */

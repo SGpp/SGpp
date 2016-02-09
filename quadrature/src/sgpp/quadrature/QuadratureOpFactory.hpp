@@ -10,23 +10,26 @@
  * This file contains factory methods for operations.
  */
 
+#include <random>
 #include <sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace op_factory {
+namespace op_factory {
 
-    /**
-     * Creates an OperationQuadratureMCAdvanced, specifying a grid
-     * object and the number of samples to use.
-     *
-     * @param grid
-     * @param numberOfSamples
-     */
-    quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(base::Grid& grid, size_t numberOfSamples);
+/**
+ * Creates an OperationQuadratureMCAdvanced.
+ *
+ * @param grid Reference to the grid object
+ * @param numberOfSamples Number of Monte Carlo samples
+ * @param seed Custom seed (defaults to default seed of mt19937_64)
+ */
+quadrature::OperationQuadratureMCAdvanced* createOperationQuadratureMCAdvanced(
+  base::Grid& grid, size_t numberOfSamples,
+  std::uint64_t seed = std::mt19937_64::default_seed);
 
-  } /* namespace op_factory */
-} /* namespace SGPP */
+}  // namespace op_factory
+}  // namespace SGPP
 
 #endif /* QUADRATUREOPFACTORY_HPP_ */

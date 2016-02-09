@@ -13,45 +13,46 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * GridGenerator for periodic grids with boundaries
-     */
-    class PeriodicGridGenerator : public GridGenerator {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's storage object
-         */
-        PeriodicGridGenerator(GridStorage* storage);
+/**
+ * GridGenerator for periodic grids with boundaries
+ */
+class PeriodicGridGenerator : public GridGenerator {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's storage object
+   */
+  explicit PeriodicGridGenerator(GridStorage* storage);
 
-        /**
-         * Destructor
-         */
-        virtual ~PeriodicGridGenerator();
+  /**
+   * Destructor
+   */
+  ~PeriodicGridGenerator() override;
 
-        virtual void regular(size_t level);
-        virtual void full(size_t level);
-        virtual void refine(RefinementFunctor* func);
-        virtual void cliques(size_t level, size_t clique_size);
-        virtual size_t getNumberOfRefinablePoints();
+  void regular(size_t level) override;
+  void full(size_t level) override;
+  void refine(RefinementFunctor* func) override;
+  void cliques(size_t level, size_t clique_size) override;
+  size_t getNumberOfRefinablePoints() override;
 
-        virtual void coarsen(CoarseningFunctor* func, DataVector* alpha);
-        virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha, size_t numFirstOnly);
-        virtual size_t getNumberOfRemovablePoints();
+  void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
+  void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+                         size_t numFirstOnly) override;
+  size_t getNumberOfRemovablePoints() override;
 
-        virtual void refineMaxLevel(RefinementFunctor* func, size_t maxLevel);
-        virtual size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel);
+  void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
+  size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
-      protected:
-        /// pointer to the storage object
-        GridStorage* storage;
-    };
+ protected:
+  /// pointer to the storage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 
 #endif /* PERIODICGRIDGENERATOR_HPP */

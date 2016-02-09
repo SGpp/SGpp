@@ -13,37 +13,38 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grids with prewavelet ansatzfunctions without boundaries
-     */
-    class OperationMultipleEvalPrewavelet : public OperationMultipleEval {
-      public:
-        /**
-         * Constructor of OperationMultipleEvalPrewavelet
-         *
-         * @param grid grid
-         * @param dataset Dataset
-         */
-        OperationMultipleEvalPrewavelet(Grid& grid, DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalPrewavelet() {}
-
-        virtual void mult(DataVector& alpha, DataVector& result);
-        virtual void multTranspose(DataVector& source, DataVector& result);
-
-      protected:
-        /// Pointer to the grid's GridStorage object
-        GridStorage* storage;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grids with prewavelet ansatzfunctions without boundaries
+ */
+class OperationMultipleEvalPrewavelet : public OperationMultipleEval {
+ public:
+  /**
+   * Constructor of OperationMultipleEvalPrewavelet
+   *
+   * @param grid grid
+   * @param dataset Dataset
+   */
+  OperationMultipleEvalPrewavelet(Grid& grid,
+                                  DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationMultipleEvalPrewavelet() override {}
+
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to the grid's GridStorage object
+  GridStorage* storage;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALPREWAVELET_HPP */

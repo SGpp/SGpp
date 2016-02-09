@@ -14,46 +14,49 @@
 
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) : Grid(istr) {
-    }
-
-    WaveletBoundaryGrid::WaveletBoundaryGrid(size_t dim) {
-      this->storage = new GridStorage(dim);
-    }
-
-    WaveletBoundaryGrid::~WaveletBoundaryGrid() {
-    }
-
-    SGPP::base::GridType WaveletBoundaryGrid::getType() {
-      return SGPP::base::GridType::WaveletBoundary;
-    }
-
-    const SBasis& WaveletBoundaryGrid::getBasis() {
-      static SWaveletBoundaryBase basis;
-      return basis;
-    }
-
-    Grid* WaveletBoundaryGrid::unserialize(std::istream& istr) {
-      return new WaveletBoundaryGrid(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* WaveletBoundaryGrid::createGridGenerator() {
-      return new BoundaryGridGenerator(this->storage);
-    }
-
-
-
-  }
+WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) :
+  Grid(istr),
+  boundaryLevel(0) {
+  istr >> boundaryLevel;
 }
+
+WaveletBoundaryGrid::WaveletBoundaryGrid(size_t dim,
+    level_t boundaryLevel) :
+  Grid(dim),
+  boundaryLevel(boundaryLevel) {
+}
+
+WaveletBoundaryGrid::~WaveletBoundaryGrid() {
+}
+
+SGPP::base::GridType WaveletBoundaryGrid::getType() {
+  return SGPP::base::GridType::WaveletBoundary;
+}
+
+const SBasis& WaveletBoundaryGrid::getBasis() {
+  static SWaveletBoundaryBase basis;
+  return basis;
+}
+
+Grid* WaveletBoundaryGrid::unserialize(std::istream& istr) {
+  return new WaveletBoundaryGrid(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* WaveletBoundaryGrid::createGridGenerator() {
+  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+}
+
+
+
+}  // namespace base
+}  // namespace SGPP

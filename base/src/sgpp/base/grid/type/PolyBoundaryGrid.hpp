@@ -13,45 +13,51 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * trapezoid boundary grid with polynomial base functions
-     */
-    class PolyBoundaryGrid : public Grid {
-      protected:
-        PolyBoundaryGrid(std::istream& istr);
+/**
+ * trapezoid boundary grid with polynomial base functions
+ */
+class PolyBoundaryGrid : public Grid {
+ protected:
+  explicit PolyBoundaryGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor of grid with polynomial base functions
-         *
-         * @param dim the dimension of the grid
-         * @param degree the max. polynom's degree
-         */
-        PolyBoundaryGrid(size_t dim, size_t degree);
+ public:
+  /**
+   * Constructor of grid with polynomial base functions
+   *
+   * @param dim the dimension of the grid
+   * @param degree the max. polynom's degree
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted (default = 1: boundary has same level
+   *                      as main axes)
+   */
+  PolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
-        /**
-         * Destructor
-         */
-        virtual ~PolyBoundaryGrid();
+  /**
+   * Destructor
+   */
+  ~PolyBoundaryGrid() override;
 
-        virtual const SBasis& getBasis();
-        virtual SGPP::base::GridType getType();
-        virtual void serialize(std::ostream& ostr);
+  const SBasis& getBasis() override;
+  SGPP::base::GridType getType() override;
+  void serialize(std::ostream& ostr) override;
 
-        virtual GridGenerator* createGridGenerator();
+  GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
-        size_t getDegree() const;
+  static Grid* unserialize(std::istream& istr);
+  size_t getDegree() const;
 
-      protected:
-        /// max. polynom's degree
-        size_t degree;
-        const SPolyBoundaryBase* basis_;
-    };
+ protected:
+  /// max. polynom's degree
+  size_t degree;
+  /// polynomial basis
+  const SPolyBoundaryBase* basis_;
+  /// level at which the boundary points should be inserted
+  level_t boundaryLevel;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* POLYTRUNCATEDBOUNDARYGRID_HPP */

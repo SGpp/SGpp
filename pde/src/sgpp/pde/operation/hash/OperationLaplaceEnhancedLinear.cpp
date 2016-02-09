@@ -14,33 +14,37 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage) :
-      UpDownOneOpDimEnhanced(storage) {
-    }
+OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(
+  SGPP::base::GridStorage* storage) :
+  UpDownOneOpDimEnhanced(storage) {
+}
 
-    OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage,
-        SGPP::base::DataVector& coef) :
-      UpDownOneOpDimEnhanced(storage, coef) {
-    }
+OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(
+  SGPP::base::GridStorage* storage,
+  SGPP::base::DataVector& coef) :
+  UpDownOneOpDimEnhanced(storage, coef) {
+}
 
-    OperationLaplaceEnhancedLinear::~OperationLaplaceEnhancedLinear() {
-    }
+OperationLaplaceEnhancedLinear::~OperationLaplaceEnhancedLinear() {
+}
 
-    void OperationLaplaceEnhancedLinear::up(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim) {
-      LaplaceEnhancedUpBBLinear func(this->storage);
-      SGPP::base::sweep<LaplaceEnhancedUpBBLinear> s(func, this->storage);
+void OperationLaplaceEnhancedLinear::up(SGPP::base::DataMatrix& alpha,
+                                        SGPP::base::DataMatrix& result, size_t dim) {
+  LaplaceEnhancedUpBBLinear func(this->storage);
+  SGPP::base::sweep<LaplaceEnhancedUpBBLinear> s(func, this->storage);
 
-      s.sweep1D(alpha, result, dim);
-    }
+  s.sweep1D(alpha, result, dim);
+}
 
-    void OperationLaplaceEnhancedLinear::down(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim) {
-      LaplaceEnhancedDownBBLinear func(this->storage);
-      SGPP::base::sweep<LaplaceEnhancedDownBBLinear> s(func, this->storage);
+void OperationLaplaceEnhancedLinear::down(SGPP::base::DataMatrix& alpha,
+    SGPP::base::DataMatrix& result, size_t dim) {
+  LaplaceEnhancedDownBBLinear func(this->storage);
+  SGPP::base::sweep<LaplaceEnhancedDownBBLinear> s(func, this->storage);
 
-      s.sweep1D(alpha, result, dim);
-    }
+  s.sweep1D(alpha, result, dim);
+}
 
-  }
+}
 }
