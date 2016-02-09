@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 }
 
 BOOST_AUTO_TEST_CASE(testOps) {
-  float tol = 1e-5f;
+  float tol = 1e-4f;
 
   DataVectorSP d = d_rand;
   DataVectorSP d2(N);
