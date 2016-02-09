@@ -30,8 +30,6 @@ ignoreFolders = []
 # find all modules
 moduleFolders, languageSupport = getModules(ignoreFolders)
 
-prepareDoxyfile(moduleFolders)
-
 moduleNames = []
 languageSupportNames = []
 
@@ -69,7 +67,10 @@ vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languag
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
 
-vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
+vars.Add('PREFIX', 'Path where built libraries, headers and other built files are installed (architecture independant). Needs a trailing slash!', '/usr/local')
+vars.Add('EPREFIX', 'Path of architecture dependant files.' )
+vars.Add('LIBDIR', 'Path of libraries.' )
+vars.Add('INCLUDEDIR', 'Path of header files.' )
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
@@ -103,6 +104,14 @@ else:
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
+
+env['EPREFIX'] = env.get( 'EPREFIX', env['PREFIX'] )
+env['LIBDIR'] = env.get( 'LIBDIR', os.path.join( env['EPREFIX'], "lib" ) )
+env['INCLUDEDIR'] = env.get( 'INCLUDEDIR', os.path.join( env['PREFIX'], "include" ) )
+
+# no docu if clean:
+if not env.GetOption('clean'):
+  prepareDoxyfile(moduleFolders)
 
 if 'CXX' in ARGUMENTS:
   print "CXX: ", ARGUMENTS['CXX']
@@ -161,15 +170,15 @@ Parameters are:
 vars.GenerateHelpText(env))
 
 # adds trailing slashes were required and if not present
-BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
+BUILD_DIR = Dir(os.path.join('lib', 'sgpp'))
 Export('BUILD_DIR')
-PYSGPP_PACKAGE_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib'))
+PYSGPP_PACKAGE_PATH = Dir(os.path.join('lib'))
 Export('PYSGPP_PACKAGE_PATH')
 PYSGPP_BUILD_PATH = Dir(os.path.join(PYSGPP_PACKAGE_PATH.abspath, 'pysgpp'))
 Export('PYSGPP_BUILD_PATH')
-JSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
+JSGPP_BUILD_PATH = Dir(os.path.join('lib', 'jsgpp'))
 Export('JSGPP_BUILD_PATH')
-EXAMPLE_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'bin', 'examples'))
+EXAMPLE_DIR = Dir(os.path.join('bin', 'examples'))
 Export('EXAMPLE_DIR')
 
 # no checks if clean:
@@ -400,3 +409,11 @@ dependencies.append(env.Command('printFinished', [], printFinished))
 # necessary to enforce an order on the final steps of the building of the wrapper
 for i in range(len(dependencies) - 1):
   env.Depends(dependencies[i + 1], dependencies[i])
+
+env.Clean("distclean",
+  [
+    "config.log",
+  ])
+Default(libraryTargetList, dependencies)
+
+env.Alias('install-lib-sgpp', Install(os.path.join( env.get('LIBDIR'), 'sgpp'), libraryTargetList))
