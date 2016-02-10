@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
   //SGPP::base::DataVector *classes = dataset.getClasses();
-  SGPP::base::DataMatrix& trainingData = dataset.getTrainingData();
+  SGPP::base::DataMatrix& trainingData = dataset.getData();
 
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();
@@ -53,7 +53,8 @@ int main(int argc, char** argv) {
     SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
+        configuration);
 
   SGPP::base::DataVector result(dataset.getNumberInstances());
 

@@ -14,47 +14,45 @@
 
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    ModWaveletGrid::ModWaveletGrid(std::istream& istr) :
-      Grid(istr) {
-    }
-
-    ModWaveletGrid::ModWaveletGrid(size_t dim) :
-      Grid(dim) {
-    }
-
-    ModWaveletGrid::~ModWaveletGrid() {
-    }
-
-    SGPP::base::GridType ModWaveletGrid::getType() {
-      return SGPP::base::GridType::ModWavelet;
-    }
-
-    const SBasis& ModWaveletGrid::getBasis() {
-      static SWaveletModifiedBase basis;
-      return basis;
-    }
-
-    Grid* ModWaveletGrid::unserialize(std::istream& istr) {
-      return new ModWaveletGrid(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* ModWaveletGrid::createGridGenerator() {
-      return new StandardGridGenerator(this->storage);
-    }
-
-
-
-  }
+ModWaveletGrid::ModWaveletGrid(std::istream& istr) :
+  Grid(istr) {
 }
+
+ModWaveletGrid::ModWaveletGrid(size_t dim) :
+  Grid(dim) {
+}
+
+ModWaveletGrid::~ModWaveletGrid() {
+}
+
+SGPP::base::GridType ModWaveletGrid::getType() {
+  return SGPP::base::GridType::ModWavelet;
+}
+
+const SBasis& ModWaveletGrid::getBasis() {
+  static SWaveletModifiedBase basis;
+  return basis;
+}
+
+Grid* ModWaveletGrid::unserialize(std::istream& istr) {
+  return new ModWaveletGrid(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* ModWaveletGrid::createGridGenerator() {
+  return new StandardGridGenerator(this->storage);
+}
+
+
+
+}  // namespace base
+}  // namespace SGPP

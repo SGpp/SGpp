@@ -21,10 +21,9 @@ class Regressor(Learner):
     error = None
     
     
-    
     ##constructor
     def __init__(self):
-        super(self.__class__,self).__init__()
+        super(Regressor,self).__init__()
        
         
     ##calculate L2-norm of error
@@ -65,10 +64,6 @@ class Regressor(Learner):
         self.errors = DataVector(len(alpha))
         self.specification.getBOperator(data.getName()).multTranspose(self.error, self.errors)
         self.errors.componentwise_mult(alpha)
-        
-        # calculate error per basis function
-#        self.errors = DataVector(alpha.getSize())
-#        self.specification.getBOperator().mult(self.error, data.getPoints(), self.errors)
         
         return mse
     

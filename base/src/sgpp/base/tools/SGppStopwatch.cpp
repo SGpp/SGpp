@@ -9,25 +9,25 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    SGppStopwatch::SGppStopwatch() :
-      start_time(std::chrono::high_resolution_clock::now()) {
-    }
-
-    SGppStopwatch::~SGppStopwatch() {
-    }
-
-    void SGppStopwatch::start() {
-      start_time = std::chrono::high_resolution_clock::now();
-    }
-
-    float_t SGppStopwatch::stop() {
-      std::chrono::time_point<std::chrono::high_resolution_clock> end_time =
-        std::chrono::high_resolution_clock::now();
-      std::chrono::duration<float_t> elapsed_seconds = end_time - start_time;
-      return elapsed_seconds.count();
-    }
-
-  }
+SGppStopwatch::SGppStopwatch() :
+  start_time(std::chrono::high_resolution_clock::now()) {
 }
+
+SGppStopwatch::~SGppStopwatch() {
+}
+
+void SGppStopwatch::start() {
+  start_time = std::chrono::high_resolution_clock::now();
+}
+
+float_t SGppStopwatch::stop() {
+  std::chrono::time_point<std::chrono::high_resolution_clock> end_time =
+    std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float_t> elapsed_seconds = end_time - start_time;
+  return elapsed_seconds.count();
+}
+
+}  // namespace base
+}  // namespace SGPP

@@ -15,60 +15,64 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Class that implements the virtual class OperationMatrix for the
-     * application of classification for the Systemmatrix by using a
-     * density function
-     */
-    class PiecewiseConstantSmoothedRegressionSystemMatrix: public SGPP::base::OperationMatrix {
-      private:
-        SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor;
-        SGPP::base::Grid& grid;
-        /// the lambda, the regularisation parameter
-        float_t lambda;
-        /// Operation A for calculating the data matrix
-        /// (L2 Dot-Product of basis functions)
-        SGPP::base::OperationMatrix* A;
-        /// OperationB for calculating the data matrix
-        //        SGPP::base::OperationMultipleEval* B;
-        /// OperationMatrix, the regularisation method
-        SGPP::base::OperationMatrix* C;
+/**
+ * Class that implements the virtual class OperationMatrix for the
+ * application of classification for the Systemmatrix by using a
+ * density function
+ */
+class PiecewiseConstantSmoothedRegressionSystemMatrix: public
+  SGPP::base::OperationMatrix {
+ private:
+  SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor;
+  SGPP::base::Grid& grid;
+  /// the lambda, the regularisation parameter
+  float_t lambda;
+  /// Operation A for calculating the data matrix
+  /// (L2 Dot-Product of basis functions)
+  SGPP::base::OperationMatrix* A;
+  /// OperationB for calculating the data matrix
+  //        SGPP::base::OperationMultipleEval* B;
+  /// OperationMatrix, the regularisation method
+  SGPP::base::OperationMatrix* C;
 
-      public:
-        /**
-         * Std-Constructor
-         *
-         * @param piecewiseRegressor approximation with piecewise-constant octtree
-         * @param grid  reference to the sparse grid
-         * @param C the regression functional
-         * @param lambdaRegression the regression parameter
-         */
-        PiecewiseConstantSmoothedRegressionSystemMatrix(SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor, SGPP::base::Grid& grid,
-            SGPP::base::OperationMatrix& C, float_t lambdaRegression);
+ public:
+  /**
+   * Std-Constructor
+   *
+   * @param piecewiseRegressor approximation with piecewise-constant octtree
+   * @param grid  reference to the sparse grid
+   * @param C the regression functional
+   * @param lambdaRegression the regression parameter
+   */
+  PiecewiseConstantSmoothedRegressionSystemMatrix(
+    SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
+    SGPP::base::Grid& grid,
+    SGPP::base::OperationMatrix& C, float_t lambdaRegression);
 
-        /**
-         * Generates the left hand side of the classification equation
-         *
-         * @param alpha parameters for the sparse grid functions
-         * @param result reference to the vector which will contain the result
-         */
-        void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  /**
+   * Generates the left hand side of the classification equation
+   *
+   * @param alpha parameters for the sparse grid functions
+   * @param result reference to the vector which will contain the result
+   */
+  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-        /**
-         * Generates the right hand side of the classification equation
-         *
-         * @param b reference to the vector which will contain the result of the
-         * matrix vector multiplication on the rhs
-         */
-        void generateb(SGPP::base::DataVector& b);
+  /**
+   * Generates the right hand side of the classification equation
+   *
+   * @param b reference to the vector which will contain the result of the
+   * matrix vector multiplication on the rhs
+   */
+  void generateb(SGPP::base::DataVector& b);
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~PiecewiseConstantSmoothedRegressionSystemMatrix();
-    };
+  /**
+   * Std-Destructor
+   */
+  virtual ~PiecewiseConstantSmoothedRegressionSystemMatrix();
+};
 
-  }
-}
+}  // namespace datadriven
+}  // namespace SGPP
+

@@ -15,38 +15,39 @@
 
 
 namespace SGPP {
-  namespace base {
-    /**
-     * Implements the hierarchisation on a sprase grid with mod linear base functions
-     *
-     * @param node_values the functions values in the node base
-     *
-     */
-    void OperationHierarchisationModLinear::doHierarchisation(DataVector& node_values) {
-      HierarchisationModLinear func(this->storage);
-      sweep<HierarchisationModLinear> s(func, this->storage);
+namespace base {
+/**
+ * Implements the hierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param node_values the functions values in the node base
+ *
+ */
+void OperationHierarchisationModLinear::doHierarchisation(
+  DataVector& node_values) {
+  HierarchisationModLinear func(this->storage);
+  sweep<HierarchisationModLinear> s(func, this->storage);
 
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(node_values, node_values, i);
-      }
-    }
-
-    /**
-     * Implements the dehierarchisation on a sprase grid with mod linear base functions
-     *
-     * @param alpha the coefficients of the sparse grid's base functions
-     *
-     */
-    void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha) {
-      DehierarchisationModLinear func(this->storage);
-      sweep<DehierarchisationModLinear> s(func, this->storage);
-
-      // Execute hierarchisation in every dimension of the grid
-      for (size_t i = 0; i < this->storage->dim(); i++) {
-        s.sweep1D(alpha, alpha, i);
-      }
-    }
-
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(node_values, node_values, i);
   }
 }
+
+/**
+ * Implements the dehierarchisation on a sprase grid with mod linear base functions
+ *
+ * @param alpha the coefficients of the sparse grid's base functions
+ *
+ */
+void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha) {
+  DehierarchisationModLinear func(this->storage);
+  sweep<DehierarchisationModLinear> s(func, this->storage);
+
+  // Execute hierarchisation in every dimension of the grid
+  for (size_t i = 0; i < this->storage->dim(); i++) {
+    s.sweep1D(alpha, alpha, i);
+  }
+}
+
+}  // namespace base
+}  // namespace SGPP

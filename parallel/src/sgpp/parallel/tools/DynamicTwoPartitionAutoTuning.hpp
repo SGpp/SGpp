@@ -12,17 +12,18 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    class DynamicTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
-      public:
-        DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
-        virtual void resetAutoTuning();
-      protected:
-        void autoTune();
-        double _partition2_speedup;
-    };
+class DynamicTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
+ public:
+  DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider,
+                                size_t retune_cycles);
+  virtual void resetAutoTuning();
+ protected:
+  void autoTune();
+  double _partition2_speedup;
+};
 
-  }
+}
 }
 #endif // DYNAMICTWOPARTITIONAUTOTUNING_HPP

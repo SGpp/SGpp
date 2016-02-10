@@ -19,13 +19,12 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
                                             'CheckJNI' : SGppConfigureExtend.CheckJNI,
                                             'CheckFlag' : SGppConfigureExtend.CheckFlag })
 
-    if env['COMPILER'] != 'vcc':
-        # check C++11 support
-        if not config.CheckFlag("-std=c++11"):
-            sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-            sys.exit(1)  # TODO: exist undefined, fix
-        
-        config.env.AppendUnique(CPPFLAGS="-std=c++11")
+    # check C++11 support
+    if not config.CheckFlag("-std=c++11"):
+        sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
+        sys.exit(1)  # TODO: exist undefined, fix
+
+    config.env.AppendUnique(CPPFLAGS="-std=c++11")
 
     # boost library
     #TODO: add check and error
@@ -71,7 +70,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
         sys.exit(1)
 
-      config.env.AppendUnique(CPPDEFINES=["USE_OCL"])
+      config.env["CPPDEFINES"]["USE_OCL"] = "1"
     else:
       print "Info: OpenCL is not enabled"
 
@@ -185,7 +184,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
     # make settings case-insensitive
     env['COMPILER'] = env['COMPILER'].lower()
     env['ARCH'] = env['ARCH'].lower()
-    
+
     if env['COMPILER'] == 'gnu':
         gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
         gcc_ver = env._get_major_minor_revision(gcc_ver_str)
@@ -246,9 +245,9 @@ Please install the corresponding package, e.g. using command on Ubuntu
             config.env.AppendUnique(CPPFLAGS=["-mfma"])
         else:
             print "You must specify a valid ARCH value for gnu."
-            print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
+            print "Available configurations are: sse3, sse42, avx, fma4, avx2, avx512"
             sys.exit(1)
-        
+
         # check if using MinGW (g++ on win32)
         if env['PLATFORM'] == 'win32':
             # disable warnings which occur when including Boost in the tests
@@ -355,17 +354,9 @@ Please install the corresponding package, e.g. using command on Ubuntu
             sys.exit(1)
 
         env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
-    elif env['COMPILER'] == 'vcc':
-        print "Using vcc"
-        env.AppendUnique(CPPFLAGS=['/EHsc'])
-        env.AppendUnique(CPPFLAGS=['/DNOMINMAX'])
-        if env['USE_STATICLIB']:
-            env.AppendUnique(CPPFLAGS=['/D_USE_STATICLIB'])
-        # env.Append(CPPFLAGS=['/openmp']) -> does not work due to missing openMP3 support
-        env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for Compiler."
-        print "Available configurations are: gnu, clang, vcc and intel"
+        print "Available configurations are: gnu, clang, and intel"
         sys.exit(1)
 
     # special treatment for different platforms
@@ -403,6 +394,16 @@ Please install the corresponding package, e.g. using command on Ubuntu
         continue
       env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
 
+    # check for mpic++
+    if not env['CXX']=='mpic++':
+        env['SG_PARALLEL'] = 0
+        print 'Hint: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
+    elif env['SG_PARALLEL'] != 0:
+        env['CPPDEFINES']['USE_MPI'] = '1'
+        print 'Parallel module ("SG_PARALLEL") enabled'
+    else:
+        print 'Parallel module ("SG_PARALLEL") disabled'
+
     # detour compiler output
     env['PRINT_CMD_LINE_FUNC'] = Helper.print_cmd_line
 
@@ -412,3 +413,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
     with open(env['CMD_LOGFILE'], 'a') as logFile:
         logFile.seek(0)
         logFile.truncate()
+
+
+

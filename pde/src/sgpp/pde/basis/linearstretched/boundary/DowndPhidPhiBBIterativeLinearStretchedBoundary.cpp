@@ -10,100 +10,102 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(SGPP::base::GridStorage* storage) : storage(storage) {
-    }
+DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(
+  SGPP::base::GridStorage* storage) : storage(storage) {
+}
 
-    DowndPhidPhiBBIterativeLinearStretchedBoundary::~DowndPhidPhiBBIterativeLinearStretchedBoundary() {
-    }
+DowndPhidPhiBBIterativeLinearStretchedBoundary::~DowndPhidPhiBBIterativeLinearStretchedBoundary() {
+}
 
-    void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
 
-      // Bounding Box handling
-      SGPP::base::Stretching* stretching = this->storage->getStretching();
-      float_t q = stretching->getIntervalWidth(dim);
-      float_t Qqout = 1.0 / q;
+  // Bounding Box handling
+  SGPP::base::Stretching* stretching = this->storage->getStretching();
+  float_t q = stretching->getIntervalWidth(dim);
+  float_t Qqout = 1.0 / q;
 
-      // init the coefficients of the ansatz functions with boundary
-      result.setAll(0.0);
+  // init the coefficients of the ansatz functions with boundary
+  result.setAll(0.0);
 
-      if (q != 1.0) {
-        // traverse all basis function by sequence number
-        for (size_t i = 0; i < storage->size(); i++) {
-          SGPP::base::GridStorage::index_type::level_type level;
-          SGPP::base::GridStorage::index_type::index_type index;
-          (*storage)[i]->get(dim, level, index);
+  if (q != 1.0) {
+    // traverse all basis function by sequence number
+    for (size_t i = 0; i < storage->size(); i++) {
+      SGPP::base::GridStorage::index_type::level_type level;
+      SGPP::base::GridStorage::index_type::index_type index;
+      (*storage)[i]->get(dim, level, index);
 
-          if (level == 0) {
+      if (level == 0) {
+        if (index == 0) {
+          if (!stretching->hasDirichletBoundaryLeft(dim)) {
+            //only affects the diagonal of the stiffness matrix
+            result[i] += Qqout * alpha[i];
+
+            // down
             if (index == 0) {
-              if (!stretching->hasDirichletBoundaryLeft(dim)) {
-                //only affects the diagonal of the stiffness matrix
-                result[i] += Qqout * alpha[i];
+              SGPP::base::GridIndex index_one = *(*storage)[i];
+              index_one.set(dim, 0, 1);
 
-                // down
-                if (index == 0) {
-                  SGPP::base::GridIndex index_one = *(*storage)[i];
-                  index_one.set(dim, 0, 1);
-
-                  if (!stretching->hasDirichletBoundaryRight(dim)) {
-                    result[storage->seq(&index_one)] += ((-1.0 * Qqout) * alpha[i]);
-                  }
-                }
-              }
-            }
-
-            if (index == 1) {
               if (!stretching->hasDirichletBoundaryRight(dim)) {
-                //only affects the diagonal of the stiffness matrix
-                result[i] += Qqout * alpha[i];
+                result[storage->seq(&index_one)] += ((-1.0 * Qqout) * alpha[i]);
               }
             }
-          }
-          //only affects the diagonal of the stiffness matrix
-          else {
-            result[i] = alpha[i] * (Qqout * pow(2.0, static_cast<int>(level + 1)));
           }
         }
-      } else {
-        // traverse all basis function by sequence number
-        for (size_t i = 0; i < storage->size(); i++) {
-          SGPP::base::GridStorage::index_type::level_type level;
-          SGPP::base::GridStorage::index_type::index_type index;
-          (*storage)[i]->get(dim, level, index);
 
-          if (level == 0) {
-            if (index == 0) {
-              if (!stretching->hasDirichletBoundaryLeft(dim)) {
-                //only affects the diagonal of the stiffness matrix
-                result[i] += alpha[i];
-
-                // down
-                if (index == 0) {
-                  SGPP::base::GridIndex index_one = *(*storage)[i];
-                  index_one.set(dim, 0, 1);
-
-                  if (!stretching->hasDirichletBoundaryRight(dim)) {
-                    result[storage->seq(&index_one)] += ((-1.0) * alpha[i]);
-                  }
-                }
-              }
-            }
-
-            if (index == 1) {
-              if (!stretching->hasDirichletBoundaryRight(dim)) {
-                //only affects the diagonal of the stiffness matrix
-                result[i] += alpha[i];
-              }
-            }
-          }
-          //only affects the diagonal of the stiffness matrix
-          else {
-            result[i] = alpha[i] * pow(2.0, static_cast<int>(level + 1));
+        if (index == 1) {
+          if (!stretching->hasDirichletBoundaryRight(dim)) {
+            //only affects the diagonal of the stiffness matrix
+            result[i] += Qqout * alpha[i];
           }
         }
       }
+      //only affects the diagonal of the stiffness matrix
+      else {
+        result[i] = alpha[i] * (Qqout * pow(2.0, static_cast<int>(level + 1)));
+      }
     }
+  } else {
+    // traverse all basis function by sequence number
+    for (size_t i = 0; i < storage->size(); i++) {
+      SGPP::base::GridStorage::index_type::level_type level;
+      SGPP::base::GridStorage::index_type::index_type index;
+      (*storage)[i]->get(dim, level, index);
 
+      if (level == 0) {
+        if (index == 0) {
+          if (!stretching->hasDirichletBoundaryLeft(dim)) {
+            //only affects the diagonal of the stiffness matrix
+            result[i] += alpha[i];
+
+            // down
+            if (index == 0) {
+              SGPP::base::GridIndex index_one = *(*storage)[i];
+              index_one.set(dim, 0, 1);
+
+              if (!stretching->hasDirichletBoundaryRight(dim)) {
+                result[storage->seq(&index_one)] += ((-1.0) * alpha[i]);
+              }
+            }
+          }
+        }
+
+        if (index == 1) {
+          if (!stretching->hasDirichletBoundaryRight(dim)) {
+            //only affects the diagonal of the stiffness matrix
+            result[i] += alpha[i];
+          }
+        }
+      }
+      //only affects the diagonal of the stiffness matrix
+      else {
+        result[i] = alpha[i] * pow(2.0, static_cast<int>(level + 1));
+      }
+    }
   }
+}
+
+}
 }

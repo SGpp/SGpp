@@ -13,48 +13,48 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating partial derivatives of wavelet
-     * linear combinations on Noboundary grids.
-     */
-    class OperationNaiveEvalPartialDerivativeWavelet :
-      public OperationNaiveEvalPartialDerivative {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         */
-        OperationNaiveEvalPartialDerivativeWavelet(GridStorage* storage) :
-          storage(storage) {
-        }
-
-        /**
-         * Destructor.
-         */
-        virtual ~OperationNaiveEvalPartialDerivativeWavelet() override {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @param derivDim  dimension in which the partial derivative should be taken
-         * @return          value of the partial derivative of the linear combination
-         */
-        virtual float_t evalPartialDerivative(const DataVector& alpha,
-                                              const DataVector& point,
-                                              size_t derivDim) override;
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D wavelet basis
-        SWaveletBase base;
-    };
-
+/**
+ * Operation for evaluating partial derivatives of wavelet
+ * linear combinations on Noboundary grids.
+ */
+class OperationNaiveEvalPartialDerivativeWavelet :
+  public OperationNaiveEvalPartialDerivative {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   */
+  explicit OperationNaiveEvalPartialDerivativeWavelet(GridStorage* storage) :
+    storage(storage) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  ~OperationNaiveEvalPartialDerivativeWavelet() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @param derivDim  dimension in which the partial derivative should be taken
+   * @return          value of the partial derivative of the linear combination
+   */
+  float_t evalPartialDerivative(const DataVector& alpha,
+                                const DataVector& point,
+                                size_t derivDim) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D wavelet basis
+  SWaveletBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVALPARTIALDERIVATIVEWAVELET_HPP */

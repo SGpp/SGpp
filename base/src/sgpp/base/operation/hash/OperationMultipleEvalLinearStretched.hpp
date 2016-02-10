@@ -13,37 +13,38 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationB for a grids with linearstretched basis ansatzfunctions without boundaries
-     */
-    class OperationMultipleEvalLinearStretched : public OperationMultipleEval {
-      public:
-        /**
-         * Constructor of OperationBLinearStretched
-         *
-         * @param grid grid
-         * @param dataset the dataset that should be evaluated
-         */
-        OperationMultipleEvalLinearStretched(Grid& grid, DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalLinearStretched() override {}
-
-        virtual void mult(DataVector& alpha, DataVector& result) override;
-        virtual void multTranspose(DataVector& source, DataVector& result) override;
-
-      protected:
-        /// Pointer to the grid's GridStorage object
-        GridStorage* storage;
-    };
-
+/**
+ * This class implements OperationB for a grids with linearstretched basis ansatzfunctions without boundaries
+ */
+class OperationMultipleEvalLinearStretched : public OperationMultipleEval {
+ public:
+  /**
+   * Constructor of OperationBLinearStretched
+   *
+   * @param grid grid
+   * @param dataset the dataset that should be evaluated
+   */
+  OperationMultipleEvalLinearStretched(Grid& grid, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationMultipleEvalLinearStretched() override {}
+
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to the grid's GridStorage object
+  GridStorage* storage;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALLINEARSTRETCHED_HPP */

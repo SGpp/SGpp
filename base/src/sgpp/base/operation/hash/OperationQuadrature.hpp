@@ -12,33 +12,32 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class provides the quadrature of a sparse grid function
-     */
-    class OperationQuadrature {
-      public:
-        /**
-         * Constructor
-         */
-        OperationQuadrature() {}
+/**
+ * This class provides the quadrature of a sparse grid function
+ */
+class OperationQuadrature {
+ public:
+  /**
+   * Constructor
+   */
+  OperationQuadrature() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationQuadrature() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationQuadrature() {}
 
-        /**
-         * Integrate the sparse grid function
-         *
-         * @param alpha the function's values in the nodal basis
-         */
-        virtual float_t doQuadrature(DataVector& alpha) = 0;
+  /**
+   * Integrate the sparse grid function
+   *
+   * @param alpha the function's values in the nodal basis
+   */
+  virtual float_t doQuadrature(DataVector& alpha) = 0;
+};
 
-    };
-
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONQUADRATURE_HPP */

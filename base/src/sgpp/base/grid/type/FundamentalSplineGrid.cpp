@@ -12,66 +12,64 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) :
-      Grid(istr),
-      degree(1 << 16),
-      basis_(NULL) {
-      istr >> degree;
-    }
+FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) :
+  Grid(istr),
+  degree(1 << 16),
+  basis_(NULL) {
+  istr >> degree;
+}
 
 
-    FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree) :
-      Grid(dim),
-      degree(degree),
-      basis_(NULL) {
-    }
+FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree) :
+  Grid(dim),
+  degree(degree),
+  basis_(NULL) {
+}
 
-    FundamentalSplineGrid::~FundamentalSplineGrid() {
-      if (basis_ != NULL) {
-        delete basis_;
-      }
-    }
-
-    SGPP::base::GridType FundamentalSplineGrid::getType() {
-      return SGPP::base::GridType::FundamentalSpline;
-    }
-
-    const SBasis& FundamentalSplineGrid::getBasis() {
-      if (basis_ == NULL) {
-        basis_ = new SFundamentalSplineBase(degree);
-      }
-
-      return *basis_;
-    }
-
-    size_t FundamentalSplineGrid::getDegree() {
-      return this->degree;
-    }
-
-    Grid* FundamentalSplineGrid::unserialize(std::istream& istr) {
-      return new FundamentalSplineGrid(istr);
-    }
-
-    void FundamentalSplineGrid::serialize(std::ostream& ostr) {
-      this->Grid::serialize(ostr);
-      ostr << degree << std::endl;
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* FundamentalSplineGrid::createGridGenerator() {
-      return new StandardGridGenerator(this->storage);
-    }
-
+FundamentalSplineGrid::~FundamentalSplineGrid() {
+  if (basis_ != NULL) {
+    delete basis_;
   }
 }
+
+SGPP::base::GridType FundamentalSplineGrid::getType() {
+  return SGPP::base::GridType::FundamentalSpline;
+}
+
+const SBasis& FundamentalSplineGrid::getBasis() {
+  if (basis_ == NULL) {
+    basis_ = new SFundamentalSplineBase(degree);
+  }
+
+  return *basis_;
+}
+
+size_t FundamentalSplineGrid::getDegree() {
+  return this->degree;
+}
+
+Grid* FundamentalSplineGrid::unserialize(std::istream& istr) {
+  return new FundamentalSplineGrid(istr);
+}
+
+void FundamentalSplineGrid::serialize(std::ostream& ostr) {
+  this->Grid::serialize(ostr);
+  ostr << degree << std::endl;
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* FundamentalSplineGrid::createGridGenerator() {
+  return new StandardGridGenerator(this->storage);
+}
+
+}  // namespace base
+}  // namespace SGPP

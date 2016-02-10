@@ -12,93 +12,93 @@
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      /**
-       * Mladineo objective function.
-       *
-       * Definition:
-       * \f[\bar{f}(\bar{\vec{x}}) :=
-       * 1 + \frac{1}{2} \norm{\bar{\vec{x}}}_2^2 -
-       * \cos(10 \ln(2\bar{x}_1)) \cos(10 \ln(3\bar{x}_2))\f]
-       */
-      class MladineoObjective : public TestScalarFunction {
-        public:
-          /**
-           * Constructor.
-           */
-          MladineoObjective();
+/**
+ * Mladineo objective function.
+ *
+ * Definition:
+ * \f[\bar{f}(\bar{\vec{x}}) :=
+ * 1 + \frac{1}{2} \norm{\bar{\vec{x}}}_2^2 -
+ * \cos(10 \ln(2\bar{x}_1)) \cos(10 \ln(3\bar{x}_2))\f]
+ */
+class MladineoObjective : public TestScalarFunction {
+ public:
+  /**
+   * Constructor.
+   */
+  MladineoObjective();
 
-          /**
-           * Destructor.
-           */
-          virtual ~MladineoObjective() override;
+  /**
+   * Destructor.
+   */
+  ~MladineoObjective() override;
 
-          /**
-           * @param x     point \f$\vec{x} \in [0, 1]^d\f$
-           * @return      \f$f(\vec{x})\f$
-           */
-          virtual float_t evalUndisplaced(const base::DataVector& x)
-          override;
+  /**
+   * @param x     point \f$\vec{x} \in [0, 1]^d\f$
+   * @return      \f$f(\vec{x})\f$
+   */
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
-          /**
-           * @param[out] clone pointer to cloned object
-           */
-          virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-          const override;
-      };
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
+};
 
-      /**
-       * Mladineo unconstrained test problem.
-       *
-       * * Number of parameters: 2
-       * * Domain: \f$\bar{\vec{x}} \in [0.01, 1]^2\f$
-       * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
-       *   (0.01152704, 0.01440461)\f$
-       * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
-       *   0.0001701830\f$
-       */
-      class Mladineo : public UnconstrainedTestProblem {
-        public:
-          /**
-           * Constructor.
-           */
-          Mladineo();
+/**
+ * Mladineo unconstrained test problem.
+ *
+ * * Number of parameters: 2
+ * * Domain: \f$\bar{\vec{x}} \in [0.01, 1]^2\f$
+ * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
+ *   (0.01152704, 0.01440461)\f$
+ * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
+ *   0.0001701830\f$
+ */
+class Mladineo : public UnconstrainedTestProblem {
+ public:
+  /**
+   * Constructor.
+   */
+  Mladineo();
 
-          /**
-           * Destructor.
-           */
-          virtual ~Mladineo() override;
+  /**
+   * Destructor.
+   */
+  ~Mladineo() override;
 
-          /**
-           * @return  objective function of the test problem
-           */
-          virtual TestScalarFunction& getObjectiveFunction() override;
+  /**
+   * @return  objective function of the test problem
+   */
+  TestScalarFunction& getObjectiveFunction() override;
 
-          /**
-           * @param[out] x minimal point
-           *               \f$\vec{x}_\opt \in [0, 1]^d\f$
-           * @return       minimal function value
-           *               \f$f(\vec{x}_\opt)\f$
-           */
-          virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-          override;
+  /**
+   * @param[out] x minimal point
+   *               \f$\vec{x}_\opt \in [0, 1]^d\f$
+   * @return       minimal function value
+   *               \f$f(\vec{x}_\opt)\f$
+   */
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
-        protected:
-          /**
-           * Checks if \f$\vec{d} \in [-0.01, 0] \times [-0.01, 0]\f$.
-           *
-           * @return whether the current displacement is feasible
-           */
-          virtual bool isDisplacementFeasible() override;
+ protected:
+  /**
+   * Checks if \f$\vec{d} \in [-0.01, 0] \times [-0.01, 0]\f$.
+   *
+   * @return whether the current displacement is feasible
+   */
+  bool isDisplacementFeasible() override;
 
-          /// objective function
-          MladineoObjective f;
-      };
+  /// objective function
+  MladineoObjective f;
+};
 
-    }
-  }
+}
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_MLADINEO_HPP */

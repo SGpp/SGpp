@@ -11,24 +11,24 @@
 using namespace SGPP::base;
 
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    NaiveSampleGenerator::NaiveSampleGenerator(size_t dimension,
-        std::uint64_t seed) :
-      SampleGenerator(dimension, seed),
-      uniformRealDist(0, 1) {
-    }
+NaiveSampleGenerator::NaiveSampleGenerator(size_t dimension,
+    std::uint64_t seed) :
+  SampleGenerator(dimension, seed),
+  uniformRealDist(0, 1) {
+}
 
-    NaiveSampleGenerator::~NaiveSampleGenerator() {
-    }
+NaiveSampleGenerator::~NaiveSampleGenerator() {
+}
 
-    void NaiveSampleGenerator::getSample(DataVector& sample) {
-      // generate random sample with dimensionality corresponding to the
-      // size of the given datavector (in 0 to 1)
-      for (size_t i = 0; i < sample.getSize(); i++) {
-        sample[i] = uniformRealDist(rng);
-      }
-    }
-
+void NaiveSampleGenerator::getSample(DataVector& sample) {
+  // generate random sample with dimensionality corresponding to the
+  // size of the given datavector (in 0 to 1)
+  for (size_t i = 0; i < sample.getSize(); i++) {
+    sample[i] = uniformRealDist(rng);
   }
+}
+
+}
 }

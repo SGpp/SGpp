@@ -14,44 +14,44 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
-    /**
-     * This class provides a method for discounting when the risk-free rate corresponds to an axis of the grid
-     */
-    class VariableDiscountFactor {
+/**
+ * This class provides a method for discounting when the risk-free rate corresponds to an axis of the grid
+ */
+class VariableDiscountFactor {
 
-      private:
-        /// bounding box of the grid
-        SGPP::base::BoundingBox* myBoundingBox;
-        /// SGPP::base::Grid Storage object
-        SGPP::base::GridStorage* storage;
-        /// dimension of the risk-free rate (HW axis)
-        int dim_r;
+ private:
+  /// bounding box of the grid
+  SGPP::base::BoundingBox* myBoundingBox;
+  /// SGPP::base::Grid Storage object
+  SGPP::base::GridStorage* storage;
+  /// dimension of the risk-free rate (HW axis)
+  int dim_r;
 
-      public:
-        /**
-         * Std-Constructor
-         *
-         * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
-         * @param dim_r dimension of the risk-free rate (HW axis)
-         */
-        VariableDiscountFactor(SGPP::base::GridStorage* storage, int dim_r);
+ public:
+  /**
+   * Std-Constructor
+   *
+   * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
+   * @param dim_r dimension of the risk-free rate (HW axis)
+   */
+  VariableDiscountFactor(SGPP::base::GridStorage* storage, int dim_r);
 
-        /**
-         * Std-Destructor
-         */
-        ~VariableDiscountFactor();
-        /**
-         * get a vector which contains all the factors needed to multiply with another vector
-         *@param factor the vector that should be calculated to multiply with another vector
-         *@param T timestepsize
-         */
-        void getDiscountFactor(SGPP::base::DataVector& factor, float_t T);
+  /**
+   * Std-Destructor
+   */
+  ~VariableDiscountFactor();
+  /**
+   * get a vector which contains all the factors needed to multiply with another vector
+   *@param factor the vector that should be calculated to multiply with another vector
+   *@param T timestepsize
+   */
+  void getDiscountFactor(SGPP::base::DataVector& factor, float_t T);
 
-    };
+};
 
-  }
+}
 }
 
 #endif /* VARIABLEDISCOUNTFACTOR_HPP */

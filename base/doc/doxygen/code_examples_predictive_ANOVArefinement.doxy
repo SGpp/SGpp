@@ -16,27 +16,16 @@ please see \ref installation.
 @section code_examples_predictive_ANOVArefinement_overview Overview
 
 - @ref code_examples_predictive_ANOVArefinement_python
-- @ref code_examples_predictive_ANOVArefinement_cpp
 
 
 
 @section code_examples_predictive_ANOVArefinement_python Python
 
-First, the example in Python.
+The example in Python looks as follows:
 
 @include predictive_ANOVArefinement.py
 
 This results in an output similar to
 
 @include predictive_ANOVArefinement.output.txt
-
-
-
-@section code_examples_predictive_ANOVArefinement_cpp C++
-
-Now, the very same in C++.
-
-@include predictive_ANOVArefinement.cpp
-
-This results in an output similar to the Python example output from above.
 */

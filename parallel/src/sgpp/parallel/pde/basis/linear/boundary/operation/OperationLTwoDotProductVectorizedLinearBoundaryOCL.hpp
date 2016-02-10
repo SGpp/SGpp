@@ -16,42 +16,46 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    /**
-     * Implements the standard L 2 scalar product on linear boundary grids
-     *
-     */
-    class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public SGPP::base::OperationMatrix {
+/**
+ * Implements the standard L 2 scalar product on linear boundary grids
+ *
+ */
+class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public
+  SGPP::base::OperationMatrix {
 
-      private:
-        SGPP::base::GridStorage* storage;
-        SGPP::base::DataMatrix* level_;
-        SGPP::base::DataMatrix* level_int_;
-        SGPP::base::DataMatrix* index_;
-        double* lcl_q;
-        OCLPDEKernels OCLPDEKernelsHandle;
+ private:
+  SGPP::base::GridStorage* storage;
+  SGPP::base::DataMatrix* level_;
+  SGPP::base::DataMatrix* level_int_;
+  SGPP::base::DataMatrix* index_;
+  double* lcl_q;
+  OCLPDEKernels OCLPDEKernelsHandle;
 
-        void mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void mult_dirichlet(SGPP::base::DataVector& alpha,
+                      SGPP::base::DataVector& result);
 
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's SGPP::base::GridStorage object
-         */
-        OperationLTwoDotProductVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage);
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's SGPP::base::GridStorage object
+   */
+  OperationLTwoDotProductVectorizedLinearBoundaryOCL(SGPP::base::GridStorage*
+      storage);
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationLTwoDotProductVectorizedLinearBoundaryOCL();
+  /**
+   * Destructor
+   */
+  virtual ~OperationLTwoDotProductVectorizedLinearBoundaryOCL();
 
-      protected:
-        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
-    };
+ protected:
+  virtual void mult(SGPP::base::DataVector& alpha,
+                    SGPP::base::DataVector& result);
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONLTWODOTPRODUCTVECTORIZEDLINEARBOUNDARYOCL_HPP */

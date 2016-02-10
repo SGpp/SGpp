@@ -13,52 +13,52 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    /**
-     * Abstract definition of a matrix operator interface used for
-     * solving parabolic PDEs. It allows for applying both, the mass and stiffness
-     * matrix in one mult-call.
-     */
-    class OperationParabolicPDEMatrixCombined : public SGPP::base::OperationMatrix {
-      protected:
-        /// storing the current timestep coefficient
-        double TimestepCoeff;
+/**
+ * Abstract definition of a matrix operator interface used for
+ * solving parabolic PDEs. It allows for applying both, the mass and stiffness
+ * matrix in one mult-call.
+ */
+class OperationParabolicPDEMatrixCombined : public SGPP::base::OperationMatrix {
+ protected:
+  /// storing the current timestep coefficient
+  double TimestepCoeff;
 
-      public:
-        /**
-         * Constructor
-         */
-        OperationParabolicPDEMatrixCombined() {}
+ public:
+  /**
+   * Constructor
+   */
+  OperationParabolicPDEMatrixCombined() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationParabolicPDEMatrixCombined() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationParabolicPDEMatrixCombined() {}
 
-        /**
-         * Sets the timestep coefficient
-         *
-         * @param newTimestepCoeff The new timestep coefficient for the chosen
-         * numerical approximation scheme.
-         */
-        void setTimestepCoeff(double newTimestepCoeff) {
-          this->TimestepCoeff = newTimestepCoeff;
-        }
-
-        /**
-         * Gets the timestep coefficient
-         *
-         * @return newTimestepCoeff The new timestep coefficient for the chosen
-         * numerical approximation scheme.
-         */
-        double getTimestepCoeff() {
-          return this->TimestepCoeff;
-        }
-
-    };
-
+  /**
+   * Sets the timestep coefficient
+   *
+   * @param newTimestepCoeff The new timestep coefficient for the chosen
+   * numerical approximation scheme.
+   */
+  void setTimestepCoeff(double newTimestepCoeff) {
+    this->TimestepCoeff = newTimestepCoeff;
   }
+
+  /**
+   * Gets the timestep coefficient
+   *
+   * @return newTimestepCoeff The new timestep coefficient for the chosen
+   * numerical approximation scheme.
+   */
+  double getTimestepCoeff() {
+    return this->TimestepCoeff;
+  }
+
+};
+
+}
 }
 
 #endif /* OPERATIONPARABOLICPDEMATRIXCOMBINED_HPP */

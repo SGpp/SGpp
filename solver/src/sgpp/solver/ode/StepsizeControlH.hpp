@@ -16,48 +16,55 @@
 
 
 namespace SGPP {
-  namespace solver {
+namespace solver {
 
-    /**
-     * This class implements a step size control using Crank-Nicolson with different step sizes
-     * for solving ordinary partial equations
-     *
-     */
-    class StepsizeControlH : public StepsizeControl {
-      private:
-
-
-        void predictor(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
-                       float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs);
-        void corrector(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize, SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs);
-
-        //float_t twoNorm(SGPP::base::DataVector &dv1, SGPP::base::DataVector &dv2);
-
-        float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon);
-
-        std::string _odesolver;
+/**
+ * This class implements a step size control using Crank-Nicolson with different step sizes
+ * for solving ordinary partial equations
+ *
+ */
+class StepsizeControlH : public StepsizeControl {
+ private:
 
 
-      public:
-        /**
-         * Std-Constructer
-         *
-         * @param odesolver the mode of the euler that should be executed, must be ExEul or ImEul
-         * @param imax number of maximum executed iterations
-         * @param timestepSize the size of one timestep
-         * @param eps the epsilon for the step size control
-         * @param screen possible pointer to a SGPP::base::ScreenOutput object
-         * @param gamma damping factor
-         */
-        StepsizeControlH(std::string odesolver, size_t imax, float_t timestepSize, float_t eps, SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.9);
+  void predictor(SLESolver& LinearSystemSolver,
+                 SGPP::solver::OperationParabolicPDESolverSystem& System,
+                 float_t tmp_timestepsize, SGPP::base::DataVector& dv,
+                 SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs);
+  void corrector(SLESolver& LinearSystemSolver,
+                 SGPP::solver::OperationParabolicPDESolverSystem& System,
+                 float_t tmp_timestepsize, SGPP::base::DataVector& dv,
+                 SGPP::base::DataVector* rhs);
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~StepsizeControlH();
-    };
+  //float_t twoNorm(SGPP::base::DataVector &dv1, SGPP::base::DataVector &dv2);
 
-  }
+  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
+                       float_t norm, float_t epsilon);
+
+  std::string _odesolver;
+
+
+ public:
+  /**
+   * Std-Constructer
+   *
+   * @param odesolver the mode of the euler that should be executed, must be ExEul or ImEul
+   * @param imax number of maximum executed iterations
+   * @param timestepSize the size of one timestep
+   * @param eps the epsilon for the step size control
+   * @param screen possible pointer to a SGPP::base::ScreenOutput object
+   * @param gamma damping factor
+   */
+  StepsizeControlH(std::string odesolver, size_t imax, float_t timestepSize,
+                   float_t eps, SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.9);
+
+  /**
+   * Std-Destructor
+   */
+  virtual ~StepsizeControlH();
+};
+
+}
 }
 
 #endif /* STEPSIZECONTROLH_HPP */

@@ -13,29 +13,30 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Conditionalize Probability Density Function
-     */
+/**
+ * Conditionalize Probability Density Function
+ */
 
-    class OperationDensityConditional {
-      public:
-        OperationDensityConditional() {}
-        virtual ~OperationDensityConditional() {}
+class OperationDensityConditional {
+ public:
+  OperationDensityConditional() {}
+  virtual ~OperationDensityConditional() {}
 
-        /**
-         * Conditional (Density) Functions
-         *
-         * @param alpha Coefficient vector for current grid
-         * @param mg Referenz of grid pointer
-         * @param malpha Coefficient vector for new grid (mg). Will be resized.
-         * @param mdim Marginalize in dimension mdim
-         * @param xbar Point at which to conditionalize
-         */
-        virtual void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha, unsigned int mdim, float_t xbar) = 0;
-    };
+  /**
+   * Conditional (Density) Functions
+   *
+   * @param alpha Coefficient vector for current grid
+   * @param mg Referenz of grid pointer
+   * @param malpha Coefficient vector for new grid (mg). Will be resized.
+   * @param mdim Marginalize in dimension mdim
+   * @param xbar Point at which to conditionalize
+   */
+  virtual void doConditional(base::DataVector& alpha, base::Grid*& mg,
+                             base::DataVector& malpha, unsigned int mdim, float_t xbar) = 0;
+};
 
-  }
+}
 }
 #endif /* OPERATIONDENSITYCONDITIONAL_HPP */

@@ -37,8 +37,8 @@ int main(int argc, char** argv) {
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset arffDataset = arffTools.readARFF(fileName);
 
-  SGPP::base::DataMatrix& dataset = arffDataset.getTrainingData();
-  SGPP::base::DataVector& values = arffDataset.getClasses();
+  SGPP::base::DataMatrix& dataset = arffDataset.getData();
+  SGPP::base::DataVector& values = arffDataset.getTargets();
 
   int maxLevel = 7;
 
@@ -65,13 +65,14 @@ int main(int argc, char** argv) {
   solverConfig.threshold_ = -1.0;
   solverConfig.type_ = SGPP::solver::SLESolverType::CG;
 
-  SGPP::pde::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = SGPP::pde::RegularizationType::Laplace;
+  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
 
   bool verbose = true;
 
-  SGPP::datadriven::PiecewiseConstantSmoothedRegressionMetaLearner learner(verbose, dataset, values, gridConfig, adaptConfig,
-      solverConfig, regularizationConfig);
+  SGPP::datadriven::PiecewiseConstantSmoothedRegressionMetaLearner learner(
+    verbose, dataset, values, gridConfig, adaptConfig,
+    solverConfig, regularizationConfig);
 
   //    SGPP::float_t lambdaOpt = learner.optimizeLambdaCVGreedy(10, 15, 0.25, 0.125);
 
@@ -87,7 +88,8 @@ int main(int argc, char** argv) {
 
   if (arffDataset.getDimension() == 2) {
 
-    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(*grid);
+    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(
+        *grid);
 
 #if USE_DOUBLE_PRECISION == 1
     SGPP::float_t pointIncrement = 0.01;
@@ -117,7 +119,8 @@ int main(int argc, char** argv) {
     resultFileLinear.close();
   } else if (arffDataset.getDimension() == 3) {
 
-    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(*grid);
+    SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(
+        *grid);
 
 #if USE_DOUBLE_PRECISION == 1
     SGPP::float_t pointIncrement = 0.05;

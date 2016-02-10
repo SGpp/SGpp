@@ -1,55 +1,59 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * CombiS_CT_demo.hpp
+ *
+ *  Created on: May 22, 2014
+ *      Author: petzko
+ */
 
 #ifndef COMBIS_CT_HPP_
 #define COMBIS_CT_HPP_
 
-#include <sgpp/combigrid/utils/combigrid_ultils.hpp>
-#include <sgpp/combigrid/combischeme/CombiSchemeBasis.hpp>
+#include <sgpp/combigrid/combischeme/AbstractCombiScheme.hpp>
 
 namespace combigrid {
 
-  /** class to model the standard combination technique. <br>
-   * For grids with boundary there will be only the trapezoid grid.
-   * The linear grid with boundary has too many boundary points
-   * and is not often used in practical applications.
-   *  */
-  class S_CT : public CombiSchemeBasis {
+template <typename _Tp>
+class CombiS_CT : public AbstractCombiScheme<_Tp> {
+ public:
+  CombiS_CT(std::vector<int> levels, int trunc_levels = 1);
 
-    public:
+  CombiS_CT(std::vector<int> levels, std::vector<int> trunc_levels);
 
+  void initCombiGrid(int in_dim,
+                     std::vector<std::vector<int> >& out_levels_vector,
+                     std::vector<_Tp>& out_coefs);
 
-      /** simple Ctor with the same level */
-      S_CT( int dim , int level );
+  void re_initCombiGrid(int in_dim,
+                        const std::vector<FGridContainer<_Tp>*> in_grids,
+                        std::vector<std::vector<int> >& out_levels_vector,
+                        std::vector<_Tp>& out_coefs);
 
-      /** simple Ctor with the same level and level of truncation*/
-      S_CT( int dim , int level , int level_truncation);
+  /** Implement this method with desired logic to handle situations when
+   * recomputation of the coefficients might be necessary.
+   *  Exemplary use cases could be the addition or removal of a fullgrid to/from
+   * the combigrid container.
+   * @param in_dim - dimension of the problem
+   * @param out_fgrids - a vector containing the fullgrids associated with the
+   * current combigrid- will be updated with the newly recomputed
+   * coefficients
+   * */
+  void recomputeCoefficients(int in_dim,
+                             std::vector<FGridContainer<_Tp>*>& out_fgrids);
 
-      /** S-CT Ctor with dimension adaptive levels */
-      S_CT( int dim , const std::vector< int >& levels );
+  ~CombiS_CT() {}
 
-      /** S-CT Ctor with dimension homogenious levels but with dimension adaptive truncation */
-      S_CT( int dim , int level , const std::vector< int >& levels_trunk ) ;
+ private:
+  /** utility functions for the current implementation of the combination scheme
+   **/
+  void getTrapezoidsums(std::vector<int>& v, size_t dim, int sum,
+                        std::vector<double>& ratio_, std::vector<int>& l_user_,
+                        std::vector<std::vector<int> >& out_levels_vector);
 
-      /** S-CT Ctor with dimension adaptive levels and with dimension adaptive levels and truncation */
-      S_CT( int dim , const std::vector< int >& levels , const std::vector< int >& levels_trunk );
-
-
-    protected:
-
-
-      /** the init function which is general for all types of combi schemes
-       * */
-      void init( std::vector< int >& levels , std::vector< double >& ratio_ , std::vector< int >& l_user_ );
-
-
-      /** recursive function for the combination scheme
-       * */
-      void getTrapezoidsums(std::vector<int>& v , size_t dim , int sum , std::vector< double >& ratio_ ,  std::vector< int >& l_user_);
-  };
+  void applyScheme(int in_dim, const std::vector<int>& in_levels,
+                   std::vector<double>& in_ratio_, std::vector<int>& in_l_user_,
+                   std::vector<std::vector<int> >& out_levels_vector,
+                   std::vector<_Tp>& out_coefs);
+};
 }
-
 
 #endif /* COMBIS_CT_HPP_ */

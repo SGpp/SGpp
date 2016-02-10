@@ -8,45 +8,42 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with modified linear base functions
-     */
-    class PeriodicGrid : public Grid {
-      protected:
-        PeriodicGrid(std::istream& istr);
+/**
+ * grid with modified linear base functions
+ */
+class PeriodicGrid : public Grid {
+ protected:
+  explicit PeriodicGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor modified linear grid
-         *
-         * @param dim the dimension of the grid
-         */
-        PeriodicGrid(size_t dim);
+ public:
+  /**
+   * Constructor modified linear grid
+   *
+   * @param dim the dimension of the grid
+   */
+  explicit PeriodicGrid(size_t dim);
 
-        /**
-         * Destructor
-         */
-        virtual ~PeriodicGrid() override;
+  /**
+   * Destructor
+   */
+  ~PeriodicGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
-        virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-        static Grid* unserialize(std::istream& istr);
+  static Grid* unserialize(std::istream& istr);
+};
 
-    };
-
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* PERIODICGRID_HPP */

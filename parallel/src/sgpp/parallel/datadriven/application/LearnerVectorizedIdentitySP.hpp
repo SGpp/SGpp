@@ -15,61 +15,66 @@
 
 namespace SGPP {
 
-  namespace parallel {
+namespace parallel {
 
-    /**
-     * This class implements standard sparse grid regression
-     * with an Identity matrix as regularization operator.
-     *
-     * Furthermore this Learner provides support for several
-     * vectorization approaches covering GPUs, CPUs and coprocessors.
-     *
-     * This version supports single precision floating point numbers.
-     */
-    class LearnerVectorizedIdentitySP : public SGPP::datadriven::LearnerBaseSP {
-      protected:
-        /// vectorization selector
-        VectorizationType vecType_;
+/**
+ * This class implements standard sparse grid regression
+ * with an Identity matrix as regularization operator.
+ *
+ * Furthermore this Learner provides support for several
+ * vectorization approaches covering GPUs, CPUs and coprocessors.
+ *
+ * This version supports single precision floating point numbers.
+ */
+class LearnerVectorizedIdentitySP : public SGPP::datadriven::LearnerBaseSP {
+ protected:
+  /// vectorization selector
+  VectorizationType vecType_;
 
-        MPIType mpiType_;
+  MPIType mpiType_;
 
-        virtual SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystem(SGPP::base::DataMatrixSP& trainDataset, float lambda);
+  virtual SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystem(
+    SGPP::base::DataMatrixSP& trainDataset, float lambda);
 
-        virtual void postProcessing(const SGPP::base::DataMatrixSP& trainDataset, const SGPP::solver::SLESolverType& solver,
-                                    const size_t numNeededIterations);
+  virtual void postProcessing(const SGPP::base::DataMatrixSP& trainDataset,
+                              const SGPP::solver::SLESolverType& solver,
+                              const size_t numNeededIterations);
 
-      public:
-        /**
-         * Constructor
-         *
-         * @param vecType selection of vectorization to employ
-         * @param isRegression set to true if a regression task should be executed
-         * @param isVerbose set to true in order to allow console output
-         */
-        LearnerVectorizedIdentitySP(const VectorizationType vecType, const bool isRegression, const bool isVerbose = true);
-        LearnerVectorizedIdentitySP(const VectorizationType vecType, const MPIType mpiType, const bool isRegression, const bool isVerbose = true);
+ public:
+  /**
+   * Constructor
+   *
+   * @param vecType selection of vectorization to employ
+   * @param isRegression set to true if a regression task should be executed
+   * @param isVerbose set to true in order to allow console output
+   */
+  LearnerVectorizedIdentitySP(const VectorizationType vecType,
+                              const bool isRegression, const bool isVerbose = true);
+  LearnerVectorizedIdentitySP(const VectorizationType vecType,
+                              const MPIType mpiType, const bool isRegression, const bool isVerbose = true);
 
-        /**
-         * Constructor
-         *
-         * @param tGridFilename path to file that contains a serialized grid
-         * @param tAlphaFilename path to file that contains the grid's coefficients
-         * @param vecType selection of vectorization to employ
-         * @param isRegression set to true if a regression task should be executed
-         * @param isVerbose set to true in order to allow console output
-         */
-        LearnerVectorizedIdentitySP(const std::string tGridFilename, const std::string tAlphaFilename, const VectorizationType vecType,
-                                    const bool isRegression, const bool isVerbose = true);
+  /**
+   * Constructor
+   *
+   * @param tGridFilename path to file that contains a serialized grid
+   * @param tAlphaFilename path to file that contains the grid's coefficients
+   * @param vecType selection of vectorization to employ
+   * @param isRegression set to true if a regression task should be executed
+   * @param isVerbose set to true in order to allow console output
+   */
+  LearnerVectorizedIdentitySP(const std::string tGridFilename,
+                              const std::string tAlphaFilename, const VectorizationType vecType,
+                              const bool isRegression, const bool isVerbose = true);
 
-        /**
-         * Destructor
-         */
-        virtual ~LearnerVectorizedIdentitySP();
+  /**
+   * Destructor
+   */
+  virtual ~LearnerVectorizedIdentitySP();
 
-        virtual SGPP::base::DataVectorSP predict(SGPP::base::DataMatrixSP& testDataset);
-    };
+  virtual SGPP::base::DataVectorSP predict(SGPP::base::DataMatrixSP& testDataset);
+};
 
-  }
+}
 
 }
 

@@ -13,38 +13,39 @@
 #include <sgpp/globaldef.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Quadrature on sparse grid, polynomial grid without boundaries
-     */
-    class OperationQuadraturePolyBoundary : public OperationQuadrature {
-      public:
-        /**
-         * Constructor of OperationQuadraturePoly
-         *
-         * @param storage Pointer to the grid's GridStorage object
-         * @param degree the polynom's max. degree
-         */
-        OperationQuadraturePolyBoundary(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+/**
+ * Quadrature on sparse grid, polynomial grid without boundaries
+ */
+class OperationQuadraturePolyBoundary : public OperationQuadrature {
+ public:
+  /**
+   * Constructor of OperationQuadraturePoly
+   *
+   * @param storage Pointer to the grid's GridStorage object
+   * @param degree the polynom's max. degree
+   */
+  OperationQuadraturePolyBoundary(GridStorage* storage,
+                                  size_t degree) : storage(storage), base(degree) {}
 
-        virtual ~OperationQuadraturePolyBoundary() override {}
+  ~OperationQuadraturePolyBoundary() override {}
 
-        /**
-         * Quadrature for piecewise polynomial basis functions of max. degree 3
-         *
-         * @param alpha Coefficient vector for current grid
-         */
-        virtual float_t doQuadrature(DataVector& alpha) override;
+  /**
+   * Quadrature for piecewise polynomial basis functions of max. degree 3
+   *
+   * @param alpha Coefficient vector for current grid
+   */
+  float_t doQuadrature(DataVector& alpha) override;
 
-      protected:
-        // Pointer to the grid's GridStorage object
-        GridStorage* storage;
-        /// Poly Boundary Basis object
-        SPolyBoundaryBase base;
-    };
+ protected:
+  // Pointer to the grid's GridStorage object
+  GridStorage* storage;
+  /// Poly Boundary Basis object
+  SPolyBoundaryBase base;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONQUADRATUREPOLYBOUNDARY_HPP */

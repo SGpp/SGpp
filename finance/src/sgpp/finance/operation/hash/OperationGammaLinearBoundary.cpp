@@ -25,77 +25,87 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
-    OperationGammaLinearBoundary::OperationGammaLinearBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataMatrix& coef) : SGPP::pde::UpDownTwoOpDims(storage, coef) {
-    }
+OperationGammaLinearBoundary::OperationGammaLinearBoundary(
+  SGPP::base::GridStorage* storage,
+  SGPP::base::DataMatrix& coef) : SGPP::pde::UpDownTwoOpDims(storage, coef) {
+}
 
-    OperationGammaLinearBoundary::~OperationGammaLinearBoundary() {
-    }
+OperationGammaLinearBoundary::~OperationGammaLinearBoundary() {
+}
 
-    void OperationGammaLinearBoundary::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // phi * phi
-      SGPP::pde::PhiPhiUpBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::up(SGPP::base::DataVector& alpha,
+                                      SGPP::base::DataVector& result, size_t dim) {
+  // phi * phi
+  SGPP::pde::PhiPhiUpBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLinearBoundary::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // phi * phi
-      SGPP::pde::PhiPhiDownBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::down(SGPP::base::DataVector& alpha,
+                                        SGPP::base::DataVector& result, size_t dim) {
+  // phi * phi
+  SGPP::pde::PhiPhiDownBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLinearBoundary::upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // x * phi * dphi
-      XPhidPhiUpBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<XPhidPhiUpBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::upOpDimOne(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  // x * phi * dphi
+  XPhidPhiUpBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<XPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLinearBoundary::downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // x * phi * dphi
-      XPhidPhiDownBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<XPhidPhiDownBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::downOpDimOne(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  // x * phi * dphi
+  XPhidPhiDownBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<XPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLinearBoundary::upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // x * dphi * phi
-      XdPhiPhiUpBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::upOpDimTwo(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  // x * dphi * phi
+  XdPhiPhiUpBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLinearBoundary::downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // x * dphi * phi
-      XdPhiPhiDownBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::downOpDimTwo(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  // x * dphi * phi
+  XdPhiPhiDownBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLinearBoundary::upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // x^2 * dphi * dphi
-      SqXdPhidPhiUpBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<SqXdPhidPhiUpBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::upOpDimOneAndOpDimTwo(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  // x^2 * dphi * dphi
+  SqXdPhidPhiUpBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<SqXdPhidPhiUpBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLinearBoundary::downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // x^2 * dphi * dphi
-      SqXdPhidPhiDownBBLinearBoundary func(this->storage);
-      SGPP::base::sweep<SqXdPhidPhiDownBBLinearBoundary> s(func, this->storage);
+void OperationGammaLinearBoundary::downOpDimOneAndOpDimTwo(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  // x^2 * dphi * dphi
+  SqXdPhidPhiDownBBLinearBoundary func(this->storage);
+  SGPP::base::sweep<SqXdPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-  }
+}
 }

@@ -15,49 +15,54 @@
 
 
 namespace SGPP {
-  namespace parallel {
+namespace parallel {
 
-    /**
-     * Implementation for linear functions of LTwoDotLaplace Operation, linear grids with boundaries
-     *
-     */
-    class OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL: public OperationParabolicPDEMatrixCombined {
-      private:
-        SGPP::base::GridStorage* storage;
-        SGPP::base::DataMatrix* level_;
-        SGPP::base::DataMatrix* level_int_;
-        SGPP::base::DataMatrix* index_;
-        double* lcl_q;
-        double* lcl_q_inv;
-        SGPP::base::DataVector* lambda;
-        OCLPDEKernels OCLPDEKernelsHandle ;
+/**
+ * Implementation for linear functions of LTwoDotLaplace Operation, linear grids with boundaries
+ *
+ */
+class OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL: public
+  OperationParabolicPDEMatrixCombined {
+ private:
+  SGPP::base::GridStorage* storage;
+  SGPP::base::DataMatrix* level_;
+  SGPP::base::DataMatrix* level_int_;
+  SGPP::base::DataMatrix* index_;
+  double* lcl_q;
+  double* lcl_q_inv;
+  SGPP::base::DataVector* lambda;
+  OCLPDEKernels OCLPDEKernelsHandle ;
 
-        void mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void mult_dirichlet(SGPP::base::DataVector& alpha,
+                      SGPP::base::DataVector& result);
 
-      public:
-        /**
-         * Construtor of OperationLTwoDotLaplaceLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-         * @param lambda the lambda parameter which is needed in some cases (Black-Scholes) to modify the dimensional local values
-         */
-        OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda);
+ public:
+  /**
+   * Construtor of OperationLTwoDotLaplaceLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+   * @param lambda the lambda parameter which is needed in some cases (Black-Scholes) to modify the dimensional local values
+   */
+  OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage*
+      storage, SGPP::base::DataVector& lambda);
 
-        /**
-         * Construtor of OperationLTwoDotLaplaceLinear
-         *
-         * @param storage Pointer to the grid's gridstorage obejct
-          */
-        OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage);
+  /**
+   * Construtor of OperationLTwoDotLaplaceLinear
+   *
+   * @param storage Pointer to the grid's gridstorage obejct
+    */
+  OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage*
+      storage);
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL();
+  /**
+   * Destructor
+   */
+  virtual ~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL();
 
-        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
-    };
-  }
+  virtual void mult(SGPP::base::DataVector& alpha,
+                    SGPP::base::DataVector& result);
+};
+}
 }
 
 #endif /* OPERATIONLTWODOTLAPLACEVECTORIZEDOCLLINEARBOUNDARY_HPP */

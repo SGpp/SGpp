@@ -9,71 +9,73 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
 
 
-    DPhiPhiDownBBLinearStretchedBoundary::DPhiPhiDownBBLinearStretchedBoundary(SGPP::base::GridStorage* storage) : DPhiPhiDownBBLinearStretched(storage) {
+DPhiPhiDownBBLinearStretchedBoundary::DPhiPhiDownBBLinearStretchedBoundary(
+  SGPP::base::GridStorage* storage) : DPhiPhiDownBBLinearStretched(storage) {
+}
+
+DPhiPhiDownBBLinearStretchedBoundary::~DPhiPhiDownBBLinearStretchedBoundary() {
+}
+
+
+void DPhiPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
+    source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+  // get boundary values
+  float_t left_boundary;
+  float_t right_boundary;
+  size_t seq_left;
+  size_t seq_right;
+
+  /*
+   * Handle Level 0
+   */
+  // This handles the diagonal only
+  //////////////////////////////////////
+  // left boundary
+  index.resetToLeftLevelZero(dim);
+  seq_left = index.seq();
+  left_boundary = source[seq_left];
+
+  // right boundary
+  index.resetToRightLevelZero(dim);
+  seq_right = index.seq();
+  right_boundary = source[seq_right];
+
+
+  // the following is independent from a bounding box
+
+  // check boundary conditions
+  if (this->stretching->hasDirichletBoundaryLeft(dim)) {
+    result[seq_left] = 0.0; //left_boundary;
+  } else {
+    result[seq_left] = left_boundary * (-0.5);
+  }
+
+  if (this->stretching->hasDirichletBoundaryRight(dim)) {
+    result[seq_right] = 0.0; //right_boundary;
+  } else {
+    result[seq_right] = right_boundary * (0.5);
+    // down
+    //////////////////////////////////////
+    result[seq_right] += left_boundary * (-0.5);
+  }
+
+  // move to root
+  if (!index.hint()) {
+    index.resetToLevelOne(dim);
+
+    if (!this->storage->end(index.seq())) {
+      rec(source, result, index, dim, left_boundary, right_boundary);
     }
 
-    DPhiPhiDownBBLinearStretchedBoundary::~DPhiPhiDownBBLinearStretchedBoundary() {
-    }
+    index.resetToLeftLevelZero(dim);
+  }
+}
 
+// namespace detail
 
-    void DPhiPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      // get boundary values
-      float_t left_boundary;
-      float_t right_boundary;
-      size_t seq_left;
-      size_t seq_right;
-
-      /*
-       * Handle Level 0
-       */
-      // This handles the diagonal only
-      //////////////////////////////////////
-      // left boundary
-      index.resetToLeftLevelZero(dim);
-      seq_left = index.seq();
-      left_boundary = source[seq_left];
-
-      // right boundary
-      index.resetToRightLevelZero(dim);
-      seq_right = index.seq();
-      right_boundary = source[seq_right];
-
-
-      // the following is independent from a bounding box
-
-      // check boundary conditions
-      if (this->stretching->hasDirichletBoundaryLeft(dim)) {
-        result[seq_left] = 0.0; //left_boundary;
-      } else {
-        result[seq_left] = left_boundary * (-0.5);
-      }
-
-      if (this->stretching->hasDirichletBoundaryRight(dim)) {
-        result[seq_right] = 0.0; //right_boundary;
-      } else {
-        result[seq_right] = right_boundary * (0.5);
-        // down
-        //////////////////////////////////////
-        result[seq_right] += left_boundary * (-0.5);
-      }
-
-      // move to root
-      if (!index.hint()) {
-        index.resetToLevelOne(dim);
-
-        if (!this->storage->end(index.seq())) {
-          rec(source, result, index, dim, left_boundary, right_boundary);
-        }
-
-        index.resetToLeftLevelZero(dim);
-      }
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+} // namespace SGPP
 }

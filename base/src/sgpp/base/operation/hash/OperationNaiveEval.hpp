@@ -8,59 +8,56 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-// disable warning on MSVC++
-#ifdef _MSC_VER
-#pragma warning(disable: 4267)
-#endif /* MSC_VER */
-
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation that evaluates the current sparse grid function defined
-     * by the coefficient vector @em alpha at a given point.
-     * In contrast to OperationEval, implementations of OperationNaiveEval should
-     * use a "naive" method for evaluating sparse grid functions, e.g. evaluate
-     * all basis functions by brute force.
-     */
-    class OperationNaiveEval {
-      public:
-        /**
-         * Default constructor.
-         */
-        OperationNaiveEval() {}
+/**
+ * Operation that evaluates the current sparse grid function defined
+ * by the coefficient vector @em alpha at a given point.
+ * In contrast to OperationEval, implementations of OperationNaiveEval should
+ * use a "naive" method for evaluating sparse grid functions, e.g. evaluate
+ * all basis functions by brute force.
+ */
+class OperationNaiveEval {
+ public:
+  /**
+   * Default constructor.
+   */
+  OperationNaiveEval() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationNaiveEval() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationNaiveEval() {}
 
-        /**
-         * Evaluates the sparse grid function at a given point.
-         *
-         * @param alpha The coefficients of the sparse grid's basis functions
-         * @param point The coordinates of the evaluation point
-         */
-        float_t eval(const DataVector& alpha,
-                     const std::vector<float_t>& point) {
-          DataVector p(point);
-          return eval(alpha, p);
-        }
-
-        /**
-         * Evaluates the sparse grid function at a given point.
-         *
-         * @param alpha The coefficients of the sparse grid's basis functions
-         * @param point The coordinates of the evaluation point
-         */
-        virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point) = 0;
-    };
-
+  /**
+   * Evaluates the sparse grid function at a given point.
+   *
+   * @param alpha The coefficients of the sparse grid's basis functions
+   * @param point The coordinates of the evaluation point
+   */
+  float_t eval(const DataVector& alpha,
+               const std::vector<float_t>& point) {
+    DataVector p(point);
+    return eval(alpha, p);
   }
-}
+
+  /**
+   * Evaluates the sparse grid function at a given point.
+   *
+   * @param alpha The coefficients of the sparse grid's basis functions
+   * @param point The coordinates of the evaluation point
+   */
+  virtual float_t eval(const DataVector& alpha,
+                       const DataVector& point) = 0;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONNAIVEEVAL_HPP */

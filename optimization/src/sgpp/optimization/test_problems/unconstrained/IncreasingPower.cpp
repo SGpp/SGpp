@@ -9,56 +9,56 @@
 #include <cmath>
 
 namespace SGPP {
-  namespace optimization {
-    namespace test_problems {
+namespace optimization {
+namespace test_problems {
 
-      IncreasingPower::IncreasingPower(size_t d) :
-        UnconstrainedTestProblem(d),
-        f(d) {
-      }
+IncreasingPower::IncreasingPower(size_t d) :
+  UnconstrainedTestProblem(d),
+  f(d) {
+}
 
-      IncreasingPower::~IncreasingPower() {
-      }
+IncreasingPower::~IncreasingPower() {
+}
 
-      TestScalarFunction& IncreasingPower::getObjectiveFunction() {
-        return f;
-      }
+TestScalarFunction& IncreasingPower::getObjectiveFunction() {
+  return f;
+}
 
-      float_t IncreasingPower::getOptimalPointUndisplaced(base::DataVector& x) {
-        x.resize(d);
+float_t IncreasingPower::getOptimalPointUndisplaced(base::DataVector& x) {
+  x.resize(d);
 
-        for (size_t t = 0; t < d; t++) {
-          x[t] = 1.0 / std::pow(2.0, t + 1);
-        }
-
-        return 0.0;
-      }
-
-      IncreasingPowerObjective::IncreasingPowerObjective(size_t d) :
-        TestScalarFunction(d) {
-      }
-
-      IncreasingPowerObjective::~IncreasingPowerObjective() {
-      }
-
-      float_t IncreasingPowerObjective::evalUndisplaced(
-        const base::DataVector& x) {
-        float_t result = 0.0;
-
-        for (size_t t = 0; t < d; t++) {
-          result += std::pow(std::abs(x[t] - 1.0 / std::pow(2.0, t + 1)),
-                             t + 2);
-        }
-
-        return result;
-      }
-
-      void IncreasingPowerObjective::clone(
-        std::unique_ptr<ScalarFunction>& clone) const {
-        clone = std::unique_ptr<ScalarFunction>(
-                  new IncreasingPowerObjective(*this));
-      }
-
-    }
+  for (size_t t = 0; t < d; t++) {
+    x[t] = 1.0 / std::pow(2.0, t + 1);
   }
+
+  return 0.0;
+}
+
+IncreasingPowerObjective::IncreasingPowerObjective(size_t d) :
+  TestScalarFunction(d) {
+}
+
+IncreasingPowerObjective::~IncreasingPowerObjective() {
+}
+
+float_t IncreasingPowerObjective::evalUndisplaced(
+  const base::DataVector& x) {
+  float_t result = 0.0;
+
+  for (size_t t = 0; t < d; t++) {
+    result += std::pow(std::abs(x[t] - 1.0 / std::pow(2.0, t + 1)),
+                       t + 2);
+  }
+
+  return result;
+}
+
+void IncreasingPowerObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new IncreasingPowerObjective(*this));
+}
+
+}
+}
 }

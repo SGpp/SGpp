@@ -38,7 +38,8 @@ SGPP::float_t ExampleGradient::eval(const SGPP::base::DataVector& x,
   }
 }
 
-void ExampleGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+void ExampleGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone)
+const {
   clone = std::unique_ptr<ScalarFunctionGradient>(new ExampleGradient(*this));
 }
 
@@ -65,7 +66,8 @@ SGPP::float_t ExampleHessian::eval(const SGPP::base::DataVector& x,
   }
 }
 
-void ExampleHessian::clone(std::unique_ptr<ScalarFunctionHessian>& clone) const {
+void ExampleHessian::clone(std::unique_ptr<ScalarFunctionHessian>& clone)
+const {
   clone = std::unique_ptr<ScalarFunctionHessian>(new ExampleHessian(*this));
 }
 
@@ -94,7 +96,8 @@ SGPP::float_t SphereGradient::eval(const SGPP::base::DataVector& x,
   return result;
 }
 
-void SphereGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+void SphereGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone)
+const {
   clone = std::unique_ptr<ScalarFunctionGradient>(new SphereGradient(*this));
 }
 
@@ -260,7 +263,8 @@ SGPP::float_t G3ObjectiveGradient::eval(const SGPP::base::DataVector& x,
   return fx;
 }
 
-void G3ObjectiveGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+void G3ObjectiveGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone)
+const {
   clone = std::unique_ptr<ScalarFunctionGradient>(
             new G3ObjectiveGradient(*this));
 }
@@ -294,7 +298,8 @@ void G3ConstraintFunction::clone(std::unique_ptr<VectorFunction>& clone) const {
             new G3ConstraintFunction(*this));
 }
 
-G3ConstraintGradient::G3ConstraintGradient(size_t d) : VectorFunctionGradient(d, 1) {
+G3ConstraintGradient::G3ConstraintGradient(size_t d) : VectorFunctionGradient(d,
+      1) {
 }
 
 G3ConstraintGradient::~G3ConstraintGradient() {
@@ -318,7 +323,8 @@ void G3ConstraintGradient::eval(const SGPP::base::DataVector& x,
   value[0] = gx;
 }
 
-void G3ConstraintGradient::clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
+void G3ConstraintGradient::clone(std::unique_ptr<VectorFunctionGradient>& clone)
+const {
   clone = std::unique_ptr<VectorFunctionGradient>(
             new G3ConstraintGradient(*this));
 }
@@ -385,7 +391,8 @@ SGPP::float_t G8ObjectiveGradient::eval(const SGPP::base::DataVector& x,
   }
 }
 
-void G8ObjectiveGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
+void G8ObjectiveGradient::clone(std::unique_ptr<ScalarFunctionGradient>& clone)
+const {
   clone = std::unique_ptr<ScalarFunctionGradient>(
             new G8ObjectiveGradient(*this));
 }
@@ -444,7 +451,8 @@ void G8ConstraintGradient::eval(const SGPP::base::DataVector& x,
   }
 }
 
-void G8ConstraintGradient::clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
+void G8ConstraintGradient::clone(std::unique_ptr<VectorFunctionGradient>& clone)
+const {
   clone = std::unique_ptr<VectorFunctionGradient>(
             new G8ConstraintGradient(*this));
 }

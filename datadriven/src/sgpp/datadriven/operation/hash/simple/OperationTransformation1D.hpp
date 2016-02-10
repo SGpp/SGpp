@@ -13,28 +13,29 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Sample 1D Probability Density Function
-     */
+/**
+ * Sample 1D Probability Density Function
+ */
 
-    class OperationTransformation1D {
-      public:
-        OperationTransformation1D() {
-        }
-        virtual ~OperationTransformation1D() {
-        }
-
-        /**
-         * Transform 1d
-         * @param alpha1d
-         * @param coord1d
-         * @return
-         */
-        virtual float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d) = 0;
-    };
-
+class OperationTransformation1D {
+ public:
+  OperationTransformation1D() {
   }
+  virtual ~OperationTransformation1D() {
+  }
+
+  /**
+   * Transform 1d
+   * @param alpha1d
+   * @param coord1d
+   * @return
+   */
+  virtual float_t doTransformation1D(base::DataVector* alpha1d,
+                                     float_t coord1d) = 0;
+};
+
+}
 }
 #endif /* OPERATIONTRANSFORMATION1D_HPP */

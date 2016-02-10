@@ -13,32 +13,32 @@
  * Example test function.
  */
 class ExampleFunction : public SGPP::optimization::ScalarFunction {
-  public:
-    /**
-     * Constructor.
-     */
-    ExampleFunction() : SGPP::optimization::ScalarFunction(2) {
-    }
+ public:
+  /**
+   * Constructor.
+   */
+  ExampleFunction() : SGPP::optimization::ScalarFunction(2) {
+  }
 
-    /**
-     * Evaluates the test function.
-     *
-     * @param x     point \f$\vec{x} \in [0, 1]^2\f$
-     * @return      \f$f(\vec{x})\f$
-     */
-    SGPP::float_t eval(const SGPP::base::DataVector& x) {
-      // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
-      return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
-    }
+  /**
+   * Evaluates the test function.
+   *
+   * @param x     point \f$\vec{x} \in [0, 1]^2\f$
+   * @return      \f$f(\vec{x})\f$
+   */
+  SGPP::float_t eval(const SGPP::base::DataVector& x) {
+    // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
+    return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
+  }
 
-    /**
-     * @param[out] clone pointer to cloned object
-     */
-    virtual void clone(
-      std::unique_ptr<SGPP::optimization::ScalarFunction>& clone) const {
-      clone = std::unique_ptr<SGPP::optimization::ScalarFunction>(
-                new ExampleFunction(*this));
-    }
+  /**
+   * @param[out] clone pointer to cloned object
+   */
+  virtual void clone(
+    std::unique_ptr<SGPP::optimization::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<SGPP::optimization::ScalarFunction>(
+              new ExampleFunction(*this));
+  }
 };
 
 /**

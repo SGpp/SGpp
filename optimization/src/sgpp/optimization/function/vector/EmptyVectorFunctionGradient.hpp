@@ -10,24 +10,24 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Singleton containing an empty implementation of VectorFunctionGradient.
-     * This is intended as a fill-in for ConstrainedOptimizer, if
-     * only equality or inequality constraints are supported.
-     */
-    class EmptyVectorFunctionGradient {
-      public:
-        static WrapperVectorFunctionGradient& getInstance();
+/**
+ * Singleton containing an empty implementation of VectorFunctionGradient.
+ * This is intended as a fill-in for ConstrainedOptimizer, if
+ * only equality or inequality constraints are supported.
+ */
+class EmptyVectorFunctionGradient {
+ public:
+  static WrapperVectorFunctionGradient& getInstance();
 
-      private:
-        EmptyVectorFunctionGradient() {}
-        EmptyVectorFunctionGradient(const EmptyVectorFunctionGradient&) = delete;
-        void operator=(const EmptyVectorFunctionGradient&) = delete;
-    };
+ private:
+  EmptyVectorFunctionGradient() {}
+  EmptyVectorFunctionGradient(const EmptyVectorFunctionGradient&) = delete;
+  void operator=(const EmptyVectorFunctionGradient&) = delete;
+};
 
-  }
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORGRADIENT_HPP */

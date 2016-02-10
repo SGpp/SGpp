@@ -10,21 +10,26 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid, rhs) {
-    }
+OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(
+  SGPP::base::Grid& SparseGrid,
+  SGPP::base::DataVector& rhs) : OperationEllipticPDESolverSystem(SparseGrid,
+        rhs) {
+}
 
-    OperationEllipticPDESolverSystemFreeBoundaries::~OperationEllipticPDESolverSystemFreeBoundaries() {
-    }
+OperationEllipticPDESolverSystemFreeBoundaries::~OperationEllipticPDESolverSystemFreeBoundaries() {
+}
 
-    void OperationEllipticPDESolverSystemFreeBoundaries::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-      applyLOperator(alpha, result);
-    }
+void OperationEllipticPDESolverSystemFreeBoundaries::mult(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+  applyLOperator(alpha, result);
+}
 
-    SGPP::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS() {
-      return this->rhs;
-    }
+SGPP::base::DataVector*
+OperationEllipticPDESolverSystemFreeBoundaries::generateRHS() {
+  return this->rhs;
+}
 
-  }
+}
 }

@@ -12,28 +12,32 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <utility>
+#include <vector>
+
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    float_t OperationEvalModWavelet::eval(const DataVector& alpha,
-                                          const DataVector& point) {
-      typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+float_t OperationEvalModWavelet::eval(const DataVector& alpha,
+                                      const DataVector& point) {
+  typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
-      IndexValVector vec;
-      WaveletModifiedBasis<unsigned int, unsigned int> base;
-      GetAffectedBasisFunctions<WaveletModifiedBasis<unsigned int, unsigned int> > ga(storage);
+  IndexValVector vec;
+  WaveletModifiedBasis<unsigned int, unsigned int> base;
+  GetAffectedBasisFunctions <
+  WaveletModifiedBasis<unsigned int, unsigned int> > ga(storage);
 
-      ga(base, point, vec);
+  ga(base, point, vec);
 
-      float_t result = 0.0;
+  float_t result = 0.0;
 
-      for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
-        result += iter->second * alpha[iter->first];
-      }
-
-      return result;
-    }
-
+  for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
+    result += iter->second * alpha[iter->first];
   }
+
+  return result;
 }
+
+}  // namespace base
+}  // namespace SGPP

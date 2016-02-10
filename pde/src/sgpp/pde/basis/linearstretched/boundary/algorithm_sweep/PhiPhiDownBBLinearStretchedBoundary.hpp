@@ -16,50 +16,51 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
 
 
-    /**
-     * Implementation of SGPP::base::sweep operator (): 1D Down for
-     * Bilinearform \f$\int_{x} \phi(x) \phi(x) dx\f$
-     * on linear boundary grids
-     */
-    class PhiPhiDownBBLinearStretchedBoundary : public PhiPhiDownBBLinearStretched {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's SGPP::base::GridStorage object
-         */
-        PhiPhiDownBBLinearStretchedBoundary(SGPP::base::GridStorage* storage);
+/**
+ * Implementation of SGPP::base::sweep operator (): 1D Down for
+ * Bilinearform \f$\int_{x} \phi(x) \phi(x) dx\f$
+ * on linear boundary grids
+ */
+class PhiPhiDownBBLinearStretchedBoundary : public PhiPhiDownBBLinearStretched {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's SGPP::base::GridStorage object
+   */
+  PhiPhiDownBBLinearStretchedBoundary(SGPP::base::GridStorage* storage);
 
-        /**
-         * Destructor
-         */
-        virtual ~PhiPhiDownBBLinearStretchedBoundary();
+  /**
+   * Destructor
+   */
+  virtual ~PhiPhiDownBBLinearStretchedBoundary();
 
-        /**
-         * This operations performs the calculation of down in the direction of dimension <i>dim</i>
-         *
-         * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
-         * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
-         * result)
-         * So please assure that both functions do exist!
-         *
-         * On level zero the getfixDirechletBoundaries of the storage object evaluated
-         *
-         * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
-         * @param result SGPP::base::DataVector that contains the result of the down operation
-         * @param index a iterator object of the grid
-         * @param dim current fixed dimension of the 'execution direction'
-         */
-        virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
-    };
+  /**
+   * This operations performs the calculation of down in the direction of dimension <i>dim</i>
+   *
+   * For level zero it's assumed, that both ansatz-functions do exist: 0,0 and 0,1
+   * If one is missing this code might produce some bad errors (segmentation fault, wrong calculation
+   * result)
+   * So please assure that both functions do exist!
+   *
+   * On level zero the getfixDirechletBoundaries of the storage object evaluated
+   *
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param result SGPP::base::DataVector that contains the result of the down operation
+   * @param index a iterator object of the grid
+   * @param dim current fixed dimension of the 'execution direction'
+   */
+  virtual void operator()(SGPP::base::DataVector& source,
+                          SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
+};
 
-    // namespace detail
+// namespace detail
 
-  } // namespace SGPP
+} // namespace SGPP
 }
 
 #endif /* PHIPHIDOWNBBLINEARSTRETCHEDBOUNDARY_HPP */

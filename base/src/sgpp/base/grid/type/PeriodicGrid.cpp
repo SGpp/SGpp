@@ -12,46 +12,44 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    PeriodicGrid::PeriodicGrid(std::istream& istr) :
-      Grid(istr) {
-    }
-
-    PeriodicGrid::PeriodicGrid(size_t dim) :
-      Grid(dim) {
-    }
-
-    PeriodicGrid::~PeriodicGrid() {
-    }
-
-    SGPP::base::GridType PeriodicGrid::getType() {
-      return SGPP::base::GridType::Periodic;
-    }
-
-    Grid* PeriodicGrid::unserialize(std::istream& istr) {
-      return new PeriodicGrid(istr);
-    }
-
-    const SBasis& PeriodicGrid::getBasis() {
-      static SLinearPeriodicBasis basis;
-      return basis;
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* PeriodicGrid::createGridGenerator() {
-      return new PeriodicGridGenerator(this->storage);
-    }
-
-
-  }
+PeriodicGrid::PeriodicGrid(std::istream& istr) :
+  Grid(istr) {
 }
+
+PeriodicGrid::PeriodicGrid(size_t dim) :
+  Grid(dim) {
+}
+
+PeriodicGrid::~PeriodicGrid() {
+}
+
+SGPP::base::GridType PeriodicGrid::getType() {
+  return SGPP::base::GridType::Periodic;
+}
+
+Grid* PeriodicGrid::unserialize(std::istream& istr) {
+  return new PeriodicGrid(istr);
+}
+
+const SBasis& PeriodicGrid::getBasis() {
+  static SLinearPeriodicBasis basis;
+  return basis;
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* PeriodicGrid::createGridGenerator() {
+  return new PeriodicGridGenerator(this->storage);
+}
+
+
+}  // namespace base
+}  // namespace SGPP

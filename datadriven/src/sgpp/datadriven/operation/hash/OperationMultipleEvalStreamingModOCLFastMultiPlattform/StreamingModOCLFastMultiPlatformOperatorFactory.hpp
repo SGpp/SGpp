@@ -14,10 +14,12 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperationMultiEvalStreamingModOCLFastMultiPlatform.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(base::Grid& grid,
-        base::DataMatrix& dataset, SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(
+  base::Grid& grid,
+  base::DataMatrix& dataset,
+  SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
-  }
+}
 }

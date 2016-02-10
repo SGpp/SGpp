@@ -90,10 +90,12 @@ int main(int argc, char** argv) {
 
   sampleFile.close();
 
-  SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressorOperator(dataset, values);
+  SGPP::datadriven::OperationPiecewiseConstantRegression
+  piecewiseRegressorOperator(dataset, values);
 
-  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
-        0.0001, 30);
+  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node>
+  piecewiseRegressor = piecewiseRegressorOperator.hierarchize(
+                         0.0001, 30);
 
   //    std::ofstream resultFile;
   //    resultFile.open("resultFile.csv");
@@ -184,8 +186,8 @@ int main(int argc, char** argv) {
   solverConfig.threshold_ = -1.0;
   solverConfig.type_ = SGPP::solver::SLESolverType::CG;
 
-  SGPP::pde::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = SGPP::pde::RegularizationType::Laplace;
+  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
 
   //  SGPP::float_t lambda = 0.1;
   SGPP::float_t lambda = 0.0005;
@@ -194,14 +196,17 @@ int main(int argc, char** argv) {
   //  SGPP::float_t lambda = 0.001;
 
 
-  auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(dim));
+  auto grid = std::shared_ptr<SGPP::base::Grid>
+              (SGPP::base::Grid::createLinearGrid(dim));
 
-  auto generator = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
+  auto generator = std::shared_ptr<SGPP::base::GridGenerator>
+                   (grid->createGridGenerator());
   generator->regular(maxLevel);
 
   bool verbose = true;
 
-  SGPP::datadriven::LearnerPiecewiseConstantSmoothedRegression learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
+  SGPP::datadriven::LearnerPiecewiseConstantSmoothedRegression learner(gridConfig,
+      adaptConfig, solverConfig, regularizationConfig,
       verbose);
 
   DataVector alpha(grid->getSize());
@@ -219,7 +224,8 @@ int main(int argc, char** argv) {
 
   std::cout << std::endl;
 
-  SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(*grid);
+  SGPP::base::OperationEval* linearEval = SGPP::op_factory::createOperationEval(
+      *grid);
 
   if (dim == 2) {
 #if USE_DOUBLE_PRECISION == 1
