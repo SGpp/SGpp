@@ -26,8 +26,7 @@ class EmptyVectorFunction {
   EmptyVectorFunction(const EmptyVectorFunction&) = delete;
   void operator=(const EmptyVectorFunction&) = delete;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP */

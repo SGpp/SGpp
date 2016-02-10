@@ -47,24 +47,21 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    *                      while the finite entries denote the constant
    *                      values for the corresponding parameter.
    */
-  ComponentScalarFunctionGradient(
-    ScalarFunctionGradient& fGradient,
-    std::vector<float_t> defaultValues = std::vector<float_t>()) :
+  ComponentScalarFunctionGradient(ScalarFunctionGradient& fGradient,
+                                  std::vector<float_t> defaultValues = std::vector<float_t>())
+      :
 
-    ScalarFunctionGradient((defaultValues.size() > 0) ?
-                           std::count(defaultValues.begin(),
-                                      defaultValues.end(), NAN) :
-                           fGradient.getNumberOfParameters()),
-    fGradientScalar(&fGradient),
-    fGradientVector(nullptr),
-    dF(fGradient.getNumberOfParameters()),
-    k(0),
-    defaultValues((defaultValues.size() > 0) ?
-                  defaultValues : std::vector<float_t>(dF, NAN)),
-    tmpVec1(dF),
-    tmpVec2(dF),
-    tmpMat(0, 0) {
-
+        ScalarFunctionGradient((defaultValues.size() > 0)
+                                   ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                   : fGradient.getNumberOfParameters()),
+        fGradientScalar(&fGradient),
+        fGradientVector(nullptr),
+        dF(fGradient.getNumberOfParameters()),
+        k(0),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        tmpVec1(dF),
+        tmpVec2(dF),
+        tmpMat(0, 0) {
     initialize();
   }
 
@@ -83,33 +80,28 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    *                      (between 0 and m - 1)
    * @param defaultValues see other constructor
    */
-  ComponentScalarFunctionGradient(
-    VectorFunctionGradient& fGradient,
-    size_t k,
-    std::vector<float_t> defaultValues = std::vector<float_t>()) :
+  ComponentScalarFunctionGradient(VectorFunctionGradient& fGradient, size_t k,
+                                  std::vector<float_t> defaultValues = std::vector<float_t>())
+      :
 
-    ScalarFunctionGradient((defaultValues.size() > 0) ?
-                           std::count(defaultValues.begin(),
-                                      defaultValues.end(), NAN) :
-                           fGradient.getNumberOfParameters()),
-    fGradientScalar(nullptr),
-    fGradientVector(&fGradient),
-    dF(fGradient.getNumberOfParameters()),
-    k(k),
-    defaultValues((defaultValues.size() > 0) ?
-                  defaultValues : std::vector<float_t>(dF, NAN)),
-    tmpVec1(dF),
-    tmpVec2(fGradient.getNumberOfComponents()),
-    tmpMat(fGradient.getNumberOfComponents(), dF) {
-
+        ScalarFunctionGradient((defaultValues.size() > 0)
+                                   ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                   : fGradient.getNumberOfParameters()),
+        fGradientScalar(nullptr),
+        fGradientVector(&fGradient),
+        dF(fGradient.getNumberOfParameters()),
+        k(k),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        tmpVec1(dF),
+        tmpVec2(fGradient.getNumberOfComponents()),
+        tmpMat(fGradient.getNumberOfComponents(), dF) {
     initialize();
   }
 
   /**
    * Destructor.
    */
-  virtual ~ComponentScalarFunctionGradient() override {
-  }
+  ~ComponentScalarFunctionGradient() override {}
 
   /**
    * @param[in] x evaluation point \f$\vec{x} \in [0, 1]^n\f$
@@ -118,8 +110,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    *              where \f$(x_1, \dotsc, x_n) =
    *              (y_{i_1}, \dotsc, y_{i_n})\f$
    */
-  inline virtual float_t eval(const base::DataVector& x,
-                              base::DataVector& gradient) override {
+  inline float_t eval(const base::DataVector& x, base::DataVector& gradient) override {
     size_t t2 = 0;
 
     // select entries of x which correspond to NAN entries in
@@ -163,10 +154,8 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<ScalarFunctionGradient>& clone) const override {
-    clone = std::unique_ptr<ScalarFunctionGradient>(
-              new ComponentScalarFunctionGradient(*this));
+  void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
+    clone = std::unique_ptr<ScalarFunctionGradient>(new ComponentScalarFunctionGradient(*this));
   }
 
  protected:
@@ -191,7 +180,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
     // make sure defaultValues has the correct size
     if (defaultValues.size() != dF) {
       throw std::runtime_error(
-        "ComponentScalarFunctionGradient::initialize(): Invalid defaultValues.");
+          "ComponentScalarFunctionGradient::initialize(): Invalid defaultValues.");
     }
 
     // initialize constant non-NAN entries
@@ -202,8 +191,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
     }
   }
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONGRADIENT_HPP */

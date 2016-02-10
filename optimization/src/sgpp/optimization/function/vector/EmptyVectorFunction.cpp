@@ -7,14 +7,12 @@
 #include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    WrapperVectorFunction& EmptyVectorFunction::getInstance() {
-      static WrapperVectorFunction wrapperVectorFunction(
-        0, 0, [](const base::DataVector & x,
-      base::DataVector & value) {});
-      return wrapperVectorFunction;
-    }
-
-  }
+WrapperVectorFunction& EmptyVectorFunction::getInstance() {
+  static WrapperVectorFunction wrapperVectorFunction(
+      0, 0, [](const base::DataVector& x, base::DataVector& value) {});
+  return wrapperVectorFunction;
 }
+}  // namespace optimization
+}  // namespace SGPP

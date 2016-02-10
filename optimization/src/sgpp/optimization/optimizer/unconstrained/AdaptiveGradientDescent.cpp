@@ -13,23 +13,16 @@ namespace optimization {
 namespace optimizer {
 
 AdaptiveGradientDescent::AdaptiveGradientDescent(
-  ScalarFunction& f,
-  ScalarFunctionGradient& fGradient,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t stepSizeIncreaseFactor,
-  float_t stepSizeDecreaseFactor,
-  float_t lineSearchAccuracy) :
-  UnconstrainedOptimizer(f, maxItCount),
-  fGradient(fGradient),
-  theta(tolerance),
-  rhoAlphaPlus(stepSizeIncreaseFactor),
-  rhoAlphaMinus(stepSizeDecreaseFactor),
-  rhoLs(lineSearchAccuracy) {
-}
+    ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, float_t tolerance,
+    float_t stepSizeIncreaseFactor, float_t stepSizeDecreaseFactor, float_t lineSearchAccuracy)
+    : UnconstrainedOptimizer(f, maxItCount),
+      fGradient(fGradient),
+      theta(tolerance),
+      rhoAlphaPlus(stepSizeIncreaseFactor),
+      rhoAlphaMinus(stepSizeDecreaseFactor),
+      rhoLs(lineSearchAccuracy) {}
 
-AdaptiveGradientDescent::~AdaptiveGradientDescent() {
-}
+AdaptiveGradientDescent::~AdaptiveGradientDescent() {}
 
 void AdaptiveGradientDescent::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
@@ -91,8 +84,7 @@ void AdaptiveGradientDescent::optimize() {
     const float_t gradFxTimesDir = -gradFxNorm;
 
     // line search
-    while ((fxNew > fx + rhoLs * alpha * gradFxTimesDir) &&
-           (alpha > 0.0)) {
+    while ((fxNew > fx + rhoLs * alpha * gradFxTimesDir) && (alpha > 0.0)) {
       alpha *= rhoAlphaMinus;
       inDomain = true;
 
@@ -126,9 +118,8 @@ void AdaptiveGradientDescent::optimize() {
     alpha *= rhoAlphaPlus;
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
-      std::to_string(k) + " evaluations, x = " + x.toString() +
-      ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
+                                             x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if alpha is smaller than tolerance theta
@@ -150,50 +141,33 @@ void AdaptiveGradientDescent::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const {
-  return fGradient;
-}
+ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const { return fGradient; }
 
-float_t AdaptiveGradientDescent::getTolerance() const {
-  return theta;
-}
+float_t AdaptiveGradientDescent::getTolerance() const { return theta; }
 
-void AdaptiveGradientDescent::setTolerance(float_t tolerance) {
-  theta = tolerance;
-}
+void AdaptiveGradientDescent::setTolerance(float_t tolerance) { theta = tolerance; }
 
-float_t AdaptiveGradientDescent::getStepSizeIncreaseFactor() const {
-  return rhoAlphaPlus;
-}
+float_t AdaptiveGradientDescent::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
 
-void AdaptiveGradientDescent::setStepSizeIncreaseFactor(
-  float_t stepSizeIncreaseFactor) {
+void AdaptiveGradientDescent::setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor) {
   rhoAlphaPlus = stepSizeIncreaseFactor;
 }
 
-float_t AdaptiveGradientDescent::getStepSizeDecreaseFactor() const {
-  return rhoAlphaMinus;
-}
+float_t AdaptiveGradientDescent::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
 
-void AdaptiveGradientDescent::setStepSizeDecreaseFactor(
-  float_t stepSizeDecreaseFactor) {
+void AdaptiveGradientDescent::setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor) {
   rhoAlphaMinus = stepSizeDecreaseFactor;
 }
 
-float_t AdaptiveGradientDescent::getLineSearchAccuracy() const {
-  return rhoLs;
-}
+float_t AdaptiveGradientDescent::getLineSearchAccuracy() const { return rhoLs; }
 
-void AdaptiveGradientDescent::setLineSearchAccuracy(
-  float_t lineSearchAccuracy) {
+void AdaptiveGradientDescent::setLineSearchAccuracy(float_t lineSearchAccuracy) {
   rhoLs = lineSearchAccuracy;
 }
 
-void AdaptiveGradientDescent::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new AdaptiveGradientDescent(*this));
+void AdaptiveGradientDescent::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new AdaptiveGradientDescent(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP

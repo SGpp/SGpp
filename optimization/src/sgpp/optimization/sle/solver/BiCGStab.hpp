@@ -37,8 +37,7 @@ class BiCGStab : public SLESolver {
    * @param tolerance         tolerance
    * @param startingPoint     starting vector
    */
-  BiCGStab(size_t maxItCount, float_t tolerance,
-           const base::DataVector& startingPoint);
+  BiCGStab(size_t maxItCount, float_t tolerance, const base::DataVector& startingPoint);
 
   /**
    * Destructor.
@@ -52,9 +51,7 @@ class BiCGStab : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system,
-                     base::DataVector& b,
-                     base::DataVector& x) const override;
+  bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const override;
 
   /**
    * @return              maximal number of iterations
@@ -94,9 +91,8 @@ class BiCGStab : public SLESolver {
   /// starting vector
   base::DataVector x0;
 };
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_BICGSTAB_HPP */

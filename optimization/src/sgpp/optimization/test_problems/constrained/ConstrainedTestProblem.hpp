@@ -6,11 +6,11 @@
 #ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_CONSTRAINEDTESTPROBLEM_HPP
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_CONSTRAINEDTESTPROBLEM_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/TestScalarFunction.hpp>
 #include <sgpp/optimization/test_problems/TestVectorFunction.hpp>
+
+#include <cstddef>
 
 namespace SGPP {
 namespace optimization {
@@ -36,7 +36,7 @@ class ConstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  ConstrainedTestProblem(size_t d);
+  explicit ConstrainedTestProblem(size_t d);
 
   /**
    * Destructor.
@@ -136,9 +136,8 @@ class ConstrainedTestProblem {
    */
   virtual bool isDisplacementFeasible();
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_CONSTRAINEDTESTPROBLEM_HPP */

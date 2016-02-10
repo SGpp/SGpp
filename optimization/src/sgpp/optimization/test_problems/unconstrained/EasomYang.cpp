@@ -11,17 +11,11 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-EasomYang::EasomYang(size_t d) :
-  UnconstrainedTestProblem(d),
-  f(d) {
-}
+EasomYang::EasomYang(size_t d) : UnconstrainedTestProblem(d), f(d) {}
 
-EasomYang::~EasomYang() {
-}
+EasomYang::~EasomYang() {}
 
-TestScalarFunction& EasomYang::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& EasomYang::getObjectiveFunction() { return f; }
 
 float_t EasomYang::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
@@ -29,15 +23,11 @@ float_t EasomYang::getOptimalPointUndisplaced(base::DataVector& x) {
   return -1.0;
 }
 
-EasomYangObjective::EasomYangObjective(size_t d) :
-  TestScalarFunction(d) {
-}
+EasomYangObjective::EasomYangObjective(size_t d) : TestScalarFunction(d) {}
 
-EasomYangObjective::~EasomYangObjective() {
-}
+EasomYangObjective::~EasomYangObjective() {}
 
-float_t EasomYangObjective::evalUndisplaced(
-  const base::DataVector& x) {
+float_t EasomYangObjective::evalUndisplaced(const base::DataVector& x) {
   float_t sum = 0.0;
   float_t product = 1.0;
 
@@ -51,12 +41,9 @@ float_t EasomYangObjective::evalUndisplaced(
   return -std::exp(-sum) * product;
 }
 
-void EasomYangObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new EasomYangObjective(*this));
+void EasomYangObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new EasomYangObjective(*this));
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP

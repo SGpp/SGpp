@@ -92,7 +92,7 @@ class RandomNumberGenerator {
    */
   void operator=(const RandomNumberGenerator&) = delete;
 };
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_RANDOMNUMBERGENERATOR_HPP */

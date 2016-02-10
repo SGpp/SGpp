@@ -47,25 +47,22 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
    *                      while the finite entries denote the constant
    *                      values for the corresponding parameter.
    */
-  ComponentScalarFunctionHessian(
-    ScalarFunctionHessian& fHessian,
-    std::vector<float_t> defaultValues = std::vector<float_t>()) :
+  ComponentScalarFunctionHessian(ScalarFunctionHessian& fHessian,
+                                 std::vector<float_t> defaultValues = std::vector<float_t>())
+      :
 
-    ScalarFunctionHessian((defaultValues.size() > 0) ?
-                          std::count(defaultValues.begin(),
-                                     defaultValues.end(), NAN) :
-                          fHessian.getNumberOfParameters()),
-    fHessianScalar(&fHessian),
-    fHessianVector(nullptr),
-    dF(fHessian.getNumberOfParameters()),
-    k(0),
-    defaultValues((defaultValues.size() > 0) ?
-                  defaultValues : std::vector<float_t>(dF, NAN)),
-    tmpVec1(dF),
-    tmpVec2(dF),
-    tmpMat(dF, dF),
-    tmpVecMat() {
-
+        ScalarFunctionHessian((defaultValues.size() > 0)
+                                  ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                  : fHessian.getNumberOfParameters()),
+        fHessianScalar(&fHessian),
+        fHessianVector(nullptr),
+        dF(fHessian.getNumberOfParameters()),
+        k(0),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        tmpVec1(dF),
+        tmpVec2(dF),
+        tmpMat(dF, dF),
+        tmpVecMat() {
     initialize();
   }
 
@@ -84,35 +81,30 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
    *                      (between 0 and m - 1)
    * @param defaultValues see other constructor
    */
-  ComponentScalarFunctionHessian(
-    VectorFunctionHessian& fHessian,
-    size_t k,
-    std::vector<float_t> defaultValues = std::vector<float_t>()) :
+  ComponentScalarFunctionHessian(VectorFunctionHessian& fHessian, size_t k,
+                                 std::vector<float_t> defaultValues = std::vector<float_t>())
+      :
 
-    ScalarFunctionHessian((defaultValues.size() > 0) ?
-                          std::count(defaultValues.begin(),
-                                     defaultValues.end(), NAN) :
-                          fHessian.getNumberOfParameters()),
-    fHessianScalar(nullptr),
-    fHessianVector(&fHessian),
-    dF(fHessian.getNumberOfParameters()),
-    k(k),
-    defaultValues((defaultValues.size() > 0) ?
-                  defaultValues : std::vector<float_t>(dF, NAN)),
-    tmpVec1(dF),
-    tmpVec2(fHessian.getNumberOfComponents()),
-    tmpMat(fHessian.getNumberOfComponents(), dF),
-    tmpVecMat(std::vector<base::DataMatrix>(
-                fHessian.getNumberOfComponents(), base::DataMatrix(dF, dF))) {
-
+        ScalarFunctionHessian((defaultValues.size() > 0)
+                                  ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                  : fHessian.getNumberOfParameters()),
+        fHessianScalar(nullptr),
+        fHessianVector(&fHessian),
+        dF(fHessian.getNumberOfParameters()),
+        k(k),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        tmpVec1(dF),
+        tmpVec2(fHessian.getNumberOfComponents()),
+        tmpMat(fHessian.getNumberOfComponents(), dF),
+        tmpVecMat(std::vector<base::DataMatrix>(fHessian.getNumberOfComponents(),
+                                                base::DataMatrix(dF, dF))) {
     initialize();
   }
 
   /**
    * Destructor.
    */
-  virtual ~ComponentScalarFunctionHessian() override {
-  }
+  ~ComponentScalarFunctionHessian() override {}
 
   /**
    * @param[in] x evaluation point \f$\vec{x} \in [0, 1]^n\f$
@@ -122,9 +114,8 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
    *              where \f$(x_1, \dotsc, x_n) =
    *              (y_{i_1}, \dotsc, y_{i_n})\f$
    */
-  inline virtual float_t eval(const base::DataVector& x,
-                              base::DataVector& gradient,
-                              base::DataMatrix& hessian) override {
+  inline float_t eval(const base::DataVector& x, base::DataVector& gradient,
+                      base::DataMatrix& hessian) override {
     size_t t2 = 0, t4;
 
     // select entries of x which correspond to NAN entries in
@@ -186,10 +177,8 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<ScalarFunctionHessian>& clone) const override {
-    clone = std::unique_ptr<ScalarFunctionHessian>(
-              new ComponentScalarFunctionHessian(*this));
+  void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const override {
+    clone = std::unique_ptr<ScalarFunctionHessian>(new ComponentScalarFunctionHessian(*this));
   }
 
  protected:
@@ -216,7 +205,7 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
     // make sure defaultValues has the correct size
     if (defaultValues.size() != dF) {
       throw std::runtime_error(
-        "ComponentScalarFunctionHessian::initialize(): Invalid defaultValues.");
+          "ComponentScalarFunctionHessian::initialize(): Invalid defaultValues.");
     }
 
     // initialize constant non-NAN entries
@@ -227,8 +216,7 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
     }
   }
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONHESSIAN_HPP */

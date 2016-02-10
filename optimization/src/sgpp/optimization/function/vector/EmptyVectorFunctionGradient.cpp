@@ -7,15 +7,12 @@
 #include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    WrapperVectorFunctionGradient& EmptyVectorFunctionGradient::getInstance() {
-      static WrapperVectorFunctionGradient wrapperVectorFunctionGradient(
-        0, 0, [](const base::DataVector & x,
-                 base::DataVector & value,
-      base::DataMatrix & gradient) {});
-      return wrapperVectorFunctionGradient;
-    }
-
-  }
+WrapperVectorFunctionGradient& EmptyVectorFunctionGradient::getInstance() {
+  static WrapperVectorFunctionGradient wrapperVectorFunctionGradient(
+      0, 0, [](const base::DataVector& x, base::DataVector& value, base::DataMatrix& gradient) {});
+  return wrapperVectorFunctionGradient;
 }
+}  // namespace optimization
+}  // namespace SGPP

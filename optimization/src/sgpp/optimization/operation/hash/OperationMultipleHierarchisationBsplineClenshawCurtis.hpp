@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONBSPLINECLENSHAWCURTIS_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONBSPLINECLENSHAWCURTIS_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINECLENSHAWCURTIS_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINECLENSHAWCURTIS_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,16 +19,16 @@ namespace optimization {
  * Hierarchisation operation for B-spline basis functions on
  * Clenshaw-Curtis grids.
  */
-class OperationMultipleHierarchisationBsplineClenshawCurtis :
-  public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationBsplineClenshawCurtis
+    : public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  OperationMultipleHierarchisationBsplineClenshawCurtis(
-    base::BsplineClenshawCurtisGrid& grid);
+  explicit OperationMultipleHierarchisationBsplineClenshawCurtis(
+      base::BsplineClenshawCurtisGrid& grid);
 
   /**
    * Destructor.
@@ -69,8 +69,7 @@ class OperationMultipleHierarchisationBsplineClenshawCurtis :
   /// storage of the sparse grid
   base::BsplineClenshawCurtisGrid& grid;
 };
+}  // namespace optimization
+}  // namespace SGPP
 
-}
-}
-
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONBSPLINECLENSHAWCURTIS_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINECLENSHAWCURTIS_HPP */
