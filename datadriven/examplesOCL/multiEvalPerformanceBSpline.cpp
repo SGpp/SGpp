@@ -1,11 +1,17 @@
-#include <random>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/globaldef.hpp>
+#include <random>
+#include <string>
+
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/operation/hash/common/basis/BsplineBasis.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
+#include "sgpp/globaldef.hpp"
 
 SGPP::float_t calculateMSE(SGPP::base::DataVector vector1,
                            SGPP::base::DataVector vector2) {
@@ -20,7 +26,6 @@ SGPP::float_t calculateMSE(SGPP::base::DataVector vector1,
 }
 
 int main(int argc, char** argv) {
-
   std::string fileName = "friedman_4d.arff";
   //  std::string fileName = "debugging_small.arff";
 
@@ -46,12 +51,12 @@ int main(int argc, char** argv) {
   std::uniform_real_distribution<double> dist(1.0, 100.0);
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCL);
+      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+      SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
-        configuration);
+      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
+                                                    configuration);
 
   {
     // create coefficient vector

@@ -1,21 +1,16 @@
-/*
- * multiEvalPerformance.cpp
- *
- *  Created on: Mar 12, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <iostream>
-#if USE_OCL==1
+#include <string>
 
+#include "sgpp/globaldef.hpp"
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/datadriven/application/LearnerScenario.hpp>
-
+#include "sgpp/datadriven/application/LearnerScenario.hpp"
 
 int main(int argc, char** argv) {
-
   int maxLevel = 1;
   //    std::string fileName = "friedman_4d_small.arff";
   std::string fileName = "friedman_4d.arff";
@@ -25,7 +20,7 @@ int main(int argc, char** argv) {
   sg::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
-  gridConfig.dim_ = 0; //dim is inferred from the data
+  gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = maxLevel;
   gridConfig.type_ = SGPP::base::GridType::Linear;
 
@@ -51,7 +46,8 @@ int main(int argc, char** argv) {
   double lambda = 0.000001;
 
   SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig,
-      SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig);
+                                             SLESolverConfigRefine,
+                                             SLESolverConfigFinal, adaptConfig);
 
   scenario.writeToFile("learnerSimple.scenario");
 
@@ -59,12 +55,3 @@ int main(int argc, char** argv) {
 
   readScenario.writeToFile("test.scenario");
 }
-#else
-#include <iostream>
-int main(int argc, char** argv) {
-  std::cout <<
-            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
-            std::endl;
-  return 0;
-}
-#endif

@@ -87,6 +87,7 @@ vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant 
 vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
+vars.Add(BoolVariable('PRINT_INSTRUCTIONS', 'Print instruction for installing SG++.', True))
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ)
@@ -391,7 +392,8 @@ def printFinished(target, source, env):
     print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
                                                PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
 
-dependencies.append(env.Command('printFinished', [], printFinished))
+if env["PRINT_INSTRUCTIONS"]:
+    dependencies.append(env.Command('printFinished', [], printFinished))
 
 # necessary to enforce an order on the final steps of the building of the wrapper
 for i in range(len(dependencies) - 1):

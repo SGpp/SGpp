@@ -1,12 +1,16 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <iostream>
 #include <string>
 
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 int main(int argc, char** argv) {
-
   int maxLevel = 9;
   //  int maxLevel = 2;
 
@@ -17,14 +21,14 @@ int main(int argc, char** argv) {
   //  std::string fileName = "chess_train.arff";
   //    std::string fileName = "bigger.arff";
 
-  //SGPP::base::RegularGridConfiguration gridConfig;
+  // SGPP::base::RegularGridConfiguration gridConfig;
   SGPP::base::RegularGridConfiguration gridConfig;
   SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
   SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
   SGPP::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
-  gridConfig.dim_ = 0; //dim is inferred from the data
+  gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = maxLevel;
   gridConfig.type_ = SGPP::base::GridType::ModLinear;
 
@@ -47,39 +51,38 @@ int main(int argc, char** argv) {
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
-  std::string metaInformation = "refine: " + std::to_string((
-                                  unsigned long long) adaptConfig.numRefinements_)
-                                + " points: " + std::to_string((unsigned long long) adaptConfig.noPoints_) +
-                                " iterations: "
-                                + std::to_string((unsigned long long) SLESolverConfigRefine.maxIterations_);
+  std::string metaInformation =
+      "refine: " + std::to_string(adaptConfig.numRefinements_) + " points: " +
+      std::to_string(adaptConfig.noPoints_) + " iterations: " +
+      std::to_string(SLESolverConfigRefine.maxIterations_);
 
   bool verbose = true;
   SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine,
                                         SLESolverConfigFinal, adaptConfig,
                                         verbose);
 
-  //learner.learn(kernelType, fileName);
-  //learner.learnReference(fileName);
+  // learner.learn(kernelType, fileName);
+  // learner.learnReference(fileName);
 
-  //buggy are:
-  //subspace simple - 0
-  //subspacelinear combined - 60
-  //streaming default - 1600 (13 without avx)
-  //streaming ocl - 13
+  // buggy are:
+  // subspace simple - 0
+  // subspacelinear combined - 60
+  // streaming default - 1600 (13 without avx)
+  // streaming ocl - 13
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-    SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-    SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
+      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
 
   double lambda = 0.000001;
 
-
   learner.learn(configuration, fileName, lambda);
-  //learner.learnReference(fileName);
+  // learner.learnReference(fileName);
 
-  //learner.learnAndTest(fileName, testFileName, isBinaryClassificationProblem);
-  //learner.learnAndCompare(configuration, fileName, 8, 1.0);
-  //learner.writeStatisticsFile("statistics.csv", "test");
+  // learner.learnAndTest(fileName, testFileName,
+  // isBinaryClassificationProblem);
+  // learner.learnAndCompare(configuration, fileName, 8, 1.0);
+  // learner.writeStatisticsFile("statistics.csv", "test");
 
   return EXIT_SUCCESS;
 }
