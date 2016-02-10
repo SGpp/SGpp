@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include <sgpp/solver/SLESolver.hpp>
 
 namespace SGPP {
 namespace datadriven {
@@ -35,7 +36,7 @@ private:
 
 	std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
 
-	std::shared_ptr<SGPP::solver::SLESolver> solver;
+	std::shared_ptr<solver::SLESolver> solver;
 protected:
 
 	virtual datadriven::DMSystemMatrixBase* createSystemMatrix(
