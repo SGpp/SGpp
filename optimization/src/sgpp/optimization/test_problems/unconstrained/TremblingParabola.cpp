@@ -12,17 +12,11 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-TremblingParabola::TremblingParabola(size_t d, size_t p) :
-  UnconstrainedTestProblem(d),
-  f(d, p) {
-}
+TremblingParabola::TremblingParabola(size_t d, size_t p) : UnconstrainedTestProblem(d), f(d, p) {}
 
-TremblingParabola::~TremblingParabola() {
-}
+TremblingParabola::~TremblingParabola() {}
 
-TestScalarFunction& TremblingParabola::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& TremblingParabola::getObjectiveFunction() { return f; }
 
 float_t TremblingParabola::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
@@ -30,19 +24,12 @@ float_t TremblingParabola::getOptimalPointUndisplaced(base::DataVector& x) {
   return 0.0;
 }
 
-TremblingParabolaObjective::TremblingParabolaObjective(
-  size_t d, size_t p) :
-  TestScalarFunction(d),
-  p(p),
-  bSplineBasis(p),
-  g0(splineTrembling(0.0)) {
-}
+TremblingParabolaObjective::TremblingParabolaObjective(size_t d, size_t p)
+    : TestScalarFunction(d), p(p), bSplineBasis(p), g0(splineTrembling(0.0)) {}
 
-TremblingParabolaObjective::~TremblingParabolaObjective() {
-}
+TremblingParabolaObjective::~TremblingParabolaObjective() {}
 
-float_t TremblingParabolaObjective::evalUndisplaced(
-  const base::DataVector& x) {
+float_t TremblingParabolaObjective::evalUndisplaced(const base::DataVector& x) {
   float_t result = 0.0;
 
   /*for (size_t t = 0; t < d; t++) {
@@ -77,12 +64,9 @@ inline float_t TremblingParabolaObjective::splineTrembling(float_t x) const {
   return result;
 }
 
-void TremblingParabolaObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new TremblingParabolaObjective(*this));
+void TremblingParabolaObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new TremblingParabolaObjective(*this));
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP

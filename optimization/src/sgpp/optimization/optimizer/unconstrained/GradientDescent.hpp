@@ -8,10 +8,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <memory>
-
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
+
+#include <memory>
 
 namespace SGPP {
 namespace optimization {
@@ -44,12 +44,9 @@ class GradientDescent : public UnconstrainedOptimizer {
    * @param tolerance     tolerance (parameter for Armijo's rule)
    * @param epsilon       epsilon (parameter for Armijo's rule)
    */
-  GradientDescent(ScalarFunction& f,
-                  ScalarFunctionGradient& fGradient,
-                  size_t maxItCount = DEFAULT_MAX_IT_COUNT,
-                  float_t beta = DEFAULT_BETA,
-                  float_t gamma = DEFAULT_GAMMA,
-                  float_t tolerance = DEFAULT_TOLERANCE,
+  GradientDescent(ScalarFunction& f, ScalarFunctionGradient& fGradient,
+                  size_t maxItCount = DEFAULT_MAX_IT_COUNT, float_t beta = DEFAULT_BETA,
+                  float_t gamma = DEFAULT_GAMMA, float_t tolerance = DEFAULT_TOLERANCE,
                   float_t epsilon = DEFAULT_EPSILON);
 
   /**
@@ -107,8 +104,7 @@ class GradientDescent : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// objective function gradient
@@ -122,9 +118,8 @@ class GradientDescent : public UnconstrainedOptimizer {
   /// epsilon (parameter for Armijo's rule)
   float_t eps;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_GRADIENTDESCENT_HPP */

@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
@@ -16,23 +14,19 @@ namespace SGPP {
 namespace optimization {
 
 OperationMultipleHierarchisationModLinear::OperationMultipleHierarchisationModLinear(
-  base::ModLinearGrid& grid) :
-  grid(grid) {
-}
+    base::ModLinearGrid& grid)
+    : grid(grid) {}
 
-OperationMultipleHierarchisationModLinear::~OperationMultipleHierarchisationModLinear() {
-}
+OperationMultipleHierarchisationModLinear::~OperationMultipleHierarchisationModLinear() {}
 
-bool OperationMultipleHierarchisationModLinear::doHierarchisation(
-  base::DataVector& nodeValues) {
+bool OperationMultipleHierarchisationModLinear::doHierarchisation(base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationModLinear::doDehierarchisation(
-  base::DataVector& alpha) {
+void OperationMultipleHierarchisationModLinear::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalModLinear opNaiveEval(&storage);
@@ -53,16 +47,14 @@ void OperationMultipleHierarchisationModLinear::doDehierarchisation(
   alpha = nodeValues;
 }
 
-bool OperationMultipleHierarchisationModLinear::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+bool OperationMultipleHierarchisationModLinear::doHierarchisation(base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationModLinear::doDehierarchisation(
-  base::DataMatrix& alpha) {
+void OperationMultipleHierarchisationModLinear::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalModLinear opNaiveEval(&storage);
@@ -86,6 +78,5 @@ void OperationMultipleHierarchisationModLinear::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

@@ -26,8 +26,7 @@ class EmptyVectorFunctionGradient {
   EmptyVectorFunctionGradient(const EmptyVectorFunctionGradient&) = delete;
   void operator=(const EmptyVectorFunctionGradient&) = delete;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORGRADIENT_HPP */

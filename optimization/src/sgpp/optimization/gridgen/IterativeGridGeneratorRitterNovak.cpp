@@ -3,15 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cstring>
-#include <iterator>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+
+#include <cstring>
+#include <iterator>
+#include <algorithm>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace optimization {
@@ -30,63 +33,48 @@ inline double fastPow(double a, double b) {
     int x[2];
   } u = {a};
 
-  u.x[1] = static_cast<int>(
-             b * static_cast<double>(u.x[1] - 1072632447) + 1072632447);
+  u.x[1] = static_cast<int>(b * static_cast<double>(u.x[1] - 1072632447) + 1072632447);
   u.x[0] = 0;
 
   return u.d;
 }
 
 IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
-  ScalarFunction& f,
-  base::Grid& grid,
-  size_t N,
-  float_t adaptivity,
-  base::level_t initialLevel,
-  base::level_t maxLevel,
-  PowMethod powMethod) :
-  IterativeGridGenerator(f, grid, N),
-  gamma(adaptivity),
-  initialLevel(initialLevel),
-  maxLevel(maxLevel),
-  powMethod(powMethod) {
-}
+    ScalarFunction& f, base::Grid& grid, size_t N, float_t adaptivity, base::level_t initialLevel,
+    base::level_t maxLevel, PowMethod powMethod)
+    : IterativeGridGenerator(f, grid, N),
+      gamma(adaptivity),
+      initialLevel(initialLevel),
+      maxLevel(maxLevel),
+      powMethod(powMethod) {}
 
-IterativeGridGeneratorRitterNovak::~IterativeGridGeneratorRitterNovak() {
-}
+IterativeGridGeneratorRitterNovak::~IterativeGridGeneratorRitterNovak() {}
 
-float_t IterativeGridGeneratorRitterNovak::getAdaptivity() const {
-  return gamma;
-}
+float_t IterativeGridGeneratorRitterNovak::getAdaptivity() const { return gamma; }
 
 void IterativeGridGeneratorRitterNovak::setAdaptivity(float_t adaptivity) {
   this->gamma = adaptivity;
 }
 
-base::level_t IterativeGridGeneratorRitterNovak::getInitialLevel() const {
-  return initialLevel;
-}
+base::level_t IterativeGridGeneratorRitterNovak::getInitialLevel() const { return initialLevel; }
 
-void IterativeGridGeneratorRitterNovak::setInitialLevel(
-  base::level_t initialLevel) {
+void IterativeGridGeneratorRitterNovak::setInitialLevel(base::level_t initialLevel) {
   this->initialLevel = initialLevel;
 }
 
-base::level_t IterativeGridGeneratorRitterNovak::getMaxLevel() const {
-  return maxLevel;
-}
+base::level_t IterativeGridGeneratorRitterNovak::getMaxLevel() const { return maxLevel; }
 
 void IterativeGridGeneratorRitterNovak::setMaxLevel(base::level_t maxLevel) {
   this->maxLevel = maxLevel;
 }
 
-IterativeGridGeneratorRitterNovak::PowMethod
-IterativeGridGeneratorRitterNovak::getPowMethod() const {
+IterativeGridGeneratorRitterNovak::PowMethod IterativeGridGeneratorRitterNovak::getPowMethod()
+    const {
   return powMethod;
 }
 
 void IterativeGridGeneratorRitterNovak::setPowMethod(
-  IterativeGridGeneratorRitterNovak::PowMethod powMethod) {
+    IterativeGridGeneratorRitterNovak::PowMethod powMethod) {
   this->powMethod = powMethod;
 }
 
@@ -94,8 +82,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   Printer::getInstance().printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
 
   bool result = true;
-  base::GridIndex::PointDistribution distr =
-    base::GridIndex::PointDistribution::Normal;
+  base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
   base::GridStorage& gridStorage = *grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
@@ -110,8 +97,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
   // generate initial grid
   {
-    std::unique_ptr<base::GridGenerator> gridGen(
-      grid.createGridGenerator());
+    std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
     gridGen->regular(initialLevel);
   }
 
@@ -162,13 +148,9 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
   // determine fXOrder and rank (prepared above)
   std::sort(fXOrder.begin(), fXOrder.begin() + currentN,
-  [&](size_t a, size_t b) {
-    return (fX[a] < fX[b]);
-  });
+            [&fX](size_t a, size_t b) { return (fX[a] < fX[b]); });
   std::sort(rank.begin(), rank.begin() + currentN,
-  [&](size_t a, size_t b) {
-    return (fXOrder[a - 1] < fXOrder[b - 1]);
-  });
+            [&fXOrder](size_t a, size_t b) { return (fXOrder[a - 1] < fXOrder[b - 1]); });
 
   // determine fXSorted
   for (size_t i = 0; i < currentN; i++) {
@@ -182,12 +164,11 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     // status printing
     {
       char str[10];
-      snprintf(str, 10, "%.1f%%",
-               static_cast<float_t>(currentN) /
-               static_cast<float_t>(N) * 100.0);
-      Printer::getInstance().printStatusUpdate(std::string(str) +
-          " (N = " + std::to_string(currentN) +
-          ", k = " + std::to_string(k) + ")");
+      snprintf(str, sizeof(str),
+               "%.1f%%", static_cast<float_t>(currentN) / static_cast<float_t>(N) * 100.0);
+      Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
+                                               std::to_string(currentN) + ", k = " +
+                                               std::to_string(k) + ")");
     }
 
     // determine the best i (i.e. i_best = argmin_i g_i)
@@ -203,12 +184,10 @@ bool IterativeGridGeneratorRitterNovak::generate() {
       float_t g;
 
       if (powMethod == STD_POW) {
-        g = std::pow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0,
-                     gamma) *
+        g = std::pow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0, gamma) *
             std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
       } else {
-        g = fastPow(static_cast<double>(levelSum[i] + degree[i]) + 1.0,
-                    gamma) *
+        g = fastPow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
             fastPow(static_cast<double>(rank[i]) + 1.0, 1.0 - gamma);
       }
 
@@ -290,7 +269,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     if (newN == currentN) {
       // size unchanged ==> point not refined (should not happen)
       Printer::getInstance().printStatusEnd(
-        "error: size unchanged in IterativeGridGeneratorRitterNovak");
+          "error: size unchanged in IterativeGridGeneratorRitterNovak");
       result = false;
       break;
     }
@@ -326,7 +305,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
       // update rank and fXOrder by insertion sort
       // ==> go through fX from greatest entry to lowest
-      for (size_t j = i; j-- > 0; ) {
+      for (size_t j = i; j-- > 0;) {
         if (fXSorted[j] < fXi) {
           // new function value is greater than current one ==> insert here
           fXOrder.insert(fXOrder.begin() + (j + 1), i);
@@ -358,15 +337,13 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   fX.resize(currentN);
 
   if (result) {
-    Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(
-          currentN) +
-        ", k = " + std::to_string(k) + ")");
+    Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ", k = " +
+                                             std::to_string(k) + ")");
     Printer::getInstance().printStatusEnd();
     return true;
   } else {
     return false;
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

@@ -54,23 +54,20 @@ class ComponentScalarFunction : public ScalarFunction {
    *                      while the finite entries denote the constant
    *                      values for the corresponding parameter.
    */
-  ComponentScalarFunction(
-    ScalarFunction& f,
-    std::vector<float_t> defaultValues = std::vector<float_t>()) :
+  ComponentScalarFunction(ScalarFunction& f,
+                          std::vector<float_t> defaultValues = std::vector<float_t>())
+      :
 
-    ScalarFunction((defaultValues.size() > 0) ?
-                   std::count(defaultValues.begin(),
-                              defaultValues.end(), NAN) :
-                   f.getNumberOfParameters()),
-    fScalar(&f),
-    fVector(nullptr),
-    dF(f.getNumberOfParameters()),
-    k(0),
-    defaultValues((defaultValues.size() > 0) ?
-                  defaultValues : std::vector<float_t>(dF, NAN)),
-    tmpVec1(dF),
-    tmpVec2(0) {
-
+        ScalarFunction((defaultValues.size() > 0)
+                           ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                           : f.getNumberOfParameters()),
+        fScalar(&f),
+        fVector(nullptr),
+        dF(f.getNumberOfParameters()),
+        k(0),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        tmpVec1(dF),
+        tmpVec2(0) {
     initialize();
   }
 
@@ -89,32 +86,27 @@ class ComponentScalarFunction : public ScalarFunction {
    *                      (between 0 and m - 1)
    * @param defaultValues see other constructor
    */
-  ComponentScalarFunction(
-    VectorFunction& f,
-    size_t k,
-    std::vector<float_t> defaultValues = std::vector<float_t>()) :
+  ComponentScalarFunction(VectorFunction& f, size_t k,
+                          std::vector<float_t> defaultValues = std::vector<float_t>())
+      :
 
-    ScalarFunction((defaultValues.size() > 0) ?
-                   std::count(defaultValues.begin(),
-                              defaultValues.end(), NAN) :
-                   f.getNumberOfParameters()),
-    fScalar(nullptr),
-    fVector(&f),
-    dF(f.getNumberOfParameters()),
-    k(k),
-    defaultValues((defaultValues.size() > 0) ?
-                  defaultValues : std::vector<float_t>(dF, NAN)),
-    tmpVec1(dF),
-    tmpVec2(f.getNumberOfComponents()) {
-
+        ScalarFunction((defaultValues.size() > 0)
+                           ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                           : f.getNumberOfParameters()),
+        fScalar(nullptr),
+        fVector(&f),
+        dF(f.getNumberOfParameters()),
+        k(k),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        tmpVec1(dF),
+        tmpVec2(f.getNumberOfComponents()) {
     initialize();
   }
 
   /**
    * Destructor.
    */
-  virtual ~ComponentScalarFunction() override {
-  }
+  ~ComponentScalarFunction() override {}
 
   /**
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^n\f$
@@ -122,7 +114,7 @@ class ComponentScalarFunction : public ScalarFunction {
    *              where \f$(x_1, \dotsc, x_n) =
    *              (y_{i_1}, \dotsc, y_{i_n})\f$
    */
-  inline virtual float_t eval(const base::DataVector& x) override {
+  inline float_t eval(const base::DataVector& x) override {
     size_t t2 = 0;
 
     // select entries of x which correspond to NAN entries in
@@ -147,9 +139,8 @@ class ComponentScalarFunction : public ScalarFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override {
-    clone = std::unique_ptr<ScalarFunction>(
-              new ComponentScalarFunction(*this));
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override {
+    clone = std::unique_ptr<ScalarFunction>(new ComponentScalarFunction(*this));
   }
 
  protected:
@@ -171,8 +162,7 @@ class ComponentScalarFunction : public ScalarFunction {
   void initialize() {
     // make sure defaultValues has the correct size
     if (defaultValues.size() != dF) {
-      throw std::runtime_error(
-        "ComponentScalarFunction::initialize(): Invalid defaultValues.");
+      throw std::runtime_error("ComponentScalarFunction::initialize(): Invalid defaultValues.");
     }
 
     // initialize constant non-NAN entries
@@ -183,8 +173,7 @@ class ComponentScalarFunction : public ScalarFunction {
     }
   }
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTION_HPP */
