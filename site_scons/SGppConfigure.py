@@ -60,8 +60,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       else:
         sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
 
-      print config.env['CPPPATH']
-
       if not config.CheckCXXHeader('CL/cl.h'):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
@@ -73,8 +71,15 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       else:
         sys.stderr.write("Info: Trying to find the OpenCL library \"libOpenCL\" without the variable \"OCL_LIBRARY_PATH\"\n")
 
+      print "LIBRARY_PATH:", config.env['LIBPATH']
+
       if not config.CheckLib('OpenCL', language="c++", autoadd=0):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
+        sys.exit(1)
+        
+      if not config.CheckLib('boost_program_options', language="c++", autoadd=0):
+        sys.stderr.write("Error: \"libboost-program-options\" not found, but required for OpenCL\n")
+        sys.stderr.write("On debian-like system the package \"libboost-program-options-dev\" can be installed to solve this issue\n")
         sys.exit(1)
 
       config.env["CPPDEFINES"]["USE_OCL"] = "1"

@@ -78,7 +78,6 @@ else:
     libsuffix = env['SHLIBSUFFIX']
     lib = env.SharedLibrary(target=libname,
                             source=objs,
-                            LIBPATH=BUILD_DIR,
                             LIBS=moduleDependencies)
 
 for lib_str in moduleDependencies:
@@ -103,6 +102,16 @@ if env["ARCH"].upper() != "MIC":
     for fileName in os.listdir("examples"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
             example = example_env.Program(source=os.path.join("examples", fileName))
+            example_env.Requires(example, libInstall)
+            exampleTargetList.append(example)
+
+# build examples for OpenCL
+if env["USE_OCL"]:
+    example_env = env.Clone()
+    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["libboost_program_options"])
+    for fileName in os.listdir("examplesOCL"):
+        if fnmatch.fnmatch(fileName, "*.cpp"):
+            example = example_env.Program(source=os.path.join("examplesOCL", fileName))
             example_env.Requires(example, libInstall)
             exampleTargetList.append(example)
 
