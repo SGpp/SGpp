@@ -9,6 +9,7 @@ import os
 import SGppConfigure
 from SCons.Script.SConscript import SConsEnvironment
 import warnings
+import subprocess
 
 from Helper import *
 
@@ -81,6 +82,7 @@ vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '
 vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
 vars.Add(BoolVariable('COMPILE_BOOST_PERFORMANCE_TESTS', 'Compile the performance tests written using Boost Test. Currently only buildable with OpenCL enabled', False))
 vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
+vars.Add(BoolVariable('RUN_CPPLINT', 'Check compliance to Google\'s style guide using cpplint.', True))
 vars.Add(BoolVariable('USE_DOUBLE_PRECISION', 'If disabled, SG++ will compile using single precision (floats).', True))
 
 vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
@@ -248,6 +250,35 @@ if env['PLATFORM'] == 'win32':
 else:
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
                                               PYSGPP_PACKAGE_PATH.abspath])
+# -------------------------------------------------------------------------
+
+def lintAction(target, source, env):
+    p = subprocess.Popen(["python", "tools/cpplint.py",
+                          "--extensions=cpp,hpp", "--linelength=100",
+                          source[0].abspath],
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # wait for termination and get output on stdout and stderr
+    stdout, stderr = p.communicate()
+    # cpplint prints on stderr
+    for line in stderr.splitlines():
+        # skip status lines, empty lines, and some warning types
+        if ("Done processing " in line) or \
+                ("Total errors found: " in line) or \
+                ("Is this a non-const reference? " +
+                 "If so, make const or use a pointer:" in line) or \
+                ("Consider using rand_r(...) instead of rand(...) for " +
+                 "improved thread safety." in line) or \
+                ("<chrono> is an unapproved C++11 header." in line) or \
+                (line == ""):
+            pass
+        else:
+            print "Warning: " + line
+    # touch file without writing anything
+    # (to indicate for the next run of SCons that we already checked this file)
+    with open(target[0].abspath, "w"): pass
+
+env.Export('lintAction')
+
 # -------------------------------------------------------------------------
 
 # add custom builder to trigger the unittests after the build and to enable a special import test

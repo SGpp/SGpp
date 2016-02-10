@@ -13,6 +13,9 @@
 *.so
 *.exe
 
+#ignoring cpplint files
+*.lint
+
 #ignoring swig build files
 *.jar
 *doc.i
