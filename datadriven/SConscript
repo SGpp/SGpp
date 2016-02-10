@@ -56,8 +56,12 @@ objs = []
 
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
   if os.path.exists(os.path.join(currentFolder, "SConscript")):
-    objsSubmodule = env.SConscript(os.path.join(currentFolder, "SConscript"))
+    cppsSubmodule, hppsSubmodule, objsSubmodule = \
+            env.SConscript(os.path.join(currentFolder, "SConscript"))
     objs += objsSubmodule
+    for hpp in hppsSubmodule:
+      headerSourceList.append(os.path.join(moduleName, hpp))
+      headerDestList.append(hpp.split(os.sep, 1)[1])
     # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
     subdirNames[:] = []
   else:
