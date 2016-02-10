@@ -12,24 +12,22 @@
 #include <sgpp/datadriven/datamining/Scorer.hpp>
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
 
-
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    class SparseGridMiner {
-      public:
-        SparseGridMiner(datadriven::DataMiningConfiguration pconfig);
-        virtual ~SparseGridMiner();
+class SparseGridMiner {
+ public:
+  SparseGridMiner(datadriven::DataMiningConfiguration pconfig);
+  virtual ~SparseGridMiner();
 
+  void run();
 
-        void run();
+ private:
+  datadriven::SampleProvider* dataset;
+  datadriven::Scorer* scorer;
 
-      private:
-        datadriven::SampleProvider* dataset;
-        datadriven::Scorer* scorer;
+  datadriven::DataMiningConfiguration& config;
+};
 
-        datadriven::DataMiningConfiguration& config;
-    };
-
-  } /* namespace datadriven */
+} /* namespace datadriven */
 } /* namespace SGPP */
