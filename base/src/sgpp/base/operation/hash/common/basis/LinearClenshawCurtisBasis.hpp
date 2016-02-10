@@ -68,9 +68,9 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
     }
   }
 
-  protected:
-    /// reference to the Clenshaw-Curtis cache table
-    ClenshawCurtisTable& clenshawCurtisTable;
+ protected:
+  /// reference to the Clenshaw-Curtis cache table
+  ClenshawCurtisTable& clenshawCurtisTable;
 };
 
 // default type-def (unsigned int for level and index)
