@@ -61,6 +61,7 @@ vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
+vars.Add(BoolVariable('PYDOC', 'Build python wrapper with comments', 'SG_PYTHON' in languageSupportNames))
 
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
