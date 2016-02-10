@@ -158,6 +158,8 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
   size_t degree;
   /// temporary helper vector of fixed size p+2 containing B-spline knots
   std::vector<float_t> xi;
+  /// reference to the Clenshaw-Curtis cache table
+  ClenshawCurtisTable& clenshawCurtisTable;
 
   /**
    * @param l     level of the grid point
