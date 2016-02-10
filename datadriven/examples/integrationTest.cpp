@@ -33,23 +33,29 @@ int main(int argc, char** argv) {
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset arffDataset = arffTools.readARFF(fileName);
 
-  SGPP::base::DataMatrix& dataset = arffDataset.getTrainingData();
-  SGPP::base::DataVector& values = arffDataset.getClasses();
+  SGPP::base::DataMatrix& dataset = arffDataset.getData();
+  SGPP::base::DataVector& values = arffDataset.getTargets();
 
   int maxLevel = 8;
   float_t lambda = 0.0;
 
-  SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressor(dataset, values);
+  SGPP::datadriven::OperationPiecewiseConstantRegression piecewiseRegressor(
+    dataset, values);
 
-  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> node = piecewiseRegressor.hierarchize(0.001, 20);
+  std::unique_ptr<SGPP::datadriven::PiecewiseConstantRegression::Node> node =
+    piecewiseRegressor.hierarchize(0.001, 20);
 
-  auto grid = std::shared_ptr<SGPP::base::Grid>(SGPP::base::Grid::createLinearGrid(arffDataset.getDimension()));
+  auto grid = std::shared_ptr<SGPP::base::Grid>
+              (SGPP::base::Grid::createLinearGrid(arffDataset.getDimension()));
 
-  auto generator = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
+  auto generator = std::shared_ptr<SGPP::base::GridGenerator>
+                   (grid->createGridGenerator());
   generator->regular(maxLevel);
 
-  SGPP::base::OperationMatrix* C = SGPP::op_factory::createOperationLaplace(*grid);
-  SGPP::datadriven::PiecewiseConstantSmoothedRegressionSystemMatrix SMatrix(*node, *grid, *C, lambda);
+  SGPP::base::OperationMatrix* C = SGPP::op_factory::createOperationLaplace(
+                                     *grid);
+  SGPP::datadriven::PiecewiseConstantSmoothedRegressionSystemMatrix SMatrix(*node,
+      *grid, *C, lambda);
 
   SGPP::base::DataVector rhs(grid->getStorage()->size());
 

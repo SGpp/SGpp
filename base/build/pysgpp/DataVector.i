@@ -75,6 +75,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
   size_t append();
   size_t append(SGPP::float_t value);
   
+  void restructure(std::vector<size_t>&);
+  
   void setAll(SGPP::float_t value);
   
   void copyFrom(const DataVector& vec);

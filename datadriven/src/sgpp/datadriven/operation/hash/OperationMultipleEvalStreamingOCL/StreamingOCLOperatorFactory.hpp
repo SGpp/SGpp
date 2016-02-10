@@ -14,10 +14,11 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
-        SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid,
+    base::DataMatrix& dataset,
+    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
-  }
+}
 }

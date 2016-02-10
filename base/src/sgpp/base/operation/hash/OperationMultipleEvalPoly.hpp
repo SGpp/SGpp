@@ -14,40 +14,43 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
-     */
-    class OperationMultipleEvalPoly : public OperationMultipleEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid grid
-         * @param degree the polynom's max. degree
-         * @param dataset Dataset
-         */
-        OperationMultipleEvalPoly(Grid& grid, size_t degree, DataMatrix& dataset) : OperationMultipleEval(grid, dataset), base(degree) {
-          this->storage = grid.getStorage();
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEvalPoly() override {}
-
-        virtual void mult(DataVector& alpha, DataVector& result) override;
-        virtual void multTranspose(DataVector& source, DataVector& result) override;
-
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-        /// Poly Basis object
-        SPolyBase base;
-    };
-
+/**
+ * This class implements OperationMultipleEval for a grids with poly basis ansatzfunctions
+ */
+class OperationMultipleEvalPoly : public OperationMultipleEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid grid
+   * @param degree the polynom's max. degree
+   * @param dataset Dataset
+   */
+  OperationMultipleEvalPoly(Grid& grid, size_t degree,
+                            DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset),
+    base(degree) {
+    this->storage = grid.getStorage();
   }
-}
+
+  /**
+   * Destructor
+   */
+  ~OperationMultipleEvalPoly() override {}
+
+  void mult(DataVector& alpha, DataVector& result) override;
+  void multTranspose(DataVector& source, DataVector& result) override;
+
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+  /// Poly Basis object
+  SPolyBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALPOLY_HPP */

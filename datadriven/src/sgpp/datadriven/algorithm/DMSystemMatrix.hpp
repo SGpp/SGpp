@@ -18,50 +18,54 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * Class that implements the virtual class SGPP::base::OperationMatrix for the
-     * application of classification for the Systemmatrix
-     */
-    class DMSystemMatrix : public DMSystemMatrixBase {
-      private:
-        /// SGPP::base::OperationMatrix, the regularisation mehtod
-        SGPP::base::OperationMatrix* C;
-        /// OperationB for calculating the data matrix
-        //OperationMultiEval* B;
-        SGPP::base::OperationMultipleEval* B;
+/**
+ * Class that implements the virtual class base::OperationMatrix for the
+ * application of classification for the Systemmatrix
+ */
+class DMSystemMatrix : public DMSystemMatrixBase {
+ private:
+  /// base::OperationMatrix, the regularisation mehtod
+  base::OperationMatrix* C;
+  /// OperationB for calculating the data matrix
+  // OperationMultiEval* B;
+  base::OperationMultipleEval* B;
 
-        SGPP::base::Grid& grid;
+  base::Grid& grid;
 
-      public:
-        /**
-         * Std-Constructor
-         *
-         * @param grid reference to the sparse grid
-         * @param trainData reference to SGPP::base::DataVector that contains the training data
-         * @param C the regression functional
-         * @param lambdaRegression the lambda, the regression parameter
-         */
-        DMSystemMatrix(SGPP::base::Grid& grid, SGPP::base::DataMatrix& trainData, SGPP::base::OperationMatrix& C, float_t lambdaRegression);
+ public:
+  /**
+   * Std-Constructor
+   *
+   * @param grid reference to the sparse grid
+   * @param trainData reference to base::DataVector that contains the training data
+   * @param C the regression functional
+   * @param lambdaRegression the lambda, the regression parameter
+   */
+  DMSystemMatrix(base::Grid& grid, base::DataMatrix& trainData,
+                 base::OperationMatrix& C, float_t lambdaRegression);
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~DMSystemMatrix();
+  /**
+   * Std-Destructor
+   */
+  virtual ~DMSystemMatrix();
 
-        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(base::DataVector& alpha,
+                    base::DataVector& result);
 
-        /**
-         * Generates the right hand side of the classification equation
-         *
-         * @param classes the class information of the training data
-         * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
-         */
-        virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
-    };
+  /**
+   * Generates the right hand side of the classification equation
+   *
+   * @param classes the class information of the training data
+   * @param b reference to the vector that will contain the result of the matrix vector
+   *   multiplication on the rhs
+   */
+  virtual void generateb(base::DataVector& classes,
+                         base::DataVector& b);
+};
 
-  }
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* DMSYSTEMMATRIX_HPP */

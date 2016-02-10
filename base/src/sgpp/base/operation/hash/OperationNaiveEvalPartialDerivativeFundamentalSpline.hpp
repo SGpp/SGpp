@@ -13,49 +13,50 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Operation for evaluating partial derivatives of B-spline
-     * linear combinations on Noboundary grids.
-     */
-    class OperationNaiveEvalPartialDerivativeFundamentalSpline :
-      public OperationNaiveEvalPartialDerivative {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param storage   storage of the sparse grid
-         * @param degree    B-spline degree
-         */
-        OperationNaiveEvalPartialDerivativeFundamentalSpline(GridStorage* storage, size_t degree) :
-          storage(storage), base(degree) {
-        }
-
-        /**
-         * Destructor.
-         */
-        virtual ~OperationNaiveEvalPartialDerivativeFundamentalSpline() override {
-        }
-
-        /**
-         * @param alpha     coefficient vector
-         * @param point     evaluation point
-         * @param derivDim  dimension in which the partial derivative should be taken
-         * @return          value of the partial derivative of the linear combination
-         */
-        virtual float_t evalPartialDerivative(const DataVector& alpha,
-                                              const DataVector& point,
-                                              size_t derivDim) override;
-
-      protected:
-        /// storage of the sparse grid
-        GridStorage* storage;
-        /// 1D B-spline basis
-        SFundamentalSplineBase base;
-    };
-
+/**
+ * Operation for evaluating partial derivatives of B-spline
+ * linear combinations on Noboundary grids.
+ */
+class OperationNaiveEvalPartialDerivativeFundamentalSpline :
+  public OperationNaiveEvalPartialDerivative {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param storage   storage of the sparse grid
+   * @param degree    B-spline degree
+   */
+  OperationNaiveEvalPartialDerivativeFundamentalSpline(GridStorage* storage,
+      size_t degree) :
+    storage(storage), base(degree) {
   }
-}
+
+  /**
+   * Destructor.
+   */
+  ~OperationNaiveEvalPartialDerivativeFundamentalSpline() override {
+  }
+
+  /**
+   * @param alpha     coefficient vector
+   * @param point     evaluation point
+   * @param derivDim  dimension in which the partial derivative should be taken
+   * @return          value of the partial derivative of the linear combination
+   */
+  float_t evalPartialDerivative(const DataVector& alpha,
+                                const DataVector& point,
+                                size_t derivDim) override;
+
+ protected:
+  /// storage of the sparse grid
+  GridStorage* storage;
+  /// 1D B-spline basis
+  SFundamentalSplineBase base;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONEVALPARTIALDERIVATIVEFUNDAMENTALSPLINE_HPP */

@@ -16,51 +16,52 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Hierarchisation on sparse grid, mod bspline case
-     *
-     */
-    class OperationHierarchisationModBspline : public OperationHierarchisation {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         * @param degree the bsplinenom's max. degree
-         */
-        OperationHierarchisationModBspline(GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
+/**
+ * Hierarchisation on sparse grid, mod bspline case
+ *
+ */
+class OperationHierarchisationModBspline : public OperationHierarchisation {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's GridStorage object
+   * @param degree the bsplinenom's max. degree
+   */
+  explicit OperationHierarchisationModBspline(
+    GridStorage* storage, size_t degree) : storage(storage), base(degree) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationHierarchisationModBspline() override {}
+  /**
+   * Destructor
+   */
+  ~OperationHierarchisationModBspline() override {}
 
-        /**
-         * Implements the hierarchisation on a sprase grid with mod bspline base functions
-         *
-         * @param node_values the functions values in the node base
-         *
-         */
-        virtual void doHierarchisation(DataVector& node_values) override;
+  /**
+   * Implements the hierarchisation on a sprase grid with mod bspline base functions
+   *
+   * @param node_values the functions values in the node base
+   *
+   */
+  void doHierarchisation(DataVector& node_values) override;
 
-        /**
-         * Implements the dehierarchisation on a sprase grid with mod bspline base functions
-         *
-         * @param alpha the coefficients of the sparse grid's base functions
-         *
-         */
-        virtual void doDehierarchisation(DataVector& alpha) override;
+  /**
+   * Implements the dehierarchisation on a sprase grid with mod bspline base functions
+   *
+   * @param alpha the coefficients of the sparse grid's base functions
+   *
+   */
+  void doDehierarchisation(DataVector& alpha) override;
 
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
-        /// Mod Bspline Basis object
-        SBsplineModifiedBase base;
-    };
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+  /// Mod Bspline Basis object
+  SBsplineModifiedBase base;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONHIERARCHISATIONMODBSPLINE_HPP */

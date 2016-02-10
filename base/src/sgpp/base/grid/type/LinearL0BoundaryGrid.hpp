@@ -8,44 +8,42 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with linear base functions with boundaries
-     */
-    class LinearL0BoundaryGrid : public Grid {
-      protected:
-        LinearL0BoundaryGrid(std::istream& istr);
+/**
+ * grid with linear base functions with boundaries
+ */
+class LinearL0BoundaryGrid : public Grid {
+ protected:
+  explicit LinearL0BoundaryGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor for the Linear Boundary Grid
-         *
-         * @param dim the dimension of the grid
-         */
-        LinearL0BoundaryGrid(size_t dim);
+ public:
+  /**
+   * Constructor for the Linear Boundary Grid
+   *
+   * @param dim the dimension of the grid
+   */
+  explicit LinearL0BoundaryGrid(size_t dim);
 
-        /**
-         * Destructor
-         */
-        virtual ~LinearL0BoundaryGrid() override;
+  /**
+   * Destructor
+   */
+  ~LinearL0BoundaryGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
+  SGPP::base::GridType getType() override;
 
-        virtual const SBasis& getBasis() override;
+  const SBasis& getBasis() override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
-    };
+  static Grid* unserialize(std::istream& istr);
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* LINEARBOUNDARYGRID_HPP */

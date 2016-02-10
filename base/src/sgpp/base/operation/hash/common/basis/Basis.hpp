@@ -10,38 +10,39 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Basis class for basis functions.
-     */
-    template<class LT, class IT>
-    class Basis {
-      public:
-        /**
-         * Evaluate the basis function with given level and index.
-         *
-         * @param level   level of the basis function
-         * @param index   index of the basis function
-         * @param x       evaluation point
-         * @result        value of the basis function.
-         */
-        virtual float_t eval(LT level, IT index, float_t x) = 0;
+/**
+ * Basis class for basis functions.
+ */
+template<class LT, class IT>
+class Basis {
+ public:
+  /**
+   * Evaluate the basis function with given level and index.
+   *
+   * @param level   level of the basis function
+   * @param index   index of the basis function
+   * @param x       evaluation point
+   * @result        value of the basis function.
+   */
+  virtual float_t eval(LT level, IT index, float_t x) = 0;
 
-        /**
-         * Destructor.
-         */
-        virtual ~Basis() {};
+  /**
+   * Destructor.
+   */
+  virtual ~Basis() {}
 
-        //Basis();
-        /*private:
-        Basis(Basis const&);
-        Basis& operator=(Basis const&);
-        */
-    };
+  // Basis();
+  /*private:
+  Basis(Basis const&);
+  Basis& operator=(Basis const&);
+  */
+};
 
-    typedef Basis<unsigned int, unsigned int> SBasis;
-  }
-}
+typedef Basis<unsigned int, unsigned int> SBasis;
 
-#endif // BASIS_HPP
+}  // namespace base
+}  // namespace SGPP
+
+#endif  // BASIS_HPP

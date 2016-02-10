@@ -10,24 +10,26 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    class QuadRule1D {
-      public:
-        QuadRule1D();
-        virtual ~QuadRule1D();
+class QuadRule1D {
+ public:
+  QuadRule1D();
+  virtual ~QuadRule1D();
 
-        void getLevelPointsAndWeights(size_t level, base::DataVector& coordinates,
-                                      base::DataVector& weights);
+  void getLevelPointsAndWeights(size_t level, base::DataVector& coordinates,
+                                base::DataVector& weights);
 
-      protected:
-        const size_t maxSupportedLevel = 20;
-        std::vector<DataVector*> coordinates;
-        std::vector<DataVector*> weights;
-    };
+ protected:
+  const size_t maxSupportedLevel = 20;
+  std::vector<DataVector*> coordinates;
+  std::vector<DataVector*> weights;
+};
 
-  } /* namespace base */
-} /* namespace SGPP */
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* QUADRULE1D_HPP_ */

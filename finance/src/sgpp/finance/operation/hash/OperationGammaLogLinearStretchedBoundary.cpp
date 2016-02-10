@@ -25,71 +25,83 @@
 
 
 namespace SGPP {
-  namespace finance {
+namespace finance {
 
-    OperationGammaLogLinearStretchedBoundary::OperationGammaLogLinearStretchedBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataMatrix& coef) : SGPP::pde::UpDownTwoOpDims(storage, coef) {
-    }
+OperationGammaLogLinearStretchedBoundary::OperationGammaLogLinearStretchedBoundary(
+  SGPP::base::GridStorage* storage,
+  SGPP::base::DataMatrix& coef) : SGPP::pde::UpDownTwoOpDims(storage, coef) {
+}
 
-    OperationGammaLogLinearStretchedBoundary::~OperationGammaLogLinearStretchedBoundary() {
-    }
+OperationGammaLogLinearStretchedBoundary::~OperationGammaLogLinearStretchedBoundary() {
+}
 
-    void OperationGammaLogLinearStretchedBoundary::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // phi * phi
-      SGPP::pde::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-      SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+void OperationGammaLogLinearStretchedBoundary::up(SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, size_t dim) {
+  // phi * phi
+  SGPP::pde::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearStretchedBoundary> s(func,
+      this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLogLinearStretchedBoundary::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // phi * phi
-      SGPP::pde::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-      SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+void OperationGammaLogLinearStretchedBoundary::down(SGPP::base::DataVector&
+    alpha, SGPP::base::DataVector& result, size_t dim) {
+  // phi * phi
+  SGPP::pde::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearStretchedBoundary> s(func,
+      this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLogLinearStretchedBoundary::upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // phi * dphi
-      PhidPhiUpBBLinearStretchedBoundary func(this->storage);
-      SGPP::base::sweep<PhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+void OperationGammaLogLinearStretchedBoundary::upOpDimOne(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  // phi * dphi
+  PhidPhiUpBBLinearStretchedBoundary func(this->storage);
+  SGPP::base::sweep<PhidPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLogLinearStretchedBoundary::downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // phi * dphi
-      PhidPhiDownBBLinearStretchedBoundary func(this->storage);
-      SGPP::base::sweep<PhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+void OperationGammaLogLinearStretchedBoundary::downOpDimOne(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  // phi * dphi
+  PhidPhiDownBBLinearStretchedBoundary func(this->storage);
+  SGPP::base::sweep<PhidPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLogLinearStretchedBoundary::upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // dphi * phi
-      DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
-      SGPP::base::sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+void OperationGammaLogLinearStretchedBoundary::upOpDimTwo(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  // dphi * phi
+  DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
+  SGPP::base::sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLogLinearStretchedBoundary::downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      // dphi * phi
-      DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
-      SGPP::base::sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+void OperationGammaLogLinearStretchedBoundary::downOpDimTwo(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  // dphi * phi
+  DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
+  SGPP::base::sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
 
-      s.sweep1D_Boundary(alpha, result, dim);
-    }
+  s.sweep1D_Boundary(alpha, result, dim);
+}
 
-    void OperationGammaLogLinearStretchedBoundary::upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      SGPP::pde::UpdPhidPhiBBIterativeLinearStretchedBoundary myUp(this->storage);
-      myUp(alpha, result, dim);
-    }
+void OperationGammaLogLinearStretchedBoundary::upOpDimOneAndOpDimTwo(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  SGPP::pde::UpdPhidPhiBBIterativeLinearStretchedBoundary myUp(this->storage);
+  myUp(alpha, result, dim);
+}
 
-    void OperationGammaLogLinearStretchedBoundary::downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-      SGPP::pde::DowndPhidPhiBBIterativeLinearStretchedBoundary myDown(this->storage);
-      myDown(alpha, result, dim);
-    }
+void OperationGammaLogLinearStretchedBoundary::downOpDimOneAndOpDimTwo(
+  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+  SGPP::pde::DowndPhidPhiBBIterativeLinearStretchedBoundary myDown(this->storage);
+  myDown(alpha, result, dim);
+}
 
-  }
+}
 }

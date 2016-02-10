@@ -46,12 +46,15 @@ int main(int argc, char** argv) {
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
-  std::string metaInformation = "refine: " + std::to_string((unsigned long long) adaptConfig.numRefinements_)
-                                + " points: " + std::to_string((unsigned long long) adaptConfig.noPoints_) + " iterations: "
+  std::string metaInformation = "refine: " + std::to_string((
+                                  unsigned long long) adaptConfig.numRefinements_)
+                                + " points: " + std::to_string((unsigned long long) adaptConfig.noPoints_) +
+                                " iterations: "
                                 + std::to_string((unsigned long long) SLESolverConfigRefine.maxIterations_);
 
   bool verbose = true;
-  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig,
+  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine,
+                                        SLESolverConfigFinal, adaptConfig,
                                         verbose);
 
   //learner.learn(kernelType, fileName);

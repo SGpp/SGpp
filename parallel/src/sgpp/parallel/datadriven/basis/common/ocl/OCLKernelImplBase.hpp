@@ -30,56 +30,56 @@
 
 
 namespace SGPP {
-  namespace parallel {
-    class OCLKernelImplBase {
-      public:
-        void resetKernel();
-        static inline size_t getChunkGridPoints() {
-          return ocl_local_size;
-        }
-
-        static inline size_t getChunkDataPoints() {
-          return ocl_local_size;
-        }
-      protected:
-        OCLKernelImplBase();
-
-        ~OCLKernelImplBase();
-        void releaseGridBuffers();
-
-        void releaseDataBuffers();
-
-        void releaseKernelsAndPrograms();
-
-
-        cl_int err;
-        cl_platform_id platform_id;
-        cl_platform_id* platform_ids;
-        cl_device_id* device_ids;
-        cl_uint num_platforms;
-        cl_uint num_devices;
-        cl_context context;
-
-        cl_command_queue* command_queue;
-
-        cl_mem* clData;
-        cl_mem* clLevel;
-        cl_mem* clIndex;
-        cl_mem* clMask;
-        cl_mem* clOffset;
-
-        // use pinned memory (on host and device) to speed up data transfers from/to GPU
-        cl_mem* clDevGrid;
-        cl_mem* clDevTmp;
-        cl_mem clPinnedGrid;
-        cl_mem clPinnedTmp;
-
-        cl_kernel* kernel_multTrans;
-        cl_kernel* kernel_mult;
-
-        static unsigned int ocl_local_size;
-    };
+namespace parallel {
+class OCLKernelImplBase {
+ public:
+  void resetKernel();
+  static inline size_t getChunkGridPoints() {
+    return ocl_local_size;
   }
+
+  static inline size_t getChunkDataPoints() {
+    return ocl_local_size;
+  }
+ protected:
+  OCLKernelImplBase();
+
+  ~OCLKernelImplBase();
+  void releaseGridBuffers();
+
+  void releaseDataBuffers();
+
+  void releaseKernelsAndPrograms();
+
+
+  cl_int err;
+  cl_platform_id platform_id;
+  cl_platform_id* platform_ids;
+  cl_device_id* device_ids;
+  cl_uint num_platforms;
+  cl_uint num_devices;
+  cl_context context;
+
+  cl_command_queue* command_queue;
+
+  cl_mem* clData;
+  cl_mem* clLevel;
+  cl_mem* clIndex;
+  cl_mem* clMask;
+  cl_mem* clOffset;
+
+  // use pinned memory (on host and device) to speed up data transfers from/to GPU
+  cl_mem* clDevGrid;
+  cl_mem* clDevTmp;
+  cl_mem clPinnedGrid;
+  cl_mem clPinnedTmp;
+
+  cl_kernel* kernel_multTrans;
+  cl_kernel* kernel_mult;
+
+  static unsigned int ocl_local_size;
+};
+}
 }
 
 #endif // USEOCL

@@ -9,67 +9,69 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
 
 
-    PhiPhiUpBBLinearStretchedBoundary::PhiPhiUpBBLinearStretchedBoundary(SGPP::base::GridStorage* storage) : PhiPhiUpBBLinearStretched(storage) {
+PhiPhiUpBBLinearStretchedBoundary::PhiPhiUpBBLinearStretchedBoundary(
+  SGPP::base::GridStorage* storage) : PhiPhiUpBBLinearStretched(storage) {
+}
+
+PhiPhiUpBBLinearStretchedBoundary::~PhiPhiUpBBLinearStretchedBoundary() {
+}
+
+void PhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
+    source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+  float_t q = this->stretching->getIntervalWidth(dim);
+  //  float_t t = this->stretching->getIntervalOffset(dim);
+
+
+  // get boundary values
+  float_t fl = 0.0;
+  float_t fr = 0.0;
+
+  if (!index.hint()) {
+    index.resetToLevelOne(dim);
+
+    if (!this->storage->end(index.seq())) {
+      //This will be changed to rec
+      rec(source, result, index, dim, fl, fr);
     }
 
-    PhiPhiUpBBLinearStretchedBoundary::~PhiPhiUpBBLinearStretchedBoundary() {
-    }
+    index.resetToLeftLevelZero(dim);
+  }
 
-    void PhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-      float_t q = this->stretching->getIntervalWidth(dim);
-      //  float_t t = this->stretching->getIntervalOffset(dim);
+  size_t seq_left;
+  size_t seq_right;
 
+  // left boundary
+  seq_left = index.seq();
 
-      // get boundary values
-      float_t fl = 0.0;
-      float_t fr = 0.0;
+  // right boundary
+  index.resetToRightLevelZero(dim);
+  seq_right = index.seq();
 
-      if (!index.hint()) {
-        index.resetToLevelOne(dim);
+  // up
+  //////////////////////////////////////
+  //Left
+  if (this->stretching->hasDirichletBoundaryLeft(dim)) {
+    result[seq_left] = 0.0; // source[seq_left];
+  } else {
+    result[seq_left] = fl;
+    result[seq_left] += (((1.0 / 6.0) * source[seq_right]) * q);
+  }
 
-        if (!this->storage->end(index.seq())) {
-          //This will be changed to rec
-          rec(source, result, index, dim, fl, fr);
-        }
+  // Right
+  if (this->stretching->hasDirichletBoundaryRight(dim)) {
+    result[seq_right] = 0.0; //source[seq_right];
+  } else {
+    result[seq_right] = fr;
+  }
 
-        index.resetToLeftLevelZero(dim);
-      }
+  index.resetToLeftLevelZero(dim);
+}
 
-      size_t seq_left;
-      size_t seq_right;
+// namespace detail
 
-      // left boundary
-      seq_left = index.seq();
-
-      // right boundary
-      index.resetToRightLevelZero(dim);
-      seq_right = index.seq();
-
-      // up
-      //////////////////////////////////////
-      //Left
-      if (this->stretching->hasDirichletBoundaryLeft(dim)) {
-        result[seq_left] = 0.0; // source[seq_left];
-      } else {
-        result[seq_left] = fl;
-        result[seq_left] += (((1.0 / 6.0) * source[seq_right]) * q);
-      }
-
-      // Right
-      if (this->stretching->hasDirichletBoundaryRight(dim)) {
-        result[seq_right] = 0.0; //source[seq_right];
-      } else {
-        result[seq_right] = fr;
-      }
-
-      index.resetToLeftLevelZero(dim);
-    }
-
-    // namespace detail
-
-  } // namespace SGPP
+} // namespace SGPP
 }

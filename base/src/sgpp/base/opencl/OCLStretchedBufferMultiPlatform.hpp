@@ -1,9 +1,7 @@
-/*
- * OCLStretchedBufferMultiPlatform.hpp
- *
- *  Created on: Mar 31, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -13,49 +11,55 @@
 
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 
+#include <map>
+
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    //copies the whole buffer on all devices, retrieves only the part that was worked on on a specific device
+// copies the whole buffer on all devices, retrieves only the part
+// that was worked on on a specific device
 
-    class OCLStretchedBufferMultiPlatform {
-      private:
-        std::shared_ptr<OCLManagerMultiPlatform> manager;
-        bool initialized;
-        std::map<cl_platform_id, cl_mem*> platformBufferList;
-        size_t sizeofType;
-        size_t elements;
+class OCLStretchedBufferMultiPlatform {
+ private:
+  std::shared_ptr<OCLManagerMultiPlatform> manager;
+  bool initialized;
+  std::map<cl_platform_id, cl_mem*> platformBufferList;
+  size_t sizeofType;
+  size_t elements;
 
-        bool isMappedMemory;
-        std::map<cl_platform_id, cl_mem> hostBuffer;
-        std::map<cl_platform_id, void*> mappedHostBuffer;
-      public:
+  bool isMappedMemory;
+  std::map<cl_platform_id, cl_mem> hostBuffer;
+  std::map<cl_platform_id, void*> mappedHostBuffer;
 
-        OCLStretchedBufferMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform> manager);
+ public:
+  OCLStretchedBufferMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform>
+                                  manager);
 
-        ~OCLStretchedBufferMultiPlatform();
+  ~OCLStretchedBufferMultiPlatform();
 
-        bool isInitialized();
+  bool isInitialized();
 
-        cl_mem* getBuffer(cl_platform_id platformId, size_t deviceNumber);
+  cl_mem* getBuffer(cl_platform_id platformId, size_t deviceNumber);
 
-        //only for mapped buffer
-        void* getMappedHostBuffer(cl_platform_id platformId);
+  // only for mapped buffer
+  void* getMappedHostBuffer(cl_platform_id platformId);
 
-        void copyToOtherHostBuffers(cl_platform_id originPlatformId);
+  void copyToOtherHostBuffers(cl_platform_id originPlatformId);
 
-        void readFromBuffer(std::map<cl_platform_id, size_t*> indexStart, std::map<cl_platform_id, size_t*> indexEnd);
+  void readFromBuffer(std::map<cl_platform_id, size_t*> indexStart,
+                      std::map<cl_platform_id, size_t*> indexEnd);
 
-        void combineBuffer(std::map<cl_platform_id, size_t*> indexStart, std::map<cl_platform_id, size_t*> indexEnd,
-                           cl_platform_id platformId);
+  void combineBuffer(std::map<cl_platform_id, size_t*> indexStart,
+                     std::map<cl_platform_id, size_t*> indexEnd,
+                     cl_platform_id platformId);
 
-        void writeToBuffer();
+  void writeToBuffer();
 
-        void initializeBuffer(size_t sizeofType, size_t elements);
+  void initializeBuffer(size_t sizeofType, size_t elements);
 
-        void freeBuffer();
-    };
+  void freeBuffer();
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 

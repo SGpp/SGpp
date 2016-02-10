@@ -13,36 +13,37 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * FirstMomemnt of sparse grid function, linear grid without boundaries
-     */
-    class OperationFirstMomentLinear : public OperationFirstMoment {
-      public:
-        /**
-         * Constructor of OperationFirstMomentLinear
-         *
-         * @param storage Pointer to the grid's GridStorage object
-         */
-        OperationFirstMomentLinear(GridStorage* storage) : storage(storage) {}
+/**
+ * FirstMomemnt of sparse grid function, linear grid without boundaries
+ */
+class OperationFirstMomentLinear : public OperationFirstMoment {
+ public:
+  /**
+   * Constructor of OperationFirstMomentLinear
+   *
+   * @param storage Pointer to the grid's GridStorage object
+   */
+  explicit OperationFirstMomentLinear(GridStorage* storage) :
+    storage(storage) {}
 
-        virtual ~OperationFirstMomentLinear() override {}
+  ~OperationFirstMomentLinear() override {}
 
-        /**
-         * Compute first moment of the function
-         * @f[ \int_{\Omega} x\cdot f(x) dx. @f]
-         *
-         * @param alpha Coefficient vector for current grid
-         */
-        virtual float_t doQuadrature(const DataVector& alpha) override;
+  /**
+   * Compute first moment of the function
+   * @f[ \int_{\Omega} x\cdot f(x) dx. @f]
+   *
+   * @param alpha Coefficient vector for current grid
+   */
+  float_t doQuadrature(const DataVector& alpha) override;
 
-      protected:
-        // Pointer to the grid's GridStorage object
-        GridStorage* storage;
-    };
+ protected:
+  // Pointer to the grid's GridStorage object
+  GridStorage* storage;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONFIRSTMOMENTLINEAR_HPP */

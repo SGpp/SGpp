@@ -162,8 +162,10 @@ int main() {
     ht.eval(x, htx);
 
     std::cout << "x = " << x.toString() << "\n";
-    std::cout << "f = " << fx << ", g = " << gx.toString() << ", h = " << hx.toString() << "\n";
-    std::cout << "ft = " << ftx << ", gt = " << gtx.toString() << ", ht = " << htx.toString() << "\n";
+    std::cout << "f = " << fx << ", g = " << gx.toString() << ", h = " <<
+              hx.toString() << "\n";
+    std::cout << "ft = " << ftx << ", gt = " << gtx.toString() << ", ht = " <<
+              htx.toString() << "\n";
     std::cout << "\n";
   }
 

@@ -12,33 +12,32 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class provides the second moment of a sparse grid function
-     */
-    class OperationSecondMoment {
-      public:
-        /**
-         * Constructor
-         */
-        OperationSecondMoment() {}
+/**
+ * This class provides the second moment of a sparse grid function
+ */
+class OperationSecondMoment {
+ public:
+  /**
+   * Constructor
+   */
+  OperationSecondMoment() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationSecondMoment() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationSecondMoment() {}
 
-        /**
-         * Integrate the sparse grid function
-         *
-         * @param alpha the function's values in the nodal basis
-         */
-        virtual float_t doQuadrature(DataVector& alpha) = 0;
+  /**
+   * Integrate the sparse grid function
+   *
+   * @param alpha the function's values in the nodal basis
+   */
+  virtual float_t doQuadrature(DataVector& alpha) = 0;
+};
 
-    };
-
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONSECONDMOMENT_HPP */

@@ -13,39 +13,38 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * This class implements OperationEval for a grids with prewavelet basis ansatzfunctions without boundaries
-     */
-    class OperationEvalPrewavelet : public OperationEval {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's GridStorage object
-         */
-        OperationEvalPrewavelet(GridStorage* storage) : storage(storage) {}
+/**
+ * This class implements OperationEval for a grids with prewavelet basis ansatzfunctions without boundaries
+ */
+class OperationEvalPrewavelet : public OperationEval {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's GridStorage object
+   */
+  explicit OperationEvalPrewavelet(GridStorage* storage) : storage(storage) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationEvalPrewavelet() override {}
+  /**
+   * Destructor
+   */
+  ~OperationEvalPrewavelet() override {}
 
-        virtual float_t eval(const DataVector& alpha,
-                             const DataVector& point) override;
-        virtual float_t test(const DataVector& alpha,
-                             const DataVector& data,
-                             const DataVector& classes);
-        virtual float_t integrate(const DataVector& alpha);
+  float_t eval(const DataVector& alpha,
+               const DataVector& point) override;
+  virtual float_t test(const DataVector& alpha,
+                       const DataVector& data,
+                       const DataVector& classes);
+  virtual float_t integrate(const DataVector& alpha);
 
-      protected:
-        /// Pointer to GridStorage object
-        GridStorage* storage;
+ protected:
+  /// Pointer to GridStorage object
+  GridStorage* storage;
+};
 
-    };
-
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONEVELMODLINEAR_HPP */

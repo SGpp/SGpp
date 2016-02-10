@@ -10,24 +10,24 @@
 #include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Singleton containing an empty implementation of VectorFunction.
-     * This is intended as a fill-in for ConstrainedOptimizer, if
-     * only equality or inequality constraints are supported.
-     */
-    class EmptyVectorFunction {
-      public:
-        static WrapperVectorFunction& getInstance();
+/**
+ * Singleton containing an empty implementation of VectorFunction.
+ * This is intended as a fill-in for ConstrainedOptimizer, if
+ * only equality or inequality constraints are supported.
+ */
+class EmptyVectorFunction {
+ public:
+  static WrapperVectorFunction& getInstance();
 
-      private:
-        EmptyVectorFunction() {}
-        EmptyVectorFunction(const EmptyVectorFunction&) = delete;
-        void operator=(const EmptyVectorFunction&) = delete;
-    };
+ private:
+  EmptyVectorFunction() {}
+  EmptyVectorFunction(const EmptyVectorFunction&) = delete;
+  void operator=(const EmptyVectorFunction&) = delete;
+};
 
-  }
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP */

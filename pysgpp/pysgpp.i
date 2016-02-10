@@ -44,15 +44,6 @@
 #include <omp.h>
 %}
 
-// -----------------------------------------------------------
-// needed for MSVC++ wrapper since swig does not understand
-// that unsigned int is equal to size_t and generates
-// template specifications twice
-#ifdef SWIGWIN
-typedef unsigned int size_t;
-#endif
-// -----------------------------------------------------------
-
 %{
 #define SWIG_FILE_WITH_INIT
 %}
@@ -64,8 +55,10 @@ import_array();
 
 
 %{
+#ifdef SG_BASE
 #include "sgpp/globaldef.hpp"
 #include "sgpp_base.hpp"
+#endif
 #ifdef SG_DATADRIVEN
 #include "sgpp_datadriven.hpp"
 #endif
@@ -96,11 +89,13 @@ import_array();
 %}
 
 
+#ifdef SG_BASE
 #ifdef PYDOC
 %include "base_doc.i"
 #endif
 
 %include "base/build/pysgpp/base.i"
+#endif
 
 #ifdef SG_DATADRIVEN
 #ifdef PYDOC

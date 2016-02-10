@@ -10,89 +10,89 @@
 #include <random>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Singleton class for generating pseudo-random numbers
-     * (wrapper around std::mt19937 from &lt;random&gt;).
-     */
-    class RandomNumberGenerator {
-      public:
-        /// type of the seed
-        typedef std::mt19937::result_type SeedType;
+/**
+ * Singleton class for generating pseudo-random numbers
+ * (wrapper around std::mt19937 from &lt;random&gt;).
+ */
+class RandomNumberGenerator {
+ public:
+  /// type of the seed
+  typedef std::mt19937::result_type SeedType;
 
-        /**
-         * @return singleton instance
-         */
-        static RandomNumberGenerator& getInstance();
+  /**
+   * @return singleton instance
+   */
+  static RandomNumberGenerator& getInstance();
 
-        /**
-         * Generate a uniform pseudo-random number.
-         *
-         * @param a lower bound
-         * @param b upper bound
-         * @return  uniform pseudo-random number in \f$[a, b]\f$
-         */
-        float_t getUniformRN(float_t a = 0.0, float_t b = 1.0);
+  /**
+   * Generate a uniform pseudo-random number.
+   *
+   * @param a lower bound
+   * @param b upper bound
+   * @return  uniform pseudo-random number in \f$[a, b]\f$
+   */
+  float_t getUniformRN(float_t a = 0.0, float_t b = 1.0);
 
-        /**
-         * Generate a uniform pseudo-random array index.
-         *
-         * @param size  size of the array
-         * @return      discrete uniform pseudo-random number in
-         *              \f$\{0, \dotsc, \text{\texttt{size}} - 1\}\f$
-         */
-        size_t getUniformIndexRN(size_t size);
+  /**
+   * Generate a uniform pseudo-random array index.
+   *
+   * @param size  size of the array
+   * @return      discrete uniform pseudo-random number in
+   *              \f$\{0, \dotsc, \text{\texttt{size}} - 1\}\f$
+   */
+  size_t getUniformIndexRN(size_t size);
 
-        /**
-         * Generate a Gaussian pseudo-random number.
-         *
-         * @param stdDev    standard deviation of the Gaussian distribution
-         * @param mean      mean of the Gaussian distribution
-         * @return          Gaussian pseudo-random number
-         */
-        float_t getGaussianRN(float_t stdDev = 1.0, float_t mean = 0.0);
+  /**
+   * Generate a Gaussian pseudo-random number.
+   *
+   * @param stdDev    standard deviation of the Gaussian distribution
+   * @param mean      mean of the Gaussian distribution
+   * @return          Gaussian pseudo-random number
+   */
+  float_t getGaussianRN(float_t stdDev = 1.0, float_t mean = 0.0);
 
-        /**
-         * @return      seed
-         */
-        SeedType getSeed() const;
+  /**
+   * @return      seed
+   */
+  SeedType getSeed() const;
 
-        /**
-         * Reseeds with time-dependent seed.
-         */
-        void setSeed();
+  /**
+   * Reseeds with time-dependent seed.
+   */
+  void setSeed();
 
-        /**
-         * Reseeds.
-         *
-         * @param seed  seed to be used
-         */
-        void setSeed(SeedType seed);
+  /**
+   * Reseeds.
+   *
+   * @param seed  seed to be used
+   */
+  void setSeed(SeedType seed);
 
-      protected:
-        /// random number generator
-        std::mt19937 generator;
-        /// seed
-        SeedType seed;
+ protected:
+  /// random number generator
+  std::mt19937 generator;
+  /// seed
+  SeedType seed;
 
-      private:
-        /**
-         * Constructor, initializes with time-dependent seed.
-         */
-        RandomNumberGenerator();
+ private:
+  /**
+   * Constructor, initializes with time-dependent seed.
+   */
+  RandomNumberGenerator();
 
-        /**
-         * Deleted copy constructor.
-         */
-        RandomNumberGenerator(const RandomNumberGenerator&) = delete;
+  /**
+   * Deleted copy constructor.
+   */
+  RandomNumberGenerator(const RandomNumberGenerator&) = delete;
 
-        /**
-         * Deleted assignment operator.
-         */
-        void operator=(const RandomNumberGenerator&) = delete;
-    };
-  }
+  /**
+   * Deleted assignment operator.
+   */
+  void operator=(const RandomNumberGenerator&) = delete;
+};
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_RANDOMNUMBERGENERATOR_HPP */

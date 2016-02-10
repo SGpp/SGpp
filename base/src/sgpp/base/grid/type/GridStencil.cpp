@@ -9,45 +9,45 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    GridStencil::GridStencil(std::istream& istr)
-      : Grid(istr), surplusStencil(64), neighborStencil(64), weightStencil(64) {
-    }
-
-
-    GridStencil::GridStencil(size_t dim)
-      : surplusStencil(64), neighborStencil(64), weightStencil(64) {
-    }
-
-
-    GridStencil::GridStencil(BoundingBox& BB)
-      : surplusStencil(64), neighborStencil(64), weightStencil(64) {
-    }
-
-
-    GridStencil::~GridStencil() {
-    }
-
-
-
-    const GridStencil::IndexStencil&
-    GridStencil::getSurplusStencil() const {
-      return surplusStencil;
-    }
-
-
-    const GridStencil::IndexStencil&
-    GridStencil::getNeighborStencil() const {
-      return neighborStencil;
-    }
-
-
-    const GridStencil::WeightStencil&
-    GridStencil::getWeightStencil() const {
-      return weightStencil;
-    }
-
-
-  }
+GridStencil::GridStencil(std::istream& istr)
+  : Grid(istr), surplusStencil(64), neighborStencil(64), weightStencil(64) {
 }
+
+
+GridStencil::GridStencil(size_t dim)
+  : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+}
+
+
+GridStencil::GridStencil(BoundingBox& BB)
+  : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+}
+
+
+GridStencil::~GridStencil() {
+}
+
+
+
+const GridStencil::IndexStencil&
+GridStencil::getSurplusStencil() const {
+  return surplusStencil;
+}
+
+
+const GridStencil::IndexStencil&
+GridStencil::getNeighborStencil() const {
+  return neighborStencil;
+}
+
+
+const GridStencil::WeightStencil&
+GridStencil::getWeightStencil() const {
+  return weightStencil;
+}
+
+
+}  // namespace base
+}  // namespace SGPP

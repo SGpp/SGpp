@@ -6,58 +6,58 @@
 #ifndef FILE_EXCEPTION_HPP
 #define FILE_EXCEPTION_HPP
 
+#include <sgpp/globaldef.hpp>
+
 #include <exception>
 #include <cstddef>
 
-#include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Exception that is thrown in case of a file failure
-     *
-     */
-    class file_exception : public std::exception {
-      public:
-        /**
-         * Constructor
-         *
-         * @param msg the exception message
-         */
-        file_exception(const char* msg) throw() : msg(msg) {
-        }
-
-        /**
-         * Standard Constructor
-         */
-        file_exception() throw() : msg(NULL) { }
-
-        /**
-         * Destructor
-         */
-        virtual ~file_exception() throw() override { }
-
-        /**
-         * throw method that have to be implemented
-         *
-         * @return returns the message specified in the constructor otherwise a general text
-         */
-        virtual const char* what() const throw() override {
-          if (msg) {
-            return msg;
-          } else {
-            return "file_exception: general failure";
-          }
-        }
-
-      protected:
-        /// the exception message
-        const char* msg;
-    };
-
+/**
+ * Exception that is thrown in case of a file failure
+ *
+ */
+class file_exception : public std::exception {
+ public:
+  /**
+   * Constructor
+   *
+   * @param msg the exception message
+   */
+  explicit file_exception(const char* msg) throw() : msg(msg) {
   }
-}
+
+  /**
+   * Standard Constructor
+   */
+  file_exception() throw() : msg(NULL) { }
+
+  /**
+   * Destructor
+   */
+  ~file_exception() throw() override { }
+
+  /**
+   * throw method that have to be implemented
+   *
+   * @return returns the message specified in the constructor otherwise a general text
+   */
+  const char* what() const throw() override {
+    if (msg) {
+      return msg;
+    } else {
+      return "file_exception: general failure";
+    }
+  }
+
+ protected:
+  /// the exception message
+  const char* msg;
+};
+
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* FILE_EXCEPTION_HPP */

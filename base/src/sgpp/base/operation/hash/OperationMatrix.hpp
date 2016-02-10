@@ -12,35 +12,35 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Abstract definition of a matrix operator interface.
-     * Every time you need to apply a matrix to the ansatzfunction's
-     * coefficients derive a class from OperationMatrix
-     */
-    class OperationMatrix {
-      public:
-        /**
-         * Constructor
-         */
-        OperationMatrix() {}
+/**
+ * Abstract definition of a matrix operator interface.
+ * Every time you need to apply a matrix to the ansatzfunction's
+ * coefficients derive a class from OperationMatrix
+ */
+class OperationMatrix {
+ public:
+  /**
+   * Constructor
+   */
+  OperationMatrix() {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationMatrix() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationMatrix() {}
 
-        /**
-         * starts the Multiplication with the matrix
-         *
-         * @param alpha DataVector that contains the ansatzfunctions' coefficients
-         * @param result DataVector into which the result of the Laplace operation is stored
-         */
-        virtual void mult(DataVector& alpha, DataVector& result) = 0;
-    };
+  /**
+   * starts the Multiplication with the matrix
+   *
+   * @param alpha DataVector that contains the ansatzfunctions' coefficients
+   * @param result DataVector into which the result of the Laplace operation is stored
+   */
+  virtual void mult(DataVector& alpha, DataVector& result) = 0;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONMATRIX_HPP */

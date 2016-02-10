@@ -22,10 +22,12 @@
 
 void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
                       SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen,
-                      SGPP::base::DataVector& alpha, std::mt19937 mt, std::uniform_real_distribution<double>& dist) {
+                      SGPP::base::DataVector& alpha, std::mt19937 mt,
+                      std::uniform_real_distribution<double>& dist) {
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(&alpha,
-        adaptConfig.noPoints_, adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
+    SGPP::base::SurplusRefinementFunctor(&alpha,
+                                         adaptConfig.noPoints_, adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -107,7 +109,8 @@ int main(int argc, char** argv) {
     level = atoi(argv[2]);
     adaptConfig.numRefinements_ = atoi(argv[3]);
 
-    std::cout << "level: " << level << " numRef: " << adaptConfig.numRefinements_ << std::endl;
+    std::cout << "level: " << level << " numRef: " << adaptConfig.numRefinements_ <<
+              std::endl;
   }
 
   if ( argc >= 5) {
@@ -127,7 +130,8 @@ int main(int argc, char** argv) {
   SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << std::endl;
-  std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
+  std::cout << "number of data points: " << dataset.getNumberInstances() <<
+            std::endl;
 
   std::random_device rd;
   std::mt19937 mt(1234);
@@ -142,18 +146,21 @@ int main(int argc, char** argv) {
 
   std::cout << "creating operation with unrefined grid" << std::endl;
   SGPP::base::OperationMultipleEval* eval =
-    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+    SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
+        configuration);
 
   SGPP::base::OperationMultipleEval* evalTwo = nullptr;
 
   if (bBoth) {
     std::cout << "creating second operation with unrefined grid" << std::endl;
-    evalTwo = SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configurationTwo);
+    evalTwo = SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
+              configurationTwo);
   }
 
   doAllRefinements(adaptConfig, *grid, *gridGen, alpha, mt, dist);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->size() << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage->size()
+            << std::endl;
   std::cout << "grid set up" << std::endl;
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
@@ -176,8 +183,10 @@ int main(int argc, char** argv) {
 
   if ( bBoth ) {
     std::cout << "durationStreaming: " << evalTwo->getDuration() << std::endl;
-    std::cout << "diff: " << eval->getDuration() - evalTwo->getDuration() << std::endl;
-    std::cout << "speedUp: " << evalTwo->getDuration() / eval->getDuration() << std::endl;
+    std::cout << "diff: " << eval->getDuration() - evalTwo->getDuration() <<
+              std::endl;
+    std::cout << "speedUp: " << evalTwo->getDuration() / eval->getDuration() <<
+              std::endl;
   }
 
   if ( bCompare) {
@@ -197,7 +206,8 @@ int main(int argc, char** argv) {
     size_t biggestErrorIndex = 0;
 
     for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-      std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+      std::cout << "mine: " << dataSizeVectorResult[i] << " ref: " <<
+                dataSizeVectorResultCompare[i] << std::endl;
       double error = (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
 
       if (fabs(error) > fabs(biggestError)) {
@@ -210,7 +220,8 @@ int main(int argc, char** argv) {
 
     mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
     std::cout << "mse: " << mse << std::endl;
-    std::cout << "biggest error i: " << biggestErrorIndex << " value: " << biggestError << std::endl;
+    std::cout << "biggest error i: " << biggestErrorIndex << " value: " <<
+              biggestError << std::endl;
   }
 
 }

@@ -10,49 +10,50 @@
 #include <sgpp/base/algorithm/BreadthFirstSearch.hpp>
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    OperationHierarchisationFundamentalSpline::
-    OperationHierarchisationFundamentalSpline(FundamentalSplineGrid* grid) :
-      grid(grid) {
-    }
-
-    OperationHierarchisationFundamentalSpline::
-    ~OperationHierarchisationFundamentalSpline() {
-    }
-
-    void OperationHierarchisationFundamentalSpline::doHierarchisation(
-      DataVector& node_values) {
-      HierarchisationFundamentalSpline func(grid);
-      BreadthFirstSearch<HierarchisationFundamentalSpline>
-      bfs(func, grid->getStorage());
-      bfs.execute(node_values, node_values);
-    }
-
-    void OperationHierarchisationFundamentalSpline::doDehierarchisation(
-      DataVector& alpha) {
-      DehierarchisationFundamentalSpline func(grid);
-      BreadthFirstSearch<DehierarchisationFundamentalSpline>
-      bfs(func, grid->getStorage());
-      DataVector alphaCopy(alpha);
-      bfs.execute(alphaCopy, alpha);
-    }
-
-    void OperationHierarchisationFundamentalSpline::doHierarchisation(
-      DataMatrix& node_values) {
-      HierarchisationFundamentalSpline func(grid);
-      BreadthFirstSearch<HierarchisationFundamentalSpline>
-      bfs(func, grid->getStorage());
-      bfs.execute(node_values, node_values);
-    }
-
-    void OperationHierarchisationFundamentalSpline::doDehierarchisation(
-      DataMatrix& alpha) {
-      DehierarchisationFundamentalSpline func(grid);
-      BreadthFirstSearch<DehierarchisationFundamentalSpline>
-      bfs(func, grid->getStorage());
-      DataMatrix alphaCopy(alpha);
-      bfs.execute(alphaCopy, alpha);
-    }
-  }
+OperationHierarchisationFundamentalSpline::
+OperationHierarchisationFundamentalSpline(FundamentalSplineGrid* grid) :
+  grid(grid) {
 }
+
+OperationHierarchisationFundamentalSpline::
+~OperationHierarchisationFundamentalSpline() {
+}
+
+void OperationHierarchisationFundamentalSpline::doHierarchisation(
+  DataVector& node_values) {
+  HierarchisationFundamentalSpline func(grid);
+  BreadthFirstSearch<HierarchisationFundamentalSpline>
+  bfs(func, grid->getStorage());
+  bfs.execute(node_values, node_values);
+}
+
+void OperationHierarchisationFundamentalSpline::doDehierarchisation(
+  DataVector& alpha) {
+  DehierarchisationFundamentalSpline func(grid);
+  BreadthFirstSearch<DehierarchisationFundamentalSpline>
+  bfs(func, grid->getStorage());
+  DataVector alphaCopy(alpha);
+  bfs.execute(alphaCopy, alpha);
+}
+
+void OperationHierarchisationFundamentalSpline::doHierarchisation(
+  DataMatrix& node_values) {
+  HierarchisationFundamentalSpline func(grid);
+  BreadthFirstSearch<HierarchisationFundamentalSpline>
+  bfs(func, grid->getStorage());
+  bfs.execute(node_values, node_values);
+}
+
+void OperationHierarchisationFundamentalSpline::doDehierarchisation(
+  DataMatrix& alpha) {
+  DehierarchisationFundamentalSpline func(grid);
+  BreadthFirstSearch<DehierarchisationFundamentalSpline>
+  bfs(func, grid->getStorage());
+  DataMatrix alphaCopy(alpha);
+  bfs.execute(alphaCopy, alpha);
+}
+
+}  // namespace base
+}  // namespace SGPP

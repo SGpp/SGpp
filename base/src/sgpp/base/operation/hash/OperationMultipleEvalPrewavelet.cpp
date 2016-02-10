@@ -14,21 +14,23 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationMultipleEvalPrewavelet::mult(DataVector& alpha, DataVector& result) {
-      AlgorithmDGEMV<SPrewaveletBase> op;
-      PrewaveletBasis<unsigned int, unsigned int> base;
+void OperationMultipleEvalPrewavelet::mult(DataVector& alpha,
+    DataVector& result) {
+  AlgorithmDGEMV<SPrewaveletBase> op;
+  PrewaveletBasis<unsigned int, unsigned int> base;
 
-      op.mult(storage, base, alpha, this->dataset, result);
-    }
-
-    void OperationMultipleEvalPrewavelet::multTranspose(DataVector& source, DataVector& result) {
-      AlgorithmDGEMV<SPrewaveletBase> op;
-      PrewaveletBasis<unsigned int, unsigned int> base;
-
-      op.mult_transposed(storage, base, source, this->dataset, result);
-    }
-
-  }
+  op.mult(storage, base, alpha, this->dataset, result);
 }
+
+void OperationMultipleEvalPrewavelet::multTranspose(DataVector& source,
+    DataVector& result) {
+  AlgorithmDGEMV<SPrewaveletBase> op;
+  PrewaveletBasis<unsigned int, unsigned int> base;
+
+  op.mult_transposed(storage, base, source, this->dataset, result);
+}
+
+}  // namespace base
+}  // namespace SGPP

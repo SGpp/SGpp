@@ -18,7 +18,7 @@
 #include <sgpp/datadriven/application/LearnerDensityBased.hpp>
 #include <sgpp/datadriven/application/LearnerDensityBasedReg.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
-#include <sgpp/datadriven/application/LearnerOnlineSGD.hpp>
+// #include <sgpp/datadriven/application/LearnerOnlineSGD.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
@@ -39,6 +39,8 @@
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
 
 #endif /* DATADRIVEN_HPP */

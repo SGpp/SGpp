@@ -10,56 +10,52 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <exception>
 
-
-#include <sgpp/globaldef.hpp>
-
-
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {
-
-    }
-
-    LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim) {
-      this->storage = new GridStorage(dim);
-    }
-
-    LinearGridStencil::LinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
-      this->storage = new GridStorage(BB);
-    }
-
-    LinearGridStencil::~LinearGridStencil() {
-    }
-
-    SGPP::base::GridType LinearGridStencil::getType() {
-      return SGPP::base::GridType::LinearStencil;
-    }
-
-    const SBasis& LinearGridStencil::getBasis() {
-      throw new factory_exception("Not implemented");
-      // it should never get so far, code just for compilation reasons
-      // If there will be a meaningful basis, this following lines should be changed
-      static SLinearBase basis;
-      return basis;
-    }
-
-    Grid* LinearGridStencil::unserialize(std::istream& istr) {
-      return new LinearGridStencil(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* LinearGridStencil::createGridGenerator() {
-      return new StandardGridGenerator(this->storage);
-    }
-
-
-  }
+LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {
 }
+
+LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim) {
+  this->storage = new GridStorage(dim);
+}
+
+LinearGridStencil::LinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
+  this->storage = new GridStorage(BB);
+}
+
+LinearGridStencil::~LinearGridStencil() {
+}
+
+SGPP::base::GridType LinearGridStencil::getType() {
+  return SGPP::base::GridType::LinearStencil;
+}
+
+const SBasis& LinearGridStencil::getBasis() {
+  throw new factory_exception("Not implemented");
+  // it should never get so far, code just for compilation reasons
+  // If there will be a meaningful basis, this following lines should be changed
+  static SLinearBase basis;
+  return basis;
+}
+
+Grid* LinearGridStencil::unserialize(std::istream& istr) {
+  return new LinearGridStencil(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* LinearGridStencil::createGridGenerator() {
+  return new StandardGridGenerator(this->storage);
+}
+
+
+}  // namespace base
+}  // namespace SGPP

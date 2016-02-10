@@ -14,63 +14,71 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    /**
-     * This class implements the ParabolicPDESolverSystem for the
-     * Heat Equation.
-     */
-    class HeatEquationParabolicPDESolverSystemParallelOMP : public OperationParabolicPDESolverSystemDirichlet {
-      protected:
-        /// the heat coefficient
-        float_t a;
-        /// the Laplace Operation (Stiffness Matrix), on boundary grid
-        SGPP::base::OperationMatrix* OpLaplaceBound;
-        /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-        SGPP::base::OperationMatrix* OpMassBound;
-        /// the Laplace Operation (Stiffness Matrix), on inner grid
-        SGPP::base::OperationMatrix* OpLaplaceInner;
-        /// the LTwoDotProduct Operation (Mass Matrix), on inner grid
-        SGPP::base::OperationMatrix* OpMassInner;
+/**
+ * This class implements the ParabolicPDESolverSystem for the
+ * Heat Equation.
+ */
+class HeatEquationParabolicPDESolverSystemParallelOMP : public
+  OperationParabolicPDESolverSystemDirichlet {
+ protected:
+  /// the heat coefficient
+  float_t a;
+  /// the Laplace Operation (Stiffness Matrix), on boundary grid
+  SGPP::base::OperationMatrix* OpLaplaceBound;
+  /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
+  SGPP::base::OperationMatrix* OpMassBound;
+  /// the Laplace Operation (Stiffness Matrix), on inner grid
+  SGPP::base::OperationMatrix* OpLaplaceInner;
+  /// the LTwoDotProduct Operation (Mass Matrix), on inner grid
+  SGPP::base::OperationMatrix* OpMassInner;
 
-        void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
+                               SGPP::base::DataVector& result);
 
-        void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorComplete(SGPP::base::DataVector& alpha,
+                              SGPP::base::DataVector& result);
 
-        void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyMassMatrixInner(SGPP::base::DataVector& alpha,
+                            SGPP::base::DataVector& result);
 
-        void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorInner(SGPP::base::DataVector& alpha,
+                           SGPP::base::DataVector& result);
 
-      public:
-        /**
-         * Std-Constructor
-         *
-         * @param SparseGrid reference to the sparse grid
-         * @param alpha the sparse grid's coefficients
-         * @param a the heat coefficient
-         * @param TimestepSize the size of one timestep used in the ODE Solver
-         * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
-         *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
-         */
-        HeatEquationParabolicPDESolverSystemParallelOMP(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, float_t a, float_t TimestepSize, std::string OperationMode = "ExEul");
+ public:
+  /**
+   * Std-Constructor
+   *
+   * @param SparseGrid reference to the sparse grid
+   * @param alpha the sparse grid's coefficients
+   * @param a the heat coefficient
+   * @param TimestepSize the size of one timestep used in the ODE Solver
+   * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
+   *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
+   */
+  HeatEquationParabolicPDESolverSystemParallelOMP(SGPP::base::Grid& SparseGrid,
+      SGPP::base::DataVector& alpha, float_t a, float_t TimestepSize,
+      std::string OperationMode = "ExEul");
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~HeatEquationParabolicPDESolverSystemParallelOMP();
+  /**
+   * Std-Destructor
+   */
+  virtual ~HeatEquationParabolicPDESolverSystemParallelOMP();
 
-        virtual void finishTimestep();
+  virtual void finishTimestep();
 
-        virtual void coarsenAndRefine(bool isLastTimestep = false);
+  virtual void coarsenAndRefine(bool isLastTimestep = false);
 
-        virtual void startTimestep();
+  virtual void startTimestep();
 
-        virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha,
+                    SGPP::base::DataVector& result);
 
-        virtual SGPP::base::DataVector* generateRHS();
-    };
+  virtual SGPP::base::DataVector* generateRHS();
+};
 
-  }
+}
 }
 
 #endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP_HPP */

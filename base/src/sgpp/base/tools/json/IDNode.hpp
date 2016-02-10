@@ -1,65 +1,70 @@
-/*
- * JSONIDNode.hpp
- *
- *  Created on: Nov 7, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
 #include <sgpp/base/tools/json/Node.hpp>
 
+#include <string>
+#include <vector>
+
 namespace json {
 
-  //enum class InternalIDType {ID, DOUBLE, UINT, INT, BOOL};
+// enum class InternalIDType {ID, DOUBLE, UINT, INT, BOOL};
 
-  class IDNode: public Node {
-    private:
-      std::string value;
+class IDNode: public Node {
+ private:
+  std::string value;
 
-      //  bool isNumber;
-      //  InternalIDType internalType;
-      bool isDouble;
-      double doubleValue; //only used for number types
-      bool isUnsigned;
-      uint64_t unsignedValue;
-      bool isSigned;
-      int64_t signedValue;
-      bool isBool;
-      bool boolValue;
+  //  bool isNumber;
+  //  InternalIDType internalType;
+  bool isDouble;
+  double doubleValue;  // only used for number types
+  bool isUnsigned;
+  uint64_t unsignedValue;
+  bool isSigned;
+  int64_t signedValue;
+  bool isBool;
+  bool boolValue;
 
-      void setupInternalType();
+  void setupInternalType();
 
-    public:
-      IDNode();
+ public:
+  IDNode();
 
-      virtual void parse(std::vector<Token>& stream) override;
+  IDNode& operator=(const IDNode& right) = default;
 
-      virtual void serialize(std::ofstream& outFile, size_t indentWidth) override;
+  Node& operator=(const Node& right) override;
 
-      virtual std::string& get() override;
+  void parse(std::vector<Token>& stream) override;
 
-      virtual void set(const std::string& value) override;
+  void serialize(std::ostream& outFile, size_t indentWidth) override;
 
-      virtual double getDouble() override;
+  std::string& get() override;
 
-      virtual void setDouble(double numericValue) override;
+  void set(const std::string& value) override;
 
-      virtual uint64_t getUInt() override;
+  double getDouble() override;
 
-      virtual void setUInt(uint64_t uintValue) override;
+  void setDouble(double numericValue) override;
 
-      virtual int64_t getInt() override;
+  uint64_t getUInt() override;
 
-      virtual void setInt(int64_t intValue) override;
+  void setUInt(uint64_t uintValue) override;
 
-      virtual bool getBool() override;
+  int64_t getInt() override;
 
-      virtual void setBool(bool boolValue) override;
+  void setInt(int64_t intValue) override;
 
-      virtual size_t size() override;
+  bool getBool() override;
 
-      virtual Node* clone() override;
-  };
+  void setBool(bool boolValue) override;
 
-}
+  size_t size() override;
+
+  Node* clone() override;
+};
+
+}  // namespace json

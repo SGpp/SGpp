@@ -240,12 +240,7 @@ tutorial
 
 @subsection mingw_using_python Python
 
-The Python bindings pysgpp can be used either by setting the
-@c PYTHONPATH environment variable to include the @c lib directory, i.e.
-@verbatim
-set PYTHONPATH=C:\PATH_TO_SGPP\lib;%$PYTHONPATH%
-@endverbatim
-or by installing pysgpp in the local @c site-packages folder:
+The Python bindings pysgpp can be used by installing pysgpp in the local @c site-packages folder:
 @verbatim
 python setup.py install --user
 @endverbatim
@@ -378,4 +373,9 @@ OperationMultipleEvalSubspaceCombined.hpp:82:121: fatal error: ../../OperationMu
   or fix it by yourself (preferable).
   If you are using an official release of SG++, please report the bug to
   the developers. Thanks!
+- If you are using an older computer (say < 2011) and the compilation seem to succeed but the unit tests fail, then you might have a problem with your architecture. By default SG++ is compiled with AVX support, which your processor may not support. Try to add the flag
+  @verbatim
+ARCH=SSE3
+  @endverbatim
+  to your build command, which replaces AVX by SSE3. SSE3 is supported by processors, which have been released after 2006. 
 */

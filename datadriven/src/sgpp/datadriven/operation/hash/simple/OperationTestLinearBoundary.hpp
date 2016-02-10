@@ -13,38 +13,45 @@
 
 
 namespace SGPP {
-  namespace datadriven {
+namespace datadriven {
 
-    /**
-     * This class implements OperationTest for a grids with linear basis ansatzfunctions with
-     * boundaries
-     *
-     */
-    class OperationTestLinearBoundary : public OperationTest {
-      public:
-        /**
-         * Constructor
-         *
-         * @param storage the grid's SGPP::base::GridStorage object
-         */
-        OperationTestLinearBoundary(SGPP::base::GridStorage* storage) : storage(storage) {}
+/**
+ * This class implements OperationTest for a grids with linear basis ansatzfunctions with
+ * boundaries
+ *
+ */
+class OperationTestLinearBoundary : public OperationTest {
+ public:
+  /**
+   * Constructor
+   *
+   * @param storage the grid's SGPP::base::GridStorage object
+   */
+  OperationTestLinearBoundary(SGPP::base::GridStorage* storage) : storage(
+      storage) {}
 
-        /**
-         * Destructor
-         */
-        virtual ~OperationTestLinearBoundary() {}
+  /**
+   * Destructor
+   */
+  virtual ~OperationTestLinearBoundary() {}
 
-        virtual float_t test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes);
-        virtual float_t testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues);
-        virtual float_t testWithCharacteristicNumber(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers);
-        virtual void calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve);
+  virtual float_t test(SGPP::base::DataVector& alpha,
+                       SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes);
+  virtual float_t testMSE(SGPP::base::DataVector& alpha,
+                          SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues);
+  virtual float_t testWithCharacteristicNumber(SGPP::base::DataVector& alpha,
+      SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
+      SGPP::base::DataVector& charaNumbers);
+  virtual void calculateROCcurve(SGPP::base::DataVector& alpha,
+                                 SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
+                                 SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve);
 
-      protected:
-        /// Pointer to SGPP::base::GridStorage object
-        SGPP::base::GridStorage* storage;
-    };
+ protected:
+  /// Pointer to SGPP::base::GridStorage object
+  SGPP::base::GridStorage* storage;
+};
 
-  }
+}
 }
 
 #endif /* OPERATIONTESTLINEARBOUNDARY_HPP */

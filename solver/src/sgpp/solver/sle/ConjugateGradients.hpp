@@ -15,46 +15,48 @@
 
 
 namespace SGPP {
-  namespace solver {
+namespace solver {
 
-    class ConjugateGradients : public SLESolver {
-      public:
-        /**
-         * Std-Constructor
-         */
-        ConjugateGradients(size_t imax, float_t epsilon);
+class ConjugateGradients : public SLESolver {
+ public:
+  /**
+   * Std-Constructor
+   */
+  ConjugateGradients(size_t imax, float_t epsilon);
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~ConjugateGradients();
+  /**
+   * Std-Destructor
+   */
+  virtual ~ConjugateGradients();
 
-        virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false, bool verbose = false, float_t max_threshold = -1.0);
+  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix,
+                     SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false,
+                     bool verbose = false, float_t max_threshold = -1.0);
 
-        // Define functions for observer pattern in python
+  // Define functions for observer pattern in python
 
-        /**
-         * function that signals the start of the CG method (used in python)
-         */
-        virtual void starting();
+  /**
+   * function that signals the start of the CG method (used in python)
+   */
+  virtual void starting();
 
-        /**
-         * function that signals the start of the calculation of the CG method (used in python)
-         */
-        virtual void calcStarting();
+  /**
+   * function that signals the start of the calculation of the CG method (used in python)
+   */
+  virtual void calcStarting();
 
-        /**
-         * function that signals that one iteration step of the CG method has been completed (used in python)
-         */
-        virtual void iterationComplete();
+  /**
+   * function that signals that one iteration step of the CG method has been completed (used in python)
+   */
+  virtual void iterationComplete();
 
-        /**
-         * function that signals the finish of the cg method (used in python)
-         */
-        virtual void complete();
-    };
+  /**
+   * function that signals the finish of the cg method (used in python)
+   */
+  virtual void complete();
+};
 
-  }
+}
 }
 
 #endif /* CONJUGATEGRADIENTS_HPP */

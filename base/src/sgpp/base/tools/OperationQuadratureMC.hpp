@@ -13,69 +13,70 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
-     */
-    typedef float_t (*FUNC)(int, float_t*, void*);
+/**
+ * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
+ */
+typedef float_t (*FUNC)(int, float_t*, void*);
 
 
-    /**
-     * Quadrature on any sparse grid (that has OperationMultipleEval implemented)
-     * using Monte Carlo.
-     *
-     */
-    class OperationQuadratureMC : public OperationQuadrature {
-      public:
-        /**
-         * Constructor of OperationQuadratureMC, specifying a grid
-         * object and the number of samples to use.
-         *
-         * @param grid Reference to the grid object
-         * @param mcPaths Number of Monte Carlo samples
-         *
-         */
-        OperationQuadratureMC(SGPP::base::Grid& grid, int mcPaths);
+/**
+ * Quadrature on any sparse grid (that has OperationMultipleEval implemented)
+ * using Monte Carlo.
+ *
+ */
+class OperationQuadratureMC : public OperationQuadrature {
+ public:
+  /**
+   * Constructor of OperationQuadratureMC, specifying a grid
+   * object and the number of samples to use.
+   *
+   * @param grid Reference to the grid object
+   * @param mcPaths Number of Monte Carlo samples
+   *
+   */
+  OperationQuadratureMC(SGPP::base::Grid& grid, int mcPaths);
 
-        virtual ~OperationQuadratureMC() override {}
+  ~OperationQuadratureMC() override {}
 
-        /**
-         * Quadrature using simple MC in @f$\Omega=[0,1]^d@f$.
-         *
-         * @param alpha Coefficient vector for current grid
-         */
-        virtual float_t doQuadrature(SGPP::base::DataVector& alpha) override;
+  /**
+   * Quadrature using simple MC in @f$\Omega=[0,1]^d@f$.
+   *
+   * @param alpha Coefficient vector for current grid
+   */
+  float_t doQuadrature(SGPP::base::DataVector& alpha) override;
 
-        /**
-         * Quadrature of an arbitrary function using
-         * simple MC in @f$\Omega=[0,1]^d@f$.
-         *
-         * @param func The function to integrate
-         * @param clientdata Optional data to pass to FUNC
-         */
-        float_t doQuadratureFunc(FUNC func, void* clientdata);
+  /**
+   * Quadrature of an arbitrary function using
+   * simple MC in @f$\Omega=[0,1]^d@f$.
+   *
+   * @param func The function to integrate
+   * @param clientdata Optional data to pass to FUNC
+   */
+  float_t doQuadratureFunc(FUNC func, void* clientdata);
 
-        /**
-         * Quadrature of the @f$L^2@f$-norm of the error,
-         * @f$ ||f(x)-u(x)||_{L^2} @f$, between a given function and the
-         * current sparse grid function using
-         * simple MC in @f$\Omega=[0,1]^d@f$.
-         *
-         * @param func The function @f$f(x)@f$
-         * @param clientdata Optional data to pass to FUNC
-         * @param alpha Coefficient vector for current grid
-         */
-        float_t doQuadratureL2Error(FUNC func, void* clientdata, SGPP::base::DataVector& alpha);
+  /**
+   * Quadrature of the @f$L^2@f$-norm of the error,
+   * @f$ ||f(x)-u(x)||_{L^2} @f$, between a given function and the
+   * current sparse grid function using
+   * simple MC in @f$\Omega=[0,1]^d@f$.
+   *
+   * @param func The function @f$f(x)@f$
+   * @param clientdata Optional data to pass to FUNC
+   * @param alpha Coefficient vector for current grid
+   */
+  float_t doQuadratureL2Error(FUNC func, void* clientdata,
+                              SGPP::base::DataVector& alpha);
 
-      protected:
-        // Pointer to the grid object
-        SGPP::base::Grid* grid;
-        // Number of MC paths
-        size_t mcPaths;
-    };
+ protected:
+  // Pointer to the grid object
+  SGPP::base::Grid* grid;
+  // Number of MC paths
+  size_t mcPaths;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* OPERATIONQUADRATUREMC_HPP */

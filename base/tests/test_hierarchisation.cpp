@@ -8,7 +8,9 @@
 
 using namespace SGPP::base;
 
-void testHierarchisationDehierarchisation(SGPP::base::Grid* grid, size_t level, SGPP::float_t (*func)(DataVector&), SGPP::float_t tolerance = 0.0, bool naiveOp = false, bool doStretch = false) {
+void testHierarchisationDehierarchisation(SGPP::base::Grid* grid, size_t level,
+    SGPP::float_t (*func)(DataVector&), SGPP::float_t tolerance = 0.0,
+    bool naiveOp = false, bool doStretch = false) {
   GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   GridStorage* gridStore = grid->getStorage();
@@ -32,7 +34,8 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid* grid, size_t level, 
   }
 
   DataVector alpha = DataVector(node_values);
-  OperationHierarchisation* hierarchisation = SGPP::op_factory::createOperationHierarchisation(*grid);
+  OperationHierarchisation* hierarchisation =
+    SGPP::op_factory::createOperationHierarchisation(*grid);
   hierarchisation->doHierarchisation(alpha);
 
   if (naiveOp == true) {
@@ -233,9 +236,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
 #if USE_DOUBLE_PRECISION == 1
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-13, false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-13,
+                                       false, true);
 #else
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4, false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4,
+                                       false, true);
 #endif
   delete str1d;
   delete dimBound;
@@ -265,9 +270,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
 #if USE_DOUBLE_PRECISION == 1
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12, false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12,
+                                       false, true);
 #else
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4, false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4,
+                                       false, true);
 #endif
 }
 

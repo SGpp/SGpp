@@ -13,21 +13,23 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    void OperationMultipleEvalLinearStretchedBoundary::mult(DataVector& alpha, DataVector& result) {
-      AlgorithmDGEMV<SLinearStretchedBoundaryBase> op;
-      LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
+void OperationMultipleEvalLinearStretchedBoundary::mult(DataVector& alpha,
+    DataVector& result) {
+  AlgorithmDGEMV<SLinearStretchedBoundaryBase> op;
+  LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
 
-      op.mult(storage, base, alpha, this->dataset, result);
-    }
-
-    void OperationMultipleEvalLinearStretchedBoundary::multTranspose(DataVector& source, DataVector& result) {
-      AlgorithmDGEMV<SLinearStretchedBoundaryBase> op;
-      LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
-
-      op.mult_transposed(storage, base, source, this->dataset, result);
-    }
-
-  }
+  op.mult(storage, base, alpha, this->dataset, result);
 }
+
+void OperationMultipleEvalLinearStretchedBoundary::multTranspose(
+  DataVector& source, DataVector& result) {
+  AlgorithmDGEMV<SLinearStretchedBoundaryBase> op;
+  LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
+
+  op.mult_transposed(storage, base, source, this->dataset, result);
+}
+
+}  // namespace base
+}  // namespace SGPP

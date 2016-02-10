@@ -12,86 +12,90 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
-     *
-     * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data points
-     */
-    class OperationMultipleEval {
-      protected:
-        Grid& grid;
-        DataMatrix& dataset;
-        bool isPrepared;
+/**
+ * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
+ *
+ * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data points
+ */
+class OperationMultipleEval {
+ protected:
+  Grid& grid;
+  DataMatrix& dataset;
+  bool isPrepared;
 
-      public:
-        /**
-         * Constructor
-         *
-         * @param grid the sparse grid used for this operation
-         * @param dataset data set that should be evaluated on the sparse grid, a operation may create a copy of the dataset
-         */
-        OperationMultipleEval(SGPP::base::Grid& grid, DataMatrix& dataset) :
-          grid(grid), dataset(dataset), isPrepared(false) {
-        }
-
-        /**
-         * Destructor
-         */
-        virtual ~OperationMultipleEval() {
-        }
-
-        /**
-         * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
-         *
-         * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
-         * @param result the result vector of the matrix vector multiplication
-         */
-        virtual void mult(DataVector& alpha, DataVector& result) = 0;
-
-        /**
-         * Multiplication of @f$B@f$ with vector @f$\alpha@f$
-         *
-         * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
-         * @param result the result vector of the matrix vector multiplication
-         */
-        virtual void multTranspose(DataVector& source, DataVector& result) = 0;
-
-        /**
-         * Evaluate multiple datapoints with the specified grid
-         *
-         * @param alpha surplus vector of the grid
-         * @param result result of the evaluations
-         */
-        void eval(DataVector& alpha, DataVector& result) {
-          this->mult(alpha, result);
-        }
-
-        /**
-         * Used for kernel-specific setup like special data structures that are defined from the current state of
-         * the grid. This function is by default called with each "mult()", "multTranspose()" or evaluation operation
-         * and can be ignored from an external perspective.
-         * This is not overridden by every kernel.
-         */
-        virtual void prepare() {
-        }
-
-        virtual float_t getDuration() {
-          throw new SGPP::base::operation_exception(
-            "error: OperationMultipleEval::getDuration(): not implemented for this kernel");
-        }
-
-        /**
-         * Name of this implementation of the operation.
-         */
-        virtual std::string getImplementationName() {
-          throw new SGPP::base::operation_exception(
-            "error: OperationMultipleEval::getImplementationName(): not implemented for this kernel");
-        }
-    };
-
+ public:
+  /**
+   * Constructor
+   *
+   * @param grid the sparse grid used for this operation
+   * @param dataset data set that should be evaluated on the sparse grid, a operation may create a copy of the dataset
+   */
+  OperationMultipleEval(SGPP::base::Grid& grid, DataMatrix& dataset) :
+    grid(grid), dataset(dataset), isPrepared(false) {
   }
-}
+
+  /**
+   * Destructor
+   */
+  virtual ~OperationMultipleEval() {
+  }
+
+  /**
+   * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
+   *
+   * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
+   * @param result the result vector of the matrix vector multiplication
+   */
+  virtual void mult(DataVector& alpha, DataVector& result) = 0;
+
+  /**
+   * Multiplication of @f$B@f$ with vector @f$\alpha@f$
+   *
+   * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
+   * @param result the result vector of the matrix vector multiplication
+   */
+  virtual void multTranspose(DataVector& source, DataVector& result) = 0;
+
+  /**
+   * Evaluate multiple datapoints with the specified grid
+   *
+   * @param alpha surplus vector of the grid
+   * @param result result of the evaluations
+   */
+  void eval(DataVector& alpha, DataVector& result) {
+    this->mult(alpha, result);
+  }
+
+  /**
+   * Used for kernel-specific setup like special data structures that are defined from the current state of
+   * the grid. This function is by default called with each "mult()", "multTranspose()" or evaluation operation
+   * and can be ignored from an external perspective.
+   * This is not overridden by every kernel.
+   */
+  virtual void prepare() {
+  }
+
+  virtual float_t getDuration() {
+    throw new SGPP::base::operation_exception(
+      "error: OperationMultipleEval::getDuration(): "
+      "not implemented for this kernel");
+  }
+
+  /**
+   * Name of this implementation of the operation.
+   */
+  virtual std::string getImplementationName() {
+    throw new SGPP::base::operation_exception(
+      "error: OperationMultipleEval::getImplementationName(): "
+      "not implemented for this kernel");
+  }
+};
+
+}  // namespace base
+}  // namespace SGPP

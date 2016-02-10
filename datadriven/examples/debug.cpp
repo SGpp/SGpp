@@ -50,7 +50,8 @@ int main(int argc, char** argv) {
 
   double lambda = 0.000001;
 
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig);
+  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig,
+      SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig);
 
   scenario.writeToFile("learnerSimple.scenario");
 
@@ -61,7 +62,9 @@ int main(int argc, char** argv) {
 #else
 #include <iostream>
 int main(int argc, char** argv) {
-  std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
+  std::cout <<
+            "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
+            std::endl;
   return 0;
 }
 #endif

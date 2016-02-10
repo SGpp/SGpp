@@ -12,45 +12,45 @@
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    /**
-     * grid with polynomial base functions
-     */
-    class PolyGrid : public Grid {
-      protected:
-        PolyGrid(std::istream& istr);
+/**
+ * grid with polynomial base functions
+ */
+class PolyGrid : public Grid {
+ protected:
+  explicit PolyGrid(std::istream& istr);
 
-      public:
-        /**
-         * Constructor of grid with polynomial base functions
-         *
-         * @param dim the dimension of the grid
-         * @param degree the max. polynom's degree
-         */
-        PolyGrid(size_t dim, size_t degree);
+ public:
+  /**
+   * Constructor of grid with polynomial base functions
+   *
+   * @param dim the dimension of the grid
+   * @param degree the max. polynom's degree
+   */
+  PolyGrid(size_t dim, size_t degree);
 
-        /**
-         * Destructor
-         */
-        virtual ~PolyGrid() override;
+  /**
+   * Destructor
+   */
+  ~PolyGrid() override;
 
-        virtual SGPP::base::GridType getType() override;
-        virtual const SBasis& getBasis() override;
-        virtual void serialize(std::ostream& ostr) override;
+  SGPP::base::GridType getType() override;
+  const SBasis& getBasis() override;
+  void serialize(std::ostream& ostr) override;
 
-        virtual GridGenerator* createGridGenerator() override;
+  GridGenerator* createGridGenerator() override;
 
-        static Grid* unserialize(std::istream& istr);
-        size_t getDegree() const;
+  static Grid* unserialize(std::istream& istr);
+  size_t getDegree() const;
 
-      protected:
-        /// max. polynom's degree
-        size_t degree;
-        const SPolyBase* basis_;
-    };
+ protected:
+  /// max. polynom's degree
+  size_t degree;
+  const SPolyBase* basis_;
+};
 
-  }
-}
+}  // namespace base
+}  // namespace SGPP
 
 #endif /* POLYGRID_HPP */

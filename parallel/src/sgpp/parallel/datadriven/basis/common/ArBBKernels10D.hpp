@@ -13,32 +13,40 @@
 
 namespace SGPP {
 
-  namespace parallel {
+namespace parallel {
 
-    class ArBBKernels10D {
-      private:
-        bool isMultTransSPfirst;
-        bool isMultSPfirst;
-        bool isMultTransfirst;
-        bool isMultfirst;
+class ArBBKernels10D {
+ private:
+  bool isMultTransSPfirst;
+  bool isMultSPfirst;
+  bool isMultTransfirst;
+  bool isMultfirst;
 
-      public:
-        ArBBKernels10D();
+ public:
+  ArBBKernels10D();
 
-        ~ArBBKernels10D();
+  ~ArBBKernels10D();
 
-        double multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
+  double multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel,
+                       double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
+                       size_t storageSize, size_t dims);
 
-        double multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize, size_t dims);
+  double multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel,
+                  double* ptrIndex, double* ptrResult, size_t result_size, size_t storageSize,
+                  size_t dims);
 
-        double multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize, size_t dims);
+  double multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel,
+                         float* ptrIndex, float* ptrGlobalResult, size_t sourceSize, size_t storageSize,
+                         size_t dims);
 
-        double multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize, size_t dims);
+  double multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel,
+                    float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize,
+                    size_t dims);
 
-        void resetKernels();
-    };
+  void resetKernels();
+};
 
-  }
+}
 
 }
 

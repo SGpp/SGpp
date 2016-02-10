@@ -16,36 +16,38 @@
 
 
 namespace SGPP {
-  namespace solver {
+namespace solver {
 
-    /**
-     * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
-     * for solving ordinary partial equations
-     *
-     */
-    class StepsizeControlMC : public VarTimestep {
-      protected:
+/**
+ * This class implements a step size control using Adams-Bashforth and Crank-Nicolson
+ * for solving ordinary partial equations
+ *
+ */
+class StepsizeControlMC : public VarTimestep {
+ protected:
 
-        float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm, float_t epsilon);
+  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
+                       float_t norm, float_t epsilon);
 
-      public:
-        /**
-         * Std-Constructer
-         *
-         * @param imax number of maximum executed iterations
-         * @param timestepSize the size of one timestep
-         * @param eps the epsilon for the step size control
-         * @param screen possible pointer to a ScreenOutput object
-         */
-        StepsizeControlMC(size_t imax, float_t timestepSize, float_t eps, SGPP::base::ScreenOutput* screen = NULL);
+ public:
+  /**
+   * Std-Constructer
+   *
+   * @param imax number of maximum executed iterations
+   * @param timestepSize the size of one timestep
+   * @param eps the epsilon for the step size control
+   * @param screen possible pointer to a ScreenOutput object
+   */
+  StepsizeControlMC(size_t imax, float_t timestepSize, float_t eps,
+                    SGPP::base::ScreenOutput* screen = NULL);
 
-        /**
-         * Std-Destructor
-         */
-        virtual ~StepsizeControlMC();
-    };
+  /**
+   * Std-Destructor
+   */
+  virtual ~StepsizeControlMC();
+};
 
-  }
+}
 }
 
 #endif /* STEPSIZECONTROLMC_HPP */

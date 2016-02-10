@@ -16,69 +16,69 @@
 
 
 namespace SGPP {
-  namespace quadrature {
+namespace quadrature {
 
-    /**
-     * The class NaiveSampleGenerator implements a simple MonteCarlo sample
-     * generator. A sample is generated using the standard random number
-     * generator from cmath and transforming the values to float_t range 0.0 to
-     * 1.0.
-     */
-    class LatinHypercubeSampleGenerator : public SampleGenerator {
+/**
+ * The class NaiveSampleGenerator implements a simple MonteCarlo sample
+ * generator. A sample is generated using the standard random number
+ * generator from cmath and transforming the values to float_t range 0.0 to
+ * 1.0.
+ */
+class LatinHypercubeSampleGenerator : public SampleGenerator {
 
-      public:
+ public:
 
-        /**
-         * Standard constructor
-         *
-         * @param dimensions number of dimensions used for sample generation
-         * @param numberOfStrata number of strata
-         * @param seed custom seed (defaults to default seed of mt19937_64)
-         */
+  /**
+   * Standard constructor
+   *
+   * @param dimensions number of dimensions used for sample generation
+   * @param numberOfStrata number of strata
+   * @param seed custom seed (defaults to default seed of mt19937_64)
+   */
 
-        LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfStrata,
-                                      std::uint64_t seed = std::mt19937_64::default_seed);
+  LatinHypercubeSampleGenerator(size_t dimensions, size_t numberOfStrata,
+                                std::uint64_t seed = std::mt19937_64::default_seed);
 
-        /**
-         * Destructor
-         */
-        virtual ~LatinHypercubeSampleGenerator();
+  /**
+   * Destructor
+   */
+  virtual ~LatinHypercubeSampleGenerator();
 
-        /**
-         * This method generates one sample .
-         * Implementation of the abstract Method getSample from SampelGenerator.
-         *
-         * @param sample DataVector storing the new generated sample vector.
-         */
+  /**
+   * This method generates one sample .
+   * Implementation of the abstract Method getSample from SampelGenerator.
+   *
+   * @param sample DataVector storing the new generated sample vector.
+   */
 
-        void getSample(SGPP::base::DataVector& sample);
+  void getSample(SGPP::base::DataVector& sample);
 
-      private:
+ private:
 
-        /**
-         * This method generates one sample .
-         * Implementation of the abstract Method getSample from SampelGenerator.
-         */
+  /**
+   * This method generates one sample .
+   * Implementation of the abstract Method getSample from SampelGenerator.
+   */
 
-        void shuffleStrataSequence();
+  void shuffleStrataSequence();
 
-        //
-        size_t numberOfStrata;
+  //
+  size_t numberOfStrata;
 
-        //
-        size_t numberOfCurrentSample;
+  //
+  size_t numberOfCurrentSample;
 
-        //
-        float_t sizeOfStrata;
+  //
+  float_t sizeOfStrata;
 
-        //
-        std::vector< std::vector<size_t> > currentStrata;
+  //
+  std::vector< std::vector<size_t> > currentStrata;
 
-        //
-        std::uniform_real_distribution<float_t> uniformRealDist;
-    };
+  //
+  std::uniform_real_distribution<float_t> uniformRealDist;
+};
 
-  }
+}
 }
 
 #endif /* LATINHYPERCUBESAMPLEGENERATOR_HPP */

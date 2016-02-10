@@ -10,183 +10,185 @@
 
 
 namespace SGPP {
-  namespace pde {
+namespace pde {
 
-    LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(SGPP::base::GridStorage* storage) :
-      storage(storage) {
+LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(
+  SGPP::base::GridStorage* storage) :
+  storage(storage) {
+}
+
+LaplaceUpGradientPrewavelet::~LaplaceUpGradientPrewavelet() {
+}
+
+void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
+    SGPP::base::DataVector& result,
+    grid_iterator& index, size_t dim) {
+  SGPP::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
+  SGPP::base::GridStorage::index_type::index_type i;
+
+  SGPP::base::GridStorage::index_type::level_type l_old;
+  SGPP::base::GridStorage::index_type::index_type i_old;
+
+  index.get(dim, l_old, i_old);
+
+  size_t _seq;
+  size_t _seql;
+  size_t _seqr;
+
+  float_t _vall, _valr;
+
+  float_t h;
+
+  if (l == 1)
+    return;
+
+  index.set(dim, l, 1);
+  _seqr = index.seq();
+  _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
+
+  float_t* temp_current = new float_t[(1 << (l - 1)) - 1];
+
+  for (i = 0; i < (unsigned int) (1 << (l - 1)) - 1; i++) {
+    _seql = _seqr;
+    _vall = _valr;
+    index.set(dim, l, 2 * i + 3);
+    _seqr = index.seq();
+    _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
+    temp_current[i] = -0.6 * (_vall + _valr);
+  }
+
+  l--;
+
+  for (; l > 2; l--) {
+    i = 0;
+    h = static_cast<float_t>(1 << l);
+    index.set(dim, l, i + 1);
+    _seq = index.seq();
+
+    if (!storage->end(_seq))
+      result[_seq] = 0.9 * h * (2 * temp_current[i] - temp_current[i
+                                + 1]) - 0.6 * h * (-temp_current[i + 2] + 2
+                                    * temp_current[i + 1] - temp_current[i]) + 0.1 * h
+                     * (-temp_current[i + 1] + 2 * temp_current[i + 2]
+                        - temp_current[i + 3]);
+
+    i = 2;
+    index.set(dim, l, i + 1);
+    _seq = index.seq();
+
+    if (!storage->end(_seq))
+      result[_seq] = h * (2 * temp_current[i] - temp_current[i + 1]
+                          - temp_current[i - 1]) + -0.6 * h * (-temp_current[i
+                              + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i])
+                     - 0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i
+                                  - 1]) + 0.1 * h * (-temp_current[i + 1] + 2
+                                      * temp_current[i + 2] - temp_current[i + 3]) + 0.1 * h
+                     * (-temp_current[i - 1] + 2 * temp_current[i - 2]);
+
+    for (i = 4; i < (unsigned int) (1 << l) - 4; i = i + 2) {
+      index.set(dim, l, i + 1);
+      _seq = index.seq();
+
+      if (!storage->end(_seq))
+        result[_seq] = h * (2 * temp_current[i] - temp_current[i
+                            + 1] - temp_current[i - 1]) - 0.6 * h
+                       * (-temp_current[i + 2] + 2 * temp_current[i + 1]
+                          - 2 * temp_current[i]) - 0.6 * h
+                       * (-temp_current[i - 2] + 2 * temp_current[i - 1])
+                       + 0.1 * h
+                       * (-temp_current[i + 1] + 2
+                          * temp_current[i + 2]
+                          - temp_current[i + 3]) + 0.1 * h
+                       * (-temp_current[i - 1] + 2 * temp_current[i - 2]
+                          - temp_current[i - 3]);
     }
 
-    LaplaceUpGradientPrewavelet::~LaplaceUpGradientPrewavelet() {
-    }
+    i = (1 << l) - 4;
+    index.set(dim, l, i + 1);
+    _seq = index.seq();
 
-    void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-        grid_iterator& index, size_t dim) {
-      SGPP::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
-      SGPP::base::GridStorage::index_type::index_type i;
+    if (!storage->end(_seq))
+      result[_seq] = h * (2 * temp_current[i] - temp_current[i + 1]
+                          - temp_current[i - 1]) + -0.6 * h * (-temp_current[i
+                              + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i])
+                     - 0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i
+                                  - 1]) + 0.1 * h * (-temp_current[i + 1] + 2
+                                      * temp_current[i + 2]) + 0.1 * h
+                     * (-temp_current[i - 1] + 2 * temp_current[i - 2]
+                        - temp_current[i - 3]);
 
-      SGPP::base::GridStorage::index_type::level_type l_old;
-      SGPP::base::GridStorage::index_type::index_type i_old;
+    i = (1 << l) - 2;
+    index.set(dim, l, i + 1);
+    _seq = index.seq();
 
-      index.get(dim, l_old, i_old);
+    if (!storage->end(_seq))
+      result[_seq] = 0.9 * h * (2 * temp_current[i] - temp_current[i
+                                - 1]) - 0.6 * h * (-temp_current[i - 2] + 2
+                                    * temp_current[i - 1] - temp_current[i]) + 0.1 * h
+                     * (-temp_current[i - 1] + 2 * temp_current[i - 2]
+                        - temp_current[i - 3]);
 
-      size_t _seq;
-      size_t _seql;
-      size_t _seqr;
+    index.set(dim, l, 1);
+    _seqr = index.seq();
+    _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
 
-      float_t _vall, _valr;
+    for (i = 0; i < (unsigned int) (1 << (l - 1)) - 1; i++) {
 
-      float_t h;
-
-      if (l == 1)
-        return;
-
-      index.set(dim, l, 1);
+      _seql = _seqr;
+      _vall = _valr;
+      index.set(dim, l, 2 * i + 3);
       _seqr = index.seq();
       _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
-
-      float_t* temp_current = new float_t[(1 << (l - 1)) - 1];
-
-      for (i = 0; i < (unsigned int) (1 << (l - 1)) - 1; i++) {
-        _seql = _seqr;
-        _vall = _valr;
-        index.set(dim, l, 2 * i + 3);
-        _seqr = index.seq();
-        _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
-        temp_current[i] = -0.6 * (_vall + _valr);
-      }
-
-      l--;
-
-      for (; l > 2; l--) {
-        i = 0;
-        h = static_cast<float_t>(1 << l);
-        index.set(dim, l, i + 1);
-        _seq = index.seq();
-
-        if (!storage->end(_seq))
-          result[_seq] = 0.9 * h * (2 * temp_current[i] - temp_current[i
-                                    + 1]) - 0.6 * h * (-temp_current[i + 2] + 2
-                                        * temp_current[i + 1] - temp_current[i]) + 0.1 * h
-                         * (-temp_current[i + 1] + 2 * temp_current[i + 2]
-                            - temp_current[i + 3]);
-
-        i = 2;
-        index.set(dim, l, i + 1);
-        _seq = index.seq();
-
-        if (!storage->end(_seq))
-          result[_seq] = h * (2 * temp_current[i] - temp_current[i + 1]
-                              - temp_current[i - 1]) + -0.6 * h * (-temp_current[i
-                                  + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i])
-                         - 0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i
-                                      - 1]) + 0.1 * h * (-temp_current[i + 1] + 2
-                                          * temp_current[i + 2] - temp_current[i + 3]) + 0.1 * h
-                         * (-temp_current[i - 1] + 2 * temp_current[i - 2]);
-
-        for (i = 4; i < (unsigned int) (1 << l) - 4; i = i + 2) {
-          index.set(dim, l, i + 1);
-          _seq = index.seq();
-
-          if (!storage->end(_seq))
-            result[_seq] = h * (2 * temp_current[i] - temp_current[i
-                                + 1] - temp_current[i - 1]) - 0.6 * h
-                           * (-temp_current[i + 2] + 2 * temp_current[i + 1]
-                              - 2 * temp_current[i]) - 0.6 * h
-                           * (-temp_current[i - 2] + 2 * temp_current[i - 1])
-                           + 0.1 * h
-                           * (-temp_current[i + 1] + 2
-                              * temp_current[i + 2]
-                              - temp_current[i + 3]) + 0.1 * h
-                           * (-temp_current[i - 1] + 2 * temp_current[i - 2]
-                              - temp_current[i - 3]);
-        }
-
-        i = (1 << l) - 4;
-        index.set(dim, l, i + 1);
-        _seq = index.seq();
-
-        if (!storage->end(_seq))
-          result[_seq] = h * (2 * temp_current[i] - temp_current[i + 1]
-                              - temp_current[i - 1]) + -0.6 * h * (-temp_current[i
-                                  + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i])
-                         - 0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i
-                                      - 1]) + 0.1 * h * (-temp_current[i + 1] + 2
-                                          * temp_current[i + 2]) + 0.1 * h
-                         * (-temp_current[i - 1] + 2 * temp_current[i - 2]
-                            - temp_current[i - 3]);
-
-        i = (1 << l) - 2;
-        index.set(dim, l, i + 1);
-        _seq = index.seq();
-
-        if (!storage->end(_seq))
-          result[_seq] = 0.9 * h * (2 * temp_current[i] - temp_current[i
-                                    - 1]) - 0.6 * h * (-temp_current[i - 2] + 2
-                                        * temp_current[i - 1] - temp_current[i]) + 0.1 * h
-                         * (-temp_current[i - 1] + 2 * temp_current[i - 2]
-                            - temp_current[i - 3]);
-
-        index.set(dim, l, 1);
-        _seqr = index.seq();
-        _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
-
-        for (i = 0; i < (unsigned int) (1 << (l - 1)) - 1; i++) {
-
-          _seql = _seqr;
-          _vall = _valr;
-          index.set(dim, l, 2 * i + 3);
-          _seqr = index.seq();
-          _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
-          temp_current[i] = -0.6 * (_vall + _valr) + temp_current[2 * i
-                            + 1];
-        }
-      }
-
-      if (l == 2) {
-        h = static_cast<float_t>(1 << l);
-
-        index.set(dim, 2, 1);
-        _seql = index.seq();
-
-        if (!storage->end(_seql)) {
-          result[_seql] = 0.9 * h * (2 * temp_current[0]
-                                     - temp_current[1]) - 0.6 * h * (-temp_current[2] + 2
-                                         * temp_current[1] - temp_current[0]) + 0.1 * h
-                          * (-temp_current[1] + 2 * temp_current[2]);
-          _vall = source[_seql];
-        } else {
-          _vall = 0.0;
-        }
-
-        index.set(dim, 2, 3);
-        _seqr = index.seq();
-
-        if (!storage->end(_seqr)) {
-          result[_seqr] = 0.9 * h * (2 * temp_current[2]
-                                     - temp_current[1]) - 0.6 * h * (-temp_current[0] + 2
-                                         * temp_current[1] - temp_current[2]) + 0.1 * h
-                          * (-temp_current[1] + 2 * temp_current[0]);
-          _valr = source[_seqr];
-        } else
-          _valr = 0.0;
-
-        temp_current[0] = -0.6 * (_vall + _valr)
-                          + temp_current[1];
-
-        l = 1;
-      }
-
-      if (l == 1) {
-        h = static_cast<float_t>(1 << l);
-        index.set(dim, 1, 1);
-        _seq = index.seq();
-        result[_seq] = 2 * h * temp_current[0];
-      }
-
-      //I dont think thats necessary, but just to be sure!
-      index.set(dim, l_old, i_old);
-      delete[] temp_current;
-
+      temp_current[i] = -0.6 * (_vall + _valr) + temp_current[2 * i
+                        + 1];
     }
   }
+
+  if (l == 2) {
+    h = static_cast<float_t>(1 << l);
+
+    index.set(dim, 2, 1);
+    _seql = index.seq();
+
+    if (!storage->end(_seql)) {
+      result[_seql] = 0.9 * h * (2 * temp_current[0]
+                                 - temp_current[1]) - 0.6 * h * (-temp_current[2] + 2
+                                     * temp_current[1] - temp_current[0]) + 0.1 * h
+                      * (-temp_current[1] + 2 * temp_current[2]);
+      _vall = source[_seql];
+    } else {
+      _vall = 0.0;
+    }
+
+    index.set(dim, 2, 3);
+    _seqr = index.seq();
+
+    if (!storage->end(_seqr)) {
+      result[_seqr] = 0.9 * h * (2 * temp_current[2]
+                                 - temp_current[1]) - 0.6 * h * (-temp_current[0] + 2
+                                     * temp_current[1] - temp_current[2]) + 0.1 * h
+                      * (-temp_current[1] + 2 * temp_current[0]);
+      _valr = source[_seqr];
+    } else
+      _valr = 0.0;
+
+    temp_current[0] = -0.6 * (_vall + _valr)
+                      + temp_current[1];
+
+    l = 1;
+  }
+
+  if (l == 1) {
+    h = static_cast<float_t>(1 << l);
+    index.set(dim, 1, 1);
+    _seq = index.seq();
+    result[_seq] = 2 * h * temp_current[0];
+  }
+
+  //I dont think thats necessary, but just to be sure!
+  index.set(dim, l_old, i_old);
+  delete[] temp_current;
+
+}
+}
 }

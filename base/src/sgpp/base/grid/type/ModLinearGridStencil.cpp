@@ -13,53 +13,51 @@
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
-  namespace base {
+namespace base {
 
-    ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(istr) {
-
-    }
-
-    ModLinearGridStencil::ModLinearGridStencil(size_t dim) : GridStencil(dim) {
-      this->storage = new GridStorage(dim);
-    }
-
-    ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
-      this->storage = new GridStorage(BB);
-    }
-
-    ModLinearGridStencil::~ModLinearGridStencil() {
-    }
-
-    SGPP::base::GridType ModLinearGridStencil::getType() {
-      return SGPP::base::GridType::ModLinearStencil;
-    }
-
-    const SBasis& ModLinearGridStencil::getBasis() {
-      throw new factory_exception("Not implemented");
-      // it should never get so far, code just for compilation reasons
-      // If there will be a meaningful basis, this following lines should be changed
-      static SLinearModifiedBase basis;
-      return basis;
-    }
-
-    Grid* ModLinearGridStencil::unserialize(std::istream& istr) {
-      return new ModLinearGridStencil(istr);
-    }
-
-    /**
-     * Creates new GridGenerator
-     * This must be changed if we add other storage types
-     */
-    GridGenerator* ModLinearGridStencil::createGridGenerator() {
-      return new StandardGridGenerator(this->storage);
-    }
-
-
-  }
+ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(
+    istr) {
 }
+
+ModLinearGridStencil::ModLinearGridStencil(size_t dim) : GridStencil(dim) {
+  this->storage = new GridStorage(dim);
+}
+
+ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
+  this->storage = new GridStorage(BB);
+}
+
+ModLinearGridStencil::~ModLinearGridStencil() {
+}
+
+SGPP::base::GridType ModLinearGridStencil::getType() {
+  return SGPP::base::GridType::ModLinearStencil;
+}
+
+const SBasis& ModLinearGridStencil::getBasis() {
+  throw new factory_exception("Not implemented");
+  // it should never get so far, code just for compilation reasons
+  // If there will be a meaningful basis, this following lines should be changed
+  static SLinearModifiedBase basis;
+  return basis;
+}
+
+Grid* ModLinearGridStencil::unserialize(std::istream& istr) {
+  return new ModLinearGridStencil(istr);
+}
+
+/**
+ * Creates new GridGenerator
+ * This must be changed if we add other storage types
+ */
+GridGenerator* ModLinearGridStencil::createGridGenerator() {
+  return new StandardGridGenerator(this->storage);
+}
+
+
+}  // namespace base
+}  // namespace SGPP

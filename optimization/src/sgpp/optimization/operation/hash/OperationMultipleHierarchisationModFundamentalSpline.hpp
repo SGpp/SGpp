@@ -14,66 +14,66 @@
 #include <sgpp/base/operation/hash/OperationHierarchisationModFundamentalSpline.hpp>
 
 namespace SGPP {
-  namespace optimization {
+namespace optimization {
 
-    /**
-     * Hierarchisation operation for modified B-spline basis functions on
-     * Noboundary grids.
-     */
-    class OperationMultipleHierarchisationModFundamentalSpline :
-      public OperationMultipleHierarchisation {
-      public:
-        /**
-         * Constructor.
-         *
-         * @param grid      grid
-         */
-        OperationMultipleHierarchisationModFundamentalSpline(
-          base::ModFundamentalSplineGrid& grid);
+/**
+ * Hierarchisation operation for modified B-spline basis functions on
+ * Noboundary grids.
+ */
+class OperationMultipleHierarchisationModFundamentalSpline :
+  public OperationMultipleHierarchisation {
+ public:
+  /**
+   * Constructor.
+   *
+   * @param grid      grid
+   */
+  OperationMultipleHierarchisationModFundamentalSpline(
+    base::ModFundamentalSplineGrid& grid);
 
-        /**
-         * Destructor.
-         */
-        virtual ~OperationMultipleHierarchisationModFundamentalSpline() override;
+  /**
+   * Destructor.
+   */
+  ~OperationMultipleHierarchisationModFundamentalSpline() override;
 
-        /**
-         * @param[in,out] nodeValues before: vector of function values at
-         *                           the grid points,
-         *                           after: vector of hierarchical coefficients
-         * @return                   whether hierarchisation was successful
-         */
-        virtual bool doHierarchisation(base::DataVector& nodeValues) override;
+  /**
+   * @param[in,out] nodeValues before: vector of function values at
+   *                           the grid points,
+   *                           after: vector of hierarchical coefficients
+   * @return                   whether hierarchisation was successful
+   */
+  bool doHierarchisation(base::DataVector& nodeValues) override;
 
-        /**
-         * @param[in,out] alpha before: vector of hierarchical coefficients,
-         *                      after: vector of function values at
-         *                      the grid points
-         */
-        virtual void doDehierarchisation(base::DataVector& alpha) override;
+  /**
+   * @param[in,out] alpha before: vector of hierarchical coefficients,
+   *                      after: vector of function values at
+   *                      the grid points
+   */
+  void doDehierarchisation(base::DataVector& alpha) override;
 
-        /**
-         * @param[in,out] nodeValues before: matrix of function values at
-         *                           the grid points,
-         *                           after: matrix of hierarchical coefficients
-         * @return                   whether hierarchisation was successful
-         */
-        virtual bool doHierarchisation(base::DataMatrix& nodeValues) override;
+  /**
+   * @param[in,out] nodeValues before: matrix of function values at
+   *                           the grid points,
+   *                           after: matrix of hierarchical coefficients
+   * @return                   whether hierarchisation was successful
+   */
+  bool doHierarchisation(base::DataMatrix& nodeValues) override;
 
-        /**
-         * @param[in,out] alpha before: matrix of hierarchical coefficients,
-         *                      after: matrix of function values at
-         *                      the grid points
-         */
-        virtual void doDehierarchisation(base::DataMatrix& alpha) override;
+  /**
+   * @param[in,out] alpha before: matrix of hierarchical coefficients,
+   *                      after: matrix of function values at
+   *                      the grid points
+   */
+  void doDehierarchisation(base::DataMatrix& alpha) override;
 
-      protected:
-        /// storage of the sparse grid
-        base::ModFundamentalSplineGrid& grid;
-        /// hierarchization operation
-        base::OperationHierarchisationModFundamentalSpline op;
-    };
+ protected:
+  /// storage of the sparse grid
+  base::ModFundamentalSplineGrid& grid;
+  /// hierarchization operation
+  base::OperationHierarchisationModFundamentalSpline op;
+};
 
-  }
+}
 }
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODFUNDAMENTALSPLINE_HPP */

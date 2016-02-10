@@ -30,8 +30,6 @@ ignoreFolders = []
 # find all modules
 moduleFolders, languageSupport = getModules(ignoreFolders)
 
-prepareDoxyfile(moduleFolders)
-
 moduleNames = []
 languageSupportNames = []
 
@@ -56,7 +54,7 @@ vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (mu
 vars.Add('CPPPATH', 'Set paths where to look for additional headers', '')
 vars.Add('LIBPATH', 'Set paths where to look for additional libs', '')
 # define the target
-vars.Add('ARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', 'avx')
+vars.Add('ARCH', 'Sets the architecture if compiling with gcc, this is a pass-through option: just specify the gcc options!', 'sse3')
 vars.Add('COMPILER', "Sets the processor you are compiling for. 'gnu' means using gcc with standard configuration. Also available are: 'intel', here Intel Compiler in version 11 or higher must be used", 'gnu')
 vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
@@ -69,14 +67,17 @@ vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languag
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
 
-vars.Add('OUTPUT_PATH', 'Path where built libraries are installed. Needs a trailing slash!', '')
+vars.Add('PREFIX', 'Path where built libraries, headers and other built files are installed (architecture independant). Needs a trailing slash!', '/usr/local')
+vars.Add('EPREFIX', 'Path of architecture dependant files.' )
+vars.Add('LIBDIR', 'Path of libraries.' )
+vars.Add('INCLUDEDIR', 'Path of header files.' )
 vars.Add(BoolVariable('VERBOSE', 'Set output verbosity', False))
 vars.Add('CMD_LOGFILE', 'Specifies a file to capture the build log', 'build.log')
 vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabled if also the OpenCL environment variables are set)', False))
 vars.Add('OCL_INCLUDE_PATH', 'Specifies the location of the OpenCL header files (parent directory of "CL/").')
 vars.Add('OCL_LIBRARY_PATH', 'Specifies the location of the OpenCL library.')
 vars.Add('BOOST_INCLUDE_PATH', 'Specifies the location of the boost header files.', '/usr/include')
-vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '/usr/lib64')
+vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '/usr/lib/x86_64-linux-gnu')
 vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
 vars.Add(BoolVariable('COMPILE_BOOST_PERFORMANCE_TESTS', 'Compile the performance tests written using Boost Test. Currently only buildable with OpenCL enabled', False))
 vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
@@ -86,7 +87,6 @@ vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only r
 vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
-vars.Add('MSVC_USE_SCRIPT', 'Sets the script to initialize the environment for the Visual Studio compiler and linker.', '')
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
 
 # create temporary environment to check which system and compiler we should use
@@ -105,6 +105,14 @@ else:
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
 
+env['EPREFIX'] = env.get( 'EPREFIX', env['PREFIX'] )
+env['LIBDIR'] = env.get( 'LIBDIR', os.path.join( env['EPREFIX'], "lib" ) )
+env['INCLUDEDIR'] = env.get( 'INCLUDEDIR', os.path.join( env['PREFIX'], "include" ) )
+
+# no docu if clean:
+if not env.GetOption('clean'):
+  prepareDoxyfile(moduleFolders)
+
 if 'CXX' in ARGUMENTS:
   print "CXX: ", ARGUMENTS['CXX']
   env['CXX'] = ARGUMENTS['CXX']
@@ -115,13 +123,12 @@ if 'CPPFLAGS' in ARGUMENTS:
   env['CPPFLAGS'] = ARGUMENTS['CPPFLAGS'].split(",")
 if 'CFLAGS' in ARGUMENTS:
   env['CFLAGS'] = ARGUMENTS['CFLAGS']
+env.AppendUnique(CPPDEFINES = {})
 if 'CPPDEFINES' in ARGUMENTS:
-  defineDict = {}
   for define in ARGUMENTS['CPPDEFINES'].split(","):
     key, value = define.split("=")
-    defineDict[key] = value
-  env.AppendUnique(CPPDEFINES = defineDict)
-  print env['CPPDEFINES']
+    env['CPPDEFINES'][key] = value
+
 if 'CPPPATH' in ARGUMENTS:
     env['CPPPATH'] = ARGUMENTS['CPPPATH'].split(",")
 if 'LIBPATH' in ARGUMENTS:
@@ -162,15 +169,15 @@ Parameters are:
 vars.GenerateHelpText(env))
 
 # adds trailing slashes were required and if not present
-BUILD_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'sgpp'))
+BUILD_DIR = Dir(os.path.join('lib', 'sgpp'))
 Export('BUILD_DIR')
-PYSGPP_PACKAGE_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib'))
+PYSGPP_PACKAGE_PATH = Dir(os.path.join('lib'))
 Export('PYSGPP_PACKAGE_PATH')
 PYSGPP_BUILD_PATH = Dir(os.path.join(PYSGPP_PACKAGE_PATH.abspath, 'pysgpp'))
 Export('PYSGPP_BUILD_PATH')
-JSGPP_BUILD_PATH = Dir(os.path.join(env['OUTPUT_PATH'], 'lib', 'jsgpp'))
+JSGPP_BUILD_PATH = Dir(os.path.join('lib', 'jsgpp'))
 Export('JSGPP_BUILD_PATH')
-EXAMPLE_DIR = Dir(os.path.join(env['OUTPUT_PATH'], 'bin', 'examples'))
+EXAMPLE_DIR = Dir(os.path.join('bin', 'examples'))
 Export('EXAMPLE_DIR')
 
 # no checks if clean:
@@ -179,19 +186,17 @@ if not env.GetOption('clean'):
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
-if (env['PLATFORM'] == 'win32') and (env['COMPILER'] != 'vcc'):
+if env['PLATFORM'] == 'win32':
     set_win32_spawn(env)
 
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)
 env.Append(LIBPATH=[BUILD_DIR])
 
-# add C++ defines for all modules
-cppdefines = []
+# # add C++ defines for all modules
 for module in moduleNames:
     if env[module]:
-        cppdefines.append(module)
-env.Append(CPPDEFINES=cppdefines)
+        env['CPPDEFINES'][module] = '1'
 
 # environement setup finished, export environment
 Export('env')
@@ -206,7 +211,7 @@ if env['PLATFORM'] == 'win32':
     env["ENV"]["PATH"] = os.pathsep.join([
         env["ENV"].get("PATH", ""),
         BUILD_DIR.abspath])
-    
+
     # also add the Boost library path to the PATH
     # so that the Boost test *.dll can be found when running the tests
     if env['RUN_BOOST_TESTS']:
@@ -257,18 +262,24 @@ if env['COMPILE_BOOST_TESTS']:
     builder = Builder(action="./$SOURCE")
     env.Append(BUILDERS={'BoostTest' : builder})
 
+
+
 libraryTargetList = []
 installTargetList = []
 testTargetList = []
 boostTestTargetList = []
 exampleTargetList = []
 pydocTargetList = []
+headerSourceList = []
+headerDestList = []
 env.Export('libraryTargetList')
 env.Export('installTargetList')
 env.Export('testTargetList')
 env.Export('boostTestTargetList')
 env.Export('exampleTargetList')
 env.Export('pydocTargetList')
+env.Export('headerSourceList')
+env.Export('headerDestList')
 
 # compile selected modules
 flattenedDependencyGraph = []
@@ -288,28 +299,35 @@ for moduleFolder in moduleFolders:
 Export('flattenedDependencyGraph')
 
 if env['PYDOC'] and env['SG_PYTHON']:
-  with open('moduleDoxy', 'r') as template:
-    data = template.read()
-    for module in moduleFolders:
-      if not env['SG_' + module.upper()]:
-        continue
-      print module
+  data = open('moduleDoxy', 'r').read()
+  for module in moduleFolders:
+    if not env['SG_' + module.upper()]:
+      continue
+
+    if env.GetOption("clean"):
+      if os.path.exists(os.path.join(module, 'Doxyfile')):
+        os.remove(os.path.join(module, 'Doxyfile'))
+      doxypath = os.path.join(module, 'doc/xml/')
+      if os.path.exists(doxypath):
+        for file in os.listdir(doxypath):
+          os.remove(os.path.join(doxypath, file))
+    else:
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
-        doxyFile.write(data.replace('$modname', module).replace('$quiet', 'NO' if env['VERBOSE'] else 'YES'))
+        doxyFile.write(data.replace('$modname', module).replace('$quiet', 'YES'))
 
-      doxy_env = env.Clone()
+    doxy_env = env.Clone()
 
-      doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
+    doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
 
-      doxy2swig_command = "python pysgpp/doxy2swig.py -o -c " + ('' if env['VERBOSE'] else '-q') + " $SOURCE $TARGET"
-      doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
+    doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
+    doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
 
-      for root, dirs, files in os.walk(os.path.join(module, 'src')):
-        for file in files:
-          if 'cpp' in file or 'hpp' in file:
-            doxy_env.Depends(doxygen, os.path.join(root, file))
-            doxy_env.Depends(doxy2swig, os.path.join(root, file))
-      pydocTargetList.append(doxy2swig)
+    for root, dirs, files in os.walk(os.path.join(module, 'src')):
+      for file in files:
+        if 'cpp' in file or 'hpp' in file:
+          doxy_env.Depends(doxygen, os.path.join(root, file))
+          doxy_env.Depends(doxy2swig, os.path.join(root, file))
+    pydocTargetList.append(doxy2swig)
 
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
@@ -401,3 +419,20 @@ dependencies.append(env.Command('printFinished', [], printFinished))
 # necessary to enforce an order on the final steps of the building of the wrapper
 for i in range(len(dependencies) - 1):
   env.Depends(dependencies[i + 1], dependencies[i])
+
+# Stuff needed for system install
+env.Clean("distclean",
+  [
+    "config.log",
+  ])
+Default(libraryTargetList, dependencies)
+
+ils = env.Alias('install-lib-sgpp', Install(os.path.join( env.get('LIBDIR'), 'sgpp'), libraryTargetList))
+
+headerFinalDestList = []
+for headerDest in headerDestList:
+  headerFinalDestList.append(os.path.join( env.get('INCLUDEDIR'), headerDest))
+
+iis = env.Alias('install-inc-sgpp', InstallAs(headerFinalDestList, headerSourceList))
+
+env.Alias('install', [ils, iis])
