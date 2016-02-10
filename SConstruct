@@ -272,7 +272,10 @@ def lintAction(target, source, env):
                 (line == ""):
             pass
         else:
-            print "Warning: " + line
+            parts = line.split(":  ")
+            location = parts[0]
+            message = ":  ".join(parts[1:])
+            print location + ": warning: " + message
     # touch file without writing anything
     # (to indicate for the next run of SCons that we already checked this file)
     with open(target[0].abspath, "w"): pass
