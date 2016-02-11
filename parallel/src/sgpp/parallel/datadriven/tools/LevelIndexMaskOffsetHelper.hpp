@@ -91,7 +91,7 @@ inline rebuild<Mask, C>::rebuild(C* op) {
 }
 }
 
-#if USE_DOUBLE_PRECISION==0
+//#if USE_DOUBLE_PRECISION==0
 
 
 namespace LevelIndexMaskOffsetHelperSP {
@@ -151,7 +151,7 @@ inline rebuild<Mask, C>::rebuild(C* op) {
 }
 }
 
-#endif // USE_DOUBLE_PRECISION==0
+//#endif // USE_DOUBLE_PRECISION==0
 
 
 }

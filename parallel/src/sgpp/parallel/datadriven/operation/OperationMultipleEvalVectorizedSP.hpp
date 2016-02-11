@@ -16,7 +16,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION==0
+//#if USE_DOUBLE_PRECISION==0
 
 namespace SGPP {
 namespace parallel {
@@ -121,6 +121,6 @@ class OperationMultipleEvalVectorizedSP {
 }
 }
 
-#endif // USE_DOUBLE_PRECISION==0
+//#endif // USE_DOUBLE_PRECISION==0
 
 #endif /* OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP */
