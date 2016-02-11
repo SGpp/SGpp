@@ -77,7 +77,7 @@ class StratifiedSampleGenerator: public SampleGenerator {
 
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* STRATIFIEDSAMPLEGENERATOR_HPP */

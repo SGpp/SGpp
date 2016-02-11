@@ -43,7 +43,7 @@ class Random {
   static std::uniform_int_distribution<std::uint64_t> distInt;
   static std::uniform_real_distribution<float_t> distReal;
 };
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* RANDOM_HPP */

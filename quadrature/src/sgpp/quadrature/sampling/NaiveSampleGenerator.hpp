@@ -53,7 +53,7 @@ class NaiveSampleGenerator : public SampleGenerator {
   std::uniform_real_distribution<float_t> uniformRealDist;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* NAIVESAMPLEGENERATOR_HPP */

@@ -85,7 +85,7 @@ class SampleGenerator {
   // random number generator
   std::mt19937_64 rng;
 };
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* SAMPLEGENERATOR_HPP */
