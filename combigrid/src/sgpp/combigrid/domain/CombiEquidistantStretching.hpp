@@ -12,7 +12,7 @@
  * Create an equidistant  grid..
  *
  *
- **/
+ */
 
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
 
@@ -26,8 +26,8 @@ class CombiEquidistantStretching : public AbstractStretchingMaker {
 
   /**
    *
-   * @param level - integer specifying the current grid level. the
-   * corresponding nr of points is 2^level + 1
+   * @param level - integer specifying the current grid level; the
+   * corresponding nr of points is 2**level + 1
    * @param min - the left boundary of the interval
    * @param max - the right boundary of the interval
    * @param stretching - the output vector of pre-computed grid points
