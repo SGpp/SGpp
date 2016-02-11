@@ -12,17 +12,15 @@
 namespace SGPP {
 namespace quadrature {
 
-HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions,
-    std::uint64_t seed) :
-  SampleGenerator(dimensions, seed),
-  index(1),
-  baseVector(dimensions),
-  iVector(dimensions),
-  fVector(dimensions),
-  resultVector(dimensions),
-  distInt(0, 15) {
-  size_t basePrimes[] =
-  { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47 };
+HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions, std::uint64_t seed)
+    : SampleGenerator(dimensions, seed),
+      index(1),
+      baseVector(dimensions),
+      iVector(dimensions),
+      fVector(dimensions),
+      resultVector(dimensions),
+      distInt(0, 15) {
+  size_t basePrimes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47};
 
   for (size_t i = 0; i < dimensions; i++) {
     baseVector[i] = basePrimes[distInt(rng)];
@@ -31,8 +29,7 @@ HaltonSampleGenerator::HaltonSampleGenerator(size_t dimensions,
   }
 }
 
-HaltonSampleGenerator::~HaltonSampleGenerator() {
-}
+HaltonSampleGenerator::~HaltonSampleGenerator() {}
 
 void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
   for (size_t i = 0; i < dimensions; i++) {
@@ -41,12 +38,10 @@ void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
     iVector[i] = static_cast<float_t>(index);
 
     while (iVector[i] > 0) {
-      resultVector[i] = resultVector[i]
-                        + fVector[i]
-                        * ((float_t) ((size_t) iVector[i] % baseVector[i]));
-      iVector[i] = floor(
-                     ((float_t) iVector[i]) / ((float_t) baseVector[i]));
-      fVector[i] = fVector[i] / ((float_t) baseVector[i]);
+      resultVector[i] =
+          resultVector[i] + fVector[i] * ((float_t)((size_t)iVector[i] % baseVector[i]));
+      iVector[i] = floor(((float_t)iVector[i]) / ((float_t)baseVector[i]));
+      fVector[i] = fVector[i] / ((float_t)baseVector[i]);
     }
 
     dv[i] = resultVector[i];

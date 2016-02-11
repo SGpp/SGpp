@@ -10,7 +10,6 @@
 
 #include <random>
 
-
 namespace SGPP {
 namespace quadrature {
 

@@ -14,7 +14,6 @@
 #include <vector>
 #include <random>
 
-
 namespace SGPP {
 namespace quadrature {
 
@@ -69,7 +68,7 @@ class LatinHypercubeSampleGenerator : public SampleGenerator {
   float_t sizeOfStrata;
 
   //
-  std::vector< std::vector<size_t> > currentStrata;
+  std::vector<std::vector<size_t> > currentStrata;
 
   //
   std::uniform_real_distribution<float_t> uniformRealDist;

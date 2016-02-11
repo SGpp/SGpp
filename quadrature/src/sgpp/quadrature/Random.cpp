@@ -13,9 +13,9 @@ namespace quadrature {
 bool Random::is_seeded = false;
 std::mt19937_64 Random::gen = std::mt19937_64();
 std::uniform_int_distribution<std::uint64_t> Random::distInt =
-  std::uniform_int_distribution<std::uint64_t>(0, RAND_MAX);
+    std::uniform_int_distribution<std::uint64_t>(0, RAND_MAX);
 std::uniform_real_distribution<float_t> Random::distReal =
-  std::uniform_real_distribution<float_t>(0, 1);
+    std::uniform_real_distribution<float_t>(0, 1);
 
 void Random::seed(std::uint64_t seed_value) {
   gen.seed(seed_value);

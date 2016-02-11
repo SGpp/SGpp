@@ -11,18 +11,16 @@
 namespace SGPP {
 namespace quadrature {
 
-SampleGenerator::SampleGenerator(size_t dimensions, std::uint64_t seed) :
-  dimensions(dimensions), seed(seed) {
+SampleGenerator::SampleGenerator(size_t dimensions, std::uint64_t seed)
+    : dimensions(dimensions), seed(seed) {
   rng.seed(seed);
 }
 
-SampleGenerator::~SampleGenerator() {
-}
+SampleGenerator::~SampleGenerator() {}
 
 void SampleGenerator::getSamples(base::DataMatrix& samples) {
   // Number of columns has to correspond to the number of dimensions
-  if (samples.getNcols() != dimensions)
-    return;
+  if (samples.getNcols() != dimensions) return;
 
   // generate one sample for every row of the given DataMatrix
   base::DataVector dv(dimensions);
@@ -33,13 +31,9 @@ void SampleGenerator::getSamples(base::DataMatrix& samples) {
   }
 }
 
-size_t SampleGenerator::getDimensions() {
-  return dimensions;
-}
+size_t SampleGenerator::getDimensions() { return dimensions; }
 
-void SampleGenerator::setDimensions(size_t dimensions) {
-  this->dimensions = dimensions;
-}
+void SampleGenerator::setDimensions(size_t dimensions) { this->dimensions = dimensions; }
 
 }  // namespace quadrature
 }  // namespace SGPP
