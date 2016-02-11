@@ -48,7 +48,7 @@ class ODESolver : public SGSolver {
                      bool bIdentifyLastStep = false, bool verbose = false) = 0;
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* ODESOLVER_HPP */

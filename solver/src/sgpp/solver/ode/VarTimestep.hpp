@@ -9,9 +9,9 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
-#include <string>
-//
 #include <sgpp/globaldef.hpp>
+
+#include <string>
 
 
 namespace SGPP {
@@ -62,7 +62,7 @@ class VarTimestep : public StepsizeControl {
   virtual ~VarTimestep();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* VARTIMESTEP_HPP */

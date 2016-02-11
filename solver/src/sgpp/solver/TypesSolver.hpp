@@ -6,9 +6,9 @@
 #ifndef TYPESSOLVER_HPP
 #define TYPESSOLVER_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cstddef>
 
 
 namespace SGPP {
@@ -37,8 +37,7 @@ struct SLESolverSPConfiguration {
   float threshold_;
 };
 
-}
-
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* TYPESSOLVER_HPP */

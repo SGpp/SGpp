@@ -7,10 +7,9 @@
 #define SGSOLVER_HPP
 
 #include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <cstddef>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -96,7 +95,7 @@ class SGSolver {
   }
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* SGSOLVER_HPP */

@@ -8,9 +8,9 @@
 #endif
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include <cstdio>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cstdio>
 
 
 namespace SGPP {
@@ -57,7 +57,7 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
     SystemMatrix.mult(q, temp);
     r.sub(temp);
     delta_0 = r.dotProduct(r) * epsilonSquared;
-    //delta_0 = r.dotProduct(r);
+    // delta_0 = r.dotProduct(r);
   } else {
     alpha.setAll(0.0);
   }
@@ -75,11 +75,11 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
   if (reuse == false) {
     delta_0 = delta_new * epsilonSquared;
-    //delta_0 = delta_new;
+    // delta_0 = delta_new;
   }
 
   this->residuum = (delta_0 / epsilonSquared);
-  //this->residuum = delta_0;
+  // this->residuum = delta_0;
   this->calcStarting();
 
   if (verbose == true) {
@@ -90,7 +90,6 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
   while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0)
          && (delta_new > max_threshold)) {
-
     //          //SGPP::base::DataVector *myAlpha = this->myLearner->alpha_;
     //        if (this->nIterations == 42) {
     //          for (size_t j = 0; j < d.getSize();j++) {
@@ -169,5 +168,5 @@ void ConjugateGradients::iterationComplete() {
 void ConjugateGradients::complete() {
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

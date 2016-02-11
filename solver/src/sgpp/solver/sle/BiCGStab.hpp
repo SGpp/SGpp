@@ -10,18 +10,15 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 
 
 namespace SGPP {
 namespace solver {
 
 class BiCGStab : public SLESolver {
- private:
-
-
  public:
   /**
    * Std-Constructor
@@ -46,7 +43,7 @@ class BiCGStab : public SLESolver {
                      bool verbose = false, float_t max_threshold = -1.0);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /*BICGSTAB_HPP */

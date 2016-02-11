@@ -12,6 +12,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 
 namespace SGPP {
 namespace solver {
@@ -187,7 +189,7 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
   SGPP::base::GridStorage* getSecondGridStorage();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEM_HPP */

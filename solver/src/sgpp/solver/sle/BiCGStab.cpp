@@ -4,9 +4,9 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/solver/sle/BiCGStab.hpp>
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
+
+#include <cmath>
 
 
 namespace SGPP {
@@ -29,7 +29,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     alpha.setAll(0.0);
   }
 
-  //Calculate r0
+  // Calculate r0
   SGPP::base::DataVector r(alpha.getSize());
   SystemMatrix.mult(alpha, r);
   r.sub(b);
@@ -41,7 +41,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     std::cout <<  "delta_0 " << delta_0 << std::endl;
   }
 
-  //Choose r0 as r
+  // Choose r0 as r
   SGPP::base::DataVector rZero(r);
   // Set p as r0
   SGPP::base::DataVector p(rZero);
@@ -66,7 +66,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     s.setAll(0.0);
     SystemMatrix.mult(p, s);
 
-    //std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
+    // std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
 
     sigma = s.dotProduct(rZero);
 
@@ -84,7 +84,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     v.setAll(0.0);
     SystemMatrix.mult(w, v);
 
-    //std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
+    // std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
 
     omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
@@ -123,5 +123,5 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
   }
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

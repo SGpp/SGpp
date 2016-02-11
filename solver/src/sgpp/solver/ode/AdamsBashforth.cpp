@@ -9,11 +9,11 @@
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/exception/solver_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <iostream>
 #include <string>
 #include <sstream>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -23,14 +23,14 @@ AdamsBashforth::AdamsBashforth(size_t imax, float_t timestepSize,
                                SGPP::base::ScreenOutput* screen) : ODESolver(imax, timestepSize),
   myScreen(screen) {
   this->residuum = 0.0;
-
 }
 
 AdamsBashforth::~AdamsBashforth() {
 }
 
 void AdamsBashforth::solve(SLESolver& LinearSystemSolver,
-                           SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep,
+                           SGPP::solver::OperationParabolicPDESolverSystem& System,
+                           bool bIdentifyLastStep,
                            bool verbose) {
   size_t allIter = 0;
   SGPP::base::DataVector* rhs;
@@ -86,7 +86,6 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver,
     }
 
     System.saveAlpha();
-
   }
 
   // write some empty lines to console
@@ -97,5 +96,5 @@ void AdamsBashforth::solve(SLESolver& LinearSystemSolver,
   this->nIterations = allIter;
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

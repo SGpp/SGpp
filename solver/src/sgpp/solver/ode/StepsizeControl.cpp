@@ -8,12 +8,13 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/exception/solver_exception.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
-#include <sgpp/globaldef.hpp>
+#include <algorithm>
 
 
 namespace SGPP {
@@ -26,7 +27,6 @@ StepsizeControl::StepsizeControl(size_t imax, float_t timestepSize, float_t eps,
   this->myEps = eps;
   this->mySC = sc;
   useCoarsen = true;
-
 }
 
 StepsizeControl::~StepsizeControl() {
@@ -74,31 +74,31 @@ float_t StepsizeControl::maxNorm(
          ++p) {
       q = ogs->find(p->first);
 
-      //   std::cout << "YK" << ((p->first)->toString() == (q->first)->toString() ) << " " << (p->first)->toString() << " YKold" << ((q->first)->equals(*p->first)) << " "<< (q->first)->toString() << std::endl;
+      // std::cout << "YK" << ((p->first)->toString() == (q->first)->toString() ) <<
+      // " " << (p->first)->toString() << " YKold" << ((q->first)->equals(*p->first)) <<
+      // " "<< (q->first)->toString() << std::endl;
       if ((q->first)->equals(*p->first)) {
-
         auto i = p->second;
         auto j = q->second;
-        //  std::cout <<time<< " "<< (p->first)->toString() << " "<<i<<" " << Data[i]<< " " << (q->first)->toString() <<" "<<j<< " "<< OldData[j] << std::endl;
+        //  std::cout <<time<< " "<< (p->first)->toString() << " "<<i<<" " << Data[i]<< " " <<
+        // (q->first)->toString() <<" "<<j<< " "<< OldData[j] << std::endl;
         float_t t2 = std::max(fabs(Data[i]), fabs(OldData[j]));
         float_t tmpData = fabs(Data[i] - OldData[j]) / std::max(sc, t2);
 
         if (max < fabs(tmpData)) {
-
           max = fabs(tmpData);
         }
       }
     }
 
-    //std::cout << "u1 " << max << " e"<<(max >= epsilon) << std::endl;
-
+    // std::cout << "u1 " << max << " e"<<(max >= epsilon) << std::endl;
   }
 
   return max;
-
 }
 void StepsizeControl::solve(SLESolver& LinearSystemSolver,
-                            SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep,
+                            SGPP::solver::OperationParabolicPDESolverSystem& System,
+                            bool bIdentifyLastStep,
                             bool verbose) {
   size_t allIter = 0;
   SGPP::base::DataVector* rhs;
@@ -119,8 +119,8 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
 
   std::ofstream fileout;
 
-  //fileout.open(filename.c_str());
-  fileout.open(filename.c_str(), std::ofstream::app); // apend to file
+  // fileout.open(filename.c_str());
+  fileout.open(filename.c_str(), std::ofstream::app);  // apend to file
   fileout << std::endl;
 
   System.getGridCoefficientsForSC(YkImEul);
@@ -128,8 +128,6 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
   rhs = NULL;
 
   for (size_t i = 0; i < maxIter && time < maxTimestep; i++) {
-
-
     YkAdBas.resize(System.getGridCoefficients()->getSize());
 
     YkImEul.resize(System.getGridCoefficients()->getSize());
@@ -203,9 +201,7 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
 
       // adapt size of last time step
       tmp_timestepsize = std::min(tmp_timestepsize, maxTimestep - time);
-
     }
-
   }
 
   fileout.close();
@@ -214,11 +210,6 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
   if (myScreen != NULL) {
     myScreen->writeEmptyLines(2);
   }
-
-
-
 }
-}
-
-
-}
+}  // namespace solver
+}  // namespace SGPP

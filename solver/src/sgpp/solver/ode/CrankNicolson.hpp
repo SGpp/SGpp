@@ -49,7 +49,7 @@ class CrankNicolson : public ODESolver {
                      bool bIdentifyLastStep = false, bool verbose = false);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* CRANKNICOLSON_HPP */

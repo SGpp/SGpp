@@ -52,7 +52,7 @@ class SLESolver : public SGSolver {
                      bool verbose = false, float_t max_threshold = DEFAULT_RES_THRESHOLD) = 0;
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* SLESOLVER_HPP */
