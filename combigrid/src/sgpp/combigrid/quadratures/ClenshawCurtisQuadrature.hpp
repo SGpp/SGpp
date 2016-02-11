@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef CLENSHAWCURTISQUADRATURE_HPP_
 #define CLENSHAWCURTISQUADRATURE_HPP_
@@ -74,8 +72,7 @@ class ClenshawCurtisQuadrature : public AbstractQuadratureRule<_Tp> {
    *
    */
   _Tp clenshaw_curtis_fullgrid(int dim, _Tp (*f)(std::vector<double>),
-                               FGridContainer<_Tp> *gridContainer,
-                               bool interpolate);
+                               FGridContainer<_Tp> *gridContainer, bool interpolate);
 };
 }  // namespace combigrid
 

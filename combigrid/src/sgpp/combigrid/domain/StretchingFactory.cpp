@@ -1,9 +1,7 @@
-/*
- * StretchingFactory.cpp
- *
- *  Created on: Jan 19, 2015
- *      Author: petz
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/domain/StretchingFactory.hpp>
 
@@ -39,12 +37,11 @@ AbstractStretchingMaker* createStretchingMaker(combigrid::Stretching str) {
 
     case UNKNOWN:
     default:
-      COMBIGRID_OUT_WRN(
-          "Input stretching type unknown! Returning a NULL stretching maker!",
-          __FILE__, __LINE__)
+      COMBIGRID_OUT_WRN("Input stretching type unknown! Returning a NULL stretching maker!",
+                        __FILE__, __LINE__)
       break;
   }
 
   return maker;
 }
-}
+}  // namespace combigrid

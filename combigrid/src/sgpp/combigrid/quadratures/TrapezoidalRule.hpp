@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef TRAPEZOIDAL_QUADRATURE__HPP
 #define TRAPEZOIDAL_QUADRATURE__HPP
@@ -73,8 +71,8 @@ class TrapezoidalRule : public AbstractQuadratureRule<_Tp> {
    * Do a full grid trapezoidal rule over a single dim-dimensional FULL GRID.
    *
    */
-  _Tp trapz_full_grid(int dim, _Tp (*f)(std::vector<double>),
-                      FGridContainer<_Tp>* gridContainer, bool interpolate);
+  _Tp trapz_full_grid(int dim, _Tp (*f)(std::vector<double>), FGridContainer<_Tp>* gridContainer,
+                      bool interpolate);
 
   int MAX_LEVELS;
   /* Container for the pre-computed coefs for levels 1,2... MAX_LEVELS.

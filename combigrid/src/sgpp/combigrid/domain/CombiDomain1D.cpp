@@ -1,10 +1,8 @@
-/* ****************************************************************************
- * Copyright (C) 2011 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
-// @author Christoph Kowitz (kowitz@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/combigrid/domain/CombiDomain1D.hpp>
 #include <vector>
 #include <algorithm>
@@ -35,8 +33,7 @@ combigrid::Domain1D::Domain1D(const Domain1D& domain) {
   _jacobian = domain.axisJacobian();
 }
 
-void combigrid::Domain1D::transformRealToUnit(double coordReal,
-                                              double& coordUnit, int level_in,
+void combigrid::Domain1D::transformRealToUnit(double coordReal, double& coordUnit, int level_in,
                                               bool noBoundary) const {
   // int verb = 6;
   if (_isStretched) {
@@ -58,11 +55,10 @@ void combigrid::Domain1D::transformRealToUnit(double coordReal,
     }
 
     // startInd should be now at the beginning of the cell
-    intersec = (_stretching[endInd] - coordReal) /
-               (_stretching[endInd] - _stretching[startInd]);
+    intersec = (_stretching[endInd] - coordReal) / (_stretching[endInd] - _stretching[startInd]);
     //   - make the transformation to the unit domain -> unitCoords
     coordUnit =
-        (((double)endInd) * combigrid::oneOverPowOfTwo[level_diff] - intersec) /
+        ((static_cast<double>(endInd)) * combigrid::oneOverPowOfTwo[level_diff] - intersec) /
         combigrid::powerOfTwo[_level - level_diff];
 
     if (noBoundary) {
@@ -72,17 +68,16 @@ void combigrid::Domain1D::transformRealToUnit(double coordReal,
       if (startInd == 0) {
         double h = _stretching[endInd + offs] - _stretching[startInd + offs];
         intersec = (_stretching[endInd] - coordReal) / h;
-        coordUnit = (((double)endInd) * combigrid::oneOverPowOfTwo[level_diff] -
-                     intersec) /
-                    combigrid::powerOfTwo[_level - level_diff];
+        coordUnit =
+            ((static_cast<double>(endInd)) * combigrid::oneOverPowOfTwo[level_diff] - intersec) /
+            combigrid::powerOfTwo[_level - level_diff];
         // COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::tran 1");
       }
 
-      if (endInd == (int)_stretching.size() - 1) {
+      if (endInd == static_cast<int>(_stretching.size()) - 1) {
         double h = _stretching[startInd] - _stretching[startInd - offs];
         intersec = (coordReal - _stretching[startInd]) / h;
-        coordUnit = (((double)(endInd - offs)) *
-                         combigrid::oneOverPowOfTwo[level_diff] +
+        coordUnit = ((static_cast<double>(endInd - offs)) * combigrid::oneOverPowOfTwo[level_diff] +
                      intersec) /
                     combigrid::powerOfTwo[_level - level_diff];
         // COMBIGRID_OUT_LEVEL3( verb , " combigrid::Domain1D::tran 2 ,
@@ -107,20 +102,19 @@ void combigrid::Domain1D::transformRealToUnit(double coordReal,
   }
 }
 
-void combigrid::Domain1D::transformUnitToReal(int level, int index,
-                                              double& realCoord) const {
+void combigrid::Domain1D::transformUnitToReal(int level, int index, double& realCoord) const {
   if (_isStretched) {
     // get the stretched index
     int level_diff = (_level < level) ? 0 : _level - level;
     realCoord = _stretching[index * combigrid::powerOfTwo[level_diff]];
   } else {
     // no stretching , just simple scaling
-    realCoord = _min + (_max - _min) * ((double)index) * oneOverPowOfTwo[level];
+    realCoord = _min + (_max - _min) * (static_cast<double>(index)) * oneOverPowOfTwo[level];
   }
 }
 
-void combigrid::Domain1D::findEntry(double coordReal, int level_in,
-                                    int& startIndex, double& intersect) const {
+void combigrid::Domain1D::findEntry(double coordReal, int level_in, int& startIndex,
+                                    double& intersect) const {
   if (_isStretched) {
     int startInd = 0, mid = 0;
     int endInd = static_cast<int>(_stretching.size()) - 1;
@@ -147,19 +141,18 @@ void combigrid::Domain1D::findEntry(double coordReal, int level_in,
   } else {
     // for the non-stretched case
     double unitC = (coordReal - _min) / (_max - _min);
-    startIndex = static_cast<int>(
-        ::floor((double)combigrid::powerOfTwo[level_in] * unitC));
+    startIndex =
+        static_cast<int>(::floor(static_cast<double>(combigrid::powerOfTwo[level_in]) * unitC));
     startIndex = (startIndex < 0) ? 0 : startIndex;
     startIndex = (startIndex >= combigrid::powerOfTwo[level_in] - 1)
                      ? combigrid::powerOfTwo[level_in] - 1
                      : startIndex;
-    intersect = (unitC * (double)combigrid::powerOfTwo[level_in] -
-                 (double)(startIndex));
+    intersect = (unitC * static_cast<double>(combigrid::powerOfTwo[level_in]) -
+                 static_cast<double>(startIndex));
   }
 }
 
-void combigrid::Domain1D::getMeshWidth(int index, int level_in, double& h0,
-                                       double& h1) const {
+void combigrid::Domain1D::getMeshWidth(int index, int level_in, double& h0, double& h1) const {
   if (_isStretched) {
     int level_diff = (_level < level_in) ? 0 : _level - level_in;
     // index checking should be done in the debug mode
@@ -168,6 +161,6 @@ void combigrid::Domain1D::getMeshWidth(int index, int level_in, double& h0,
     h1 = _stretching[(index + 1) * combigrid::powerOfTwo[level_diff]] -
          _stretching[index * combigrid::powerOfTwo[level_diff]];
   } else {
-    h1 = h0 = (_max - _min) * (1 / (double)combigrid::powerOfTwo[level_in]);
+    h1 = h0 = (_max - _min) * (1 / static_cast<double>(combigrid::powerOfTwo[level_in]));
   }
 }

@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef GAUSSPATTERSONQUADRATURE_HPP_
 #define GAUSSPATTERSONQUADRATURE_HPP_
@@ -77,8 +75,7 @@ class GaussPattersonQuadrature : public AbstractQuadratureRule<_Tp> {
    */
 
   _Tp gauss_patterson_fullGrid(int dim, _Tp (*f)(std::vector<double>),
-                               FGridContainer<_Tp>* gridContainer,
-                               bool interpolate);
+                               FGridContainer<_Tp>* gridContainer, bool interpolate);
 };
 }  // namespace combigrid
 

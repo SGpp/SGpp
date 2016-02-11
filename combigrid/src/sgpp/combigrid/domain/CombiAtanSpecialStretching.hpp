@@ -1,14 +1,14 @@
-/* ****************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIATANSPECIALSTRETCHING_HPP_
 #define COMBIATANSPECIALSTRETCHING_HPP_
 
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
+
+#include <vector>
 
 namespace combigrid {
 
@@ -27,12 +27,11 @@ class AtanSpecialStretching : public AbstractStretchingMaker {
 
   virtual ~AtanSpecialStretching() { ; }
 
-  void get1DStretching(int level, double min, double max,
-                       std::vector<double>* stretching,
+  void get1DStretching(int level, double min, double max, std::vector<double>* stretching,
                        std::vector<double>* jacobian) const;
 
   Stretching getStretchingType() const { return ATAN; }
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBIATANSPECIALSTRETCHING_HPP_ */

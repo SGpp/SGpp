@@ -1,17 +1,22 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/combigrid/combischeme/CombiTS_CT.hpp>
 
+#include <vector>
+
 template <typename _Tp>
-combigrid::CombiTS_CT<_Tp>::CombiTS_CT(std::vector<int> minlevels,
-                                       std::vector<int> maxlevels) {
+combigrid::CombiTS_CT<_Tp>::CombiTS_CT(std::vector<int> minlevels, std::vector<int> maxlevels) {
   _levels_small = minlevels;
   this->_levels = maxlevels;
   this->_makeCombiInDimension.clear();
 }
 
 template <typename _Tp>
-combigrid::CombiTS_CT<_Tp>::CombiTS_CT(
-    const std::vector<int>& in_levels,
-    const std::vector<bool>& makeCombiInDimension) {
+combigrid::CombiTS_CT<_Tp>::CombiTS_CT(const std::vector<int>& in_levels,
+                                       const std::vector<bool>& makeCombiInDimension) {
   // set the makeCombiIndimensions flag vector
   this->_makeCombiInDimension = makeCombiInDimension;
   // set the small levels vector to be 0.5*in_levels_vector
@@ -38,9 +43,9 @@ combigrid::CombiTS_CT<_Tp>::CombiTS_CT(std::vector<int> in_max_levels) {
 }
 
 template <typename _Tp>
-void combigrid::CombiTS_CT<_Tp>::initCombiGrid(
-    int in_dim, std::vector<std::vector<int> >& out_levels_vector,
-    std::vector<_Tp>& out_coefs) {
+void combigrid::CombiTS_CT<_Tp>::initCombiGrid(int in_dim,
+                                               std::vector<std::vector<int> >& out_levels_vector,
+                                               std::vector<_Tp>& out_coefs) {
   // initiate a duplicate
   // of the vectors with max and min levels values
   std::vector<int> levels_big = this->_levels;
@@ -67,9 +72,9 @@ void combigrid::CombiTS_CT<_Tp>::initCombiGrid(
   if (_makeCombiInDimension.size() != 0) {
     active_dim = _makeCombiInDimension;
   } else {
-    if (levels_small.size() > 0 && levels_big.size() > 0)
-      for (int i = 0; i < in_dim; i++)
-        active_dim[i] = (levels_small[i] != levels_big[i]);
+    if (levels_small.size() > 0 && levels_big.size() > 0) {
+      for (int i = 0; i < in_dim; i++) active_dim[i] = (levels_small[i] != levels_big[i]);
+    }
   }
 
   std::vector<int> level_tmp;
@@ -93,10 +98,10 @@ void combigrid::CombiTS_CT<_Tp>::initCombiGrid(
 }
 
 template <typename _Tp>
-void combigrid::CombiTS_CT<_Tp>::re_initCombiGrid(
-    int in_dim, const std::vector<FGridContainer<_Tp>*> in_grids,
-    std::vector<std::vector<int> >& out_levels_vector,
-    std::vector<_Tp>& out_coefs) {
+void combigrid::CombiTS_CT<_Tp>::re_initCombiGrid(int in_dim,
+                                                  const std::vector<FGridContainer<_Tp>*> in_grids,
+                                                  std::vector<std::vector<int> >& out_levels_vector,
+                                                  std::vector<_Tp>& out_coefs) {
   std::vector<std::vector<int> > tmp_levels_vector;
   std::vector<_Tp> tmp_coefs;
   initCombiGrid(in_dim, tmp_levels_vector, tmp_coefs);
@@ -104,8 +109,7 @@ void combigrid::CombiTS_CT<_Tp>::re_initCombiGrid(
   // examine what vectors do we have in the in_grids vector....
   // 1) first deactivate all existing grids
 
-  for (unsigned int i = 0; i < in_grids.size(); i++)
-    in_grids[i]->deactivateGrid();
+  for (unsigned int i = 0; i < in_grids.size(); i++) in_grids[i]->deactivateGrid();
 
   // 2) if the scheme attempts to create an already existing grid, change the
   // coeffs and activate it.
@@ -115,9 +119,7 @@ void combigrid::CombiTS_CT<_Tp>::re_initCombiGrid(
     while (j < tmp_levels_vector.size()) {
       // if the grid vector i's levels vector == temp_levels_vector[j] and the
       // coeffs are the same
-      if (in_grids[i]->getFGLevels() == tmp_levels_vector[j])
-
-      {
+      if (in_grids[i]->getFGLevels() == tmp_levels_vector[j]) {
         // if true leave the grid as activated..change its coefficient
         // and remove the record from the list of grids to be created.
         in_grids[i]->setCoef(tmp_coefs[j]);
@@ -148,8 +150,7 @@ void combigrid::CombiTS_CT<_Tp>::re_initCombiGrid(
 template <typename _Tp>
 void combigrid::CombiTS_CT<_Tp>::recomputeCoefficients(
     int in_dim, std::vector<FGridContainer<_Tp>*>& out_fgrids) {
-  std::cout
-      << " combiTS_CT scheme -> recomputeCoefficients has been invoked \n";
+  std::cout << " combiTS_CT scheme -> recomputeCoefficients has been invoked \n";
 }  // action
 
 template class combigrid::CombiTS_CT<float>;

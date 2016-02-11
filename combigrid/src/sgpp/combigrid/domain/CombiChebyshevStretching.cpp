@@ -1,12 +1,12 @@
-/*
- * CombiChebyshevStretching.cpp
- *
- *  Created on: 28 Jul 2014
- *      Author: kenny
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/domain/CombiChebyshevStretching.hpp>
 #include <math.h>
+
+#include <vector>
 
 /**
  *   Implements a simple coordinate transform :
@@ -21,9 +21,9 @@
  *beautifully as  T_N(x) = cos(N*arcos(x))
  **/
 
-void combigrid::CombiChebyshevStretching::get1DStretching(
-    int level, double min, double max, std::vector<double>* stretching,
-    std::vector<double>* jacobian) const {
+void combigrid::CombiChebyshevStretching::get1DStretching(int level, double min, double max,
+                                                          std::vector<double>* stretching,
+                                                          std::vector<double>* jacobian) const {
   int nr_pts = powerOfTwo[level] + 1;
   // resize the stretching vector...
   stretching->resize(nr_pts);
