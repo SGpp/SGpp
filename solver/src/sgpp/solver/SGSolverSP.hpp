@@ -11,7 +11,6 @@
 
 #include <cstddef>
 
-
 namespace SGPP {
 namespace solver {
 
@@ -37,8 +36,8 @@ class SGSolverSP {
    * @param nMaximumIterations number of maximum executed iterations
    * @param epsilon the final error in the iterative solver, or the size of one timestep
    */
-  SGSolverSP(size_t nMaximumIterations,
-             float epsilon) : nMaxIterations(nMaximumIterations), myEpsilon(epsilon) {
+  SGSolverSP(size_t nMaximumIterations, float epsilon)
+      : nMaxIterations(nMaximumIterations), myEpsilon(epsilon) {
     nIterations = 0;
     residuum = 0.0;
   }
@@ -46,53 +45,42 @@ class SGSolverSP {
   /**
    * Std-Destructor
    */
-  virtual ~SGSolverSP() { }
-
+  virtual ~SGSolverSP() {}
 
   /**
    * function that returns the number of needed solve steps
    *
    * @return the number of needed solve steps of the sovler
    */
-  size_t getNumberIterations() {
-    return nIterations;
-  }
+  size_t getNumberIterations() { return nIterations; }
 
   /**
    * function the returns the residuum (current or final), error of the solver
    *
    * @return the residuum
    */
-  float getResiduum() {
-    return residuum;
-  }
+  float getResiduum() { return residuum; }
 
   /**
    * resets the number of maximum iterations
    *
    * @param nIterations the new number of maximum iterations
    */
-  void setMaxIterations(size_t nIterations) {
-    nMaxIterations = nIterations;
-  }
+  void setMaxIterations(size_t nIterations) { nMaxIterations = nIterations; }
 
   /**
    * resets the epsilon, that is used in the SGSolver
    *
    * @param eps the new value of epsilon
    */
-  void setEpsilon(float eps) {
-    myEpsilon = eps;
-  }
+  void setEpsilon(float eps) { myEpsilon = eps; }
 
   /**
    * gets the the epsilon, that is used in the SGSolver
    *
    * @return the epsilon, used in the solver
    */
-  float getEpsilon() {
-    return myEpsilon;
-  }
+  float getEpsilon() { return myEpsilon; }
 };
 
 }  // namespace solver

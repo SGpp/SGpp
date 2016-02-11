@@ -12,7 +12,6 @@
 
 #include <string>
 
-
 namespace SGPP {
 namespace solver {
 
@@ -39,13 +38,13 @@ class Euler : public ODESolver {
    * @param Mode the mode of the euler that should be executed, must be ExEul or ImEul
    * @param imax number of maximum executed iterations
    * @param timestepSize the size of one timestep
-   * @param generateAnimation set this, if you want to create a grid evaluation in every time step, in order to create an animation
+   * @param generateAnimation set this, if you want to create a grid evaluation in every time step,
+   * in order to create an animation
    * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
    * @param screen possible pointer to a SGPP::base::ScreenOutput object
    */
-  Euler(std::string Mode, size_t imax, float_t timestepSize,
-        bool generateAnimation = false, size_t numEvalsAnimation = 20,
-        SGPP::base::ScreenOutput* screen = NULL);
+  Euler(std::string Mode, size_t imax, float_t timestepSize, bool generateAnimation = false,
+        size_t numEvalsAnimation = 20, SGPP::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor

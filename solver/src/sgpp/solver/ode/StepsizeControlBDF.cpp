@@ -14,24 +14,22 @@
 #include <fstream>
 #include <cmath>
 
-
 namespace SGPP {
 namespace solver {
 
-StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, float_t timestepSize,
-                                       float_t eps, SGPP::base::ScreenOutput* screen)
-  : VarTimestep("AdBas", "BDF2", nTimesteps, timestepSize, eps, screen) {
+StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, float_t timestepSize, float_t eps,
+                                       SGPP::base::ScreenOutput* screen)
+    : VarTimestep("AdBas", "BDF2", nTimesteps, timestepSize, eps, screen) {
   std::stringstream fnsstream;
-  fnsstream << "Time_" << "SCBDF" << this->myEps << ".gnuplot";
+  fnsstream << "Time_"
+            << "SCBDF" << this->myEps << ".gnuplot";
   filename = fnsstream.str();
 }
 
-StepsizeControlBDF::~StepsizeControlBDF() {
-}
+StepsizeControlBDF::~StepsizeControlBDF() {}
 
-float_t StepsizeControlBDF::nextTimestep(float_t tmp_timestepsize,
-    float_t tmp_timestepsize_old, float_t norm, float_t epsilon) {
-
+float_t StepsizeControlBDF::nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
+                                         float_t norm, float_t epsilon) {
   // float_t deltaY = u/(3.0*(1.0+tmp_timestepsize/tmp_timestepsize_old));
   /*
       float_t epsilon = 0.001;

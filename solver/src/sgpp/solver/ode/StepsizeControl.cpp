@@ -16,38 +16,35 @@
 #include <fstream>
 #include <algorithm>
 
-
 namespace SGPP {
 namespace solver {
 
-StepsizeControl::StepsizeControl(size_t imax, float_t timestepSize, float_t eps,
-                                 float_t sc, SGPP::base::ScreenOutput* screen, float_t gamma)
-  : ODESolver(imax, timestepSize), myScreen(screen), _gamma(gamma) {
+StepsizeControl::StepsizeControl(size_t imax, float_t timestepSize, float_t eps, float_t sc,
+                                 SGPP::base::ScreenOutput* screen, float_t gamma)
+    : ODESolver(imax, timestepSize), myScreen(screen), _gamma(gamma) {
   this->residuum = 0.0;
   this->myEps = eps;
   this->mySC = sc;
   useCoarsen = true;
 }
 
-StepsizeControl::~StepsizeControl() {
-}
+StepsizeControl::~StepsizeControl() {}
 
-float_t StepsizeControl::norm(SGPP::solver::OperationParabolicPDESolverSystem&
-                              System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+float_t StepsizeControl::norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
+                              SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
   return twoNorm(System, dv1, dv2);
 }
 
-float_t StepsizeControl::twoNorm(
-  SGPP::solver::OperationParabolicPDESolverSystem& System,
-  SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+float_t StepsizeControl::twoNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
+                                 SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
   dv1.sub(dv2);
 
   return sqrt(dv1.dotProduct(dv1));
 }
 
-float_t StepsizeControl::maxNorm(
-  SGPP::solver::OperationParabolicPDESolverSystem& System,
-  SGPP::base::DataVector& YkImEul, SGPP::base::DataVector& YkImEulOld) {
+float_t StepsizeControl::maxNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
+                                 SGPP::base::DataVector& YkImEul,
+                                 SGPP::base::DataVector& YkImEulOld) {
   float_t max = 0.0;
   float_t sc = this->mySC;
 
@@ -60,8 +57,7 @@ float_t StepsizeControl::maxNorm(
       float_t t2 = std::max(fabs(Data[j]), fabs(OldData[j]));
       float_t tmpData = fabs(Data[j] - OldData[j]) / std::max(sc, t2);
 
-      if (max < fabs(tmpData))
-        max = fabs(tmpData);
+      if (max < fabs(tmpData)) max = fabs(tmpData);
     }
   } else {
     //      std::cout << "YK" << YkImEul.getSize()<< " YKold" << YkImEulOld.getSize()  << std::endl;
@@ -70,8 +66,7 @@ float_t StepsizeControl::maxNorm(
     SGPP::base::GridStorage* ogs = System.getOldGridStorage();
     SGPP::base::GridStorage::grid_map_iterator q;
 
-    for (SGPP::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end();
-         ++p) {
+    for (SGPP::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end(); ++p) {
       q = ogs->find(p->first);
 
       // std::cout << "YK" << ((p->first)->toString() == (q->first)->toString() ) <<
@@ -98,8 +93,7 @@ float_t StepsizeControl::maxNorm(
 }
 void StepsizeControl::solve(SLESolver& LinearSystemSolver,
                             SGPP::solver::OperationParabolicPDESolverSystem& System,
-                            bool bIdentifyLastStep,
-                            bool verbose) {
+                            bool bIdentifyLastStep, bool verbose) {
   size_t allIter = 0;
   SGPP::base::DataVector* rhs;
   SGPP::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());
@@ -110,8 +104,7 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
   float_t tmp_timestepsize_new = tmp_timestepsize;
   float_t epsilon = this->myEps;
 
-  float_t maxTimestep = static_cast<float_t> (this->nMaxIterations) *
-                        tmp_timestepsize;
+  float_t maxTimestep = static_cast<float_t>(this->nMaxIterations) * tmp_timestepsize;
 
   size_t maxIter = this->nMaxIterations * 10000;
 
@@ -136,10 +129,9 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
 
     corrector(LinearSystemSolver, System, tmp_timestepsize, YkImEul, rhs);
 
-    float_t tmp  = norm(System, YkImEul, YkAdBas);
+    float_t tmp = norm(System, YkImEul, YkAdBas);
 
-    tmp_timestepsize_new = nextTimestep(tmp_timestepsize, tmp_timestepsize_old, tmp,
-                                        epsilon);
+    tmp_timestepsize_new = nextTimestep(tmp_timestepsize, tmp_timestepsize_old, tmp, epsilon);
 
     if (0.8 * tmp_timestepsize > tmp_timestepsize_new) {
       if (_gamma <= 0.0)
@@ -151,16 +143,16 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
       allIter += LinearSystemSolver.getNumberIterations();
 
     } else {
-      fileout << i << " " << (tmp_timestepsize_new - tmp_timestepsize) << " " << time
-              << " " << tmp_timestepsize << std::endl;
+      fileout << i << " " << (tmp_timestepsize_new - tmp_timestepsize) << " " << time << " "
+              << tmp_timestepsize << std::endl;
       time += tmp_timestepsize;
       allIter += LinearSystemSolver.getNumberIterations();
 
       if (verbose == true) {
         if (myScreen == NULL) {
           std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
-                    << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " <<
-                    allIter << ")" << std::endl;
+                    << LinearSystemSolver.getNumberIterations()
+                    << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
         }
       }
 
@@ -168,11 +160,11 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
         std::stringstream soutput;
 
         soutput << " Final residuum " << LinearSystemSolver.getResiduum() << "; with "
-                << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " <<
-                allIter << ")";
+                << LinearSystemSolver.getNumberIterations()
+                << " Iterations (Total Iter.: " << allIter << ")";
 
         if (i < this->nMaxIterations - 1) {
-          myScreen->update((size_t)(((float_t)(time) * 100.0) / ((float_t)maxTimestep)),
+          myScreen->update((size_t)(((float_t)(time)*100.0) / ((float_t)maxTimestep)),
                            soutput.str());
         } else {
           myScreen->update(100, soutput.str());

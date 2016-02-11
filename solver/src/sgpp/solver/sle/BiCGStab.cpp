@@ -8,19 +8,15 @@
 
 #include <cmath>
 
-
 namespace SGPP {
 namespace solver {
 
-BiCGStab::BiCGStab(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {
-}
+BiCGStab::BiCGStab(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {}
 
-BiCGStab::~BiCGStab() {
-}
+BiCGStab::~BiCGStab() {}
 
-void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
-                     SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse,
-                     bool verbose, float_t max_threshold) {
+void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
+                     SGPP::base::DataVector& b, bool reuse, bool verbose, float_t max_threshold) {
   this->nIterations = 1;
   float_t epsilonSqd = this->myEpsilon * this->myEpsilon;
 
@@ -38,7 +34,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
   float_t delta = 0.0;
 
   if (verbose == true) {
-    std::cout <<  "delta_0 " << delta_0 << std::endl;
+    std::cout << "delta_0 " << delta_0 << std::endl;
   }
 
   // Choose r0 as r
@@ -78,7 +74,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
     // w = r - a*s
     w = r;
-    w.axpy((-1.0)*a, s);
+    w.axpy((-1.0) * a, s);
 
     // v = Aw
     v.setAll(0.0);
@@ -89,12 +85,12 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
     // x = x - a*p - omega*w
-    alpha.axpy((-1.0)*a, p);
-    alpha.axpy((-1.0)*omega, w);
+    alpha.axpy((-1.0) * a, p);
+    alpha.axpy((-1.0) * omega, w);
 
     // r = r - a*s - omega*v
-    r.axpy((-1.0)*a, s);
-    r.axpy((-1.0)*omega, v);
+    r.axpy((-1.0) * a, s);
+    r.axpy((-1.0) * omega, v);
 
     rho_new = r.dotProduct(rZero);
 
@@ -115,7 +111,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     rho = rho_new;
 
     // p = r + beta*(p - omega*s)
-    p.axpy((-1.0)*omega, s);
+    p.axpy((-1.0) * omega, s);
     p.mult(beta);
     p.add(r);
 

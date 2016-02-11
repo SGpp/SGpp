@@ -9,20 +9,15 @@
 
 #include <cmath>
 
-
 namespace SGPP {
 namespace solver {
 
-BiCGStabSP::BiCGStabSP(size_t imax,
-                       float epsilon) : SGPP::solver::SLESolverSP(imax, epsilon) {
-}
+BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : SGPP::solver::SLESolverSP(imax, epsilon) {}
 
-BiCGStabSP::~BiCGStabSP() {
-}
+BiCGStabSP::~BiCGStabSP() {}
 
-void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
-                       SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b, bool reuse,
-                       bool verbose, float max_threshold) {
+void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::DataVectorSP& alpha,
+                       SGPP::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
   this->nIterations = 1;
   float epsilonSqd = this->myEpsilon * this->myEpsilon;
 
@@ -40,7 +35,7 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   float delta = 0.0f;
 
   if (verbose == true) {
-    std::cout <<  "delta_0 " << delta_0 << std::endl;
+    std::cout << "delta_0 " << delta_0 << std::endl;
   }
 
   // Choose r0 as r
@@ -80,7 +75,7 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
 
     // w = r - a*s
     w = r;
-    w.axpy((-1.0f)*a, s);
+    w.axpy((-1.0f) * a, s);
 
     // v = Aw
     v.setAll(0.0f);
@@ -91,12 +86,12 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
     omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
     // x = x - a*p - omega*w
-    alpha.axpy((-1.0f)*a, p);
-    alpha.axpy((-1.0f)*omega, w);
+    alpha.axpy((-1.0f) * a, p);
+    alpha.axpy((-1.0f) * omega, w);
 
     // r = r - a*s - omega*v
-    r.axpy((-1.0f)*a, s);
-    r.axpy((-1.0f)*omega, v);
+    r.axpy((-1.0f) * a, s);
+    r.axpy((-1.0f) * omega, v);
 
     rho_new = r.dotProduct(rZero);
 
@@ -117,7 +112,7 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
     rho = rho_new;
 
     // p = r + beta*(p - omega*s)
-    p.axpy((-1.0f)*omega, s);
+    p.axpy((-1.0f) * omega, s);
     p.mult(beta);
     p.add(r);
 

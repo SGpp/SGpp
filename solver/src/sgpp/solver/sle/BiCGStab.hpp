@@ -14,7 +14,6 @@
 
 #include <iostream>
 
-
 namespace SGPP {
 namespace solver {
 
@@ -38,9 +37,9 @@ class BiCGStab : public SLESolver {
    * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
    * http://netlib.org
    */
-  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix,
-                     SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false,
-                     bool verbose = false, float_t max_threshold = -1.0);
+  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
+                     SGPP::base::DataVector& b, bool reuse = false, bool verbose = false,
+                     float_t max_threshold = -1.0);
 };
 
 }  // namespace solver

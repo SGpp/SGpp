@@ -6,7 +6,6 @@
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
 
-
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/ode/Euler.hpp>

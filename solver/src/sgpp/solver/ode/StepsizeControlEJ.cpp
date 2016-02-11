@@ -18,24 +18,20 @@
 #include <fstream>
 #include <cmath>
 
-
 namespace SGPP {
 namespace solver {
 
-StepsizeControlEJ::StepsizeControlEJ(std::string odesolver, size_t nTimesteps,
-                                     float_t timestepSize, float_t eps, float_t sc,
-                                     SGPP::base::ScreenOutput* screen,
+StepsizeControlEJ::StepsizeControlEJ(std::string odesolver, size_t nTimesteps, float_t timestepSize,
+                                     float_t eps, float_t sc, SGPP::base::ScreenOutput* screen,
                                      float_t gamma)
-  : StepsizeControl(nTimesteps, timestepSize, eps, sc, screen, gamma),
-    _odesolver(odesolver) {
+    : StepsizeControl(nTimesteps, timestepSize, eps, sc, screen, gamma), _odesolver(odesolver) {
   std::stringstream fnsstream;
-  fnsstream << "Time_" << "SCEJ" << this->myEps << "_" << this->mySC <<
-            ".gnuplot";
+  fnsstream << "Time_"
+            << "SCEJ" << this->myEps << "_" << this->mySC << ".gnuplot";
   filename = fnsstream.str();
 }
 
-StepsizeControlEJ::~StepsizeControlEJ() {
-}
+StepsizeControlEJ::~StepsizeControlEJ() {}
 
 void StepsizeControlEJ::predictor(SLESolver& LinearSystemSolver,
                                   SGPP::solver::OperationParabolicPDESolverSystem& System,
@@ -61,8 +57,7 @@ void StepsizeControlEJ::corrector(SLESolver& LinearSystemSolver,
   rhs = System.generateRHS();
 
   // solve the system of the current timestep
-  LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true,
-                           false, -1.0);
+  LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 
   System.finishTimestep();
   dv.resize(System.getGridCoefficients()->getSize());
@@ -71,14 +66,13 @@ void StepsizeControlEJ::corrector(SLESolver& LinearSystemSolver,
   // end corr()
 }
 
-float_t StepsizeControlEJ::norm(SGPP::solver::OperationParabolicPDESolverSystem&
-                                System, SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+float_t StepsizeControlEJ::norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
+                                SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
   return maxNorm(System, dv1, dv2);
 }
 
-float_t StepsizeControlEJ::nextTimestep(float_t tmp_timestepsize,
-                                        float_t tmp_timestepsize_old, float_t norm,
-                                        float_t epsilon) {
+float_t StepsizeControlEJ::nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
+                                        float_t norm, float_t epsilon) {
   return tmp_timestepsize * epsilon / norm;
 }
 }  // namespace solver
