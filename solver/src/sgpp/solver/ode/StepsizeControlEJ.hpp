@@ -12,6 +12,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 
 namespace SGPP {
 namespace solver {
@@ -42,6 +44,7 @@ class StepsizeControlEJ : public StepsizeControl {
   virtual float_t norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
                        SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
   std::string _odesolver;
+
  public:
   /**
    * Std-Constructer
@@ -64,7 +67,7 @@ class StepsizeControlEJ : public StepsizeControl {
   virtual ~StepsizeControlEJ();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROLEJ_HPP */

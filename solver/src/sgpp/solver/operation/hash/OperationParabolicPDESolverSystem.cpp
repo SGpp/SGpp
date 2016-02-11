@@ -9,6 +9,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+
 
 namespace SGPP {
 namespace solver {
@@ -107,5 +109,5 @@ OperationParabolicPDESolverSystem::getSecondGridStorage() {
   return secondGridStorage;
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

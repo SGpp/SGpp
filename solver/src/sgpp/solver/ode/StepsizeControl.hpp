@@ -9,9 +9,10 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
 #include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
-#include <string>
-//
+
 #include <sgpp/globaldef.hpp>
+
+#include <string>
 
 
 namespace SGPP {
@@ -89,7 +90,7 @@ class StepsizeControl : public ODESolver {
              bool bIdentifyLastStep = false, bool verbose = false);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROL_H_ */

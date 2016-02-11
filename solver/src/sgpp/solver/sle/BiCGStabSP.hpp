@@ -11,18 +11,15 @@
 
 #include <sgpp/solver/SLESolverSP.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 
 
 namespace SGPP {
 namespace solver {
 
 class BiCGStabSP : public SLESolverSP {
- private:
-
-
  public:
   /**
    * Std-Constructor
@@ -47,7 +44,7 @@ class BiCGStabSP : public SLESolverSP {
                      bool reuse = false, bool verbose = false, float max_threshold = -1.0);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* BICGSTABSP_HPP */

@@ -8,11 +8,11 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
-#include <string>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
 
-//
 #include <sgpp/globaldef.hpp>
+
+#include <string>
 
 
 namespace SGPP {
@@ -25,8 +25,6 @@ namespace solver {
  */
 class StepsizeControlH : public StepsizeControl {
  private:
-
-
   void predictor(SLESolver& LinearSystemSolver,
                  SGPP::solver::OperationParabolicPDESolverSystem& System,
                  float_t tmp_timestepsize, SGPP::base::DataVector& dv,
@@ -36,7 +34,7 @@ class StepsizeControlH : public StepsizeControl {
                  float_t tmp_timestepsize, SGPP::base::DataVector& dv,
                  SGPP::base::DataVector* rhs);
 
-  //float_t twoNorm(SGPP::base::DataVector &dv1, SGPP::base::DataVector &dv2);
+  // float_t twoNorm(SGPP::base::DataVector &dv1, SGPP::base::DataVector &dv2);
 
   float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
                        float_t norm, float_t epsilon);
@@ -64,7 +62,7 @@ class StepsizeControlH : public StepsizeControl {
   virtual ~StepsizeControlH();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROLH_HPP */

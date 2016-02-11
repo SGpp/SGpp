@@ -13,7 +13,8 @@ namespace SGPP {
 namespace solver {
 
 CrankNicolson::CrankNicolson(size_t nTimesteps, float_t timestepSize,
-                             SGPP::base::ScreenOutput* screen) : ODESolver(nTimesteps, timestepSize),
+                             SGPP::base::ScreenOutput* screen) :
+                                 ODESolver(nTimesteps, timestepSize),
   myScreen(screen) {
   this->residuum = 0.0;
 }
@@ -22,7 +23,8 @@ CrankNicolson::~CrankNicolson() {
 }
 
 void CrankNicolson::solve(SLESolver& LinearSystemSolver,
-                          SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep,
+                          SGPP::solver::OperationParabolicPDESolverSystem& System,
+                          bool bIdentifyLastStep,
                           bool verbose) {
   size_t allIter = 0;
   SGPP::base::DataVector* rhs = NULL;
@@ -80,5 +82,5 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver,
   this->nIterations = allIter;
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

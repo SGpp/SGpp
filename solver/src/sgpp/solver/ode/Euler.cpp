@@ -9,11 +9,11 @@
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/exception/solver_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <iostream>
 #include <string>
 #include <sstream>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -130,5 +130,5 @@ void Euler::solve(SLESolver& LinearSystemSolver,
   this->nIterations = allIter;
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

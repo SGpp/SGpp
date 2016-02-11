@@ -9,9 +9,9 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 
 
 namespace SGPP {
@@ -56,7 +56,7 @@ class ConjugateGradients : public SLESolver {
   virtual void complete();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* CONJUGATEGRADIENTS_HPP */

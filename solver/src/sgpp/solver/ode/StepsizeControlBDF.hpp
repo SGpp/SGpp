@@ -26,7 +26,6 @@ namespace solver {
  */
 class StepsizeControlBDF  : public VarTimestep {
  protected:
-
   float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
                        float_t norm, float_t epsilon);
 
@@ -46,10 +45,10 @@ class StepsizeControlBDF  : public VarTimestep {
    * Std-Destructor
    */
   virtual ~StepsizeControlBDF();
-
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROLBDF_HPP */
+

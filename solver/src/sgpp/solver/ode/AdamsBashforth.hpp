@@ -8,9 +8,9 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
-#include <string>
-
 #include <sgpp/globaldef.hpp>
+
+#include <string>
 
 
 namespace SGPP {
@@ -47,7 +47,7 @@ class AdamsBashforth : public ODESolver {
                      bool bIdentifyLastStep = false, bool verbose = false);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* ADAMSBASHFORTH_HPP */

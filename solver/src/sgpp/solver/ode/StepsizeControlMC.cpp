@@ -9,13 +9,13 @@
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/exception/solver_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
-
-#include <sgpp/globaldef.hpp>
+#include <algorithm>
 
 
 namespace SGPP {
@@ -27,18 +27,17 @@ StepsizeControlMC::StepsizeControlMC(size_t imax, float_t timestepSize,
   std::stringstream fnsstream;
   fnsstream << "Time_" << "SCMC" << eps << ".gnuplot";
   filename = fnsstream.str();
-
 }
 
 StepsizeControlMC::~StepsizeControlMC() {
 }
 
 float_t StepsizeControlMC::nextTimestep(float_t tmp_timestepsize,
-                                        float_t tmp_timestepsize_old, float_t norm, float_t epsilon) {
+                                        float_t tmp_timestepsize_old, float_t norm,
+                                        float_t epsilon) {
   float_t deltaY = norm;
   return tmp_timestepsize * std::max(0.67, std::min(1.5, pow(epsilon / deltaY,
                                      (float_t)1.0 / (float_t)3.0)));
-
 }
-}
-}
+}  // namespace solver
+}  // namespace SGPP

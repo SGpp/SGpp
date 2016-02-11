@@ -6,13 +6,13 @@
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/solver/ode/StepsizeControlBDF.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <cmath>
-
-#include <sgpp/globaldef.hpp>
 
 
 namespace SGPP {
@@ -45,7 +45,6 @@ float_t StepsizeControlBDF::nextTimestep(float_t tmp_timestepsize,
       tmp_timestepsize_new = tmp_timestepsize * sqrt(epsilon/deltaY);
   */
   return tmp_timestepsize * pow(epsilon / norm, (float_t)1.0 / (float_t)3.0);
-
 }
-}
-}
+}  // namespace solver
+}  // namespace SGPP

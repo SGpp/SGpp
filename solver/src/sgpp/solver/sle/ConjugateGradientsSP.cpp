@@ -22,7 +22,8 @@ ConjugateGradientsSP::~ConjugateGradientsSP() {
 }
 
 void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
-                                 SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b, bool reuse,
+                                 SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b,
+                                 bool reuse,
                                  bool verbose, float max_threshold) {
   if (verbose == true) {
     std::cout << "Starting Conjugated Gradients" << std::endl;
@@ -143,5 +144,5 @@ void ConjugateGradientsSP::iterationComplete() {
 void ConjugateGradientsSP::complete() {
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

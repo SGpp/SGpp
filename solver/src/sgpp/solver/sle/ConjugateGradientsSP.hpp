@@ -11,9 +11,9 @@
 
 #include <sgpp/solver/SLESolverSP.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 
 
 namespace SGPP {
@@ -69,7 +69,7 @@ class ConjugateGradientsSP : public SLESolverSP {
   virtual void complete();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* CONJUGATEGRADIENTSSP_HPP */
