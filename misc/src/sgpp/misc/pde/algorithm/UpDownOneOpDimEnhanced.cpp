@@ -70,21 +70,22 @@ void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha,
   size_t curNumAlgoDims = this->numAlgoDims_;
   size_t curMaxParallelDims = this->maxParallelDims_;
 
-  //Unidirectional scheme
+  // Unidirectional scheme
   if (dim > 0) {
     // Reordering ups and downs
     SGPP::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
     SGPP::base::DataMatrix result_temp(alpha.getNrows(), this->numAlgoDims_);
     SGPP::base::DataMatrix temp_two(alpha.getNrows(), this->numAlgoDims_);
 
-    #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp, result)
+    #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp, result)
     {
       up(alpha, temp, dim);
       updown(temp, result, dim - 1);
     }
 
-    #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp_two, result_temp)
-    {
+    #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) \
+        shared(alpha, temp_two, result_temp)
+    {  // NOLINT(whitespace/braces)
       updown(alpha, temp_two, dim - 1);
       down(temp_two, result_temp, dim);
     }
@@ -96,10 +97,10 @@ void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha,
     // Terminates dimension recursion
     SGPP::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
 
-    #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, result)
+    #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, result)
     up(alpha, result, dim);
 
-    #pragma omp task if(curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp)
+    #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp)
     down(alpha, temp, dim);
 
     #pragma omp taskwait
@@ -108,5 +109,5 @@ void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha,
   }
 }
 
-}
-}
+}  // namespace pde
+}  // namespace SGPP
