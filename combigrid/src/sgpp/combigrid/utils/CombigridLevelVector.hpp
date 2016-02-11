@@ -14,7 +14,8 @@ namespace combigrid {
 
 /**Levelvector allowing computations done in hegland.2003.adaptive equation (16)
  * for the computation of required grid to create a valid combination solution.
- * Represents the P_alpha in that paper. It is thus also including the respective
+ * Represents the P_alpha in that paper. It is thus also including the
+ * respective
  * coefficient of the full grid level vector. */
 class CombigridLevelVector {
  public:
@@ -30,8 +31,7 @@ class CombigridLevelVector {
   CombigridLevelVector() {
     levelVec_.resize(0);
     coef_.resize(0);
-  }
-  ;
+  };
   /** Creates an CombigridLevelVector with a certain coefficient. Might only
    * be used in rare cases.*/
   CombigridLevelVector(std::vector<int> level, double coef);
@@ -40,31 +40,21 @@ class CombigridLevelVector {
                        std::vector<double> coef);
 
   /** Returns all full Grid level vectors*/
-  std::vector<std::vector<int> > getLevelVec() const {
-    return levelVec_;
-  }
+  std::vector<std::vector<int> > getLevelVec() const { return levelVec_; }
 
   /** Returns a single Full Grid Level vector containing the level of the
    * full grid in each dimension.
    */
-  std::vector<int> getLevelVecSingle(int i) const {
-    return levelVec_[i];
-  }
+  std::vector<int> getLevelVecSingle(int i) const { return levelVec_[i]; }
 
   /** Returns a vector of coefficients in the respective ordering*/
-  std::vector<double> getCoef() const {
-    return coef_;
-  }
+  std::vector<double> getCoef() const { return coef_; }
 
   /** Returns the dimensionality of the grids*/
-  int getDim() const {
-    return int( levelVec_[0].size() );
-  }
+  int getDim() const { return int(levelVec_[0].size()); }
 
   /** Returns the number of full grids */
-  int getN() const {
-    return int( levelVec_.size() );
-  }
+  int getN() const { return int(levelVec_.size()); }
 
   CombigridLevelVector& operator=(const CombigridLevelVector& rhs);
 
@@ -91,13 +81,12 @@ class CombigridLevelVector {
    * provided in the Combigridlevelvectors
    */
   static CombigridLevelVector getCombiLevels(
-    std::vector<CombigridLevelVector> in);
+      std::vector<CombigridLevelVector> in);
   /**
    * Function creating the levels of a combigrid containing all subgrids
    * provided in the Combigridlevelvectors
    */
-  static CombigridLevelVector getCombiLevels(
-    std::vector<std::vector<int> > in);
+  static CombigridLevelVector getCombiLevels(std::vector<std::vector<int> > in);
   /**
    * Function creating the levels of a combigrid containing all subgrids
    * provided in the Combigridlevelvectors
@@ -116,7 +105,6 @@ class CombigridLevelVector {
   std::vector<std::vector<int> > levelVec_;
   std::vector<double> coef_;
 };
-
 }
 
 #endif /* COMBIGRIDLEVELVECTOR_HPP_ */

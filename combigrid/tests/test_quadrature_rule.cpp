@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <sgpp/globaldef.hpp>
 #include "sgpp/combigrid/combigrid/SerialCombiGrid.hpp"
 #include "sgpp/combigrid/combischeme/CombiS_CT.hpp"
 #include "sgpp/combigrid/combischeme/CombiTS_CT.hpp"

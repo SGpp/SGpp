@@ -15,9 +15,7 @@ namespace combigrid {
 
 /** */
 class Domain1D {
-
  public:
-
   /** */
   Domain1D(int level, double min, double max,
            AbstractStretchingMaker& stretching);
@@ -27,53 +25,38 @@ class Domain1D {
    */
   Domain1D(const Domain1D& domain);
 
-  virtual ~Domain1D() {
-    ;
-  }
+  virtual ~Domain1D() { ; }
 
   /** return if the axis is scaled */
-  inline bool isAxisScaled() const {
-    return _isStretched;
-  }
+  inline bool isAxisScaled() const { return _isStretched; }
 
   /** return the minimum of the domain */
-  inline double getMinDomain() const {
-    return _min;
-  }
+  inline double getMinDomain() const { return _min; }
 
   /** return the maximum of the domain */
-  inline double getMaxDomain() const {
-    return _max;
-  }
+  inline double getMaxDomain() const { return _max; }
 
   /** return if the axis is scaled */
-  const std::vector<double>& axisScaling() const {
-    return _stretching;
-  }
+  const std::vector<double>& axisScaling() const { return _stretching; }
   /**
-   *  @return returns a vector of doubles with the derivative of the coordinate transform evaluated at the corresponding grid points...
+   *  @return returns a vector of doubles with the derivative of the coordinate
+   *transform evaluated at the corresponding grid points...
    *
    */
-  const std::vector<double>& axisJacobian() const {
-    return _jacobian;
-  }
+  const std::vector<double>& axisJacobian() const { return _jacobian; }
 
-  Stretching getStretchingType() const {
-    return _stretching_type;
-  }
+  Stretching getStretchingType() const { return _stretching_type; }
 
   /** return the level of the domain , then the number of points are (2^L) + 1*/
-  inline int getLevel() const {
-    return _level;
-  }
+  inline int getLevel() const { return _level; }
 
   /** transform the real coordinates to unit coordinates
    * @param coordReal real non-unit coordinates
    * @param coordUnit coordinates in the unit cube
    * @param level_in level of the resolution required
    * @param noBoundary make extrapolation for the boundary cells*/
-  void transformRealToUnit(double coordReal, double& coordUnit, int level_in =
-                             0, bool noBoundary = false) const;
+  void transformRealToUnit(double coordReal, double& coordUnit,
+                           int level_in = 0, bool noBoundary = false) const;
 
   /** transform from unit index to real coordinates
    * @param level input level
@@ -98,7 +81,6 @@ class Domain1D {
   void getMeshWidth(int index, int level_in, double& h0, double& h1) const;
 
  private:
-
   /** the level in the case of stretched */
   int _level;
 
@@ -115,9 +97,7 @@ class Domain1D {
   std::vector<double> _stretching;
   std::vector<double> _jacobian;
   Stretching _stretching_type;
-
 };
-
 }
 
 #endif /* COMBIDOMAIN1D_HPP_ */
