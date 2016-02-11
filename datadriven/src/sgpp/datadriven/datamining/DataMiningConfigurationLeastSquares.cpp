@@ -7,100 +7,152 @@
 
 #include <string>
 
+#include "sgpp/base/tools/json/json_exception.hpp"
+
 namespace SGPP {
 namespace datadriven {
 
-DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares() :
-		DataMiningConfiguration() {
-	// set default config
-	gridConfig.dim_ = 0;
-	gridConfig.level_ = 2;
-	gridConfig.type_ = SGPP::base::GridType::Linear;
-	gridConfig.maxDegree_= 1;
-	gridConfig.boundaryLevel_ = 0;
+DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
+    : DataMiningConfiguration() {
+  // set default config
+  gridConfig.dim_ = 0;
+  gridConfig.level_ = 2;
+  gridConfig.type_ = SGPP::base::GridType::Linear;
+  gridConfig.maxDegree_ = 1;
+  gridConfig.boundaryLevel_ = 0;
 
-	// configure adaptive refinement
-	adaptivityConfig.maxLevelType_ = false;
-	adaptivityConfig.noPoints_ = 0;
-	adaptivityConfig.numRefinements_ = 0;
-	adaptivityConfig.percent_ = 100.0;
-	adaptivityConfig.threshold_ = 0.0,
+  // configure adaptive refinement
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 100.0;
+  adaptivityConfig.threshold_ = 0.0,
 
-	// configure solver
-	solverRefineConfig.type_ = SGPP::solver::SLESolverType::CG;
-	solverRefineConfig.maxIterations_ = 100;
-	solverRefineConfig.eps_ = 1e-10;
-	solverRefineConfig.threshold_ = 1e-10;
+  // configure solver
+      solverRefineConfig.type_ = SGPP::solver::SLESolverType::CG;
+  solverRefineConfig.maxIterations_ = 100;
+  solverRefineConfig.eps_ = 1e-10;
+  solverRefineConfig.threshold_ = 1e-10;
 
-	// configure solver
-	solverFinalConfig.type_ = SGPP::solver::SLESolverType::CG;
-	solverFinalConfig.maxIterations_ = 100;
-	solverFinalConfig.eps_ = 1e-10;
-	solverFinalConfig.threshold_ = 1e-10;
+  // configure solver
+  solverFinalConfig.type_ = SGPP::solver::SLESolverType::CG;
+  solverFinalConfig.maxIterations_ = 100;
+  solverFinalConfig.eps_ = 1e-10;
+  solverFinalConfig.threshold_ = 1e-10;
 
-	// configure regularization
-	regularizationConfig.regType_ =
-			SGPP::datadriven::RegularizationType::Laplace;
+  // configure regularization
+  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
 
-	lambda = 0.0;
+  lambda = 0.0;
 }
-
 
 DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares(
-		const std::string& fileName) :
-		DataMiningConfiguration(fileName) {
+    const std::string &fileName)
+    : DataMiningConfiguration(fileName) {
+  try {
+    gridConfig.dim_ = 0;
+    gridConfig.level_ = static_cast<int>((*this)["grid"]["level"].getUInt());
+    gridConfig.type_ = stringToGridType((*this)["grid"]["type"].get());
+
+    // configure adaptive refinement
+    adaptivityConfig.maxLevelType_ =
+        (*this)["refinement"]["maxLevelType"].getBool();
+    adaptivityConfig.noPoints_ = (*this)["refinement"]["numPoints"].getUInt();
+    adaptivityConfig.numRefinements_ =
+        (*this)["refinement"]["numRefinements"].getUInt();
+    adaptivityConfig.percent_ = (*this)["refinement"]["percent"].getDouble();
+    adaptivityConfig.threshold_ =
+        (*this)["refinement"]["threshold"].getDouble();
+
+    // configure solver
+    solverRefineConfig.type_ =
+        stringToSolverType((*this)["solverRefine"]["type"].get());
+    solverRefineConfig.maxIterations_ =
+        (*this)["solverRefine"]["maxIterations"].getUInt();
+    solverRefineConfig.eps_ = (*this)["solverRefine"]["eps"].getDouble();
+    solverRefineConfig.threshold_ =
+        (*this)["solverRefine"]["threshold"].getDouble();
+
+    // configure solver
+    solverFinalConfig.type_ =
+        stringToSolverType((*this)["solverFinal"]["type"].get());
+    solverFinalConfig.maxIterations_ =
+        (*this)["solverFinal"]["maxIterations"].getUInt();
+    solverFinalConfig.eps_ = (*this)["solverFinal"]["eps"].getDouble();
+    solverFinalConfig.threshold_ =
+        (*this)["solverFinal"]["threshold"].getDouble();
+
+    // configure regularization
+    regularizationConfig.regType_ =
+        stringToRegularizationType((*this)["regularization"]["type"].get());
+
+    lambda = (*this)["regularization"]["type"].getDouble();
+  } catch (json::json_exception &e) {
+    std::cout << e.what() << std::endl;
+  }
 }
 
-base::RegularGridConfiguration &DataMiningConfigurationLeastSquares::getGridConfig() {
-	return gridConfig;
+base::RegularGridConfiguration
+DataMiningConfigurationLeastSquares::getGridConfig() {
+  return gridConfig;
 }
 
-base::AdpativityConfiguration &DataMiningConfigurationLeastSquares::getRefinementConfig() {
-	return adaptivityConfig;
+base::AdpativityConfiguration
+DataMiningConfigurationLeastSquares::getRefinementConfig() {
+  return adaptivityConfig;
 }
 
-solver::SLESolverConfiguration &DataMiningConfigurationLeastSquares::getSolverRefineConfig() {
-	return solverRefineConfig;
+solver::SLESolverConfiguration
+DataMiningConfigurationLeastSquares::getSolverRefineConfig() {
+  return solverRefineConfig;
 }
 
-solver::SLESolverConfiguration &DataMiningConfigurationLeastSquares::getSolverFinalConfig() {
-	return solverFinalConfig;
+solver::SLESolverConfiguration
+DataMiningConfigurationLeastSquares::getSolverFinalConfig() {
+  return solverFinalConfig;
 }
 
-datadriven::RegularizationConfiguration &DataMiningConfigurationLeastSquares::getRegularizationConfig() {
-	return regularizationConfig;
+datadriven::RegularizationConfiguration
+DataMiningConfigurationLeastSquares::getRegularizationConfig() {
+  return regularizationConfig;
 }
+
+double DataMiningConfigurationLeastSquares::getLambda() { return lambda; }
 
 void DataMiningConfigurationLeastSquares::setGridConfig(
-		base::RegularGridConfiguration &gridConfig) {
-	this->gridConfig = gridConfig;
+    base::RegularGridConfiguration &gridConfig) {
+  this->gridConfig = gridConfig;
 }
 
 void DataMiningConfigurationLeastSquares::setRefinementConfig(
-		base::AdpativityConfiguration &adaptivityConfig) {
-	this->adaptivityConfig = adaptivityConfig;
+    base::AdpativityConfiguration &adaptivityConfig) {
+  this->adaptivityConfig = adaptivityConfig;
 }
 
 void DataMiningConfigurationLeastSquares::setSolverRefineConfig(
-		solver::SLESolverConfiguration &solverConfig) {
-	this->solverRefineConfig = solverConfig;
+    solver::SLESolverConfiguration &solverConfig) {
+  this->solverRefineConfig = solverConfig;
 }
 
 void DataMiningConfigurationLeastSquares::setSolverFinalConfig(
-		solver::SLESolverConfiguration &solverConfig) {
-	this->solverFinalConfig = solverConfig;
+    solver::SLESolverConfiguration &solverConfig) {
+  this->solverFinalConfig = solverConfig;
 }
 
 void DataMiningConfigurationLeastSquares::setRegularizationConfig(
-		datadriven::RegularizationConfiguration &regularizationConfig) {
-	this->regularizationConfig = regularizationConfig;
+    datadriven::RegularizationConfiguration &regularizationConfig) {
+  this->regularizationConfig = regularizationConfig;
 }
 
-DataMiningConfiguration* DataMiningConfigurationLeastSquares::clone() {
-	DataMiningConfiguration* clone = new DataMiningConfigurationLeastSquares(*this);
-	return clone;
+void DataMiningConfigurationLeastSquares::setLambda(double lambda) {
+  this->lambda = lambda;
 }
 
-}// namespace base
+DataMiningConfiguration *DataMiningConfigurationLeastSquares::clone() {
+  DataMiningConfiguration *clone =
+      new DataMiningConfigurationLeastSquares(*this);
+  return clone;
+}
+
+}  // namespace datadriven
 }  // namespace SGPP
-

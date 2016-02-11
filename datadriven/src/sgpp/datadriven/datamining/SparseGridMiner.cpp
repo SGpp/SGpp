@@ -35,6 +35,7 @@ namespace SGPP {
       datadriven::Dataset dataset = dataWrapper.allSamples();
 
       // 3. generate learner
+
       std::shared_ptr<datadriven::ModelFittingDensityEstimation> fitter = std::make_shared<datadriven::ModelFittingDensityEstimation>(config);
 
       // 4. load simple splitting scorer
