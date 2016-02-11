@@ -6,7 +6,7 @@
  */
 
 #include <sgpp/combigrid/domain/CombiChebyshevStretching.hpp>
-#include <math.h>
+#include <sgpp/globaldef.hpp>
 
 /**
  *   Implements a simple coordinate transform :

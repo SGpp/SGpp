@@ -6,7 +6,7 @@
  */
 
 #include <sgpp/combigrid/domain/CombiBasuStretching.hpp>
-#include <math.h>
+#include <sgpp/globaldef.hpp>
 
 void combigrid::CombiBasuStretching::get1DStretching(
     int level, double min, double max, std::vector<double>* stretching,
