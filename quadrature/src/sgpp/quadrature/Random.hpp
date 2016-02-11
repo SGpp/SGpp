@@ -5,9 +5,10 @@
 
 #ifndef RANDOM_HPP
 #define RANDOM_HPP
-#include <random>
 
 #include <sgpp/globaldef.hpp>
+
+#include <random>
 
 
 namespace SGPP {
@@ -19,7 +20,6 @@ namespace quadrature {
 
 class Random {
  public:
-
   /**
    * Manually seed the generator with a given seed.
    * @param seed_value the seed to use.

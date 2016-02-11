@@ -10,10 +10,10 @@
  * This file contains factory methods for operations.
  */
 
-#include <random>
 #include <sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp>
-
 #include <sgpp/globaldef.hpp>
+
+#include <random>
 
 namespace SGPP {
 namespace op_factory {

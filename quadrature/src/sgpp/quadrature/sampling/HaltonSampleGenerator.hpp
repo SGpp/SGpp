@@ -11,6 +11,8 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
+#include <vector>
+
 namespace SGPP {
 namespace quadrature {
 
@@ -18,9 +20,7 @@ namespace quadrature {
  *
  */
 class HaltonSampleGenerator : public SampleGenerator {
-
  public:
-
   /**
    * Standard constructor
    *
