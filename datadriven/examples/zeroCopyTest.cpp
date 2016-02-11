@@ -20,7 +20,7 @@
 using namespace SGPP::base;
 using namespace std::chrono;
 
-<<<<<<< HEAD
+/*<<<<<<< HEAD
 void testCloned(std::shared_ptr<OCLManager> manager, double *values, size_t valueSize) {
     OCLClonedBuffer cloned(manager);
     cloned.initializeBuffer(values, sizeof(double), valueSize);
@@ -60,11 +60,11 @@ void testZeroCopyReadOnly(std::shared_ptr<OCLManager> manager, double* values,
   OCLZeroCopyBuffer buffer(manager);
   buffer.initializeBuffer( values, sizeof(double), valueSize, true);
 >>>>>>> origin/master
-}
+}*/
 
 int main(int argc, char** argv) {
 
-    auto parameters = std::make_shared<OCLOperationConfiguration>();
+	/* auto parameters = std::make_shared<OCLOperationConfiguration>();
     (*parameters).addIDAttr("MAX_DEVICES", 1ul);
     (*parameters).addIDAttr("SELECT_SPECIFIC_DEVICE", 0ul);
 
@@ -167,13 +167,13 @@ int main(int argc, char** argv) {
     }
     avg = (static_cast<double>(sum)/static_cast<double>(iterations)) * 0.001 * 0.001;
     std::cout << "Average: " << avg << std::endl;
-    sum = 0;
+    sum = 0;*/
 }
 #else
 int main(int argc, char** argv) {
     std::cout << "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" << std::endl;
         return 0;
-=======
+/*=======
   avg = (static_cast<double>(sum) / static_cast<double>(iterations)) * 0.001 *
         0.001;
   std::cout << "Average: " << avg << std::endl;
@@ -210,7 +210,7 @@ int main(int argc, char** argv) {
             "This examples requires OpenCL to be enabled. (build with USE_OCL=1)" <<
             std::endl;
   return 0;
->>>>>>> origin/master
+  >>>>>>> origin/master*/
 }
 #endif
 

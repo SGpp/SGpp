@@ -178,7 +178,7 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
     }
 
     // evaluate initial parameter combination
-    double shortestDuration = evaluateSetup(scenario, fixedParameters, kernelName);
+    double shortestDuration = 0.0;//(scenario, fixedParameters, kernelName);
     if (collectStatistics) {
         this->statistics.push_back(std::make_pair(fixedParameters, shortestDuration));
     }
@@ -208,7 +208,7 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
             }
 
             // evaluate current parameter combination
-            double duration = evaluateSetup(scenario, fixedParameters, kernelName);
+            double duration = 0.0;//(scenario, fixedParameters, kernelName);
             if (duration < shortestDuration) {
                 std::cout << "new best combination! old: " << shortestDuration << " new: " << duration << std::endl;
                 shortestDuration = duration;
@@ -234,7 +234,7 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
     std::cout << this->fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName] << std::endl;
 }
 
-double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
+/*double StaticParameterTuner::0.0;//(SGPP::datadriven::LearnerScenario &scenario,
 SGPP::base::OCLOperationConfiguration &currentParameters, const std::string &kernelName) {
 
     SGPP::datadriven::MetaLearner learner(scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
@@ -278,7 +278,8 @@ SGPP::base::OCLOperationConfiguration &currentParameters, const std::string &ker
         std::cout << "duration: " << duration << std::endl;
     }
     return duration;
-}
+}*/
+
 
 /*void StaticParameterTuner::writeToFile(const std::string &fileName) {
  std::ofstream file(fileName);

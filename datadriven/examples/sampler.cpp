@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv) {
 
-<<<<<<< HEAD
+/*<<<<<<< HEAD
     //  int maxLevel = 9;
     int maxLevel = 10;
 
@@ -141,5 +141,5 @@ int main(int argc, char** argv) {
 
     //learner.writeStatisticsFile("statistics.csv", "test");
 
-    return EXIT_SUCCESS;
+    return EXIT_SUCCESS;*/
 }

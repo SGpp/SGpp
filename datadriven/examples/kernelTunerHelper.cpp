@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
   // Specify scenario for performance optimization
 
-  int maxLevel = 10;
+/*  int maxLevel = 10;
   //    std::string fileName = "friedman_4d_small.arff";
   std::string fileName = "friedman_4d.arff";
   sg::base::RegularGridConfiguration gridConfig;
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
   //    staticParameterTuner.writeStatisticsToFile("statistics.csv", platformName, deviceName, kernelName);
 
   std::cout << "-------------- all done! --------------" << std::endl;
-
+*/
   return 0;
 }
 #else

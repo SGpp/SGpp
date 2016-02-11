@@ -17,7 +17,7 @@
 
 int main(int argc, char **argv) {
 
-    int maxLevel = 10;
+/*    int maxLevel = 10;
 //    std::string fileName = "friedman_4d_small.arff";
     std::string fileName = "DR5_train.arff";
     sg::base::RegularGridConfiguration gridConfig;
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
     std::cout << "done" << std::endl;
 
-    return 0;
+    return 0;*/
 }
 #else
 int main(int argc, char **argv) {

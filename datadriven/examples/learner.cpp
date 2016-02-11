@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
 
     std::string testFileName = "";
 
-    SGPP::datadriven::LearnerMode learnerMode = SGPP::datadriven::LearnerMode::LEARN;
+/*    SGPP::datadriven::LearnerMode learnerMode = SGPP::datadriven::LearnerMode::LEARN;
 
     //only relevant for LEARNTEST-mode
     bool isRegression = true;
@@ -288,7 +288,7 @@ int main(int argc, char *argv[]) {
     } else if (learnerMode == SGPP::datadriven::LearnerMode::LEARNTEST) {
 // test the learned function with a test dataset (no cross-validation yet)
         learner.learnAndTest(configuration, trainingFileName, testFileName, isRegression);
-    }
+		}*/
 
     return 0;
 }
