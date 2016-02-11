@@ -41,6 +41,7 @@ for currentFolder, subdirNames, fileNames in os.walk("src"):
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
         hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
         headerSourceList.append(os.path.join(moduleName, hpp))
         headerDestList.append(hpp.split(os.sep, 1)[1])
 
