@@ -11,6 +11,8 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
+#include <vector>
+
 
 namespace SGPP {
 namespace quadrature {
@@ -26,9 +28,7 @@ typedef float_t (*FUNC)(int, float_t*, void*);
  */
 
 class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
-
  public:
-
   /**
    * @brief Constructor of OperationQuadratureMCAdvanced, specifying a grid
    * object and the number of samples to use.
@@ -126,9 +126,8 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
   // seed for the sample generator
   std::uint64_t seed;
 
-  //SampleGenerator Instance
+  // SampleGenerator Instance
   SGPP::quadrature::SampleGenerator* myGenerator;
-
 };
 
 }  // namespace quadrature

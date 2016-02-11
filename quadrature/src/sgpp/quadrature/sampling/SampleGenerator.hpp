@@ -8,9 +8,9 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <random>
-
 #include <sgpp/globaldef.hpp>
+
+#include <random>
 
 namespace SGPP {
 namespace quadrature {
@@ -24,7 +24,6 @@ namespace quadrature {
 
 class SampleGenerator {
  public:
-
   /**
    * Standard constructor
    *
@@ -47,7 +46,6 @@ class SampleGenerator {
 
   virtual void getSample(SGPP::base::DataVector& sample) {
   }
-  ;
 
   /**
    * This method generates a given number of samples. The resulting

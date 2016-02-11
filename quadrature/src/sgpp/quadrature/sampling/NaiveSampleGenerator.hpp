@@ -9,9 +9,9 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
-#include <random>
-
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
+
+#include <random>
 
 
 namespace SGPP {
@@ -24,9 +24,7 @@ namespace quadrature {
  * 1.0.
  */
 class NaiveSampleGenerator : public SampleGenerator {
-
  public:
-
   /**
    * Standard constructor
    *
