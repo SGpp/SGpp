@@ -77,8 +77,8 @@ void AlgorithmAdaBoostSPVectorizedIdentity::alphaSolver(double& lambda,
   SGPP::base::PrecisionConverter::convertDataVectorSPToDataVector(alphaSP, alpha);
 }
 
-}  // namespace parallel
+}
 
-}  // namespace SGPP
+}
 
 #endif
