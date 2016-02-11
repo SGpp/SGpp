@@ -7,6 +7,8 @@
 
 #include <sgpp/combigrid/quadratures/ClenshawCurtisQuadrature.hpp>
 #include <vector>
+#include <sgpp/globaldef.hpp>
+
 
 template <typename _Tp>
 combigrid::ClenshawCurtisQuadrature<_Tp>::ClenshawCurtisQuadrature(

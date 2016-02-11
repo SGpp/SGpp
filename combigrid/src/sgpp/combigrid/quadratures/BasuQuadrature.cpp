@@ -7,6 +7,7 @@
 
 #include <sgpp/combigrid/quadratures/BasuQuadrature.hpp>
 #include <vector>
+#include <sgpp/globaldef.hpp>
 
 template <typename _Tp>
 combigrid::BasuQuadrature<_Tp>::BasuQuadrature(int max_lvl) {
