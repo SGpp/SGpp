@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
   //std::string fileName = "DR5_train.arff";
   //std::string fileName = "debugging.arff";
 
-  std::cout << "Dataset: " << fileName << std::endl;
+/*  std::cout << "Dataset: " << fileName << std::endl;
 
   SGPP::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", "true");
@@ -221,8 +221,8 @@ int main(int argc, char** argv) {
     mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
     std::cout << "mse: " << mse << std::endl;
     std::cout << "biggest error i: " << biggestErrorIndex << " value: " <<
-              biggestError << std::endl;
-  }
+	biggestError << std::endl;
+	}*/
 
 }
 #else

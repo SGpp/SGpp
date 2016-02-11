@@ -28,7 +28,7 @@ using namespace std;
 
 int main (int argc, char** args) {
   //set variables
-  SGPP::base::BatchConfiguration batchConfig;
+/*  SGPP::base::BatchConfiguration batchConfig;
   SGPP::solver::SLESolverConfiguration solverConfig;
   SGPP::base::AdpativityConfiguration adaptConfig;
   SGPP::base::RegularGridConfiguration gridConfig;
@@ -87,7 +87,7 @@ int main (int argc, char** args) {
 
   //don't forget to close the file (only needed if the file has not been read to completion yet, otherwise the reader will close the file automatically)
   learner.closeFile();
-
+*/
   return EXIT_SUCCESS;
 }
 

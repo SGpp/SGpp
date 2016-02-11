@@ -12,6 +12,7 @@
 
 #include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include "OCLDevice.hpp"
 
 #include <map>
 #include <vector>
@@ -24,7 +25,8 @@ class OCLManagerMultiPlatform {
  public:
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
-  std::vector<OCLPlatformWrapper> platforms;
+     std::vector<std::shared_ptr<OCLDevice>> devices;
+ std::vector<OCLPlatformWrapper> platforms;
   //        cl_uint platformCount;
   //        // devices on the individual platforms
   //        std::map<cl_platform_id, size_t> platformDeviceCount;
@@ -57,6 +59,7 @@ class OCLManagerMultiPlatform {
    */
   void buildKernel(const std::string& program_src, const char* kernel_name,
                    std::map<cl_platform_id, std::vector<cl_kernel> >& kernels);
+    cl_kernel buildKernel(const std::string &source, std::shared_ptr<OCLDevice> device, const std::string &kernelName);
 
   //    void setPlatformIDs();
   //
@@ -83,6 +86,8 @@ class OCLManagerMultiPlatform {
                        bool useConfiguration);
 
   std::shared_ptr<base::OCLOperationConfiguration> getConfiguration();
+	std::vector<std::shared_ptr<OCLDevice>> &getDevices();
+
 };
 
 }  // namespace base

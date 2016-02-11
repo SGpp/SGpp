@@ -15,7 +15,7 @@
 
 int main(int argc, char** argv) {
 
-<<<<<<< HEAD
+/*<<<<<<< HEAD
     std::string fileName = "friedman_4d.arff";
     //  std::string fileName = "debugging_small.arff";
 
@@ -142,6 +142,6 @@ int main(int argc, char** argv) {
     }
 
     mse = mse / static_cast<double>(result.getSize());
-    std::cout << "mse: " << mse << std::endl;
+    std::cout << "mse: " << mse << std::endl;*/
 }
 

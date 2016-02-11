@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "debugging.arff";
-  std::string fileName = "friedman_4d.arff";
+/*  std::string fileName = "friedman_4d.arff";
 
   uint32_t level = 7;
 
@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
   }
 
   mse = mse / static_cast<double>(alphaResult.getSize());
-  std::cout << "mse: " << mse << std::endl;
+  std::cout << "mse: " << mse << std::endl;*/
 }
 #else
 #include <iostream>

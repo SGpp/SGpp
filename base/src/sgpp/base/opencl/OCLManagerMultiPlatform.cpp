@@ -368,6 +368,73 @@ void OCLManagerMultiPlatform::configureDevice(cl_device_id deviceId,
   filteredDeviceIds.push_back(deviceId);
   overallDeviceCount += 1;
 }
+cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source, std::shared_ptr<OCLDevice> device,
+        const std::string &kernelName) {
+    cl_int err;
+
+    // setting the program
+    const char* kernel_src = source.c_str();
+    cl_program program = clCreateProgramWithSource(device->context, 1, &kernel_src,
+    NULL, &err);
+
+    if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+    }
+
+    std::string build_opts;
+
+    if (!(*parameters).contains("ENABLE_OPTIMIZATIONS") || (*parameters)["ENABLE_OPTIMIZATIONS"].getBool()) {
+        //TODO: user should be able to change
+        std::string optimizationFlags = "";
+        if ((*parameters).contains("OPTIMIZATION_FLAGS")) {
+            optimizationFlags = (*parameters)["OPTIMIZATION_FLAGS"].get();
+        }
+        build_opts = optimizationFlags; // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
+    } else {
+        build_opts = "-cl-opt-disable"; // -g
+    }
+
+    // compiling the program
+    err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
+
+    if (err != CL_SUCCESS) {
+        // get the build log
+        size_t len;
+        clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0,
+        NULL, &len);
+        std::string buffer(len, '\0');
+        clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
+        buffer = buffer.substr(0, buffer.find('\0'));
+
+        if (verbose) {
+            std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
+        }
+
+        std::stringstream errorString;
+        errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+
+    }
+
+    cl_kernel kernel = clCreateKernel(program, kernelName.c_str(), &err);
+    if (err != CL_SUCCESS) {
+        std::stringstream errorString;
+        errorString << "OCL Error: Failed to create kernel! Error code: " << err << std::endl;
+        throw SGPP::base::operation_exception(errorString.str());
+    }
+
+    if (program) {
+        clReleaseProgram(program);
+    }
+    return kernel;
+}
+
+std::vector<std::shared_ptr<OCLDevice>> &OCLManagerMultiPlatform::getDevices() {
+    return this->devices;
+}
+
 
 }  // namespace base
 }  // namespace SGPP

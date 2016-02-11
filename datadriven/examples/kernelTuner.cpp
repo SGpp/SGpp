@@ -16,7 +16,7 @@
 
 int main(int argc, char** argv) {
 
-  std::string scenarioFileName;
+/*  std::string scenarioFileName;
   std::string parameterConfigurationFileName; // <- includes kernel type, subtype
   std::string kernelName;
   std::string outputFileName;
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
 
   bestParameters.serialize(outputFileName);
 
-  std::cout << "-------------- all done! --------------" << std::endl;
+  std::cout << "-------------- all done! --------------" << std::endl;*/
   return 0;
 }
 #else

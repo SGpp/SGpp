@@ -60,7 +60,9 @@ vars.Add(BoolVariable('OPT', "Sets optimization on and off", False))
 # for compiling on LRZ without errors: omit unit tests
 vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
+vars.Add(BoolVariable('PYDOC', 'Build python wrapper with comments', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
+
 
 for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, 'Build the module ' + moduleName, True))
@@ -75,9 +77,9 @@ vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabl
 vars.Add('OCL_INCLUDE_PATH', 'Specifies the location of the OpenCL header files (parent directory of "CL/").')
 vars.Add('OCL_LIBRARY_PATH', 'Specifies the location of the OpenCL library.')
 vars.Add('BOOST_INCLUDE_PATH', 'Specifies the location of the boost header files.', '/usr/include')
-vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '/usr/lib64')
+vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '/usr/lib/x86_64-linux-gnu')
 vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
-vars.Add(BoolVariable('COMPILE_BOOST_PERFORMANCE_TESTS', 'Compile the performance tests written using Boost Test.', True))
+vars.Add(BoolVariable('COMPILE_BOOST_PERFORMANCE_TESTS', 'Compile the performance tests written using Boost Test. Currently only buildable with OpenCL enabled', False))
 vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
 vars.Add(BoolVariable('USE_DOUBLE_PRECISION', 'If disabled, SG++ will compile using single precision (floats).', True))
 
@@ -87,15 +89,28 @@ vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant 
 vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
 
+# create temporary environment to check which system and compiler we should use
+# (the Environment call without "tools=[]" crashes with MinGW,
+# so we do it like that)
+env = Environment(variables=vars, ENV=os.environ, tools=[])
+
+if (env['PLATFORM'].lower() == 'win32') and \
+   (env['COMPILER'].lower() == 'gnu'):
+	# MinGW: use gcc toolschain
+	tools = ['gnulink', 'gcc', 'g++', 'gas', 'ar', 'swig']
+else:
+	# otherwise: use default toolchain
+	tools = ['default']
+
 # initialize environment
-env = Environment(variables=vars, ENV=os.environ)
+env = Environment(variables=vars, ENV=os.environ, tools=tools)
 
 env['EPREFIX'] = env.get( 'EPREFIX', env['PREFIX'] )
 env['LIBDIR'] = env.get( 'LIBDIR', os.path.join( env['EPREFIX'], "lib" ) )
 env['INCLUDEDIR'] = env.get( 'INCLUDEDIR', os.path.join( env['PREFIX'], "include" ) )
 
 # no docu if clean:
-if not env['PYDOC'] and not env.GetOption('clean'):
+if not env.GetOption('clean'):
   prepareDoxyfile(moduleFolders)
 
 if 'CXX' in ARGUMENTS:
@@ -189,7 +204,9 @@ Export('env')
 env.Append(CPPPATH=['#/tools'])
 config = env.Configure()
 Export('config')
-# set up paths (Only Tested on Ubuntu!)
+
+# update PATH under win32/LD_LIBRARY_PATH otherwise
+# to add BUILD_DIR (so we can run the Boost tests)
 if env['PLATFORM'] == 'win32':
     env["ENV"]["PATH"] = os.pathsep.join([
         env["ENV"].get("PATH", ""),
@@ -206,19 +223,43 @@ else:
         env["ENV"].get("LD_LIBRARY_PATH", ""),
         BUILD_DIR.abspath])
 
-env["ENV"]["PYTHONPATH"] = os.pathsep.join([
-    env["ENV"].get("PYTHONPATH", ""),
-    PYSGPP_PACKAGE_PATH.abspath])
+# -------------------------------------------------------------------------
+# add the pysgpp package path to the environment
+if env['PLATFORM'] == 'win32':
+  # try to import pysgpp to detect an already existing installation, which
+  # could cause trouble
+  try:
+    import pysgpp
+    print "Warning: more than one installations of pysgpp are detected. To get rid of this warning remove the pysgpp package from your local python installation."
+  except:
+    None
+
+  # get a temporary folders
+  import tempfile, uuid
+  # get temp directory
+  pysgppTempFolder = os.path.join(tempfile.gettempdir(),
+                           "site-pyspp-%s" % str(uuid.uuid4()))
+  # create temp folder
+  os.makedirs(pysgppTempFolder)
+
+  # add it to the build python path
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([pysgppTempFolder,
+                                              env["ENV"].get("PYTHONPATH", "")])
+else:
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
+                                              PYSGPP_PACKAGE_PATH.abspath])
+# -------------------------------------------------------------------------
 
 # add custom builder to trigger the unittests after the build and to enable a special import test
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-    builder = Builder(action="python $SOURCE.file", chdir=1)
+    # do the actual thing
+    builder = Builder(action="python $SOURCE", chdir=0)
     env.Append(BUILDERS={'Test' : builder})
     builder = Builder(action="python $SOURCE")
     env.Append(BUILDERS={'SimpleTest' : builder})
 
 if env['COMPILE_BOOST_TESTS']:
-    builder = Builder(action="./$SOURCE --log_level=test_suite")
+    builder = Builder(action="./$SOURCE")
     env.Append(BUILDERS={'BoostTest' : builder})
 
 
@@ -257,29 +298,36 @@ for moduleFolder in moduleFolders:
 
 Export('flattenedDependencyGraph')
 
-if env['PYDOC'] and env['SG_PYTHON'] and not env.GetOption('clean'):
-  with open('moduleDoxy', 'r') as template:
-    data = template.read()
-    for module in moduleFolders:
-      if not env['SG_' + module.upper()]:
-        continue
-      print module
+if env['PYDOC'] and env['SG_PYTHON']:
+  data = open('moduleDoxy', 'r').read()
+  for module in moduleFolders:
+    if not env['SG_' + module.upper()]:
+      continue
+
+    if env.GetOption("clean"):
+      if os.path.exists(os.path.join(module, 'Doxyfile')):
+        os.remove(os.path.join(module, 'Doxyfile'))
+      doxypath = os.path.join(module, 'doc/xml/')
+      if os.path.exists(doxypath):
+        for file in os.listdir(doxypath):
+          os.remove(os.path.join(doxypath, file))
+    else:
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
         doxyFile.write(data.replace('$modname', module).replace('$quiet', 'YES'))
 
-      doxy_env = env.Clone()
+    doxy_env = env.Clone()
 
-      doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
+    doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
 
-      doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
-      doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
+    doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
+    doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
 
-      for root, dirs, files in os.walk(os.path.join(module, 'src')):
-        for file in files:
-          if 'cpp' in file or 'hpp' in file:
-            doxy_env.Depends(doxygen, os.path.join(root, file))
-            doxy_env.Depends(doxy2swig, os.path.join(root, file))
-      pydocTargetList.append(doxy2swig)
+    for root, dirs, files in os.walk(os.path.join(module, 'src')):
+      for file in files:
+        if 'cpp' in file or 'hpp' in file:
+          doxy_env.Depends(doxygen, os.path.join(root, file))
+          doxy_env.Depends(doxy2swig, os.path.join(root, file))
+    pydocTargetList.append(doxy2swig)
 
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})
@@ -302,46 +350,22 @@ def installPythonLibToTmp(target, source, env):
   import sys, os, subprocess
 
   # get temp directory
-  tmpfolder = source[0].get_string(0)
+  pysgppTempFolder = source[0].get_string(0)
 
   # install python interface to tmp directory
   p = subprocess.call(["python", "setup.py",
                        "--quiet",
-                       "install", "--install-lib=%s" % tmpfolder])
+                       "install", "--install-lib=%s" % pysgppTempFolder])
   if p != 0:
-      print "Error: installing python package to the temporary folder '%s' failed; I can not run the python unit tests automatically." % tmpfolder
+      print "Error: installing python package to the temporary folder '%s' failed; I can not run the python unit tests automatically." % pysgppTempFolder
       exit(-1)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-  # -------------------------------------------------------------------------
-  # prepare python package for unit testing
   if env['PLATFORM'] == 'win32':
-    # try to import pysgpp to detect an already existing installation, which
-    # could cause trouble
-    try:
-      import pysgpp
-      print "Warning: more than one installations of pysgpp are detected. To get rid of this warning remove the pysgpp package from your local python installation."
-    except:
-      None
-
-    # get a temporary folders
-    import tempfile, uuid
-    # get temp directory
-    tmpfolder = os.path.join(tempfile.gettempdir(),
-                             "site-pyspp-%s" % str(uuid.uuid4()))
-    # create temp folder
-    os.makedirs(tmpfolder)
-
-    # add it to the build python path
-    env["ENV"]["PYTHONPATH"] = os.pathsep.join([tmpfolder,
-                                                env["ENV"].get("PYTHONPATH", "")])
     # install the python library to that temporary folder
-    dependencies.append(env.Command('installPythonLibToTmp', [tmpfolder], installPythonLibToTmp))
-  else:
-    # add lib folder tp python path
-    env["ENV"]["PYTHONPATH"] = os.pathsep.join([os.path.abspath(os.path.join("lib")),
-                                                env["ENV"].get("PYTHONPATH", "")])
-  # -------------------------------------------------------------------------
+    dependencies.append(env.Command('installPythonLibToTmp', [pysgppTempFolder], installPythonLibToTmp))
+
+  # print message that python tests are about to start
   dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))
 
   # serialize tests and move them at the end of the build
