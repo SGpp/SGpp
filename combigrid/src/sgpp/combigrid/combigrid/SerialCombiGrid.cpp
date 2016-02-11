@@ -1,12 +1,14 @@
-
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
 
 /** sets the domain of all the full grids, this is the correct way for
  * extrapolation */
 template <typename _Tp>
-void combigrid::SerialCombiGrid<_Tp>::setDomainAllFG(
-    GridDomain* gridDomain) const {
+void combigrid::SerialCombiGrid<_Tp>::setDomainAllFG(GridDomain* gridDomain) const {
   for (unsigned int i = 0; i < this->_fgrids.size(); i++) {
     this->_fgrids[i]->fg()->setDomain(gridDomain);
   }

@@ -1,14 +1,12 @@
-/* ****************************************************************************
-* Copyright (C) 2011 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBIBASISFUNCTION_HPP_
 #define COMBIBASISFUNCTION_HPP_
 
-#include "../utils/combigrid_utils.hpp"
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
 
 namespace combigrid {
 
@@ -37,6 +35,6 @@ class BasisFunctionBasis {
    * could be different [-1,2]*/
   virtual double functionEval2(double coord) const = 0;
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBIBASISFUNCTION_HPP_ */

@@ -1,13 +1,14 @@
-/* ****************************************************************************
- * Copyright (C) 2011 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef COMBITANSTRETCHING_HPP_
 #define COMBITANSTRETCHING_HPP_
 
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
+
+#include <vector>
 
 namespace combigrid {
 
@@ -20,7 +21,7 @@ class TanStretching : public AbstractStretchingMaker {
  public:
   /** Ctor
    * @param intFact must be smaller than one*/
-  TanStretching(double intFact = 1.0 / 7.0)
+  explicit TanStretching(double intFact = 1.0 / 7.0)
       : AbstractStretchingMaker(), intFact_(intFact) {
     if (intFact_ > 1.5) intFact_ = 1.0 / 1.5;
 
@@ -29,8 +30,7 @@ class TanStretching : public AbstractStretchingMaker {
 
   virtual ~TanStretching() { ; }
 
-  void get1DStretching(int level, double min, double max,
-                       std::vector<double>* stretching,
+  void get1DStretching(int level, double min, double max, std::vector<double>* stretching,
                        std::vector<double>* jacobian) const;
 
   Stretching getStretchingType() const { return TAN; }
@@ -39,6 +39,6 @@ class TanStretching : public AbstractStretchingMaker {
   /** internal factor for the formula */
   double intFact_;
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBITANSTRETCHING_HPP_ */

@@ -1,9 +1,8 @@
-/* ****************************************************************************
- * Copyright (C) 2011 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef COMBIFULLGRID_HPP_
 #define COMBIFULLGRID_HPP_
 
@@ -11,7 +10,10 @@
 #include <sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp>
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 #include <sgpp/combigrid/domain/StretchingFactory.hpp>
-#include "../utils/combigrid_utils.hpp"
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
+
+#include <vector>
+#include <algorithm>
 
 namespace combigrid {
 
@@ -41,8 +43,7 @@ template <typename FG_ELEMENT>
 class FullGrid {
  public:
   /** simplest Ctor with homogeneous  levels */
-  FullGrid(int dim, int level, bool hasBdrPoints = true,
-           const BasisFunctionBasis* basis = NULL) {
+  FullGrid(int dim, int level, bool hasBdrPoints = true, const BasisFunctionBasis* basis = NULL) {
     // set the basis function for the full grid
     if (basis == NULL)
       basis_ = LinearBasisFunction::getDefaultBasis();
@@ -67,9 +68,8 @@ class FullGrid {
     nrPoints_.resize(dim_);
 
     for (int j = 0; j < dim_; j++) {
-      nrPoints_[j] =
-          ((hasBoundaryPoints_[j] == true) ? (powerOfTwo[levels_[j]] + 1)
-                                           : (powerOfTwo[levels_[j]] - 1));
+      nrPoints_[j] = ((hasBoundaryPoints_[j] == true) ? (powerOfTwo[levels_[j]] + 1)
+                                                      : (powerOfTwo[levels_[j]] - 1));
       offsets_[j] = nrElements_;
       nrElements_ = nrElements_ * nrPoints_[j];
     }
@@ -100,17 +100,15 @@ class FullGrid {
     nrPoints_.resize(dim_);
 
     for (int j = 0; j < dim_; j++) {
-      nrPoints_[j] =
-          ((hasBoundaryPoints_[j] == true) ? (powerOfTwo[levels_[j]] + 1)
-                                           : (powerOfTwo[levels_[j]] - 1));
+      nrPoints_[j] = ((hasBoundaryPoints_[j] == true) ? (powerOfTwo[levels_[j]] + 1)
+                                                      : (powerOfTwo[levels_[j]] - 1));
       offsets_[j] = nrElements_;
       nrElements_ = nrElements_ * nrPoints_[j];
     }
   }
 
   /** dimension adaptive Ctor */
-  FullGrid(int dim, const std::vector<int>& levels,
-           const std::vector<bool>& hasBdrPoints,
+  FullGrid(int dim, const std::vector<int>& levels, const std::vector<bool>& hasBdrPoints,
            const BasisFunctionBasis* basis = NULL) {
     // set the basis function for the full grid
     if (basis == NULL)
@@ -134,9 +132,8 @@ class FullGrid {
     nrPoints_.resize(dim_);
 
     for (int j = 0; j < dim_; j++) {
-      nrPoints_[j] =
-          ((hasBoundaryPoints_[j] == true) ? (powerOfTwo[levels_[j]] + 1)
-                                           : (powerOfTwo[levels_[j]] - 1));
+      nrPoints_[j] = ((hasBoundaryPoints_[j] == true) ? (powerOfTwo[levels_[j]] + 1)
+                                                      : (powerOfTwo[levels_[j]] - 1));
       offsets_[j] = nrElements_;
       nrElements_ = nrElements_ * nrPoints_[j];
     }
@@ -201,16 +198,17 @@ class FullGrid {
 
       if (hasBoundaryPoints_[ii] == true) {
         aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
-        aindex[ii] = (aindex[ii] >= (int)(nrPoints_[ii] - 1))
-                         ? (int)(nrPoints_[ii] - 2)
+        aindex[ii] = (aindex[ii] >= static_cast<int>(nrPoints_[ii] - 1))
+                         ? static_cast<int>(nrPoints_[ii] - 2)
                          : aindex[ii];
         // calculate the coordinates
-        normcoord = normcoord - (double)aindex[ii];
+        normcoord = normcoord - static_cast<double>(aindex[ii]);
       } else {
         aindex[ii] = (aindex[ii] < 0) ? 0 : aindex[ii];
-        aindex[ii] = (aindex[ii] >= (int)(nrPoints_[ii])) ? (int)(nrPoints_[ii])
-                                                          : aindex[ii];
-        normcoord = normcoord - (double)aindex[ii];
+        aindex[ii] = (aindex[ii] >= static_cast<int>(nrPoints_[ii]))
+                         ? static_cast<int>(nrPoints_[ii])
+                         : aindex[ii];
+        normcoord = normcoord - static_cast<double>(aindex[ii]);
 
         if (aindex[ii] <= 0) {
           aindex[ii] = 1;
@@ -221,11 +219,11 @@ class FullGrid {
         } else {
           // make extrapolation at the last cell (where there is no boundary
           // point)
-          if (aindex[ii] >= (int)nrPoints_[ii] - 1) {
-            aindex[ii] = (int)nrPoints_[ii] - 1;
+          if (aindex[ii] >= static_cast<int>(nrPoints_[ii]) - 1) {
+            aindex[ii] = static_cast<int>(nrPoints_[ii]) - 1;
             // extrapolation to the right this will be a >=1 number
             normcoord = coords[ii] * powerOfTwo[levels_[ii]] -
-                        (double)aindex[ii];  // this should be 1 + ...
+                        static_cast<double>(aindex[ii]);  // this should be 1 + ...
             // COMBIGRID_OUT_LEVEL3( verb , "FullG R , aindex[ii]:" <<
             // aindex[ii]);
           }
@@ -259,9 +257,8 @@ class FullGrid {
       // compute the "dim" dimensional basis function value(for one node) and
       // the corresponding vector index
       for (jj = dim_ - 1; jj >= 0; jj--) {
-        vv = (nrPoints_[jj] > 1)
-                 ? (tmp_val & 1)
-                 : 0;  // if we have only one point then use the same
+        vv =
+            (nrPoints_[jj] > 1) ? (tmp_val & 1) : 0;  // if we have only one point then use the same
         baseVal = baseVal * (FG_ELEMENT)intersect[2 * jj + vv];
         i = i * nrPoints_[jj] + aindex[jj] + vv;
         tmp_val = tmp_val >> 1;
@@ -271,8 +268,8 @@ class FullGrid {
       // the value
       // COMBIGRID_OUT_LEVEL3( verb , "Vect elem i:" << i << " , vect:" <<
       // fullgridVector_[i]);
-      ret_val = (ii == 0) ? (baseVal * fullgridVector_[i])
-                          : (ret_val + baseVal * fullgridVector_[i]);
+      ret_val =
+          (ii == 0) ? (baseVal * fullgridVector_[i]) : (ret_val + baseVal * fullgridVector_[i]);
     }
 
     // COMBIGRID_OUT_LEVEL3( verb , "FullGrid::eval RET VAL:" << ret_val);
@@ -335,13 +332,12 @@ class FullGrid {
       std::vector<AbstractStretchingMaker*> stretchings(dim_, NULL);
 
       for (int d = 0; d < dim_; d++)
-        stretchings[d] = combigrid::createStretchingMaker(
-            gridDomain_->get1DDomain(d).getStretchingType());
+        stretchings[d] =
+            combigrid::createStretchingMaker(gridDomain_->get1DDomain(d).getStretchingType());
 
       std::vector<double> min = gridDomain_->getMin();
       std::vector<double> max = gridDomain_->getMax();
-      GridDomain* new_domain =
-          new GridDomain(dim_, new_levels, min, max, stretchings);
+      GridDomain* new_domain = new GridDomain(dim_, new_levels, min, max, stretchings);
       new_grid->setDomain(new_domain);
     }
 
@@ -349,9 +345,8 @@ class FullGrid {
     std::vector<double> k_coords(dim_, 0.0);  // current point coordinates
     std::vector<int> k_idx(dim_, 0);
 
-    std::vector<int> bb_idx(dim_, 0);  // bounding box indices (only left)
-    std::vector<double> bb_coords(2 * dim_,
-                                  0.0);  // bounding box coords (left and right)
+    std::vector<int> bb_idx(dim_, 0);              // bounding box indices (only left)
+    std::vector<double> bb_coords(2 * dim_, 0.0);  // bounding box coords (left and right)
 
     // get the next element of the new grid
     // speed-up somehow :> ???
@@ -372,10 +367,8 @@ class FullGrid {
       for (int d = 0; d < dim_; d++) {
         double x_d0 = bb_coords[d * 2];
         double x_d1 = bb_coords[d * 2 + 1];
-        interpol_coeffs[d * 2] =
-            calculate_interpolation_coeff(x_d0, x_d1, k_coords[d], -1);
-        interpol_coeffs[d * 2 + 1] =
-            calculate_interpolation_coeff(x_d0, x_d1, k_coords[d], +1);
+        interpol_coeffs[d * 2] = calculate_interpolation_coeff(x_d0, x_d1, k_coords[d], -1);
+        interpol_coeffs[d * 2 + 1] = calculate_interpolation_coeff(x_d0, x_d1, k_coords[d], +1);
       }
 
       // now perform the interpolation sum!
@@ -442,8 +435,7 @@ class FullGrid {
 
   inline int bb_left(int j_k, int l, int k) const {
     int dL = k - l;
-    return (dL >= 0 ? (j_k / powerOfTwo[dL]) : j_k * powerOfTwo[-dL]) -
-           j_k / powerOfTwo[k];
+    return (dL >= 0 ? (j_k / powerOfTwo[dL]) : j_k * powerOfTwo[-dL]) - j_k / powerOfTwo[k];
     // at the end we subtract j_k/powerOfTwo[k] to ensure that points on the
     // right boundary (i.e. when j_k = 2^k
     // are mapped onto the point 2^l-1, instead of 2^l!!! this is done because
@@ -461,24 +453,22 @@ class FullGrid {
     int ind = 0;
     int tmp_add = 0;
 
-    if (gridDomain_ ==
-        NULL) {  // default we are getting coordinates in the [0;1]^dim cube...
+    if (gridDomain_ == NULL) {  // default we are getting coordinates in the [0;1]^dim cube...
       for (int j = 0; j < dim_; j++) {
-        ind = elemIndex % (int)(nrPoints_[j]);
-        elemIndex = elemIndex / (int)(nrPoints_[j]);
+        ind = elemIndex % static_cast<int>(nrPoints_[j]);
+        elemIndex = elemIndex / static_cast<int>(nrPoints_[j]);
         // set the coordinate based on if we have boundary points
         tmp_add = (hasBoundaryPoints_[j] == true) ? (0) : (1);
-        coords[j] = ((double)(ind + tmp_add)) * oneOverPowOfTwo[levels_[j]];
+        coords[j] = (static_cast<double>(ind + tmp_add)) * oneOverPowOfTwo[levels_[j]];
       }
     } else {
       // we have a valid Domain
       for (int j = 0; j < dim_; j++) {
-        ind = elemIndex % (int)(nrPoints_[j]);
-        elemIndex = elemIndex / (int)(nrPoints_[j]);
+        ind = elemIndex % static_cast<int>(nrPoints_[j]);
+        elemIndex = elemIndex / static_cast<int>(nrPoints_[j]);
         // set the coordinate based on if we have boundary points
         tmp_add = (hasBoundaryPoints_[j] == true) ? (0) : (1);
-        (gridDomain_->get1DDomain(j))
-            .transformUnitToReal(levels_[j], ind + tmp_add, coords[j]);
+        (gridDomain_->get1DDomain(j)).transformUnitToReal(levels_[j], ind + tmp_add, coords[j]);
         // COMBIGRID_OUT_LEVEL3( verb , "FullGrid::getCoords j:" << j << " ,
         // coords[j]:" << coords[j]);
       }
@@ -497,8 +487,7 @@ class FullGrid {
    * @param elementIndex [IN] the linear index of the element
    * @param levels [OUT] the levels of the point in the LI notation
    * @param indexes [OUT] the indexes of the point in the LI notation */
-  void getLI(int elementIndex, std::vector<int>& levels,
-             std::vector<int>& indexes) const {
+  void getLI(int elementIndex, std::vector<int>& levels, std::vector<int>& indexes) const {
     int k, startindex, tmp_val;
 
     tmp_val = elementIndex;
@@ -566,8 +555,7 @@ class FullGrid {
    *
    * @param linIndex [IN] the linear index
    * @param axisIndex [OUT] the returned vector index */
-  inline void getVectorIndex(const int linIndex,
-                             std::vector<int>& axisIndex) const {
+  inline void getVectorIndex(const int linIndex, std::vector<int>& axisIndex) const {
     int tmp = linIndex;
 
     for (int i = dim_ - 1; i >= 0; i--) {
@@ -607,9 +595,7 @@ class FullGrid {
   /** the getters for the full grid vector */
   inline std::vector<FG_ELEMENT>& getElementVector() { return fullgridVector_; }
 
-  inline const std::vector<FG_ELEMENT>& getElementVector() const {
-    return fullgridVector_;
-  }
+  inline const std::vector<FG_ELEMENT>& getElementVector() const { return fullgridVector_; }
 
   /** return the offset in the full grid vector of the dimension */
   inline int getOffset(int i) const { return offsets_[i]; }
@@ -633,9 +619,7 @@ class FullGrid {
   inline std::vector<int>& getSGppIndex() const { return (*sgppIndex_); }
 
   /** vector of flags to show if the dimension has boundary points*/
-  inline const std::vector<bool>& returnBoundaryFlags() const {
-    return hasBoundaryPoints_;
-  }
+  inline const std::vector<bool>& returnBoundaryFlags() const { return hasBoundaryPoints_; }
 
   /** copies the input vector to the full grid vector
    * @param in [IN] input vector*/
@@ -700,13 +684,11 @@ class FullGrid {
    *
    */
 
-  double calculate_interpolation_coeff(double x_0, double x_1, double x,
-                                       int direction) {
+  double calculate_interpolation_coeff(double x_0, double x_1, double x, int direction) {
     // error checking
     if (direction == 0) {
-      COMBIGRID_OUT_WRN(
-          "interpolation direciton parameter = 0. Returning 0.0!!!", __FILE__,
-          __LINE__)
+      COMBIGRID_OUT_WRN("interpolation direciton parameter = 0. Returning 0.0!!!", __FILE__,
+                        __LINE__)
       return 0.0;
     }
 
@@ -756,8 +738,7 @@ class FullGrid {
    *
    */
 
-  void bounding_box(std::vector<int> k_idx, std::vector<int> new_levels,
-                    std::vector<int>& bb_idx,
+  void bounding_box(std::vector<int> k_idx, std::vector<int> new_levels, std::vector<int>& bb_idx,
                     std::vector<double>& bb_coord) const {
     if (k_idx.size() != dim_ || bb_idx.size() != dim_) {
       COMBIGRID_OUT_WRN(
@@ -822,14 +803,12 @@ class FullGrid {
 
   int binary_search(double x, std::vector<double> grid_line) const {
     if (grid_line.size() == 0) {
-      COMBIGRID_OUT_ERR("Cannot search inside an empty array! Aborting!",
-                        __FILE__, __LINE__);
+      COMBIGRID_OUT_ERR("Cannot search inside an empty array! Aborting!", __FILE__, __LINE__);
       return 0;
     }
 
     if (x < grid_line[0] || x > grid_line[grid_line.size() - 1]) {
-      COMBIGRID_OUT_ERR("Input element outside array bounds! Aborting!",
-                        __FILE__, __LINE__);
+      COMBIGRID_OUT_ERR("Input element outside array bounds! Aborting!", __FILE__, __LINE__);
       return 0;
     }
 
@@ -850,6 +829,6 @@ class FullGrid {
     return m;
   }
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBIFULLGRID_HPP_ */

@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/quadratures/TrapezoidalRule.hpp>
 #include <iostream>
@@ -118,9 +116,8 @@ _Tp combigrid::TrapezoidalRule<_Tp>::integrate(CombiGrid<_Tp>* grids,
               __FILE__, __LINE__);
           error_flag++;
         } else {
-          result +=
-              (_Tp)grids->getCoef(j) *
-              trapz_full_grid(dim, f, grids->getFullGrid(j), badstretching);
+          result += (_Tp)grids->getCoef(j) *
+                    trapz_full_grid(dim, f, grids->getFullGrid(j), badstretching);
         }
       }
     }
@@ -132,16 +129,14 @@ _Tp combigrid::TrapezoidalRule<_Tp>::integrate(CombiGrid<_Tp>* grids,
 }
 
 template <typename _Tp>
-_Tp combigrid::TrapezoidalRule<_Tp>::trapz_full_grid(
-    int dim, _Tp (*f)(std::vector<double>), FGridContainer<_Tp>* gridContainer,
-    bool badstretching) {
+_Tp combigrid::TrapezoidalRule<_Tp>::trapz_full_grid(int dim, _Tp (*f)(std::vector<double>),
+                                                     FGridContainer<_Tp>* gridContainer,
+                                                     bool badstretching) {
   _Tp result = 0.0f;
-  FullGrid<_Tp>* grid =
-      gridContainer->fg();  // obtain a pointer to the fullgrid
+  FullGrid<_Tp>* grid = gridContainer->fg();  // obtain a pointer to the fullgrid
   std::vector<_Tp> f_values;
   CombiEquidistantStretching stretching = CombiEquidistantStretching();
-  AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching,
-                                             &f_values, f);
+  AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching, &f_values, f);
 
   /***
    * At this point of the evaluation we already have the functional values
@@ -153,8 +148,7 @@ _Tp combigrid::TrapezoidalRule<_Tp>::trapz_full_grid(
    *functional values by the weights
    *  and sum the results up...
    */
-  unsigned int num_elem =
-      grid->getNrElements();  // get the total number of grid points
+  unsigned int num_elem = grid->getNrElements();  // get the total number of grid points
   std::vector<int> indices(dim, 0);
   std::vector<int> levels = gridContainer->getFGLevels();
 
@@ -177,8 +171,7 @@ _Tp combigrid::TrapezoidalRule<_Tp>::trapz_full_grid(
 }
 
 template <typename _Tp>
-void combigrid::TrapezoidalRule<_Tp>::calculateCoefficients(int in_level,
-                                                            _Tp** out_coefs) {
+void combigrid::TrapezoidalRule<_Tp>::calculateCoefficients(int in_level, _Tp** out_coefs) {
   int N = powerOfTwo[in_level] + 1;
   *out_coefs = reinterpret_cast<_Tp*>(malloc(N * sizeof(_Tp)));
 

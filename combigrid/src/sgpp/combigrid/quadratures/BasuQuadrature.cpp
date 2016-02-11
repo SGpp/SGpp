@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/quadratures/BasuQuadrature.hpp>
 #include <vector>
@@ -111,8 +109,7 @@ _Tp combigrid::BasuQuadrature<_Tp>::integrate(CombiGrid<_Tp>* grids,
           error_flag++;
         } else {
           result +=
-              (_Tp)grids->getCoef(j) *
-              basu_full_grid(dim, f, grids->getFullGrid(j), badstretching);
+              (_Tp)grids->getCoef(j) * basu_full_grid(dim, f, grids->getFullGrid(j), badstretching);
         }
       }
     }
@@ -124,16 +121,14 @@ _Tp combigrid::BasuQuadrature<_Tp>::integrate(CombiGrid<_Tp>* grids,
 }
 
 template <typename _Tp>
-_Tp combigrid::BasuQuadrature<_Tp>::basu_full_grid(
-    int dim, _Tp (*f)(std::vector<double>), FGridContainer<_Tp>* gridContainer,
-    bool badstretching) {
+_Tp combigrid::BasuQuadrature<_Tp>::basu_full_grid(int dim, _Tp (*f)(std::vector<double>),
+                                                   FGridContainer<_Tp>* gridContainer,
+                                                   bool badstretching) {
   _Tp result = 0.0f;
-  FullGrid<_Tp>* grid =
-      gridContainer->fg();  // obtain a pointer to the fullgrid
+  FullGrid<_Tp>* grid = gridContainer->fg();  // obtain a pointer to the fullgrid
   std::vector<_Tp> f_values;
   CombiBasuStretching stretching = CombiBasuStretching();
-  AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching,
-                                             &f_values, f);
+  AbstractQuadratureRule<_Tp>::getGridValues(grid, badstretching, &stretching, &f_values, f);
 
   /**check if we have a fully infinite interval to integrate over!!! */
   std::vector<Domain1D> domains;
@@ -145,8 +140,7 @@ _Tp combigrid::BasuQuadrature<_Tp>::basu_full_grid(
     for (int d = 0; d < dim; d++) {
       Domain1D dom = domain->get1DDomain(d);
 
-      if (dom.getMinDomain() == n_INF && dom.getMaxDomain() == p_INF)
-        fully_infinite[d] = true;
+      if (dom.getMinDomain() == n_INF && dom.getMaxDomain() == p_INF) fully_infinite[d] = true;
     }
   }
 
@@ -160,8 +154,7 @@ _Tp combigrid::BasuQuadrature<_Tp>::basu_full_grid(
    *functional values by the weights
    *  and sum the results up...
    */
-  unsigned int num_elem =
-      grid->getNrElements();  // get the total number of grid points
+  unsigned int num_elem = grid->getNrElements();  // get the total number of grid points
   std::vector<int> indices(dim, 0);
   std::vector<int> levels = gridContainer->getFGLevels();
 
@@ -196,8 +189,7 @@ _Tp combigrid::BasuQuadrature<_Tp>::basu_full_grid(
 }
 
 template <class _Tp>
-void combigrid::BasuQuadrature<_Tp>::calculateCoefficients(int in_level,
-                                                           _Tp** out_coefs) {
+void combigrid::BasuQuadrature<_Tp>::calculateCoefficients(int in_level, _Tp** out_coefs) {
   int N = powerOfTwo[in_level];
   int n = powerOfTwo[in_level - 1];  // is equal to (N-1)/2;
   *out_coefs = reinterpret_cast<_Tp*>(malloc((N + 1) * sizeof(_Tp)));
@@ -206,8 +198,7 @@ void combigrid::BasuQuadrature<_Tp>::calculateCoefficients(int in_level,
     double factor = 2 * M_PI * s / N;
     double w_s = 1.0 / N;
 
-    for (int p = 1; p < n - 1; p++)
-      w_s += (2.0 / N) * cos(factor * p) / (1 - 4 * p * p);
+    for (int p = 1; p < n - 1; p++) w_s += (2.0 / N) * cos(factor * p) / (1 - 4 * p * p);
 
     w_s += (1.0 / N) * cos(factor * (n - 1)) / (1 - 4 * (n - 1) * (n - 1));
 

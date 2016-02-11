@@ -1,9 +1,8 @@
-/* ****************************************************************************
- * Copyright (C) 2011 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef GRIDPLOTTER_HPP_
 #define GRIDPLOTTER_HPP_
 
@@ -51,30 +50,23 @@ class GridPlotter {
 
   /** plot one Full grid */
   static void plotFullGrid(const std::string& filePath, const FullGrid<_Tp>* fg,
-                           const std::vector<double>& globalCoord_in,
-                           int resolution = 0) {
+                           const std::vector<double>& globalCoord_in, int resolution = 0) {
     combigrid::Evaluable<_Tp> obj(fg);
     int dim = fg->getDimension();
-    plotObject(dim, filePath, &obj, fg->getDomain(), globalCoord_in,
-               resolution);
+    plotObject(dim, filePath, &obj, fg->getDomain(), globalCoord_in, resolution);
   }
 
   /** plot one combination grid */
-  static void plotCombiGrid(const std::string& filePath,
-                            const CombiGrid<_Tp>* cg,
-                            const std::vector<double>& globalCoord_in,
-                            int resolution = 0) {
+  static void plotCombiGrid(const std::string& filePath, const CombiGrid<_Tp>* cg,
+                            const std::vector<double>& globalCoord_in, int resolution = 0) {
     combigrid::Evaluable<_Tp> obj(cg);
     int dim = cg->getFullGrid(0)->getDimension();
-    plotObject(dim, filePath, &obj, cg->getDomain(), globalCoord_in,
-               resolution);
+    plotObject(dim, filePath, &obj, cg->getDomain(), globalCoord_in, resolution);
   }
 
  private:
-  static void plotObject(int dim, const std::string& filePath,
-                         const combigrid::Evaluable<_Tp>* obj,
-                         const GridDomain* domain,
-                         const std::vector<double>& globalCoord_in,
+  static void plotObject(int dim, const std::string& filePath, const combigrid::Evaluable<_Tp>* obj,
+                         const GridDomain* domain, const std::vector<double>& globalCoord_in,
                          int resolution) {
     std::vector<_Tp> result(0);
     std::vector<double> globalCoord = globalCoord_in;
@@ -103,8 +95,7 @@ class GridPlotter {
         for (int ii = 0; ii < resolution; ii++) {
           globalCoord[0] =
               minX +
-              (maxX - minX) * (static_cast<double>(ii) /
-                               static_cast<double>(resolution - 1));
+              (maxX - minX) * (static_cast<double>(ii) / static_cast<double>(resolution - 1));
           result[ii] = obj->eval(globalCoord);
         }
 
@@ -114,10 +105,9 @@ class GridPlotter {
         myfile << "X = [ " << minX;
 
         for (int ii = 1; ii < resolution; ii++) {
-          myfile << " , "
-                 << (minX +
-                     (maxX - minX) * (static_cast<double>(ii) /
-                                      static_cast<double>(resolution - 1)));
+          myfile << " , " << (minX +
+                              (maxX - minX) *
+                                  (static_cast<double>(ii) / static_cast<double>(resolution - 1)));
         }
 
         myfile << "]; \n ";
@@ -150,12 +140,10 @@ class GridPlotter {
           for (int jj = 0; jj < resolution; jj++) {
             globalCoord[0] =
                 minX +
-                (maxX - minX) * (static_cast<double>(ii) /
-                                 static_cast<double>(resolution - 1));
+                (maxX - minX) * (static_cast<double>(ii) / static_cast<double>(resolution - 1));
             globalCoord[1] =
                 minY +
-                (maxY - minY) * (static_cast<double>(jj) /
-                                 static_cast<double>(resolution - 1));
+                (maxY - minY) * (static_cast<double>(jj) / static_cast<double>(resolution - 1));
             result[ii * resolution + jj] = obj->eval(globalCoord);
           }
         }
@@ -165,20 +153,18 @@ class GridPlotter {
         myfile << "X = [ " << minX;
 
         for (int ii = 1; ii < resolution; ii++) {
-          myfile << " , "
-                 << (minX +
-                     (maxX - minX) * (static_cast<double>(ii) /
-                                      static_cast<double>(resolution - 1)));
+          myfile << " , " << (minX +
+                              (maxX - minX) *
+                                  (static_cast<double>(ii) / static_cast<double>(resolution - 1)));
         }
 
         myfile << "]; \n ";
         myfile << "Y = [ " << minY;
 
         for (int ii = 1; ii < resolution; ii++) {
-          myfile << " , "
-                 << (minY +
-                     (maxY - minY) * (static_cast<double>(ii) /
-                                      static_cast<double>(resolution - 1)));
+          myfile << " , " << (minY +
+                              (maxY - minY) *
+                                  (static_cast<double>(ii) / static_cast<double>(resolution - 1)));
         }
 
         myfile << "]; \n ";
@@ -202,8 +188,7 @@ class GridPlotter {
         result.resize(domain->get1DDomain(0).axisScaling().size());
 
         // loop and evaluate points
-        for (unsigned int ii = 0;
-             ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
+        for (unsigned int ii = 0; ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
           globalCoord[0] = domain->get1DDomain(0).axisScaling()[ii];
           result[ii] = obj->eval(globalCoord);
         }
@@ -213,16 +198,14 @@ class GridPlotter {
         myfile.open(filePath.c_str());
         myfile << "X = [ " << domain->get1DDomain(0).axisScaling()[0];
 
-        for (unsigned int ii = 1;
-             ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
+        for (unsigned int ii = 1; ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
           myfile << " , " << domain->get1DDomain(0).axisScaling()[ii];
         }
 
         myfile << "]; \n ";
         myfile << "res = [ " << result[0];
 
-        for (unsigned int ii = 1;
-             ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
+        for (unsigned int ii = 1; ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
           myfile << " , " << result[ii];
         }
 
@@ -235,10 +218,8 @@ class GridPlotter {
         // loop and evaluate points
         double res = 0.0;
 
-        for (unsigned int ii = 0;
-             ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
-          for (unsigned int jj = 0;
-               jj < domain->get1DDomain(1).axisScaling().size(); jj++) {
+        for (unsigned int ii = 0; ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
+          for (unsigned int jj = 0; jj < domain->get1DDomain(1).axisScaling().size(); jj++) {
             globalCoord[0] = domain->get1DDomain(0).axisScaling()[ii];
             globalCoord[1] = domain->get1DDomain(1).axisScaling()[jj];
             res = obj->eval(globalCoord);
@@ -250,25 +231,22 @@ class GridPlotter {
         myfile.open(filePath.c_str());
         myfile << "X = [ " << domain->get1DDomain(0).axisScaling()[0];
 
-        for (unsigned int ii = 1;
-             ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
+        for (unsigned int ii = 1; ii < domain->get1DDomain(0).axisScaling().size(); ii++) {
           myfile << " , " << domain->get1DDomain(0).axisScaling()[ii];
         }
 
         myfile << "]; \n ";
         myfile << "Y = [ " << domain->get1DDomain(1).axisScaling()[0];
 
-        for (unsigned int ii = 1;
-             ii < domain->get1DDomain(1).axisScaling().size(); ii++) {
+        for (unsigned int ii = 1; ii < domain->get1DDomain(1).axisScaling().size(); ii++) {
           myfile << " , " << domain->get1DDomain(1).axisScaling()[ii];
         }
 
         myfile << "]; \n ";
         myfile << "res = [ " << result[0];
 
-        for (unsigned int ii = 1;
-             ii < domain->get1DDomain(0).axisScaling().size() *
-                      domain->get1DDomain(1).axisScaling().size();
+        for (unsigned int ii = 1; ii < domain->get1DDomain(0).axisScaling().size() *
+                                           domain->get1DDomain(1).axisScaling().size();
              ii++) {
           if ((ii % domain->get1DDomain(1).axisScaling().size()) == 0) {
             myfile << " ; " << result[ii];

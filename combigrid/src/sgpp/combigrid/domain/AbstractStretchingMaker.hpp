@@ -1,9 +1,8 @@
-/* ****************************************************************************
- * Copyright (C) 2011 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef ABSTRACTSTRETCHINGMAKER_HPP_
 #define ABSTRACTSTRETCHINGMAKER_HPP_
 
@@ -20,12 +19,7 @@ enum Stretching { EQUIDISTANT, CHEBYSHEV, LEGENDRE, BASU, UNKNOWN, ATAN, TAN };
  * map the actual coordinates to the [-1;1] interval
  *
  */
-enum TRANSFORMATION_TYPE {
-  FINITE,
-  SEMI_INFINITE_NINF,
-  SEMI_INFINITE_PINF,
-  INFINITE
-};
+enum TRANSFORMATION_TYPE { FINITE, SEMI_INFINITE_NINF, SEMI_INFINITE_PINF, INFINITE };
 
 /** class to create stretching in 1D*/
 class AbstractStretchingMaker {
@@ -41,16 +35,14 @@ class AbstractStretchingMaker {
    * size of the interval and underlying tranformations.
    */
 
-  virtual void get1DStretching(int level, double min, double max,
-                               std::vector<double>* stretching,
+  virtual void get1DStretching(int level, double min, double max, std::vector<double>* stretching,
                                std::vector<double>* jacobian) const = 0;
 
   virtual ~AbstractStretchingMaker() {}
 
   virtual Stretching getStretchingType() const = 0;
 
-  double transforminterval(double min, double max, double point,
-                           TRANSFORMATION_TYPE tp) const {
+  double transforminterval(double min, double max, double point, TRANSFORMATION_TYPE tp) const {
     double result = point;
 
     switch (tp) {
@@ -82,8 +74,7 @@ class AbstractStretchingMaker {
     return result;
   }
 
-  double transformationJacobian(double min, double max, double pt,
-                                TRANSFORMATION_TYPE type) const {
+  double transformationJacobian(double min, double max, double pt, TRANSFORMATION_TYPE type) const {
     double result = 1.0;
 
     // the if's are in order to avoid singularities
