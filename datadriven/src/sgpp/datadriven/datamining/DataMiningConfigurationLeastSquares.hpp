@@ -17,41 +17,40 @@
 namespace SGPP {
 namespace datadriven {
 
-class DataMiningConfigurationLeastSquares: public DataMiningConfiguration {
+class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
+  friend class ModelFittingDensityEstimation;
 
-	friend class ModelFittingDensityEstimation;
+ private:
+  base::RegularGridConfiguration gridConfig;
+  base::AdpativityConfiguration adaptivityConfig;
+  solver::SLESolverConfiguration solverRefineConfig;
+  solver::SLESolverConfiguration solverFinalConfig;
+  datadriven::RegularizationConfiguration regularizationConfig;
+  float_t lambda;
 
-private:
-	base::RegularGridConfiguration gridConfig;
-	base::AdpativityConfiguration adaptivityConfig;
-	solver::SLESolverConfiguration solverRefineConfig;
-	solver::SLESolverConfiguration solverFinalConfig;
-	datadriven::RegularizationConfiguration regularizationConfig;
-	float_t lambda;
+ public:
+  DataMiningConfigurationLeastSquares();
 
-public:
-	DataMiningConfigurationLeastSquares();
+  explicit DataMiningConfigurationLeastSquares(const std::string &fileName);
 
-	explicit DataMiningConfigurationLeastSquares(const std::string& fileName);
+  base::RegularGridConfiguration getGridConfig();
+  base::AdpativityConfiguration getRefinementConfig();
+  solver::SLESolverConfiguration getSolverRefineConfig();
+  solver::SLESolverConfiguration getSolverFinalConfig();
+  datadriven::RegularizationConfiguration getRegularizationConfig();
+  double getLambda();
 
-	base::RegularGridConfiguration &getGridConfig();
-	base::AdpativityConfiguration &getRefinementConfig();
-	solver::SLESolverConfiguration &getSolverRefineConfig();
-	solver::SLESolverConfiguration &getSolverFinalConfig();
-	datadriven::RegularizationConfiguration &getRegularizationConfig();
+  void setGridConfig(base::RegularGridConfiguration &gridConfig);
+  void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
+  void setSolverRefineConfig(
+      solver::SLESolverConfiguration &solverRefineConfig);
+  void setSolverFinalConfig(solver::SLESolverConfiguration &solverFinalConfig);
+  void setRegularizationConfig(
+      datadriven::RegularizationConfiguration &regularizationConfig);
+  void setLambda(double lambda);
 
-	void setGridConfig(base::RegularGridConfiguration &gridConfig);
-	void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
-	void setSolverRefineConfig(
-			solver::SLESolverConfiguration &solverRefineConfig);
-	void setSolverFinalConfig(
-			solver::SLESolverConfiguration &solverFinalConfig);
-	void setRegularizationConfig(
-			datadriven::RegularizationConfiguration &regularizationConfig);
-
-	virtual DataMiningConfiguration* clone() override;
+  virtual DataMiningConfiguration *clone() override;
 };
 
 }  // namespace base
 }  // namespace SGPP
-

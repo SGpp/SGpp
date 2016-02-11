@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
+#include <sgpp/solver/SLESolver.hpp>
 
 namespace SGPP {
 namespace datadriven {
@@ -27,16 +28,18 @@ namespace datadriven {
  */
 class ModelFittingLeastSquares: public ModelFittingBase {
 private:
-	std::vector<std::pair<size_t, float_t> > ExecTimeOnStep;
-
 	base::OperationMultipleEval* kernel = nullptr;
 
 	datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
 
 	DataMiningConfigurationLeastSquares configuration;
+
+	std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
+
+	std::shared_ptr<solver::SLESolver> solver;
 protected:
 
-	virtual datadriven::DMSystemMatrixBase* createDMSystem(
+	virtual datadriven::DMSystemMatrixBase* createSystemMatrix(
 			base::DataMatrix& trainDataset, float_t lambda);
 
 public:
@@ -53,7 +56,16 @@ public:
 	 */
 	virtual ~ModelFittingLeastSquares();
 
+	// new grid and new dataset
 	void fit(datadriven::Dataset& dataset) override;
+
+	// reuse grid and assume old dataset
+	// for grid refinement steps
+  void refine() override;
+
+  // reuse grid and new dataset
+  // for online learning
+  void update(datadriven::Dataset& dataset) override;
 
 	void setImplementation(
 			datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
