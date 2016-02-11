@@ -38,5 +38,5 @@ float_t Random::random_double() {
   return distReal(gen);
 }
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP

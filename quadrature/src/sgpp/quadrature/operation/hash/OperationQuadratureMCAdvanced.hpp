@@ -131,7 +131,7 @@ class OperationQuadratureMCAdvanced: public SGPP::base::OperationQuadrature {
 
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* OPERATIONQUADRATUREMCADVANCED_HPP */

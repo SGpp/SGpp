@@ -78,7 +78,7 @@ class LatinHypercubeSampleGenerator : public SampleGenerator {
   std::uniform_real_distribution<float_t> uniformRealDist;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* LATINHYPERCUBESAMPLEGENERATOR_HPP */

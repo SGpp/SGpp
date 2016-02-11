@@ -53,7 +53,7 @@ class HaltonSampleGenerator : public SampleGenerator {
   std::uniform_int_distribution<std::uint64_t> distInt;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* HALTONSAMPLEGENERATOR_HPP */

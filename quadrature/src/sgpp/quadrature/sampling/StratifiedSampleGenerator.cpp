@@ -4,18 +4,16 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp>
-
-#include <cmath>
 #include <sgpp/quadrature/Random.hpp>
 #include <sgpp/globaldef.hpp>
 
-using namespace SGPP::base;
-using namespace std;
+#include <cmath>
+#include <vector>
 
 namespace SGPP {
 namespace quadrature {
 
-StratifiedSampleGenerator::StratifiedSampleGenerator(vector<size_t>&
+StratifiedSampleGenerator::StratifiedSampleGenerator(std::vector<size_t>&
     strataPerDimension, uint64_t seed) :
   SampleGenerator(strataPerDimension.size(), seed),
   numberOfStrata(strataPerDimension),
@@ -33,14 +31,12 @@ StratifiedSampleGenerator::StratifiedSampleGenerator(vector<size_t>&
     currentStrata[i] = 0;
     sizeOfStrata[i] = 1. / static_cast<float_t>(this->numberOfStrata[i]);
   }
-
 }
 
 StratifiedSampleGenerator::~StratifiedSampleGenerator() {
 }
 
 void StratifiedSampleGenerator::getSample(SGPP::base::DataVector& dv) {
-
   // Check for correct dimension of the parameter vector
   if (dv.getSize() != dimensions)
     return;
@@ -69,5 +65,5 @@ void StratifiedSampleGenerator::getNextStrata() {
   }
 }
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP

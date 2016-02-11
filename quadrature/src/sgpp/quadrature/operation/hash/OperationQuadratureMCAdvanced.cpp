@@ -7,14 +7,16 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <cmath>
-#include <iostream>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/Random.hpp>
 #include <sgpp/quadrature/sampling/HaltonSampleGenerator.hpp>
 #include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 #include <sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp>
+
+#include <cmath>
+#include <iostream>
+#include <vector>
 
 namespace SGPP {
 namespace quadrature {
@@ -76,7 +78,6 @@ void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithHaltonSequences() {
 
 float_t OperationQuadratureMCAdvanced::doQuadrature(
   SGPP::base::DataVector& alpha) {
-
   SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
 
   myGenerator->getSamples(dm);
@@ -90,7 +91,7 @@ float_t OperationQuadratureMCAdvanced::doQuadrature(
 
 float_t OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func,
     void* clientdata) {
-  //float_t* p = new float_t[dimensions];
+  // float_t* p = new float_t[dimensions];
 
   SGPP::base::DataMatrix dm(numberOfSamples, dimensions);
   myGenerator->getSamples(dm);
@@ -105,7 +106,7 @@ float_t OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func,
                 clientdata);
   }
 
-  //delete p;
+  // delete p;
   return res / static_cast<float_t>(numberOfSamples);
 }
 
@@ -140,6 +141,5 @@ size_t OperationQuadratureMCAdvanced::getDimensions() {
   return dimensions;
 }
 
-}
-
-}
+}  // namespace quadrature
+}  // namespace SGPP

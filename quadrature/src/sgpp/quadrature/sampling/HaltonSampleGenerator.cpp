@@ -4,13 +4,10 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/quadrature/sampling/HaltonSampleGenerator.hpp>
-
-#include <random>
 #include <sgpp/globaldef.hpp>
 
+#include <random>
 #include <cmath>
-
-using namespace SGPP::base;
 
 namespace SGPP {
 namespace quadrature {
@@ -38,7 +35,6 @@ HaltonSampleGenerator::~HaltonSampleGenerator() {
 }
 
 void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
-
   for (size_t i = 0; i < dimensions; i++) {
     resultVector[i] = 0.;
     fVector[i] = 1. / static_cast<float_t>(baseVector[i]);
@@ -59,5 +55,5 @@ void HaltonSampleGenerator::getSample(SGPP::base::DataVector& dv) {
   index++;
 }
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
