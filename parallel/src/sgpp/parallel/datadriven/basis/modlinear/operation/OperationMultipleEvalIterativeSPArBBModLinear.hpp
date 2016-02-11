@@ -11,7 +11,7 @@
 #include <sgpp/parallel/datadriven/basis/common/ArBBKernels2D.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
-
+#include <sgpp/base/datatypes/DataVectorSP.hpp>
 #include <sgpp/globaldef.hpp>
 
 #if USE_DOUBLE_PRECISION==0
@@ -31,7 +31,7 @@ namespace parallel {
  * @li result MUST have the same size as data points that should be evaluated
  */
 class OperationMultipleEvalIterativeSPArBBModLinear : public
-  SGPP::parallel::OperationMultipleEvalVectorizedSP {
+  OperationMultipleEvalVectorizedSP {
  public:
   /**
    * Construtor of OperationMultipleEvalIterativeSPArBBModLinear
