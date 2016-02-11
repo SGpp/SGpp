@@ -6,14 +6,12 @@
 #ifndef DATADRIVEN_HPP
 #define DATADRIVEN_HPP
 
-
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-
 #include <sgpp/datadriven/application/Learner.hpp>
 #include <sgpp/datadriven/application/LearnerDensityBased.hpp>
 #include <sgpp/datadriven/application/LearnerDensityBasedReg.hpp>
@@ -22,10 +20,8 @@
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
-
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
@@ -37,10 +33,7 @@
 #endif
 
 #include "sgpp/datadriven/tools/TypesDatadriven.hpp"
-
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-
-#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-
+#include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
 
 #endif /* DATADRIVEN_HPP */
