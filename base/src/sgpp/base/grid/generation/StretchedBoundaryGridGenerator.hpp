@@ -16,8 +16,7 @@ namespace SGPP {
 namespace base {
 
 /**
- * This class provides the interface for the grid generation
- * for grids with boundaries, pentagon cut through sub space scheme
+ * TODOTEXT
  */
 class StretchedBoundaryGridGenerator : public GridGenerator {
  public:

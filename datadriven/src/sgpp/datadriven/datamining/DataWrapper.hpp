@@ -11,20 +11,28 @@
 #include <string>
 
 #include <sgpp/datadriven/datamining/SampleProvider.hpp>
+#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace datadriven {
 
 class DataWrapper : public SampleProvider {
-public:
-	DataWrapper(std::string filename): filename(filename){}
-	virtual ~DataWrapper(){};
+ public:
+  DataWrapper(datadriven::DataMiningConfiguration& config)
+      : SampleProvider(config) {
+    try {
+      filename = config["filename"].get();
+    } catch (json::json_exception& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+  virtual ~DataWrapper(){};
 
-protected:
-	std::string filename;
+ protected:
+  std::string filename;
 };
 
 } /* namespace datadriven */

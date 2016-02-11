@@ -76,7 +76,7 @@ vars.Add(BoolVariable('USE_OCL', 'Sets OpenCL enabled state (Only actually enabl
 vars.Add('OCL_INCLUDE_PATH', 'Specifies the location of the OpenCL header files (parent directory of "CL/").')
 vars.Add('OCL_LIBRARY_PATH', 'Specifies the location of the OpenCL library.')
 vars.Add('BOOST_INCLUDE_PATH', 'Specifies the location of the boost header files.', '/usr/include')
-vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '/usr/lib64')
+vars.Add('BOOST_LIBRARY_PATH', 'Specifies the location of the boost library.', '/usr/lib/x86_64-linux-gnu')
 vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written using Boost Test.', True))
 vars.Add(BoolVariable('COMPILE_BOOST_PERFORMANCE_TESTS', 'Compile the performance tests written using Boost Test.', True))
 vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
@@ -97,7 +97,7 @@ env['LIBDIR'] = env.get( 'LIBDIR', os.path.join( env['EPREFIX'], "lib" ) )
 env['INCLUDEDIR'] = env.get( 'INCLUDEDIR', os.path.join( env['PREFIX'], "include" ) )
 
 # no docu if clean:
-if not env['PYDOC'] and not env.GetOption('clean'):
+if not env.GetOption('clean'):
   prepareDoxyfile(moduleFolders)
 
 if 'CXX' in ARGUMENTS:
@@ -259,29 +259,36 @@ for moduleFolder in moduleFolders:
 
 Export('flattenedDependencyGraph')
 
-if env['PYDOC'] and env['SG_PYTHON'] and not env.GetOption('clean'):
-  with open('moduleDoxy', 'r') as template:
-    data = template.read()
-    for module in moduleFolders:
-      if not env['SG_' + module.upper()]:
-        continue
-      print module
+if env['PYDOC'] and env['SG_PYTHON']:
+  data = open('moduleDoxy', 'r').read()
+  for module in moduleFolders:
+    if not env['SG_' + module.upper()]:
+      continue
+
+    if env.GetOption("clean"):
+      if os.path.exists(os.path.join(module, 'Doxyfile')):
+        os.remove(os.path.join(module, 'Doxyfile'))
+      doxypath = os.path.join(module, 'doc/xml/')
+      if os.path.exists(doxypath):
+        for file in os.listdir(doxypath):
+          os.remove(os.path.join(doxypath, file))
+    else:
       with open(os.path.join(module, 'Doxyfile'), 'w') as doxyFile:
         doxyFile.write(data.replace('$modname', module).replace('$quiet', 'YES'))
 
-      doxy_env = env.Clone()
+    doxy_env = env.Clone()
 
-      doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
+    doxygen = doxy_env.Command(os.path.join(module, 'doc/xml/index.xml'), '', 'doxygen ' + os.path.join(module, 'Doxyfile'))
 
-      doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
-      doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
+    doxy2swig_command = "python pysgpp/doxy2swig.py -o -c -q $SOURCE $TARGET"
+    doxy2swig = doxy_env.Command(os.path.join('pysgpp', module + '_doc.i'), doxygen, doxy2swig_command)
 
-      for root, dirs, files in os.walk(os.path.join(module, 'src')):
-        for file in files:
-          if 'cpp' in file or 'hpp' in file:
-            doxy_env.Depends(doxygen, os.path.join(root, file))
-            doxy_env.Depends(doxy2swig, os.path.join(root, file))
-      pydocTargetList.append(doxy2swig)
+    for root, dirs, files in os.walk(os.path.join(module, 'src')):
+      for file in files:
+        if 'cpp' in file or 'hpp' in file:
+          doxy_env.Depends(doxygen, os.path.join(root, file))
+          doxy_env.Depends(doxy2swig, os.path.join(root, file))
+    pydocTargetList.append(doxy2swig)
 
 if env['SG_PYTHON']:
   env.SConscript('#/pysgpp/SConscript', {'env': env, 'moduleName': "pysgpp"})

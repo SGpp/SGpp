@@ -47,8 +47,6 @@ AbstractStretchingMaker* createStretchingMaker(combigrid::Stretching str);
 //
 //    return maker;
 //  }
-
 }
-
 
 #endif /* STRETCHINGFACTORY_HPP_ */

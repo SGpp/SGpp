@@ -114,8 +114,6 @@ class OperationMultipleEvalVectorized {
     LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalVectorized>;
   friend struct
     LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalVectorized>;
-#if USE_DOUBLE_PRECISION==0
-#endif
 
 };
 

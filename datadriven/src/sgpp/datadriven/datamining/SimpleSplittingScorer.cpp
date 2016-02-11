@@ -10,7 +10,8 @@
 #include <ctime>
 
 #include <sgpp/globaldef.hpp>
-#include "SimpleSplittingScorer.hpp"
+#include <sgpp/datadriven/datamining/SimpleSplittingScorer.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 using namespace SGPP::base;
 
@@ -18,13 +19,15 @@ namespace SGPP {
 namespace datadriven {
 
 SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
-    std::shared_ptr<ModelFittingBase> fitter,
-    double trainPortion, int seed): Scorer(metric, fitter),
-  trainPortion(trainPortion), seed(seed) {
-  if (this->seed) {
-    this->seed = std::time(NULL);
-  }
+    std::shared_ptr<ModelFittingBase> fitter, datadriven::DataMiningConfiguration config): Scorer(metric, fitter) {
 
+  try {
+    trainPortion = config["trainPortion"].getDouble();
+    // TODO: if seed not set use random seed
+    seed = config["seed"].getUInt();
+  } catch (json::json_exception& e) {
+    std::cout << e.what() << std::endl;
+  }
 }
 
 
@@ -45,7 +48,7 @@ double SimpleSplittingScorer::getScore(Dataset& dataset) {
   splitset(dataset, trainingSet, testSet);
 
   // fit the model to the training dataset
-  fitter->fit(trainingSet);
+  fitter->update(trainingSet);
 
   // evaluate the model on the test set and return the metric
   DataVector predictedValues(testSize);
