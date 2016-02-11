@@ -17,7 +17,7 @@
 namespace SGPP {
 namespace datadriven {
 
-class FunctionWrapper: public sg::datadriven::SampleProvider {
+class FunctionWrapper: public SGPP::datadriven::SampleProvider {
 public:
 	FunctionWrapper(datadriven::DataMiningConfiguration& config);
 	virtual ~FunctionWrapper();
