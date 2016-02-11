@@ -1,85 +1,85 @@
-/*
- * StreamingOCLMultiPlatformConfiguration.hpp
- *
- *  Created on: Nov 18, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
+#include <string>
+
+#include "sgpp/globaldef.hpp"
 
 namespace SGPP {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
 class Configuration {
-private:
-    Configuration() = default;
-public:
-    static const std::string &getKernelName() {
-        static std::string kernelName = "StreamingOCLMultiPlatform";
-        return kernelName;
-    }
+ private:
+  Configuration() = default;
 
-    static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+ public:
+  static const std::string &getKernelName() {
+    static std::string kernelName = "StreamingOCLMultiPlatform";
+    return kernelName;
+  }
 
-        for (std::string &platformName : parameters["PLATFORMS"].keys()) {
-            json::Node &platformNode = parameters["PLATFORMS"][platformName];
-            for (std::string &deviceName : platformNode["DEVICES"].keys()) {
-                json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+  static void augmentDefaultParameters(
+      SGPP::base::OCLOperationConfiguration &parameters) {
+    for (std::string &platformName : parameters["PLATFORMS"].keys()) {
+      json::Node &platformNode = parameters["PLATFORMS"][platformName];
+      for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+        json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
-                const std::string &kernelName = Configuration::getKernelName();
+        const std::string &kernelName = Configuration::getKernelName();
 
-                json::Node &kernelNode =
-                        deviceNode["KERNELS"].contains(kernelName) ?
-                                deviceNode["KERNELS"][kernelName] : deviceNode["KERNELS"].addDictAttr(kernelName);
+        json::Node &kernelNode =
+            deviceNode["KERNELS"].contains(kernelName)
+                ? deviceNode["KERNELS"][kernelName]
+                : deviceNode["KERNELS"].addDictAttr(kernelName);
 
-                if (kernelNode.contains("VERBOSE") == false) {
-                    kernelNode.addIDAttr("VERBOSE", false);
-                }
-
-                if (kernelNode.contains("REUSE_SOURCE") == false) {
-                    kernelNode.addIDAttr("REUSE_SOURCE", false);
-                }
-
-                if (kernelNode.contains("WRITE_SOURCE") == false) {
-                    kernelNode.addIDAttr("WRITE_SOURCE", false);
-                }
-
-                if (kernelNode.contains("LOCAL_SIZE") == false) {
-                    kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
-                }
-
-                if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
-                    kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-                }
-
-                if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
-                    kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
-                }
-
-                if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
-                    kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-                }
-
-                if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
-                }
-
-                if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
-                }
-
-                if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
-                }
-            }
+        if (kernelNode.contains("VERBOSE") == false) {
+          kernelNode.addIDAttr("VERBOSE", false);
         }
+
+        if (kernelNode.contains("REUSE_SOURCE") == false) {
+          kernelNode.addIDAttr("REUSE_SOURCE", false);
+        }
+
+        if (kernelNode.contains("WRITE_SOURCE") == false) {
+          kernelNode.addIDAttr("WRITE_SOURCE", false);
+        }
+
+        if (kernelNode.contains("LOCAL_SIZE") == false) {
+          kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
+        }
+
+        if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
+          kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+        }
+
+        if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
+          kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
+        }
+
+        if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
+          kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+        }
+
+        if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+        }
+
+        if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+        }
+
+        if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
+        }
+      }
     }
-
+  }
 };
-
-}
-}
-}
+}  // namespace StreamingOCLMultiPlatform
+}  // namespace datadriven
+}  // namespace SGPP
