@@ -6,8 +6,6 @@
 #ifndef UPDOWNONEOPDIMENHANCED_HPP
 #define UPDOWNONEOPDIMENHANCED_HPP
 
-#include <vector>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -18,6 +16,8 @@
 #endif
 
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 
 namespace SGPP {
@@ -45,7 +45,7 @@ class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage);
+  explicit UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -119,7 +119,7 @@ class UpDownOneOpDimEnhanced: public SGPP::base::OperationMatrix {
                     size_t dim) = 0;
 };
 
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* STDUPDOWN_HPP */
