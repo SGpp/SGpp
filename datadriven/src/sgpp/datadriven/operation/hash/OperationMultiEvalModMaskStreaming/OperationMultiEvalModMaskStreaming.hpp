@@ -21,64 +21,71 @@
 namespace SGPP {
 namespace datadriven {
 
-class OperationMultiEvalModMaskStreaming: public base::OperationMultipleEval {
-protected:
-    SGPP::base::DataMatrix preparedDataset;
-    /// Member to store the sparse grid's levels for better vectorization
-    std::vector<double> level;
-    /// Member to store the sparse grid's indices for better vectorization
-    std::vector<double> index;
+class OperationMultiEvalModMaskStreaming : public base::OperationMultipleEval {
+ protected:
+  SGPP::base::DataMatrix preparedDataset;
+  /// Member to store the sparse grid's levels for better vectorization
+  std::vector<double> level;
+  /// Member to store the sparse grid's indices for better vectorization
+  std::vector<double> index;
 
-    std::vector<double> mask;
-    std::vector<double> offset;
-    /// Timer object to handle time measurements
-    SGPP::base::SGppStopwatch myTimer_;
+  std::vector<double> mask;
+  std::vector<double> offset;
+  /// Timer object to handle time measurements
+  SGPP::base::SGppStopwatch myTimer_;
 
-    base::GridStorage* storage;
+  base::GridStorage* storage;
 
-    float_t duration;
-public:
+  float_t duration;
 
-    OperationMultiEvalModMaskStreaming(base::Grid& grid, base::DataMatrix& dataset);
+ public:
+  OperationMultiEvalModMaskStreaming(base::Grid& grid,
+                                     base::DataMatrix& dataset);
 
-    ~OperationMultiEvalModMaskStreaming();
+  ~OperationMultiEvalModMaskStreaming();
 
-    size_t getChunkGridPoints();
+  size_t getChunkGridPoints();
 
-    size_t getChunkDataPoints();
+  size_t getChunkDataPoints();
 
-    void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override;
+  void mult(SGPP::base::DataVector& alpha,
+            SGPP::base::DataVector& result) override;
 
-    void multTranspose(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result) override;
+  void multTranspose(SGPP::base::DataVector& source,
+                     SGPP::base::DataVector& result) override;
 
-    void prepare() override;
+  void prepare() override;
 
-    float_t getDuration() override;
+  float_t getDuration() override;
 
-private:
-    void getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber, size_t* segmentStart,
-            size_t* segmentEnd, size_t blockSize);
+ private:
+  void getPartitionSegment(size_t start, size_t end, size_t segmentCount,
+                           size_t segmentNumber, size_t* segmentStart,
+                           size_t* segmentEnd, size_t blockSize);
 
-    size_t padDataset(SGPP::base::DataMatrix& dataset);
+  size_t padDataset(SGPP::base::DataMatrix& dataset);
 
-    void getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd,
-            size_t blocksize);
+  void getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart,
+                                 size_t* segmentEnd, size_t blocksize);
 
-    void multImpl(std::vector<double> &level, std::vector<double> &index, std::vector<double> &mask,
-            std::vector<double> &offset,
-            SGPP::base::DataMatrix* dataset,
-            SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
-            const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data);
+  void multImpl(std::vector<double>& level, std::vector<double>& index,
+                std::vector<double>& mask, std::vector<double>& offset,
+                SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+                SGPP::base::DataVector& result, const size_t start_index_grid,
+                const size_t end_index_grid, const size_t start_index_data,
+                const size_t end_index_data);
 
-    void multTransposeImpl(std::vector<double> &level, std::vector<double> &index, std::vector<double> &mask,
-            std::vector<double> &offset,
-            SGPP::base::DataMatrix* dataset,
-            SGPP::base::DataVector& source, SGPP::base::DataVector& result, const size_t start_index_grid,
-            const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data);
+  void multTransposeImpl(std::vector<double>& level, std::vector<double>& index,
+                         std::vector<double>& mask, std::vector<double>& offset,
+                         SGPP::base::DataMatrix* dataset,
+                         SGPP::base::DataVector& source,
+                         SGPP::base::DataVector& result,
+                         const size_t start_index_grid,
+                         const size_t end_index_grid,
+                         const size_t start_index_data,
+                         const size_t end_index_data);
 
-    void recalculateLevelIndexMask();
+  void recalculateLevelIndexMask();
 };
-
 }
 }

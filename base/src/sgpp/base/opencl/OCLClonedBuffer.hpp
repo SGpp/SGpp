@@ -22,6 +22,7 @@ class OCLClonedBuffer {
   size_t sizeofType;
   size_t elements;
 
+
  public:
   explicit OCLClonedBuffer(std::shared_ptr<OCLManager> manager);
 
@@ -44,5 +45,3 @@ class OCLClonedBuffer {
 
 }  // namespace base
 }  // namespace SGPP
-
-
