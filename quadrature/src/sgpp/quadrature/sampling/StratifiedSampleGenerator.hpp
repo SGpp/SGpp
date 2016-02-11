@@ -22,7 +22,7 @@ namespace quadrature {
  * one sample has already been generated for every strata, the next requested
  * sample will be placed into the first strata.
  */
-class StratifiedSampleGenerator: public SampleGenerator {
+class StratifiedSampleGenerator : public SampleGenerator {
  public:
   /**
    * Standard constructor

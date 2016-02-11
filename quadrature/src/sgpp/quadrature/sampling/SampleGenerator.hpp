@@ -31,8 +31,7 @@ class SampleGenerator {
    * @param seed custom seed (defaults to default seed of mt19937_64)
    */
 
-  SampleGenerator(size_t dimensions,
-                  std::uint64_t seed = std::mt19937_64::default_seed);
+  explicit SampleGenerator(size_t dimensions, std::uint64_t seed = std::mt19937_64::default_seed);
   virtual ~SampleGenerator();
 
   /**
@@ -44,8 +43,7 @@ class SampleGenerator {
    * @param sample provide a DataVector to store the generated sample.
    */
 
-  virtual void getSample(SGPP::base::DataVector& sample) {
-  }
+  virtual void getSample(SGPP::base::DataVector& sample) {}
 
   /**
    * This method generates a given number of samples. The resulting
