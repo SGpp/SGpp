@@ -7,7 +7,7 @@
 
 #ifndef COMBIEQUIDISTANTSTRETCHING_HPP_
 #define COMBIEQUIDISTANTSTRETCHING_HPP_
-/**
+/*
  *
  * Create an equidistant  grid..
  *
