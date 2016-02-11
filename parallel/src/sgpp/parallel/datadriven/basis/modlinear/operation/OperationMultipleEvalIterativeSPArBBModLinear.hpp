@@ -14,6 +14,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#if USE_DOUBLE_PRECISION==0
 namespace SGPP {
 namespace parallel {
 
@@ -71,4 +72,5 @@ class OperationMultipleEvalIterativeSPArBBModLinear : public
 };
 
 }
+#endif
 #endif /* OPERATIONMULTIPLEEVALITERATIVESPARBBMODLINEAR_HPP */
