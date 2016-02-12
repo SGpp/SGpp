@@ -7,23 +7,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
-
-
 SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::PhiPhiDownBBLinearStretchedBoundary(
-  SGPP::base::GridStorage* storage) : SGPP::pde::PhiPhiDownBBLinearStretched(
-      storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : SGPP::pde::PhiPhiDownBBLinearStretched(storage) {}
 
-SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::~PhiPhiDownBBLinearStretchedBoundary() {
-}
+SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::~PhiPhiDownBBLinearStretchedBoundary() {}
 
-void SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(
-  SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-  grid_iterator& index, size_t dim) {
+void SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
+                                                                SGPP::base::DataVector& result,
+                                                                grid_iterator& index, size_t dim) {
   float_t q = this->stretching->getIntervalWidth(dim);
   //  float_t t = this->stretching->getIntervalOffset(dim);
 
@@ -50,13 +45,13 @@ void SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(
 
   // check boundary conditions
   if (this->stretching->hasDirichletBoundaryLeft(dim)) {
-    result[seq_left] = 0.0; //left_boundary
+    result[seq_left] = 0.0;  // left_boundary
   } else {
     result[seq_left] = ((1.0 / 3.0) * left_boundary) * q;
   }
 
   if (this->stretching->hasDirichletBoundaryRight(dim)) {
-    result[seq_right] = 0.0; //right_boundary;
+    result[seq_right] = 0.0;  // right_boundary;
   } else {
     result[seq_right] = ((1.0 / 3.0) * right_boundary) * q;
 
@@ -75,10 +70,7 @@ void SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(
 
     index.resetToLeftLevelZero(dim);
   }
-
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace pde
+}  // namespace SGPP

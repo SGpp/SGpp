@@ -8,9 +8,7 @@
 
 #include <sgpp/pde/algorithm/StdUpDown.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace pde {
@@ -19,15 +17,14 @@ namespace pde {
  * Implements the standard L 2 scalar product on linear boundary grids
  *
  */
-class OperationLTwoDotProductLinearStretchedBoundary: public StdUpDown {
+class OperationLTwoDotProductLinearStretchedBoundary : public StdUpDown {
  public:
   /**
    * Constructor
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  OperationLTwoDotProductLinearStretchedBoundary(SGPP::base::GridStorage*
-      storage);
+  explicit OperationLTwoDotProductLinearStretchedBoundary(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -44,8 +41,7 @@ class OperationLTwoDotProductLinearStretchedBoundary: public StdUpDown {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -56,11 +52,9 @@ class OperationLTwoDotProductLinearStretchedBoundary: public StdUpDown {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONLTWODOTPRODUCTLINEARSTRETCHEDBOUNDARY_HPP */

@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -20,17 +19,15 @@ namespace pde {
  *
  * For the mult-routine only the Laplace-Operator is required
  */
-class PoissonEquationEllipticPDESolverSystemDirichlet : public
-  OperationEllipticPDESolverSystemDirichlet {
+class PoissonEquationEllipticPDESolverSystemDirichlet
+    : public OperationEllipticPDESolverSystemDirichlet {
  protected:
   SGPP::base::OperationMatrix* Laplace_Inner;
   SGPP::base::OperationMatrix* Laplace_Complete;
 
-  void applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result);
+  void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-  void applyLOperatorInner(SGPP::base::DataVector& alpha,
-                           SGPP::base::DataVector& result);
+  void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
  public:
   /**
@@ -40,15 +37,14 @@ class PoissonEquationEllipticPDESolverSystemDirichlet : public
    * @param rhs the right hand side for solving the elliptic PDE
    */
   PoissonEquationEllipticPDESolverSystemDirichlet(SGPP::base::Grid& SparseGrid,
-      SGPP::base::DataVector& rhs);
+                                                  SGPP::base::DataVector& rhs);
 
   /**
    * Destructor
    */
   virtual ~PoissonEquationEllipticPDESolverSystemDirichlet();
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLET_HPP */

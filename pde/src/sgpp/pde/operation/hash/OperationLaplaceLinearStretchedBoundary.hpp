@@ -8,9 +8,7 @@
 
 #include <sgpp/pde/algorithm/UpDownOneOpDim.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace pde {
@@ -19,36 +17,30 @@ namespace pde {
  * Implementation of Laplace for linear functions with boundaries
  *
  */
-class OperationLaplaceLinearStretchedBoundary: public UpDownOneOpDim {
+class OperationLaplaceLinearStretchedBoundary : public UpDownOneOpDim {
  public:
   /**
    * Constructor
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  OperationLaplaceLinearStretchedBoundary(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceLinearStretchedBoundary(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~OperationLaplaceLinearStretchedBoundary();
 
-
  protected:
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void downOpDim(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void upOpDim(SGPP::base::DataVector& alpha,
-                       SGPP::base::DataVector& result, size_t dim);
+  virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACELINEARBOUNDARYSTRETCHED_HPP */

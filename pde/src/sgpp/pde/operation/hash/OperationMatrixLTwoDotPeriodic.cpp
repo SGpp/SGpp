@@ -8,20 +8,20 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 
 namespace SGPP {
 namespace pde {
 
 OperationMatrixLTwoDotPeriodic::OperationMatrixLTwoDotPeriodic(
-  SGPP::base::GridStorage* gridStorage) {
+    SGPP::base::GridStorage* gridStorage) {
   this->gridStorage = gridStorage;
 }
 
-OperationMatrixLTwoDotPeriodic::~OperationMatrixLTwoDotPeriodic() {
-}
+OperationMatrixLTwoDotPeriodic::~OperationMatrixLTwoDotPeriodic() {}
 
 void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result) {
+                                          SGPP::base::DataVector& result) {
   size_t nrows = gridStorage->size();
   size_t ncols = gridStorage->size();
 
@@ -55,7 +55,7 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
           std::swap(iik, ijk);
         }
 
-        if (lik == 1) { // level 0
+        if (lik == 1) {  // level 0
           if (ljk > 2) {
             lik = 2;
             iik = 1;
@@ -66,10 +66,9 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
               ijk = ijk - ljk / 2;
             }
 
-            //Use formula for different overlapping ansatz functions:
-            float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
-            float_t temp_res = fabs(diff - (1 / ljk))
-                               + fabs(diff + (1 / ljk)) - fabs(diff);
+            // Use formula for different overlapping ansatz functions:
+            float_t diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+            float_t temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
             temp_res *= lik;
             temp_res = (1 - temp_res) / ljk;
             res *= temp_res;
@@ -81,26 +80,25 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
             res *= 1.0 / (3 * ljk);
           }
         } else if (lik == ljk) {
-          if (iik == ijk) { // case 4
-            //Use formula for identical ansatz functions:
+          if (iik == ijk) {  // case 4
+            // Use formula for identical ansatz functions:
             res *= 2.0 / lik / 3;
-          } else { //case 0
-            //Different index, but same level => ansatz functions do not overlap:
+          } else {  // case 0
+            // Different index, but same level => ansatz functions do not overlap:
             res = 0.;
             break;
           }
         } else {
-          if (std::max((iik - 1) / lik, (ijk - 1) / ljk)
-              >= std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
-            //Ansatz functions do not not overlap:
+          if (std::max((iik - 1) / lik, (ijk - 1) / ljk) >=
+              std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
+            // Ansatz functions do not not overlap:
             res = 0.;
             break;
           } else {
-            //Use formula for different overlapping ansatz functions:
+            // Use formula for different overlapping ansatz functions:
 
-            float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
-            float_t temp_res = fabs(diff - (1 / ljk))
-                               + fabs(diff + (1 / ljk)) - fabs(diff);
+            float_t diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+            float_t temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
             temp_res *= lik;
             temp_res = (1 - temp_res) / ljk;
             res *= temp_res;
@@ -111,7 +109,7 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
       row[j] = res;
     }
 
-    //Standard matrix multiplication:
+    // Standard matrix multiplication:
     float_t temp = 0.;
 
     for (size_t j = 0; j < ncols; j++) {
@@ -121,5 +119,5 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
     result[i] = temp;
   }
 }
-}
-}
+}  // namespace pde
+}  // namespace SGPP

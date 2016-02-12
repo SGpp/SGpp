@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -44,8 +43,7 @@ class OperationEllipticPDESolverSystem : public SGPP::base::OperationMatrix {
    * @param SparseGrid the grid, for which the system should be solved
    * @param rhs the right hand side of the corresponding system
    */
-  OperationEllipticPDESolverSystem(SGPP::base::Grid& SparseGrid,
-                                   SGPP::base::DataVector& rhs);
+  OperationEllipticPDESolverSystem(SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
 
   /**
    * Destructor
@@ -56,10 +54,10 @@ class OperationEllipticPDESolverSystem : public SGPP::base::OperationMatrix {
    * Multiplicates a vector with the matrix \f$ L \f$
    *
    * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
-   * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
+   * @param result SGPP::base::DataVector into which the result of the space discretization
+   * operation is stored
    */
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result) = 0;
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
   /**
    * generates the right hand side of the system
@@ -82,8 +80,7 @@ class OperationEllipticPDESolverSystem : public SGPP::base::OperationMatrix {
    */
   size_t getNumGridPointsInner();
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONELLITPICPDESOLVERMATRIX_HPP */

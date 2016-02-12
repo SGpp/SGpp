@@ -7,29 +7,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
+PhiPhiUpModLinear::PhiPhiUpModLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
 
+PhiPhiUpModLinear::~PhiPhiUpModLinear() {}
 
-PhiPhiUpModLinear::PhiPhiUpModLinear(SGPP::base::GridStorage* storage) :
-  storage(storage) {
-}
-
-PhiPhiUpModLinear::~PhiPhiUpModLinear() {
-}
-
-void PhiPhiUpModLinear::operator()(SGPP::base::DataVector& source,
-                                   SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void PhiPhiUpModLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                   grid_iterator& index, size_t dim) {
   float_t fl = 0.0;
   float_t fr = 0.0;
   rec(source, result, index, dim, fl, fr);
 }
 
-void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source,
-                            SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                            float_t& fr) {
+void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                            grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -67,31 +60,22 @@ void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source,
 
     fl += fm / 2.0 + alpha_value;
     fr += fm / 2.0 + alpha_value;
-  }
-  // left boundary
-  else if (i == 1) {
+  } else if (i == 1) {  // left boundary
     result[seq] = 2.0 * fl + fm;
 
     fl += fm / 2.0 + 4.0 / 3.0 * h * alpha_value;
     fr += fm / 2.0 + 2.0 / 3.0 * h * alpha_value;
-  }
-  // right boundary
-  else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
+  } else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {  // right boundary
     result[seq] = 2.0 * fr + fm;
 
     fl += fm / 2.0 + 2.0 / 3.0 * h * alpha_value;
     fr += fm / 2.0 + 4.0 / 3.0 * h * alpha_value;
-  }
-  // inner functions
-  else {
+  } else {  // inner functions
     result[seq] = fm;
 
     fl += fm / 2.0 + h / 2.0 * alpha_value;
     fr += fm / 2.0 + h / 2.0 * alpha_value;
   }
 }
-
-
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

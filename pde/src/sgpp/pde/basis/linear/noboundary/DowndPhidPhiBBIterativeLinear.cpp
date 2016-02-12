@@ -8,19 +8,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
-DowndPhidPhiBBIterativeLinear::DowndPhidPhiBBIterativeLinear(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-}
+DowndPhidPhiBBIterativeLinear::DowndPhidPhiBBIterativeLinear(SGPP::base::GridStorage* storage)
+    : storage(storage) {}
 
-DowndPhidPhiBBIterativeLinear::~DowndPhidPhiBBIterativeLinear() {
-}
+DowndPhidPhiBBIterativeLinear::~DowndPhidPhiBBIterativeLinear() {}
 
 void DowndPhidPhiBBIterativeLinear::operator()(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                               SGPP::base::DataVector& result, size_t dim) {
   // Bounding Box handling
   SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
   float_t q = boundingBox->getIntervalWidth(dim);
@@ -35,7 +32,7 @@ void DowndPhidPhiBBIterativeLinear::operator()(SGPP::base::DataVector& alpha,
       SGPP::base::GridStorage::index_type::level_type level;
       SGPP::base::GridStorage::index_type::index_type index;
       (*storage)[i]->get(dim, level, index);
-      //only affects the diagonal of the stiffness matrix
+      // only affects the diagonal of the stiffness matrix
       result[i] = alpha[i] * (Qqout * (static_cast<float_t>(1 << (level + 1))));
     }
   } else {
@@ -44,11 +41,10 @@ void DowndPhidPhiBBIterativeLinear::operator()(SGPP::base::DataVector& alpha,
       SGPP::base::GridStorage::index_type::level_type level;
       SGPP::base::GridStorage::index_type::index_type index;
       (*storage)[i]->get(dim, level, index);
-      //only affects the diagonal of the stiffness matrix
+      // only affects the diagonal of the stiffness matrix
       result[i] = alpha[i] * static_cast<float_t>(1 << (level + 1));
     }
   }
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

@@ -8,33 +8,28 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
-UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(SGPP::base::GridStorage*
-    storage,
-    SGPP::base::GridStorage* shadowStorage) {
+UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(SGPP::base::GridStorage* storage,
+                                                   SGPP::base::GridStorage* shadowStorage) {
   this->storage = storage;
   this->shadowStorage = shadowStorage;
 }
 
-UpDownOneOpDimWithShadow::~UpDownOneOpDimWithShadow() {
-}
+UpDownOneOpDimWithShadow::~UpDownOneOpDimWithShadow() {}
 
-void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha,
-                                    SGPP::base::DataVector& result) {
-
+void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   expandGrid();
 
-  //Create new Datavectors for the grid including shadow points.
+  // Create new Datavectors for the grid including shadow points.
   SGPP::base::DataVector alpha_temp(storage->size());
   SGPP::base::DataVector result_temp(storage->size());
 
   alpha_temp.setAll(0.0);
   result_temp.setAll(0.0);
 
-  //Copy the alpha vector ... the old points remain the same, the new points are zero.
+  // Copy the alpha vector ... the old points remain the same, the new points are zero.
   for (size_t i = 0; i < alpha.getSize(); i++) {
     alpha_temp[i] = alpha[i];
   }
@@ -46,14 +41,13 @@ void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha,
     this->updown(alpha_temp, beta, storage->dim() - 1, i);
 
     result_temp.add(beta);
-
   }
 
-  //Remove shadow grid points from the grid
+  // Remove shadow grid points from the grid
   shrinkGrid();
 
-  //Copy the result in the actual result vector. The values for the shadow
-  //grid points are just needed for data transport, thus they can be omitted
+  // Copy the result in the actual result vector. The values for the shadow
+  // grid points are just needed for data transport, thus they can be omitted
   for (size_t i = 0; i < storage->size(); i++) {
     result[i] = result_temp[i];
   }
@@ -71,13 +65,12 @@ void UpDownOneOpDimWithShadow::shrinkGrid() {
   }
 }
 
-void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result,
+void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
                                       size_t dim, size_t op_dim) {
   if (dim == op_dim) {
     specialOP(alpha, result, dim, op_dim);
   } else {
-    //Unidirectional scheme
+    // Unidirectional scheme
     if (dim > 0) {
       // Reordering ups and downs
       SGPP::base::DataVector temp(alpha.getSize());
@@ -102,14 +95,13 @@ void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha,
 
       result.add(temp);
     }
-
   }
 }
 
 void UpDownOneOpDimWithShadow::specialOP(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result,
-    size_t dim, size_t op_dim) {
-  //Unidirectional scheme
+                                         SGPP::base::DataVector& result, size_t dim,
+                                         size_t op_dim) {
+  // Unidirectional scheme
   if (dim > 0) {
     // Reordering ups and downs
     SGPP::base::DataVector temp(alpha.getSize());
@@ -135,6 +127,5 @@ void UpDownOneOpDimWithShadow::specialOP(SGPP::base::DataVector& alpha,
     result.add(temp);
   }
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

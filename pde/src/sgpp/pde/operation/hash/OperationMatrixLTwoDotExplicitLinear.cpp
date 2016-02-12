@@ -6,29 +6,27 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <string.h>
-#include <cmath>
-#include <vector>
 
 #include <sgpp/globaldef.hpp>
 
+#include <string.h>
+#include <cmath>
+#include <vector>
+#include <algorithm>
 
 namespace SGPP {
 namespace pde {
 
 OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(
-  SGPP::base::DataMatrix* m,
-  SGPP::base::Grid* grid) :
-  ownsMatrix_(false) {
+    SGPP::base::DataMatrix* m, SGPP::base::Grid* grid)
+    : ownsMatrix_(false) {
   m_ = m;
   buildMatrix(grid);
 }
 
-OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(
-  SGPP::base::Grid* grid) :
-  ownsMatrix_(true) {
-  m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(),
-                                  grid->getStorage()->size());
+OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(SGPP::base::Grid* grid)
+    : ownsMatrix_(true) {
+  m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(), grid->getStorage()->size());
   buildMatrix(grid);
 }
 
@@ -53,32 +51,30 @@ void OperationMatrixLTwoDotExplicitLinear::buildMatrix(SGPP::base::Grid* grid) {
 
         if (lik == ljk) {
           if (iik == ijk) {
-            //Use formula for identical ansatz functions:
+            // Use formula for identical ansatz functions:
             res *= 2 / lik / 3;
           } else {
-            //Different index, but same level => ansatz functions do not overlap:
+            // Different index, but same level => ansatz functions do not overlap:
             res = 0.;
             break;
           }
         } else {
-          if (std::max((iik - 1) / lik, (ijk - 1) / ljk)
-              >= std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
-            //Ansatz functions do not not overlap:
+          if (std::max((iik - 1) / lik, (ijk - 1) / ljk) >=
+              std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
+            // Ansatz functions do not not overlap:
             res = 0.;
             break;
           } else {
-            //Use formula for different overlapping ansatz functions:
-            if (lik > ljk) { //Phi_i_k is the "smaller" ansatz function
-              float_t diff = (iik / lik) - (ijk / ljk); // x_i_k - x_j_k
-              float_t temp_res = fabs(diff - (1 / lik))
-                                 + fabs(diff + (1 / lik)) - fabs(diff);
+            // Use formula for different overlapping ansatz functions:
+            if (lik > ljk) {                             // Phi_i_k is the "smaller" ansatz function
+              float_t diff = (iik / lik) - (ijk / ljk);  // x_i_k - x_j_k
+              float_t temp_res = fabs(diff - (1 / lik)) + fabs(diff + (1 / lik)) - fabs(diff);
               temp_res *= ljk;
               temp_res = (1 - temp_res) / lik;
               res *= temp_res;
-            } else { //Phi_j_k is the "smaller" ansatz function
-              float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
-              float_t temp_res = fabs(diff - (1 / ljk))
-                                 + fabs(diff + (1 / ljk)) - fabs(diff);
+            } else {                                     // Phi_j_k is the "smaller" ansatz function
+              float_t diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+              float_t temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
               temp_res *= lik;
               temp_res = (1 - temp_res) / ljk;
               res *= temp_res;
@@ -94,13 +90,11 @@ void OperationMatrixLTwoDotExplicitLinear::buildMatrix(SGPP::base::Grid* grid) {
 }
 
 OperationMatrixLTwoDotExplicitLinear::~OperationMatrixLTwoDotExplicitLinear() {
-  if (ownsMatrix_)
-    delete m_;
+  if (ownsMatrix_) delete m_;
 }
 
 void OperationMatrixLTwoDotExplicitLinear::mult(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result) {
-
+                                                SGPP::base::DataVector& result) {
   size_t nrows = m_->getNrows();
   size_t ncols = m_->getNcols();
 
@@ -110,7 +104,7 @@ void OperationMatrixLTwoDotExplicitLinear::mult(SGPP::base::DataVector& alpha,
 
   float_t* data = m_->getPointer();
 
-  //Standard matrix multiplication:
+  // Standard matrix multiplication:
   float_t temp = 0.;
   size_t acc = 0;
 
