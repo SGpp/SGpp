@@ -28,5 +28,10 @@ ClenshawCurtisTable::ClenshawCurtisTable(level_type maxLevel)
   }
 }
 
+ClenshawCurtisTable& ClenshawCurtisTable::getInstance() {
+  static ClenshawCurtisTable clenshawCurtisTable;
+  return clenshawCurtisTable;
+}
+
 }  // namespace base
 }  // namespace SGPP

@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
@@ -16,23 +14,19 @@ namespace SGPP {
 namespace optimization {
 
 OperationMultipleHierarchisationWavelet::OperationMultipleHierarchisationWavelet(
-  base::WaveletGrid& grid) :
-  grid(grid) {
-}
+    base::WaveletGrid& grid)
+    : grid(grid) {}
 
-OperationMultipleHierarchisationWavelet::~OperationMultipleHierarchisationWavelet() {
-}
+OperationMultipleHierarchisationWavelet::~OperationMultipleHierarchisationWavelet() {}
 
-bool OperationMultipleHierarchisationWavelet::doHierarchisation(
-  base::DataVector& nodeValues) {
+bool OperationMultipleHierarchisationWavelet::doHierarchisation(base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationWavelet::doDehierarchisation(
-  base::DataVector& alpha) {
+void OperationMultipleHierarchisationWavelet::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalWavelet opNaiveEval(&storage);
@@ -53,16 +47,14 @@ void OperationMultipleHierarchisationWavelet::doDehierarchisation(
   alpha = nodeValues;
 }
 
-bool OperationMultipleHierarchisationWavelet::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+bool OperationMultipleHierarchisationWavelet::doHierarchisation(base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationWavelet::doDehierarchisation(
-  base::DataMatrix& alpha) {
+void OperationMultipleHierarchisationWavelet::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalWavelet opNaiveEval(&storage);
@@ -86,6 +78,5 @@ void OperationMultipleHierarchisationWavelet::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

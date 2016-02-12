@@ -5,33 +5,25 @@
 
 #include <sgpp/pde/basis/linearstretched/noboundary/algorithm_sweep/PhiPhiDownBBLinearStretched.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace pde {
 
+PhiPhiDownBBLinearStretched::PhiPhiDownBBLinearStretched(SGPP::base::GridStorage* storage)
+    : storage(storage), stretching(storage->getStretching()) {}
 
-
-PhiPhiDownBBLinearStretched::PhiPhiDownBBLinearStretched(
-  SGPP::base::GridStorage* storage) : storage(storage),
-  stretching(storage->getStretching()) {
-}
-
-PhiPhiDownBBLinearStretched::~PhiPhiDownBBLinearStretched() {
-}
+PhiPhiDownBBLinearStretched::~PhiPhiDownBBLinearStretched() {}
 
 void PhiPhiDownBBLinearStretched::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                             SGPP::base::DataVector& result, grid_iterator& index,
+                                             size_t dim) {
   rec(source, result, index, dim, 0.0, 0.0);
-
 }
 
 void PhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
-                                      SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                                      float_t fr) {
-
+                                      SGPP::base::DataVector& result, grid_iterator& index,
+                                      size_t dim, float_t fl, float_t fr) {
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -43,18 +35,18 @@ void PhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
 
   float_t posl = 0, posr = 0, currentPosition = 0;
   this->stretching->getAdjacentPositions(static_cast<int>(current_level),
-                                         static_cast<int>(current_index), dim, currentPosition, posl, posr );
+                                         static_cast<int>(current_index), dim, currentPosition,
+                                         posl, posr);
   float_t baseLength = posr - posl;
   float_t leftLength = currentPosition - posl;
   float_t rightLength = posr - currentPosition;
 
   // integration
-  result[seq] = (1.0 / 3.0) * (baseLength) * alpha_value + fl / 6.0 *
-                (baseLength + rightLength) + fr / 6.0 * (baseLength + leftLength);
+  result[seq] = (1.0 / 3.0) * (baseLength)*alpha_value + fl / 6.0 * (baseLength + rightLength) +
+                fr / 6.0 * (baseLength + leftLength);
 
   // dehierarchisation
-  float_t fm  = (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
-
+  float_t fm = (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -73,7 +65,5 @@ void PhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace pde
+}  // namespace SGPP

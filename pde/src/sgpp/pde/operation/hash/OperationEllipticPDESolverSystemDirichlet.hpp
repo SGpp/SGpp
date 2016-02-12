@@ -10,10 +10,9 @@
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/base/grid/common/DirichletGridConverter.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace pde {
@@ -35,8 +34,7 @@ namespace pde {
  *
  * The inner grid is constructed during the constructor call!
  */
-class OperationEllipticPDESolverSystemDirichlet : public
-  OperationEllipticPDESolverSystem {
+class OperationEllipticPDESolverSystemDirichlet : public OperationEllipticPDESolverSystem {
  protected:
   /// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
   SGPP::base::DataVector* alpha_inner;
@@ -75,15 +73,14 @@ class OperationEllipticPDESolverSystemDirichlet : public
    * @param rhs the right hand side of the corresponding system
    */
   OperationEllipticPDESolverSystemDirichlet(SGPP::base::Grid& SparseGrid,
-      SGPP::base::DataVector& rhs);
+                                            SGPP::base::DataVector& rhs);
 
   /**
    * Destructor
    */
   virtual ~OperationEllipticPDESolverSystemDirichlet();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual SGPP::base::DataVector* generateRHS();
 
@@ -99,13 +96,14 @@ class OperationEllipticPDESolverSystemDirichlet : public
   /**
    * Gets the solution for the complete grid
    *
-   * @param Solution SGPP::base::DataVector that must have a dimension equal to the bound's grid dimension, the result is written to Solution
+   * @param Solution SGPP::base::DataVector that must have a dimension equal to the bound's grid
+   * dimension, the result is written to Solution
    * @param SolutionInner Solution on the inner grid
    */
   virtual void getSolutionBoundGrid(SGPP::base::DataVector& Solution,
                                     SGPP::base::DataVector& SolutionInner);
 };
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONELLIPTICPDESOLVERMATRIXDIRICHLET_HPP */

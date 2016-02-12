@@ -8,7 +8,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -17,11 +16,11 @@ OperationParabolicPDESolverSystemFreeBoundaries::OperationParabolicPDESolverSyst
   this->numSumGridpointsComplete = 0;
 }
 
-OperationParabolicPDESolverSystemFreeBoundaries::~OperationParabolicPDESolverSystemFreeBoundaries() {
-}
+OperationParabolicPDESolverSystemFreeBoundaries::
+    ~OperationParabolicPDESolverSystemFreeBoundaries() {}
 
-void OperationParabolicPDESolverSystemFreeBoundaries::mult(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void OperationParabolicPDESolverSystemFreeBoundaries::mult(SGPP::base::DataVector& alpha,
+                                                           SGPP::base::DataVector& result) {
   if (this->tOperationMode == "ExEul") {
     applyMassMatrix(alpha, result);
   } else if (this->tOperationMode == "ImEul") {
@@ -33,7 +32,7 @@ void OperationParabolicPDESolverSystemFreeBoundaries::mult(
     result.add(temp);
 
     applyLOperator(alpha, temp);
-    result.axpy((-1.0)*this->TimestepSize, temp);
+    result.axpy((-1.0) * this->TimestepSize, temp);
   } else if (this->tOperationMode == "CrNic") {
     result.setAll(0.0);
 
@@ -43,7 +42,7 @@ void OperationParabolicPDESolverSystemFreeBoundaries::mult(
     result.add(temp);
 
     applyLOperator(alpha, temp);
-    result.axpy((-0.5)*this->TimestepSize, temp);
+    result.axpy((-0.5) * this->TimestepSize, temp);
   } else if (this->tOperationMode == "AdBas") {
     result.setAll(0.0);
 
@@ -61,7 +60,7 @@ void OperationParabolicPDESolverSystemFreeBoundaries::mult(
     result.add(temp);
 
     applyLOperator(alpha, temp);
-    result.axpy((-1.0)*this->TimestepSize, temp);
+    result.axpy((-1.0) * this->TimestepSize, temp);
   } else if (this->tOperationMode == "F23") {
     result.setAll(0.0);
     float_t tDiff = this->TimestepSize / this->TimestepSize_old;
@@ -71,12 +70,13 @@ void OperationParabolicPDESolverSystemFreeBoundaries::mult(
     result.mult(alpha0);
 
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was specified!");
+    throw new SGPP::base::algorithm_exception(
+        "OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was "
+        "specified!");
   }
 }
 
-SGPP::base::DataVector*
-OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
+SGPP::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
   SGPP::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
   if (this->tOperationMode == "ExEul") {
@@ -102,7 +102,7 @@ OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
     rhs_complete.add(temp);
 
     applyLOperator(*this->alpha_complete, temp);
-    rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+    rhs_complete.axpy((0.5) * this->TimestepSize, temp);
   } else if (this->tOperationMode == "AdBas") {
     rhs_complete.setAll(0.0);
 
@@ -121,7 +121,7 @@ OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
     temp_old.mult(this->TimestepSize / this->TimestepSize_old);
     temp.sub(temp_old);
 
-    rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+    rhs_complete.axpy((0.5) * this->TimestepSize, temp);
   } else if (this->tOperationMode == "BDF2") {
     rhs_complete.setAll(0.0);
 
@@ -148,7 +148,6 @@ OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
     float_t alpha1 = alpha0 * (tDiff - 1.0);
     float_t alpha2 = -alpha0 * (tDiff * tDiff / (tDiff + 1.0));
 
-
     SGPP::base::DataVector temp(this->alpha_complete->getSize());
     SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
 
@@ -165,7 +164,9 @@ OperationParabolicPDESolverSystemFreeBoundaries::generateRHS() {
 
     rhs_complete.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was specified!");
+    throw new SGPP::base::algorithm_exception(
+        "OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was "
+        "specified!");
   }
 
   // Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -184,6 +185,5 @@ SGPP::base::DataVector*
 OperationParabolicPDESolverSystemFreeBoundaries::getGridCoefficientsForCG() {
   return this->alpha_complete;
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

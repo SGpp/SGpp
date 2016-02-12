@@ -7,36 +7,27 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+SqXdPhidPhiUpBBLinearStretched::SqXdPhidPhiUpBBLinearStretched(SGPP::base::GridStorage* storage)
+    : storage(storage), stretching(storage->getStretching()) {}
 
-
-SqXdPhidPhiUpBBLinearStretched::SqXdPhidPhiUpBBLinearStretched(
-  SGPP::base::GridStorage* storage) : storage(storage),
-  stretching(storage->getStretching()) {
-}
-
-
-SqXdPhidPhiUpBBLinearStretched::~SqXdPhidPhiUpBBLinearStretched() {
-}
-
+SqXdPhidPhiUpBBLinearStretched::~SqXdPhidPhiUpBBLinearStretched() {}
 
 void SqXdPhidPhiUpBBLinearStretched::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-
+                                                SGPP::base::DataVector& result,
+                                                grid_iterator& index, size_t dim) {
   // get boundary values
   float_t fl = 0.0;
   float_t fr = 0.0;
 
   rec(source, result, index, dim, fl, fr);
-
 }
 
 void SqXdPhidPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-    float_t& fr) {
+                                         SGPP::base::DataVector& result, grid_iterator& index,
+                                         size_t dim, float_t& fl, float_t& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -74,18 +65,13 @@ void SqXdPhidPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
 
   float_t alpha_value = source[seq];
 
-
   float_t c = 1.0 / 3.0 * (posc + posr + posl);
   // transposed operations:
   result[seq] = fm;
 
   fl = c * alpha_value + fl + fm * (rightLength / baseLength);
   fr = -c * alpha_value + fr + fm * (leftLength / baseLength);
-
 }
 
-
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

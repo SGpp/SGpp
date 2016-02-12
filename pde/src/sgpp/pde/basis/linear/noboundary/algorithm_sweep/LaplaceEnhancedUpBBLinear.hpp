@@ -16,6 +16,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
 namespace SGPP {
 namespace pde {
@@ -50,7 +51,7 @@ class LaplaceEnhancedUpBBLinear {
   /// translation of basis function in current algorithmic domain
   float_t t_;
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
   /// const. vector holding 1/2 in both components
   const __m128d half_in_;
 #endif
@@ -60,13 +61,14 @@ class LaplaceEnhancedUpBBLinear {
   const __m128d half_in_;
 #endif
 #endif
+
  public:
   /**
    * Constructor
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  LaplaceEnhancedUpBBLinear(SGPP::base::GridStorage* storage);
+  explicit LaplaceEnhancedUpBBLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -77,16 +79,16 @@ class LaplaceEnhancedUpBBLinear {
    * This operations performs the calculation of up in the direction of dimension <i>dim</i>
    * on a grid with fix Dirichlet 0 boundary conditions
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
    * @param result SGPP::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataMatrix& source,
-                          SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim);
+  virtual void operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result,
+                          grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * recursive function for the calculation of Up (L2 scalar product) without Bounding Box
    *
@@ -98,7 +100,7 @@ class LaplaceEnhancedUpBBLinear {
   void rec(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
   /**
    * recursive function for the calculation of merged-Down (L2 scalar products) without Bounding Box
    *
@@ -150,7 +152,8 @@ class LaplaceEnhancedUpBBLinear {
 #endif
 
   /**
-   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) without Bounding Box
+   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) without
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
@@ -160,7 +163,8 @@ class LaplaceEnhancedUpBBLinear {
   void rec_LG(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
   /**
-   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) without Bounding Box
+   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) without
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
@@ -200,7 +204,8 @@ class LaplaceEnhancedUpBBLinear {
                 grid_iterator& index);
 
   /**
-   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) with Bounding Box
+   * recursive function for the calculation of merged-Up (L2 scalar product and gradient) with
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
@@ -210,7 +215,8 @@ class LaplaceEnhancedUpBBLinear {
   void recBB_LG(float_t& fl, float_t& fr, size_t dim, grid_iterator& index);
 
   /**
-   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) with Bounding Box
+   * recursive function for the calculation of merged-Up (gradient and L2 scalar product) with
+   * Bounding Box
    *
    * @param fl first function value on the left boundary, L2 scalar product
    * @param fr first function value on the right boundary, L2 scalar product
@@ -227,9 +233,7 @@ class LaplaceEnhancedUpBBLinear {
   void recBB_grad(size_t dim, grid_iterator& index);
 };
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* LAPLACEENHANCEDUPBBLINEAR_HPP */

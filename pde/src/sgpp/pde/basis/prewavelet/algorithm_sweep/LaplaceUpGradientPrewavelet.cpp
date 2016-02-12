@@ -5,24 +5,19 @@
 
 #include <sgpp/pde/basis/prewavelet/algorithm_sweep/LaplaceUpGradientPrewavelet.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace pde {
 
-LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(
-  SGPP::base::GridStorage* storage) :
-  storage(storage) {
-}
+LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(SGPP::base::GridStorage* storage)
+    : storage(storage) {}
 
-LaplaceUpGradientPrewavelet::~LaplaceUpGradientPrewavelet() {
-}
+LaplaceUpGradientPrewavelet::~LaplaceUpGradientPrewavelet() {}
 
 void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result,
-    grid_iterator& index, size_t dim) {
+                                             SGPP::base::DataVector& result, grid_iterator& index,
+                                             size_t dim) {
   SGPP::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
   SGPP::base::GridStorage::index_type::index_type i;
 
@@ -39,8 +34,7 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
 
   float_t h;
 
-  if (l == 1)
-    return;
+  if (l == 1) return;
 
   index.set(dim, l, 1);
   _seqr = index.seq();
@@ -48,7 +42,7 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
 
   float_t* temp_current = new float_t[(1 << (l - 1)) - 1];
 
-  for (i = 0; i < (unsigned int) (1 << (l - 1)) - 1; i++) {
+  for (i = 0; i < (unsigned int)(1 << (l - 1)) - 1; i++) {
     _seql = _seqr;
     _vall = _valr;
     index.set(dim, l, 2 * i + 3);
@@ -66,41 +60,34 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
     _seq = index.seq();
 
     if (!storage->end(_seq))
-      result[_seq] = 0.9 * h * (2 * temp_current[i] - temp_current[i
-                                + 1]) - 0.6 * h * (-temp_current[i + 2] + 2
-                                    * temp_current[i + 1] - temp_current[i]) + 0.1 * h
-                     * (-temp_current[i + 1] + 2 * temp_current[i + 2]
-                        - temp_current[i + 3]);
+      result[_seq] =
+          0.9 * h * (2 * temp_current[i] - temp_current[i + 1]) -
+          0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - temp_current[i]) +
+          0.1 * h * (-temp_current[i + 1] + 2 * temp_current[i + 2] - temp_current[i + 3]);
 
     i = 2;
     index.set(dim, l, i + 1);
     _seq = index.seq();
 
     if (!storage->end(_seq))
-      result[_seq] = h * (2 * temp_current[i] - temp_current[i + 1]
-                          - temp_current[i - 1]) + -0.6 * h * (-temp_current[i
-                              + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i])
-                     - 0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i
-                                  - 1]) + 0.1 * h * (-temp_current[i + 1] + 2
-                                      * temp_current[i + 2] - temp_current[i + 3]) + 0.1 * h
-                     * (-temp_current[i - 1] + 2 * temp_current[i - 2]);
+      result[_seq] =
+          h * (2 * temp_current[i] - temp_current[i + 1] - temp_current[i - 1]) +
+          -0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i]) -
+          0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i - 1]) +
+          0.1 * h * (-temp_current[i + 1] + 2 * temp_current[i + 2] - temp_current[i + 3]) +
+          0.1 * h * (-temp_current[i - 1] + 2 * temp_current[i - 2]);
 
-    for (i = 4; i < (unsigned int) (1 << l) - 4; i = i + 2) {
+    for (i = 4; i < (unsigned int)(1 << l) - 4; i = i + 2) {
       index.set(dim, l, i + 1);
       _seq = index.seq();
 
       if (!storage->end(_seq))
-        result[_seq] = h * (2 * temp_current[i] - temp_current[i
-                            + 1] - temp_current[i - 1]) - 0.6 * h
-                       * (-temp_current[i + 2] + 2 * temp_current[i + 1]
-                          - 2 * temp_current[i]) - 0.6 * h
-                       * (-temp_current[i - 2] + 2 * temp_current[i - 1])
-                       + 0.1 * h
-                       * (-temp_current[i + 1] + 2
-                          * temp_current[i + 2]
-                          - temp_current[i + 3]) + 0.1 * h
-                       * (-temp_current[i - 1] + 2 * temp_current[i - 2]
-                          - temp_current[i - 3]);
+        result[_seq] =
+            h * (2 * temp_current[i] - temp_current[i + 1] - temp_current[i - 1]) -
+            0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i]) -
+            0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i - 1]) +
+            0.1 * h * (-temp_current[i + 1] + 2 * temp_current[i + 2] - temp_current[i + 3]) +
+            0.1 * h * (-temp_current[i - 1] + 2 * temp_current[i - 2] - temp_current[i - 3]);
     }
 
     i = (1 << l) - 4;
@@ -108,39 +95,34 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
     _seq = index.seq();
 
     if (!storage->end(_seq))
-      result[_seq] = h * (2 * temp_current[i] - temp_current[i + 1]
-                          - temp_current[i - 1]) + -0.6 * h * (-temp_current[i
-                              + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i])
-                     - 0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i
-                                  - 1]) + 0.1 * h * (-temp_current[i + 1] + 2
-                                      * temp_current[i + 2]) + 0.1 * h
-                     * (-temp_current[i - 1] + 2 * temp_current[i - 2]
-                        - temp_current[i - 3]);
+      result[_seq] =
+          h * (2 * temp_current[i] - temp_current[i + 1] - temp_current[i - 1]) +
+          -0.6 * h * (-temp_current[i + 2] + 2 * temp_current[i + 1] - 2 * temp_current[i]) -
+          0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i - 1]) +
+          0.1 * h * (-temp_current[i + 1] + 2 * temp_current[i + 2]) +
+          0.1 * h * (-temp_current[i - 1] + 2 * temp_current[i - 2] - temp_current[i - 3]);
 
     i = (1 << l) - 2;
     index.set(dim, l, i + 1);
     _seq = index.seq();
 
     if (!storage->end(_seq))
-      result[_seq] = 0.9 * h * (2 * temp_current[i] - temp_current[i
-                                - 1]) - 0.6 * h * (-temp_current[i - 2] + 2
-                                    * temp_current[i - 1] - temp_current[i]) + 0.1 * h
-                     * (-temp_current[i - 1] + 2 * temp_current[i - 2]
-                        - temp_current[i - 3]);
+      result[_seq] =
+          0.9 * h * (2 * temp_current[i] - temp_current[i - 1]) -
+          0.6 * h * (-temp_current[i - 2] + 2 * temp_current[i - 1] - temp_current[i]) +
+          0.1 * h * (-temp_current[i - 1] + 2 * temp_current[i - 2] - temp_current[i - 3]);
 
     index.set(dim, l, 1);
     _seqr = index.seq();
     _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
 
-    for (i = 0; i < (unsigned int) (1 << (l - 1)) - 1; i++) {
-
+    for (i = 0; i < (unsigned int)(1 << (l - 1)) - 1; i++) {
       _seql = _seqr;
       _vall = _valr;
       index.set(dim, l, 2 * i + 3);
       _seqr = index.seq();
       _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
-      temp_current[i] = -0.6 * (_vall + _valr) + temp_current[2 * i
-                        + 1];
+      temp_current[i] = -0.6 * (_vall + _valr) + temp_current[2 * i + 1];
     }
   }
 
@@ -151,10 +133,9 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
     _seql = index.seq();
 
     if (!storage->end(_seql)) {
-      result[_seql] = 0.9 * h * (2 * temp_current[0]
-                                 - temp_current[1]) - 0.6 * h * (-temp_current[2] + 2
-                                     * temp_current[1] - temp_current[0]) + 0.1 * h
-                      * (-temp_current[1] + 2 * temp_current[2]);
+      result[_seql] = 0.9 * h * (2 * temp_current[0] - temp_current[1]) -
+                      0.6 * h * (-temp_current[2] + 2 * temp_current[1] - temp_current[0]) +
+                      0.1 * h * (-temp_current[1] + 2 * temp_current[2]);
       _vall = source[_seql];
     } else {
       _vall = 0.0;
@@ -164,16 +145,15 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
     _seqr = index.seq();
 
     if (!storage->end(_seqr)) {
-      result[_seqr] = 0.9 * h * (2 * temp_current[2]
-                                 - temp_current[1]) - 0.6 * h * (-temp_current[0] + 2
-                                     * temp_current[1] - temp_current[2]) + 0.1 * h
-                      * (-temp_current[1] + 2 * temp_current[0]);
+      result[_seqr] = 0.9 * h * (2 * temp_current[2] - temp_current[1]) -
+                      0.6 * h * (-temp_current[0] + 2 * temp_current[1] - temp_current[2]) +
+                      0.1 * h * (-temp_current[1] + 2 * temp_current[0]);
       _valr = source[_seqr];
-    } else
+    } else {
       _valr = 0.0;
+    }
 
-    temp_current[0] = -0.6 * (_vall + _valr)
-                      + temp_current[1];
+    temp_current[0] = -0.6 * (_vall + _valr) + temp_current[1];
 
     l = 1;
   }
@@ -185,10 +165,9 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
     result[_seq] = 2 * h * temp_current[0];
   }
 
-  //I dont think thats necessary, but just to be sure!
+  // I dont think thats necessary, but just to be sure!
   index.set(dim, l_old, i_old);
   delete[] temp_current;
-
 }
-}
-}
+}  // namespace pde
+}  // namespace SGPP

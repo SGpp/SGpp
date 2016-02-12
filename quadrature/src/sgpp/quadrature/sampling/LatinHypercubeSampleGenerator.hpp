@@ -7,13 +7,12 @@
 #define LATINHYPERCUBESAMPLEGENERATOR_HPP
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <list>
-#include <vector>
-#include <random>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
+#include <list>
+#include <vector>
+#include <random>
 
 namespace SGPP {
 namespace quadrature {
@@ -25,9 +24,7 @@ namespace quadrature {
  * 1.0.
  */
 class LatinHypercubeSampleGenerator : public SampleGenerator {
-
  public:
-
   /**
    * Standard constructor
    *
@@ -54,7 +51,6 @@ class LatinHypercubeSampleGenerator : public SampleGenerator {
   void getSample(SGPP::base::DataVector& sample);
 
  private:
-
   /**
    * This method generates one sample .
    * Implementation of the abstract Method getSample from SampelGenerator.
@@ -72,13 +68,13 @@ class LatinHypercubeSampleGenerator : public SampleGenerator {
   float_t sizeOfStrata;
 
   //
-  std::vector< std::vector<size_t> > currentStrata;
+  std::vector<std::vector<size_t> > currentStrata;
 
   //
   std::uniform_real_distribution<float_t> uniformRealDist;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* LATINHYPERCUBESAMPLEGENERATOR_HPP */

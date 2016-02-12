@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
@@ -28,7 +27,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param storage the grid's SGPP::base::GridStorage object
    * @param coef vector that contains the constant coefficients of this operation
    */
-  OperationHestonKLinear(SGPP::base::GridStorage* storage, float_t**** * coef);
+  OperationHestonKLinear(SGPP::base::GridStorage* storage, float_t***** coef);
 
   /**
    * Destructor
@@ -36,7 +35,6 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
   virtual ~OperationHestonKLinear();
 
  protected:
-
   /**
    * Up-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
    * Applies the up-part of the one-dimensional mass matrix in one dimension.
@@ -46,8 +44,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-          size_t dim);
+  void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -58,8 +55,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-            size_t dim);
+  void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -69,8 +65,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  void downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -80,8 +75,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  void upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -91,8 +85,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  void downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -102,8 +95,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  void upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -113,8 +105,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimThree(SGPP::base::DataVector& alpha,
-                      SGPP::base::DataVector& result, size_t dim);
+  void downOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -124,8 +115,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  void upOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -135,8 +125,7 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimFour(SGPP::base::DataVector& alpha,
-                     SGPP::base::DataVector& result, size_t dim);
+  void downOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -146,141 +135,154 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                   size_t dim);
+  void upOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
-                               SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                               size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
-                             SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                             size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha,
-                                 SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                 size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha,
-                               SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                               size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                              size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha,
-                                 SGPP::base::DataVector& result, size_t dim);
+  void downOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                 size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha,
-                               SGPP::base::DataVector& result, size_t dim);
+  void upOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                               size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result, size_t dim);
+  void downOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result, size_t dim);
+  void upOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                              size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                  SGPP::base::DataVector& result, size_t dim);
+  void downOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                  size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result, size_t dim);
+  void upOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
   void downOpDimOneAndOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result, size_t dim);
+                                            SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
@@ -290,17 +292,19 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
                                           SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
   void downOpDimOneAndOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result, size_t dim);
+                                           SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
@@ -310,68 +314,72 @@ class OperationHestonKLinear : public SGPP::pde::UpDownFourOpDims {
                                          SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
   void downOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result, size_t dim);
+                                             SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
   void upOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result, size_t dim);
+                                           SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
   void downOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result, size_t dim);
+                                             SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
   void upOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result, size_t dim);
+                                           SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector&
-      alpha, SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
+                                                        SGPP::base::DataVector& result, size_t dim);
 
   /**
-   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make the class concrete.
+   * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
+   * the class concrete.
    *
    * @param alpha the coefficients of the gridpoints
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector&
-      alpha, SGPP::base::DataVector& result, size_t dim);
-
+  void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
+                                                      SGPP::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* OPERATIONHESTONKLINEAR_HPP */

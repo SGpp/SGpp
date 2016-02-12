@@ -27,7 +27,7 @@ class SphereObjective : public TestScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  SphereObjective(size_t d);
+  explicit SphereObjective(size_t d);
 
   /**
    * Destructor.
@@ -38,14 +38,12 @@ class SphereObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t evalUndisplaced(const base::DataVector& x)
-  override;
+  float_t evalUndisplaced(const base::DataVector& x) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
 /**
@@ -65,7 +63,7 @@ class Sphere : public UnconstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  Sphere(size_t d);
+  explicit Sphere(size_t d);
 
   /**
    * Destructor.
@@ -83,16 +81,14 @@ class Sphere : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-  override;
+  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
   /// objective function
   SphereObjective f;
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SPHERE_HPP */

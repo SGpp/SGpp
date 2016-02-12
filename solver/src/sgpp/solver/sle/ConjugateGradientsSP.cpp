@@ -10,20 +10,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace solver {
 
-ConjugateGradientsSP::ConjugateGradientsSP(size_t imax,
-    float epsilon) : SLESolverSP(imax, epsilon) {
-}
+ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon)
+    : SLESolverSP(imax, epsilon) {}
 
-ConjugateGradientsSP::~ConjugateGradientsSP() {
-}
+ConjugateGradientsSP::~ConjugateGradientsSP() {}
 
 void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
-                                 SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b, bool reuse,
-                                 bool verbose, float max_threshold) {
+                                 SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b,
+                                 bool reuse, bool verbose, float max_threshold) {
   if (verbose == true) {
     std::cout << "Starting Conjugated Gradients" << std::endl;
   }
@@ -73,13 +70,12 @@ void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   this->residuum = (delta_0 / epsilonSquared);
 
   if (verbose == true) {
-    std::cout << "Starting norm of residuum: " << (delta_0 / epsilonSquared) <<
-              std::endl;
+    std::cout << "Starting norm of residuum: " << (delta_0 / epsilonSquared) << std::endl;
     std::cout << "Target norm:               " << (delta_0) << std::endl;
   }
 
-  while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0)
-         && (delta_new > max_threshold)) {
+  while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) &&
+         (delta_new > max_threshold)) {
     // q = A*d
     SystemMatrix.mult(d, q);
 
@@ -99,7 +95,6 @@ void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
       // r = r - a*q
       r.axpy(-a, q);
     }
-
 
     // calculate new deltas and determine beta
     delta_old = delta_new;
@@ -125,23 +120,19 @@ void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   this->residuum = delta_new;
 
   if (verbose == true) {
-    std::cout << "Number of iterations: " << this->nIterations << " (max. " <<
-              this->nMaxIterations << ")" << std::endl;
+    std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations
+              << ")" << std::endl;
     std::cout << "Final norm of residuum: " << delta_new << std::endl;
   }
 }
 
-void ConjugateGradientsSP::starting() {
-}
+void ConjugateGradientsSP::starting() {}
 
-void ConjugateGradientsSP::calcStarting() {
-}
+void ConjugateGradientsSP::calcStarting() {}
 
-void ConjugateGradientsSP::iterationComplete() {
-}
+void ConjugateGradientsSP::iterationComplete() {}
 
-void ConjugateGradientsSP::complete() {
-}
+void ConjugateGradientsSP::complete() {}
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

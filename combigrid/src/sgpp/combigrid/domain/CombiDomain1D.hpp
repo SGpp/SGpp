@@ -1,15 +1,16 @@
-/* ****************************************************************************
- * Copyright (C) 2011 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk (benk@in.tum.de)
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef COMBIDOMAIN1D_HPP_
 #define COMBIDOMAIN1D_HPP_
 
 #include <sgpp/combigrid/domain/CombiEquidistantStretching.hpp>
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
-#include "../utils/combigrid_utils.hpp"
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
+
+#include <vector>
 
 namespace combigrid {
 
@@ -17,8 +18,7 @@ namespace combigrid {
 class Domain1D {
  public:
   /** */
-  Domain1D(int level, double min, double max,
-           AbstractStretchingMaker& stretching);
+  Domain1D(int level, double min, double max, AbstractStretchingMaker& stretching);
 
   /**
    *  copy constructor!
@@ -55,8 +55,8 @@ class Domain1D {
    * @param coordUnit coordinates in the unit cube
    * @param level_in level of the resolution required
    * @param noBoundary make extrapolation for the boundary cells*/
-  void transformRealToUnit(double coordReal, double& coordUnit,
-                           int level_in = 0, bool noBoundary = false) const;
+  void transformRealToUnit(double coordReal, double& coordUnit, int level_in = 0,
+                           bool noBoundary = false) const;
 
   /** transform from unit index to real coordinates
    * @param level input level
@@ -70,8 +70,7 @@ class Domain1D {
    * @param startIndex the left index of the cell
    * @param intersect the intersection of the cell
    */
-  void findEntry(double coordReal, int level_in, int& startIndex,
-                 double& intersect) const;
+  void findEntry(double coordReal, int level_in, int& startIndex, double& intersect) const;
 
   /** returns the mesh width /scaling
    * @param index point index
@@ -98,6 +97,6 @@ class Domain1D {
   std::vector<double> _jacobian;
   Stretching _stretching_type;
 };
-}
+}  // namespace combigrid
 
 #endif /* COMBIDOMAIN1D_HPP_ */

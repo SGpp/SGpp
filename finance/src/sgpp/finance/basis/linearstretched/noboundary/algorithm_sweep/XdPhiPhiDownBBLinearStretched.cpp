@@ -7,31 +7,23 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XdPhiPhiDownBBLinearStretched::XdPhiPhiDownBBLinearStretched(SGPP::base::GridStorage* storage)
+    : storage(storage), stretching(storage->getStretching()) {}
 
-
-XdPhiPhiDownBBLinearStretched::XdPhiPhiDownBBLinearStretched(
-  SGPP::base::GridStorage* storage) : storage(storage),
-  stretching(storage->getStretching()) {
-}
-
-XdPhiPhiDownBBLinearStretched::~XdPhiPhiDownBBLinearStretched() {
-}
+XdPhiPhiDownBBLinearStretched::~XdPhiPhiDownBBLinearStretched() {}
 
 void XdPhiPhiDownBBLinearStretched::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
-
+                                               SGPP::base::DataVector& result, grid_iterator& index,
+                                               size_t dim) {
   rec(source, result, index, dim, 0.0, 0.0);
-
 }
 
-
 void XdPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
-                                        SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                                        float_t fr) {
+                                        SGPP::base::DataVector& result, grid_iterator& index,
+                                        size_t dim, float_t fl, float_t fr) {
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -40,24 +32,20 @@ void XdPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
   SGPP::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
-  //get the positions of the current index as well as its left and right neighbors
+  // get the positions of the current index as well as its left and right neighbors
   float_t posl = 0, posr = 0, posc = 0;
-  this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i),
-                                         dim, posc, posl, posr );
+  this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl,
+                                         posr);
 
   float_t baseLength = posr - posl;
   float_t leftLength = posc - posl;
 
-  result[seq] = fl * (-1.0 / 6.0) * (posc + posl + posr) - fr * (-1.0 / 6.0) *
-                (posc + posl + posr)
-                - (1.0 / 6.0) * baseLength * alpha_value; // diagonal entry
-
-
-
+  result[seq] = fl * (-1.0 / 6.0) * (posc + posl + posr) -
+                fr * (-1.0 / 6.0) * (posc + posl + posr) -
+                (1.0 / 6.0) * baseLength * alpha_value;  // diagonal entry
 
   // dehierarchisation
-  float_t fm =  (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
-
+  float_t fm = (fr - fl) * (leftLength) / (baseLength) + fl + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -76,7 +64,5 @@ void XdPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

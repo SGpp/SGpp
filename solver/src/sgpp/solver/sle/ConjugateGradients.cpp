@@ -8,20 +8,16 @@
 #endif
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
-#include <cstdio>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cstdio>
 
 namespace SGPP {
 namespace solver {
 
-ConjugateGradients::ConjugateGradients(size_t imax,
-                                       float_t epsilon) : SLESolver(imax, epsilon) {
-}
+ConjugateGradients::ConjugateGradients(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {}
 
-ConjugateGradients::~ConjugateGradients() {
-}
+ConjugateGradients::~ConjugateGradients() {}
 
 void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
                                SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse,
@@ -57,11 +53,10 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
     SystemMatrix.mult(q, temp);
     r.sub(temp);
     delta_0 = r.dotProduct(r) * epsilonSquared;
-    //delta_0 = r.dotProduct(r);
+    // delta_0 = r.dotProduct(r);
   } else {
     alpha.setAll(0.0);
   }
-
 
   // calculate the starting residuum
   SystemMatrix.mult(alpha, temp);
@@ -75,22 +70,20 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
   if (reuse == false) {
     delta_0 = delta_new * epsilonSquared;
-    //delta_0 = delta_new;
+    // delta_0 = delta_new;
   }
 
   this->residuum = (delta_0 / epsilonSquared);
-  //this->residuum = delta_0;
+  // this->residuum = delta_0;
   this->calcStarting();
 
   if (verbose == true) {
-    std::cout << "Starting norm of residuum: " << (delta_0 / epsilonSquared) <<
-              std::endl;
+    std::cout << "Starting norm of residuum: " << (delta_0 / epsilonSquared) << std::endl;
     std::cout << "Target norm:               " << (delta_0) << std::endl;
   }
 
-  while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0)
-         && (delta_new > max_threshold)) {
-
+  while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) &&
+         (delta_new > max_threshold)) {
     //          //SGPP::base::DataVector *myAlpha = this->myLearner->alpha_;
     //        if (this->nIterations == 42) {
     //          for (size_t j = 0; j < d.getSize();j++) {
@@ -151,23 +144,19 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
   this->complete();
 
   if (verbose == true) {
-    std::cout << "Number of iterations: " << this->nIterations << " (max. " <<
-              this->nMaxIterations << ")" << std::endl;
+    std::cout << "Number of iterations: " << this->nIterations << " (max. " << this->nMaxIterations
+              << ")" << std::endl;
     std::cout << "Final norm of residuum: " << delta_new << std::endl;
   }
 }
 
-void ConjugateGradients::starting() {
-}
+void ConjugateGradients::starting() {}
 
-void ConjugateGradients::calcStarting() {
-}
+void ConjugateGradients::calcStarting() {}
 
-void ConjugateGradients::iterationComplete() {
-}
+void ConjugateGradients::iterationComplete() {}
 
-void ConjugateGradients::complete() {
-}
+void ConjugateGradients::complete() {}
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

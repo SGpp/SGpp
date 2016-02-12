@@ -6,7 +6,6 @@
 #ifndef PDE_HPP
 #define PDE_HPP
 
-
 #include <sgpp/pde/algorithm/HeatEquationParabolicPDESolverSystem.hpp>
 #include <sgpp/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichlet.hpp>
 #include <sgpp/pde/application/HeatEquationSolver.hpp>

@@ -6,7 +6,6 @@
 
 import os
 import fnmatch
-import subprocess
 
 Import('env')
 Import('BUILD_DIR')
@@ -17,6 +16,7 @@ Import('installTargetList')
 Import('exampleTargetList')
 Import('headerSourceList')
 Import('headerDestList')
+Import('lintAction')
 
 moduleDependencies = []
 Export('moduleDependencies')
@@ -27,21 +27,31 @@ if env['USE_OCL']:
 
 moduleDependencies = additionalDependencies + moduleDependencies
 
+cpps = []
+hpps = []
 objs = []
+
 for currentFolder, subdirNames, fileNames in os.walk("src", topdown=True):
   if os.path.exists(os.path.join(currentFolder, "SConscript")):
-    objsSubmodule = env.SConscript(os.path.join(currentFolder, "SConscript"))
+    cppsSubmodule, hppsSubmodule, objsSubmodule = \
+            env.SConscript(os.path.join(currentFolder, "SConscript"))
     objs += objsSubmodule
+    for hpp in hppsSubmodule:
+      headerSourceList.append(os.path.join(moduleName, hpp))
+      headerDestList.append(hpp.split(os.sep, 1)[1])
     # remove subfolders from iteration, as they are already processed (this is why topdown=True is also required
     subdirNames[:] = []
   else:
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
-      sourceFile = os.path.join(currentFolder, fileName)
-      objs.append(env.SharedObject(sourceFile))
+      cpp = os.path.join(currentFolder, fileName)
+      cpps.append(cpp)
+      objs.append(env.SharedObject(cpp))
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
-        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
+        headerSourceList.append(os.path.join(moduleName, hpp))
+        headerDestList.append(hpp.split(os.sep, 1)[1])
 
 libname = "sgpp%s" % moduleName
 if env['USE_STATICLIB']:
@@ -61,6 +71,11 @@ else:
                             LIBS=moduleDependencies)
 
 libInstall = env.Install(BUILD_DIR, lib)
+
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 if env["ARCH"] != "mic":
     for fileName in os.listdir("examples"):

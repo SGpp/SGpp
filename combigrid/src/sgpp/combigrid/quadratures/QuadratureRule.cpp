@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/quadratures/QuadratureRule.hpp>
 #include <iostream>
@@ -43,8 +41,7 @@ combigrid::QuadratureRule<_Tp>::QuadratureRule(int max_lvl) {
 #pragma omp parallel for schedule(dynamic, 1)
 
   for (int j = 0; j < NUM_QUADS; j++) {
-    coefficients[j] =
-        reinterpret_cast<_Tp**>(malloc(sizeof(_Tp*) * MAX_LEVELS[j]));
+    coefficients[j] = reinterpret_cast<_Tp**>(malloc(sizeof(_Tp*) * MAX_LEVELS[j]));
 
     for (int d = 1; d <= MAX_LEVELS[j]; d++) {
       /**
@@ -54,8 +51,7 @@ combigrid::QuadratureRule<_Tp>::QuadratureRule(int max_lvl) {
        *levels 1,2... MAX_LEVELS's
        *
        * */
-      QuadratureRule<_Tp>::calculateCoefficients(d, coefficients[j] + d - 1,
-                                                 tuples[j]);
+      QuadratureRule<_Tp>::calculateCoefficients(d, coefficients[j] + d - 1, tuples[j]);
     }
   }
 }
@@ -67,8 +63,7 @@ combigrid::QuadratureRule<_Tp>::QuadratureRule(std::vector<int> lvls) {
 #pragma omp parallel for schedule(dynamic, 1)
 
   for (int j = 0; j < NUM_QUADS; j++) {
-    coefficients[j] =
-        reinterpret_cast<_Tp**>(malloc(sizeof(_Tp*) * MAX_LEVELS[j]));
+    coefficients[j] = reinterpret_cast<_Tp**>(malloc(sizeof(_Tp*) * MAX_LEVELS[j]));
 
     for (int d = 1; d <= MAX_LEVELS[j]; d++) {
       /**
@@ -77,8 +72,7 @@ combigrid::QuadratureRule<_Tp>::QuadratureRule(std::vector<int> lvls) {
        *levels 1,2... MAX_LEVELS's
        *
        * */
-      QuadratureRule<_Tp>::calculateCoefficients(d, coefficients[j] + d - 1,
-                                                 tuples[j]);
+      QuadratureRule<_Tp>::calculateCoefficients(d, coefficients[j] + d - 1, tuples[j]);
     }
   }
 }
@@ -129,9 +123,8 @@ _Tp combigrid::QuadratureRule<_Tp>::integrate(CombiGrid<_Tp>* grids,
 
     for (int j = 0; j < nr_fullgrids; j++) {
       if (grids->getFullGrid(j)->isActive()) {
-        result +=
-            (_Tp)grids->getCoef(j) *
-            quadrature_full_grid(dim, f, grids->getFullGrid(j), interpolate);
+        result += (_Tp)grids->getCoef(j) *
+                  quadrature_full_grid(dim, f, grids->getFullGrid(j), interpolate);
       }
     }
   }
@@ -140,12 +133,11 @@ _Tp combigrid::QuadratureRule<_Tp>::integrate(CombiGrid<_Tp>* grids,
 }
 
 template <typename _Tp>
-_Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(
-    int dim, _Tp (*f)(std::vector<double>), FGridContainer<_Tp>* gridContainer,
-    bool interpolate) {
+_Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(int dim, _Tp (*f)(std::vector<double>),
+                                                         FGridContainer<_Tp>* gridContainer,
+                                                         bool interpolate) {
   _Tp result = 0.0f;
-  FullGrid<_Tp>* grid =
-      gridContainer->fg();  // obtain a pointer to the fullgrid
+  FullGrid<_Tp>* grid = gridContainer->fg();  // obtain a pointer to the fullgrid
 
   /** select which coefficient matrix shall we choose, depending on the
    * stretching
@@ -164,8 +156,7 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(
       if (dom_1d.getMinDomain() == n_INF && dom_1d.getMaxDomain() == p_INF)
         fully_infinite[d] = true;
 
-      coef_selector[d] =
-          stretchingToIdx(dom_1d.getStretchingType(), tuples, NUM_QUADS);
+      coef_selector[d] = stretchingToIdx(dom_1d.getStretchingType(), tuples, NUM_QUADS);
 
       if (dom_1d.getLevel() > MAX_LEVELS[coef_selector[d]]) {
         COMBIGRID_OUT_ERR(
@@ -186,8 +177,7 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(
    *domain at that point...
    */
 
-  unsigned int num_elem =
-      grid->getNrElements();  // get the total number of grid points
+  unsigned int num_elem = grid->getNrElements();  // get the total number of grid points
 
   // precomupte the function values depending on whether or
   // not the user wants to integrate an external function
@@ -236,8 +226,8 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(
           jacobian_j *= (_Tp)domains[d].axisJacobian()[indices[d]];
         }
 
-        f_values[j] = grid->getElementVector()[j] *
-                      jacobian_j;  // simply pick out the value on the grid...
+        f_values[j] =
+            grid->getElementVector()[j] * jacobian_j;  // simply pick out the value on the grid...
       }
     }
   } else {
@@ -261,8 +251,7 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(
         jacobian_j *= (_Tp)domains[d].axisJacobian()[indices[d]];
       }
 
-      f_values[j] =
-          f(coords) * jacobian_j;  // simply pick out the value on the grid...
+      f_values[j] = f(coords) * jacobian_j;  // simply pick out the value on the grid...
     }
   }
 
@@ -288,8 +277,7 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(
       int idx_d = indices[d];
       int level = levels[d];
 
-      if (idxToStretching(coef_selector[d], tuples, NUM_QUADS) == BASU &&
-          fully_infinite[d]) {
+      if (idxToStretching(coef_selector[d], tuples, NUM_QUADS) == BASU && fully_infinite[d]) {
         int N_0 = powerOfTwo[level - 1];
 
         if (idx_d <= N_0)
@@ -309,9 +297,7 @@ _Tp combigrid::QuadratureRule<_Tp>::quadrature_full_grid(
 }
 
 template <typename _Tp>
-int combigrid::QuadratureRule<_Tp>::stretchingToIdx(Stretching str,
-                                                    QRtouple* qrtuples,
-                                                    int size) {
+int combigrid::QuadratureRule<_Tp>::stretchingToIdx(Stretching str, QRtouple* qrtuples, int size) {
   int idx = 0;
 
   for (int i = 0; i < size; i++)
@@ -324,8 +310,8 @@ int combigrid::QuadratureRule<_Tp>::stretchingToIdx(Stretching str,
 }
 
 template <typename _Tp>
-combigrid::Stretching combigrid::QuadratureRule<_Tp>::idxToStretching(
-    int idx, QRtouple* qrtuples, int size) {
+combigrid::Stretching combigrid::QuadratureRule<_Tp>::idxToStretching(int idx, QRtouple* qrtuples,
+                                                                      int size) {
   Stretching str = EQUIDISTANT;
 
   for (int i = 0; i < size; i++)
@@ -338,8 +324,7 @@ combigrid::Stretching combigrid::QuadratureRule<_Tp>::idxToStretching(
 }
 
 template <typename _Tp>
-void combigrid::QuadratureRule<_Tp>::calculateCoefficients(int in_level,
-                                                           _Tp** out_coefs,
+void combigrid::QuadratureRule<_Tp>::calculateCoefficients(int in_level, _Tp** out_coefs,
                                                            QRtouple rule) {
   switch (rule.key) {
     case EQUIDISTANT:  // trapezoid

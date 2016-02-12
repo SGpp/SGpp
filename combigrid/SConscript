@@ -17,6 +17,7 @@ Import('installTargetList')
 Import('exampleTargetList')
 Import('headerSourceList')
 Import('headerDestList')
+Import('lintAction')
 
 #moduleDependencies = ['sgppbase']
 moduleDependencies = []
@@ -33,7 +34,10 @@ if env['USE_STATICLIB']:
         moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
 Export('libname')
 
+cpps = []
+hpps = []
 objs = []
+
 for currentFolder, subdirNames, fileNames in os.walk("src"):
     if currentFolder.startswith(os.path.join(
           "src", "sgpp", "combigrid", "test")) or \
@@ -45,12 +49,15 @@ for currentFolder, subdirNames, fileNames in os.walk("src"):
        "src","sgpp","combigrid_old")):
         continue
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        sourceFile = os.path.join(currentFolder, fileName)
-        objs.append(env.SharedObject(sourceFile))
+        cpp = os.path.join(currentFolder, fileName)
+        cpps.append(cpp)
+        objs.append(env.SharedObject(cpp))
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
-        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
+        headerSourceList.append(os.path.join(moduleName, hpp))
+        headerDestList.append(hpp.split(os.sep, 1)[1])
 
 if env['USE_STATICLIB']:
     libsuffix = env['LIBSUFFIX']
@@ -72,6 +79,11 @@ for lib_str in moduleDependencies:
                                                   libsuffix)))
 
 libInstall = env.Install(BUILD_DIR, lib)
+
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')

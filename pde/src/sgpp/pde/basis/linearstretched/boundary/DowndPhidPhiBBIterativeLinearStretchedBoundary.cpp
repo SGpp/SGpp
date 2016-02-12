@@ -8,20 +8,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
 DowndPhidPhiBBIterativeLinearStretchedBoundary::DowndPhidPhiBBIterativeLinearStretchedBoundary(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {}
 
-DowndPhidPhiBBIterativeLinearStretchedBoundary::~DowndPhidPhiBBIterativeLinearStretchedBoundary() {
-}
+DowndPhidPhiBBIterativeLinearStretchedBoundary::~DowndPhidPhiBBIterativeLinearStretchedBoundary() {}
 
-void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-
+void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(SGPP::base::DataVector& alpha,
+                                                                SGPP::base::DataVector& result,
+                                                                size_t dim) {
   // Bounding Box handling
   SGPP::base::Stretching* stretching = this->storage->getStretching();
   float_t q = stretching->getIntervalWidth(dim);
@@ -40,7 +38,7 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(
       if (level == 0) {
         if (index == 0) {
           if (!stretching->hasDirichletBoundaryLeft(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += Qqout * alpha[i];
 
             // down
@@ -57,13 +55,12 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(
 
         if (index == 1) {
           if (!stretching->hasDirichletBoundaryRight(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += Qqout * alpha[i];
           }
         }
-      }
-      //only affects the diagonal of the stiffness matrix
-      else {
+      } else {
+        // only affects the diagonal of the stiffness matrix
         result[i] = alpha[i] * (Qqout * pow(2.0, static_cast<int>(level + 1)));
       }
     }
@@ -77,7 +74,7 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(
       if (level == 0) {
         if (index == 0) {
           if (!stretching->hasDirichletBoundaryLeft(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += alpha[i];
 
             // down
@@ -94,18 +91,16 @@ void DowndPhidPhiBBIterativeLinearStretchedBoundary::operator()(
 
         if (index == 1) {
           if (!stretching->hasDirichletBoundaryRight(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += alpha[i];
           }
         }
-      }
-      //only affects the diagonal of the stiffness matrix
-      else {
+      } else {
+        // only affects the diagonal of the stiffness matrix
         result[i] = alpha[i] * pow(2.0, static_cast<int>(level + 1));
       }
     }
   }
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries1D) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, true);
+  g.regularWithBoundaries(&s, 2, 1);
 
   BOOST_CHECK_EQUAL(s.size(), 5U);
 }
@@ -328,12 +328,12 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, true);
+  g.regularWithBoundaries(&s, 2, 1);
 
   BOOST_CHECK_EQUAL(s.size(), 21U);
 
   HashGridStorage s2(2);
-  g.regularWithBoundaries(&s2, 3, true);
+  g.regularWithBoundaries(&s2, 3, 1);
 
   BOOST_CHECK_EQUAL(s2.size(), 49U);
 
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
   HashGridStorage s(3);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, true);
+  g.regularWithBoundaries(&s, 2, 1);
   BOOST_CHECK_EQUAL(s.size(), 81U);
 }
 
@@ -395,7 +395,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 1, true);
+  g.regularWithBoundaries(&s, 1, 1);
 
   DataVector d(9);
   d[0] = 0.0;
@@ -421,7 +421,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, false);
+  g.regularWithBoundaries(&s, 2, 0);
 
   DataVector d(17);
 

@@ -12,22 +12,19 @@
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace pde {
 
-OperationLaplaceLinearStretched::OperationLaplaceLinearStretched(
-  SGPP::base::GridStorage* storage) : UpDownOneOpDim(storage) {
-}
+OperationLaplaceLinearStretched::OperationLaplaceLinearStretched(SGPP::base::GridStorage* storage)
+    : UpDownOneOpDim(storage) {}
 
-OperationLaplaceLinearStretched::~OperationLaplaceLinearStretched() {
-}
+OperationLaplaceLinearStretched::~OperationLaplaceLinearStretched() {}
 
 void OperationLaplaceLinearStretched::specialOP(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim, size_t gradient_dim) {
+                                                SGPP::base::DataVector& result, size_t dim,
+                                                size_t gradient_dim) {
   // In direction gradient_dim we only calculate the norm of the gradient
   // The up-part is empty, thus omitted
   if (dim > 0) {
@@ -41,28 +38,26 @@ void OperationLaplaceLinearStretched::specialOP(SGPP::base::DataVector& alpha,
 }
 
 void OperationLaplaceLinearStretched::up(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                         SGPP::base::DataVector& result, size_t dim) {
   PhiPhiUpBBLinearStretched func(this->storage);
   SGPP::base::sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
   s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceLinearStretched::down(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                           SGPP::base::DataVector& result, size_t dim) {
   PhiPhiDownBBLinearStretched func(this->storage);
   SGPP::base::sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
   s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceLinearStretched::downOpDim(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                                SGPP::base::DataVector& result, size_t dim) {
   DowndPhidPhiBBIterativeLinearStretched myDown(this->storage);
   myDown(alpha, result, dim);
 }
 
 void OperationLaplaceLinearStretched::upOpDim(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
-}
-
-}
-}
+                                              SGPP::base::DataVector& result, size_t dim) {}
+}  // namespace pde
+}  // namespace SGPP

@@ -1,10 +1,11 @@
-/*
- * CombiEquidistantStretching.cpp
- *
- *  Created on: 15 Sep 2014
- *      Author: kenny
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/combigrid/domain/CombiEquidistantStretching.hpp>
+
+#include <vector>
 
 /**
  *
@@ -12,9 +13,9 @@
  *  simple 1D equidistant grid on the interval (min;max)
  **/
 
-void combigrid::CombiEquidistantStretching::get1DStretching(
-    int level, double min, double max, std::vector<double>* stretching,
-    std::vector<double>* jacobian) const {
+void combigrid::CombiEquidistantStretching::get1DStretching(int level, double min, double max,
+                                                            std::vector<double>* stretching,
+                                                            std::vector<double>* jacobian) const {
   int nr_pts = powerOfTwo[level] + 1;
   // resize the stretching vector...
   stretching->resize(nr_pts);
@@ -34,7 +35,7 @@ void combigrid::CombiEquidistantStretching::get1DStretching(
 
   if (min == n_INF && max == p_INF) type = INFINITE;
 
-  double dt = (2.0) / double(nr_pts - 1);
+  double dt = (2.0) / static_cast<double>(nr_pts - 1);
   // notice that dt is the spacing on the [-1;1] interval...
   //
   (*stretching)[0] = min;

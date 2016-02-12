@@ -33,9 +33,10 @@ class BsplineClenshawCurtisGrid : public Grid {
    *
    * @param dim the dimension of the grid
    * @param degree the bspline's degree
-   * @param boundaryLevel level at which the boundary points should be
-   *                      inserted (default = 1: boundary has same level
-   *                      as main axes)
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
    */
   BsplineClenshawCurtisGrid(size_t dim,
                             size_t degree,
@@ -86,7 +87,7 @@ class BsplineClenshawCurtisGrid : public Grid {
   size_t degree;
   /// B-spline basis
   const SBsplineClenshawCurtisBase* basis_;
-  /// level at which the boundary points should be inserted
+  /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };
 

@@ -6,7 +6,6 @@
 #ifndef FINANCE_HPP
 #define FINANCE_HPP
 
-
 #include <sgpp/finance/algorithm/BlackScholesParabolicPDESolverSystem.hpp>
 #include <sgpp/finance/algorithm/ModifiedBlackScholesParabolicPDESolverSystem.hpp>
 #include <sgpp/finance/algorithm/HullWhiteParabolicPDESolverSystem.hpp>

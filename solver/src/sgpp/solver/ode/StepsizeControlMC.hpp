@@ -8,12 +8,11 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
-#include <string>
 #include <sgpp/solver/ode/VarTimestep.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace solver {
@@ -25,9 +24,8 @@ namespace solver {
  */
 class StepsizeControlMC : public VarTimestep {
  protected:
-
-  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
-                       float_t norm, float_t epsilon);
+  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm,
+                       float_t epsilon);
 
  public:
   /**
@@ -47,7 +45,7 @@ class StepsizeControlMC : public VarTimestep {
   virtual ~StepsizeControlMC();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROLMC_HPP */

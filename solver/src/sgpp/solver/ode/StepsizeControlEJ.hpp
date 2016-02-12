@@ -12,6 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace solver {
@@ -36,12 +37,13 @@ class StepsizeControlEJ : public StepsizeControl {
                          float_t tmp_timestepsize, SGPP::base::DataVector& dv,
                          SGPP::base::DataVector* rhs);
 
-  virtual float_t nextTimestep(float_t tmp_timestepsize,
-                               float_t tmp_timestepsize_old, float_t norm, float_t epsilon);
+  virtual float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm,
+                               float_t epsilon);
 
   virtual float_t norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
                        SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
   std::string _odesolver;
+
  public:
   /**
    * Std-Constructer
@@ -54,9 +56,8 @@ class StepsizeControlEJ : public StepsizeControl {
    * @param screen possible pointer to a SGPP::base::ScreenOutput object
    * @param gamma used damping factor, default is 0.5
    */
-  StepsizeControlEJ(std::string odesolver, size_t nTimesteps,
-                    float_t timestepSize, float_t eps, float_t sc,
-                    SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.5);
+  StepsizeControlEJ(std::string odesolver, size_t nTimesteps, float_t timestepSize, float_t eps,
+                    float_t sc, SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.5);
 
   /**
    * Std-Destructor
@@ -64,7 +65,7 @@ class StepsizeControlEJ : public StepsizeControl {
   virtual ~StepsizeControlEJ();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROLEJ_HPP */

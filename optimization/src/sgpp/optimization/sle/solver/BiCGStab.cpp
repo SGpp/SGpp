@@ -15,24 +15,14 @@ namespace SGPP {
 namespace optimization {
 namespace sle_solver {
 
-BiCGStab::BiCGStab() :
-  BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE,
-           base::DataVector(0)) {
-}
+BiCGStab::BiCGStab() : BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE, base::DataVector(0)) {}
 
-BiCGStab::BiCGStab(size_t maxItCount, float_t tolerance,
-                   const base::DataVector& x0) :
-  SLESolver(),
-  N(maxItCount),
-  tol(tolerance),
-  x0(x0) {
-}
+BiCGStab::BiCGStab(size_t maxItCount, float_t tolerance, const base::DataVector& x0)
+    : SLESolver(), N(maxItCount), tol(tolerance), x0(x0) {}
 
-BiCGStab::~BiCGStab() {
-}
+BiCGStab::~BiCGStab() {}
 
-bool BiCGStab::solve(SLE& system, base::DataVector& b,
-                     base::DataVector& x) const {
+bool BiCGStab::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   Printer::getInstance().printStatusBegin("Solving linear system (BiCGStab)...");
 
   const size_t n = b.getSize();
@@ -96,9 +86,10 @@ bool BiCGStab::solve(SLE& system, base::DataVector& b,
     omega = t.dotProduct(s) / t.dotProduct(t);
 
     rNormSquared = s.dotProduct(s);
-	if (rNormSquared < tol*tol*0.1){//if || s || sufficiently small, then set xi = xi−1 + αpi and quit
-	  omega = 0.;
-	}
+    if (rNormSquared <
+        tol * tol * 0.1) {  // if || s || sufficiently small, then set xi = xi−1 + αpi and quit
+      omega = 0.;
+    }
     if (std::isnan(omega)) {
       Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
       return false;
@@ -111,47 +102,34 @@ bool BiCGStab::solve(SLE& system, base::DataVector& b,
 
     rNormSquared = r.dotProduct(r);
 
-    Printer::getInstance().printStatusUpdate("k = " + std::to_string(k) +
-        ", residual norm = " +
-        std::to_string(sqrt(rNormSquared)));
+    Printer::getInstance().printStatusUpdate("k = " + std::to_string(k) + ", residual norm = " +
+                                             std::to_string(sqrt(rNormSquared)));
 
     if (rNormSquared < tol * tol) {
       break;
     }
   }
 
-  Printer::getInstance().printStatusUpdate("k = " + std::to_string(k) +
-      ", residual norm = " +
-      std::to_string(sqrt(rNormSquared)));
+  Printer::getInstance().printStatusUpdate("k = " + std::to_string(k) + ", residual norm = " +
+                                           std::to_string(sqrt(rNormSquared)));
   Printer::getInstance().printStatusEnd();
   return true;
 }
 
-size_t BiCGStab::getMaxItCount() const {
-  return N;
-}
+size_t BiCGStab::getMaxItCount() const { return N; }
 
-void BiCGStab::setMaxItCount(size_t maxItCount) {
-  N = maxItCount;
-}
+void BiCGStab::setMaxItCount(size_t maxItCount) { N = maxItCount; }
 
-float_t BiCGStab::getTolerance() const {
-  return tol;
-}
+float_t BiCGStab::getTolerance() const { return tol; }
 
-void BiCGStab::setTolerance(float_t tolerance) {
-  tol = tolerance;
-}
+void BiCGStab::setTolerance(float_t tolerance) { tol = tolerance; }
 
-const base::DataVector& BiCGStab::getStartingPoint() const {
-  return x0;
-}
+const base::DataVector& BiCGStab::getStartingPoint() const { return x0; }
 
 void BiCGStab::setStartingPoint(const base::DataVector& startingPoint) {
   x0.resize(startingPoint.getSize());
   x0 = startingPoint;
 }
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace SGPP

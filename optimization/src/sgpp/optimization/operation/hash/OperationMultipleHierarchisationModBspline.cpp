@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
@@ -16,23 +14,19 @@ namespace SGPP {
 namespace optimization {
 
 OperationMultipleHierarchisationModBspline::OperationMultipleHierarchisationModBspline(
-  base::ModBsplineGrid& grid) :
-  grid(grid) {
-}
+    base::ModBsplineGrid& grid)
+    : grid(grid) {}
 
-OperationMultipleHierarchisationModBspline::~OperationMultipleHierarchisationModBspline() {
-}
+OperationMultipleHierarchisationModBspline::~OperationMultipleHierarchisationModBspline() {}
 
-bool OperationMultipleHierarchisationModBspline::doHierarchisation(
-  base::DataVector& nodeValues) {
+bool OperationMultipleHierarchisationModBspline::doHierarchisation(base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationModBspline::doDehierarchisation(
-  base::DataVector& alpha) {
+void OperationMultipleHierarchisationModBspline::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalModBspline opNaiveEval(&storage, grid.getDegree());
@@ -53,16 +47,14 @@ void OperationMultipleHierarchisationModBspline::doDehierarchisation(
   alpha = nodeValues;
 }
 
-bool OperationMultipleHierarchisationModBspline::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+bool OperationMultipleHierarchisationModBspline::doHierarchisation(base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationModBspline::doDehierarchisation(
-  base::DataMatrix& alpha) {
+void OperationMultipleHierarchisationModBspline::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalModBspline opNaiveEval(&storage, grid.getDegree());
@@ -86,6 +78,5 @@ void OperationMultipleHierarchisationModBspline::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

@@ -8,19 +8,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
 UpdPhidPhiBBIterativeLinearBoundary::UpdPhidPhiBBIterativeLinearBoundary(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {}
 
-UpdPhidPhiBBIterativeLinearBoundary::~UpdPhidPhiBBIterativeLinearBoundary() {
-}
+UpdPhidPhiBBIterativeLinearBoundary::~UpdPhidPhiBBIterativeLinearBoundary() {}
 
-void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
-    alpha, SGPP::base::DataVector& result, size_t dim) {
+void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector& alpha,
+                                                     SGPP::base::DataVector& result, size_t dim) {
   // Bounding Box handling
   SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
   float_t q = boundingBox->getIntervalWidth(dim);
@@ -69,6 +67,5 @@ void UpdPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
     }
   }
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

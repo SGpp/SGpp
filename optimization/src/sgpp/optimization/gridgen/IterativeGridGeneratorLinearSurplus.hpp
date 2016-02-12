@@ -6,11 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORLINEARSURPLUS_HPP
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORLINEARSURPLUS_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
-
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
+
+#include <cstddef>
 
 namespace SGPP {
 namespace optimization {
@@ -39,12 +38,9 @@ class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
    * @param adaptivity    adaptivity between 0 and 1
    * @param initialLevel  level of initial regular sparse grid
    */
-  IterativeGridGeneratorLinearSurplus(
-    ScalarFunction& f,
-    base::Grid& grid,
-    size_t N,
-    float_t adaptivity = DEFAULT_ADAPTIVITY,
-    base::level_t initialLevel = DEFAULT_INITIAL_LEVEL);
+  IterativeGridGeneratorLinearSurplus(ScalarFunction& f, base::Grid& grid, size_t N,
+                                      float_t adaptivity = DEFAULT_ADAPTIVITY,
+                                      base::level_t initialLevel = DEFAULT_INITIAL_LEVEL);
 
   /**
    * Destructor.
@@ -86,8 +82,7 @@ class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
   /// level of initial regular sparse grid
   base::level_t initialLevel;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORLINEARSURPLUS_HPP */

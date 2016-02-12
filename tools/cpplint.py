@@ -56,7 +56,7 @@ import unicodedata
 _USAGE = """
 Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
                    [--counting=total|toplevel|detailed] [--root=subdir]
-                   [--linelength=digits]
+                   [--linelength=digits] [--ignorecfg=yes|no]
         <file> [file] ...
 
   The style guidelines this tries to follow are those in
@@ -71,7 +71,7 @@ Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
   suppresses errors of all categories on that line.
 
   The files passed in will be linted; at least one file must be provided.
-  Default linted extensions are .cc, .cpp, .cu, .cuh and .h.  Change the
+  Default linted extensions are .cc, .cpp, .hpp, .cu, .cuh and .h.  Change the
   extensions with the --extensions flag.
 
   Flags:
@@ -123,7 +123,7 @@ Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
 
     linelength=digits
       This is the allowed line length for the project. The default value is
-      80 characters.
+      100 characters.
 
       Examples:
         --linelength=120
@@ -133,6 +133,10 @@ Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
 
       Examples:
         --extensions=hpp,cpp
+
+    ignorecfg=yes,no
+      Whether cpplint.py will ignore all CPPLINT.cfg files (see below). The
+      default is not to ignore.
 
     cpplint.py supports per-directory configurations specified in CPPLINT.cfg
     files. CPPLINT.cfg file can contain a number of key=value pairs.
@@ -500,7 +504,12 @@ _line_length = 100
 
 # The allowed extensions for file names
 # This is set by --extensions flag.
+# _valid_extensions = set(['cc', 'h', 'cpp', 'cu', 'cuh'])
 _valid_extensions = set(['cc', 'h', 'cpp', 'hpp', 'cu', 'cuh'])
+
+# Whether to ignore CPPLINT.cfg if it exists.
+# This is set by --ignorecfg flag.
+_ignore_cfg = False
 
 def ParseNolintSuppressions(filename, raw_line, linenum, error):
   """Updates the global list of error-suppressions.
@@ -6139,7 +6148,7 @@ def ProcessFile(filename, vlevel, extra_check_functions=[]):
   _SetVerboseLevel(vlevel)
   _BackupFilters()
 
-  if not ProcessConfigOverrides(filename):
+  if (not _ignore_cfg) and (not ProcessConfigOverrides(filename)):
     _RestoreFilters()
     return
 
@@ -6249,7 +6258,8 @@ def ParseArguments(args):
                                                  'filter=',
                                                  'root=',
                                                  'linelength=',
-                                                 'extensions='])
+                                                 'extensions=',
+                                                 'ignorecfg='])
   except getopt.GetoptError:
     PrintUsage('Invalid arguments.')
 
@@ -6290,6 +6300,11 @@ def ParseArguments(args):
           _valid_extensions = set(val.split(','))
       except ValueError:
           PrintUsage('Extensions must be comma seperated list.')
+    elif opt == '--ignorecfg':
+      global _ignore_cfg
+      if val not in ('yes', 'no'):
+        PrintUsage('Valid ignorecfg options are yes and no')
+      _ignore_cfg = (val == 'yes')
 
   if not filenames:
     PrintUsage('No files were specified.')

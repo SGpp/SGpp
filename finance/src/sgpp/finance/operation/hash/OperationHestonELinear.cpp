@@ -15,39 +15,35 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
 OperationHestonELinear::OperationHestonELinear(SGPP::base::GridStorage* storage,
-    SGPP::base::DataVector& coef) : SGPP::pde::UpDownOneOpDim(storage, coef) {
-}
+                                               SGPP::base::DataVector& coef)
+    : SGPP::pde::UpDownOneOpDim(storage, coef) {}
 
-OperationHestonELinear::~OperationHestonELinear() {
-}
+OperationHestonELinear::~OperationHestonELinear() {}
 
-void OperationHestonELinear::up(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result, size_t dim) {
+void OperationHestonELinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinear> s(func, this->storage);
 
   s.sweep1D(alpha, result, dim);
-
 }
 
-void OperationHestonELinear::down(SGPP::base::DataVector& alpha,
-                                  SGPP::base::DataVector& result, size_t dim) {
+void OperationHestonELinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                  size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiDownBBLinear func(this->storage);
   SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinear> s(func, this->storage);
 
   s.sweep1D(alpha, result, dim);
-
 }
 
-void OperationHestonELinear::upOpDim(SGPP::base::DataVector& alpha,
-                                     SGPP::base::DataVector& result, size_t dim) {
+void OperationHestonELinear::upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                     size_t dim) {
   // dphi * phi
   DPhiPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<DPhiPhiUpBBLinear> s(func, this->storage);
@@ -63,6 +59,5 @@ void OperationHestonELinear::downOpDim(SGPP::base::DataVector& alpha,
 
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

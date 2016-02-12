@@ -15,6 +15,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include <string>
 
 namespace SGPP {
 namespace optimization {
@@ -37,16 +38,13 @@ typedef ::Eigen::MatrixXf EigenMatrix;
  * @param[out]  x     solution of the linear system
  * @return            whether all went well (false if errors occurred)
  */
-bool solveInternal(
-  const EigenMatrix& A,
-  const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
-  base::DataVector& b,
-  base::DataVector& x) {
+bool solveInternal(const EigenMatrix& A, const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
+                   base::DataVector& b, base::DataVector& x) {
   const SGPP::float_t tolerance =
 #if USE_DOUBLE_PRECISION
-    1e-12;
+      1e-12;
 #else
-    1e-4;
+      1e-4;
 #endif
 
   // solve system
@@ -63,11 +61,9 @@ bool solveInternal(
 }
 #endif /* USE_EIGEN */
 
-Eigen::~Eigen() {
-}
+Eigen::~Eigen() {}
 
-bool Eigen::solve(SLE& system, base::DataVector& b,
-                  base::DataVector& x) const {
+bool Eigen::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   base::DataMatrix B(b.getPointer(), b.getSize(), 1);
   base::DataMatrix X(B.getNrows(), B.getNcols());
 
@@ -81,9 +77,7 @@ bool Eigen::solve(SLE& system, base::DataVector& b,
   }
 }
 
-bool Eigen::solve(SLE& system,
-                  base::DataMatrix& B,
-                  base::DataMatrix& X) const {
+bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
 #ifdef USE_EIGEN
   Printer::getInstance().printStatusBegin("Solving linear system (Eigen)...");
 
@@ -91,9 +85,8 @@ bool Eigen::solve(SLE& system,
   EigenMatrix A = EigenMatrix::Zero(n, n);
   size_t nnz = 0;
 
-  // parallelize only if the system is cloneable
-  #pragma omp parallel if (system.isCloneable()) \
-  shared(system, A, nnz) default(none)
+// parallelize only if the system is cloneable
+#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz) default(none)
   {
     SLE* system2 = &system;
 #ifdef _OPENMP
@@ -106,8 +99,8 @@ bool Eigen::solve(SLE& system,
 
 #endif /* _OPENMP */
 
-    // copy system matrix to Eigen matrix object
-    #pragma omp for ordered schedule(dynamic)
+// copy system matrix to Eigen matrix object
+#pragma omp for ordered schedule(dynamic)
 
     for (size_t i = 0; i < n; i++) {
       for (size_t j = 0; j < n; j++) {
@@ -116,20 +109,20 @@ bool Eigen::solve(SLE& system,
         // count nonzero entries
         // (not necessary, you can also remove that if you like)
         if (A(i, j) != 0) {
-          #pragma omp atomic
+#pragma omp atomic
           nnz++;
         }
       }
 
       // status message
       if (i % 100 == 0) {
-        #pragma omp ordered
+#pragma omp ordered
         {
           char str[10];
-          snprintf(str, 10, "%.1f%%",
-          static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
-          Printer::getInstance().printStatusUpdate("constructing matrix (" +
-          std::string(str) + ")");
+          snprintf(str, sizeof(str), "%.1f%%",
+                   static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+          Printer::getInstance().printStatusUpdate("constructing matrix (" + std::string(str) +
+                                                   ")");
         }
       }
     }
@@ -141,10 +134,9 @@ bool Eigen::solve(SLE& system,
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnz_ratio = static_cast<float_t>(nnz) /
-                        (static_cast<float_t>(n) *
-                         static_cast<float_t>(n));
-    snprintf(str, 10, "%.1f%%", nnz_ratio * 100.0);
+    float_t nnz_ratio =
+        static_cast<float_t>(nnz) / (static_cast<float_t>(n) * static_cast<float_t>(n));
+    snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
   }
@@ -165,10 +157,8 @@ bool Eigen::solve(SLE& system,
     if (B.getNcols() == 1) {
       Printer::getInstance().printStatusUpdate("step 2: solving");
     } else {
-      Printer::getInstance().printStatusUpdate("step 2: solving (RHS " +
-          std::to_string(i + 1) +
-          " of " + std::to_string(B.getNcols()) +
-          ")");
+      Printer::getInstance().printStatusUpdate("step 2: solving (RHS " + std::to_string(i + 1) +
+                                               " of " + std::to_string(B.getNcols()) + ")");
     }
 
     if (solveInternal(A, A_QR, b, x)) {
@@ -187,7 +177,6 @@ bool Eigen::solve(SLE& system,
   return false;
 #endif /* USE_EIGEN */
 }
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace SGPP

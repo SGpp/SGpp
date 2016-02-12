@@ -7,34 +7,38 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
-LaplaceEnhancedUpBBLinear::LaplaceEnhancedUpBBLinear(SGPP::base::GridStorage*
-    storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()),
-  algoDims(storage->getAlgorithmicDimensions()),
-  numAlgoDims_(storage->getAlgorithmicDimensions().size()),
-  ptr_source_(NULL), ptr_result_(NULL),
-  cur_algo_dim_(0), q_(0.0), t_(0.0)
+LaplaceEnhancedUpBBLinear::LaplaceEnhancedUpBBLinear(SGPP::base::GridStorage* storage)
+    : storage(storage),
+      boundingBox(storage->getBoundingBox()),
+      algoDims(storage->getAlgorithmicDimensions()),
+      numAlgoDims_(storage->getAlgorithmicDimensions().size()),
+      ptr_source_(NULL),
+      ptr_result_(NULL),
+      cur_algo_dim_(0),
+      q_(0.0),
+      t_(0.0)
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
-  , half_in_(_mm_set1_pd(0.5))
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
+      ,
+      half_in_(_mm_set1_pd(0.5))
 #endif
 #else
 #ifdef __SSE3__
-  , half_in_(_mm_set1_pd(0.5))
+      ,
+      half_in_(_mm_set1_pd(0.5))
 #endif
 #endif
 {
 }
 
-LaplaceEnhancedUpBBLinear::~LaplaceEnhancedUpBBLinear() {
-}
+LaplaceEnhancedUpBBLinear::~LaplaceEnhancedUpBBLinear() {}
 
 void LaplaceEnhancedUpBBLinear::operator()(SGPP::base::DataMatrix& source,
-    SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim) {
+                                           SGPP::base::DataMatrix& result, grid_iterator& index,
+                                           size_t dim) {
   q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
   t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
 
@@ -63,7 +67,7 @@ void LaplaceEnhancedUpBBLinear::operator()(SGPP::base::DataMatrix& source,
       }
     }
 
-    for ( ; i < this->numAlgoDims_; i++) {
+    for (; i < this->numAlgoDims_; i++) {
       if (dim == i) {
         recBB_grad(i, index);
       } else {
@@ -86,7 +90,7 @@ void LaplaceEnhancedUpBBLinear::operator()(SGPP::base::DataMatrix& source,
         rec_LG(fl, fr, i, index);
       } else {
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
         __m128d fl_xmm = _mm_set1_pd(0.0);
         __m128d fr_xmm = _mm_set1_pd(0.0);
 
@@ -117,7 +121,7 @@ void LaplaceEnhancedUpBBLinear::operator()(SGPP::base::DataMatrix& source,
       }
     }
 
-    for ( ; i < this->numAlgoDims_; i++) {
+    for (; i < this->numAlgoDims_; i++) {
       if (dim == i) {
         rec_grad(i, index);
       } else {
@@ -129,8 +133,7 @@ void LaplaceEnhancedUpBBLinear::operator()(SGPP::base::DataMatrix& source,
   }
 }
 
-void LaplaceEnhancedUpBBLinear::rec(float_t& fl, float_t& fr, size_t dim,
-                                    grid_iterator& index) {
+void LaplaceEnhancedUpBBLinear::rec(float_t& fl, float_t& fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
 
   float_t fml = 0.0;
@@ -164,34 +167,31 @@ void LaplaceEnhancedUpBBLinear::rec(float_t& fl, float_t& fr, size_t dim,
   // transposed operations:
   ptr_result_[(seq * this->numAlgoDims_) + dim] = fm;
 
-  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 <<
-                              (current_level + 1)));
+  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 << (current_level + 1)));
 
   fl = tmp + fl;
   fr = tmp + fr;
 }
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
-void LaplaceEnhancedUpBBLinear::rec_LL(__m128d& fl, __m128d& fr, size_t dim,
-                                       grid_iterator& index)
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
+void LaplaceEnhancedUpBBLinear::rec_LL(__m128d& fl, __m128d& fr, size_t dim, grid_iterator& index)
 #else
-void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
-                                       float_t& fr2, size_t dim, grid_iterator& index)
+void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2,
+                                       size_t dim, grid_iterator& index)
 #endif
 #else
 #ifdef __SSE3__
-void LaplaceEnhancedUpBBLinear::rec_LL(__m128d& fl, __m128d& fr, size_t dim,
-                                       grid_iterator& index)
+void LaplaceEnhancedUpBBLinear::rec_LL(__m128d& fl, __m128d& fr, size_t dim, grid_iterator& index)
 #else
-void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
-                                       float_t& fr2, size_t dim, grid_iterator& index)
+void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2,
+                                       size_t dim, grid_iterator& index)
 #endif
 #endif
 {
   size_t seq = index.seq();
 
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
   fl = _mm_set1_pd(0.0);
   fr = _mm_set1_pd(0.0);
   __m128d fml = _mm_set1_pd(0.0);
@@ -225,7 +225,7 @@ void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
 
     if (!storage->end(index.seq())) {
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
       rec_LL(fl, fml, dim, index);
 #else
       rec_LL(fl, fml, fl2, fml2, dim, index);
@@ -243,7 +243,7 @@ void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
 
     if (!storage->end(index.seq())) {
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
       rec_LL(fmr, fr, dim, index);
 #else
       rec_LL(fmr, fr, fmr2, fr2, dim, index);
@@ -262,7 +262,7 @@ void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
 
   index.get(cur_algo_dim_, current_level, current_index);
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
   // mesh-width +1 level
   float_t h = 1.0 / static_cast<float_t>(1 << (current_level + 1));
   __m128d h_in = _mm_loaddup_pd(&h);
@@ -282,19 +282,14 @@ void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
   ptr_result_[(seq * this->numAlgoDims_) + dim] = fm;
   ptr_result_[(seq * this->numAlgoDims_) + dim + 1] = fm2;
 
-  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 <<
-                              (current_level + 1)));
-  float_t tmp2 = (fm2 / 2.0) + (alpha_value2 / static_cast<float_t>(1 <<
-                                (current_level + 1)));
+  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 << (current_level + 1)));
+  float_t tmp2 = (fm2 / 2.0) + (alpha_value2 / static_cast<float_t>(1 << (current_level + 1)));
 
   fl = tmp + fl;
   fr = tmp + fr;
   fl2 = tmp2 + fl2;
   fr2 = tmp2 + fr2;
 #endif
-
-
-
 
 #else
 #ifdef __SSE3__
@@ -317,10 +312,8 @@ void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
   ptr_result_[(seq * this->numAlgoDims_) + dim] = fm;
   ptr_result_[(seq * this->numAlgoDims_) + dim + 1] = fm2;
 
-  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 <<
-                              (current_level + 1)));
-  float_t tmp2 = (fm2 / 2.0) + (alpha_value2 / static_cast<float_t>(1 <<
-                                (current_level + 1)));
+  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 << (current_level + 1)));
+  float_t tmp2 = (fm2 / 2.0) + (alpha_value2 / static_cast<float_t>(1 << (current_level + 1)));
 
   fl = tmp + fl;
   fr = tmp + fr;
@@ -330,8 +323,7 @@ void LaplaceEnhancedUpBBLinear::rec_LL(float_t& fl, float_t& fr, float_t& fl2,
 #endif
 }
 
-void LaplaceEnhancedUpBBLinear::rec_GL(float_t& fl, float_t& fr, size_t dim,
-                                       grid_iterator& index) {
+void LaplaceEnhancedUpBBLinear::rec_GL(float_t& fl, float_t& fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
 
   float_t fml = 0.0;
@@ -366,15 +358,13 @@ void LaplaceEnhancedUpBBLinear::rec_GL(float_t& fl, float_t& fr, size_t dim,
   ptr_result_[(seq * this->numAlgoDims_) + dim] = 0.0;
   ptr_result_[(seq * this->numAlgoDims_) + dim + 1] = fm;
 
-  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 <<
-                              (current_level + 1)));
+  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 << (current_level + 1)));
 
   fl = tmp + fl;
   fr = tmp + fr;
 }
 
-void LaplaceEnhancedUpBBLinear::rec_LG(float_t& fl, float_t& fr, size_t dim,
-                                       grid_iterator& index) {
+void LaplaceEnhancedUpBBLinear::rec_LG(float_t& fl, float_t& fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
 
   float_t fml = 0.0;
@@ -409,8 +399,7 @@ void LaplaceEnhancedUpBBLinear::rec_LG(float_t& fl, float_t& fr, size_t dim,
   ptr_result_[(seq * this->numAlgoDims_) + dim] = fm;
   ptr_result_[(seq * this->numAlgoDims_) + dim + 1] = 0.0;
 
-  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 <<
-                              (current_level + 1)));
+  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 << (current_level + 1)));
 
   fl = tmp + fl;
   fr = tmp + fr;
@@ -439,8 +428,7 @@ void LaplaceEnhancedUpBBLinear::rec_grad(size_t dim, grid_iterator& index) {
   }
 }
 
-void LaplaceEnhancedUpBBLinear::recBB(float_t& fl, float_t& fr, size_t dim,
-                                      grid_iterator& index) {
+void LaplaceEnhancedUpBBLinear::recBB(float_t& fl, float_t& fr, size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
 
   float_t fml = 0.0;
@@ -474,15 +462,15 @@ void LaplaceEnhancedUpBBLinear::recBB(float_t& fl, float_t& fr, size_t dim,
   // transposed operations:
   ptr_result_[(seq * this->numAlgoDims_) + dim] = fm;
 
-  float_t tmp = ((fm / 2.0) + ((alpha_value / static_cast<float_t>(1 <<
-                                (current_level + 1))) * q_));
+  float_t tmp =
+      ((fm / 2.0) + ((alpha_value / static_cast<float_t>(1 << (current_level + 1))) * q_));
 
   fl = tmp + fl;
   fr = tmp + fr;
 }
 
-void LaplaceEnhancedUpBBLinear::recBB_LL(float_t& fl, float_t& fr, float_t& fl2,
-    float_t& fr2, size_t dim, grid_iterator& index) {
+void LaplaceEnhancedUpBBLinear::recBB_LL(float_t& fl, float_t& fr, float_t& fl2, float_t& fr2,
+                                         size_t dim, grid_iterator& index) {
   size_t seq = index.seq();
 
   float_t fml = 0.0;
@@ -521,10 +509,9 @@ void LaplaceEnhancedUpBBLinear::recBB_LL(float_t& fl, float_t& fr, float_t& fl2,
   ptr_result_[(seq * this->numAlgoDims_) + dim] = fm;
   ptr_result_[(seq * this->numAlgoDims_) + dim + 1] = fm2;
 
-  float_t tmp = (fm / 2.0) + ((alpha_value / static_cast<float_t>(1 <<
-                               (current_level + 1))) * q_);
-  float_t tmp2 = (fm2 / 2.0) + ((alpha_value2 / static_cast<float_t>(1 <<
-                                 (current_level + 1))) * q_);
+  float_t tmp = (fm / 2.0) + ((alpha_value / static_cast<float_t>(1 << (current_level + 1))) * q_);
+  float_t tmp2 =
+      (fm2 / 2.0) + ((alpha_value2 / static_cast<float_t>(1 << (current_level + 1))) * q_);
 
   fl = tmp + fl;
   fr = tmp + fr;
@@ -533,7 +520,7 @@ void LaplaceEnhancedUpBBLinear::recBB_LL(float_t& fl, float_t& fr, float_t& fl2,
 }
 
 void LaplaceEnhancedUpBBLinear::recBB_GL(float_t& fl, float_t& fr, size_t dim,
-    grid_iterator& index) {
+                                         grid_iterator& index) {
   size_t seq = index.seq();
 
   float_t fml = 0.0;
@@ -568,15 +555,14 @@ void LaplaceEnhancedUpBBLinear::recBB_GL(float_t& fl, float_t& fr, size_t dim,
   ptr_result_[(seq * this->numAlgoDims_) + dim] = 0.0;
   ptr_result_[(seq * this->numAlgoDims_) + dim + 1] = fm;
 
-  float_t tmp = (fm / 2.0) + ((alpha_value / static_cast<float_t>(1 <<
-                               (current_level + 1))) * q_);
+  float_t tmp = (fm / 2.0) + ((alpha_value / static_cast<float_t>(1 << (current_level + 1))) * q_);
 
   fl = tmp + fl;
   fr = tmp + fr;
 }
 
 void LaplaceEnhancedUpBBLinear::recBB_LG(float_t& fl, float_t& fr, size_t dim,
-    grid_iterator& index) {
+                                         grid_iterator& index) {
   size_t seq = index.seq();
 
   float_t fml = 0.0;
@@ -611,8 +597,7 @@ void LaplaceEnhancedUpBBLinear::recBB_LG(float_t& fl, float_t& fr, size_t dim,
   ptr_result_[(seq * this->numAlgoDims_) + dim] = fm;
   ptr_result_[(seq * this->numAlgoDims_) + dim + 1] = 0.0;
 
-  float_t tmp = (fm / 2.0) + ((alpha_value / static_cast<float_t>(1 <<
-                               (current_level + 1))) * q_);
+  float_t tmp = (fm / 2.0) + ((alpha_value / static_cast<float_t>(1 << (current_level + 1))) * q_);
 
   fl = tmp + fl;
   fr = tmp + fr;
@@ -641,7 +626,5 @@ void LaplaceEnhancedUpBBLinear::recBB_grad(size_t dim, grid_iterator& index) {
   }
 }
 
-// namespace pde
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace SGPP

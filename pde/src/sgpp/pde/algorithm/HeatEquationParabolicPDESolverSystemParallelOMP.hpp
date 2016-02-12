@@ -12,6 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace pde {
@@ -20,8 +21,8 @@ namespace pde {
  * This class implements the ParabolicPDESolverSystem for the
  * Heat Equation.
  */
-class HeatEquationParabolicPDESolverSystemParallelOMP : public
-  OperationParabolicPDESolverSystemDirichlet {
+class HeatEquationParabolicPDESolverSystemParallelOMP
+    : public OperationParabolicPDESolverSystemDirichlet {
  protected:
   /// the heat coefficient
   float_t a;
@@ -34,17 +35,13 @@ class HeatEquationParabolicPDESolverSystemParallelOMP : public
   /// the LTwoDotProduct Operation (Mass Matrix), on inner grid
   SGPP::base::OperationMatrix* OpMassInner;
 
-  void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
-                               SGPP::base::DataVector& result);
+  void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-  void applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result);
+  void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-  void applyMassMatrixInner(SGPP::base::DataVector& alpha,
-                            SGPP::base::DataVector& result);
+  void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-  void applyLOperatorInner(SGPP::base::DataVector& alpha,
-                           SGPP::base::DataVector& result);
+  void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
  public:
   /**
@@ -54,12 +51,14 @@ class HeatEquationParabolicPDESolverSystemParallelOMP : public
    * @param alpha the sparse grid's coefficients
    * @param a the heat coefficient
    * @param TimestepSize the size of one timestep used in the ODE Solver
-   * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for explicit Euler,
+   * @param OperationMode specifies in which solver this matrix is used, valid values are: ExEul for
+   * explicit Euler,
    *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
    */
   HeatEquationParabolicPDESolverSystemParallelOMP(SGPP::base::Grid& SparseGrid,
-      SGPP::base::DataVector& alpha, float_t a, float_t TimestepSize,
-      std::string OperationMode = "ExEul");
+                                                  SGPP::base::DataVector& alpha, float_t a,
+                                                  float_t TimestepSize,
+                                                  std::string OperationMode = "ExEul");
 
   /**
    * Std-Destructor
@@ -72,13 +71,11 @@ class HeatEquationParabolicPDESolverSystemParallelOMP : public
 
   virtual void startTimestep();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual SGPP::base::DataVector* generateRHS();
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELOMP_HPP */

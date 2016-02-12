@@ -3,11 +3,19 @@ import fnmatch
 
 Import('env')
 
+cpps = []
+hpps = []
 objs = []
 
 if env['USE_OCL']:
   for currentFolder, subdirNames, fileNames in os.walk("."):
     for fileName in fnmatch.filter(fileNames, '*.cpp'):
-      sourceFile = os.path.join(currentFolder, fileName)
-      objs.append(env.SharedObject(sourceFile))
-Return('objs')
+      cpp = os.path.join(currentFolder, fileName)
+      cpps.append(cpp)
+      objs.append(env.SharedObject(cpp))
+  for fileName in fnmatch.filter(fileNames, '*.hpp'):
+    hpp = os.path.join(currentFolder, fileName)
+    hpps.append(hpp)
+
+returnTuple = (cpps, hpps, objs)
+Return('returnTuple')

@@ -12,16 +12,13 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
-OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(
-  SGPP::base::GridStorage* storage) : StdUpDown(storage) {
-}
+OperationLTwoDotProductLinear::OperationLTwoDotProductLinear(SGPP::base::GridStorage* storage)
+    : StdUpDown(storage) {}
 
-OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear() {
-}
+OperationLTwoDotProductLinear::~OperationLTwoDotProductLinear() {}
 
 void OperationLTwoDotProductLinear::up(SGPP::base::DataVector& alpha,
                                        SGPP::base::DataVector& result, size_t dim) {
@@ -33,13 +30,12 @@ void OperationLTwoDotProductLinear::up(SGPP::base::DataVector& alpha,
 }
 
 void OperationLTwoDotProductLinear::down(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                         SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   PhiPhiDownBBLinear func(this->storage);
   SGPP::base::sweep<PhiPhiDownBBLinear> s(func, this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

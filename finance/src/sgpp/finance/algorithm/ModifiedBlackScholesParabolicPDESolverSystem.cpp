@@ -11,55 +11,37 @@
 #include <sgpp/finance/tools/VariableDiscountFactor.hpp>
 #include <sgpp/finance/operation/FinanceOpFactory.hpp>
 
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cmath>
+#include <string>
 
 namespace SGPP {
 namespace finance {
 
 ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESolverSystem(
-  SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha,
-  SGPP::base::DataVector& mu,
-  SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r,
-  float_t TimestepSize, std::string OperationMode,
-  bool bLogTransform, bool useCoarsen, float_t coarsenThreshold,
-  std::string adaptSolveMode,
-  int numCoarsenPoints, float_t refineThreshold, std::string refineMode,
-  SGPP::base::GridIndex::level_type refineMaxLevel, int dim_HW)
-  : BlackScholesParabolicPDESolverSystem(SparseGrid,
-                                         alpha,
-                                         mu,
-                                         sigma,
-                                         rho,
-                                         r,
-                                         TimestepSize,
-                                         OperationMode,
-                                         0.0,
-                                         "nothing",
-                                         bLogTransform,
-                                         useCoarsen,
-                                         coarsenThreshold,
-                                         adaptSolveMode,
-                                         numCoarsenPoints,
-                                         refineThreshold,
-                                         refineMode,
-                                         refineMaxLevel) {
+    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
+    SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
+    std::string OperationMode, bool bLogTransform, bool useCoarsen, float_t coarsenThreshold,
+    std::string adaptSolveMode, int numCoarsenPoints, float_t refineThreshold,
+    std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int dim_HW)
+    : BlackScholesParabolicPDESolverSystem(SparseGrid, alpha, mu, sigma, rho, r, TimestepSize,
+                                           OperationMode, 0.0, "nothing", bLogTransform, useCoarsen,
+                                           coarsenThreshold, adaptSolveMode, numCoarsenPoints,
+                                           refineThreshold, refineMode, refineMaxLevel) {
   this->OpFBound = SGPP::op_factory::createOperationLF(*this->BoundGrid);
   this->dim_r = dim_HW;
-  this->variableDiscountFactor = new VariableDiscountFactor(
-    SparseGrid.getStorage(), dim_HW);
+  this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
 }
 
 void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(
-  SGPP::base::DataVector& updateVector) {
+    SGPP::base::DataVector& updateVector) {
   float_t tmp;
 
   for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
-    //std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
+    // std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
     std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(
-                           *this->BoundGrid->getBoundingBox());
+        *this->BoundGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
     float_t dblFuncValues[2];
 
@@ -69,8 +51,8 @@ void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(
     }
 
     // std::cout<< dblFuncValues[1]<< std::endl;
-    //updateVector.set(i, updateVector.get(i)* dblFuncValues[1]);
-    updateVector.set(i, updateVector.get(i)* dblFuncValues[this->dim_r]);
+    // updateVector.set(i, updateVector.get(i)* dblFuncValues[1]);
+    updateVector.set(i, updateVector.get(i) * dblFuncValues[this->dim_r]);
   }
 }
 
@@ -79,8 +61,8 @@ ModifiedBlackScholesParabolicPDESolverSystem::~ModifiedBlackScholesParabolicPDES
   delete this->variableDiscountFactor;
 }
 
-void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(SGPP::base::DataVector& alpha,
+                                                                  SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
@@ -88,7 +70,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::applyLOperator(
   // Apply the riskfree rate
   if (this->r != 0.0) {
     this->OpLTwoBound->mult(alpha, temp);
-    result.axpy((-1.0)*this->r, temp);
+    result.axpy((-1.0) * this->r, temp);
   }
 
   // Apply the delta method
@@ -118,10 +100,9 @@ void ModifiedBlackScholesParabolicPDESolverSystem::finishTimestep() {
   this->numSumGridpointsComplete += this->BoundGrid->getSize();
 }
 
-void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(
-  bool isLastTimestep) {
-  if (this->useCoarsen ==
-      true) { //  && isLastTimestep == false)  // do it always as mostly only 1 timestep is executed
+void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep) {
+  if (this->useCoarsen == true) {  //  && isLastTimestep == false)  // do it always as mostly only 1
+                                   //  timestep is executed
     ///////////////////////////////////////////////////
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
@@ -131,15 +112,13 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(
     // Coarsen the grid
     SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
-    //std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
-    //std::cout << "Grid Size: " << originalGridSize << std::endl;
+    // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
+    // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
-    if (this->adaptSolveMode == "refine"
-        || this->adaptSolveMode == "coarsenNrefine") {
+    if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-      SGPP::base::SurplusRefinementFunctor(this->alpha_complete, numRefines,
-                                           this->refineThreshold);
+      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
+          this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
         myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
@@ -154,14 +133,12 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(
       delete myRefineFunc;
     }
 
-    if (this->adaptSolveMode == "coarsen"
-        || this->adaptSolveMode == "coarsenNrefine") {
+    if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor = new
-      SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
-                                           this->coarsenThreshold);
-      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete,
-                                     originalGridSize);
+      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
+          new SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
+                                                   this->coarsenThreshold);
+      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
       delete myCoarsenFunctor;
     }
 
@@ -182,7 +159,6 @@ void ModifiedBlackScholesParabolicPDESolverSystem::startTimestep() {
   if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul") {
     this->BoundaryUpdate->multiplyBoundaryVector(*this->alpha_complete, factor);
   }
-
 }
-}
-}
+}  // namespace finance
+}  // namespace SGPP

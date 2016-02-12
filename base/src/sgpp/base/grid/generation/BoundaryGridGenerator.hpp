@@ -25,9 +25,10 @@ class BoundaryGridGenerator : public GridGenerator {
    * Constructor
    *
    * @param storage       template type that holds the grid points
-   * @param boundaryLevel level at which the boundary points should be
-   *                      inserted (default = 1: boundary has same level
-   *                      as main axes)
+   * @param boundaryLevel 1 + how much levels the boundary is coarser than
+   *                      the main axes, 0 means one level finer,
+   *                      1 means same level,
+   *                      2 means one level coarser, etc.
    */
   explicit BoundaryGridGenerator(GridStorage* storage,
                                  level_t boundaryLevel = 1);

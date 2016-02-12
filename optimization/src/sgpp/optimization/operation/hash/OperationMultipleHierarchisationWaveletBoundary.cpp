@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
@@ -16,23 +14,21 @@ namespace SGPP {
 namespace optimization {
 
 OperationMultipleHierarchisationWaveletBoundary::OperationMultipleHierarchisationWaveletBoundary(
-  base::WaveletBoundaryGrid& grid) :
-  grid(grid) {
-}
+    base::WaveletBoundaryGrid& grid)
+    : grid(grid) {}
 
-OperationMultipleHierarchisationWaveletBoundary::~OperationMultipleHierarchisationWaveletBoundary() {
-}
+OperationMultipleHierarchisationWaveletBoundary::
+    ~OperationMultipleHierarchisationWaveletBoundary() {}
 
 bool OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
-  base::DataVector& nodeValues) {
+    base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(
-  base::DataVector& alpha) {
+void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalWaveletBoundary opNaiveEval(&storage);
@@ -54,15 +50,14 @@ void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(
 }
 
 bool OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+    base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(
-  base::DataMatrix& alpha) {
+void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalWaveletBoundary opNaiveEval(&storage);
@@ -86,6 +81,5 @@ void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

@@ -9,10 +9,9 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
-#include <random>
-
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
 
+#include <random>
 
 namespace SGPP {
 namespace quadrature {
@@ -24,17 +23,15 @@ namespace quadrature {
  * 1.0.
  */
 class NaiveSampleGenerator : public SampleGenerator {
-
  public:
-
   /**
    * Standard constructor
    *
    * @param dimension number of dimensions used for sample generation
    * @param seed custom seed (defaults to default seed of mt19937_64)
    */
-  NaiveSampleGenerator(size_t dimension,
-                       std::uint64_t seed = std::mt19937_64::default_seed);
+  explicit NaiveSampleGenerator(size_t dimension,
+                                std::uint64_t seed = std::mt19937_64::default_seed);
 
   /**
    * Destructor
@@ -53,7 +50,7 @@ class NaiveSampleGenerator : public SampleGenerator {
   std::uniform_real_distribution<float_t> uniformRealDist;
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* NAIVESAMPLEGENERATOR_HPP */

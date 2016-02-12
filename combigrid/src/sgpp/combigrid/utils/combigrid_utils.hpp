@@ -1,14 +1,19 @@
-/* ****************************************************************************
- * Copyright (C) 2010 Technische Universitaet Muenchen                         *
- * This file is part of the SG++ project. For conditions of distribution and   *
- * use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
- **************************************************************************** */
-// @author Janos Benk
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifndef COMBIGRID_ULTILS_HPP_
 #define COMBIGRID_ULTILS_HPP_
 
 /** In this hpp file we define the utilities for the combination technique */
 #include <math.h>
+#include <assert.h>
+#include <float.h>
+
+// include open mp for shared memory programming
+#include <omp.h>
+
 #include <iostream>
 #include <typeinfo>
 #include <stack>
@@ -18,8 +23,6 @@
 #include <fstream>
 #include <vector>
 #include <complex>
-#include <assert.h>
-#include <float.h>
 
 #define ABS(x) x < 0 ? -x : x
 #define UNDEFINED_OPERATION_EXCEPTION -1
@@ -31,9 +34,6 @@
  */
 #define p_INF DBL_MAX
 #define n_INF -(DBL_MAX)
-
-// include open mp for shared memory programming
-#include <omp.h>
 
 // useful for checking the fullgrid vs coefficient template type precedence.. .
 
@@ -53,7 +53,6 @@
  *exception (as _FGTp > _CFTp )
  *
  */
-using namespace std;
 
 template <typename _FGTp, typename _CFTp>
 void check_type_precedence() {
@@ -74,17 +73,11 @@ typedef std::vector<double> DVector;
 
 typedef std::vector<int> IVector;
 
-#define COMBIGRID_OUT_WRN(str, FILE, LINE)                           \
-  {                                                                  \
-    std::cout << "\nWARNING: (in FILE:" << FILE << "; LINE:" << LINE \
-              << ") :\n" << str << "\n";                             \
-  }
+#define COMBIGRID_OUT_WRN(str, FILE, LINE) \
+  { std::cout << "\nWARNING: (in FILE:" << FILE << "; LINE:" << LINE << ") :\n" << str << "\n"; }
 
-#define COMBIGRID_OUT_ERR(str, FILE, LINE)                                   \
-  {                                                                          \
-    std::cout << "FILE:" << FILE << " LINE:" << LINE << ": \n ERROR:" << str \
-              << "\n";                                                       \
-  }
+#define COMBIGRID_OUT_ERR(str, FILE, LINE) \
+  { std::cout << "FILE:" << FILE << " LINE:" << LINE << ": \n ERROR:" << str << "\n"; }
 
 #define COMBIGRID_OUT(str) \
   { std::cout << str << std::endl; };
@@ -98,8 +91,9 @@ typedef std::vector<int> IVector;
 #define COMBIGRID_ERROR_TEST_EQUAL(val1, val2, tolerance, str)              \
   {                                                                         \
     if (fabs(val1 - val2) > tolerance) {                                    \
-      std::cout << std::endl << "ERROR: " << str << " , v1:" << val1        \
-                << " , v2:" << val2 << " , tol:" << tolerance << std::endl; \
+      std::cout << std::endl                                                \
+                << "ERROR: " << str << " , v1:" << val1 << " , v2:" << val2 \
+                << " , tol:" << tolerance << std::endl;                     \
       assert(false);                                                        \
     }                                                                       \
   }
@@ -143,36 +137,28 @@ typedef std::vector<int> IVector;
 namespace combigrid {
 
 /** vector with power two */
-const int powerOfTwo[30] = {1,        2,        4,         8,        16,
-                            32,       64,       128,       256,      512,
-                            1024,     2048,     4096,      8192,     16384,
-                            32768,    65536,    131072,    262144,   524288,
-                            1048576,  2097152,  4194304,   8388608,  16777216,
-                            33554432, 67108864, 134217728, 268435456};
+const int powerOfTwo[30] = {
+    1,       2,       4,       8,       16,       32,       64,       128,       256,      512,
+    1024,    2048,    4096,    8192,    16384,    32768,    65536,    131072,    262144,   524288,
+    1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
 
 /** vector with one over power two */
 const double oneOverPowOfTwo[30] = {
-    1.0 / 1.0,        1.0 / 2.0,        1.0 / 4.0,        1.0 / 8.0,
-    1.0 / 16.0,       1.0 / 32.0,       1.0 / 64.0,       1.0 / 128.0,
-    1.0 / 256.0,      1.0 / 512.0,      1.0 / 1024.0,     1.0 / 2048.0,
-    1.0 / 4096.0,     1.0 / 8192.0,     1.0 / 16384.0,    1.0 / 32768.0,
-    1.0 / 65536.0,    1.0 / 131072.0,   1.0 / 262144.0,   1.0 / 524288.0,
-    1.0 / 1048576.0,  1.0 / 2097152.0,  1.0 / 4194304.0,  1.0 / 8388608.0,
-    1.0 / 16777216.0, 1.0 / 33554432.0, 1.0 / 67108864.0, 1.0 / 134217728.0,
-    1.0 / 268435456.0};
+    1.0 / 1.0,        1.0 / 2.0,        1.0 / 4.0,         1.0 / 8.0,        1.0 / 16.0,
+    1.0 / 32.0,       1.0 / 64.0,       1.0 / 128.0,       1.0 / 256.0,      1.0 / 512.0,
+    1.0 / 1024.0,     1.0 / 2048.0,     1.0 / 4096.0,      1.0 / 8192.0,     1.0 / 16384.0,
+    1.0 / 32768.0,    1.0 / 65536.0,    1.0 / 131072.0,    1.0 / 262144.0,   1.0 / 524288.0,
+    1.0 / 1048576.0,  1.0 / 2097152.0,  1.0 / 4194304.0,   1.0 / 8388608.0,  1.0 / 16777216.0,
+    1.0 / 33554432.0, 1.0 / 67108864.0, 1.0 / 134217728.0, 1.0 / 268435456.0};
 
 /** the maximum double value */
-inline double COMBIGRID_DMAX(double v1, double v2) {
-  return (v1 < v2) ? v2 : v1;
-}
+inline double COMBIGRID_DMAX(double v1, double v2) { return (v1 < v2) ? v2 : v1; }
 
 /** the maximum int value */
 inline int COMBIGRID_IMAX(int v1, int v2) { return (v1 < v2) ? v2 : v1; }
 
 /** the minimum double value */
-inline double COMBIGRID_DMIN(double v1, double v2) {
-  return (v1 > v2) ? v2 : v1;
-}
+inline double COMBIGRID_DMIN(double v1, double v2) { return (v1 > v2) ? v2 : v1; }
 
 /** the minimum int value */
 inline int COMBIGRID_IMIN(int v1, int v2) { return (v1 > v2) ? v2 : v1; }
@@ -197,7 +183,7 @@ inline double l2_norm(std::vector<double>* v1) {
     diff = diff + v1->at(i) * v1->at(i);
   }
 
-  return sqrt(diff / double(v1->size()));
+  return sqrt(diff / static_cast<double>(v1->size()));
 }
 
 /** calculates the Inf norm of one vector*/
@@ -214,9 +200,9 @@ inline double inf_norm(std::vector<double>* v1) {
 
 /** multiply two vectors, result will be in the first vector */
 inline void vect_mul(std::vector<double>* v1, std::vector<double>* v2) {
-  COMBIGRID_ERROR_TEST(v1->size() == v2->size(),
-                       " vect_mul , size do not match v1->size():"
-                           << v1->size() << " , v2->size():" << v2->size());
+  COMBIGRID_ERROR_TEST(
+      v1->size() == v2->size(),
+      " vect_mul , size do not match v1->size():" << v1->size() << " , v2->size():" << v2->size());
 
   for (unsigned int i = 0; i < v1->size(); i++) {
     v1->at(i) = v1->at(i) * v2->at(i);
@@ -225,9 +211,9 @@ inline void vect_mul(std::vector<double>* v1, std::vector<double>* v2) {
 
 /** difference of two vectors, result will be in the first vector */
 inline void vect_diff(std::vector<double>* v1, std::vector<double>* v2) {
-  COMBIGRID_ERROR_TEST(v1->size() == v2->size(),
-                       " vect_diff , size do not match v1->size():"
-                           << v1->size() << " , v2->size():" << v2->size());
+  COMBIGRID_ERROR_TEST(
+      v1->size() == v2->size(),
+      " vect_diff , size do not match v1->size():" << v1->size() << " , v2->size():" << v2->size());
 
   for (unsigned int i = 0; i < v1->size(); i++) {
     v1->at(i) = v1->at(i) - v2->at(i);
@@ -237,9 +223,9 @@ inline void vect_diff(std::vector<double>* v1, std::vector<double>* v2) {
 /** v1 = coefv1*v1 + coefv2 * v2 */
 inline void vect_add_mul(double coefv1, std::vector<double>* v1, double coefv2,
                          std::vector<double>* v2) {
-  COMBIGRID_ERROR_TEST(v1->size() == v2->size(),
-                       " vect_add_mul , size do not match v1->size():"
-                           << v1->size() << " , v2->size():" << v2->size());
+  COMBIGRID_ERROR_TEST(v1->size() == v2->size(), " vect_add_mul , size do not match v1->size():"
+                                                     << v1->size()
+                                                     << " , v2->size():" << v2->size());
 
   for (unsigned int i = 0; i < v1->size(); i++) {
     v1->at(i) = coefv1 * v1->at(i) + coefv2 * v2->at(i);
@@ -247,11 +233,10 @@ inline void vect_add_mul(double coefv1, std::vector<double>* v1, double coefv2,
 }
 
 /** computes the scalar product of two vectors */
-inline void scalar_product(std::vector<double>* v1, std::vector<double>* v2,
-                           double& result) {
-  COMBIGRID_ERROR_TEST(v1->size() == v2->size(),
-                       " vect_add_mul , size do not match v1->size():"
-                           << v1->size() << " , v2->size():" << v2->size());
+inline void scalar_product(std::vector<double>* v1, std::vector<double>* v2, double& result) {
+  COMBIGRID_ERROR_TEST(v1->size() == v2->size(), " vect_add_mul , size do not match v1->size():"
+                                                     << v1->size()
+                                                     << " , v2->size():" << v2->size());
   result = 0.0;
 
   for (unsigned int i = 0; i < v1->size(); i++) {
@@ -267,8 +252,7 @@ inline void vect_setvalue(std::vector<double>* v1, double newValue) {
 }
 
 /** plot one vector */
-inline void plot_vect(int level, int verb, std::vector<double>* v1,
-                      const char* stri) {
+inline void plot_vect(int level, int verb, std::vector<double>* v1, const char* stri) {
   if (verb > level) {
     std::cout << stri << "=[" << v1->at(0);
 
@@ -279,6 +263,6 @@ inline void plot_vect(int level, int verb, std::vector<double>* v1,
     std::cout << "];" << std::endl;
   }
 }
-}
+}  // namespace combigrid
 
 #endif /* COMBIGRID_ULTILS_HPP_ */

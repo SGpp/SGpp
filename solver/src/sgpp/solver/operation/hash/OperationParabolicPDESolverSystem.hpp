@@ -12,6 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace solver {
@@ -77,10 +78,10 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
    * Multiplicates a vector with the matrix
    *
    * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
-   * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
+   * @param result SGPP::base::DataVector into which the result of the space discretization
+   * operation is stored
    */
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result) = 0;
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
   /**
    * generates the right hand side of the system
@@ -96,7 +97,6 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
   virtual void finishTimestep() = 0;
 
   virtual void coarsenAndRefine(bool isLastTimestep = false) = 0;
-
 
   /**
    * Implements some start jobs of every timestep, e.g.discounting boundaries
@@ -174,7 +174,8 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
   void saveAlpha();
 
   /**
-   * stores the values of the (dehierarchized) grid in the SGPP::base::DataVector Values used by time step size control methods
+   * stores the values of the (dehierarchized) grid in the SGPP::base::DataVector Values used by
+   * time step size control methods
    *
    * @param Values SGPP::base::DataVector in which the values will be stored
    */
@@ -187,7 +188,7 @@ class OperationParabolicPDESolverSystem : public SGPP::base::OperationMatrix {
   SGPP::base::GridStorage* getSecondGridStorage();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEM_HPP */

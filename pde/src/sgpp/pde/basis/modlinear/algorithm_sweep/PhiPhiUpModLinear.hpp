@@ -11,11 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
-
-
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -34,7 +31,7 @@ class PhiPhiUpModLinear {
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  PhiPhiUpModLinear(SGPP::base::GridStorage* storage);
+  explicit PhiPhiUpModLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -44,7 +41,8 @@ class PhiPhiUpModLinear {
   /**
    * This operations performs the calculation of up in the direction of dimension <i>dim</i>
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
    * @param result SGPP::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
@@ -53,7 +51,6 @@ class PhiPhiUpModLinear {
                   grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * recursive function for the calculation of Up
    *
@@ -64,13 +61,10 @@ class PhiPhiUpModLinear {
    * @param fl function value on the left boundary
    * @param fr function value on the right boundary
    */
-  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-           grid_iterator& index, size_t dim, float_t& fl, float_t& fr);
+  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index,
+           size_t dim, float_t& fl, float_t& fr);
 };
-
-
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* PHIPHIUPMODLINEAR_HPP */

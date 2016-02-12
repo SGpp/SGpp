@@ -17,6 +17,8 @@
 #include <cstddef>
 #include <algorithm>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace optimization {
@@ -35,17 +37,14 @@ void addSLESolver(SLESolver* solver, std::vector<SLESolver*>& solvers,
                   const std::map<SLESolver*, bool>& supports) {
   // add solver if it's supported and not already in the vector
   if ((supports.at(solver)) &&
-      (std::find(solvers.begin(), solvers.end(), solver) ==
-       solvers.end())) {
+      (std::find(solvers.begin(), solvers.end(), solver) == solvers.end())) {
     solvers.push_back(solver);
   }
 }
 
-Auto::~Auto() {
-}
+Auto::~Auto() {}
 
-bool Auto::solve(SLE& system, base::DataVector& b,
-                 base::DataVector& x) const {
+bool Auto::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   base::DataMatrix B(b.getPointer(), b.getSize(), 1);
   base::DataMatrix X(B.getNrows(), B.getNcols());
 
@@ -59,10 +58,8 @@ bool Auto::solve(SLE& system, base::DataVector& b,
   }
 }
 
-bool Auto::solve(SLE& system, base::DataMatrix& B,
-                 base::DataMatrix& X) const {
-  Printer::getInstance().printStatusBegin(
-    "Solving linear system (automatic method)...");
+bool Auto::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
+  Printer::getInstance().printStatusBegin("Solving linear system (automatic method)...");
 
   Armadillo solverArmadillo;
   Eigen solverEigen;
@@ -108,9 +105,7 @@ bool Auto::solve(SLE& system, base::DataMatrix& B,
     // every inc-th row
     size_t nrows = 0;
     size_t nnz = 0;
-    size_t inc = static_cast<size_t>(
-                   ESTIMATE_NNZ_ROWS_SAMPLE_SIZE *
-                   static_cast<float_t>(n)) + 1;
+    size_t inc = static_cast<size_t>(ESTIMATE_NNZ_ROWS_SAMPLE_SIZE * static_cast<float_t>(n)) + 1;
 
     Printer::getInstance().printStatusUpdate("estimating sparsity pattern");
 
@@ -125,16 +120,14 @@ bool Auto::solve(SLE& system, base::DataMatrix& B,
     }
 
     // calculate estimate ratio nonzero entries
-    float_t nnzRatio = static_cast<float_t>(nnz) /
-                       (static_cast<float_t>(nrows) *
-                        static_cast<float_t>(n));
+    float_t nnzRatio =
+        static_cast<float_t>(nnz) / (static_cast<float_t>(nrows) * static_cast<float_t>(n));
 
     // print ratio
     {
       char str[10];
-      snprintf(str, 10, "%.1f%%", nnzRatio * 100.0);
-      Printer::getInstance().printStatusUpdate("estimated nnz ratio: " +
-          std::string(str));
+      snprintf(str, sizeof(str), "%.1f%%", nnzRatio * 100.0);
+      Printer::getInstance().printStatusUpdate("estimated nnz ratio: " + std::string(str));
       Printer::getInstance().printStatusNewLine();
     }
 
@@ -160,13 +153,12 @@ bool Auto::solve(SLE& system, base::DataMatrix& B,
     if (result) {
       Printer::getInstance().printStatusEnd();
       return true;
-    } else if ((solvers[i] == &solverGmmpp) &&
-               (n > MAX_DIM_FOR_FULL)) {
+    } else if ((solvers[i] == &solverGmmpp) && (n > MAX_DIM_FOR_FULL)) {
       // don't use full solvers and return approximative solution
       Printer::getInstance().printStatusEnd(
-        "warning: using non-converged solution of iterative "
-        "solver, residual can be large "
-        "(matrix too large to try other solvers)");
+          "warning: using non-converged solution of iterative "
+          "solver, residual can be large "
+          "(matrix too large to try other solvers)");
       return true;
     }
   }
@@ -174,7 +166,6 @@ bool Auto::solve(SLE& system, base::DataMatrix& B,
   Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
   return false;
 }
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace SGPP

@@ -44,15 +44,11 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    * @param acceptanceThreshold     acceptance threshold
    * @param effectivenessThreshold  effectiveness threshold
    */
-  LevenbergMarquardt(VectorFunction& phi,
-                     VectorFunctionGradient& phiGradient,
-                     size_t maxItCount = DEFAULT_N,
-                     float_t tolerance = DEFAULT_TOLERANCE,
+  LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
+                     size_t maxItCount = DEFAULT_N, float_t tolerance = DEFAULT_TOLERANCE,
                      float_t initialDamping = DEFAULT_INITIAL_DAMPING,
-                     float_t acceptanceThreshold =
-                       DEFAULT_ACCEPTANCE_THRESHOLD,
-                     float_t effectivenessThreshold =
-                       DEFAULT_EFFECTIVENESS_THRESHOLD);
+                     float_t acceptanceThreshold = DEFAULT_ACCEPTANCE_THRESHOLD,
+                     float_t effectivenessThreshold = DEFAULT_EFFECTIVENESS_THRESHOLD);
 
   /**
    * Constructor.
@@ -69,14 +65,9 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    * @param sleSolver               reference to linear solver
    *                                for solving the linear systems
    */
-  LevenbergMarquardt(VectorFunction& phi,
-                     VectorFunctionGradient& phiGradient,
-                     size_t maxItCount,
-                     float_t tolerance,
-                     float_t initialDamping,
-                     float_t acceptanceThreshold,
-                     float_t effectivenessThreshold,
-                     const sle_solver::SLESolver& sleSolver);
+  LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient, size_t maxItCount,
+                     float_t tolerance, float_t initialDamping, float_t acceptanceThreshold,
+                     float_t effectivenessThreshold, const sle_solver::SLESolver& sleSolver);
 
   /**
    * Destructor.
@@ -133,8 +124,7 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<LeastSquaresOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<LeastSquaresOptimizer>& clone) const override;
 
  protected:
   /// phi gradient
@@ -152,9 +142,8 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
   /// linear solver
   const sle_solver::SLESolver& sleSolver;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEVENBERGMARQUARDT_HPP */
