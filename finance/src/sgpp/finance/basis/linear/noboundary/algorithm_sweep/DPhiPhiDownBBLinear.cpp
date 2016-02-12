@@ -7,27 +7,21 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+DPhiPhiDownBBLinear::DPhiPhiDownBBLinear(SGPP::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+DPhiPhiDownBBLinear::~DPhiPhiDownBBLinear() {}
 
-DPhiPhiDownBBLinear::DPhiPhiDownBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-DPhiPhiDownBBLinear::~DPhiPhiDownBBLinear() {
-}
-
-void DPhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
-                                     SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void DPhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                     grid_iterator& index, size_t dim) {
   rec(source, result, index, dim, 0.0, 0.0);
 }
 
-void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source,
-                              SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                              float_t fr) {
+void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                              grid_iterator& index, size_t dim, float_t fl, float_t fr) {
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -38,7 +32,7 @@ void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source,
   index.get(dim, l, i);
 
   // integration
-  result[seq] = (  0.5 * (fr - fl) ); // diagonal entry = 0.0
+  result[seq] = (0.5 * (fr - fl));  // diagonal entry = 0.0
 
   // dehierarchisation
   float_t fm = ((fl + fr) / 2.0) + alpha_value;
@@ -60,7 +54,5 @@ void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

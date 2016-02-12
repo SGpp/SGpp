@@ -7,29 +7,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+PhidPhiDownBBLinearStretched::PhidPhiDownBBLinearStretched(SGPP::base::GridStorage* storage)
+    : storage(storage), stretching(storage->getStretching()) {}
 
-
-PhidPhiDownBBLinearStretched::PhidPhiDownBBLinearStretched(
-  SGPP::base::GridStorage* storage) : storage(storage),
-  stretching(storage->getStretching()) {
-}
-
-PhidPhiDownBBLinearStretched::~PhidPhiDownBBLinearStretched() {
-}
+PhidPhiDownBBLinearStretched::~PhidPhiDownBBLinearStretched() {}
 
 void PhidPhiDownBBLinearStretched::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                              SGPP::base::DataVector& result, grid_iterator& index,
+                                              size_t dim) {
   rec(source, result, index, dim, 0.0, 0.0);
 }
 
 void PhidPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
-                                       SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                                       float_t fr) {
-  //Fix the eqn (Selcuk)
+                                       SGPP::base::DataVector& result, grid_iterator& index,
+                                       size_t dim, float_t fl, float_t fr) {
+  // Fix the eqn (Selcuk)
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -40,14 +35,14 @@ void PhidPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
   index.get(dim, l, i);
 
   float_t posl = 0, posr = 0, posc = 0;
-  this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i),
-                                         dim, posc, posl, posr );
+  this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl,
+                                         posr);
 
   // integration
-  result[seq] = (  0.5 * (fl - fr) ); // diagonal entry = 0.0
+  result[seq] = (0.5 * (fl - fr));  // diagonal entry = 0.0
 
   // dehierarchisation
-  float_t fm  = (fr - fl) * (posc - posl) / (posr - posl) + fl + alpha_value;
+  float_t fm = (fr - fl) * (posc - posl) / (posr - posl) + fl + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -66,7 +61,5 @@ void PhidPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

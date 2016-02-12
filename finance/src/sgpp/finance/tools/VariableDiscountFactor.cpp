@@ -7,20 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace finance {
 
-VariableDiscountFactor::VariableDiscountFactor(SGPP::base::GridStorage* storage,
-    int dim_r): myBoundingBox(storage->getBoundingBox()), storage(storage),
-  dim_r(dim_r) {
-}
+VariableDiscountFactor::VariableDiscountFactor(SGPP::base::GridStorage* storage, int dim_r)
+    : myBoundingBox(storage->getBoundingBox()), storage(storage), dim_r(dim_r) {}
 
-VariableDiscountFactor::~VariableDiscountFactor() {
-}
+VariableDiscountFactor::~VariableDiscountFactor() {}
 
-void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor,
-    float_t T) {
+void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor, float_t T) {
   float_t tmp;
 
   for (size_t i = 0; i < storage->size(); i++) {
@@ -33,11 +30,10 @@ void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor,
       dblFuncValues[j] = tmp;
     }
 
-    //std::cout<<dblFuncValues[1]<<std::endl;
-    //factor.set(i, exp((-1.0)*dblFuncValues[1]*T));
-    factor.set(i, exp((-1.0)*dblFuncValues[this->dim_r]*T));
+    // std::cout<<dblFuncValues[1]<<std::endl;
+    // factor.set(i, exp((-1.0)*dblFuncValues[1]*T));
+    factor.set(i, exp((-1.0) * dblFuncValues[this->dim_r] * T));
   }
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

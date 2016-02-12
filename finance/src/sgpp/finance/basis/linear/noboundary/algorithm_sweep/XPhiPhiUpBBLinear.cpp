@@ -7,21 +7,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XPhiPhiUpBBLinear::XPhiPhiUpBBLinear(SGPP::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+XPhiPhiUpBBLinear::~XPhiPhiUpBBLinear() {}
 
-XPhiPhiUpBBLinear::XPhiPhiUpBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-XPhiPhiUpBBLinear::~XPhiPhiUpBBLinear() {
-}
-
-void XPhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
-                                   SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void XPhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                   grid_iterator& index, size_t dim) {
   float_t q = boundingBox->getIntervalWidth(dim);
   float_t t = boundingBox->getIntervalOffset(dim);
 
@@ -42,9 +37,8 @@ void XPhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void XPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source,
-                            SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                            float_t& fr) {
+void XPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                            grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -76,21 +70,22 @@ void XPhiPhiUpBBLinear::rec(SGPP::base::DataVector& source,
 
   float_t alpha_value = source[seq];
 
-  float_t hsquare = (1.0 / static_cast<float_t>(1 << (2 * static_cast<int>
-                     (current_level))));
+  float_t hsquare = (1.0 / static_cast<float_t>(1 << (2 * static_cast<int>(current_level))));
 
   // transposed operations:
   result[seq] = fm;
 
-  fl = ((fm / 2.0) + (alpha_value * (hsquare / 2.0 * static_cast<float_t>
-                                     (current_index) - hsquare / 12.0))) + fl;
-  fr = ((fm / 2.0) + (alpha_value * (hsquare / 2.0 * static_cast<float_t>
-                                     (current_index) + hsquare / 12.0))) + fr;
+  fl = ((fm / 2.0) +
+        (alpha_value * (hsquare / 2.0 * static_cast<float_t>(current_index) - hsquare / 12.0))) +
+       fl;
+  fr = ((fm / 2.0) +
+        (alpha_value * (hsquare / 2.0 * static_cast<float_t>(current_index) + hsquare / 12.0))) +
+       fr;
 }
 
-void XPhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
-                              SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                              float_t& fr, float_t q, float_t t) {
+void XPhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                              grid_iterator& index, size_t dim, float_t& fl, float_t& fr, float_t q,
+                              float_t t) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -110,7 +105,7 @@ void XPhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
     index.stepRight(dim);
 
     if (!storage->end(index.seq())) {
-      recBB(source, result, index, dim, fmr, fr, q , t);
+      recBB(source, result, index, dim, fmr, fr, q, t);
     }
 
     index.up(dim);
@@ -126,13 +121,13 @@ void XPhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
   // transposed operations:
   result[seq] = fm;
 
-  fl = ((fm / 2.0) + (alpha_value * (h * h / 2.0 * static_cast<float_t>
-                                     (current_index) * q * q + h * t * q / 4.0 - h * h / 12.0 * q * q))) + fl;
-  fr = ((fm / 2.0) + (alpha_value * (h * h / 2.0 * static_cast<float_t>
-                                     (current_index) * q * q + h * t * q / 4.0 + h * h / 12.0 * q * q))) + fr;
+  fl = ((fm / 2.0) + (alpha_value * (h * h / 2.0 * static_cast<float_t>(current_index) * q * q +
+                                     h * t * q / 4.0 - h * h / 12.0 * q * q))) +
+       fl;
+  fr = ((fm / 2.0) + (alpha_value * (h * h / 2.0 * static_cast<float_t>(current_index) * q * q +
+                                     h * t * q / 4.0 + h * h / 12.0 * q * q))) +
+       fr;
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

@@ -8,21 +8,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XdPhidPhiUpBBLinearBoundary::XdPhidPhiUpBBLinearBoundary(SGPP::base::GridStorage* storage)
+    : XdPhidPhiUpBBLinear(storage) {}
 
-
-XdPhidPhiUpBBLinearBoundary::XdPhidPhiUpBBLinearBoundary(
-  SGPP::base::GridStorage* storage) : XdPhidPhiUpBBLinear(storage) {
-}
-
-XdPhidPhiUpBBLinearBoundary::~XdPhidPhiUpBBLinearBoundary() {
-}
+XdPhidPhiUpBBLinearBoundary::~XdPhidPhiUpBBLinearBoundary() {}
 
 void XdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                             SGPP::base::DataVector& result, grid_iterator& index,
+                                             size_t dim) {
   float_t q = this->boundingBox->getIntervalWidth(dim);
   float_t t = this->boundingBox->getIntervalOffset(dim);
 
@@ -59,15 +55,19 @@ void XdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
-      throw new base::application_exception("XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw new base::application_exception(
+          "XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
-      throw new base::application_exception("XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw new base::application_exception(
+          "XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     index.resetToLeftLevelZero(dim);
@@ -94,22 +94,24 @@ void XdPhidPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
-      throw new base::application_exception("XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw new base::application_exception(
+          "XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
-      throw new base::application_exception("XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet boundaries.");
+      throw new base::application_exception(
+          "XdPhidPhiUpBBLinearBoundary::operator : Not yet implemented for non-Dirichlet "
+          "boundaries.");
     }
 
     index.resetToLeftLevelZero(dim);
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

@@ -7,23 +7,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XdPhidPhiUpBBLinear::XdPhidPhiUpBBLinear(SGPP::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+XdPhidPhiUpBBLinear::~XdPhidPhiUpBBLinear() {}
 
-XdPhidPhiUpBBLinear::XdPhidPhiUpBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-
-XdPhidPhiUpBBLinear::~XdPhidPhiUpBBLinear() {
-}
-
-
-void XdPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
-                                     SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void XdPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                     grid_iterator& index, size_t dim) {
   float_t q = boundingBox->getIntervalWidth(dim);
   float_t t = boundingBox->getIntervalOffset(dim);
 
@@ -44,9 +37,8 @@ void XdPhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void XdPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
-                              SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                              float_t& fr) {
+void XdPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                              grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -85,9 +77,9 @@ void XdPhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + (alpha_value * ((-0.5))) + fr;
 }
 
-void XdPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
-                                SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                                float_t& fr, float_t q, float_t t) {
+void XdPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                grid_iterator& index, size_t dim, float_t& fl, float_t& fr,
+                                float_t q, float_t t) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -126,7 +118,5 @@ void XdPhidPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + (alpha_value * ((-0.5) * q)) + fr;
 }
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

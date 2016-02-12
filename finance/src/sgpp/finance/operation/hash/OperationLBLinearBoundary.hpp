@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
@@ -18,14 +17,14 @@ namespace finance {
  * Implements the standard \f$(\phi_i(x),d\phi_j(x))\f$ operator on linear boundary grids
  *
  */
-class OperationLBLinearBoundary: public SGPP::pde::StdUpDown {
+class OperationLBLinearBoundary : public SGPP::pde::StdUpDown {
  public:
   /**
    * Constructor
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  OperationLBLinearBoundary(SGPP::base::GridStorage* storage);
+  explicit OperationLBLinearBoundary(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -42,8 +41,7 @@ class OperationLBLinearBoundary: public SGPP::pde::StdUpDown {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
   /**
    * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),d\phi_j(x))\f$.
@@ -54,11 +52,9 @@ class OperationLBLinearBoundary: public SGPP::pde::StdUpDown {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* OPERATIONLBLINEARBOUNDARY_HPP */

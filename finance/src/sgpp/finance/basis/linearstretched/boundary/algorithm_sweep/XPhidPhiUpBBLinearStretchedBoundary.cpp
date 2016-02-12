@@ -7,20 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
-
-
 XPhidPhiUpBBLinearStretchedBoundary::XPhidPhiUpBBLinearStretchedBoundary(
-  SGPP::base::GridStorage* storage) : XPhidPhiUpBBLinearStretched(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : XPhidPhiUpBBLinearStretched(storage) {}
 
-XPhidPhiUpBBLinearStretchedBoundary::~XPhidPhiUpBBLinearStretchedBoundary() {
-}
+XPhidPhiUpBBLinearStretchedBoundary::~XPhidPhiUpBBLinearStretchedBoundary() {}
 
-/*void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim)
+/*void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
+SGPP::base::DataVector& result, grid_iterator& index, size_t dim)
 {
   float_t q = this->stretching->getIntervalWidth(dim);
   float_t t = this->stretching->getIntervalOffset(dim);
@@ -83,18 +80,15 @@ XPhidPhiUpBBLinearStretchedBoundary::~XPhidPhiUpBBLinearStretchedBoundary() {
 
 }*/
 
-
-void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
-    source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
+                                                     SGPP::base::DataVector& result,
+                                                     grid_iterator& index, size_t dim) {
   float_t q = this->stretching->getIntervalWidth(dim);
   float_t t = this->stretching->getIntervalOffset(dim);
-
-
 
   // get boundary values
   float_t fl = 0.0;
   float_t fr = 0.0;
-
 
   if (!index.hint()) {
     index.resetToLevelOne(dim);
@@ -118,7 +112,7 @@ void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
 
   // check boundary conditions
   if (this->stretching->hasDirichletBoundaryLeft(dim)) {
-    result[seq_left] = 0.0; // source[seq_left];
+    result[seq_left] = 0.0;  // source[seq_left];
   } else {
     // up
     //////////////////////////////////////
@@ -128,16 +122,12 @@ void XPhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
   }
 
   if (this->stretching->hasDirichletBoundaryRight(dim)) {
-    result[seq_right] = 0.0; //source[seq_right];
+    result[seq_right] = 0.0;  // source[seq_right];
   } else {
     result[seq_right] = fr;
   }
 
   index.resetToLeftLevelZero(dim);
-
-
 }
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

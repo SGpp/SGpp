@@ -9,39 +9,34 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/finance/operation/FinanceOpFactory.hpp>
-#include <cmath>
 
 #include <sgpp/globaldef.hpp>
-
+#include <cmath>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace finance {
 
 BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(
-  SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha,
-  SGPP::base::DataVector& mu,
-  SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r,
-  float_t TimestepSize, std::string OperationMode,
-  float_t dStrike, std::string option_type,
-  bool bLogTransform, bool useCoarsen, float_t coarsenThreshold,
-  std::string adaptSolveMode,
-  int numCoarsenPoints, float_t refineThreshold, std::string refineMode,
-  SGPP::base::GridIndex::level_type refineMaxLevel) {
+    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
+    SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
+    std::string OperationMode, float_t dStrike, std::string option_type, bool bLogTransform,
+    bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
+    float_t refineThreshold, std::string refineMode,
+    SGPP::base::GridIndex::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
   this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
   this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(*
-      (this->BoundGrid)->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(*
-      (this->BoundGrid)->getStorage());
+  this->oldGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
+  this->secondGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
 
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(
-    SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->r = r;
   this->mus = &mu;
   this->sigmas = &sigma;
@@ -50,25 +45,34 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(
 
   // throw exception if grid dimensions not equal algorithmic dimensions
   if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim()) {
-    throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystemn : Number of algorithmic dimensions higher than the number of grid's dimensions.");
+    throw SGPP::base::algorithm_exception(
+        "BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystemn : Number of "
+        "algorithmic dimensions higher than the number of grid's dimensions.");
   }
 
-  // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
-  if (this->BoundGrid->getStorage()->dim() != this->mus->getSize()
-      || this->BoundGrid->getStorage()->dim() != this->sigmas->getSize()) {
-    throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Dimension of mu and sigma parameters don't match the grid's dimensions!");
+  // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and
+  // sigma)
+  if (this->BoundGrid->getStorage()->dim() != this->mus->getSize() ||
+      this->BoundGrid->getStorage()->dim() != this->sigmas->getSize()) {
+    throw SGPP::base::algorithm_exception(
+        "BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Dimension of "
+        "mu and sigma parameters don't match the grid's dimensions!");
   }
 
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
-  if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows()
-      || this->BoundGrid->getStorage()->dim() != this->rhos->getNcols()) {
-    throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Row or col of rho parameter don't match the grid's dimensions!");
+  if (this->BoundGrid->getStorage()->dim() != this->rhos->getNrows() ||
+      this->BoundGrid->getStorage()->dim() != this->rhos->getNcols()) {
+    throw SGPP::base::algorithm_exception(
+        "BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Row or col "
+        "of rho parameter don't match the grid's dimensions!");
   }
 
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
     if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim()) {
-      throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Minimum one algorithmic dimension is not inside the grid's dimensions!");
+      throw SGPP::base::algorithm_exception(
+          "BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : Minimum "
+          "one algorithmic dimension is not inside the grid's dimensions!");
     }
   }
 
@@ -85,13 +89,14 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(
     }
 
     if (dimCount > 1) {
-      throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : There is minimum one float_td algorithmic dimension!");
+      throw SGPP::base::algorithm_exception(
+          "BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem : There is "
+          "minimum one float_td algorithmic dimension!");
     }
   }
 
   // build the coefficient vectors for the operations
-  this->gammaCoef = new SGPP::base::DataMatrix(this->BSalgoDims.size(),
-      this->BSalgoDims.size());
+  this->gammaCoef = new SGPP::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
   this->deltaCoef = new SGPP::base::DataVector(this->BSalgoDims.size());
 
   if (bLogTransform == false) {
@@ -99,25 +104,22 @@ BlackScholesParabolicPDESolverSystem::BlackScholesParabolicPDESolverSystem(
     buildGammaCoefficients();
 
     // Create needed operations, on boundary grid
-    this->OpDeltaBound = SGPP::op_factory::createOperationDelta(*this->BoundGrid,
-                         *this->deltaCoef);
-    this->OpGammaBound = SGPP::op_factory::createOperationGamma(*this->BoundGrid,
-                         *this->gammaCoef);
-  }
-  // create needed operations that are different in case of a log-transformed Black-Scholoes equation
-  else {
+    this->OpDeltaBound = SGPP::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef);
+    this->OpGammaBound = SGPP::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef);
+  } else {
+    // create needed operations that are different in case of a log-transformed Black-Scholoes
+    // equation
     buildDeltaCoefficientsLogTransform();
     buildGammaCoefficientsLogTransform();
 
     // operations on boundary grid
-    this->OpDeltaBound = SGPP::op_factory::createOperationDeltaLog(*this->BoundGrid,
-                         *this->deltaCoef);
-    this->OpGammaBound = SGPP::op_factory::createOperationGammaLog(*this->BoundGrid,
-                         *this->gammaCoef);
+    this->OpDeltaBound =
+        SGPP::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef);
+    this->OpGammaBound =
+        SGPP::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef);
   }
 
-  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(
-                        *this->BoundGrid);
+  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
 
   // right hand side if System
   this->rhs = NULL;
@@ -161,8 +163,8 @@ BlackScholesParabolicPDESolverSystem::~BlackScholesParabolicPDESolverSystem() {
   delete this->secondGridStorage;
 }
 
-void BlackScholesParabolicPDESolverSystem::applyLOperator(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void BlackScholesParabolicPDESolverSystem::applyLOperator(SGPP::base::DataVector& alpha,
+                                                          SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
@@ -170,7 +172,7 @@ void BlackScholesParabolicPDESolverSystem::applyLOperator(
   // Apply the riskfree rate
   if (this->r != 0.0) {
     this->OpLTwoBound->mult(alpha, temp);
-    result.axpy((-1.0)*this->r, temp);
+    result.axpy((-1.0) * this->r, temp);
   }
 
   // Apply the delta method
@@ -182,8 +184,8 @@ void BlackScholesParabolicPDESolverSystem::applyLOperator(
   result.sub(temp);
 }
 
-void BlackScholesParabolicPDESolverSystem::applyMassMatrix(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void BlackScholesParabolicPDESolverSystem::applyMassMatrix(SGPP::base::DataVector& alpha,
+                                                           SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
@@ -210,11 +212,9 @@ void BlackScholesParabolicPDESolverSystem::finishTimestep() {
   // add number of Gridpoints
   this->numSumGridpointsInner += 0;
   this->numSumGridpointsComplete += this->BoundGrid->getSize();
-
 }
 
-void BlackScholesParabolicPDESolverSystem::coarsenAndRefine(
-  bool isLastTimestep) {
+void BlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep) {
   if (this->useCoarsen == true && isLastTimestep == false) {
     ///////////////////////////////////////////////////
     // Start integrated refinement & coarsening
@@ -225,15 +225,13 @@ void BlackScholesParabolicPDESolverSystem::coarsenAndRefine(
     // Coarsen the grid
     SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
 
-    //std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
-    //std::cout << "Grid Size: " << originalGridSize << std::endl;
+    // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
+    // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
-    if (this->adaptSolveMode == "refine"
-        || this->adaptSolveMode == "coarsenNrefine") {
+    if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-      SGPP::base::SurplusRefinementFunctor(this->alpha_complete, numRefines,
-                                           this->refineThreshold);
+      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
+          this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
         myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
@@ -248,14 +246,12 @@ void BlackScholesParabolicPDESolverSystem::coarsenAndRefine(
       delete myRefineFunc;
     }
 
-    if (this->adaptSolveMode == "coarsen"
-        || this->adaptSolveMode == "coarsenNrefine") {
+    if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor = new
-      SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
-                                           this->coarsenThreshold);
-      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete,
-                                     originalGridSize);
+      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
+          new SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
+                                                   this->coarsenThreshold);
+      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
       delete myCoarsenFunctor;
     }
 
@@ -289,14 +285,13 @@ void BlackScholesParabolicPDESolverSystem::buildGammaCoefficients() {
       // handle diagonal
       if (i == j) {
         this->gammaCoef->set(i, j,
-                             0.5 * ((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(
-                                       this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],
-                                           this->BSalgoDims[j])));
+                             0.5 * ((this->sigmas->get(this->BSalgoDims[i]) *
+                                     this->sigmas->get(this->BSalgoDims[j])) *
+                                    this->rhos->get(this->BSalgoDims[i], this->BSalgoDims[j])));
       } else {
-        this->gammaCoef->set(i, j,
-                             ((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(
-                                 this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],
-                                     this->BSalgoDims[j])));
+        this->gammaCoef->set(i, j, ((this->sigmas->get(this->BSalgoDims[i]) *
+                                     this->sigmas->get(this->BSalgoDims[j])) *
+                                    this->rhos->get(this->BSalgoDims[i], this->BSalgoDims[j])));
       }
     }
   }
@@ -312,13 +307,14 @@ void BlackScholesParabolicPDESolverSystem::buildDeltaCoefficients() {
     for (size_t j = 0; j < dim; j++) {
       // handle diagonal
       if (i == j) {
-        covar_sum += ((this->sigmas->get(this->BSalgoDims[i]) * this->sigmas->get(
-                         this->BSalgoDims[j])) * this->rhos->get(this->BSalgoDims[i],
-                             this->BSalgoDims[j]));
+        covar_sum +=
+            ((this->sigmas->get(this->BSalgoDims[i]) * this->sigmas->get(this->BSalgoDims[j])) *
+             this->rhos->get(this->BSalgoDims[i], this->BSalgoDims[j]));
       } else {
-        covar_sum += (0.5 * ((this->sigmas->get(this->BSalgoDims[i]) *
-                              this->sigmas->get(this->BSalgoDims[j])) * this->rhos->get(this->BSalgoDims[i],
-                                  this->BSalgoDims[j])));
+        covar_sum +=
+            (0.5 *
+             ((this->sigmas->get(this->BSalgoDims[i]) * this->sigmas->get(this->BSalgoDims[j])) *
+              this->rhos->get(this->BSalgoDims[i], this->BSalgoDims[j])));
       }
     }
 
@@ -334,14 +330,13 @@ void BlackScholesParabolicPDESolverSystem::buildGammaCoefficientsLogTransform() 
       // handle diagonal
       if (i == j) {
         this->gammaCoef->set(i, j,
-                             0.5 * ((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(
-                                       this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],
-                                           this->BSalgoDims[j])));
+                             0.5 * ((this->sigmas->get(this->BSalgoDims[i]) *
+                                     this->sigmas->get(this->BSalgoDims[j])) *
+                                    this->rhos->get(this->BSalgoDims[i], this->BSalgoDims[j])));
       } else {
-        this->gammaCoef->set(i, j,
-                             ((this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(
-                                 this->BSalgoDims[j]))*this->rhos->get(this->BSalgoDims[i],
-                                     this->BSalgoDims[j])));
+        this->gammaCoef->set(i, j, ((this->sigmas->get(this->BSalgoDims[i]) *
+                                     this->sigmas->get(this->BSalgoDims[j])) *
+                                    this->rhos->get(this->BSalgoDims[i], this->BSalgoDims[j])));
       }
     }
   }
@@ -351,11 +346,10 @@ void BlackScholesParabolicPDESolverSystem::buildDeltaCoefficientsLogTransform() 
   size_t dim = this->BSalgoDims.size();
 
   for (size_t i = 0; i < dim; i++) {
-    this->deltaCoef->set(i, this->mus->get(this->BSalgoDims[i]) - (0.5 *
-                         (this->sigmas->get(this->BSalgoDims[i])*this->sigmas->get(
-                            this->BSalgoDims[i]))));
+    this->deltaCoef->set(
+        i, this->mus->get(this->BSalgoDims[i]) - (0.5 * (this->sigmas->get(this->BSalgoDims[i]) *
+                                                         this->sigmas->get(this->BSalgoDims[i]))));
   }
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

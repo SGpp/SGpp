@@ -7,21 +7,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+PhidPhiUpBBLinear::PhidPhiUpBBLinear(SGPP::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+PhidPhiUpBBLinear::~PhidPhiUpBBLinear() {}
 
-PhidPhiUpBBLinear::PhidPhiUpBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-PhidPhiUpBBLinear::~PhidPhiUpBBLinear() {
-}
-
-void PhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
-                                   SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void PhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                   grid_iterator& index, size_t dim) {
   // get boundary values
   float_t fl = 0.0;
   float_t fr = 0.0;
@@ -29,9 +24,8 @@ void PhidPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   rec(source, result, index, dim, fl, fr);
 }
 
-void PhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
-                            SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                            float_t& fr) {
+void PhidPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                            grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -72,7 +66,5 @@ void PhidPhiUpBBLinear::rec(SGPP::base::DataVector& source,
   fr = (fm / 2.0) + ((alpha_value * helper) + fr);
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

@@ -11,11 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
-
-
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -36,28 +33,27 @@ class SqXdPhidPhiUpBBLinearStretched {
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  SqXdPhidPhiUpBBLinearStretched(SGPP::base::GridStorage* storage);
+  explicit SqXdPhidPhiUpBBLinearStretched(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~SqXdPhidPhiUpBBLinearStretched();
 
-
   /**
    * This operations performs the calculation of up in the direction of dimension <i>dim</i>
    * on a grid with fix Dirichlet 0 boundary conditions
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
    * @param result SGPP::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataVector& source,
-                          SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
+  virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                          grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * recursive function for the calculation of Up without Bounding Box support
    *
@@ -68,13 +64,11 @@ class SqXdPhidPhiUpBBLinearStretched {
    * @param fl function value on the left boundary, reference parameter
    * @param fr function value on the right boundary, reference parameter
    */
-  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-           grid_iterator& index, size_t dim, float_t& fl, float_t& fr);
+  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index,
+           size_t dim, float_t& fl, float_t& fr);
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* SQXDPHIDPHIUPBBLINEARSTRETCHEDBOUNDARY_HPP */

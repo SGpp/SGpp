@@ -7,25 +7,20 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
-
-
 XPhidPhiDownBBLinearStretchedBoundary::XPhidPhiDownBBLinearStretchedBoundary(
-  SGPP::base::GridStorage* storage) : XPhidPhiDownBBLinearStretched(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : XPhidPhiDownBBLinearStretched(storage) {}
 
-XPhidPhiDownBBLinearStretchedBoundary::~XPhidPhiDownBBLinearStretchedBoundary() {
-}
+XPhidPhiDownBBLinearStretchedBoundary::~XPhidPhiDownBBLinearStretchedBoundary() {}
 
-void XPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
-    source, SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void XPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
+                                                       SGPP::base::DataVector& result,
+                                                       grid_iterator& index, size_t dim) {
   float_t q = this->stretching->getIntervalWidth(dim);
   float_t t = this->stretching->getIntervalOffset(dim);
-
-
 
   // get boundary values
   float_t left_boundary;
@@ -48,16 +43,15 @@ void XPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
   seq_right = index.seq();
   right_boundary = source[seq_right];
 
-
   // check boundary conditions
   if (this->stretching->hasDirichletBoundaryLeft(dim)) {
-    result[seq_left] = 0.0; //left_boundary;
+    result[seq_left] = 0.0;  // left_boundary;
   } else {
     result[seq_left] = left_boundary * (((-1.0 / 6.0) * q) - (0.5 * t));
   }
 
   if (this->stretching->hasDirichletBoundaryRight(dim)) {
-    result[seq_right] = 0.0; //right_boundary;
+    result[seq_right] = 0.0;  // right_boundary;
   } else {
     result[seq_right] = right_boundary * (((1.0 / 3.0) * q) + (0.5 * t));
     // down
@@ -75,13 +69,7 @@ void XPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector&
 
     index.resetToLeftLevelZero(dim);
   }
-
-
-
-
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP
