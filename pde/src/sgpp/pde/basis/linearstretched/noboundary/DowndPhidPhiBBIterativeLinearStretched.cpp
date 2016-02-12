@@ -8,19 +8,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
 DowndPhidPhiBBIterativeLinearStretched::DowndPhidPhiBBIterativeLinearStretched(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {}
 
-DowndPhidPhiBBIterativeLinearStretched::~DowndPhidPhiBBIterativeLinearStretched() {
-}
+DowndPhidPhiBBIterativeLinearStretched::~DowndPhidPhiBBIterativeLinearStretched() {}
 
-void DowndPhidPhiBBIterativeLinearStretched::operator()(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
+void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& alpha,
+                                                        SGPP::base::DataVector& result,
+                                                        size_t dim) {
   SGPP::base::Stretching* stretching = this->storage->getStretching();
   //  float_t q = stretching->getIntervalWidth(dim);
   //
@@ -64,16 +63,14 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(
     SGPP::base::GridStorage::index_type::index_type index;
     (*storage)[i]->get(dim, level, index);
     float_t posl = 0, posr = 0, posc = 0;
-    stretching->getAdjacentPositions(static_cast<int>(level),
-                                     static_cast<int>(index), dim, posc, posl, posr );
+    stretching->getAdjacentPositions(static_cast<int>(level), static_cast<int>(index), dim, posc,
+                                     posl, posr);
     float_t baseLength = posr - posl;
     float_t leftLength = posc - posl;
     float_t rightLength = posr - posc;
-    //only affects the diagonal of the stiffness matrix
+    // only affects the diagonal of the stiffness matrix
     result[i] = alpha[i] * baseLength / (leftLength * rightLength);
   }
-
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

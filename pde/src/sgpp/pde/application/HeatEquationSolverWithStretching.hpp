@@ -6,11 +6,10 @@
 #ifndef HEATEQUATIONSOLVERWITHSTRETCHING_HPP
 #define HEATEQUATIONSOLVERWITHSTRETCHING_HPP
 
-
 #include <sgpp/pde/application/ParabolicPDESolver.hpp>
 
-//#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-//#include <sgpp/base/grid/type/LinearGrid.hpp>
+// #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+// #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
@@ -21,15 +20,14 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/base/tools/GridPrinterForStretching.hpp>
 
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <cmath>
-
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
-
 
 namespace SGPP {
 namespace pde {
@@ -48,7 +46,7 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
   float_t a;
   /// screen object used in this solver
   SGPP::base::ScreenOutput* myScreen;
-  ////BoundingBox replacement
+  /// BoundingBox replacement
   SGPP::base::Stretching* myStretching;
 
  public:
@@ -66,19 +64,16 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
 
   void constructGrid(SGPP::base::BoundingBox& myStretching, int level);
 
-  void solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
-                          size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
-                          bool verbose = false, bool generateAnimation = false,
-                          size_t numEvalsAnimation = 20);
+  void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
+                          float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+                          bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
-                          size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
-                          bool verbose = false, bool generateAnimation = false,
-                          size_t numEvalsAnimation = 20);
+  void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
+                          float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+                          bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
-                          size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
-                          size_t NumImEul = 0);
+  void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
+                          float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
 
   /**
    * This method sets the heat coefficient of the regarded material
@@ -104,8 +99,8 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu,
-                              float_t sigma, float_t factor);
+  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu, float_t sigma,
+                              float_t factor);
 
   /**
    * Inits the grid with a constant heat
@@ -150,12 +145,12 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param GridArea the area in which the function should be plotted
    * @param tfilename absolute path to file into which the grid's evaluation is written
    */
-  void printGridDomainStretching(SGPP::base::DataVector& alpha,
-                                 float_t PointesPerDimension, SGPP::base::Stretching& GridArea,
-                                 std::string tfilename) const;
+  void printGridDomainStretching(SGPP::base::DataVector& alpha, float_t PointesPerDimension,
+                                 SGPP::base::Stretching& GridArea, std::string tfilename) const;
 
   /**
-   * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis value
+   * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis
+   * value
    * or their hierarchical surplus
    *
    * This function is available for all dimensions
@@ -164,11 +159,11 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param tfilename absoulte path to the file the grid is written into
    * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
    */
-  void printSparseGrid(SGPP::base::DataVector& alpha, std::string tfilename,
-                       bool bSurplus) const;
+  void printSparseGrid(SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
   /**
-   * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis value
+   * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis
+   * value
    * or their hierarchical surplus
    *
    * This function is available for all dimensions.
@@ -180,12 +175,10 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param tfilename absoulte path to the file the grid is written into
    * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
    */
-  void printSparseGridExpTransform(SGPP::base::DataVector& alpha,
-                                   std::string tfilename, bool bSurplus) const;
-
+  void printSparseGridExpTransform(SGPP::base::DataVector& alpha, std::string tfilename,
+                                   bool bSurplus) const;
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* HEATEQUATIONSOLVERWITHSTRETCHING_HPP */

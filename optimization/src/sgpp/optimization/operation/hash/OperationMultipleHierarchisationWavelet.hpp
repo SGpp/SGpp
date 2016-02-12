@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONWAVELET_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONWAVELET_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERWAVELET_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERWAVELET_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,15 +19,14 @@ namespace optimization {
  * Hierarchisation operation for wavelet basis functions on
  * Noboundary grids.
  */
-class OperationMultipleHierarchisationWavelet :
-  public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationWavelet : public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  OperationMultipleHierarchisationWavelet(base::WaveletGrid& grid);
+  explicit OperationMultipleHierarchisationWavelet(base::WaveletGrid& grid);
 
   /**
    * Destructor.
@@ -68,8 +67,7 @@ class OperationMultipleHierarchisationWavelet :
   /// storage of the sparse grid
   base::WaveletGrid& grid;
 };
+}  // namespace optimization
+}  // namespace SGPP
 
-}
-}
-
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONWAVELET_HPP */
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERWAVELET_HPP */

@@ -11,11 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
-
-
 
 /**
  * Implementation of sweep operator (): 1D Up for
@@ -36,7 +33,7 @@ class XdPhiPhiUpBBLinear {
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  XdPhiPhiUpBBLinear(SGPP::base::GridStorage* storage);
+  explicit XdPhiPhiUpBBLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -47,7 +44,8 @@ class XdPhiPhiUpBBLinear {
    * This operations performs the calculation of up in the direction of dimension <i>dim</i>
    * on a grid with fix Dirichlet 0 boundary conditions
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
    * @param result SGPP::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
@@ -56,7 +54,6 @@ class XdPhiPhiUpBBLinear {
                   grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * recursive function for the calculation of Up
    *
@@ -67,8 +64,8 @@ class XdPhiPhiUpBBLinear {
    * @param fl function value on the left boundary, reference parameter
    * @param fr function value on the right boundary, reference parameter
    */
-  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-           grid_iterator& index, size_t dim, float_t& fl, float_t& fr);
+  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index,
+           size_t dim, float_t& fl, float_t& fr);
 
   /**
    * recursive function for the calculation of Up with Bounding Box support
@@ -82,14 +79,11 @@ class XdPhiPhiUpBBLinear {
    * @param q strechting parameter
    * @param t translation parameter
    */
-  void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-             grid_iterator& index, size_t dim, float_t& fl, float_t& fr, float_t q,
-             float_t t);
+  void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index,
+             size_t dim, float_t& fl, float_t& fr, float_t q, float_t t);
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* XDPHIPHIUPBBLINEARBOUNDARY_HPP */

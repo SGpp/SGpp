@@ -7,19 +7,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
 LaplaceEnhancedDownBBLinearBoundary::LaplaceEnhancedDownBBLinearBoundary(
-  SGPP::base::GridStorage* storage) : LaplaceEnhancedDownBBLinear(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : LaplaceEnhancedDownBBLinear(storage) {}
 
-LaplaceEnhancedDownBBLinearBoundary::~LaplaceEnhancedDownBBLinearBoundary() {
-}
+LaplaceEnhancedDownBBLinearBoundary::~LaplaceEnhancedDownBBLinearBoundary() {}
 
-void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix&
-    source, SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim) {
+void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& source,
+                                                     SGPP::base::DataMatrix& result,
+                                                     grid_iterator& index, size_t dim) {
   q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
   t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
   float_t q_reci = 1.0 / q_;
@@ -101,7 +100,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix&
       }
     }
 
-    for ( ; i < this->numAlgoDims_; i++) {
+    for (; i < this->numAlgoDims_; i++) {
       float_t fl = source.get(seq_left, i);
       float_t fr = source.get(seq_right, i);
 
@@ -140,7 +139,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix&
       float_t fr1 = source.get(seq_right, i);
       float_t fr2 = source.get(seq_right, i + 1);
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
       __m128d fl_xmm = _mm_set_pd(fl2, fl1);
       __m128d fr_xmm = _mm_set_pd(fr2, fr1);
 #endif
@@ -181,7 +180,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix&
         calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
         calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION==1
+#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -236,7 +235,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix&
       }
     }
 
-    for ( ; i < this->numAlgoDims_; i++) {
+    for (; i < this->numAlgoDims_; i++) {
       float_t fl = source.get(seq_left, i);
       float_t fr = source.get(seq_right, i);
 
@@ -259,7 +258,6 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix&
           index.resetToLevelOne(dim);
 
           if (!this->storage->end(index.seq())) {
-
             rec(fl, fr, i, index);
           }
 
@@ -270,23 +268,24 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix&
   }
 }
 
-void LaplaceEnhancedDownBBLinearBoundary::calcL2Boundary(float_t fl, float_t fr,
-    size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim, float_t q) {
+void LaplaceEnhancedDownBBLinearBoundary::calcL2Boundary(float_t fl, float_t fr, size_t seq_left,
+                                                         size_t seq_right, size_t dim,
+                                                         size_t algo_dim, float_t q) {
   if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
     ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
   else
-    ptr_result_[(seq_left * this->numAlgoDims_) + dim] =  (1.0 / 3.0) * fl * q;
+    ptr_result_[(seq_left * this->numAlgoDims_) + dim] = (1.0 / 3.0) * fl * q;
 
   if (this->boundingBox->hasDirichletBoundaryRight(algo_dim))
     ptr_result_[(seq_right * this->numAlgoDims_) + dim] = 0.0;
   else
-    ptr_result_[(seq_right * this->numAlgoDims_) + dim] = ((
-          1.0 / 3.0) * fr * q) + ((1.0 / 6.0) * fl * q);
+    ptr_result_[(seq_right * this->numAlgoDims_) + dim] =
+        ((1.0 / 3.0) * fr * q) + ((1.0 / 6.0) * fl * q);
 }
 
-void LaplaceEnhancedDownBBLinearBoundary::calcGradBoundary(float_t fl,
-    float_t fr, size_t seq_left, size_t seq_right, size_t dim, size_t algo_dim,
-    float_t q_reci) {
+void LaplaceEnhancedDownBBLinearBoundary::calcGradBoundary(float_t fl, float_t fr, size_t seq_left,
+                                                           size_t seq_right, size_t dim,
+                                                           size_t algo_dim, float_t q_reci) {
   if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
     ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
   else
@@ -295,11 +294,8 @@ void LaplaceEnhancedDownBBLinearBoundary::calcGradBoundary(float_t fl,
   if (this->boundingBox->hasDirichletBoundaryRight(cur_algo_dim_))
     ptr_result_[(seq_right * this->numAlgoDims_) + dim] = 0.0;
   else
-    ptr_result_[(seq_right * this->numAlgoDims_) + dim] = fr + ((
-          -1.0 * q_reci) * fl);
+    ptr_result_[(seq_right * this->numAlgoDims_) + dim] = fr + ((-1.0 * q_reci) * fl);
 }
 
-// namespace pde
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace SGPP

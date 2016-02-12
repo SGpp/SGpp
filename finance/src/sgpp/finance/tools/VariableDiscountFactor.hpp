@@ -12,15 +12,14 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
 /**
- * This class provides a method for discounting when the risk-free rate corresponds to an axis of the grid
+ * This class provides a method for discounting when the risk-free rate corresponds to an axis of
+ * the grid
  */
 class VariableDiscountFactor {
-
  private:
   /// bounding box of the grid
   SGPP::base::BoundingBox* myBoundingBox;
@@ -33,7 +32,8 @@ class VariableDiscountFactor {
   /**
    * Std-Constructor
    *
-   * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
+   * @param storage the grid's storage object; needed to determine the bounding box and to iterate
+   * of the entries in the coefficient vector
    * @param dim_r dimension of the risk-free rate (HW axis)
    */
   VariableDiscountFactor(SGPP::base::GridStorage* storage, int dim_r);
@@ -48,10 +48,8 @@ class VariableDiscountFactor {
    *@param T timestepsize
    */
   void getDiscountFactor(SGPP::base::DataVector& factor, float_t T);
-
 };
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* VARIABLEDISCOUNTFACTOR_HPP */

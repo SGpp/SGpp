@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace solver {
 
@@ -36,8 +35,7 @@ class CrankNicolson : public ODESolver {
    * @param timestepSize the size of one timestep
    * @param screen possible pointer to a SGPP::base::ScreenOutput object
    */
-  CrankNicolson(size_t nTimesteps, float_t timestepSize,
-                SGPP::base::ScreenOutput* screen = NULL);
+  CrankNicolson(size_t nTimesteps, float_t timestepSize, SGPP::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor
@@ -49,7 +47,7 @@ class CrankNicolson : public ODESolver {
                      bool bIdentifyLastStep = false, bool verbose = false);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* CRANKNICOLSON_HPP */

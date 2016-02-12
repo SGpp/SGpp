@@ -9,10 +9,10 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
 #include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
-#include <string>
-//
+
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace solver {
@@ -26,7 +26,6 @@ class StepsizeControl : public ODESolver {
  private:
   /// identify of grid coarsening is used
   bool useCoarsen;
-
 
  protected:
   /// Pointer to SGPP::base::ScreenOutput object
@@ -50,8 +49,8 @@ class StepsizeControl : public ODESolver {
   virtual float_t norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
                        SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
 
-  virtual float_t nextTimestep(float_t tmp_timestepsize,
-                               float_t tmp_timestepsize_old, float_t norm, float_t epsilon) = 0;
+  virtual float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm,
+                               float_t epsilon) = 0;
 
   float_t twoNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
                   SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
@@ -63,7 +62,6 @@ class StepsizeControl : public ODESolver {
 
   /// damping factor
   float_t _gamma;
-
 
  public:
   /**
@@ -84,12 +82,11 @@ class StepsizeControl : public ODESolver {
    */
   virtual ~StepsizeControl();
 
-  void solve(SLESolver& LinearSystemSolver,
-             SGPP::solver::OperationParabolicPDESolverSystem& System,
+  void solve(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
              bool bIdentifyLastStep = false, bool verbose = false);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROL_H_ */

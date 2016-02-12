@@ -12,23 +12,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
-OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(
-  SGPP::base::GridStorage* storage) :
-  UpDownOneOpDimEnhanced(storage) {
-}
+OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage)
+    : UpDownOneOpDimEnhanced(storage) {}
 
-OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataVector& coef) :
-  UpDownOneOpDimEnhanced(storage, coef) {
-}
+OperationLaplaceEnhancedLinear::OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage,
+                                                               SGPP::base::DataVector& coef)
+    : UpDownOneOpDimEnhanced(storage, coef) {}
 
-OperationLaplaceEnhancedLinear::~OperationLaplaceEnhancedLinear() {
-}
+OperationLaplaceEnhancedLinear::~OperationLaplaceEnhancedLinear() {}
 
 void OperationLaplaceEnhancedLinear::up(SGPP::base::DataMatrix& alpha,
                                         SGPP::base::DataMatrix& result, size_t dim) {
@@ -39,12 +33,11 @@ void OperationLaplaceEnhancedLinear::up(SGPP::base::DataMatrix& alpha,
 }
 
 void OperationLaplaceEnhancedLinear::down(SGPP::base::DataMatrix& alpha,
-    SGPP::base::DataMatrix& result, size_t dim) {
+                                          SGPP::base::DataMatrix& result, size_t dim) {
   LaplaceEnhancedDownBBLinear func(this->storage);
   SGPP::base::sweep<LaplaceEnhancedDownBBLinear> s(func, this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

@@ -12,17 +12,11 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-SHCB::SHCB() :
-  UnconstrainedTestProblem(2),
-  f() {
-}
+SHCB::SHCB() : UnconstrainedTestProblem(2), f() {}
 
-SHCB::~SHCB() {
-}
+SHCB::~SHCB() {}
 
-TestScalarFunction& SHCB::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& SHCB::getObjectiveFunction() { return f; }
 
 float_t SHCB::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
@@ -31,28 +25,21 @@ float_t SHCB::getOptimalPointUndisplaced(base::DataVector& x) {
   return -1.031628453489877;
 }
 
-SHCBObjective::SHCBObjective() :
-  TestScalarFunction(2) {
-}
+SHCBObjective::SHCBObjective() : TestScalarFunction(2) {}
 
-SHCBObjective::~SHCBObjective() {
-}
+SHCBObjective::~SHCBObjective() {}
 
-float_t SHCBObjective::evalUndisplaced(
-  const base::DataVector& x) {
+float_t SHCBObjective::evalUndisplaced(const base::DataVector& x) {
   const float_t x1 = 10.0 * x[0] - 5.0;
   const float_t x2 = 10.0 * x[1] - 5.0;
 
-  return x1 * x1 * (4.0 - 2.1 * x1 * x1 + x1 * x1 * x1 * x1 / 3.0) +
-         x1 * x2 + 4.0 * x2 * x2 * (x2 * x2 - 1.0);
+  return x1 * x1 * (4.0 - 2.1 * x1 * x1 + x1 * x1 * x1 * x1 / 3.0) + x1 * x2 +
+         4.0 * x2 * x2 * (x2 * x2 - 1.0);
 }
 
-void SHCBObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new SHCBObjective(*this));
+void SHCBObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new SHCBObjective(*this));
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP

@@ -17,21 +17,24 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+
+#include <sgpp/globaldef.hpp>
+
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
-
-#include <sgpp/globaldef.hpp>
-
+#include <algorithm>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace finance {
 
-BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(
-  bool useLogTransform, std::string OptionType) : BlackScholesSolver(
-      useLogTransform) {
+BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(bool useLogTransform,
+                                                                   std::string OptionType)
+    : BlackScholesSolver(useLogTransform) {
   this->bStochasticDataAlloc = false;
   this->bGridConstructed = false;
   this->myScreen = NULL;
@@ -53,20 +56,19 @@ BlackScholesSolverWithStretching::BlackScholesSolverWithStretching(
   this->myStretching = NULL;
 }
 
-BlackScholesSolverWithStretching::~BlackScholesSolverWithStretching() {
-}
+BlackScholesSolverWithStretching::~BlackScholesSolverWithStretching() {}
 
-void BlackScholesSolverWithStretching::getGridNormalDistribution(
-  SGPP::base::DataVector& alpha, std::vector<float_t>& norm_mu,
-  std::vector<float_t>& norm_sigma) {
+void BlackScholesSolverWithStretching::getGridNormalDistribution(SGPP::base::DataVector& alpha,
+                                                                 std::vector<float_t>& norm_mu,
+                                                                 std::vector<float_t>& norm_sigma) {
   if (this->bGridConstructed) {
     float_t tmp;
     float_t value;
     SGPP::base::StdNormalDistribution myNormDistr;
 
     for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(*
-                           (this->myStretching));
+      std::string coords =
+          this->myGridStorage->get(i)->getCoordsStringStretching(*(this->myStretching));
       std::stringstream coordsStream(coords);
 
       value = 1.0;
@@ -84,13 +86,14 @@ void BlackScholesSolverWithStretching::getGridNormalDistribution(
       alpha[i] = value;
     }
   } else {
-    throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::getGridNormalDistribution : The grid wasn't initialized before!");
+    throw new SGPP::base::application_exception(
+        "BlackScholesSolverWithStretching::getGridNormalDistribution : The grid wasn't initialized "
+        "before!");
   }
 }
 
-
-void BlackScholesSolverWithStretching::constructGridStretching(
-  SGPP::base::Stretching& stretching, int level) {
+void BlackScholesSolverWithStretching::constructGridStretching(SGPP::base::Stretching& stretching,
+                                                               int level) {
   this->dim = stretching.getDimensions();
   this->levels = level;
 
@@ -103,21 +106,24 @@ void BlackScholesSolverWithStretching::constructGridStretching(
   this->myStretching = this->myGrid->getStretching();
   this->myGridStorage = this->myGrid->getStorage();
 
-  //std::string serGrid;
-  //myGrid->serialize(serGrid);
-  //std::cout << serGrid << std::endl;
+  // std::string serGrid;
+  // myGrid->serialize(serGrid);
+  // std::cout << serGrid << std::endl;
 
   this->bGridConstructed = true;
 }
 
-void BlackScholesSolverWithStretching::constructGrid(SGPP::base::BoundingBox&
-    myBoundingBox, size_t level) {
-  throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::constructGrid : This solver does not support SGPP::base::BoundingBox, use constructGridStretching instead!");
+void BlackScholesSolverWithStretching::constructGrid(SGPP::base::BoundingBox& myBoundingBox,
+                                                     size_t level) {
+  throw new SGPP::base::application_exception(
+      "BlackScholesSolverWithStretching::constructGrid : This solver does not support "
+      "SGPP::base::BoundingBox, use constructGridStretching instead!");
 }
 
-void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(
-  SGPP::base::DataVector& alpha, float_t strike, std::string payoffType,
-  float_t dStrikeDistance) {
+void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(SGPP::base::DataVector& alpha,
+                                                                   float_t strike,
+                                                                   std::string payoffType,
+                                                                   float_t dStrikeDistance) {
   size_t nRefinements = 0;
 
   this->dStrike = strike;
@@ -125,7 +131,6 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-
       SGPP::base::DataVector refineVector(alpha.getSize());
 
       if (payoffType == "std_euro_call" || payoffType == "std_euro_put") {
@@ -136,8 +141,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(
         float_t dDistance = 0.0;
 
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
-          std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(*
-                               (this->myStretching));
+          std::string coords =
+              this->myGridStorage->get(i)->getCoordsStringStretching(*(this->myStretching));
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -170,8 +175,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(
 
         delete[] dblFuncValues;
 
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-        SGPP::base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+        SGPP::base::SurplusRefinementFunctor* myRefineFunc =
+            new SGPP::base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
 
         this->myGrid->createGridGenerator()->refine(myRefineFunc);
 
@@ -182,17 +187,21 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::refineInitialGridWithPayoff : An unsupported payoffType was specified!");
+        throw new SGPP::base::application_exception(
+            "BlackScholesSolverWithStretching::refineInitialGridWithPayoff : An unsupported "
+            "payoffType was specified!");
       }
     } else {
-      throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::refineInitialGridWithPayoff : The grid wasn't initialized before!");
+      throw new SGPP::base::application_exception(
+          "BlackScholesSolverWithStretching::refineInitialGridWithPayoff : The grid wasn't "
+          "initialized before!");
     }
   }
 }
 
 void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
-  SGPP::base::DataVector& alpha, float_t strike, std::string payoffType,
-  float_t dStrikeDistance, SGPP::base::GridIndex::level_type maxLevel) {
+    SGPP::base::DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance,
+    SGPP::base::GridIndex::level_type maxLevel) {
   size_t nRefinements = 0;
 
   this->dStrike = strike;
@@ -200,7 +209,6 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-
       SGPP::base::DataVector refineVector(alpha.getSize());
 
       if (payoffType == "std_euro_call" || payoffType == "std_euro_put") {
@@ -211,8 +219,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
         float_t dDistance = 0.0;
 
         for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
-          std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(
-                                 *this->myStretching);
+          std::string coords =
+              this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
           std::stringstream coordsStream(coords);
 
           for (size_t j = 0; j < this->dim; j++) {
@@ -245,8 +253,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
 
         delete[] dblFuncValues;
 
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-        SGPP::base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+        SGPP::base::SurplusRefinementFunctor* myRefineFunc =
+            new SGPP::base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
 
         this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
 
@@ -257,22 +265,25 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel : An unsupported payoffType was specified!");
+        throw new SGPP::base::application_exception(
+            "BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel : An "
+            "unsupported payoffType was specified!");
       }
     } else {
-      throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel : The grid wasn't initialized before!");
+      throw new SGPP::base::application_exception(
+          "BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel : The grid "
+          "wasn't initialized before!");
     }
   }
 }
 
-
-void BlackScholesSolverWithStretching::initGridWithPayoff(
-  SGPP::base::DataVector& alpha, float_t strike, std::string payoffType) {
+void BlackScholesSolverWithStretching::initGridWithPayoff(SGPP::base::DataVector& alpha,
+                                                          float_t strike, std::string payoffType) {
   this->dStrike = strike;
   this->payoffType = payoffType;
 
-  if (payoffType == "std_euro_call" || payoffType == "std_euro_put"
-      || payoffType == "std_amer_put") {
+  if (payoffType == "std_euro_call" || payoffType == "std_euro_put" ||
+      payoffType == "std_amer_put") {
     this->tBoundaryType = "Dirichlet";
   }
 
@@ -285,20 +296,19 @@ void BlackScholesSolverWithStretching::initGridWithPayoff(
 
 void BlackScholesSolverWithStretching::initScreen() {
   this->myScreen = new SGPP::base::ScreenOutput();
-  this->myScreen->writeTitle("SGpp - Black Scholes Solver with SGPP::base::Stretching, 2.1.0",
-                             "The SG++ Project (C) 2009-2010, by Alexander Heinecke and Sarpkan Selcuk");
-  this->myScreen->writeStartSolve("Multidimensional Black Scholes Solver with SGPP::base::Stretching");
+  this->myScreen->writeTitle(
+      "SGpp - Black Scholes Solver with SGPP::base::Stretching, 2.1.0",
+      "The SG++ Project (C) 2009-2010, by Alexander Heinecke and Sarpkan Selcuk");
+  this->myScreen->writeStartSolve(
+      "Multidimensional Black Scholes Solver with SGPP::base::Stretching");
 }
 
-
 void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
-  SGPP::base::DataVector& alpha, std::string tFilename, size_t numTestpoints,
-  float_t strike) {
+    SGPP::base::DataVector& alpha, std::string tFilename, size_t numTestpoints, float_t strike) {
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
       if (this->myGrid->getStorage()->getStretching()->getDimensions() == 2) {
-        if (numTestpoints < 2)
-          numTestpoints = 2;
+        if (numTestpoints < 2) numTestpoints = 2;
 
         float_t dInc = (2.0 * strike) / static_cast<float_t>(numTestpoints - 1);
 
@@ -308,8 +318,7 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
         std::ofstream file;
         file.open(tFilename.c_str());
 
-        SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(
-                                              *this->myGrid);
+        SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*this->myGrid);
 
         for (size_t i = 0; i < numTestpoints; i++) {
           std::vector<float_t> point;
@@ -319,8 +328,8 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
 
           float_t result = myEval->eval(alpha, point);
 
-          file << std::scientific << std::setprecision( 16 ) << dX << " " << dY << " " <<
-               result << std::endl;
+          file << std::scientific << std::setprecision(16) << dX << " " << dY << " " << result
+               << std::endl;
 
           dX += dInc;
           dY -= dInc;
@@ -331,13 +340,15 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
         file.close();
       }
     } else {
-      throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::getPayoffInterpolationError : A grid wasn't constructed before!");
+      throw new SGPP::base::application_exception(
+          "BlackScholesSolverWithStretching::getPayoffInterpolationError : A grid wasn't "
+          "constructed before!");
     }
   }
 }
 
-size_t BlackScholesSolverWithStretching::getGridPointsAtMoney(
-  std::string payoffType, float_t strike, float_t eps) {
+size_t BlackScholesSolverWithStretching::getGridPointsAtMoney(std::string payoffType,
+                                                              float_t strike, float_t eps) {
   size_t nPoints = 0;
 
   if (this->useLogTransform == false) {
@@ -349,14 +360,15 @@ size_t BlackScholesSolverWithStretching::getGridPointsAtMoney(
 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put") {
           for (size_t d = 0; d < this->dim; d++) {
-            if ( ((coords.sum() / static_cast<float_t>(this->dim)) < (strike - eps))
-                 || ((coords.sum() / static_cast<float_t>(this->dim)) > (strike + eps)) ) {
+            if (((coords.sum() / static_cast<float_t>(this->dim)) < (strike - eps)) ||
+                ((coords.sum() / static_cast<float_t>(this->dim)) > (strike + eps))) {
               isAtMoney = false;
             }
-
           }
         } else {
-          throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::getGridPointsAtMoney : An unknown payoff-type was specified!");
+          throw new SGPP::base::application_exception(
+              "BlackScholesSolverWithStretching::getGridPointsAtMoney : An unknown payoff-type was "
+              "specified!");
         }
 
         if (isAtMoney == true) {
@@ -364,21 +376,24 @@ size_t BlackScholesSolverWithStretching::getGridPointsAtMoney(
         }
       }
     } else {
-      throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::getGridPointsAtMoney : A grid wasn't constructed before!");
+      throw new SGPP::base::application_exception(
+          "BlackScholesSolverWithStretching::getGridPointsAtMoney : A grid wasn't constructed "
+          "before!");
     }
   }
 
   return nPoints;
 }
 
-void BlackScholesSolverWithStretching::initCartesianGridWithPayoff(
-  SGPP::base::DataVector& alpha, float_t strike, std::string payoffType) {
+void BlackScholesSolverWithStretching::initCartesianGridWithPayoff(SGPP::base::DataVector& alpha,
+                                                                   float_t strike,
+                                                                   std::string payoffType) {
   float_t tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(
-                             *this->myStretching);
+      std::string coords =
+          this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
 
@@ -405,29 +420,33 @@ void BlackScholesSolverWithStretching::initCartesianGridWithPayoff(
 
         alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
       } else {
-        throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
+        throw new SGPP::base::application_exception(
+            "BlackScholesSolverWithStretching::initCartesianGridWithPayoff : An unknown "
+            "payoff-type was specified!");
       }
 
       delete[] dblFuncValues;
     }
 
     SGPP::base::OperationHierarchisation* myHierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::initCartesianGridWithPayoff : A grid wasn't constructed before!");
+    throw new SGPP::base::application_exception(
+        "BlackScholesSolverWithStretching::initCartesianGridWithPayoff : A grid wasn't constructed "
+        "before!");
   }
 }
 
 void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(
-  SGPP::base::DataVector& alpha, float_t strike, std::string payoffType) {
+    SGPP::base::DataVector& alpha, float_t strike, std::string payoffType) {
   float_t tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(
-                             *this->myStretching);
+      std::string coords =
+          this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
 
@@ -454,38 +473,45 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(
 
         alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
       } else {
-        throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff : An unknown payoff-type was specified!");
+        throw new SGPP::base::application_exception(
+            "BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff : An unknown "
+            "payoff-type was specified!");
       }
 
       delete[] dblFuncValues;
     }
 
     SGPP::base::OperationHierarchisation* myHierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
+    throw new SGPP::base::application_exception(
+        "BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff : A grid wasn't "
+        "constructed before!");
   }
 }
 
-void BlackScholesSolverWithStretching::getAnalyticAlpha1D(
-  base::DataVector& alpha_analytic, float_t strike, float_t t,
-  std::string payoffType, bool hierarchized) {
+void BlackScholesSolverWithStretching::getAnalyticAlpha1D(base::DataVector& alpha_analytic,
+                                                          float_t strike, float_t t,
+                                                          std::string payoffType,
+                                                          bool hierarchized) {
   float_t coord;
 
   if (dim != 1) {
-    throw new base::application_exception("BlackScholesSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
+    throw new base::application_exception(
+        "BlackScholesSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
   }
 
   if (!this->bGridConstructed) {
-    throw new base::application_exception("BlackScholesSolver::getAnalyticAlpha1D : function only available for dim = 1!");
+    throw new base::application_exception(
+        "BlackScholesSolver::getAnalyticAlpha1D : function only available for dim = 1!");
   }
 
   // compute values of analytic solution on given grid
   for (size_t i = 0; i < this->myGridStorage->size(); i++) {
-    std::string coords = this->myGridStorage->get(i)->getCoordsStringStretching(
-                           *this->myStretching);
+    std::string coords =
+        this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
     std::stringstream coordsStream(coords);
     coordsStream >> coord;
 
@@ -494,18 +520,18 @@ void BlackScholesSolverWithStretching::getAnalyticAlpha1D(
     }
 
     if (payoffType == "std_euro_call") {
-      alpha_analytic[i] = this->getAnalyticSolution1D(coord, true, t,
-                          this->sigmas->get(0), this->r, strike);
+      alpha_analytic[i] =
+          this->getAnalyticSolution1D(coord, true, t, this->sigmas->get(0), this->r, strike);
     } else if (payoffType == "std_euro_put") {
-      alpha_analytic[i] = this->getAnalyticSolution1D(coord, false, t,
-                          this->sigmas->get(0), this->r, strike);
+      alpha_analytic[i] =
+          this->getAnalyticSolution1D(coord, false, t, this->sigmas->get(0), this->r, strike);
     }
   }
 
   if (hierarchized) {
     // hierarchize computed values
     base::OperationHierarchisation* myHier =
-      SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHier->doHierarchisation(alpha_analytic);
 
     delete myHier;
@@ -513,36 +539,40 @@ void BlackScholesSolverWithStretching::getAnalyticAlpha1D(
 }
 
 void BlackScholesSolverWithStretching::printGrid(SGPP::base::DataVector& alpha,
-    size_t PointesPerDimension, std::string tfilename) const {
+                                                 size_t PointesPerDimension,
+                                                 std::string tfilename) const {
   SGPP::base::GridPrinterForStretching myPrinter(*this->myGrid);
   myPrinter.printGrid(alpha, tfilename, PointesPerDimension);
 }
 
-void BlackScholesSolverWithStretching::printGridDomainStretching(
-  SGPP::base::DataVector& alpha, size_t PointesPerDimension,
-  SGPP::base::Stretching& GridArea, std::string tfilename) const {
+void BlackScholesSolverWithStretching::printGridDomainStretching(SGPP::base::DataVector& alpha,
+                                                                 size_t PointesPerDimension,
+                                                                 SGPP::base::Stretching& GridArea,
+                                                                 std::string tfilename) const {
   SGPP::base::GridPrinterForStretching myPrinter(*this->myGrid);
-  myPrinter.printGridDomainStretching(alpha, tfilename, GridArea,
-                                      PointesPerDimension);
+  myPrinter.printGridDomainStretching(alpha, tfilename, GridArea, PointesPerDimension);
 }
 
-void BlackScholesSolverWithStretching::printGridDomain(SGPP::base::DataVector&
-    alpha, size_t PointesPerDimension, SGPP::base::BoundingBox& GridArea,
-    std::string tfilename)const {
-  throw new SGPP::base::application_exception("BlackScholesSolverWithStretching::printGridDomain: SGPP::base::BoundingBox not supported, use printGridDomainStretching instead!");
+void BlackScholesSolverWithStretching::printGridDomain(SGPP::base::DataVector& alpha,
+                                                       size_t PointesPerDimension,
+                                                       SGPP::base::BoundingBox& GridArea,
+                                                       std::string tfilename) const {
+  throw new SGPP::base::application_exception(
+      "BlackScholesSolverWithStretching::printGridDomain: SGPP::base::BoundingBox not supported, "
+      "use printGridDomainStretching instead!");
 }
 
-void BlackScholesSolverWithStretching::printSparseGrid(SGPP::base::DataVector&
-    alpha, std::string tfilename, bool bSurplus) const {
+void BlackScholesSolverWithStretching::printSparseGrid(SGPP::base::DataVector& alpha,
+                                                       std::string tfilename, bool bSurplus) const {
   SGPP::base::GridPrinterForStretching myPrinter(*this->myGrid);
   myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
 }
 
-void BlackScholesSolverWithStretching::printSparseGridExpTransform(
-  SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const {
+void BlackScholesSolverWithStretching::printSparseGridExpTransform(SGPP::base::DataVector& alpha,
+                                                                   std::string tfilename,
+                                                                   bool bSurplus) const {
   SGPP::base::GridPrinterForStretching myPrinter(*this->myGrid);
   myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

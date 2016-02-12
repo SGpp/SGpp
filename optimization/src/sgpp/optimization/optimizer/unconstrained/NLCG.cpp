@@ -15,22 +15,17 @@ namespace SGPP {
 namespace optimization {
 namespace optimizer {
 
-NLCG::NLCG(ScalarFunction& f,
-           ScalarFunctionGradient& fGradient,
-           size_t maxItCount, float_t beta, float_t gamma,
-           float_t tolerance, float_t epsilon,
-           float_t restartThreshold) :
-  UnconstrainedOptimizer(f, maxItCount),
-  fGradient(fGradient),
-  beta(beta),
-  gamma(gamma),
-  tol(tolerance),
-  eps(epsilon),
-  alpha(restartThreshold) {
-}
+NLCG::NLCG(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, float_t beta,
+           float_t gamma, float_t tolerance, float_t epsilon, float_t restartThreshold)
+    : UnconstrainedOptimizer(f, maxItCount),
+      fGradient(fGradient),
+      beta(beta),
+      gamma(gamma),
+      tol(tolerance),
+      eps(epsilon),
+      alpha(restartThreshold) {}
 
-NLCG::~NLCG() {
-}
+NLCG::~NLCG() {}
 
 void NLCG::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
@@ -79,8 +74,7 @@ void NLCG::optimize() {
     }
 
     // line search
-    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
-                          gradFx, sNormalized, y, k)) {
+    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx, gradFx, sNormalized, y, k)) {
       // line search failed ==> exit
       // (either a "real" error occured or the improvement achieved is
       // too small)
@@ -97,8 +91,7 @@ void NLCG::optimize() {
 
     // the method is restarted (beta = 0), if the following criterion
     // is *not* met
-    if (std::abs(gradFy.dotProduct(gradFx)) /
-        (gradFyNorm * gradFyNorm) < alpha) {
+    if (std::abs(gradFy.dotProduct(gradFx)) / (gradFyNorm * gradFyNorm) < alpha) {
       // Polak-Ribiere coefficient
       for (size_t t = 0; t < d; t++) {
         beta += gradFy[t] * (gradFy[t] - gradFx[t]);
@@ -120,9 +113,8 @@ void NLCG::optimize() {
     fHist.append(fx);
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
-      std::to_string(k) + " evaluations, x = " + x.toString() +
-      ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
+                                             x.toString() + ", f(x) = " + std::to_string(fx));
   }
 
   xOpt.resize(d);
@@ -131,55 +123,31 @@ void NLCG::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& NLCG::getObjectiveGradient() const {
-  return fGradient;
-}
+ScalarFunctionGradient& NLCG::getObjectiveGradient() const { return fGradient; }
 
-float_t NLCG::getBeta() const {
-  return beta;
-}
+float_t NLCG::getBeta() const { return beta; }
 
-void NLCG::setBeta(float_t beta) {
-  this->beta = beta;
-}
+void NLCG::setBeta(float_t beta) { this->beta = beta; }
 
-float_t NLCG::getGamma() const {
-  return gamma;
-}
+float_t NLCG::getGamma() const { return gamma; }
 
-void NLCG::setGamma(float_t gamma) {
-  this->gamma = gamma;
-}
+void NLCG::setGamma(float_t gamma) { this->gamma = gamma; }
 
-float_t NLCG::getTolerance() const {
-  return tol;
-}
+float_t NLCG::getTolerance() const { return tol; }
 
-void NLCG::setTolerance(float_t tolerance) {
-  tol = tolerance;
-}
+void NLCG::setTolerance(float_t tolerance) { tol = tolerance; }
 
-float_t NLCG::getEpsilon() const {
-  return eps;
-}
+float_t NLCG::getEpsilon() const { return eps; }
 
-void NLCG::setEpsilon(float_t epsilon) {
-  eps = epsilon;
-}
+void NLCG::setEpsilon(float_t epsilon) { eps = epsilon; }
 
-float_t NLCG::getRestartThreshold() const {
-  return alpha;
-}
+float_t NLCG::getRestartThreshold() const { return alpha; }
 
-void NLCG::setRestartThreshold(float_t restartThreshold) {
-  alpha = restartThreshold;
-}
+void NLCG::setRestartThreshold(float_t restartThreshold) { alpha = restartThreshold; }
 
-void NLCG::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new NLCG(*this));
+void NLCG::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new NLCG(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP

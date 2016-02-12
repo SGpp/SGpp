@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
@@ -15,16 +13,15 @@
 namespace SGPP {
 namespace optimization {
 
-OperationMultipleHierarchisationBsplineClenshawCurtis::OperationMultipleHierarchisationBsplineClenshawCurtis(
-  base::BsplineClenshawCurtisGrid& grid) :
-  grid(grid) {
-}
+OperationMultipleHierarchisationBsplineClenshawCurtis::
+    OperationMultipleHierarchisationBsplineClenshawCurtis(base::BsplineClenshawCurtisGrid& grid)
+    : grid(grid) {}
 
-OperationMultipleHierarchisationBsplineClenshawCurtis::~OperationMultipleHierarchisationBsplineClenshawCurtis() {
-}
+OperationMultipleHierarchisationBsplineClenshawCurtis::
+    ~OperationMultipleHierarchisationBsplineClenshawCurtis() {}
 
 bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
-  base::DataVector& nodeValues) {
+    base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
@@ -32,11 +29,10 @@ bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
-  base::DataVector& alpha) {
+    base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(&storage,
-      grid.getDegree());
+  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(&storage, grid.getDegree());
   base::DataVector nodeValues(storage.size());
   base::DataVector x(d, 0.0);
 
@@ -55,7 +51,7 @@ void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
 }
 
 bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+    base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
@@ -63,11 +59,10 @@ bool OperationMultipleHierarchisationBsplineClenshawCurtis::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
-  base::DataMatrix& alpha) {
+    base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(&storage,
-      grid.getDegree());
+  base::OperationNaiveEvalBsplineClenshawCurtis opNaiveEval(&storage, grid.getDegree());
   base::DataVector nodeValues(storage.size(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.size(), 0.0);
@@ -88,6 +83,5 @@ void OperationMultipleHierarchisationBsplineClenshawCurtis::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

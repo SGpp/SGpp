@@ -7,33 +7,27 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XPhidPhiUpBBLinearStretched::XPhidPhiUpBBLinearStretched(SGPP::base::GridStorage* storage)
+    : storage(storage), stretching(storage->getStretching()) {}
 
-
-XPhidPhiUpBBLinearStretched::XPhidPhiUpBBLinearStretched(
-  SGPP::base::GridStorage* storage) : storage(storage),
-  stretching(storage->getStretching()) {
-}
-
-XPhidPhiUpBBLinearStretched::~XPhidPhiUpBBLinearStretched() {
-}
+XPhidPhiUpBBLinearStretched::~XPhidPhiUpBBLinearStretched() {}
 
 void XPhidPhiUpBBLinearStretched::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                             SGPP::base::DataVector& result, grid_iterator& index,
+                                             size_t dim) {
   // get boundary values
   float_t fl = 0.0;
   float_t fr = 0.0;
 
   rec(source, result, index, dim, fl, fr);
-
 }
 
 void XPhidPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
-                                      SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                                      float_t& fr) {
+                                      SGPP::base::DataVector& result, grid_iterator& index,
+                                      size_t dim, float_t& fl, float_t& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -62,10 +56,10 @@ void XPhidPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
   }
 
   index.get(dim, current_level, current_index);
-  //get the positions of the current index as well as its left and right neighbors
+  // get the positions of the current index as well as its left and right neighbors
   float_t posl = 0, posr = 0, posc = 0;
   this->stretching->getAdjacentPositions(static_cast<int>(current_level),
-                                         static_cast<int>(current_index), dim, posc, posl, posr );
+                                         static_cast<int>(current_index), dim, posc, posl, posr);
   float_t baseLength = posr - posl;
   float_t leftLength = posc - posl;
   float_t rightLength = posr - posc;
@@ -73,7 +67,6 @@ void XPhidPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
   float_t fm = fml + fmr;
 
   float_t alpha_value = source[seq];
-
 
   // transposed operations:
   result[seq] = fm;
@@ -83,7 +76,5 @@ void XPhidPhiUpBBLinearStretched::rec(SGPP::base::DataVector& source,
   fr = (-c * alpha_value) + fr + fm * (leftLength / baseLength);
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

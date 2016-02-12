@@ -12,6 +12,7 @@ Import('BUILD_DIR')
 Import('moduleName')
 Import('headerSourceList')
 Import('headerDestList')
+Import('lintAction')
 
 env_parallel = env.Clone()
 # can only build without mpi support, skip those files
@@ -108,7 +109,11 @@ if env['USE_STATICLIB']:
     for i, _ in enumerate(moduleDependencies):
         moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
 Export('libname')
-srcs = []
+
+cpps = []
+hpps = []
+objs = []
+
 for currentFolder, subdirNames, fileNames in os.walk("."):
     if currentFolder.startswith(os.path.join(".", "src", "sgpp", "parallel", "exampleApplication")):
         continue #  ignore exampleApplication when compiling normally.
@@ -121,15 +126,15 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
                  continue
             if fileName in ArBBOnlyFiles:
                  continue
-            srcs.append(os.path.join(currentFolder, fileName))
+            cpp = os.path.join(currentFolder, fileName)
+            cpps.append(cpp)
+            objs.append(env_parallel.SharedObject(cpp))
     if currentFolder != 'src':
       for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        headerSourceList.append(os.path.join(moduleName, currentFolder, fileName))
-        headerDestList.append(os.path.join(currentFolder, fileName).split(os.sep,1)[1])
-
-objs = []
-for sourceFile in srcs:
-    objs.append(env_parallel.SharedObject(sourceFile))
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
+        headerSourceList.append(os.path.join(moduleName, hpp))
+        headerDestList.append(hpp.split(os.sep, 1)[1])
 
 if env['USE_STATICLIB']:
     libsuffix = env['LIBSUFFIX']
@@ -151,6 +156,11 @@ for lib_str in moduleDependencies:
                                                   libsuffix)))
 
 libInstall = env_parallel.Install(BUILD_DIR, lib)
+
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')

@@ -16,15 +16,14 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <cmath>
-
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-
 
 namespace SGPP {
 namespace pde {
@@ -57,18 +56,18 @@ class HeatEquationSolver : public ParabolicPDESolver {
 
   void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
-  virtual void solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                  size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
+  virtual void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
+                                  float_t epsilonCG, SGPP::base::DataVector& alpha,
                                   bool verbose = false, bool generateAnimation = false,
                                   size_t numEvalsAnimation = 20);
 
-  virtual void solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                  size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
+  virtual void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
+                                  float_t epsilonCG, SGPP::base::DataVector& alpha,
                                   bool verbose = false, bool generateAnimation = false,
                                   size_t numEvalsAnimation = 20);
 
-  virtual void solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
-                                  size_t maxCGIterations, float_t epsilonCG, SGPP::base::DataVector& alpha,
+  virtual void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
+                                  float_t epsilonCG, SGPP::base::DataVector& alpha,
                                   size_t NumImEul = 0);
 
   /**
@@ -87,8 +86,8 @@ class HeatEquationSolver : public ParabolicPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu,
-                              float_t sigma, float_t factor);
+  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu, float_t sigma,
+                              float_t factor);
 
   /**
    * Inits the screen object
@@ -103,8 +102,7 @@ class HeatEquationSolver : public ParabolicPDESolver {
    * @param tFilename file into which the rhs is written
    * @param timestepsize the size of the timesteps
    */
-  void storeInnerRHS(SGPP::base::DataVector& alpha, std::string tFilename,
-                     float_t timestepsize);
+  void storeInnerRHS(SGPP::base::DataVector& alpha, std::string tFilename, float_t timestepsize);
 
   /**
    * Routine to export the solution of the inner system which
@@ -117,12 +115,10 @@ class HeatEquationSolver : public ParabolicPDESolver {
    * @param epsilonCG the epsilon used in the C
    * @param tFilename file into which the rhs is written
    */
-  void storeInnerSolution(SGPP::base::DataVector& alpha, size_t numTimesteps,
-                          float_t timestepsize, size_t maxCGIterations, float_t epsilonCG,
-                          std::string tFilename);
+  void storeInnerSolution(SGPP::base::DataVector& alpha, size_t numTimesteps, float_t timestepsize,
+                          size_t maxCGIterations, float_t epsilonCG, std::string tFilename);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* HEATEQUATIONSOLVER_HPP */

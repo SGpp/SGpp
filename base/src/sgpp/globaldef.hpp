@@ -102,7 +102,7 @@ namespace std {
 // it doesn't contain this function.  (see std::make_shared)
 // This function is part of the C++14 (and newer) standard.
 template<typename T, typename ...Args>
-std::unique_ptr<T> make_unique(Args&& ...args) {
+std::unique_ptr<T> make_unique(Args&& ...args) {  // NOLINT(build/c++11)
   return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 

@@ -12,24 +12,17 @@ namespace SGPP {
 namespace optimization {
 namespace optimizer {
 
-BFGS::BFGS(
-  ScalarFunction& f,
-  ScalarFunctionGradient& fGradient,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t stepSizeIncreaseFactor,
-  float_t stepSizeDecreaseFactor,
-  float_t lineSearchAccuracy) :
-  UnconstrainedOptimizer(f, maxItCount),
-  fGradient(fGradient),
-  theta(tolerance),
-  rhoAlphaPlus(stepSizeIncreaseFactor),
-  rhoAlphaMinus(stepSizeDecreaseFactor),
-  rhoLs(lineSearchAccuracy) {
-}
+BFGS::BFGS(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount,
+           float_t tolerance, float_t stepSizeIncreaseFactor, float_t stepSizeDecreaseFactor,
+           float_t lineSearchAccuracy)
+    : UnconstrainedOptimizer(f, maxItCount),
+      fGradient(fGradient),
+      theta(tolerance),
+      rhoAlphaPlus(stepSizeIncreaseFactor),
+      rhoAlphaMinus(stepSizeDecreaseFactor),
+      rhoLs(lineSearchAccuracy) {}
 
-BFGS::~BFGS() {
-}
+BFGS::~BFGS() {}
 
 void BFGS::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (BFGS)...");
@@ -180,9 +173,8 @@ void BFGS::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
-      std::to_string(k) + " evaluations, x = " + x.toString() +
-      ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
+                                             x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if delta is smaller than tolerance theta
@@ -204,50 +196,31 @@ void BFGS::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& BFGS::getObjectiveGradient() const {
-  return fGradient;
-}
+ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return fGradient; }
 
-float_t BFGS::getTolerance() const {
-  return theta;
-}
+float_t BFGS::getTolerance() const { return theta; }
 
-void BFGS::setTolerance(float_t tolerance) {
-  theta = tolerance;
-}
+void BFGS::setTolerance(float_t tolerance) { theta = tolerance; }
 
-float_t BFGS::getStepSizeIncreaseFactor() const {
-  return rhoAlphaPlus;
-}
+float_t BFGS::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
 
-void BFGS::setStepSizeIncreaseFactor(
-  float_t stepSizeIncreaseFactor) {
+void BFGS::setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor) {
   rhoAlphaPlus = stepSizeIncreaseFactor;
 }
 
-float_t BFGS::getStepSizeDecreaseFactor() const {
-  return rhoAlphaMinus;
-}
+float_t BFGS::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
 
-void BFGS::setStepSizeDecreaseFactor(
-  float_t stepSizeDecreaseFactor) {
+void BFGS::setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor) {
   rhoAlphaMinus = stepSizeDecreaseFactor;
 }
 
-float_t BFGS::getLineSearchAccuracy() const {
-  return rhoLs;
-}
+float_t BFGS::getLineSearchAccuracy() const { return rhoLs; }
 
-void BFGS::setLineSearchAccuracy(
-  float_t lineSearchAccuracy) {
-  rhoLs = lineSearchAccuracy;
-}
+void BFGS::setLineSearchAccuracy(float_t lineSearchAccuracy) { rhoLs = lineSearchAccuracy; }
 
-void BFGS::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new BFGS(*this));
+void BFGS::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new BFGS(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP

@@ -6,10 +6,9 @@
 #ifndef TYPESSOLVER_HPP
 #define TYPESSOLVER_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cstddef>
 
 namespace SGPP {
 
@@ -18,10 +17,7 @@ namespace solver {
 /**
  * enum to address different SLE solvers in a standardized way
  */
-enum class SLESolverType {
-  CG,
-  BiCGSTAB
-};
+enum class SLESolverType { CG, BiCGSTAB };
 
 struct SLESolverConfiguration {
   SGPP::solver::SLESolverType type_;
@@ -37,8 +33,7 @@ struct SLESolverSPConfiguration {
   float threshold_;
 };
 
-}
-
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* TYPESSOLVER_HPP */

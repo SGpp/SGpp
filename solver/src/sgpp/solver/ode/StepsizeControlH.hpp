@@ -8,12 +8,11 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
-#include <string>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
 
-//
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace solver {
@@ -25,24 +24,20 @@ namespace solver {
  */
 class StepsizeControlH : public StepsizeControl {
  private:
-
-
   void predictor(SLESolver& LinearSystemSolver,
-                 SGPP::solver::OperationParabolicPDESolverSystem& System,
-                 float_t tmp_timestepsize, SGPP::base::DataVector& dv,
-                 SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs);
-  void corrector(SLESolver& LinearSystemSolver,
-                 SGPP::solver::OperationParabolicPDESolverSystem& System,
-                 float_t tmp_timestepsize, SGPP::base::DataVector& dv,
+                 SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize,
+                 SGPP::base::DataVector& dv, SGPP::base::DataVector& corr,
                  SGPP::base::DataVector* rhs);
+  void corrector(SLESolver& LinearSystemSolver,
+                 SGPP::solver::OperationParabolicPDESolverSystem& System, float_t tmp_timestepsize,
+                 SGPP::base::DataVector& dv, SGPP::base::DataVector* rhs);
 
-  //float_t twoNorm(SGPP::base::DataVector &dv1, SGPP::base::DataVector &dv2);
+  // float_t twoNorm(SGPP::base::DataVector &dv1, SGPP::base::DataVector &dv2);
 
-  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
-                       float_t norm, float_t epsilon);
+  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm,
+                       float_t epsilon);
 
   std::string _odesolver;
-
 
  public:
   /**
@@ -55,8 +50,8 @@ class StepsizeControlH : public StepsizeControl {
    * @param screen possible pointer to a SGPP::base::ScreenOutput object
    * @param gamma damping factor
    */
-  StepsizeControlH(std::string odesolver, size_t imax, float_t timestepSize,
-                   float_t eps, SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.9);
+  StepsizeControlH(std::string odesolver, size_t imax, float_t timestepSize, float_t eps,
+                   SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.9);
 
   /**
    * Std-Destructor
@@ -64,7 +59,7 @@ class StepsizeControlH : public StepsizeControl {
   virtual ~StepsizeControlH();
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* STEPSIZECONTROLH_HPP */

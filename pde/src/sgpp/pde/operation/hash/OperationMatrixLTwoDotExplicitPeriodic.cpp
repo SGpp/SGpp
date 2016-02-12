@@ -6,35 +6,32 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+
+#include <sgpp/globaldef.hpp>
+
 #include <string.h>
 #include <cmath>
 #include <vector>
 #include <algorithm>
 
-#include <sgpp/globaldef.hpp>
-
-
 namespace SGPP {
 namespace pde {
 
 OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(
-  SGPP::base::DataMatrix* m,
-  SGPP::base::Grid* grid) :
-  ownsMatrix_(false) {
+    SGPP::base::DataMatrix* m, SGPP::base::Grid* grid)
+    : ownsMatrix_(false) {
   m_ = m;
   buildMatrix(grid);
 }
 
 OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(
-  SGPP::base::Grid* grid) :
-  ownsMatrix_(true) {
-  m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(),
-                                  grid->getStorage()->size());
+    SGPP::base::Grid* grid)
+    : ownsMatrix_(true) {
+  m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(), grid->getStorage()->size());
   buildMatrix(grid);
 }
 
-void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(
-  SGPP::base::Grid* grid) {
+void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(SGPP::base::Grid* grid) {
   size_t gridSize = grid->getStorage()->size();
   size_t gridDim = grid->getStorage()->dim();
 
@@ -59,7 +56,7 @@ void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(
           std::swap(iik, ijk);
         }
 
-        if (lik == 1) { // level 0
+        if (lik == 1) {  // level 0
           if (ljk > 2) {
             lik = 2;
             iik = 1;
@@ -70,10 +67,9 @@ void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(
               ijk = ijk - ljk / 2;
             }
 
-            //Use formula for different overlapping ansatz functions:
-            float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
-            float_t temp_res = fabs(diff - (1 / ljk))
-                               + fabs(diff + (1 / ljk)) - fabs(diff);
+            // Use formula for different overlapping ansatz functions:
+            float_t diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+            float_t temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
             temp_res *= lik;
             temp_res = (1 - temp_res) / ljk;
             res *= temp_res;
@@ -85,26 +81,25 @@ void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(
             res *= 1.0 / (3 * ljk);
           }
         } else if (lik == ljk) {
-          if (iik == ijk) { // case 4
-            //Use formula for identical ansatz functions:
+          if (iik == ijk) {  // case 4
+            // Use formula for identical ansatz functions:
             res *= 2.0 / lik / 3;
-          } else { //case 0
-            //Different index, but same level => ansatz functions do not overlap:
+          } else {  // case 0
+            // Different index, but same level => ansatz functions do not overlap:
             res = 0.;
             break;
           }
         } else {
-          if (std::max((iik - 1) / lik, (ijk - 1) / ljk)
-              >= std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
-            //Ansatz functions do not not overlap:
+          if (std::max((iik - 1) / lik, (ijk - 1) / ljk) >=
+              std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
+            // Ansatz functions do not not overlap:
             res = 0.;
             break;
           } else {
-            //Use formula for different overlapping ansatz functions:
+            // Use formula for different overlapping ansatz functions:
 
-            float_t diff = (ijk / ljk) - (iik / lik); // x_j_k - x_i_k
-            float_t temp_res = fabs(diff - (1 / ljk))
-                               + fabs(diff + (1 / ljk)) - fabs(diff);
+            float_t diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+            float_t temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
             temp_res *= lik;
             temp_res = (1 - temp_res) / ljk;
             res *= temp_res;
@@ -119,13 +114,11 @@ void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(
 }
 
 OperationMatrixLTwoDotExplicitPeriodic::~OperationMatrixLTwoDotExplicitPeriodic() {
-  if (ownsMatrix_)
-    delete m_;
+  if (ownsMatrix_) delete m_;
 }
 
 void OperationMatrixLTwoDotExplicitPeriodic::mult(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result) {
-
+                                                  SGPP::base::DataVector& result) {
   size_t nrows = m_->getNrows();
   size_t ncols = m_->getNcols();
 
@@ -135,7 +128,7 @@ void OperationMatrixLTwoDotExplicitPeriodic::mult(SGPP::base::DataVector& alpha,
 
   float_t* data = m_->getPointer();
 
-  //Standard matrix multiplication:
+  // Standard matrix multiplication:
   float_t temp = 0.;
   size_t acc = 0;
 
@@ -152,7 +145,3 @@ void OperationMatrixLTwoDotExplicitPeriodic::mult(SGPP::base::DataVector& alpha,
 
 }  // namespace pde
 }  // namespace SGPP
-
-
-
-

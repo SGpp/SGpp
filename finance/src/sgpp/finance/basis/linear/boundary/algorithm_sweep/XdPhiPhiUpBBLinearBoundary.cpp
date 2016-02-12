@@ -7,21 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XdPhiPhiUpBBLinearBoundary::XdPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage* storage)
+    : XdPhiPhiUpBBLinear(storage) {}
 
-
-XdPhiPhiUpBBLinearBoundary::XdPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage*
-    storage) : XdPhiPhiUpBBLinear(storage) {
-}
-
-XdPhiPhiUpBBLinearBoundary::~XdPhiPhiUpBBLinearBoundary() {
-}
+XdPhiPhiUpBBLinearBoundary::~XdPhiPhiUpBBLinearBoundary() {}
 
 void XdPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                            SGPP::base::DataVector& result, grid_iterator& index,
+                                            size_t dim) {
   float_t q = this->boundingBox->getIntervalWidth(dim);
   float_t t = this->boundingBox->getIntervalOffset(dim);
 
@@ -58,7 +54,7 @@ void XdPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       // up
       //////////////////////////////////////
@@ -68,7 +64,7 @@ void XdPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -97,7 +93,7 @@ void XdPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       // up
       //////////////////////////////////////
@@ -107,7 +103,7 @@ void XdPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -116,7 +112,5 @@ void XdPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

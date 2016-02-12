@@ -1,9 +1,7 @@
-/* ****************************************************************************
-* Copyright (C) 2015 Technische Universitaet Muenchen                         *
-* This file is part of the SG++ project. For conditions of distribution and   *
-* use, please see the copyright notice at http://www5.in.tum.de/SGpp          *
-**************************************************************************** */
-// @author Petar Tzenov
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef COMBICHEBYSHEVSTRETCHING_HPP_
 #define COMBICHEBYSHEVSTRETCHING_HPP_
@@ -43,8 +41,7 @@ class CombiChebyshevStretching : public AbstractStretchingMaker {
    * size of the interval and underlying tranformations.
    *
    */
-  void get1DStretching(int level, double min, double max,
-                       std::vector<double>* stretching,
+  void get1DStretching(int level, double min, double max, std::vector<double>* stretching,
                        std::vector<double>* jacobian) const;
 
   Stretching getStretchingType() const { return CHEBYSHEV; }

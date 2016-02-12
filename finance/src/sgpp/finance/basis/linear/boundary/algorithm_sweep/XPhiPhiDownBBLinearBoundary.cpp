@@ -7,21 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XPhiPhiDownBBLinearBoundary::XPhiPhiDownBBLinearBoundary(SGPP::base::GridStorage* storage)
+    : XPhiPhiDownBBLinear(storage) {}
 
-
-XPhiPhiDownBBLinearBoundary::XPhiPhiDownBBLinearBoundary(
-  SGPP::base::GridStorage* storage) : XPhiPhiDownBBLinear(storage) {
-}
-
-XPhiPhiDownBBLinearBoundary::~XPhiPhiDownBBLinearBoundary() {
-}
+XPhiPhiDownBBLinearBoundary::~XPhiPhiDownBBLinearBoundary() {}
 
 void XPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                             SGPP::base::DataVector& result, grid_iterator& index,
+                                             size_t dim) {
   float_t q = this->boundingBox->getIntervalWidth(dim);
   float_t t = this->boundingBox->getIntervalOffset(dim);
 
@@ -55,13 +51,13 @@ void XPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   if (useBB) {
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; //left_boundary
+      result[seq_left] = 0.0;  // left_boundary
     } else {
       result[seq_left] = ((1.0 / 3.0 * t + 1.0 / 12.0 * q * q) * left_boundary);
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //right_boundary;
+      result[seq_right] = 0.0;  // right_boundary;
     } else {
       result[seq_right] = ((1.0 / 3.0 * t + 1.0 / 4.0 * q * q) * right_boundary);
 
@@ -83,13 +79,13 @@ void XPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   } else {
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; //left_boundary
+      result[seq_left] = 0.0;  // left_boundary
     } else {
       result[seq_left] = (1.0 / 12.0) * left_boundary;
     }
 
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //right_boundary;
+      result[seq_right] = 0.0;  // right_boundary;
     } else {
       result[seq_right] = (1.0 / 4.0) * right_boundary;
 
@@ -111,7 +107,5 @@ void XPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

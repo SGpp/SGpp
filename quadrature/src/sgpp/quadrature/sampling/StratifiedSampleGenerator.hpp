@@ -8,9 +8,10 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/globaldef.hpp>
-#include <random>
-
 #include <sgpp/quadrature/sampling/SampleGenerator.hpp>
+
+#include <random>
+#include <vector>
 
 namespace SGPP {
 namespace quadrature {
@@ -21,10 +22,8 @@ namespace quadrature {
  * one sample has already been generated for every strata, the next requested
  * sample will be placed into the first strata.
  */
-class StratifiedSampleGenerator: public SampleGenerator {
-
+class StratifiedSampleGenerator : public SampleGenerator {
  public:
-
   /**
    * Standard constructor
    *
@@ -74,10 +73,9 @@ class StratifiedSampleGenerator: public SampleGenerator {
 
   //
   std::uniform_real_distribution<float_t> uniformRealDist;
-
 };
 
-}
-}
+}  // namespace quadrature
+}  // namespace SGPP
 
 #endif /* STRATIFIEDSAMPLEGENERATOR_HPP */

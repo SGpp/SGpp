@@ -11,11 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
-
-
 
 /**
  * Implementation of sweep operator (): 1D Down for
@@ -36,7 +33,7 @@ class SqXdPhidPhiDownBBLinear {
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  SqXdPhidPhiDownBBLinear(SGPP::base::GridStorage* storage);
+  explicit SqXdPhidPhiDownBBLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -47,16 +44,16 @@ class SqXdPhidPhiDownBBLinear {
    * This operations performs the calculation of down in the direction of dimension <i>dim</i>
    * on a grid with fix Dirichlet 0 boundary conditions
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
    * @param result SGPP::base::DataVector that contains the result of the down operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataVector& source,
-                          SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
+  virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                          grid_iterator& index, size_t dim);
 
  protected:
-
   /**
    * recursive function for the calculation of Down without Bounding Box support
    *
@@ -67,8 +64,8 @@ class SqXdPhidPhiDownBBLinear {
    * @param fl function value on the left boundary
    * @param fr function value on the right boundary
    */
-  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-           grid_iterator& index, size_t dim, float_t fl, float_t fr);
+  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index,
+           size_t dim, float_t fl, float_t fr);
 
   /**
    * recursive function for the calculation of Down with Bounding Box support
@@ -82,13 +79,11 @@ class SqXdPhidPhiDownBBLinear {
    * @param q interval width in the current dimension <i>dim</i>
    * @param t interval offset in current dimension <i>dim</i>
    */
-  void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-             grid_iterator& index, size_t dim, float_t fl, float_t fr, float_t q, float_t t);
+  void recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index,
+             size_t dim, float_t fl, float_t fr, float_t q, float_t t);
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* SQXDPHIDPHIDOWNBBLINEAR_HPP */

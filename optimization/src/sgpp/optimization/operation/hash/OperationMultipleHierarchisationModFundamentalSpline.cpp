@@ -11,16 +11,15 @@
 namespace SGPP {
 namespace optimization {
 
-OperationMultipleHierarchisationModFundamentalSpline::OperationMultipleHierarchisationModFundamentalSpline(
-  base::ModFundamentalSplineGrid& grid) :
-  grid(grid), op(&grid) {
-}
+OperationMultipleHierarchisationModFundamentalSpline::
+    OperationMultipleHierarchisationModFundamentalSpline(base::ModFundamentalSplineGrid& grid)
+    : grid(grid), op(&grid) {}
 
-OperationMultipleHierarchisationModFundamentalSpline::~OperationMultipleHierarchisationModFundamentalSpline() {
-}
+OperationMultipleHierarchisationModFundamentalSpline::
+    ~OperationMultipleHierarchisationModFundamentalSpline() {}
 
 bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
-  base::DataVector& nodeValues) {
+    base::DataVector& nodeValues) {
   Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
   op.doHierarchisation(nodeValues);
   Printer::getInstance().printStatusEnd();
@@ -28,14 +27,14 @@ bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationModFundamentalSpline::doDehierarchisation(
-  base::DataVector& alpha) {
+    base::DataVector& alpha) {
   Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
   op.doDehierarchisation(alpha);
   Printer::getInstance().printStatusEnd();
 }
 
 bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+    base::DataMatrix& nodeValues) {
   Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
   op.doHierarchisation(nodeValues);
   Printer::getInstance().printStatusEnd();
@@ -43,11 +42,10 @@ bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationModFundamentalSpline::doDehierarchisation(
-  base::DataMatrix& alpha) {
+    base::DataMatrix& alpha) {
   Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
   op.doDehierarchisation(alpha);
   Printer::getInstance().printStatusEnd();
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

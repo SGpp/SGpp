@@ -45,12 +45,9 @@ class NelderMead : public UnconstrainedOptimizer {
    * @param gamma                 contraction coefficient
    * @param delta                 shrinking coefficient
    */
-  NelderMead(ScalarFunction& f,
-             size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
-             float_t alpha = DEFAULT_ALPHA,
-             float_t beta = DEFAULT_BETA,
-             float_t gamma = DEFAULT_GAMMA,
-             float_t delta = DEFAULT_DELTA);
+  NelderMead(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+             float_t alpha = DEFAULT_ALPHA, float_t beta = DEFAULT_BETA,
+             float_t gamma = DEFAULT_GAMMA, float_t delta = DEFAULT_DELTA);
 
   /**
    * Destructor.
@@ -102,8 +99,7 @@ class NelderMead : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// reflection coefficient
@@ -115,9 +111,8 @@ class NelderMead : public UnconstrainedOptimizer {
   /// shrinking coefficient
   float_t delta;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NELDERMEAD_HPP */

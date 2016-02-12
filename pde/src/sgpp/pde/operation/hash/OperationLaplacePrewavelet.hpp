@@ -15,19 +15,19 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include<iostream>
-
-using namespace SGPP::base;
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 
 namespace SGPP {
 namespace pde {
 
 /**
  * Implementation for linear functions of Laplace Operation, prewavelet grids without boundaries.
- * With prewavelets the calculation of the gradient part of the up down algorithm is the more complicated
- * one whereas the normal part is eased. For details on the implementation please refer to the documentation
+ * With prewavelets the calculation of the gradient part of the up down algorithm is the more
+ * complicated
+ * one whereas the normal part is eased. For details on the implementation please refer to the
+ * documentation
  * of the detail-classes LaplaceDownGradientPrewavelet.hpp, LaplaceUpGradientPrewavelet.hpp and
  * LaplaceDownPrewavelet.hpp.
  */
@@ -48,21 +48,15 @@ class OperationLaplacePrewavelet : public UpDownOneOpDimWithShadow {
   virtual ~OperationLaplacePrewavelet();
 
  protected:
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void downOpDim(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim);
-
-  virtual void upOpDim(SGPP::base::DataVector& alpha,
-                       SGPP::base::DataVector& result, size_t dim);
+  virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEPREWAVELET_HPP */

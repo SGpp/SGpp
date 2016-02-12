@@ -8,20 +8,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
 UpdPhidPhiBBIterativeLinearStretchedBoundary::UpdPhidPhiBBIterativeLinearStretchedBoundary(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {}
 
-UpdPhidPhiBBIterativeLinearStretchedBoundary::~UpdPhidPhiBBIterativeLinearStretchedBoundary() {
-}
+UpdPhidPhiBBIterativeLinearStretchedBoundary::~UpdPhidPhiBBIterativeLinearStretchedBoundary() {}
 
-void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-
+void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(SGPP::base::DataVector& alpha,
+                                                              SGPP::base::DataVector& result,
+                                                              size_t dim) {
   // Bounding Box handling
   SGPP::base::Stretching* stretching = this->storage->getStretching();
   float_t q = stretching->getIntervalWidth(dim);
@@ -70,6 +68,5 @@ void UpdPhidPhiBBIterativeLinearStretchedBoundary::operator()(
     }
   }
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

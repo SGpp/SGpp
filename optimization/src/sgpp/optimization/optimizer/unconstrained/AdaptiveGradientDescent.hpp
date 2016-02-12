@@ -41,14 +41,10 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
    * @param stepSizeDecreaseFactor  step size decrease factor
    * @param lineSearchAccuracy      line search accuracy
    */
-  AdaptiveGradientDescent(ScalarFunction& f,
-                          ScalarFunctionGradient& fGradient,
-                          size_t maxItCount = DEFAULT_N,
-                          float_t tolerance = DEFAULT_TOLERANCE,
-                          float_t stepSizeIncreaseFactor =
-                            DEFAULT_STEP_SIZE_INCREASE_FACTOR,
-                          float_t stepSizeDecreaseFactor =
-                            DEFAULT_STEP_SIZE_DECREASE_FACTOR,
+  AdaptiveGradientDescent(ScalarFunction& f, ScalarFunctionGradient& fGradient,
+                          size_t maxItCount = DEFAULT_N, float_t tolerance = DEFAULT_TOLERANCE,
+                          float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
+                          float_t stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
                           float_t lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
 
   /**
@@ -106,8 +102,7 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
   /// objective function gradient
@@ -121,9 +116,8 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
   /// line search accuracy
   float_t rhoLs;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_ADAPTIVEGRADIENTDESCENT_HPP */

@@ -7,21 +7,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
+PhiPhiUpBBLinear::PhiPhiUpBBLinear(SGPP::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
+PhiPhiUpBBLinear::~PhiPhiUpBBLinear() {}
 
-PhiPhiUpBBLinear::PhiPhiUpBBLinear(SGPP::base::GridStorage* storage) : storage(
-    storage), boundingBox(storage->getBoundingBox()) {
-}
-
-PhiPhiUpBBLinear::~PhiPhiUpBBLinear() {
-}
-
-void PhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
-                                  SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void PhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                  grid_iterator& index, size_t dim) {
   float_t q = boundingBox->getIntervalWidth(dim);
   float_t t = boundingBox->getIntervalOffset(dim);
 
@@ -42,9 +37,8 @@ void PhiPhiUpBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void PhiPhiUpBBLinear::rec(SGPP::base::DataVector& source,
-                           SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                           float_t& fr) {
+void PhiPhiUpBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                           grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -78,16 +72,15 @@ void PhiPhiUpBBLinear::rec(SGPP::base::DataVector& source,
   // transposed operations:
   result[seq] = fm;
 
-  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 <<
-                              (current_level + 1)));
+  float_t tmp = (fm / 2.0) + (alpha_value / static_cast<float_t>(1 << (current_level + 1)));
 
   fl = tmp + fl;
   fr = tmp + fr;
 }
 
-void PhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
-                             SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t& fl,
-                             float_t& fr, float_t q, float_t t) {
+void PhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                             grid_iterator& index, size_t dim, float_t& fl, float_t& fr, float_t q,
+                             float_t t) {
   size_t seq = index.seq();
 
   fl = fr = 0.0;
@@ -107,7 +100,7 @@ void PhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
     index.stepRight(dim);
 
     if (!storage->end(index.seq())) {
-      recBB(source, result, index, dim, fmr, fr, q , t);
+      recBB(source, result, index, dim, fmr, fr, q, t);
     }
 
     index.up(dim);
@@ -121,14 +114,11 @@ void PhiPhiUpBBLinear::recBB(SGPP::base::DataVector& source,
   // transposed operations:
   result[seq] = fm;
 
-  float_t tmp = ((fm / 2.0) + ((alpha_value / static_cast<float_t>(1 <<
-                                (current_level + 1))) * q));
+  float_t tmp = ((fm / 2.0) + ((alpha_value / static_cast<float_t>(1 << (current_level + 1))) * q));
 
   fl = tmp + fl;
   fr = tmp + fr;
 }
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace SGPP

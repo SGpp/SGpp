@@ -1,9 +1,7 @@
-/*
- * StretchingFactory.hpp
- *
- *  Created on: Jan 19, 2015
- *      Author: petz
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef STRETCHINGFACTORY_HPP_
 #define STRETCHINGFACTORY_HPP_
@@ -47,6 +45,6 @@ AbstractStretchingMaker* createStretchingMaker(combigrid::Stretching str);
 //
 //    return maker;
 //  }
-}
+}  // namespace combigrid
 
 #endif /* STRETCHINGFACTORY_HPP_ */

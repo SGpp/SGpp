@@ -4,23 +4,19 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/solver/sle/BiCGStab.hpp>
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cmath>
 
 namespace SGPP {
 namespace solver {
 
-BiCGStab::BiCGStab(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {
-}
+BiCGStab::BiCGStab(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {}
 
-BiCGStab::~BiCGStab() {
-}
+BiCGStab::~BiCGStab() {}
 
-void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
-                     SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse,
-                     bool verbose, float_t max_threshold) {
+void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
+                     SGPP::base::DataVector& b, bool reuse, bool verbose, float_t max_threshold) {
   this->nIterations = 1;
   float_t epsilonSqd = this->myEpsilon * this->myEpsilon;
 
@@ -29,7 +25,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     alpha.setAll(0.0);
   }
 
-  //Calculate r0
+  // Calculate r0
   SGPP::base::DataVector r(alpha.getSize());
   SystemMatrix.mult(alpha, r);
   r.sub(b);
@@ -38,10 +34,10 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
   float_t delta = 0.0;
 
   if (verbose == true) {
-    std::cout <<  "delta_0 " << delta_0 << std::endl;
+    std::cout << "delta_0 " << delta_0 << std::endl;
   }
 
-  //Choose r0 as r
+  // Choose r0 as r
   SGPP::base::DataVector rZero(r);
   // Set p as r0
   SGPP::base::DataVector p(rZero);
@@ -66,7 +62,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     s.setAll(0.0);
     SystemMatrix.mult(p, s);
 
-    //std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
+    // std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
 
     sigma = s.dotProduct(rZero);
 
@@ -78,23 +74,23 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
     // w = r - a*s
     w = r;
-    w.axpy((-1.0)*a, s);
+    w.axpy((-1.0) * a, s);
 
     // v = Aw
     v.setAll(0.0);
     SystemMatrix.mult(w, v);
 
-    //std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
+    // std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
 
     omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
     // x = x - a*p - omega*w
-    alpha.axpy((-1.0)*a, p);
-    alpha.axpy((-1.0)*omega, w);
+    alpha.axpy((-1.0) * a, p);
+    alpha.axpy((-1.0) * omega, w);
 
     // r = r - a*s - omega*v
-    r.axpy((-1.0)*a, s);
-    r.axpy((-1.0)*omega, v);
+    r.axpy((-1.0) * a, s);
+    r.axpy((-1.0) * omega, v);
 
     rho_new = r.dotProduct(rZero);
 
@@ -115,7 +111,7 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
     rho = rho_new;
 
     // p = r + beta*(p - omega*s)
-    p.axpy((-1.0)*omega, s);
+    p.axpy((-1.0) * omega, s);
     p.mult(beta);
     p.add(r);
 
@@ -123,5 +119,5 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix,
   }
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

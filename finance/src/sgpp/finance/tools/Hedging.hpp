@@ -10,10 +10,9 @@
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 
@@ -42,7 +41,8 @@ class Hedging {
   /**
    * Constructor
    *
-   * @param hedge_area BoundingBox that describes the full-grid area for which the delta and gamma should be calculated. They must be in Cartesian coordinates!
+   * @param hedge_area BoundingBox that describes the full-grid area for which the delta and gamma
+   * should be calculated. They must be in Cartesian coordinates!
    * @param resolution number of grid points in every dimension
    * @param eps epsilon used for calculating finite differences
    * @param is_log_transformed set to true if hedging is used with log-transformed grids
@@ -61,14 +61,13 @@ class Hedging {
    *
    * @param sparse_grid the sparse grid
    * @param alpha the sparse grid's coefficients
-   * @param file_extension some file extension (e.g. numbering) in order to distinguish different outputs that are written
+   * @param file_extension some file extension (e.g. numbering) in order to distinguish different
+   * outputs that are written
    */
   void calc_hedging(SGPP::base::Grid& sparse_grid, SGPP::base::DataVector alpha,
                     std::string file_extension);
 };
-
-}
-
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* HEDGING_HPP */

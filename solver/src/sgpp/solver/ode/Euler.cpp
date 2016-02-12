@@ -9,21 +9,22 @@
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/exception/solver_exception.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <iostream>
 #include <string>
 #include <sstream>
 
-#include <sgpp/globaldef.hpp>
-
-
 namespace SGPP {
 namespace solver {
 
-Euler::Euler(std::string Mode, size_t imax, float_t timestepSize,
-             bool generateAnimation, size_t numEvalsAnimation,
-             SGPP::base::ScreenOutput* screen) : ODESolver(imax, timestepSize),
-  bAnimation(generateAnimation), evalsAnimation(numEvalsAnimation), ExMode(Mode),
-  myScreen(screen) {
+Euler::Euler(std::string Mode, size_t imax, float_t timestepSize, bool generateAnimation,
+             size_t numEvalsAnimation, SGPP::base::ScreenOutput* screen)
+    : ODESolver(imax, timestepSize),
+      bAnimation(generateAnimation),
+      evalsAnimation(numEvalsAnimation),
+      ExMode(Mode),
+      myScreen(screen) {
   this->residuum = 0.0;
 
   if (Mode != "ExEul" && Mode != "ImEul") {
@@ -31,8 +32,7 @@ Euler::Euler(std::string Mode, size_t imax, float_t timestepSize,
   }
 }
 
-Euler::~Euler() {
-}
+Euler::~Euler() {}
 
 void Euler::solve(SLESolver& LinearSystemSolver,
                   SGPP::solver::OperationParabolicPDESolverSystem& System, bool bIdentifyLastStep,
@@ -67,28 +67,27 @@ void Euler::solve(SLESolver& LinearSystemSolver,
     rhs = System.generateRHS();
 
     // solve the system of the current timestep
-    LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true,
-                             false, -1.0);
+    LinearSystemSolver.solve(System, *System.getGridCoefficientsForCG(), *rhs, true, false, -1.0);
 
     allIter += LinearSystemSolver.getNumberIterations();
 
     if (verbose == true) {
       if (myScreen == NULL) {
         std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
-                  << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " <<
-                  allIter << ")" << std::endl;
+                  << LinearSystemSolver.getNumberIterations()
+                  << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
       }
     }
 
     if (myScreen != NULL) {
       std::stringstream soutput;
-      soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with " <<
-              LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " <<
-              allIter << ")";
+      soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
+              << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter
+              << ")";
 
       if (i < this->nMaxIterations - 1) {
-        myScreen->update((size_t)(((float_t)(i + 1) * 100.0) / ((
-                                    float_t)this->nMaxIterations)), soutput.str());
+        myScreen->update((size_t)(((float_t)(i + 1) * 100.0) / ((float_t) this->nMaxIterations)),
+                         soutput.str());
       } else {
         myScreen->update(100, soutput.str());
       }
@@ -130,5 +129,5 @@ void Euler::solve(SLESolver& LinearSystemSolver,
   this->nIterations = allIter;
 }
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP

@@ -7,9 +7,9 @@
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_MLADINEO_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 #include <cmath>
-#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
 namespace optimization {
@@ -39,14 +39,12 @@ class MladineoObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t evalUndisplaced(const base::DataVector& x)
-  override;
+  float_t evalUndisplaced(const base::DataVector& x) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
 /**
@@ -82,8 +80,7 @@ class Mladineo : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-  override;
+  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
   /**
@@ -96,9 +93,8 @@ class Mladineo : public UnconstrainedTestProblem {
   /// objective function
   MladineoObjective f;
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_MLADINEO_HPP */

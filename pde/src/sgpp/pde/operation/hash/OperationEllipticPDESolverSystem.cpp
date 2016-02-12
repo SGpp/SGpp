@@ -8,18 +8,14 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
-OperationEllipticPDESolverSystem::OperationEllipticPDESolverSystem(
-  SGPP::base::Grid& SparseGrid,
-  SGPP::base::DataVector& rhs) : BoundGrid(&SparseGrid), rhs(&rhs),
-  numGridpointsComplete(SparseGrid.getSize()) {
-}
+OperationEllipticPDESolverSystem::OperationEllipticPDESolverSystem(SGPP::base::Grid& SparseGrid,
+                                                                   SGPP::base::DataVector& rhs)
+    : BoundGrid(&SparseGrid), rhs(&rhs), numGridpointsComplete(SparseGrid.getSize()) {}
 
-OperationEllipticPDESolverSystem::~OperationEllipticPDESolverSystem() {
-}
+OperationEllipticPDESolverSystem::~OperationEllipticPDESolverSystem() {}
 
 size_t OperationEllipticPDESolverSystem::getNumGridPointsComplete() {
   return this->numGridpointsComplete;
@@ -28,6 +24,5 @@ size_t OperationEllipticPDESolverSystem::getNumGridPointsComplete() {
 size_t OperationEllipticPDESolverSystem::getNumGridPointsInner() {
   return this->numGridpointsInner;
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

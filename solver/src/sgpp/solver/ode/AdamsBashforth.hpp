@@ -8,10 +8,9 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace solver {
@@ -34,8 +33,7 @@ class AdamsBashforth : public ODESolver {
    * @param timestepSize the size of one timestep
    * @param screen possible pointer to a SGPP::base::ScreenOutput object
    */
-  AdamsBashforth(size_t imax, float_t timestepSize,
-                 SGPP::base::ScreenOutput* screen = NULL);
+  AdamsBashforth(size_t imax, float_t timestepSize, SGPP::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor
@@ -47,7 +45,7 @@ class AdamsBashforth : public ODESolver {
                      bool bIdentifyLastStep = false, bool verbose = false);
 };
 
-}
-}
+}  // namespace solver
+}  // namespace SGPP
 
 #endif /* ADAMSBASHFORTH_HPP */

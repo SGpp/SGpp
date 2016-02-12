@@ -1,9 +1,7 @@
-/*
- * AbstractCombiScheme.hpp
- *
- *  Created on: May 22, 2014
- *      Author: petzko
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef ABSTRACTCOMBISCHEME_HPP_
 #define ABSTRACTCOMBISCHEME_HPP_
@@ -11,8 +9,10 @@
 #include <sgpp/combigrid/domain/CombiGridDomain.hpp>
 #include <sgpp/combigrid/fullgrid/CombiFullGrid.hpp>
 #include <sgpp/combigrid/fullgrid/GridContainer.hpp>
+#include <sgpp/combigrid/utils/combigrid_utils.hpp>
+
 #include <stdlib.h>
-#include "../utils/combigrid_utils.hpp"
+#include <vector>
 
 namespace combigrid {
 
@@ -35,9 +35,7 @@ class AbstractCombiScheme {
    * @param trunc_levels: a vector(list) of intergers specifying the truncation
    * level per dimension
    * */
-  void setTruncationLevels(std::vector<int> trunc_levels) {
-    _levels_truncation = trunc_levels;
-  }
+  void setTruncationLevels(std::vector<int> trunc_levels) { _levels_truncation = trunc_levels; }
 
   /**
    * Default destructor
@@ -70,8 +68,7 @@ class AbstractCombiScheme {
    *
    * */
 
-  virtual void initCombiGrid(int in_dim,
-                             std::vector<std::vector<int> >& out_levels_vector,
+  virtual void initCombiGrid(int in_dim, std::vector<std::vector<int> >& out_levels_vector,
                              std::vector<_Tp>& out_coefs) = 0;
 
   /**
@@ -96,10 +93,9 @@ class AbstractCombiScheme {
    *
    * */
 
-  virtual void re_initCombiGrid(
-      int in_dim, const std::vector<FGridContainer<_Tp>*> in_grids,
-      std::vector<std::vector<int> >& out_levels_vector,
-      std::vector<_Tp>& out_coefs) = 0;
+  virtual void re_initCombiGrid(int in_dim, const std::vector<FGridContainer<_Tp>*> in_grids,
+                                std::vector<std::vector<int> >& out_levels_vector,
+                                std::vector<_Tp>& out_coefs) = 0;
 
   /** Implement this method with desired logic to handle situations when
    * recomputation of the coefficients might be necessary.
@@ -110,8 +106,7 @@ class AbstractCombiScheme {
    * current combigrid- will be updated with the newly recomputed
    * coefficients
    * */
-  virtual void recomputeCoefficients(
-      int in_dim, std::vector<FGridContainer<_Tp>*>& out_fgrids) = 0;
+  virtual void recomputeCoefficients(int in_dim, std::vector<FGridContainer<_Tp>*>& out_fgrids) = 0;
 
   /**
    * Evaluate the combi grid at one specified point. Buffered evaluation
@@ -164,7 +159,7 @@ class AbstractCombiScheme {
     out_results.resize(in_coords.size());
 
     // just iterate over each point and call the serial evaluation function
-    for (int i = 0; i < (int)out_results.size(); i++) {
+    for (int i = 0; i < static_cast<int>(out_results.size()); i++) {
       out_results[i] = evalCombiGrid(in_fgrids, in_coords[i]);
     }
   }
@@ -176,8 +171,7 @@ class AbstractCombiScheme {
    *is to be evaluated onto the in_coords
    * @param in_coords the coordinate points to evaluate
    */
-  _Tp evalSingleGrid(const int index,
-                     const std::vector<FGridContainer<_Tp>*>& in_fgrids,
+  _Tp evalSingleGrid(const int index, const std::vector<FGridContainer<_Tp>*>& in_fgrids,
                      const std::vector<double>& in_coords) const {
     std::vector<double> coords_temp = in_coords;
     // do not check if the current grid is active within the combigrid !!!
@@ -195,17 +189,18 @@ class AbstractCombiScheme {
 
     int size_fg = static_cast<int>(out_levels_vector.size());
 
-    while ((int)i < size_fg - 1) {
+    while (static_cast<int>(i) < size_fg - 1) {
       j = i + 1;
 
-      while ((int)j < size_fg) {
+      while (static_cast<int>(j) < size_fg) {
         if (out_levels_vector[i] == out_levels_vector[j]) {
           out_levels_vector.erase(gt + j);
           out_coefs[i] += out_coefs[j];
           out_coefs.erase(ct + j);
           size_fg--;
-        } else
+        } else {
           j++;
+        }
       }
 
       if (out_coefs[i] == 0.0) {
@@ -217,15 +212,16 @@ class AbstractCombiScheme {
           gt = out_levels_vector.begin();
           ct = out_coefs.begin();
         }
-      } else
+      } else {
         i++;
+      }
     }
   }
 
-  std::vector<int> updateScheme(
-      std::vector<std::vector<int> > levelsNew, std::vector<_Tp> coefs_new,
-      std::vector<std::vector<int> >& out_levels_vector,
-      std::vector<_Tp>& out_coefs) {
+  std::vector<int> updateScheme(std::vector<std::vector<int> > levelsNew,
+                                std::vector<_Tp> coefs_new,
+                                std::vector<std::vector<int> >& out_levels_vector,
+                                std::vector<_Tp>& out_coefs) {
     removeDuplicates(out_levels_vector, out_coefs);
     std::vector<int> result(0);
 
@@ -263,5 +259,5 @@ class AbstractCombiScheme {
     return result;
   }
 };
-}
+}  // namespace combigrid
 #endif /* ABSTRACTCOMBISCHEME_HPP_ */
