@@ -253,7 +253,7 @@ else:
 # -------------------------------------------------------------------------
 
 def lintAction(target, source, env):
-    p = subprocess.Popen(["python", "tools/cpplint.py",
+    p = subprocess.Popen(["python", "tools/cpplint.py", "--ignorecfg=yes",
                           "--extensions=cpp,hpp", "--linelength=100",
                           source[0].abspath],
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
