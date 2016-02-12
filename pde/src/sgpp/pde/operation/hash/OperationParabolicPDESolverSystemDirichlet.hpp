@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -35,8 +34,8 @@ namespace pde {
  * on on the boundaries the iterative solver (CG or BiCGSTAB) has only to take
  * inner grid points into account.
  */
-class OperationParabolicPDESolverSystemDirichlet : public
-  SGPP::solver::OperationParabolicPDESolverSystem {
+class OperationParabolicPDESolverSystemDirichlet
+    : public SGPP::solver::OperationParabolicPDESolverSystem {
  protected:
   /// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
   SGPP::base::DataVector* alpha_inner;
@@ -98,10 +97,10 @@ class OperationParabolicPDESolverSystemDirichlet : public
    * Multiplicates a vector with the matrix
    *
    * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
-   * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
+   * @param result SGPP::base::DataVector into which the result of the space discretization
+   * operation is stored
    */
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   /**
    * generates the right hand side of the system
@@ -112,8 +111,7 @@ class OperationParabolicPDESolverSystemDirichlet : public
 
   virtual SGPP::base::DataVector* getGridCoefficientsForCG();
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLET_HPP */

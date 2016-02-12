@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -28,8 +27,8 @@ namespace pde {
  * using an iterative SLE solver, that solving step is integrated in the
  * ODE Solver.
  */
-class OperationParabolicPDESolverSystemFreeBoundaries : public
-  SGPP::solver::OperationParabolicPDESolverSystem {
+class OperationParabolicPDESolverSystemFreeBoundaries
+    : public SGPP::solver::OperationParabolicPDESolverSystem {
  protected:
   /**
    * applies the PDE's mass matrix, on complete grid - with boundaries
@@ -37,8 +36,7 @@ class OperationParabolicPDESolverSystemFreeBoundaries : public
    * @param alpha the coefficients of the sparse grid's ansatzfunctions
    * @param result reference to the SGPP::base::DataVector into which the result is written
    */
-  virtual void applyMassMatrix(SGPP::base::DataVector& alpha,
-                               SGPP::base::DataVector& result) = 0;
+  virtual void applyMassMatrix(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
   /**
    * applies the PDE's system matrix, on complete grid - with boundaries
@@ -46,8 +44,7 @@ class OperationParabolicPDESolverSystemFreeBoundaries : public
    * @param alpha the coefficients of the sparse grid's ansatzfunctions
    * @param result reference to the SGPP::base::DataVector into which the result is written
    */
-  virtual void applyLOperator(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result) = 0;
+  virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
  public:
   /**
@@ -60,15 +57,13 @@ class OperationParabolicPDESolverSystemFreeBoundaries : public
    */
   virtual ~OperationParabolicPDESolverSystemFreeBoundaries();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual SGPP::base::DataVector* generateRHS();
 
   virtual SGPP::base::DataVector* getGridCoefficientsForCG();
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEMFREEBOUNDARIES_HPP */

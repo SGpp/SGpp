@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -38,8 +37,7 @@ class DowndPhidPhiBBIterativeLinearStretchedBoundary {
    *
    * @param storage Pointer to the grid's storage object
    */
-  DowndPhidPhiBBIterativeLinearStretchedBoundary(SGPP::base::GridStorage*
-      storage);
+  explicit DowndPhidPhiBBIterativeLinearStretchedBoundary(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -48,17 +46,17 @@ class DowndPhidPhiBBIterativeLinearStretchedBoundary {
 
   /**
    * This operations performs the calculation of Down in the direction of dimension <i>dim</i>
-   * of following bilinearform: \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x} dx\f$
+   * of following bilinearform: \f$\int_{x} \frac{\partial \phi(x)}{x} \frac{\partial \phi(x)}{x}
+   * dx\f$
    *
    * @param alpha SGPP::base::DataVector that contains the gridpoint's coefficients
    * @param result SGPP::base::DataVector that contains the result of the down operation
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataVector& alpha,
-                          SGPP::base::DataVector& result, size_t dim);
+  virtual void operator()(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                          size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* DOWNDPHIDPHIDOWNBBITERATIVELINEARSTRETCHEDBOUNDARY_HPP */

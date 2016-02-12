@@ -6,7 +6,6 @@
 #ifndef POISSONEQUATIONSOLVER_HPP
 #define POISSONEQUATIONSOLVER_HPP
 
-
 #include <sgpp/pde/application/EllipticPDESolver.hpp>
 
 #include <sgpp/base/grid/type/LinearGrid.hpp>
@@ -16,15 +15,14 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <cmath>
-
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
-
 
 namespace SGPP {
 namespace pde {
@@ -55,8 +53,8 @@ class PoissonEquationSolver : public EllipticPDESolver {
 
   void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
 
-  void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs,
-                size_t maxCGIterations, float_t epsilonCG, bool verbose = false);
+  void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations,
+                float_t epsilonCG, bool verbose = false);
 
   /**
    * Inits the grid with a smooth heat distribution (based on
@@ -70,8 +68,8 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu,
-                              float_t sigma, float_t factor);
+  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu, float_t sigma,
+                              float_t factor);
 
   /**
    * Inits the grid with a smooth heat distribution (based on
@@ -86,8 +84,8 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeatFullDomain(SGPP::base::DataVector& alpha, float_t mu,
-                                        float_t sigma, float_t factor);
+  void initGridWithSmoothHeatFullDomain(SGPP::base::DataVector& alpha, float_t mu, float_t sigma,
+                                        float_t factor);
 
   /**
    * Inits the grid with a heat distribution based on
@@ -111,8 +109,7 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param alpha reference to the coefficient's vector
    * @param factor a constant factor used to enlarge the exp-functions input parameter
    */
-  void initGridWithExpHeatFullDomain(SGPP::base::DataVector& alpha,
-                                     float_t factor = 1.0);
+  void initGridWithExpHeatFullDomain(SGPP::base::DataVector& alpha, float_t factor = 1.0);
 
   /**
    * Routine to export the RHS of the inner system which has to be
@@ -132,16 +129,15 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param epsilonCG the epsilon used in the C
    * @param tFilename file into which the rhs is written
    */
-  void storeInnerSolution(SGPP::base::DataVector& alpha, size_t maxCGIterations,
-                          float_t epsilonCG, std::string tFilename);
+  void storeInnerSolution(SGPP::base::DataVector& alpha, size_t maxCGIterations, float_t epsilonCG,
+                          std::string tFilename);
 
   /**
    * Inits the screen object
    */
   void initScreen();
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* POISSONEQUATIONSOLVER_HPP */

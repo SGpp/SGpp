@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -34,8 +33,8 @@ class LaplaceEnhancedUpBBLinearBoundary : public LaplaceEnhancedUpBBLinear {
    * @param algo_dim current algorithmic dimension
    * @param q stretching of basis function in the current algorithmic dimension
    */
-  void calcL2Boundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right,
-                      size_t dim, size_t algo_dim, float_t q);
+  void calcL2Boundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right, size_t dim,
+                      size_t algo_dim, float_t q);
 
   /**
    * calculates the gradient up operation on level 0 basis functions
@@ -48,8 +47,8 @@ class LaplaceEnhancedUpBBLinearBoundary : public LaplaceEnhancedUpBBLinear {
    * @param algo_dim current algorithmic dimension
    * @param q_reci reciprocal of stretching of basis function in the current algorithmic dimension
    */
-  void calcGradBoundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right,
-                        size_t dim, size_t algo_dim, float_t q_reci);
+  void calcGradBoundary(float_t fl, float_t fr, size_t seq_left, size_t seq_right, size_t dim,
+                        size_t algo_dim, float_t q_reci);
 
  public:
   /**
@@ -57,7 +56,7 @@ class LaplaceEnhancedUpBBLinearBoundary : public LaplaceEnhancedUpBBLinear {
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  LaplaceEnhancedUpBBLinearBoundary(SGPP::base::GridStorage* storage);
+  explicit LaplaceEnhancedUpBBLinearBoundary(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -68,18 +67,17 @@ class LaplaceEnhancedUpBBLinearBoundary : public LaplaceEnhancedUpBBLinear {
    * This operations performs the calculation of up in the direction of dimension <i>dim</i>
    * on a grid with fix Dirichlet 0 boundary conditions
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
    * @param result SGPP::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataMatrix& source,
-                          SGPP::base::DataMatrix& result, grid_iterator& index, size_t dim);
+  virtual void operator()(SGPP::base::DataMatrix& source, SGPP::base::DataMatrix& result,
+                          grid_iterator& index, size_t dim);
 };
 
-// namespace detail
-}
-// namespace SGPP
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* LAPLACEENHANCEDUPBBLINEARBOUNDARY_HPP */

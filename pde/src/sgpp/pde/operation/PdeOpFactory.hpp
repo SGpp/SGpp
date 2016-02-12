@@ -16,7 +16,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 
 namespace op_factory {
@@ -36,8 +35,7 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid);
  * @param coef Coefficient vector for OperationLaplace
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-base::OperationMatrix* createOperationLaplace(base::Grid& grid,
-    SGPP::base::DataVector& coef);
+base::OperationMatrix* createOperationLaplace(base::Grid& grid, SGPP::base::DataVector& coef);
 /**
  * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -65,8 +63,7 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid);
    * @param m DataMatrix in which the data is stored
    * @return Pointer to the new OperationMatrix object for the Grid grid
    */
-base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m,
-    base::Grid& grid);
+base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base::Grid& grid);
 
 /**
  * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
@@ -90,10 +87,8 @@ base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid);
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
 base::OperationMatrix* createOperationLaplaceEnhanced(base::Grid& grid,
-    SGPP::base::DataVector& coef);
-
-}
-
-}
+                                                      SGPP::base::DataVector& coef);
+}  // namespace op_factory
+}  // namespace SGPP
 
 #endif /*PDE_OP_FACTORY_HPP*/

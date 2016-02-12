@@ -7,27 +7,20 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
+PhiPhiDownModLinear::PhiPhiDownModLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
 
+PhiPhiDownModLinear::~PhiPhiDownModLinear() {}
 
-PhiPhiDownModLinear::PhiPhiDownModLinear(SGPP::base::GridStorage* storage) :
-  storage(storage) {
-}
-
-PhiPhiDownModLinear::~PhiPhiDownModLinear() {
-}
-
-void PhiPhiDownModLinear::operator()(SGPP::base::DataVector& source,
-                                     SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+void PhiPhiDownModLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                     grid_iterator& index, size_t dim) {
   rec(source, result, index, dim, 0.0, 0.0);
 }
 
-void PhiPhiDownModLinear::rec(SGPP::base::DataVector& source,
-                              SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                              float_t fr) {
+void PhiPhiDownModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                              grid_iterator& index, size_t dim, float_t fl, float_t fr) {
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -42,51 +35,41 @@ void PhiPhiDownModLinear::rec(SGPP::base::DataVector& source,
 
   // level 1, constant function
   if (l == 1) {
-    //integration
+    // integration
     result[seq] = 0.0 + alpha_value;
 
-    //dehierarchisation
+    // dehierarchisation
     fm = (fl + fr) / 2.0 + alpha_value;
 
-    //boundary value
+    // boundary value
     fl += alpha_value;
     fr += alpha_value;
-  }
-  // left boundary
-  else if (i == 1) {
-    //integration
-    result[seq] = 2.0 / 3.0 * h * (2.0 * fl + fr)
-                  + 8.0 / 3.0 * h * alpha_value;
+  } else if (i == 1) {  // left boundary
+    // integration
+    result[seq] = 2.0 / 3.0 * h * (2.0 * fl + fr) + 8.0 / 3.0 * h * alpha_value;
 
-    //dehierarchisation
+    // dehierarchisation
     fm = (fl + fr) / 2.0 + alpha_value;
 
-    //boundary value
+    // boundary value
     fl += 2.0 * alpha_value;
-  }
-  // right boundary
-  else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
-    //integration
-    result[seq] = 2.0 / 3.0 * h * (fl + 2.0 * fr)
-                  + 8.0 / 3.0 * h * alpha_value;
+  } else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {  // right boundary
+    // integration
+    result[seq] = 2.0 / 3.0 * h * (fl + 2.0 * fr) + 8.0 / 3.0 * h * alpha_value;
 
-    //dehierarchisation
+    // dehierarchisation
     fm = (fl + fr) / 2.0 + alpha_value;
 
-    //boundary value
+    // boundary value
     fr += 2.0 * alpha_value;
-  }
-  // inner functions
-  else {
-    //integration
-    result[seq] = h * (fl + fr) / 2.0
-                  + 2.0 / 3.0 * h * alpha_value;
+  } else {  // inner functions
+    // integration
+    result[seq] = h * (fl + fr) / 2.0 + 2.0 / 3.0 * h * alpha_value;
 
-    //dehierarchisation
+    // dehierarchisation
     fm = (fl + fr) / 2.0 + alpha_value;
 
-    //boundary value
-
+    // boundary value
   }
 
   if (!index.hint()) {
@@ -105,8 +88,5 @@ void PhiPhiDownModLinear::rec(SGPP::base::DataVector& source,
     index.up(dim);
   }
 }
-
-
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

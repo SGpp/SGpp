@@ -8,19 +8,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
 DowndPhidPhiBBIterativeLinearBoundary::DowndPhidPhiBBIterativeLinearBoundary(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-}
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {}
 
-DowndPhidPhiBBIterativeLinearBoundary::~DowndPhidPhiBBIterativeLinearBoundary() {
-}
+DowndPhidPhiBBIterativeLinearBoundary::~DowndPhidPhiBBIterativeLinearBoundary() {}
 
-void DowndPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
-    alpha, SGPP::base::DataVector& result, size_t dim) {
+void DowndPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector& alpha,
+                                                       SGPP::base::DataVector& result, size_t dim) {
   // Bounding Box handling
   SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
   float_t q = boundingBox->getIntervalWidth(dim);
@@ -39,7 +37,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
       if (level == 0) {
         if (index == 0) {
           if (!boundingBox->hasDirichletBoundaryLeft(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += Qqout * alpha[i];
 
             // down
@@ -56,13 +54,12 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
 
         if (index == 1) {
           if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += Qqout * alpha[i];
           }
         }
-      }
-      //only affects the diagonal of the stiffness matrix
-      else {
+      } else {
+        // only affects the diagonal of the stiffness matrix
         result[i] = alpha[i] * (Qqout * static_cast<float_t>(1 << (level + 1)));
       }
     }
@@ -76,7 +73,7 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
       if (level == 0) {
         if (index == 0) {
           if (!boundingBox->hasDirichletBoundaryLeft(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += alpha[i];
 
             // down
@@ -93,18 +90,16 @@ void DowndPhidPhiBBIterativeLinearBoundary::operator()(SGPP::base::DataVector&
 
         if (index == 1) {
           if (!boundingBox->hasDirichletBoundaryRight(dim)) {
-            //only affects the diagonal of the stiffness matrix
+            // only affects the diagonal of the stiffness matrix
             result[i] += alpha[i];
           }
         }
-      }
-      //only affects the diagonal of the stiffness matrix
-      else {
+      } else {
+        // only affects the diagonal of the stiffness matrix
         result[i] = alpha[i] * static_cast<float_t>(1 << (level + 1));
       }
     }
   }
 }
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP

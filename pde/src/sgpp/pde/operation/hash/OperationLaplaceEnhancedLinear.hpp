@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -19,23 +18,23 @@ namespace pde {
  * the UpDownOneOpDimEnhanced method.
  *
  */
-class OperationLaplaceEnhancedLinear: public UpDownOneOpDimEnhanced {
+class OperationLaplaceEnhancedLinear : public UpDownOneOpDimEnhanced {
  public:
   /**
    * Constructor
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Constructor of OperationLaplaceLinear
    *
    * @param storage Pointer to the grid's gridstorage obejct
-   * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's constant coefficients; one per dimension
+   * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's
+   * constant coefficients; one per dimension
    */
-  OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage,
-                                 SGPP::base::DataVector& coef);
+  OperationLaplaceEnhancedLinear(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef);
 
   /**
    * Destructor
@@ -50,8 +49,7 @@ class OperationLaplaceEnhancedLinear: public UpDownOneOpDimEnhanced {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
-                  size_t dim);
+  virtual void up(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim);
 
   /**
    * Down-step
@@ -60,11 +58,9 @@ class OperationLaplaceEnhancedLinear: public UpDownOneOpDimEnhanced {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
-                    size_t dim);
+  virtual void down(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result, size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEENHANCEDLINEAR_HPP */

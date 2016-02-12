@@ -12,9 +12,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace pde {
@@ -26,9 +24,8 @@ namespace pde {
  * accordingly.
  *
  */
-class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
+class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
  public:
-
   /**
    * Constructor
    *
@@ -43,9 +40,7 @@ class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
    */
   virtual ~UpDownOneOpDimWithShadow();
 
-
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
  protected:
   typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
@@ -62,8 +57,8 @@ class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-              size_t dim, size_t op_dim);
+  void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim,
+              size_t op_dim);
 
   /**
    * This functions adds all grid points of the shadow storage into the actual grid.
@@ -84,9 +79,8 @@ class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
    * @param dim the current dimension in the recursion
    * @param op_dim the dimension in that a special operation is applied
    */
-  virtual void specialOP(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim, size_t op_dim);
-
+  virtual void specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim,
+                         size_t op_dim);
 
   /**
    * std 1D up operation
@@ -95,8 +89,7 @@ class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim) = 0;
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
   /**
    * std 1D down operation
@@ -105,8 +98,7 @@ class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim) = 0;
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
 
   /**
    * special 1D down operation that is only executed in one direction
@@ -115,8 +107,8 @@ class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  virtual void downOpDim(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                         size_t dim) = 0;
 
   /**
    * special 1D up operation that is only executed in one direction
@@ -125,11 +117,10 @@ class UpDownOneOpDimWithShadow: public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  virtual void upOpDim(SGPP::base::DataVector& alpha,
-                       SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                       size_t dim) = 0;
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* UPDOWNONEOPDIMWITHSHADOW_HPP */

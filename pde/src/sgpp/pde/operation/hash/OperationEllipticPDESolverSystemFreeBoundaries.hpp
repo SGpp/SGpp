@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -26,18 +25,15 @@ namespace pde {
  * rhs: right hand sider)
  *
  */
-class OperationEllipticPDESolverSystemFreeBoundaries : public
-  OperationEllipticPDESolverSystem {
+class OperationEllipticPDESolverSystemFreeBoundaries : public OperationEllipticPDESolverSystem {
  protected:
-
   /**
    * applies the PDE's system matrix, on complete grid - with boundaries
    *
    * @param alpha the coefficients of the sparse grid's ansatzfunctions
    * @param result reference to the SGPP::base::DataVector into which the result is written
    */
-  virtual void applyLOperator(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result) = 0;
+  virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
  public:
   /**
@@ -47,20 +43,18 @@ class OperationEllipticPDESolverSystemFreeBoundaries : public
    * @param rhs the right hand side of the corresponding system
    */
   OperationEllipticPDESolverSystemFreeBoundaries(SGPP::base::Grid& SparseGrid,
-      SGPP::base::DataVector& rhs);
+                                                 SGPP::base::DataVector& rhs);
 
   /**
    * Destructor
    */
   virtual ~OperationEllipticPDESolverSystemFreeBoundaries();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual SGPP::base::DataVector* generateRHS();
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONELLITPTICPDESOLVERMATRIXFREEBOUNDARIES_HPP */

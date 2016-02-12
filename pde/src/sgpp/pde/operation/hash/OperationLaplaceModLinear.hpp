@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace pde {
 
@@ -25,7 +24,7 @@ class OperationLaplaceModLinear : public UpDownOneOpDim {
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  OperationLaplaceModLinear(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceModLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -33,20 +32,15 @@ class OperationLaplaceModLinear : public UpDownOneOpDim {
   virtual ~OperationLaplaceModLinear();
 
  protected:
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                  size_t dim);
+  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                    size_t dim);
+  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void downOpDim(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 
-  virtual void upOpDim(SGPP::base::DataVector& alpha,
-                       SGPP::base::DataVector& result, size_t dim);
+  virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
 };
-
-}
-}
+}  // namespace pde
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEMODLINEAR_HPP */
