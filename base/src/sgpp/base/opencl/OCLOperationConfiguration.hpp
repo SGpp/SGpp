@@ -5,18 +5,17 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/tools/OperationConfiguration.hpp>
-
 #include <vector>
 #include <map>
 #include <string>
 
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/tools/OperationConfiguration.hpp"
+
 namespace SGPP {
 namespace base {
 
-class OCLOperationConfiguration: public OperationConfiguration {
+class OCLOperationConfiguration : public OperationConfiguration {
  public:
   OCLOperationConfiguration();
 
@@ -27,4 +26,3 @@ class OCLOperationConfiguration: public OperationConfiguration {
 
 }  // namespace base
 }  // namespace SGPP
-

@@ -3,13 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
-
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/exception/operation_exception.hpp>
-
 #include <sstream>
+
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/opencl/OCLClonedBuffer.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
 
 namespace SGPP {
 namespace base {

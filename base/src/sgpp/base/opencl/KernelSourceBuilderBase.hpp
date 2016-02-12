@@ -1,16 +1,16 @@
-/*
- * KernelSourceBuilderBase.hpp
- *
- *  Created on: Dec 10, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "OCLDevice.hpp"
-#include <sgpp/base/tools/json/Node.hpp>
+#include "sgpp/base/tools/json/Node.hpp"
 
 namespace SGPP {
 namespace base {
@@ -79,5 +79,5 @@ class KernelSourceBuilderBase {
     }
   }
 };
-}
-}
+}  // namespace base
+}  // namespace SGPP

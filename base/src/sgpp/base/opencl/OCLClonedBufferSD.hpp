@@ -1,13 +1,12 @@
-/*
- * OCLMemory.hpp
- *
- *  Created on: Mar 27, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
 #include <CL/cl.h>
+#include <vector>
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
@@ -27,7 +26,7 @@ class OCLClonedBufferSD {
   std::vector<T> hostData;
 
  public:
-  OCLClonedBufferSD(std::shared_ptr<base::OCLDevice> device)
+  explicit OCLClonedBufferSD(std::shared_ptr<base::OCLDevice> device)
       : device(device), initialized(false), buffer(nullptr), elements(0) {}
 
   ~OCLClonedBufferSD() { this->freeBuffer(); }
@@ -106,7 +105,7 @@ class OCLClonedBufferSD {
     }
   }
 
-  // TODO: might need to set the correct flags
+  // TODO(pfandedd): might need to set the correct flags
   void initializeBuffer(size_t elements) {
     cl_int err;
 
@@ -196,5 +195,5 @@ class OCLClonedBufferSD {
     this->writeToBuffer();
   }
 };
-}
-}
+}  // namespace base
+}  // namespace SGPP

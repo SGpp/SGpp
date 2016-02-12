@@ -7,9 +7,8 @@
 
 #include <CL/cl.h>
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/opencl/OCLManager.hpp>
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/opencl/OCLManager.hpp"
 
 namespace SGPP {
 namespace base {
@@ -21,7 +20,6 @@ class OCLClonedBuffer {
   cl_mem* bufferList;
   size_t sizeofType;
   size_t elements;
-
 
  public:
   explicit OCLClonedBuffer(std::shared_ptr<OCLManager> manager);

@@ -5,13 +5,12 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/tools/ConfigurationParameters.hpp>
-
 #include <vector>
 #include <map>
 #include <string>
+
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/tools/ConfigurationParameters.hpp"
 
 namespace SGPP {
 namespace base {
