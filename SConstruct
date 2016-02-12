@@ -62,6 +62,7 @@ vars.Add(BoolVariable('NO_UNIT_TESTS', 'Omit UnitTests if set to True', False))
 vars.Add(BoolVariable('SG_PYTHON', 'Build with python Support', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('PYDOC', 'Build python wrapper with comments', 'SG_PYTHON' in languageSupportNames))
 vars.Add(BoolVariable('SG_JAVA', 'Build with java Support', 'SG_JAVA' in languageSupportNames))
+vars.Add(BoolVariable('PYDOC', 'Build python wrapper with comments', 'SG_PYTHON' in languageSupportNames))
 
 
 for moduleName in moduleNames:
@@ -88,6 +89,7 @@ vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant 
 vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
+vars.Add(BoolVariable('PRINT_INSTRUCTIONS', 'Print instruction for installing SG++.', True))
 
 # create temporary environment to check which system and compiler we should use
 # (the Environment call without "tools=[]" crashes with MinGW,
@@ -414,7 +416,8 @@ def printFinished(target, source, env):
     print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
                                                PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
 
-dependencies.append(env.Command('printFinished', [], printFinished))
+if env["PRINT_INSTRUCTIONS"]:
+    dependencies.append(env.Command('printFinished', [], printFinished))
 
 # necessary to enforce an order on the final steps of the building of the wrapper
 for i in range(len(dependencies) - 1):

@@ -1,21 +1,19 @@
-/*
- * platformConfigurationTest.cpp
- *
- *  Created on: Nov 17, 2015
- *      Author: pfandedd, baurms
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <iostream>
 
 #if USE_OCL == 1
 
-#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 int main(int argc, char** argv) {
-
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> configuration =
-    std::make_shared<SGPP::base::OCLOperationConfiguration>("detectPlatform.cfg");
+      std::make_shared<SGPP::base::OCLOperationConfiguration>(
+          "detectPlatform.cfg");
   (*configuration).replaceIDAttr("VERBOSE", true);
 
   SGPP::base::OCLManagerMultiPlatform manager(configuration);

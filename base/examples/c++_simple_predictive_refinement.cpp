@@ -3,43 +3,48 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <cmath>
 #include <iostream>
-#include <math.h>
+
 // All SG++ headers
-//#include <sgpp_base.hpp>
+// #include <sgpp_base.hpp"
 
 // Or, better!, include only those that are required
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
-#include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
+#include "sgpp/base/datatypes/DataVector.hpp"
+#include "sgpp/base/datatypes/DataMatrix.hpp"
+#include "sgpp/base/grid/Grid.hpp"
+#include "sgpp/base/grid/GridStorage.hpp"
+#include "sgpp/base/grid/generation/GridGenerator.hpp"
+#include "sgpp/base/operation/hash/OperationEval.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
+#include "sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
+#include "sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 
-using namespace std;
-using namespace SGPP::base;
+using std::cout;
+using std::endl;
+using SGPP::base::Grid;
+using SGPP::base::GridStorage;
+using SGPP::base::GridGenerator;
+using SGPP::base::DataVector;
+using SGPP::base::DataMatrix;
 
 // function to interpolate
-SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
-  return sin(x0 * M_PI);
-}
+SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) { return sin(x0 * M_PI); }
 
 DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
                            const DataVector& alpha, DataVector& error) {
   cout << "calculating error" << endl;
 
-  //traverse dataSet
+  // traverse dataSet
   DataVector vec(2);
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+  SGPP::base::OperationEval* opEval =
+      SGPP::op_factory::createOperationEval(grid);
 
   for (unsigned int i = 0; i < dataSet.getNrows(); i++) {
     dataSet.getRow(i, vec);
-    error[i] = pow(f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha,
-                   vec), 2);
+    error[i] = pow(
+        f(dataSet.get(i, 0), dataSet.get(i, 1)) - opEval->eval(alpha, vec), 2);
   }
 
   return error;
@@ -50,13 +55,15 @@ int main() {
   size_t dim = 2;
   Grid* grid = Grid::createModLinearGrid(dim);
   GridStorage* hashGridStorage = grid->getStorage();
-  cout << "dimensionality:                   " << hashGridStorage->dim() << endl;
+  cout << "dimensionality:                   " << hashGridStorage->dim()
+       << endl;
 
   // create regular grid, level 3
   size_t level = 1;
   GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
-  cout << "number of initial grid points:    " << hashGridStorage->size() << endl;
+  cout << "number of initial grid points:    " << hashGridStorage->size()
+       << endl;
 
   // create coefficient vector
   DataVector alpha(hashGridStorage->size());
@@ -70,18 +77,19 @@ int main() {
   DataVector vals(rows * cols);
 
   // Create a "List" of points where the error should be calculated.
-  // This represents a regular 2d grid with a step size of 1 / rows and 1 / cols.
+  // This represents a regular 2d grid with a step size of 1 / rows and 1 /
+  // cols.
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      //xcoord
+      // xcoord
       dataSet.set(i * cols + j, 0, i * 1.0 / rows);
-      //ycoord
+      // ycoord
       dataSet.set(i * cols + j, 1, j * 1.0 / cols);
       vals[i * cols + j] = f(i * 1.0 / rows, j * 1.0 / cols);
     }
   }
 
-  //refine adaptively 20 times
+  // refine adaptively 20 times
   for (int step = 0; step < 20; step++) {
     // set function values in alpha
     DataVector gridPointCoordinates(dim);
@@ -92,24 +100,25 @@ int main() {
     }
 
     // hierarchize
-    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-      alpha);
+    SGPP::op_factory::createOperationHierarchisation(*grid)
+        ->doHierarchisation(alpha);
 
     // calculate squared offset
     DataVector errorVector(dataSet.getNrows());
     calculateError(dataSet, *grid, alpha, errorVector);
 
     // refinement  stuff
-    HashRefinement refinement;
-    PredictiveRefinement decorator(&refinement);
+    SGPP::base::HashRefinement refinement;
+    SGPP::base::PredictiveRefinement decorator(&refinement);
 
     // refine a single grid point each time
-    cout << "Error over all = "  << errorVector.sum() << endl;
-    PredictiveRefinementIndicator indicator(grid, &dataSet, &errorVector, 1);
+    cout << "Error over all = " << errorVector.sum() << endl;
+    SGPP::base::PredictiveRefinementIndicator indicator(grid, &dataSet,
+                                                        &errorVector, 1);
     decorator.free_refine(hashGridStorage, &indicator);
 
-    cout << "Refinement step " << step + 1 << ", new grid size: " <<
-         hashGridStorage->size() << endl;
+    cout << "Refinement step " << step + 1
+         << ", new grid size: " << hashGridStorage->size() << endl;
 
     // plot grid
 

@@ -5,19 +5,24 @@
 
 #include <iostream>
 // All SG++ headers
-//#include <sgpp_base.hpp>
+// #include <sgpp_base.hpp"
 
 // Or, better!, include only those that are required
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include "sgpp/base/datatypes/DataVector.hpp"
+#include "sgpp/base/grid/Grid.hpp"
+#include "sgpp/base/grid/GridStorage.hpp"
+#include "sgpp/base/grid/generation/GridGenerator.hpp"
+#include "sgpp/base/operation/hash/OperationEval.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
-using namespace std;
-using namespace SGPP::base;
+using std::cout;
+using std::endl;
+using SGPP::base::Grid;
+using SGPP::base::GridStorage;
+using SGPP::base::GridGenerator;
+using SGPP::base::DataVector;
+using SGPP::base::DataMatrix;
 
 // function to interpolate
 SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
@@ -42,11 +47,10 @@ int main() {
   alpha.setAll(0.0);
   cout << "length of alpha vector:           " << alpha.getSize() << endl;
 
-  GridIndex* gp;
+  SGPP::base::GridIndex* gp;
 
   // refine adaptively 5 times
   for (int step = 0; step < 5; step++) {
-
     // set function values in alpha
     for (size_t i = 0; i < gridStorage->size(); i++) {
       gp = gridStorage->get(i);
@@ -54,13 +58,13 @@ int main() {
     }
 
     // hierarchize
-    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-      alpha);
+    SGPP::op_factory::createOperationHierarchisation(*grid)
+        ->doHierarchisation(alpha);
 
     // refine a single grid point each time
-    gridGen->refine(new SurplusRefinementFunctor(&alpha, 1));
-    cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
-         << endl;
+    gridGen->refine(new SGPP::base::SurplusRefinementFunctor(&alpha, 1));
+    cout << "refinement step " << step + 1
+         << ", new grid size: " << alpha.getSize() << endl;
 
     // extend alpha vector (new entries uninitialized)
     alpha.resize(gridStorage->size());

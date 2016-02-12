@@ -11,7 +11,6 @@
 #include <sgpp/datadriven/datamining/DataWrapper.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
-
 #include <sgpp/globaldef.hpp>
 
 
@@ -23,7 +22,7 @@ namespace datadriven {
 
 class ARFFWrapper: public DataWrapper {
  public:
-  ARFFWrapper(std::string filename);
+  ARFFWrapper(datadriven::DataMiningConfiguration& config);
 
   virtual ~ARFFWrapper();
 
@@ -36,7 +35,7 @@ protected:
    * Reads an ARFF file.
    *
    * @param filename filename of the file to be read
-   * @return ARFF as Dataset
+   * @param[out] dataset ARFF as Dataset
    */
   static void readARFF(const std::string& filename, Dataset& dataset);
 

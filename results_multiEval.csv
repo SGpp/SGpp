@@ -1,13 +1,3 @@
-dataset, kernel, refinedGridSize, duration
-datadriven/tests/data/DR5_train.arff.gz,SUBSPACELINEAR::COMBINED,1613287,2.57991
-datadriven/tests/data/DR5_train.arff.gz,STREAMING::OCL,1612905,19.7707
-datadriven/tests/data/DR5_train.arff.gz,DEFAULT::DEFAULT,1612986,26.3756
-datadriven/tests/data/DR5_train.arff.gz,STREAMING::DEFAULT,1613341,112.222
-datadriven/tests/data/friedman_10d.arff.gz,STREAMING::OCL,492842,2.99171
-datadriven/tests/data/friedman_10d.arff.gz,SUBSPACELINEAR::COMBINED,482947,3.30489
-datadriven/tests/data/friedman_10d.arff.gz,STREAMING::DEFAULT,494074,14.606
-datadriven/tests/data/friedman_10d.arff.gz,DEFAULT::DEFAULT,500438,47.0285
-datadriven/tests/data/friedman_4d.arff.gz,SUBSPACELINEAR::COMBINED,500814,0.485383
-datadriven/tests/data/friedman_4d.arff.gz,STREAMING::OCL,500072,1.21957
-datadriven/tests/data/friedman_4d.arff.gz,DEFAULT::DEFAULT,500889,3.33054
-datadriven/tests/data/friedman_4d.arff.gz,STREAMING::DEFAULT,499812,6.4435
+version https://git-lfs.github.com/spec/v1
+oid sha256:32d91f5e81375522e7605e7915f3e961626e8fa4b44cd1f3a263f6cffb237020
+size 954
