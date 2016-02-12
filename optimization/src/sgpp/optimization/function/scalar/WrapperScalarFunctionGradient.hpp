@@ -22,8 +22,9 @@ namespace optimization {
  */
 class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
  public:
-  typedef std::function<float_t(const base::DataVector&, base::DataVector&)>
-      FunctionGradientEvalType;
+  typedef std::function<float_t(const base::DataVector&,
+                                base::DataVector&)>
+  FunctionGradientEvalType;
 
   /**
    * Constructor.
@@ -31,13 +32,16 @@ class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
    * @param d         dimension of the domain
    * @param fGradient function gradient to be wrapped
    */
-  WrapperScalarFunctionGradient(size_t d, FunctionGradientEvalType fGradient)
-      : ScalarFunctionGradient(d), fGradient(fGradient) {}
+  WrapperScalarFunctionGradient(size_t d,
+                                FunctionGradientEvalType fGradient) :
+    ScalarFunctionGradient(d), fGradient(fGradient) {
+  }
 
   /**
    * Destructor.
    */
-  ~WrapperScalarFunctionGradient() override {}
+  virtual ~WrapperScalarFunctionGradient() override {
+  }
 
   /**
    * @param      x        evaluation point \f$\vec{x} \in [0, 1]^d\f$
@@ -45,7 +49,8 @@ class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
    *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x, base::DataVector& gradient) override {
+  inline virtual float_t eval(const base::DataVector& x,
+                              base::DataVector& gradient) override {
     return fGradient(x, gradient);
   }
 
@@ -53,15 +58,16 @@ class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
    * @param[out] clone pointer to cloned object
    */
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
-    clone =
-        std::unique_ptr<ScalarFunctionGradient>(new WrapperScalarFunctionGradient(d, fGradient));
+    clone = std::unique_ptr<ScalarFunctionGradient>(
+              new WrapperScalarFunctionGradient(d, fGradient));
   }
 
  protected:
   /// function gradient to be wrapped
   FunctionGradientEvalType fGradient;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_WRAPPERSCALARFUNCTIONGRADIENT_HPP */

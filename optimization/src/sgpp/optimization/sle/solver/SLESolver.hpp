@@ -26,12 +26,14 @@ class SLESolver {
   /**
    * Constructor.
    */
-  SLESolver() {}
+  SLESolver() {
+  }
 
   /**
    * Destructor.
    */
-  virtual ~SLESolver() {}
+  virtual ~SLESolver() {
+  }
 
   /**
    * Pure virtual method for a solving linear system.
@@ -42,7 +44,8 @@ class SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const = 0;
+  virtual bool solve(SLE& system, base::DataVector& b,
+                     base::DataVector& x) const = 0;
 
   /**
    * Virtual method for solving multiple linear systems with
@@ -56,7 +59,9 @@ class SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
+  virtual bool solve(SLE& system,
+                     base::DataMatrix& B,
+                     base::DataMatrix& X) const {
     const size_t n = system.getDimension();
     const size_t m = B.getNcols();
     base::DataVector b(n);
@@ -76,8 +81,9 @@ class SLESolver {
     return true;
   }
 };
-}  // namespace sle_solver
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_SLESOLVER_HPP */

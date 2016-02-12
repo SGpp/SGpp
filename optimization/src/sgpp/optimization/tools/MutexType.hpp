@@ -32,7 +32,9 @@ class MutexType {
   /**
    * Constructor.
    */
-  MutexType() { omp_init_nest_lock(&_lock); }
+  MutexType() {
+    omp_init_nest_lock(&_lock);
+  }
 
   /**
    * Custom copy constructor to prevent copying the lock.
@@ -58,17 +60,23 @@ class MutexType {
   /**
    * Destructor.
    */
-  ~MutexType() { omp_destroy_nest_lock(&_lock); }
+  ~MutexType() {
+    omp_destroy_nest_lock(&_lock);
+  }
 
   /**
    * Lock the MutexType.
    */
-  void lock() { omp_set_nest_lock(&_lock); }
+  void lock() {
+    omp_set_nest_lock(&_lock);
+  }
 
   /**
    * Unlock the MutexType.
    */
-  void unlock() { omp_unset_nest_lock(&_lock); }
+  void unlock() {
+    omp_unset_nest_lock(&_lock);
+  }
 
  protected:
   /// OpenMP lock
@@ -80,13 +88,16 @@ class MutexType {
 // dummy definition in case SG++ is compiled without OpenMP
 class MutexType {
  public:
-  void lock() {}
+  void lock() {
+  }
 
-  void unlock() {}
+  void unlock() {
+  }
 };
 
 #endif /* _OPENMP */
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_MUTEXTYPE_HPP */

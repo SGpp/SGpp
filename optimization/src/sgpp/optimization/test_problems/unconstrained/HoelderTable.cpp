@@ -12,11 +12,17 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-HoelderTable::HoelderTable() : UnconstrainedTestProblem(2), f() {}
+HoelderTable::HoelderTable() :
+  UnconstrainedTestProblem(2),
+  f() {
+}
 
-HoelderTable::~HoelderTable() {}
+HoelderTable::~HoelderTable() {
+}
 
-TestScalarFunction& HoelderTable::getObjectiveFunction() { return f; }
+TestScalarFunction& HoelderTable::getObjectiveFunction() {
+  return f;
+}
 
 float_t HoelderTable::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
@@ -26,31 +32,38 @@ float_t HoelderTable::getOptimalPointUndisplaced(base::DataVector& x) {
 }
 
 bool HoelderTable::isDisplacementFeasible() {
-  if ((displacement[0] > 0.005) || (displacement[0] < -0.005) || (displacement[1] > 0.01) ||
-      (displacement[1] < -0.01)) {
+  if ((displacement[0] > 0.005) || (displacement[0] < -0.005) ||
+      (displacement[1] > 0.01) || (displacement[1] < -0.01)) {
     return false;
   }
 
   return UnconstrainedTestProblem::isDisplacementFeasible();
 }
 
-HoelderTableObjective::HoelderTableObjective() : TestScalarFunction(2) {}
+HoelderTableObjective::HoelderTableObjective() :
+  TestScalarFunction(2) {
+}
 
-HoelderTableObjective::~HoelderTableObjective() {}
+HoelderTableObjective::~HoelderTableObjective() {
+}
 
-float_t HoelderTableObjective::evalUndisplaced(const base::DataVector& x) {
+float_t HoelderTableObjective::evalUndisplaced(
+  const base::DataVector& x) {
   const float_t x1 = 20.0 * x[0] - 10.0;
   const float_t x2 = 20.0 * x[1] - 10.0;
 
-  return -std::abs(std::sin(x1) * std::cos(x2) *
-                   std::exp(std::abs(1.0 - std::sqrt(x1 * x1 + x2 * x2) / M_PI)));
+  return -std::abs(
+           std::sin(x1) * std::cos(x2) * std::exp(
+             std::abs(1.0 - std::sqrt(x1 * x1 + x2 * x2) / M_PI)));
 }
 
-void HoelderTableObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+void HoelderTableObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
   clone = std::unique_ptr<ScalarFunction>(
 
-      new HoelderTableObjective(*this));
+            new HoelderTableObjective(*this));
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

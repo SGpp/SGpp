@@ -25,8 +25,8 @@ class SubspaceNodeCombined {
   uint32_t gridPointsOnLevel;
   uint32_t existingGridPointsOnLevel;
   SubspaceType type;
-  //for list representation (and future streaming subspaces)
-  std::vector<uint32_t> indices;
+  std::vector<uint32_t>
+  indices; //for list representation (and future streaming subspaces
   std::vector<std::pair<uint32_t, float_t> > indexFlatSurplusPairs;
   std::vector<float_t> subspaceArray;
   omp_lock_t subspaceLock;

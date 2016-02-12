@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <algorithm>
+
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
@@ -14,19 +16,23 @@ namespace SGPP {
 namespace optimization {
 
 OperationMultipleHierarchisationModWavelet::OperationMultipleHierarchisationModWavelet(
-    base::ModWaveletGrid& grid)
-    : grid(grid) {}
+  base::ModWaveletGrid& grid) :
+  grid(grid) {
+}
 
-OperationMultipleHierarchisationModWavelet::~OperationMultipleHierarchisationModWavelet() {}
+OperationMultipleHierarchisationModWavelet::~OperationMultipleHierarchisationModWavelet() {
+}
 
-bool OperationMultipleHierarchisationModWavelet::doHierarchisation(base::DataVector& nodeValues) {
+bool OperationMultipleHierarchisationModWavelet::doHierarchisation(
+  base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationModWavelet::doDehierarchisation(base::DataVector& alpha) {
+void OperationMultipleHierarchisationModWavelet::doDehierarchisation(
+  base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalModWavelet opNaiveEval(&storage);
@@ -47,14 +53,16 @@ void OperationMultipleHierarchisationModWavelet::doDehierarchisation(base::DataV
   alpha = nodeValues;
 }
 
-bool OperationMultipleHierarchisationModWavelet::doHierarchisation(base::DataMatrix& nodeValues) {
+bool OperationMultipleHierarchisationModWavelet::doHierarchisation(
+  base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationModWavelet::doDehierarchisation(base::DataMatrix& alpha) {
+void OperationMultipleHierarchisationModWavelet::doDehierarchisation(
+  base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalModWavelet opNaiveEval(&storage);
@@ -78,5 +86,6 @@ void OperationMultipleHierarchisationModWavelet::doDehierarchisation(base::DataM
     alpha.setColumn(i, nodeValues);
   }
 }
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}

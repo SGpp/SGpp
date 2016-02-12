@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationMatrixLTwoDotPeriodic.hpp"
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 
 #include <sgpp/globaldef.hpp>

@@ -6,7 +6,6 @@
 #ifndef SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTIONGRADIENT_HPP
 #define SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTIONGRADIENT_HPP
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 
 namespace SGPP {
@@ -19,14 +18,21 @@ namespace optimization {
  */
 class EmptyVectorFunctionGradient {
  public:
-  static WrapperVectorFunctionGradient& getInstance();
+  inline static WrapperVectorFunctionGradient& getInstance() {
+    static WrapperVectorFunctionGradient wrapperVectorFunctionGradient(
+      0, 0, [](const base::DataVector & x,
+               base::DataVector & value,
+    base::DataMatrix & gradient) {});
+    return wrapperVectorFunctionGradient;
+  }
 
  private:
   EmptyVectorFunctionGradient() {}
   EmptyVectorFunctionGradient(const EmptyVectorFunctionGradient&) = delete;
   void operator=(const EmptyVectorFunctionGradient&) = delete;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORGRADIENT_HPP */

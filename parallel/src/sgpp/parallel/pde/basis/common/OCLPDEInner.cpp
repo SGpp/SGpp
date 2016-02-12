@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OCLPDEInner.hpp"
+#include <sgpp/parallel/pde/basis/common/OCLPDEInner.hpp>
 
 #ifdef USE_MPI
 #include <sgpp/parallel/tools/MPI/SGppMPITools.hpp>

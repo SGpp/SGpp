@@ -133,9 +133,9 @@ static inline void calculateIndexCombined2(size_t dim,
     const SGPP::float_t* const (&dataTuplePtr2)[4],
     std::vector<uint32_t>& hInversePtr,
     //rep
-    uint32_t * (&intermediates)[4], uint32_t * (&intermediates2)[4],
+    uint32_t* (&intermediates)[4], uint32_t* (&intermediates2)[4],
     //rep
-    SGPP::float_t * (&evalIndexValues)[4], SGPP::float_t * (&evalIndexValues2)[4],
+    SGPP::float_t* (&evalIndexValues)[4], SGPP::float_t* (&evalIndexValues2)[4],
     //rep
     uint32_t (&indexFlat)[4], uint32_t (&indexFlat2)[4],
     //rep
@@ -279,3 +279,4 @@ static inline void calculateIndexCombined2(size_t dim,
   _mm256_storeu_pd(phiEval2, phiEvalReg2);
 #endif
 }
+

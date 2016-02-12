@@ -11,8 +11,6 @@
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 
-#include <vector>
-
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
@@ -38,7 +36,8 @@ class MultiStart : public UnconstrainedOptimizer {
    * @param populationSize  number of individual points
    *                        (default: \f$\min(10d, 100)\f$)
    */
-  MultiStart(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+  MultiStart(ScalarFunction& f,
+             size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
              size_t populationSize = 0);
 
   /**
@@ -52,7 +51,8 @@ class MultiStart : public UnconstrainedOptimizer {
    * @param populationSize   number of individual points
    *                         (default: \f$\min(10d, 100)\f$)
    */
-  MultiStart(UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+  MultiStart(UnconstrainedOptimizer& optimizer,
+             size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
              size_t populationSize = 0);
 
   /**
@@ -82,7 +82,8 @@ class MultiStart : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// default optimization algorithm
@@ -102,8 +103,9 @@ class MultiStart : public UnconstrainedOptimizer {
    */
   void initialize(size_t populationSize);
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_MULTISTART_HPP */

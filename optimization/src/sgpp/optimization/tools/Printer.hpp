@@ -6,6 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 #define SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP
 
+#include <algorithm>
+#include <cstddef>
+#include <stack>
+
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -14,12 +18,6 @@
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 #include <sgpp/optimization/sle/system/SLE.hpp>
 #include <sgpp/optimization/tools/MutexType.hpp>
-
-#include <algorithm>
-#include <cstddef>
-#include <stack>
-#include <vector>
-#include <string>
 
 namespace SGPP {
 namespace optimization {
@@ -32,7 +30,8 @@ namespace optimization {
  * @return          stream
  */
 template <class T>
-inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& x) {
+inline std::ostream& operator<<(std::ostream& stream,
+                                const std::vector<T>& x) {
   for (size_t i = 0; i < x.size(); i++) {
     stream << ((i > 0) ? ", " : "[") << x[i];
   }
@@ -47,7 +46,8 @@ inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& x) {
  * @param x         vector
  * @return          stream
  */
-inline std::ostream& operator<<(std::ostream& stream, const base::DataVector& x) {
+inline std::ostream& operator<<(std::ostream& stream,
+                                const base::DataVector& x) {
   return stream << x.toString();
 }
 
@@ -58,7 +58,8 @@ inline std::ostream& operator<<(std::ostream& stream, const base::DataVector& x)
  * @param x         pointer to grid point
  * @return          stream
  */
-inline std::ostream& operator<<(std::ostream& stream, const SGPP::base::GridIndex& x) {
+inline std::ostream& operator<<(std::ostream& stream,
+                                const SGPP::base::GridIndex& x) {
   base::DataVector xCoord(x.dim());
 
   for (size_t t = 0; t < x.dim(); t++) {
@@ -85,7 +86,10 @@ class Printer {
   /**
    * @return singleton instance
    */
-  static Printer& getInstance();
+  inline static Printer& getInstance() {
+    static Printer printer;
+    return printer;
+  }
 
   /**
    * Call at the beginning of a time-consuming operation.
@@ -148,12 +152,16 @@ class Printer {
   /**
    * @return          current verbosity level
    */
-  inline int getVerbosity() const { return verbose; }
+  inline int getVerbosity() const {
+    return verbose;
+  }
 
   /**
    * @param level     new verbosity level
    */
-  inline void setVerbosity(int level) { verbose = level; }
+  inline void setVerbosity(int level) {
+    verbose = level;
+  }
 
   /**
    * @return  running-time of the last operation terminated by
@@ -191,7 +199,8 @@ class Printer {
    *
    * @param gridGen       grid to be printed
    */
-  void printIterativeGridGenerator(const IterativeGridGenerator& gridGen) const;
+  void printIterativeGridGenerator(
+    const IterativeGridGenerator& gridGen) const;
 
   /**
    * Print a system of linear equations.
@@ -248,7 +257,8 @@ class Printer {
    */
   void operator=(const Printer&) = delete;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_PRINTER_HPP */

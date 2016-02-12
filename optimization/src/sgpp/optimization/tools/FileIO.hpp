@@ -8,14 +8,12 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <fstream>
+#include <stdexcept>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
-
-#include <fstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 namespace SGPP {
 namespace optimization {
@@ -134,7 +132,8 @@ const char* getTypeString(const std::vector<std::string>& A);
  * @param filename        filename of the file to be written
  * @param gridStorage     grid storage containing the grid points
  */
-void writeGrid(const std::string& filename, const base::GridStorage& gridStorage);
+void writeGrid(const std::string& filename,
+               const base::GridStorage& gridStorage);
 
 /**
  * Write a grid (grid points and function values) to a file.
@@ -158,7 +157,8 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
  * @param gridStorage     grid storage containing the grid points
  * @param functionValues  vector of function values
  */
-void writeGrid(const std::string& filename, const base::GridStorage& gridStorage,
+void writeGrid(const std::string& filename,
+               const base::GridStorage& gridStorage,
                const base::DataVector& functionValues);
 
 /**
@@ -168,7 +168,8 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
  * @param filename              filename of the file to be read
  * @param[out] gridStorage      grid storage containing the grid points
  */
-void readGrid(const std::string& filename, base::GridStorage& gridStorage);
+void readGrid(const std::string& filename,
+              base::GridStorage& gridStorage);
 
 /**
  * Read a grid (grid points and function values) from a file.
@@ -178,7 +179,8 @@ void readGrid(const std::string& filename, base::GridStorage& gridStorage);
  * @param[out] gridStorage      grid storage containing the grid points
  * @param[out] functionValues   vector of function values
  */
-void readGrid(const std::string& filename, base::GridStorage& gridStorage,
+void readGrid(const std::string& filename,
+              base::GridStorage& gridStorage,
               base::DataVector& functionValues);
 
 /**
@@ -212,7 +214,8 @@ void writeMatrix(const std::string& filename, base::DataMatrix& A);
  * @param n             number of columns
  */
 template <class T>
-void writeMatrix(const std::string& filename, const std::vector<T>& A, size_t m, size_t n) {
+void writeMatrix(const std::string& filename,
+                 const std::vector<T>& A, size_t m, size_t n) {
   std::ofstream f;
   f.exceptions(std::ofstream::failbit | std::ofstream::badbit);
   const char* type = getTypeString(A);
@@ -249,7 +252,8 @@ void readMatrix(const std::string& filename, base::DataMatrix& A);
  * @param[out] n        number of columns
  */
 template <class T>
-void readMatrix(const std::string& filename, std::vector<T>& A, size_t& m, size_t& n) {
+void readMatrix(const std::string& filename,
+                std::vector<T>& A, size_t& m, size_t& n) {
   std::ifstream f;
   f.exceptions(std::ofstream::failbit | std::ofstream::badbit);
   const char* type = getTypeString(A);
@@ -265,10 +269,9 @@ void readMatrix(const std::string& filename, std::vector<T>& A, size_t& m, size_
   type2[16] = 0;
 
   if (std::string(type) != std::string(type2)) {
-    throw std::invalid_argument(
-        "The type of the entries in the file "
-        "differ from the type of the "
-        "entries of A.");
+    throw std::invalid_argument("The type of the entries in the file "
+                                "differ from the type of the "
+                                "entries of A.");
   }
 
   A.empty();
@@ -323,8 +326,9 @@ void readVector(const std::string& filename, std::vector<T>& x) {
   size_t m, n;
   readMatrix(filename, x, m, n);
 }
-}  // namespace file_io
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_FILEIO_HPP */

@@ -3,26 +3,32 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sstream>
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLClonedBuffer.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/base/exception/operation_exception.hpp>
+
+#include <sstream>
 
 namespace SGPP {
 namespace base {
 
-OCLClonedBuffer::OCLClonedBuffer(std::shared_ptr<OCLManager> manager)
-    : manager(manager) {
+OCLClonedBuffer::OCLClonedBuffer(std::shared_ptr<OCLManager> manager) :
+  manager(manager) {
   initialized = false;
   bufferList = nullptr;
   sizeofType = 0;
   elements = 0;
 }
 
-OCLClonedBuffer::~OCLClonedBuffer() { this->freeBuffer(); }
+OCLClonedBuffer::~OCLClonedBuffer() {
+  this->freeBuffer();
+}
 
-bool OCLClonedBuffer::isInitialized() { return this->initialized; }
+bool OCLClonedBuffer::isInitialized() {
+  return this->initialized;
+}
 
 cl_mem* OCLClonedBuffer::getBuffer(size_t deviceNumber) {
   return &(this->bufferList[deviceNumber]);
@@ -37,20 +43,23 @@ void OCLClonedBuffer::writeToBuffer(void* hostData, size_t* offsets) {
 
   for (size_t i = 0; i < this->manager->num_devices; i++) {
     if (offsets == nullptr) {
-      err = clEnqueueWriteBuffer(
-          this->manager->command_queue[i], this->bufferList[i], CL_FALSE, 0,
-          this->sizeofType * this->elements, hostData, 0, nullptr, nullptr);
+      err = clEnqueueWriteBuffer(this->manager->command_queue[i],
+                                 this->bufferList[i],
+                                 CL_FALSE, 0,
+                                 this->sizeofType * this->elements,
+                                 hostData, 0, nullptr, nullptr);
     } else {
-      err = clEnqueueWriteBuffer(
-          this->manager->command_queue[i], this->bufferList[i], CL_FALSE,
-          this->sizeofType * offsets[i], this->sizeofType * this->elements,
-          hostData, 0, nullptr, nullptr);
+      err = clEnqueueWriteBuffer(this->manager->command_queue[i],
+                                 this->bufferList[i],
+                                 CL_FALSE, this->sizeofType * offsets[i],
+                                 this->sizeofType * this->elements,
+                                 hostData, 0, nullptr, nullptr);
     }
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue write "
-                     "buffer command! Error code: "
+                  "buffer command! Error code: "
                   << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
@@ -72,21 +81,24 @@ void OCLClonedBuffer::readFromBuffer(void* hostData, size_t* offsets,
   for (size_t i = 0; i < this->manager->num_devices; i++) {
     if (offsets == nullptr) {
       err = clEnqueueReadBuffer(this->manager->command_queue[i],
-                                this->bufferList[i], CL_FALSE, 0,
-                                this->sizeofType * this->elements, hostData, 0,
-                                nullptr, &(actionDone[i]));
+                                this->bufferList[i],
+                                CL_FALSE, 0, this->sizeofType * this->elements,
+                                hostData, 0, nullptr,
+                                &(actionDone[i]));
     } else {
-      err = clEnqueueReadBuffer(
-          this->manager->command_queue[i], this->bufferList[i], CL_FALSE,
-          this->sizeofType * offsets[i], this->sizeofType * ranges[i],
-          static_cast<char*>(hostData) + (this->sizeofType * offsets[i]), 0,
-          nullptr, &(actionDone[i]));
+      err = clEnqueueReadBuffer(this->manager->command_queue[i],
+                                this->bufferList[i],
+                                CL_FALSE, this->sizeofType * offsets[i],
+                                this->sizeofType * ranges[i],
+                                static_cast<char*>(hostData) +
+                                (this->sizeofType * offsets[i]), 0, nullptr,
+                                &(actionDone[i]));
     }
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue read buffer command! "
-                     "Error code: "
+                  "Error code: "
                   << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
@@ -107,19 +119,21 @@ void OCLClonedBuffer::initializeBuffer(void* initialValues, size_t sizeofType,
 
   for (size_t i = 0; i < manager->num_devices; i++) {
     if (initialValues != nullptr) {
-      bufferList[i] = clCreateBuffer(
-          manager->context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-          sizeofType * elements, initialValues, &err);
+      bufferList[i] = clCreateBuffer(manager->context,
+                                     CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+                                     sizeofType * elements, initialValues,
+                                     &err);
     } else {
-      bufferList[i] = clCreateBuffer(manager->context, CL_MEM_READ_ONLY,
-                                     sizeofType * elements, nullptr, &err);
+      bufferList[i] = clCreateBuffer(manager->context,
+                                     CL_MEM_READ_ONLY, sizeofType * elements,
+                                     nullptr, &err);
     }
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Could not allocate buffer! "
-                     "Error code: "
-                  << err << std::endl;
+                  "Error code: " << err <<
+                  std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
@@ -137,8 +151,9 @@ void OCLClonedBuffer::freeBuffer() {
 
   if (this->bufferList == nullptr) {
     std::stringstream errorString;
-    errorString << "OCL Error: OCLClonedBuffer in partially initialized state: "
-                   "buffer list is null"
+    errorString <<
+                "OCL Error: OCLClonedBuffer in partially initialized state: "
+                "buffer list is null"
                 << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
@@ -149,10 +164,10 @@ void OCLClonedBuffer::freeBuffer() {
       this->bufferList[i] = nullptr;
     } else {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: OCLClonedBuffer in partially initialized state: "
-             "device buffer is null"
-          << std::endl;
+      errorString <<
+                  "OCL Error: OCLClonedBuffer in partially initialized state: "
+                  "device buffer is null"
+                  << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
@@ -164,3 +179,4 @@ void OCLClonedBuffer::freeBuffer() {
 
 }  // namespace base
 }  // namespace SGPP
+

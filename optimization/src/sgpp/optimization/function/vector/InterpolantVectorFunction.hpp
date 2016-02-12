@@ -45,16 +45,19 @@ class InterpolantVectorFunction : public VectorFunction {
    *              (j-th column contains hierarchical surplusses
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
-  InterpolantVectorFunction(base::Grid& grid, const base::DataMatrix& alpha)
-      : VectorFunction(grid.getStorage()->dim(), alpha.getNcols()),
-        grid(grid),
-        opEval(op_factory::createOperationNaiveEval(grid)),
-        alpha(alpha) {}
+  InterpolantVectorFunction(base::Grid& grid,
+                            const base::DataMatrix& alpha) :
+    VectorFunction(grid.getStorage()->dim(), alpha.getNcols()),
+    grid(grid),
+    opEval(op_factory::createOperationNaiveEval(grid)),
+    alpha(alpha) {
+  }
 
   /**
    * Destructor.
    */
-  ~InterpolantVectorFunction() override {}
+  virtual ~InterpolantVectorFunction() override {
+  }
 
   /**
    * Evaluation of the function.
@@ -62,7 +65,8 @@ class InterpolantVectorFunction : public VectorFunction {
    * @param[in]  x      evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @param[out] value  \f$g(\vec{x})\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value) override {
+  inline virtual void eval(const base::DataVector& x,
+                           base::DataVector& value) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         for (size_t j = 0; j < m; j++) {
@@ -84,19 +88,24 @@ class InterpolantVectorFunction : public VectorFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunction>& clone) const override {
-    clone = std::unique_ptr<VectorFunction>(new InterpolantVectorFunction(grid, alpha));
+  virtual void clone(std::unique_ptr<VectorFunction>& clone) const override {
+    clone = std::unique_ptr<VectorFunction>(
+              new InterpolantVectorFunction(grid, alpha));
   }
 
   /**
    * @return coefficient matrix
    */
-  const base::DataMatrix& getAlpha() const { return alpha; }
+  const base::DataMatrix& getAlpha() const {
+    return alpha;
+  }
 
   /**
    * @param alpha coefficient matrix
    */
-  void setAlpha(const base::DataMatrix& alpha) { this->alpha = alpha; }
+  void setAlpha(const base::DataMatrix& alpha) {
+    this->alpha = alpha;
+  }
 
  protected:
   /// sparse grid
@@ -106,7 +115,8 @@ class InterpolantVectorFunction : public VectorFunction {
   /// coefficient matrix
   base::DataMatrix alpha;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_INTERPOLANTVECTORFUNCTION_HPP */

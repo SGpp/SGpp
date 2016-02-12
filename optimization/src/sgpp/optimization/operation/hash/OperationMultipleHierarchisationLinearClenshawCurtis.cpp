@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <algorithm>
+
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
@@ -13,15 +15,16 @@
 namespace SGPP {
 namespace optimization {
 
-OperationMultipleHierarchisationLinearClenshawCurtis::
-    OperationMultipleHierarchisationLinearClenshawCurtis(base::LinearClenshawCurtisGrid& grid)
-    : grid(grid) {}
+OperationMultipleHierarchisationLinearClenshawCurtis::OperationMultipleHierarchisationLinearClenshawCurtis(
+  base::LinearClenshawCurtisGrid& grid) :
+  grid(grid) {
+}
 
-OperationMultipleHierarchisationLinearClenshawCurtis::
-    ~OperationMultipleHierarchisationLinearClenshawCurtis() {}
+OperationMultipleHierarchisationLinearClenshawCurtis::~OperationMultipleHierarchisationLinearClenshawCurtis() {
+}
 
 bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
-    base::DataVector& nodeValues) {
+  base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
@@ -29,7 +32,7 @@ bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
-    base::DataVector& alpha) {
+  base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalLinearClenshawCurtis opNaiveEval(&storage);
@@ -51,7 +54,7 @@ void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
 }
 
 bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
-    base::DataMatrix& nodeValues) {
+  base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
@@ -59,7 +62,7 @@ bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
-    base::DataMatrix& alpha) {
+  base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalLinearClenshawCurtis opNaiveEval(&storage);
@@ -83,5 +86,6 @@ void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}

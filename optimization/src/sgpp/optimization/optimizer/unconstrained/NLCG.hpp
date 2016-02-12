@@ -48,9 +48,13 @@ class NLCG : public UnconstrainedOptimizer {
    * @param epsilon           epsilon (parameter for Armijo's rule)
    * @param restartThreshold  restart threshold
    */
-  NLCG(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount = DEFAULT_N,
-       float_t beta = DEFAULT_BETA, float_t gamma = DEFAULT_GAMMA,
-       float_t tolerance = DEFAULT_TOLERANCE, float_t epsilon = DEFAULT_EPSILON,
+  NLCG(ScalarFunction& f,
+       ScalarFunctionGradient& fGradient,
+       size_t maxItCount = DEFAULT_N,
+       float_t beta = DEFAULT_BETA,
+       float_t gamma = DEFAULT_GAMMA,
+       float_t tolerance = DEFAULT_TOLERANCE,
+       float_t epsilon = DEFAULT_EPSILON,
        float_t restartThreshold = DEFAULT_RESTART_THRESHOLD);
 
   /**
@@ -118,7 +122,8 @@ class NLCG : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// objective function gradient
@@ -134,8 +139,9 @@ class NLCG : public UnconstrainedOptimizer {
   /// restart threshold
   float_t alpha;
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NLCG_HPP */

@@ -6,10 +6,12 @@
 #pragma once
 
 #include <CL/cl.h>
-#include <map>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+
+#include <map>
 
 namespace SGPP {
 namespace base {
@@ -30,8 +32,8 @@ class OCLStretchedBufferMultiPlatform {
   std::map<cl_platform_id, void*> mappedHostBuffer;
 
  public:
-  OCLStretchedBufferMultiPlatform(
-      std::shared_ptr<OCLManagerMultiPlatform> manager);
+  OCLStretchedBufferMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform>
+                                  manager);
 
   ~OCLStretchedBufferMultiPlatform();
 
@@ -60,3 +62,4 @@ class OCLStretchedBufferMultiPlatform {
 
 }  // namespace base
 }  // namespace SGPP
+

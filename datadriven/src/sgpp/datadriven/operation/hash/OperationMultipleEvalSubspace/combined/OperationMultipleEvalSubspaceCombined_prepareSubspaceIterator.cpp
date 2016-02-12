@@ -3,7 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../../OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
+
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 
 using namespace SGPP::base;
 

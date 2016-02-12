@@ -8,12 +8,12 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "omp.h"
+#include <omp.h>
 #include <immintrin.h>
 #include <assert.h>
 
-#include "OperationMultipleEvalSubspaceCombinedParameters.hpp"
-#include "SubspaceNodeCombined.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/SubspaceNodeCombined.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 
 #include <sgpp/globaldef.hpp>

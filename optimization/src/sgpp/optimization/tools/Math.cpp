@@ -42,9 +42,9 @@ void schurDecomposition(base::DataMatrix& A, base::DataMatrix& V) {
       const float_t dPlus = A(m - 1, m - 1) + A(m - 2, m - 2);
       const float_t dMinus = A(m - 1, m - 1) - A(m - 2, m - 2);
       const float_t sigma = (dMinus >= 0.0) ? 1.0 : -1.0;
-      const float_t lambda =
-          dPlus / 2.0 +
-          sigma / 2.0 * std::sqrt(dMinus * dMinus + 4.0 * A(m - 1, m - 2) * A(m - 2, m - 1));
+      const float_t lambda = dPlus / 2.0 + sigma / 2.0 * std::sqrt(
+                               dMinus * dMinus +
+                               4.0 * A(m - 1, m - 2) * A(m - 2, m - 1));
 
       // calculate A(1:m,1:m) - lambda*eye(m)
       for (size_t i = 0; i < m; i++) {
@@ -275,7 +275,9 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
 
         for (size_t p = 0; p < m; p++) {
           for (size_t q = 0; q < m; q++) {
-            entry += QTilde(i - k - 1, p) * A(p + k + 1, q + k + 1) * QTilde(q, j - k - 1);
+            entry += QTilde(i - k - 1, p) *
+                     A(p + k + 1, q + k + 1) *
+                     QTilde(q, j - k - 1);
           }
         }
 
@@ -302,7 +304,9 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V) {
   }
 }
 
-void householderTransformation(const base::DataMatrix& A, size_t i, size_t j, base::DataMatrix& Q) {
+void householderTransformation(const base::DataMatrix& A,
+                               size_t i, size_t j,
+                               base::DataMatrix& Q) {
   // dimension of matrix
   const size_t n = A.getNrows();
   // dimension of transformation
@@ -331,6 +335,7 @@ void householderTransformation(const base::DataMatrix& A, size_t i, size_t j, ba
     }
   }
 }
-}  // namespace math
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

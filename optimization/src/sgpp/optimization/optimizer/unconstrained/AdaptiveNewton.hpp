@@ -54,7 +54,9 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    * @param dampingDecreaseFactor     damping decrease factor
    * @param lineSearchAccuracy        line search accuracy
    */
-  AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount = DEFAULT_N,
+  AdaptiveNewton(ScalarFunction& f,
+                 ScalarFunctionHessian& fHessian,
+                 size_t maxItCount = DEFAULT_N,
                  float_t tolerance = DEFAULT_TOLERANCE,
                  float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
                  float_t stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
@@ -80,10 +82,16 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    *                                  solving the linear systems
    *                                  (Hessian as coefficient matrix)
    */
-  AdaptiveNewton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount,
-                 float_t tolerance, float_t stepSizeIncreaseFactor, float_t stepSizeDecreaseFactor,
-                 float_t dampingIncreaseFactor, float_t dampingDecreaseFactor,
-                 float_t lineSearchAccuracy, const sle_solver::SLESolver& sleSolver);
+  AdaptiveNewton(ScalarFunction& f,
+                 ScalarFunctionHessian& fHessian,
+                 size_t maxItCount,
+                 float_t tolerance,
+                 float_t stepSizeIncreaseFactor,
+                 float_t stepSizeDecreaseFactor,
+                 float_t dampingIncreaseFactor,
+                 float_t dampingDecreaseFactor,
+                 float_t lineSearchAccuracy,
+                 const sle_solver::SLESolver& sleSolver);
 
   /**
    * Destructor.
@@ -160,7 +168,8 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// objective function Hessian
@@ -182,8 +191,9 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   /// linear solver
   const sle_solver::SLESolver& sleSolver;
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_ADAPTIVENEWTON_HPP */

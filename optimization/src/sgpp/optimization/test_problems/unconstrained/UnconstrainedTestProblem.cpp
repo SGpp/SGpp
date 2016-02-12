@@ -11,9 +11,13 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-UnconstrainedTestProblem::UnconstrainedTestProblem(size_t d) : d(d), displacement(d, 0.0) {}
+UnconstrainedTestProblem::UnconstrainedTestProblem(size_t d) :
+  d(d),
+  displacement(d, 0.0) {
+}
 
-UnconstrainedTestProblem::~UnconstrainedTestProblem() {}
+UnconstrainedTestProblem::~UnconstrainedTestProblem() {
+}
 
 float_t UnconstrainedTestProblem::getOptimalPoint(base::DataVector& x) {
   // reverse displace optimal point
@@ -31,7 +35,8 @@ void UnconstrainedTestProblem::generateDisplacement(float_t stdDev) {
   do {
     for (size_t t = 0; t < d; t++) {
       // every component is normally distributed
-      displacement[t] = RandomNumberGenerator::getInstance().getGaussianRN(stdDev);
+      displacement[t] =
+        RandomNumberGenerator::getInstance().getGaussianRN(stdDev);
     }
   } while (!isDisplacementFeasible());
 
@@ -39,9 +44,12 @@ void UnconstrainedTestProblem::generateDisplacement(float_t stdDev) {
   getObjectiveFunction().setDisplacement(displacement);
 }
 
-const base::DataVector& UnconstrainedTestProblem::getDisplacement() const { return displacement; }
+const base::DataVector& UnconstrainedTestProblem::getDisplacement() const {
+  return displacement;
+}
 
-void UnconstrainedTestProblem::setDisplacement(const base::DataVector& displacement) {
+void UnconstrainedTestProblem::setDisplacement(
+  const base::DataVector& displacement) {
   this->displacement = displacement;
   // set the displacement also in the objective function
   getObjectiveFunction().setDisplacement(displacement);
@@ -61,6 +69,7 @@ bool UnconstrainedTestProblem::isDisplacementFeasible() {
 
   return true;
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

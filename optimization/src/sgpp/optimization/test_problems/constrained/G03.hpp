@@ -28,7 +28,7 @@ class G03Objective : public TestScalarFunction {
    *
    * @param d   number of parameters
    */
-  explicit G03Objective(size_t d);
+  G03Objective(size_t d);
 
   /**
    * Destructor.
@@ -39,12 +39,14 @@ class G03Objective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  float_t evalUndisplaced(const base::DataVector& x) override;
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
 };
 
 /**
@@ -52,14 +54,15 @@ class G03Objective : public TestScalarFunction {
  *
  * Definition: empty, i.e., no constraint
  */
-class G03InequalityConstraint : public TestVectorFunction {
+class G03InequalityConstraint :
+  public TestVectorFunction {
  public:
   /**
    * Constructor.
    *
    * @param d   number of parameters
    */
-  explicit G03InequalityConstraint(size_t d);
+  G03InequalityConstraint(size_t d);
 
   /**
    * Destructor.
@@ -70,12 +73,14 @@ class G03InequalityConstraint : public TestVectorFunction {
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
    * @param[out]  value   \f$\vec{f}(\vec{x})\f$
    */
-  void evalUndisplaced(const base::DataVector& x, base::DataVector& value) override;
+  virtual void evalUndisplaced(const base::DataVector& x,
+                               base::DataVector& value) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<VectorFunction>& clone)
+  const override;
 };
 
 /**
@@ -85,14 +90,15 @@ class G03InequalityConstraint : public TestVectorFunction {
  * \f[\bar{h}(\bar{\vec{x}}) :=
  * \norm{\bar{\vec{x}}}_2^2 - 1\f]
  */
-class G03EqualityConstraint : public TestVectorFunction {
+class G03EqualityConstraint :
+  public TestVectorFunction {
  public:
   /**
    * Constructor.
    *
    * @param d   number of parameters
    */
-  explicit G03EqualityConstraint(size_t d);
+  G03EqualityConstraint(size_t d);
 
   /**
    * Destructor.
@@ -103,12 +109,14 @@ class G03EqualityConstraint : public TestVectorFunction {
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
    * @param[out]  value   \f$\vec{f}(\vec{x})\f$
    */
-  void evalUndisplaced(const base::DataVector& x, base::DataVector& value) override;
+  virtual void evalUndisplaced(const base::DataVector& x,
+                               base::DataVector& value) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<VectorFunction>& clone)
+  const override;
 };
 
 /**
@@ -130,7 +138,7 @@ class G03 : public ConstrainedTestProblem {
    *
    * @param d   number of parameters
    */
-  explicit G03(size_t d);
+  G03(size_t d);
 
   /**
    * Destructor.
@@ -158,7 +166,8 @@ class G03 : public ConstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
  protected:
   /// objective function
@@ -168,8 +177,9 @@ class G03 : public ConstrainedTestProblem {
   /// equality constraint function
   G03EqualityConstraint h;
 };
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_G03_HPP */

@@ -10,8 +10,8 @@
 namespace SGPP {
 namespace base {
 
-OCLOperationConfiguration::OCLOperationConfiguration()
-    : OperationConfiguration() {
+OCLOperationConfiguration::OCLOperationConfiguration():
+  OperationConfiguration() {
   // augment default values to configuration
   //        this->addIDAttr("LOCAL_SIZE", 64ul);
   //        this->addIDAttr("ENABLE_OPTIMIZATIONS", true);
@@ -29,9 +29,8 @@ OCLOperationConfiguration::OCLOperationConfiguration()
   //        this->addIDAttr("SHOW_BUILD_LOG", false);
 }
 
-OCLOperationConfiguration::OCLOperationConfiguration(
-    const std::string& fileName)
-    : OperationConfiguration(fileName) {
+OCLOperationConfiguration::OCLOperationConfiguration(const std::string&
+    fileName): OperationConfiguration(fileName) {
   // augment default values to configuration
   //    if (this->contains("LOCAL_SIZE") == false) {
   //        this->addIDAttr("LOCAL_SIZE", 64ul);
@@ -85,9 +84,11 @@ OCLOperationConfiguration::OCLOperationConfiguration(
 }
 
 OperationConfiguration* OCLOperationConfiguration::clone() {
-  return dynamic_cast<OperationConfiguration*>(
-      new OCLOperationConfiguration(*this));
+  return dynamic_cast<OperationConfiguration*>(new OCLOperationConfiguration(
+           *this));
 }
+
 
 }  // namespace base
 }  // namespace SGPP
+

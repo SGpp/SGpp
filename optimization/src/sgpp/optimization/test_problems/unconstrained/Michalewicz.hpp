@@ -38,12 +38,14 @@ class MichalewiczObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  float_t evalUndisplaced(const base::DataVector& x) override;
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
 };
 
 /**
@@ -79,14 +81,16 @@ class Michalewicz : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
  protected:
   /// objective function
   MichalewiczObjective f;
 };
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_MICHALEWICZ_HPP */

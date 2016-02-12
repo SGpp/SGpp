@@ -11,9 +11,6 @@
 #include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 #include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 
-#include <algorithm>
-#include <vector>
-
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
@@ -21,16 +18,20 @@ namespace optimizer {
 namespace {
 class PenalizedObjectiveFunction : public ScalarFunction {
  public:
-  PenalizedObjectiveFunction(ScalarFunction& f, VectorFunction& g, VectorFunction& h, float_t mu,
-                             base::DataVector& lambda)
-      : ScalarFunction(f.getNumberOfParameters()),
-        f(f),
-        g(g),
-        h(h),
-        mu(mu),
-        lambda(lambda),
-        mG(g.getNumberOfComponents()),
-        mH(h.getNumberOfComponents()) {}
+  PenalizedObjectiveFunction(ScalarFunction& f,
+                             VectorFunction& g,
+                             VectorFunction& h,
+                             float_t mu,
+                             base::DataVector& lambda) :
+    ScalarFunction(f.getNumberOfParameters()),
+    f(f),
+    g(g),
+    h(h),
+    mu(mu),
+    lambda(lambda),
+    mG(g.getNumberOfComponents()),
+    mH(h.getNumberOfComponents()) {
+  }
 
   float_t eval(const base::DataVector& x) {
     for (size_t t = 0; t < d; t++) {
@@ -65,10 +66,13 @@ class PenalizedObjectiveFunction : public ScalarFunction {
   }
 
   void clone(std::unique_ptr<ScalarFunction>& clone) const {
-    clone = std::unique_ptr<ScalarFunction>(new PenalizedObjectiveFunction(*this));
+    clone = std::unique_ptr<ScalarFunction>(
+              new PenalizedObjectiveFunction(*this));
   }
 
-  void setMu(float_t mu) { this->mu = mu; }
+  void setMu(float_t mu) {
+    this->mu = mu;
+  }
 
  protected:
   ScalarFunction& f;
@@ -82,19 +86,23 @@ class PenalizedObjectiveFunction : public ScalarFunction {
 
 class PenalizedObjectiveGradient : public ScalarFunctionGradient {
  public:
-  PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient, VectorFunctionGradient& gGradient,
-                             VectorFunctionGradient& hGradient, float_t mu,
-                             base::DataVector& lambda)
-      : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
-        fGradient(fGradient),
-        gGradient(gGradient),
-        hGradient(hGradient),
-        mu(mu),
-        lambda(lambda),
-        mG(gGradient.getNumberOfComponents()),
-        mH(hGradient.getNumberOfComponents()) {}
+  PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient,
+                             VectorFunctionGradient& gGradient,
+                             VectorFunctionGradient& hGradient,
+                             float_t mu,
+                             base::DataVector& lambda) :
+    ScalarFunctionGradient(fGradient.getNumberOfParameters()),
+    fGradient(fGradient),
+    gGradient(gGradient),
+    hGradient(hGradient),
+    mu(mu),
+    lambda(lambda),
+    mG(gGradient.getNumberOfComponents()),
+    mH(hGradient.getNumberOfComponents()) {
+  }
 
-  float_t eval(const base::DataVector& x, base::DataVector& gradient) {
+  float_t eval(const base::DataVector& x,
+               base::DataVector& gradient) {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         gradient.setAll(NAN);
@@ -151,10 +159,13 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
   }
 
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
-    clone = std::unique_ptr<ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
+    clone = std::unique_ptr<ScalarFunctionGradient>(
+              new PenalizedObjectiveGradient(*this));
   }
 
-  void setMu(float_t mu) { this->mu = mu; }
+  void setMu(float_t mu) {
+    this->mu = mu;
+  }
 
  protected:
   ScalarFunctionGradient& fGradient;
@@ -168,8 +179,11 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
 
 class AuxiliaryObjectiveFunction : public ScalarFunction {
  public:
-  AuxiliaryObjectiveFunction(size_t d, float_t sMin, float_t sMax)
-      : ScalarFunction(d + 1), sMin(sMin), sMax(sMax) {}
+  AuxiliaryObjectiveFunction(size_t d, float_t sMin, float_t sMax) :
+    ScalarFunction(d + 1),
+    sMin(sMin),
+    sMax(sMax) {
+  }
 
   float_t eval(const base::DataVector& x) {
     const size_t d = this->d - 1;
@@ -184,7 +198,8 @@ class AuxiliaryObjectiveFunction : public ScalarFunction {
   }
 
   void clone(std::unique_ptr<ScalarFunction>& clone) const {
-    clone = std::unique_ptr<ScalarFunction>(new AuxiliaryObjectiveFunction(*this));
+    clone = std::unique_ptr<ScalarFunction>(
+              new AuxiliaryObjectiveFunction(*this));
   }
 
  protected:
@@ -194,10 +209,14 @@ class AuxiliaryObjectiveFunction : public ScalarFunction {
 
 class AuxiliaryObjectiveGradient : public ScalarFunctionGradient {
  public:
-  AuxiliaryObjectiveGradient(size_t d, float_t sMin, float_t sMax)
-      : ScalarFunctionGradient(d + 1), sMin(sMin), sMax(sMax) {}
+  AuxiliaryObjectiveGradient(size_t d, float_t sMin, float_t sMax) :
+    ScalarFunctionGradient(d + 1),
+    sMin(sMin),
+    sMax(sMax) {
+  }
 
-  float_t eval(const base::DataVector& x, base::DataVector& gradient) {
+  float_t eval(const base::DataVector& x,
+               base::DataVector& gradient) {
     const size_t d = this->d - 1;
 
     for (size_t t = 0; t < d + 1; t++) {
@@ -213,7 +232,8 @@ class AuxiliaryObjectiveGradient : public ScalarFunctionGradient {
   }
 
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
-    clone = std::unique_ptr<ScalarFunctionGradient>(new AuxiliaryObjectiveGradient(*this));
+    clone = std::unique_ptr<ScalarFunctionGradient>(
+              new AuxiliaryObjectiveGradient(*this));
   }
 
  protected:
@@ -223,17 +243,24 @@ class AuxiliaryObjectiveGradient : public ScalarFunctionGradient {
 
 class AuxiliaryConstraintFunction : public VectorFunction {
  public:
-  AuxiliaryConstraintFunction(size_t d, VectorFunction& g, VectorFunction& h, float_t sMin,
-                              float_t sMax)
-      : VectorFunction(d + 1, g.getNumberOfComponents() + 2 * h.getNumberOfComponents() + 1),
-        g(g),
-        h(h),
-        mG(g.getNumberOfComponents()),
-        mH(h.getNumberOfComponents()),
-        sMin(sMin),
-        sMax(sMax) {}
+  AuxiliaryConstraintFunction(size_t d,
+                              VectorFunction& g,
+                              VectorFunction& h,
+                              float_t sMin,
+                              float_t sMax) :
+    VectorFunction(d + 1,
+                   g.getNumberOfComponents() +
+                   2 * h.getNumberOfComponents() + 1),
+    g(g),
+    h(h),
+    mG(g.getNumberOfComponents()),
+    mH(h.getNumberOfComponents()),
+    sMin(sMin),
+    sMax(sMax) {
+  }
 
-  void eval(const base::DataVector& x, base::DataVector& value) {
+  void eval(const base::DataVector& x,
+            base::DataVector& value) {
     const size_t d = this->d - 1;
     base::DataVector xPart(d);
 
@@ -267,7 +294,8 @@ class AuxiliaryConstraintFunction : public VectorFunction {
   }
 
   void clone(std::unique_ptr<VectorFunction>& clone) const {
-    clone = std::unique_ptr<VectorFunction>(new AuxiliaryConstraintFunction(*this));
+    clone = std::unique_ptr<VectorFunction>(
+              new AuxiliaryConstraintFunction(*this));
   }
 
  protected:
@@ -281,18 +309,25 @@ class AuxiliaryConstraintFunction : public VectorFunction {
 
 class AuxiliaryConstraintGradient : public VectorFunctionGradient {
  public:
-  AuxiliaryConstraintGradient(size_t d, VectorFunctionGradient& gGradient,
-                              VectorFunctionGradient& hGradient, float_t sMin, float_t sMax)
-      : VectorFunctionGradient(
-            d + 1, gGradient.getNumberOfComponents() + 2 * hGradient.getNumberOfComponents() + 1),
-        gGradient(gGradient),
-        hGradient(hGradient),
-        mG(gGradient.getNumberOfComponents()),
-        mH(hGradient.getNumberOfComponents()),
-        sMin(sMin),
-        sMax(sMax) {}
+  AuxiliaryConstraintGradient(size_t d,
+                              VectorFunctionGradient& gGradient,
+                              VectorFunctionGradient& hGradient,
+                              float_t sMin,
+                              float_t sMax) :
+    VectorFunctionGradient(d + 1,
+                           gGradient.getNumberOfComponents() +
+                           2 * hGradient.getNumberOfComponents() + 1),
+    gGradient(gGradient),
+    hGradient(hGradient),
+    mG(gGradient.getNumberOfComponents()),
+    mH(hGradient.getNumberOfComponents()),
+    sMin(sMin),
+    sMax(sMax) {
+  }
 
-  void eval(const base::DataVector& x, base::DataVector& value, base::DataMatrix& gradient) {
+  void eval(const base::DataVector& x,
+            base::DataVector& value,
+            base::DataMatrix& gradient) {
     const size_t d = this->d - 1;
     base::DataVector xPart(d);
 
@@ -349,7 +384,8 @@ class AuxiliaryConstraintGradient : public VectorFunctionGradient {
   }
 
   void clone(std::unique_ptr<VectorFunctionGradient>& clone) const {
-    clone = std::unique_ptr<VectorFunctionGradient>(new AuxiliaryConstraintGradient(*this));
+    clone = std::unique_ptr<VectorFunctionGradient>(
+              new AuxiliaryConstraintGradient(*this));
   }
 
  protected:
@@ -360,25 +396,33 @@ class AuxiliaryConstraintGradient : public VectorFunctionGradient {
   float_t sMin;
   float_t sMax;
 };
-}  // namespace
+}
 
-AugmentedLagrangian::AugmentedLagrangian(ScalarFunction& f, ScalarFunctionGradient& fGradient,
-                                         VectorFunction& g, VectorFunctionGradient& gGradient,
-                                         VectorFunction& h, VectorFunctionGradient& hGradient,
-                                         size_t maxItCount, float_t xTolerance,
-                                         float_t constraintTolerance, float_t penaltyStartValue,
-                                         float_t penaltyIncreaseFactor)
-    : ConstrainedOptimizer(f, g, h, maxItCount),
-      fGradient(fGradient),
-      gGradient(gGradient),
-      hGradient(hGradient),
-      theta(xTolerance),
-      epsilon(constraintTolerance),
-      mu0(penaltyStartValue),
-      rhoMuPlus(penaltyIncreaseFactor),
-      kHist() {}
+AugmentedLagrangian::AugmentedLagrangian(
+  ScalarFunction& f,
+  ScalarFunctionGradient& fGradient,
+  VectorFunction& g,
+  VectorFunctionGradient& gGradient,
+  VectorFunction& h,
+  VectorFunctionGradient& hGradient,
+  size_t maxItCount,
+  float_t xTolerance,
+  float_t constraintTolerance,
+  float_t penaltyStartValue,
+  float_t penaltyIncreaseFactor) :
+  ConstrainedOptimizer(f, g, h, maxItCount),
+  fGradient(fGradient),
+  gGradient(gGradient),
+  hGradient(hGradient),
+  theta(xTolerance),
+  epsilon(constraintTolerance),
+  mu0(penaltyStartValue),
+  rhoMuPlus(penaltyIncreaseFactor),
+  kHist() {
+}
 
-AugmentedLagrangian::~AugmentedLagrangian() {}
+AugmentedLagrangian::~AugmentedLagrangian() {
+}
 
 void AugmentedLagrangian::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Augmented Lagrangian)...");
@@ -415,20 +459,21 @@ void AugmentedLagrangian::optimize() {
   const size_t unconstrainedN = N / 20;
 
   PenalizedObjectiveFunction fPenalized(f, g, h, mu, lambda);
-  PenalizedObjectiveGradient fPenalizedGradient(fGradient, gGradient, hGradient, mu, lambda);
+  PenalizedObjectiveGradient fPenalizedGradient(
+    fGradient, gGradient, hGradient, mu, lambda);
 
   while (k < N) {
     fPenalized.setMu(mu);
     fPenalizedGradient.setMu(mu);
 
-    AdaptiveGradientDescent unconstrainedOptimizer(fPenalized, fPenalizedGradient, unconstrainedN,
-                                                   10.0 * theta);
+    AdaptiveGradientDescent unconstrainedOptimizer(
+      fPenalized, fPenalizedGradient, unconstrainedN, 10.0 * theta);
     unconstrainedOptimizer.setStartingPoint(x);
     unconstrainedOptimizer.optimize();
     xNew = unconstrainedOptimizer.getOptimalPoint();
 
     const size_t numberInnerEvaluations =
-        unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
+      unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
     k += numberInnerEvaluations;
 
     x = xNew;
@@ -443,8 +488,10 @@ void AugmentedLagrangian::optimize() {
 
     // status printing
     Printer::getInstance().printStatusUpdate(
-        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx) +
-        ", g(x) = " + gx.toString() + ", h(x) = " + hx.toString());
+      std::to_string(k) + " evaluations, x = " + x.toString() +
+      ", f(x) = " + std::to_string(fx) +
+      ", g(x) = " + gx.toString() +
+      ", h(x) = " + hx.toString());
 
     for (size_t i = 0; i < mG; i++) {
       lambda[i] = std::max(lambda[i] + 2.0 * mu * gx[i], 0.0);
@@ -458,7 +505,9 @@ void AugmentedLagrangian::optimize() {
 
     xNew.sub(x);
 
-    if ((xNew.l2Norm() < theta) && (gx.max() < epsilon) && (hx.maxNorm() < epsilon)) {
+    if ((xNew.l2Norm() < theta) &&
+        (gx.max() < epsilon) &&
+        (hx.maxNorm() < epsilon)) {
       breakIterationCounter++;
 
       if (breakIterationCounter >= BREAK_ITERATION_COUNTER_MAX) {
@@ -497,7 +546,8 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
   AuxiliaryObjectiveFunction auxObjFun(d, sMin, sMax);
   AuxiliaryObjectiveGradient auxObjGrad(d, sMin, sMax);
   AuxiliaryConstraintFunction auxConstrFun(d, g, h, sMin, sMax);
-  AuxiliaryConstraintGradient auxConstrGrad(d, gGradient, hGradient, sMin, sMax);
+  AuxiliaryConstraintGradient auxConstrGrad(
+    d, gGradient, hGradient, sMin, sMax);
 
   base::DataVector auxX(d + 1);
 
@@ -507,9 +557,10 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
 
   auxX[d] = (s0 - sMin) / (sMax - sMin);
 
-  AugmentedLagrangian optimizer(auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
-                                EmptyVectorFunction::getInstance(),
-                                EmptyVectorFunctionGradient::getInstance());
+  AugmentedLagrangian optimizer(
+    auxObjFun, auxObjGrad, auxConstrFun, auxConstrGrad,
+    EmptyVectorFunction::getInstance(),
+    EmptyVectorFunctionGradient::getInstance());
   optimizer.setStartingPoint(auxX);
   optimizer.optimize();
   auxX = optimizer.getOptimalPoint();
@@ -521,45 +572,65 @@ base::DataVector AugmentedLagrangian::findFeasiblePoint() const {
   return x;
 }
 
-ScalarFunctionGradient& AugmentedLagrangian::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& AugmentedLagrangian::getObjectiveGradient() const {
+  return fGradient;
+}
 
-VectorFunctionGradient& AugmentedLagrangian::getInequalityConstraintGradient() const {
+VectorFunctionGradient&
+AugmentedLagrangian::getInequalityConstraintGradient() const {
   return gGradient;
 }
 
-VectorFunctionGradient& AugmentedLagrangian::getEqualityConstraintGradient() const {
+VectorFunctionGradient&
+AugmentedLagrangian::getEqualityConstraintGradient() const {
   return hGradient;
 }
 
-float_t AugmentedLagrangian::getXTolerance() const { return theta; }
+float_t AugmentedLagrangian::getXTolerance() const {
+  return theta;
+}
 
-void AugmentedLagrangian::setXTolerance(float_t xTolerance) { theta = xTolerance; }
+void AugmentedLagrangian::setXTolerance(float_t xTolerance) {
+  theta = xTolerance;
+}
 
-float_t AugmentedLagrangian::getConstraintTolerance() const { return epsilon; }
+float_t AugmentedLagrangian::getConstraintTolerance() const {
+  return epsilon;
+}
 
-void AugmentedLagrangian::setConstraintTolerance(float_t constraintTolerance) {
+void AugmentedLagrangian::setConstraintTolerance(
+  float_t constraintTolerance) {
   epsilon = constraintTolerance;
 }
 
-float_t AugmentedLagrangian::getPenaltyStartValue() const { return mu0; }
+float_t AugmentedLagrangian::getPenaltyStartValue() const {
+  return mu0;
+}
 
-void AugmentedLagrangian::setPenaltyStartValue(float_t penaltyStartValue) {
+void AugmentedLagrangian::setPenaltyStartValue(
+  float_t penaltyStartValue) {
   mu0 = penaltyStartValue;
 }
 
-float_t AugmentedLagrangian::getPenaltyIncreaseFactor() const { return rhoMuPlus; }
+float_t AugmentedLagrangian::getPenaltyIncreaseFactor() const {
+  return rhoMuPlus;
+}
 
-void AugmentedLagrangian::setPenaltyIncreaseFactor(float_t penaltyIncreaseFactor) {
+void AugmentedLagrangian::setPenaltyIncreaseFactor(
+  float_t penaltyIncreaseFactor) {
   rhoMuPlus = penaltyIncreaseFactor;
 }
 
-const std::vector<size_t>& AugmentedLagrangian::getHistoryOfInnerIterations() const {
+const std::vector<size_t>&
+AugmentedLagrangian::getHistoryOfInnerIterations() const {
   return kHist;
 }
 
-void AugmentedLagrangian::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(new AugmentedLagrangian(*this));
+void AugmentedLagrangian::clone(
+  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(
+            new AugmentedLagrangian(*this));
 }
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+}
+}
+}

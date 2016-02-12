@@ -12,11 +12,17 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-Hartman3::Hartman3() : UnconstrainedTestProblem(3), f() {}
+Hartman3::Hartman3() :
+  UnconstrainedTestProblem(3),
+  f() {
+}
 
-Hartman3::~Hartman3() {}
+Hartman3::~Hartman3() {
+}
 
-TestScalarFunction& Hartman3::getObjectiveFunction() { return f; }
+TestScalarFunction& Hartman3::getObjectiveFunction() {
+  return f;
+}
 
 float_t Hartman3::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(3);
@@ -26,11 +32,15 @@ float_t Hartman3::getOptimalPointUndisplaced(base::DataVector& x) {
   return -3.862784507551574;
 }
 
-Hartman3Objective::Hartman3Objective() : TestScalarFunction(3) {}
+Hartman3Objective::Hartman3Objective() :
+  TestScalarFunction(3) {
+}
 
-Hartman3Objective::~Hartman3Objective() {}
+Hartman3Objective::~Hartman3Objective() {
+}
 
-float_t Hartman3Objective::evalUndisplaced(const base::DataVector& x) {
+float_t Hartman3Objective::evalUndisplaced(
+  const base::DataVector& x) {
   return -1.0 * std::exp(-3.0 * (x[0] - 0.3689) * (x[0] - 0.3689) -
                          10.0 * (x[1] - 0.1170) * (x[1] - 0.1170) -
                          30.0 * (x[2] - 0.2673) * (x[2] - 0.2673)) -
@@ -45,9 +55,12 @@ float_t Hartman3Objective::evalUndisplaced(const base::DataVector& x) {
                         35.0 * (x[2] - 0.8828) * (x[2] - 0.8828));
 }
 
-void Hartman3Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new Hartman3Objective(*this));
+void Hartman3Objective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new Hartman3Objective(*this));
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

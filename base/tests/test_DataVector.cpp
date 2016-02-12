@@ -52,7 +52,7 @@ BOOST_FIXTURE_TEST_SUITE(testDataVector, FixtureDataVector)
 
 BOOST_AUTO_TEST_CASE(testConstructor) {
   DataVector d = DataVector(2);
-  BOOST_CHECK_EQUAL(d.getSize(), 2);
+  BOOST_CHECK_EQUAL(d.getSize(), 2U);
 }
 
 BOOST_AUTO_TEST_CASE(testSetUp) {

@@ -12,11 +12,17 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-Perm::Perm(size_t d) : UnconstrainedTestProblem(d), f(d) {}
+Perm::Perm(size_t d) :
+  UnconstrainedTestProblem(d),
+  f(d) {
+}
 
-Perm::~Perm() {}
+Perm::~Perm() {
+}
 
-TestScalarFunction& Perm::getObjectiveFunction() { return f; }
+TestScalarFunction& Perm::getObjectiveFunction() {
+  return f;
+}
 
 float_t Perm::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
@@ -29,11 +35,15 @@ float_t Perm::getOptimalPointUndisplaced(base::DataVector& x) {
   return 0.0;
 }
 
-PermObjective::PermObjective(size_t d) : TestScalarFunction(d) {}
+PermObjective::PermObjective(size_t d) :
+  TestScalarFunction(d) {
+}
 
-PermObjective::~PermObjective() {}
+PermObjective::~PermObjective() {
+}
 
-float_t PermObjective::evalUndisplaced(const base::DataVector& x) {
+float_t PermObjective::evalUndisplaced(
+  const base::DataVector& x) {
   float_t result = 0.0;
   const float_t dDbl = static_cast<float_t>(d);
 
@@ -45,7 +55,8 @@ float_t PermObjective::evalUndisplaced(const base::DataVector& x) {
       const float_t xt = dDbl * (2.0 * x[t] - 1.0);
       const float_t tDbl = static_cast<float_t>(t + 1);
 
-      innerSum += (std::pow(tDbl, iDbl) + 1.0) * (std::pow(xt / tDbl, iDbl) - 1.0);
+      innerSum += (std::pow(tDbl, iDbl) + 1.0) *
+                  (std::pow(xt / tDbl, iDbl) - 1.0);
     }
 
     result += std::pow(innerSum, 2.0);
@@ -54,9 +65,12 @@ float_t PermObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void PermObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new PermObjective(*this));
+void PermObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new PermObjective(*this));
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

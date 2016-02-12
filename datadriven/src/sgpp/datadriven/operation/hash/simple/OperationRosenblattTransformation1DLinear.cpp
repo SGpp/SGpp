@@ -8,7 +8,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "OperationRosenblattTransformation1DLinear.hpp"
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>

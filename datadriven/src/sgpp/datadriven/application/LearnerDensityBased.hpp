@@ -13,7 +13,7 @@
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../../../../../base/src/sgpp/base/grid/type/LinearBoundaryGrid.hpp"
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 
 #include <map>
 #include <vector>

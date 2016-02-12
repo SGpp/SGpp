@@ -12,7 +12,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include "stdlib.h"
+#include <stdlib.h>
 #include <sstream>
 #include <fstream>
 

@@ -6,11 +6,12 @@
 #ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
 
+#include <cstddef>
+
 #include <sgpp/globaldef.hpp>
+
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
-
-#include <cstddef>
 
 namespace SGPP {
 namespace optimization {
@@ -39,7 +40,9 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   static const base::level_t DEFAULT_MAX_LEVEL = 20;
 
   /// exponentiation methods
-  enum PowMethod { STD_POW, FAST_POW };
+  enum PowMethod {
+    STD_POW, FAST_POW
+  };
 
   /**
    * Constructor.
@@ -55,11 +58,14 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
    *                      (fastPow is faster than std::pow,
    *                      but only approximative)
    */
-  IterativeGridGeneratorRitterNovak(ScalarFunction& f, base::Grid& grid, size_t N,
-                                    float_t adaptivity = DEFAULT_ADAPTIVITY,
-                                    base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
-                                    base::level_t maxLevel = DEFAULT_MAX_LEVEL,
-                                    PowMethod powMethod = STD_POW);
+  IterativeGridGeneratorRitterNovak(
+    ScalarFunction& f,
+    base::Grid& grid,
+    size_t N,
+    float_t adaptivity = DEFAULT_ADAPTIVITY,
+    base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
+    base::level_t maxLevel = DEFAULT_MAX_LEVEL,
+    PowMethod powMethod = STD_POW);
 
   /**
    * Destructor.
@@ -123,7 +129,8 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   /// exponentiation method
   PowMethod powMethod;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP */

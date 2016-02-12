@@ -14,7 +14,9 @@
 namespace SGPP {
 namespace datadriven {
 
-base::OperationMultipleEval *createAdaptiveOCLConfigured(base::Grid& grid, base::DataMatrix& dataset, SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
+base::OperationMultipleEval* createAdaptiveOCLConfigured(base::Grid& grid,
+    base::DataMatrix& dataset,
+    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 }
 }

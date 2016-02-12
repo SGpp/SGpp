@@ -3,17 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sstream>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
 
-#include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/base/exception/operation_exception.hpp>
+
+#include <sstream>
 
 namespace SGPP {
 namespace base {
 
-OCLStretchedBuffer::OCLStretchedBuffer(std::shared_ptr<OCLManager> manager)
-    : manager(manager) {
+OCLStretchedBuffer::OCLStretchedBuffer(std::shared_ptr<OCLManager> manager) :
+  manager(manager) {
   initialized = false;
   bufferList = nullptr;
   sizeofType = 0;
@@ -23,9 +25,13 @@ OCLStretchedBuffer::OCLStretchedBuffer(std::shared_ptr<OCLManager> manager)
   mappedHostBuffer = nullptr;
 }
 
-OCLStretchedBuffer::~OCLStretchedBuffer() { this->freeBuffer(); }
+OCLStretchedBuffer::~OCLStretchedBuffer() {
+  this->freeBuffer();
+}
 
-bool OCLStretchedBuffer::isInitialized() { return this->initialized; }
+bool OCLStretchedBuffer::isInitialized() {
+  return this->initialized;
+}
 
 cl_mem* OCLStretchedBuffer::getBuffer(size_t deviceNumber) {
   return &(this->bufferList[deviceNumber]);
@@ -46,8 +52,8 @@ void OCLStretchedBuffer::initializeBuffer(size_t sizeofType, size_t elements) {
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Could not allocate host buffer! "
-                   "Error code: "
-                << err << std::endl;
+                "Error code: " << err
+                << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -60,23 +66,25 @@ void OCLStretchedBuffer::initializeBuffer(size_t sizeofType, size_t elements) {
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Could not allocate buffer! "
-                     "Error code: "
-                  << err << std::endl;
+                  "Error code: " << err <<
+                  std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
 
   // TODO(pfandedd): why command queue 0?
-  void* hostPinnedMemory =
-      clEnqueueMapBuffer(manager->command_queue[0], hostBuffer, CL_TRUE,
-                         CL_MAP_READ | CL_MAP_WRITE, 0, sizeofType * elements,
-                         0, nullptr, nullptr, &err);
+  void* hostPinnedMemory = clEnqueueMapBuffer(manager->command_queue[0],
+                           hostBuffer, CL_TRUE,
+                           CL_MAP_READ | CL_MAP_WRITE, 0,
+                           sizeofType * elements, 0, nullptr, nullptr,
+                           &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Could not map pinned memory to host pointer! "
-                   "Error code: "
-                << err << std::endl;
+    errorString <<
+                "OCL Error: Could not map pinned memory to host pointer! "
+                "Error code: " << err <<
+                std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -96,36 +104,39 @@ void OCLStretchedBuffer::freeBuffer() {
 
   if (this->mappedHostBuffer == nullptr) {
     std::stringstream errorString;
-    errorString << "OCL Error: OCLStretchedBuffer in partially initialized "
-                   "state: mappedHostBuffer is null"
+    errorString <<
+                "OCL Error: OCLStretchedBuffer in partially initialized "
+                "state: mappedHostBuffer is null"
                 << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if (this->hostBuffer == nullptr) {
     std::stringstream errorString;
-    errorString << "OCL Error: OCLStretchedBuffer in partially initialized "
-                   "state: hostBuffer is null"
+    errorString <<
+                "OCL Error: OCLStretchedBuffer in partially initialized "
+                "state: hostBuffer is null"
                 << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
-  cl_int err =
-      clEnqueueUnmapMemObject(manager->command_queue[0], hostBuffer,
-                              this->mappedHostBuffer, 0, nullptr, nullptr);
+  cl_int err = clEnqueueUnmapMemObject(manager->command_queue[0], hostBuffer,
+                                       this->mappedHostBuffer, 0, nullptr,
+                                       nullptr);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: OCLStretchedBuffer unmapping memory "
-                   "not successful"
+                "not successful"
                 << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if (this->bufferList == nullptr) {
     std::stringstream errorString;
-    errorString << "OCL Error: OCLStretchedBuffer in partially "
-                   "initialized state: buffer list is null"
+    errorString <<
+                "OCL Error: OCLStretchedBuffer in partially "
+                "initialized state: buffer list is null"
                 << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
@@ -136,8 +147,9 @@ void OCLStretchedBuffer::freeBuffer() {
       this->bufferList[i] = nullptr;
     } else {
       std::stringstream errorString;
-      errorString << "OCL Error: OCLStretchedBuffer in partially "
-                     "initialized state: device buffer is null"
+      errorString <<
+                  "OCL Error: OCLStretchedBuffer in partially "
+                  "initialized state: device buffer is null"
                   << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
@@ -152,8 +164,9 @@ void OCLStretchedBuffer::freeBuffer() {
       this->hostBuffer = nullptr;
     } else {
       std::stringstream errorString;
-      errorString << "OCL Error: OCLStretchedBuffer in partially "
-                     "initialized state: host buffer is null"
+      errorString <<
+                  "OCL Error: OCLStretchedBuffer in partially "
+                  "initialized state: host buffer is null"
                   << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
@@ -169,8 +182,9 @@ void* OCLStretchedBuffer::getMappedHostBuffer() {
 void OCLStretchedBuffer::readFromBuffer(size_t* indexStart, size_t* indexEnd) {
   if (indexStart == nullptr || indexEnd == nullptr) {
     std::stringstream errorString;
-    errorString << "OCL Error: reading mapped buffer failed, "
-                   "inconsistent arguments used (see documentation)"
+    errorString <<
+                "OCL Error: reading mapped buffer failed, "
+                "inconsistent arguments used (see documentation)"
                 << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
@@ -186,25 +200,26 @@ void OCLStretchedBuffer::readFromBuffer(size_t* indexStart, size_t* indexEnd) {
 
     if (range != 0) {
       err = clEnqueueReadBuffer(
-          this->manager->command_queue[i], this->bufferList[i], CL_FALSE,
-          this->sizeofType * indexStart[i], this->sizeofType * range,
-          static_cast<char*>(this->mappedHostBuffer) +
+              this->manager->command_queue[i], this->bufferList[i],
+              CL_FALSE, this->sizeofType * indexStart[i],
+              this->sizeofType * range,
+              static_cast<char*>(this->mappedHostBuffer) +
               (this->sizeofType * indexStart[i]),
-          0, nullptr, &(actionDone[i]));
+              0, nullptr, &(actionDone[i]));
       devicesTransferring += 1;
     }
 
     if (err != CL_SUCCESS && range != 0) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue read buffer command! "
-                     "Error code: "
+                  "Error code: "
                   << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
 
   if (devicesTransferring > 0) {
-    clWaitForEvents((cl_uint)devicesTransferring, actionDone);
+    clWaitForEvents((cl_uint) devicesTransferring, actionDone);
   }
 
   for (size_t i = 0; i < this->manager->num_devices; i++) {
@@ -220,12 +235,13 @@ void OCLStretchedBuffer::writeToBuffer() {
   for (size_t i = 0; i < manager->num_devices; i++) {
     err = clEnqueueWriteBuffer(manager->command_queue[i], bufferList[i],
                                CL_TRUE, 0, this->sizeofType * this->elements,
-                               this->mappedHostBuffer, 0, nullptr, nullptr);
+                               this->mappedHostBuffer, 0,
+                               nullptr, nullptr);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue mapped write command! "
-                     "Error code: "
+                  "Error code: "
                   << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
@@ -234,3 +250,4 @@ void OCLStretchedBuffer::writeToBuffer() {
 
 }  // namespace base
 }  // namespace SGPP
+

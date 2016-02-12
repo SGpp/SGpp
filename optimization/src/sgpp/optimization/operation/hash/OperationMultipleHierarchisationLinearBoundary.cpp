@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <algorithm>
+
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
@@ -14,20 +16,23 @@ namespace SGPP {
 namespace optimization {
 
 OperationMultipleHierarchisationLinearBoundary::OperationMultipleHierarchisationLinearBoundary(
-    base::LinearBoundaryGrid& grid)
-    : grid(grid) {}
+  base::LinearBoundaryGrid& grid) :
+  grid(grid) {
+}
 
-OperationMultipleHierarchisationLinearBoundary::~OperationMultipleHierarchisationLinearBoundary() {}
+OperationMultipleHierarchisationLinearBoundary::~OperationMultipleHierarchisationLinearBoundary() {
+}
 
 bool OperationMultipleHierarchisationLinearBoundary::doHierarchisation(
-    base::DataVector& nodeValues) {
+  base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::DataVector& alpha) {
+void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(
+  base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalLinearBoundary opNaiveEval(&storage);
@@ -49,14 +54,15 @@ void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::D
 }
 
 bool OperationMultipleHierarchisationLinearBoundary::doHierarchisation(
-    base::DataMatrix& nodeValues) {
+  base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::DataMatrix& alpha) {
+void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(
+  base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalLinearBoundary opNaiveEval(&storage);
@@ -80,5 +86,6 @@ void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::D
     alpha.setColumn(i, nodeValues);
   }
 }
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}

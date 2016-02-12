@@ -14,17 +14,24 @@ namespace SGPP {
 namespace optimization {
 namespace optimizer {
 
-GradientDescent::GradientDescent(ScalarFunction& f, ScalarFunctionGradient& fGradient,
-                                 size_t maxItCount, float_t beta, float_t gamma, float_t tolerance,
-                                 float_t epsilon)
-    : UnconstrainedOptimizer(f, maxItCount),
-      fGradient(fGradient),
-      beta(beta),
-      gamma(gamma),
-      tol(tolerance),
-      eps(epsilon) {}
+GradientDescent::GradientDescent(
+  ScalarFunction& f,
+  ScalarFunctionGradient& fGradient,
+  size_t maxItCount,
+  float_t beta,
+  float_t gamma,
+  float_t tolerance,
+  float_t epsilon) :
+  UnconstrainedOptimizer(f, maxItCount),
+  fGradient(fGradient),
+  beta(beta),
+  gamma(gamma),
+  tol(tolerance),
+  eps(epsilon) {
+}
 
-GradientDescent::~GradientDescent() {}
+GradientDescent::~GradientDescent() {
+}
 
 void GradientDescent::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (gradient descent)...");
@@ -66,11 +73,13 @@ void GradientDescent::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(
+      std::to_string(k) + " evaluations, x = " + x.toString() +
+      ", f(x) = " + std::to_string(fx));
 
     // line search
-    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
+    if (!lineSearchArmijo(f, beta, gamma, tol, eps, x, fx,
+                          gradFx, s, y, k)) {
       // line search failed ==> exit
       // (either a "real" error occured or the improvement
       // achieved is too small)
@@ -88,27 +97,47 @@ void GradientDescent::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const { return fGradient; }
-
-float_t GradientDescent::getBeta() const { return beta; }
-
-void GradientDescent::setBeta(float_t beta) { this->beta = beta; }
-
-float_t GradientDescent::getGamma() const { return gamma; }
-
-void GradientDescent::setGamma(float_t gamma) { this->gamma = gamma; }
-
-float_t GradientDescent::getTolerance() const { return tol; }
-
-void GradientDescent::setTolerance(float_t tolerance) { tol = tolerance; }
-
-float_t GradientDescent::getEpsilon() const { return eps; }
-
-void GradientDescent::setEpsilon(float_t epsilon) { eps = epsilon; }
-
-void GradientDescent::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(new GradientDescent(*this));
+ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const {
+  return fGradient;
 }
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+float_t GradientDescent::getBeta() const {
+  return beta;
+}
+
+void GradientDescent::setBeta(float_t beta) {
+  this->beta = beta;
+}
+
+float_t GradientDescent::getGamma() const {
+  return gamma;
+}
+
+void GradientDescent::setGamma(float_t gamma) {
+  this->gamma = gamma;
+}
+
+float_t GradientDescent::getTolerance() const {
+  return tol;
+}
+
+void GradientDescent::setTolerance(float_t tolerance) {
+  tol = tolerance;
+}
+
+float_t GradientDescent::getEpsilon() const {
+  return eps;
+}
+
+void GradientDescent::setEpsilon(float_t epsilon) {
+  eps = epsilon;
+}
+
+void GradientDescent::clone(
+  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(
+            new GradientDescent(*this));
+}
+}
+}
+}

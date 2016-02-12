@@ -12,11 +12,17 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-Schwefel::Schwefel(size_t d) : UnconstrainedTestProblem(d), f(d) {}
+Schwefel::Schwefel(size_t d) :
+  UnconstrainedTestProblem(d),
+  f(d) {
+}
 
-Schwefel::~Schwefel() {}
+Schwefel::~Schwefel() {
+}
 
-TestScalarFunction& Schwefel::getObjectiveFunction() { return f; }
+TestScalarFunction& Schwefel::getObjectiveFunction() {
+  return f;
+}
 
 float_t Schwefel::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
@@ -24,11 +30,15 @@ float_t Schwefel::getOptimalPointUndisplaced(base::DataVector& x) {
   return -418.9828872724337 * static_cast<float_t>(d);
 }
 
-SchwefelObjective::SchwefelObjective(size_t d) : TestScalarFunction(d) {}
+SchwefelObjective::SchwefelObjective(size_t d) :
+  TestScalarFunction(d) {
+}
 
-SchwefelObjective::~SchwefelObjective() {}
+SchwefelObjective::~SchwefelObjective() {
+}
 
-float_t SchwefelObjective::evalUndisplaced(const base::DataVector& x) {
+float_t SchwefelObjective::evalUndisplaced(
+  const base::DataVector& x) {
   float_t result = 0.0;
 
   for (size_t t = 0; t < d; t++) {
@@ -39,9 +49,12 @@ float_t SchwefelObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void SchwefelObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new SchwefelObjective(*this));
+void SchwefelObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new SchwefelObjective(*this));
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

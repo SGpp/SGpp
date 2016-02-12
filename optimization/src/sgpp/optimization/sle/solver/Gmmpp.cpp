@@ -15,9 +15,6 @@
 
 #include <cstddef>
 #include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
 
 namespace SGPP {
 namespace optimization {
@@ -31,8 +28,9 @@ namespace sle_solver {
  */
 void callback(const gmm::iteration& iter) {
   Printer::getInstance().printStatusUpdate(
-      "solving with Gmm++ (k = " + std::to_string(iter.get_iteration()) + ", residual norm = " +
-      std::to_string(iter.get_res()) + ")");
+    "solving with Gmm++ (k = " +
+    std::to_string(iter.get_iteration()) +
+    ", residual norm = " + std::to_string(iter.get_res()) + ")");
 }
 
 /**
@@ -41,7 +39,9 @@ void callback(const gmm::iteration& iter) {
  * @param[out]  x   solution of the linear system
  * @return          whether all went well (false if errors occurred)
  */
-bool solveInternal(const gmm::csr_matrix<float_t>& A, base::DataVector& b, base::DataVector& x) {
+bool solveInternal(const gmm::csr_matrix<float_t>& A,
+                   base::DataVector& b,
+                   base::DataVector& x) {
   // allow warnings
   gmm::warning_level::level(1);
   const size_t n = b.getSize();
@@ -67,9 +67,10 @@ bool solveInternal(const gmm::csr_matrix<float_t>& A, base::DataVector& b, base:
     if (iter.converged() && (res < 1e3)) {
       // GMRES converged
       x = base::DataVector(xVec);
-      Printer::getInstance().printStatusUpdate("solving with Gmm++ (k = " +
-                                               std::to_string(iter.get_iteration()) +
-                                               ", residual norm = " + std::to_string(res) + ")");
+      Printer::getInstance().printStatusUpdate(
+        "solving with Gmm++ (k = " +
+        std::to_string(iter.get_iteration()) +
+        ", residual norm = " + std::to_string(res) + ")");
       Printer::getInstance().printStatusEnd();
       return true;
     } else {
@@ -78,7 +79,7 @@ bool solveInternal(const gmm::csr_matrix<float_t>& A, base::DataVector& b, base:
 
       Printer::getInstance().printStatusNewLine();
       Printer::getInstance().printStatusUpdate(
-          "solving with preconditioner failed, trying again without one");
+        "solving with preconditioner failed, trying again without one");
       Printer::getInstance().printStatusNewLine();
 
       // call GMRES again
@@ -87,29 +88,33 @@ bool solveInternal(const gmm::csr_matrix<float_t>& A, base::DataVector& b, base:
 
       if (iter.converged() && (res < 1e3)) {
         x = base::DataVector(xVec);
-        Printer::getInstance().printStatusUpdate("solving with Gmm++ (k = " +
-                                                 std::to_string(iter.get_iteration()) +
-                                                 ", residual norm = " + std::to_string(res) + ")");
+        Printer::getInstance().printStatusUpdate(
+          "solving with Gmm++ (k = " +
+          std::to_string(iter.get_iteration()) +
+          ", residual norm = " + std::to_string(res) + ")");
         Printer::getInstance().printStatusEnd();
         return true;
       } else {
         Printer::getInstance().printStatusEnd(
-            "error: Could not solve linear system, "
-            "method didn't converge");
+          "error: Could not solve linear system, "
+          "method didn't converge");
         return false;
       }
     }
   } catch (std::exception& e) {
-    Printer::getInstance().printStatusEnd("error: Could not solve linear system, what(): " +
-                                          std::string(e.what()));
+    Printer::getInstance().printStatusEnd(
+      "error: Could not solve linear system, what(): " +
+      std::string(e.what()));
     return false;
   }
 }
 #endif /* USE_GMMPP */
 
-Gmmpp::~Gmmpp() {}
+Gmmpp::~Gmmpp() {
+}
 
-bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
+bool Gmmpp::solve(SLE& system, base::DataVector& b,
+                  base::DataVector& x) const {
 #ifdef USE_GMMPP
   Printer::getInstance().printStatusBegin("Solving linear system (Gmm++)...");
 
@@ -120,8 +125,9 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   {
     gmm::row_matrix<gmm::rsvector<float_t>> A(n, n);
 
-// parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz) default(none)
+    // parallelize only if the system is cloneable
+    #pragma omp parallel if (system.isCloneable()) \
+    shared(system, A, nnz) default(none)
     {
       SLE* system2 = &system;
 #ifdef _OPENMP
@@ -134,15 +140,15 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
 
 #endif /* _OPENMP */
 
-// copy system matrix to Gmm++ matrix object
-#pragma omp for ordered schedule(dynamic)
+      // copy system matrix to Gmm++ matrix object
+      #pragma omp for ordered schedule(dynamic)
 
       for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
           float_t entry = system2->getMatrixEntry(i, j);
 
           if (entry != 0) {
-#pragma omp critical
+            #pragma omp critical
             {
               A(i, j) = entry;
               nnz++;
@@ -152,13 +158,13 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
 
         // status message
         if (i % 100 == 0) {
-#pragma omp ordered
+          #pragma omp ordered
           {
             char str[10];
-            snprintf(str, sizeof(str), "%.1f%%",
-                     static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+            snprintf(str, 10, "%.1f%%",
+            static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
             Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
-                                                     std::string(str) + ")");
+            std::string(str) + ")");
           }
         }
       }
@@ -175,9 +181,10 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnz_ratio =
-        static_cast<float_t>(nnz) / (static_cast<float_t>(n) * static_cast<float_t>(n));
-    snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
+    float_t nnz_ratio = static_cast<float_t>(nnz) /
+                        (static_cast<float_t>(n) *
+                         static_cast<float_t>(n));
+    snprintf(str, 10, "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
   }
@@ -191,6 +198,7 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   return false;
 #endif /* USE_GMMPP */
 }
-}  // namespace sle_solver
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

@@ -10,8 +10,6 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 #include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
-#include <vector>
-
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
@@ -19,12 +17,15 @@ namespace optimizer {
 namespace {
 class PenalizedObjectiveFunction : public ScalarFunction {
  public:
-  PenalizedObjectiveFunction(ScalarFunction& f, VectorFunction& g, float_t mu)
-      : ScalarFunction(f.getNumberOfParameters()),
-        f(f),
-        g(g),
-        mu(mu),
-        m(g.getNumberOfComponents()) {}
+  PenalizedObjectiveFunction(ScalarFunction& f,
+                             VectorFunction& g,
+                             float_t mu) :
+    ScalarFunction(f.getNumberOfParameters()),
+    f(f),
+    g(g),
+    mu(mu),
+    m(g.getNumberOfComponents()) {
+  }
 
   float_t eval(const base::DataVector& x) {
     for (size_t t = 0; t < d; t++) {
@@ -51,10 +52,13 @@ class PenalizedObjectiveFunction : public ScalarFunction {
   }
 
   void clone(std::unique_ptr<ScalarFunction>& clone) const {
-    clone = std::unique_ptr<ScalarFunction>(new PenalizedObjectiveFunction(*this));
+    clone = std::unique_ptr<ScalarFunction>(
+              new PenalizedObjectiveFunction(*this));
   }
 
-  void setMu(float_t mu) { this->mu = mu; }
+  void setMu(float_t mu) {
+    this->mu = mu;
+  }
 
  protected:
   ScalarFunction& f;
@@ -65,15 +69,18 @@ class PenalizedObjectiveFunction : public ScalarFunction {
 
 class PenalizedObjectiveGradient : public ScalarFunctionGradient {
  public:
-  PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient, VectorFunctionGradient& gGradient,
-                             float_t mu)
-      : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
-        fGradient(fGradient),
-        gGradient(gGradient),
-        mu(mu),
-        m(gGradient.getNumberOfComponents()) {}
+  PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient,
+                             VectorFunctionGradient& gGradient,
+                             float_t mu) :
+    ScalarFunctionGradient(fGradient.getNumberOfParameters()),
+    fGradient(fGradient),
+    gGradient(gGradient),
+    mu(mu),
+    m(gGradient.getNumberOfComponents()) {
+  }
 
-  float_t eval(const base::DataVector& x, base::DataVector& gradient) {
+  float_t eval(const base::DataVector& x,
+               base::DataVector& gradient) {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         gradient.setAll(NAN);
@@ -109,10 +116,13 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
   }
 
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
-    clone = std::unique_ptr<ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
+    clone = std::unique_ptr<ScalarFunctionGradient>(
+              new PenalizedObjectiveGradient(*this));
   }
 
-  void setMu(float_t mu) { this->mu = mu; }
+  void setMu(float_t mu) {
+    this->mu = mu;
+  }
 
  protected:
   ScalarFunctionGradient& fGradient;
@@ -120,20 +130,29 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
   float_t mu;
   size_t m;
 };
-}  // namespace
+}
 
-LogBarrier::LogBarrier(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
-                       VectorFunctionGradient& gGradient, size_t maxItCount, float_t tolerance,
-                       float_t barrierStartValue, float_t barrierDecreaseFactor)
-    : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(), maxItCount),
-      fGradient(fGradient),
-      gGradient(gGradient),
-      theta(tolerance),
-      mu0(barrierStartValue),
-      rhoMuMinus(barrierDecreaseFactor),
-      kHist() {}
+LogBarrier::LogBarrier(
+  ScalarFunction& f,
+  ScalarFunctionGradient& fGradient,
+  VectorFunction& g,
+  VectorFunctionGradient& gGradient,
+  size_t maxItCount,
+  float_t tolerance,
+  float_t barrierStartValue,
+  float_t barrierDecreaseFactor) :
+  ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(),
+                       maxItCount),
+  fGradient(fGradient),
+  gGradient(gGradient),
+  theta(tolerance),
+  mu0(barrierStartValue),
+  rhoMuMinus(barrierDecreaseFactor),
+  kHist() {
+}
 
-LogBarrier::~LogBarrier() {}
+LogBarrier::~LogBarrier() {
+}
 
 void LogBarrier::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Log Barrier)...");
@@ -165,20 +184,21 @@ void LogBarrier::optimize() {
   const size_t unconstrainedN = N / 20;
 
   PenalizedObjectiveFunction fPenalized(f, g, mu);
-  PenalizedObjectiveGradient fPenalizedGradient(fGradient, gGradient, mu);
+  PenalizedObjectiveGradient fPenalizedGradient(
+    fGradient, gGradient, mu);
 
   while (k < N) {
     fPenalized.setMu(mu);
     fPenalizedGradient.setMu(mu);
 
-    AdaptiveGradientDescent unconstrainedOptimizer(fPenalized, fPenalizedGradient, unconstrainedN,
-                                                   10.0 * theta);
+    AdaptiveGradientDescent unconstrainedOptimizer(
+      fPenalized, fPenalizedGradient, unconstrainedN, 10.0 * theta);
     unconstrainedOptimizer.setStartingPoint(x);
     unconstrainedOptimizer.optimize();
     xNew = unconstrainedOptimizer.getOptimalPoint();
 
     const size_t numberInnerEvaluations =
-        unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
+      unconstrainedOptimizer.getHistoryOfOptimalPoints().getNrows();
     k += numberInnerEvaluations;
 
     x = xNew;
@@ -191,9 +211,10 @@ void LogBarrier::optimize() {
     kHist.push_back(numberInnerEvaluations);
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx) +
-                                             ", g(x) = " + gx.toString());
+    Printer::getInstance().printStatusUpdate(
+      std::to_string(k) + " evaluations, x = " + x.toString() +
+      ", f(x) = " + std::to_string(fx) +
+      ", g(x) = " + gx.toString());
 
     mu *= rhoMuMinus;
 
@@ -216,29 +237,49 @@ void LogBarrier::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& LogBarrier::getObjectiveGradient() const {
+  return fGradient;
+}
 
-VectorFunctionGradient& LogBarrier::getInequalityConstraintGradient() const { return gGradient; }
+VectorFunctionGradient& LogBarrier::getInequalityConstraintGradient() const {
+  return gGradient;
+}
 
-float_t LogBarrier::getTolerance() const { return theta; }
+float_t LogBarrier::getTolerance() const {
+  return theta;
+}
 
-void LogBarrier::setTolerance(float_t tolerance) { theta = tolerance; }
+void LogBarrier::setTolerance(float_t tolerance) {
+  theta = tolerance;
+}
 
-float_t LogBarrier::getBarrierStartValue() const { return mu0; }
+float_t LogBarrier::getBarrierStartValue() const {
+  return mu0;
+}
 
-void LogBarrier::setBarrierStartValue(float_t barrierStartValue) { mu0 = barrierStartValue; }
+void LogBarrier::setBarrierStartValue(float_t barrierStartValue) {
+  mu0 = barrierStartValue;
+}
 
-float_t LogBarrier::getBarrierDecreaseFactor() const { return rhoMuMinus; }
+float_t LogBarrier::getBarrierDecreaseFactor() const {
+  return rhoMuMinus;
+}
 
-void LogBarrier::setBarrierDecreaseFactor(float_t barrierDecreaseFactor) {
+void LogBarrier::setBarrierDecreaseFactor(
+  float_t barrierDecreaseFactor) {
   rhoMuMinus = barrierDecreaseFactor;
 }
 
-const std::vector<size_t>& LogBarrier::getHistoryOfInnerIterations() const { return kHist; }
-
-void LogBarrier::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(new LogBarrier(*this));
+const std::vector<size_t>&
+LogBarrier::getHistoryOfInnerIterations() const {
+  return kHist;
 }
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+void LogBarrier::clone(
+  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(
+            new LogBarrier(*this));
+}
+}
+}
+}

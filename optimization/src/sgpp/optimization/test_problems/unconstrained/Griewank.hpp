@@ -7,9 +7,9 @@
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_GRIEWANK_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 #include <cmath>
+#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
 namespace optimization {
@@ -30,7 +30,7 @@ class GriewankObjective : public TestScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  explicit GriewankObjective(size_t d);
+  GriewankObjective(size_t d);
 
   /**
    * Destructor.
@@ -41,12 +41,14 @@ class GriewankObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  float_t evalUndisplaced(const base::DataVector& x) override;
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
 };
 
 /**
@@ -66,7 +68,7 @@ class Griewank : public UnconstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  explicit Griewank(size_t d);
+  Griewank(size_t d);
 
   /**
    * Destructor.
@@ -84,14 +86,16 @@ class Griewank : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
  protected:
   /// objective function
   GriewankObjective f;
 };
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_GRIEWANK_HPP */

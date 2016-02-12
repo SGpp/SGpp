@@ -12,15 +12,27 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-G10::G10() : ConstrainedTestProblem(8), f(), g(), h() {}
+G10::G10() :
+  ConstrainedTestProblem(8),
+  f(),
+  g(),
+  h() {
+}
 
-G10::~G10() {}
+G10::~G10() {
+}
 
-TestScalarFunction& G10::getObjectiveFunction() { return f; }
+TestScalarFunction& G10::getObjectiveFunction() {
+  return f;
+}
 
-TestVectorFunction& G10::getInequalityConstraintFunction() { return g; }
+TestVectorFunction& G10::getInequalityConstraintFunction() {
+  return g;
+}
 
-TestVectorFunction& G10::getEqualityConstraintFunction() { return h; }
+TestVectorFunction& G10::getEqualityConstraintFunction() {
+  return h;
+}
 
 float_t G10::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(8);
@@ -35,32 +47,47 @@ float_t G10::getOptimalPointUndisplaced(base::DataVector& x) {
   return 7049.3307;
 }
 
-G10Objective::G10Objective() : TestScalarFunction(8) {}
 
-G10Objective::~G10Objective() {}
 
-float_t G10Objective::evalUndisplaced(const base::DataVector& x) {
+G10Objective::G10Objective() :
+  TestScalarFunction(8) {
+}
+
+G10Objective::~G10Objective() {
+}
+
+float_t G10Objective::evalUndisplaced(
+  const base::DataVector& x) {
   const float_t x1 = 9900.0 * x[0] + 100.0;
   const float_t x2 = 9000.0 * x[1] + 1000.0;
   const float_t x3 = 9000.0 * x[2] + 1000.0;
-  // const float_t x4 = 990.0 * x[3] + 10.0;
-  // const float_t x5 = 990.0 * x[4] + 10.0;
-  // const float_t x6 = 990.0 * x[5] + 10.0;
-  // const float_t x7 = 990.0 * x[6] + 10.0;
-  // const float_t x8 = 990.0 * x[7] + 10.0;
+  //const float_t x4 = 990.0 * x[3] + 10.0;
+  //const float_t x5 = 990.0 * x[4] + 10.0;
+  //const float_t x6 = 990.0 * x[5] + 10.0;
+  //const float_t x7 = 990.0 * x[6] + 10.0;
+  //const float_t x8 = 990.0 * x[7] + 10.0;
 
   return x1 + x2 + x3;
 }
 
-void G10Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G10Objective(*this));
+void G10Objective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new G10Objective(*this));
 }
 
-G10InequalityConstraint::G10InequalityConstraint() : TestVectorFunction(8, 6) {}
 
-G10InequalityConstraint::~G10InequalityConstraint() {}
 
-void G10InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
+G10InequalityConstraint::G10InequalityConstraint() :
+  TestVectorFunction(8, 6) {
+}
+
+G10InequalityConstraint::~G10InequalityConstraint() {
+}
+
+void G10InequalityConstraint::evalUndisplaced(
+  const base::DataVector& x,
+  base::DataVector& value) {
   const float_t x1 = 9900.0 * x[0] + 100.0;
   const float_t x2 = 9000.0 * x[1] + 1000.0;
   const float_t x3 = 9000.0 * x[2] + 1000.0;
@@ -78,19 +105,32 @@ void G10InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::D
   value[5] = -x3 * x8 + 1250000.0 + x3 * x5 - 2500.0 * x5;
 }
 
-void G10InequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G10InequalityConstraint(*this));
+void G10InequalityConstraint::clone(
+  std::unique_ptr<VectorFunction>& clone) const {
+  clone = std::unique_ptr<VectorFunction>(
+            new G10InequalityConstraint(*this));
 }
 
-G10EqualityConstraint::G10EqualityConstraint() : TestVectorFunction(8, 0) {}
 
-G10EqualityConstraint::~G10EqualityConstraint() {}
 
-void G10EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {}
-
-void G10EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G10EqualityConstraint(*this));
+G10EqualityConstraint::G10EqualityConstraint() :
+  TestVectorFunction(8, 0) {
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+G10EqualityConstraint::~G10EqualityConstraint() {
+}
+
+void G10EqualityConstraint::evalUndisplaced(
+  const base::DataVector& x,
+  base::DataVector& value) {
+}
+
+void G10EqualityConstraint::clone(
+  std::unique_ptr<VectorFunction>& clone) const {
+  clone = std::unique_ptr<VectorFunction>(
+            new G10EqualityConstraint(*this));
+}
+
+}
+}
+}
