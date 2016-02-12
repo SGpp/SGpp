@@ -12,19 +12,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
-OperationLBLinear::OperationLBLinear(SGPP::base::GridStorage* storage) :
-  SGPP::pde::StdUpDown(storage) {
-}
+OperationLBLinear::OperationLBLinear(SGPP::base::GridStorage* storage)
+    : SGPP::pde::StdUpDown(storage) {}
 
-OperationLBLinear::~OperationLBLinear() {
-}
+OperationLBLinear::~OperationLBLinear() {}
 
-void OperationLBLinear::up(SGPP::base::DataVector& alpha,
-                           SGPP::base::DataVector& result, size_t dim) {
+void OperationLBLinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                           size_t dim) {
   // Dphi * phi
   DPhiPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<DPhiPhiUpBBLinear> s(func, this->storage);
@@ -32,14 +29,13 @@ void OperationLBLinear::up(SGPP::base::DataVector& alpha,
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationLBLinear::down(SGPP::base::DataVector& alpha,
-                             SGPP::base::DataVector& result, size_t dim) {
+void OperationLBLinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                             size_t dim) {
   // Dphi * phi
   DPhiPhiDownBBLinear func(this->storage);
   SGPP::base::sweep<DPhiPhiDownBBLinear> s(func, this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

@@ -19,23 +19,21 @@
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 
 namespace SGPP {
 namespace finance {
 
 OperationGammaLinear::OperationGammaLinear(SGPP::base::GridStorage* storage,
-    SGPP::base::DataMatrix& coef) : SGPP::pde::UpDownTwoOpDims(storage, coef) {
-}
+                                           SGPP::base::DataMatrix& coef)
+    : SGPP::pde::UpDownTwoOpDims(storage, coef) {}
 
-OperationGammaLinear::~OperationGammaLinear() {
-}
+OperationGammaLinear::~OperationGammaLinear() {}
 
-void OperationGammaLinear::up(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result, size_t dim) {
+void OperationGammaLinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                              size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinear> s(func, this->storage);
@@ -43,8 +41,8 @@ void OperationGammaLinear::up(SGPP::base::DataVector& alpha,
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinear::down(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result, size_t dim) {
+void OperationGammaLinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiDownBBLinear func(this->storage);
   SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinear> s(func, this->storage);
@@ -52,8 +50,8 @@ void OperationGammaLinear::down(SGPP::base::DataVector& alpha,
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinear::upOpDimOne(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result, size_t dim) {
+void OperationGammaLinear::upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                      size_t dim) {
   // x * phi * dphi
   XPhidPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<XPhidPhiUpBBLinear> s(func, this->storage);
@@ -70,8 +68,8 @@ void OperationGammaLinear::downOpDimOne(SGPP::base::DataVector& alpha,
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinear::upOpDimTwo(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result, size_t dim) {
+void OperationGammaLinear::upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                      size_t dim) {
   // x * dphi * phi
   XdPhiPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<XdPhiPhiUpBBLinear> s(func, this->storage);
@@ -89,7 +87,7 @@ void OperationGammaLinear::downOpDimTwo(SGPP::base::DataVector& alpha,
 }
 
 void OperationGammaLinear::upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                                 SGPP::base::DataVector& result, size_t dim) {
   // x^2 * dphi * dphi
   SqXdPhidPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<SqXdPhidPhiUpBBLinear> s(func, this->storage);
@@ -97,14 +95,13 @@ void OperationGammaLinear::upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationGammaLinear::downOpDimOneAndOpDimTwo(SGPP::base::DataVector&
-    alpha, SGPP::base::DataVector& result, size_t dim) {
+void OperationGammaLinear::downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
+                                                   SGPP::base::DataVector& result, size_t dim) {
   // x^2 * dphi * dphi
   SqXdPhidPhiDownBBLinear func(this->storage);
   SGPP::base::sweep<SqXdPhidPhiDownBBLinear> s(func, this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

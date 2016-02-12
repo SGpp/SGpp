@@ -7,21 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XPhidPhiDownBBLinear::XPhidPhiDownBBLinear(SGPP::base::GridStorage* storage)
+    : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
-
-XPhidPhiDownBBLinear::XPhidPhiDownBBLinear(SGPP::base::GridStorage* storage) :
-  storage(storage), boundingBox(storage->getBoundingBox()) {
-}
-
-XPhidPhiDownBBLinear::~XPhidPhiDownBBLinear() {
-}
+XPhidPhiDownBBLinear::~XPhidPhiDownBBLinear() {}
 
 void XPhidPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
-                                      SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                      SGPP::base::DataVector& result, grid_iterator& index,
+                                      size_t dim) {
   float_t q = boundingBox->getIntervalWidth(dim);
   float_t t = boundingBox->getIntervalOffset(dim);
 
@@ -38,9 +34,8 @@ void XPhidPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void XPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source,
-                               SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                               float_t fr) {
+void XPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                               grid_iterator& index, size_t dim, float_t fl, float_t fr) {
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -54,9 +49,9 @@ void XPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source,
   float_t i_dbl = static_cast<float_t>(i);
 
   // integration
-  result[seq] = (  ( (fl * ((hhalf * i_dbl) - hhalf)) + (fr * (((-1.0) *
-                     (hhalf * i_dbl)) - hhalf)) ) - ((1.0 / 3.0) * (((1.0 / static_cast<float_t>
-                         (1 << l))) * alpha_value)) ); // diagonal entry
+  result[seq] =
+      (((fl * ((hhalf * i_dbl) - hhalf)) + (fr * (((-1.0) * (hhalf * i_dbl)) - hhalf))) -
+       ((1.0 / 3.0) * (((1.0 / static_cast<float_t>(1 << l))) * alpha_value)));  // diagonal entry
 
   // dehierarchisation
   float_t fm = ((fl + fr) / 2.0) + alpha_value;
@@ -78,9 +73,9 @@ void XPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source,
   }
 }
 
-void XPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source,
-                                 SGPP::base::DataVector& result, grid_iterator& index, size_t dim, float_t fl,
-                                 float_t fr, float_t q, float_t t) {
+void XPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                                 grid_iterator& index, size_t dim, float_t fl, float_t fr,
+                                 float_t q, float_t t) {
   size_t seq = index.seq();
 
   float_t alpha_value = source[seq];
@@ -94,10 +89,10 @@ void XPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source,
   float_t i_dbl = static_cast<float_t>(i);
 
   // integration
-  result[seq] = (  ( (fl * ((q * ((hhalf * i_dbl) - hhalf)) + (0.5 * t))) +
-                     (fr * ((q * (((-1.0) * (hhalf * i_dbl)) - hhalf)) - (0.5 * t))) )
-                   - ((1.0 / 3.0) * (((1.0 / static_cast<float_t>(1 << l)) * q) *
-                                     alpha_value)) ); // diagonal entry
+  result[seq] = (((fl * ((q * ((hhalf * i_dbl) - hhalf)) + (0.5 * t))) +
+                  (fr * ((q * (((-1.0) * (hhalf * i_dbl)) - hhalf)) - (0.5 * t)))) -
+                 ((1.0 / 3.0) *
+                  (((1.0 / static_cast<float_t>(1 << l)) * q) * alpha_value)));  // diagonal entry
 
   // dehierarchisation
   float_t fm = ((fl + fr) / 2.0) + alpha_value;
@@ -119,7 +114,5 @@ void XPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

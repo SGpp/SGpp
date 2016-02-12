@@ -15,19 +15,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
 OperationHestonFLinear::OperationHestonFLinear(SGPP::base::GridStorage* storage,
-    SGPP::base::DataVector& coef) : SGPP::pde::UpDownOneOpDim(storage, coef) {
-}
+                                               SGPP::base::DataVector& coef)
+    : SGPP::pde::UpDownOneOpDim(storage, coef) {}
 
-OperationHestonFLinear::~OperationHestonFLinear() {
-}
+OperationHestonFLinear::~OperationHestonFLinear() {}
 
-void OperationHestonFLinear::up(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result, size_t dim) {
+void OperationHestonFLinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinear> s(func, this->storage);
@@ -35,8 +33,8 @@ void OperationHestonFLinear::up(SGPP::base::DataVector& alpha,
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationHestonFLinear::down(SGPP::base::DataVector& alpha,
-                                  SGPP::base::DataVector& result, size_t dim) {
+void OperationHestonFLinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                  size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiDownBBLinear func(this->storage);
   SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinear> s(func, this->storage);
@@ -44,8 +42,8 @@ void OperationHestonFLinear::down(SGPP::base::DataVector& alpha,
   s.sweep1D(alpha, result, dim);
 }
 
-void OperationHestonFLinear::upOpDim(SGPP::base::DataVector& alpha,
-                                     SGPP::base::DataVector& result, size_t dim) {
+void OperationHestonFLinear::upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+                                     size_t dim) {
   // dphi * phi
   DPhiPhiUpBBLinear func(this->storage);
   SGPP::base::sweep<DPhiPhiUpBBLinear> s(func, this->storage);
@@ -61,6 +59,5 @@ void OperationHestonFLinear::downOpDim(SGPP::base::DataVector& alpha,
 
   s.sweep1D(alpha, result, dim);
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

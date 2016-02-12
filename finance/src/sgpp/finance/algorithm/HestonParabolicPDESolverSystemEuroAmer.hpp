@@ -15,6 +15,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace finance {
@@ -25,10 +27,9 @@ namespace finance {
  *
  * Here European or American Options with fix Dirichlet boundaries are solved.
  */
-class HestonParabolicPDESolverSystemEuroAmer : public
-  SGPP::pde::OperationParabolicPDESolverSystemDirichlet {
+class HestonParabolicPDESolverSystemEuroAmer
+    : public SGPP::pde::OperationParabolicPDESolverSystemDirichlet {
  protected:
-
   /// the riskfree interest rate
   float_t r;
 
@@ -122,37 +123,48 @@ class HestonParabolicPDESolverSystemEuroAmer : public
   /// Pointer to the rhos
   SGPP::base::DataMatrix* hMatrix;
 
-  /// Coefficient collection for the D operator. Only one custom up/down operator, so it's just a vector of coefficients.
+  /// Coefficient collection for the D operator. Only one custom up/down operator, so it's just a
+  /// vector of coefficients.
   SGPP::base::DataVector* dCoeff;
 
-  /// Coefficient collection for the E operator. Only one custom up/down operator, so it's just a vector of coefficients.
+  /// Coefficient collection for the E operator. Only one custom up/down operator, so it's just a
+  /// vector of coefficients.
   SGPP::base::DataVector* eCoeff;
 
-  /// Coefficient collection for the F operator. Only one custom up/down operator, so it's just a vector of coefficients.
+  /// Coefficient collection for the F operator. Only one custom up/down operator, so it's just a
+  /// vector of coefficients.
   SGPP::base::DataVector* fCoeff;
 
-  /// Coefficient collection for the G operator. Only one custom up/down operator, so it's just a vector of coefficients.
+  /// Coefficient collection for the G operator. Only one custom up/down operator, so it's just a
+  /// vector of coefficients.
   SGPP::base::DataVector* gCoeff;
 
-  /// Coefficient collection for the Z operator. Only one custom up/down operator, so it's just a vector of coefficients.
+  /// Coefficient collection for the Z operator. Only one custom up/down operator, so it's just a
+  /// vector of coefficients.
   SGPP::base::DataVector* zCoeff;
 
-  /// Coefficient collection for the B operator. Two custom up/down operators, so it's a matrix of coefficients.
+  /// Coefficient collection for the B operator. Two custom up/down operators, so it's a matrix of
+  /// coefficients.
   SGPP::base::DataMatrix* bCoeff;
 
-  /// Coefficient collection for the C operator. Two custom up/down operators, so it's a matrix of coefficients.
+  /// Coefficient collection for the C operator. Two custom up/down operators, so it's a matrix of
+  /// coefficients.
   SGPP::base::DataMatrix* cCoeff;
 
-  /// Coefficient collection for the H operator. Two custom up/down operators, so it's a matrix of coefficients.
+  /// Coefficient collection for the H operator. Two custom up/down operators, so it's a matrix of
+  /// coefficients.
   SGPP::base::DataMatrix* hCoeff;
 
-  /// Coefficient collection for the X operator. Two custom up/down operators, so it's a matrix of coefficients.
+  /// Coefficient collection for the X operator. Two custom up/down operators, so it's a matrix of
+  /// coefficients.
   SGPP::base::DataMatrix* xCoeff;
 
-  /// Coefficient collection for the Y operator. Two custom up/down operators, so it's a matrix of coefficients.
+  /// Coefficient collection for the Y operator. Two custom up/down operators, so it's a matrix of
+  /// coefficients.
   SGPP::base::DataMatrix* yCoeff;
 
-  /// Coefficient collection for the W operator. Two custom up/down operators, so it's a matrix of coefficients.
+  /// Coefficient collection for the W operator. Two custom up/down operators, so it's a matrix of
+  /// coefficients.
   SGPP::base::DataMatrix* wCoeff;
 
   /// Up/down four op dims
@@ -197,12 +209,10 @@ class HestonParabolicPDESolverSystemEuroAmer : public
   /// Store whether log coordinates are used
   bool b_log_transform;
 
-  virtual void applyLOperatorInner(SGPP::base::DataVector& alpha,
-                                   SGPP::base::DataVector& result);
+  virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
   virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha,
                                       SGPP::base::DataVector& result);
-  virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha,
-                                    SGPP::base::DataVector& result);
+  virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
   virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
                                        SGPP::base::DataVector& result);
 
@@ -251,83 +261,92 @@ class HestonParabolicPDESolverSystemEuroAmer : public
   /**
    * Builds the coefficients object for the B operator.
    * Operator B has two custom 1D operators, so the coefficients object is a matrix.
-   * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
+   * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g.
+   * elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
    */
   void buildBCoefficientsLogTransform();
-
 
   /**
    * Builds the coefficients object for the C operator.
    * Operator C has two custom 1D operators, so the coefficients object is a matrix.
-   * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
+   * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g.
+   * elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
    */
   void buildCCoefficientsLogTransform();
 
   /**
    * Builds the coefficients object for the D operator.
    * The D operator is oneOpDim, so there is only a vector of coefficients to set.
-   * Only the variance dimensions are active in this operator, i.e. elements 2, 4, 6, 8 etc. (zero-based array elements 1, 3, 5, 7 etc.)
+   * Only the variance dimensions are active in this operator, i.e. elements 2, 4, 6, 8 etc.
+   * (zero-based array elements 1, 3, 5, 7 etc.)
    */
   void buildDCoefficientsLogTransform();
 
   /**
    * Builds the coefficients object for the E operator.
    * The E operator is oneOpDim, so there is only a vector of coefficients to set.
-   * Only the stock-price dimensions are active in this operator, i.e. elements 1, 3, 5, 7 etc. (zero-based array elements 0, 2, 4, 6 etc.)
+   * Only the stock-price dimensions are active in this operator, i.e. elements 1, 3, 5, 7 etc.
+   * (zero-based array elements 0, 2, 4, 6 etc.)
    */
   void buildECoefficientsLogTransform();
 
   /**
    * Builds the coefficients object for the F operator.
    * The F operator is oneOpDim, so there is only a vector of coefficients to set.
-   * Only the variance elements are active in this operator, i.e. elements 2, 4, 6, 8 etc. (zero-based array elements 1, 3, 5, 7 etc.)
+   * Only the variance elements are active in this operator, i.e. elements 2, 4, 6, 8 etc.
+   * (zero-based array elements 1, 3, 5, 7 etc.)
    */
   void buildFCoefficientsLogTransform();
 
   /**
    * Builds the coefficients object for the G operator.
    * The G operator is oneOpDim, so there is only a vector of coefficients to set.
-   * Only the variance elements are active in this operator, i.e. elements 2, 4, 6, 8 etc. (zero-based vector elements 1, 3, 5, 7 etc.)
+   * Only the variance elements are active in this operator, i.e. elements 2, 4, 6, 8 etc.
+   * (zero-based vector elements 1, 3, 5, 7 etc.)
    */
   void buildGCoefficientsLogTransform();
 
   /**
    * Builds the coefficients object for the H operator.
    * Operator H has two custom 1D operators, so the coefficients object is a matrix.
-   * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g. elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
+   * The operator has a non-zero coefficient for each pairing of a stock and its variance, e.g.
+   * elements (1,2), (3,4), (5,6) etc. (zero-based array elements (0,1), (2,3), (4,5) etc.)
    */
   void buildHCoefficientsLogTransform();
 
   /**
    * Builds the coefficients object for the K operator.
-   * This operator is more exciting. It has four custom 1D operators, so the coefficients object is a 4d array.
-   * The operator has a non-zero coefficient for each quad-pairing of a stock and its variance, and a DIFFERENT stock and its variance, e.g. for three assets: (1,2,3,4), (1,2,5,6), (3,4,5,6). (zero-based array elements (0,1,2,3), (0,1,4,5), (2,3,4,5))
+   * This operator is more exciting. It has four custom 1D operators, so the coefficients object is
+   * a 4d array.
+   * The operator has a non-zero coefficient for each quad-pairing of a stock and its variance, and
+   * a DIFFERENT stock and its variance, e.g. for three assets: (1,2,3,4), (1,2,5,6), (3,4,5,6).
+   * (zero-based array elements (0,1,2,3), (0,1,4,5), (2,3,4,5))
    */
   void buildKCoefficientsLogTransform();
 
   /**
-   * Utility method for creating a 4d array of equal size in each dimension. The array is allocated dynamically based on the provided size.
+   * Utility method for creating a 4d array of equal size in each dimension. The array is allocated
+   * dynamically based on the provided size.
    * @param dimSize The number of elements in each dimension of the array.
    * @param array Pointer to the first element of the 4d array.
    */
-  void create4dEqualDimSizeArray(size_t dimSize, float_t**** * array);
-
+  void create4dEqualDimSizeArray(size_t dimSize, float_t***** array);
 
   /**
    * Utility method to free the memory allocated to a 4d array of equal size in each dimension.
    * @param dimSize The number of elements in each dimension of the array.
    * @param array Pointer to the first element of the 4d array.
    */
-  void delete4dEqualDimSizeArray(size_t dimSize, float_t**** * array);
+  void delete4dEqualDimSizeArray(size_t dimSize, float_t***** array);
 
   /**
-   * Utility method to set all values in a 4d array of equal size to one value (e.g. this method can be used to set all the values to zero).
+   * Utility method to set all values in a 4d array of equal size to one value (e.g. this method can
+   * be used to set all the values to zero).
    * @param dimSize The number of elements in each dimension of the array.
    * @param array Pointer to the first element of the 4d array.
    * @param value Value that each of the array elements will be set to.
    */
-  void setAll4dEqualDimSizeArray(size_t dimSize, float_t**** * array,
-                                 float_t value);
+  void setAll4dEqualDimSizeArray(size_t dimSize, float_t***** array, float_t value);
 
  public:
   /**
@@ -338,13 +357,16 @@ class HestonParabolicPDESolverSystemEuroAmer : public
    * @param thetas collection of theta values, one for each asset
    * @param volvols collection of the volatility of the volatility values, one for each asset
    * @param kappas collection of the kappa values, one for each asset
-   * @param rho collection of the correlation values between the Wiener processes. The matrix size must be twice the number of assets to encompass the correlation between the stock price and variance processes.
+   * @param rho collection of the correlation values between the Wiener processes. The matrix size
+   * must be twice the number of assets to encompass the correlation between the stock price and
+   * variance processes.
    * @param r market risk-free interest rate
    * @param TimestepSize size of the timestep used in the ODE solver
    * @param OperationMode the solver used for solving the ODE, e.g. "CrNic"
    * @param dStrike strike price of the option
    * @param option_type option flavour specifier, e.g. "std_euro_call"
-   * @param bLogTransform true if log-transformed stock-price coordinates are used, false otherwise. The variance coordinates are always linear.
+   * @param bLogTransform true if log-transformed stock-price coordinates are used, false otherwise.
+   * The variance coordinates are always linear.
    * @param useCoarsen true if coarsening should be used
    * @param coarsenThreshold threshold value from which coarsening is applied
    * @param adaptSolveMode specifies the type of adaptivity used
@@ -353,18 +375,14 @@ class HestonParabolicPDESolverSystemEuroAmer : public
    * @param refineMode mode of refinement
    * @param refineMaxLevel maximum sparse grid level above which no refinement is performed
    */
-  HestonParabolicPDESolverSystemEuroAmer(SGPP::base::Grid& SparseGrid,
-                                         SGPP::base::DataVector& alpha, SGPP::base::DataVector& thetas,
-                                         SGPP::base::DataVector& volvols,
-                                         SGPP::base::DataVector& kappas,
-                                         SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
-                                         std::string OperationMode,
-                                         float_t dStrike, std::string option_type,
-                                         bool bLogTransform = false, bool useCoarsen = false,
-                                         float_t coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
-                                         int numCoarsenPoints = -1, float_t refineThreshold = 0.0,
-                                         std::string refineMode = "classic",
-                                         SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+  HestonParabolicPDESolverSystemEuroAmer(
+      SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& thetas,
+      SGPP::base::DataVector& volvols, SGPP::base::DataVector& kappas, SGPP::base::DataMatrix& rho,
+      float_t r, float_t TimestepSize, std::string OperationMode, float_t dStrike,
+      std::string option_type, bool bLogTransform = false, bool useCoarsen = false,
+      float_t coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
+      int numCoarsenPoints = -1, float_t refineThreshold = 0.0, std::string refineMode = "classic",
+      SGPP::base::GridIndex::level_type refineMaxLevel = 0);
 
   /**
    * Destructor. Just does the usual...releases all allocated memory.
@@ -375,15 +393,14 @@ class HestonParabolicPDESolverSystemEuroAmer : public
 
   /**
    * Coarsens and refines the sparse grid based on the relevant thresholds.
-   * @param isLastTimestep true if the current timestep is the last. If this is true, integrated coarsening is not performed.
+   * @param isLastTimestep true if the current timestep is the last. If this is true, integrated
+   * coarsening is not performed.
    */
   virtual void coarsenAndRefine(bool isLastTimestep = false);
 
   void startTimestep();
 };
-
-}
-
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* HESTONPARABOLICPDESOLVERSYSTEMEUROAMER_HPP */

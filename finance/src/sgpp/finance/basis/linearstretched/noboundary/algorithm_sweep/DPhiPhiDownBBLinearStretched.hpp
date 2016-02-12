@@ -11,11 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
-
-
 
 /**
  * Implementation of sweep operator (): 1D Down for
@@ -30,14 +27,13 @@ class DPhiPhiDownBBLinearStretched {
   /// Pointer to the SGPP::base::Stretching bounding box Object
   SGPP::base::Stretching* stretching;
 
-
  public:
   /**
    * Constructor
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  DPhiPhiDownBBLinearStretched(SGPP::base::GridStorage* storage);
+  explicit DPhiPhiDownBBLinearStretched(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -47,18 +43,19 @@ class DPhiPhiDownBBLinearStretched {
   /**
    * This operations performs the calculation of down in the direction of dimension <i>dim</i>
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from the vector of the laplace operation)
+   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * the vector of the laplace operation)
    * @param result SGPP::base::DataVector that contains the result of the down operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataVector& source,
-                          SGPP::base::DataVector& result, grid_iterator& index, size_t dim);
+  virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+                          grid_iterator& index, size_t dim);
 
  protected:
-
   /**
-   * recursive function for the calculation of Down without and with SGPP::base::Stretching Bounding Box support
+   * recursive function for the calculation of Down without and with SGPP::base::Stretching Bounding
+   * Box support
    * (calculations are independent from bounding box)
    *
    * @param source SGPP::base::DataVector that contains the coefficients of the ansatzfunction
@@ -68,13 +65,11 @@ class DPhiPhiDownBBLinearStretched {
    * @param fl function value on the left boundary
    * @param fr function value on the right boundary
    */
-  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-           grid_iterator& index, size_t dim, float_t fl, float_t fr);
+  void rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result, grid_iterator& index,
+           size_t dim, float_t fl, float_t fr);
 };
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP
 
 #endif /* PHIDPHIDOWNBBLINEARSTRETCHED_HPP */

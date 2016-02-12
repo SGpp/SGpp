@@ -7,21 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+XPhiPhiUpBBLinearBoundary::XPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage* storage)
+    : XPhiPhiUpBBLinear(storage) {}
 
-
-XPhiPhiUpBBLinearBoundary::XPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage*
-    storage) : XPhiPhiUpBBLinear(storage) {
-}
-
-XPhiPhiUpBBLinearBoundary::~XPhiPhiUpBBLinearBoundary() {
-}
+XPhiPhiUpBBLinearBoundary::~XPhiPhiUpBBLinearBoundary() {}
 
 void XPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                           SGPP::base::DataVector& result, grid_iterator& index,
+                                           size_t dim) {
   float_t q = this->boundingBox->getIntervalWidth(dim);
   float_t t = this->boundingBox->getIntervalOffset(dim);
 
@@ -58,9 +54,9 @@ void XPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // up
     //////////////////////////////////////
-    //Left
+    // Left
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       result[seq_left] = fl;
       result[seq_left] += ((1.0 / 6.0 * t + 1.0 / 12.0 * q * q) * source[seq_right]);
@@ -68,7 +64,7 @@ void XPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // Right
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -97,9 +93,9 @@ void XPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // up
     //////////////////////////////////////
-    //Left
+    // Left
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-      result[seq_left] = 0.0; // source[seq_left];
+      result[seq_left] = 0.0;  // source[seq_left];
     } else {
       result[seq_left] = fl;
       result[seq_left] += ((1.0 / 12.0) * source[seq_right]);
@@ -107,7 +103,7 @@ void XPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 
     // Right
     if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-      result[seq_right] = 0.0; //source[seq_right];
+      result[seq_right] = 0.0;  // source[seq_right];
     } else {
       result[seq_right] = fr;
     }
@@ -116,7 +112,5 @@ void XPhiPhiUpBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP

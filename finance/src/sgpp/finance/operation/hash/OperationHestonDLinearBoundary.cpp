@@ -15,17 +15,14 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
-OperationHestonDLinearBoundary::OperationHestonDLinearBoundary(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataVector& coef) : SGPP::pde::UpDownOneOpDim(storage, coef) {
-}
+OperationHestonDLinearBoundary::OperationHestonDLinearBoundary(SGPP::base::GridStorage* storage,
+                                                               SGPP::base::DataVector& coef)
+    : SGPP::pde::UpDownOneOpDim(storage, coef) {}
 
-OperationHestonDLinearBoundary::~OperationHestonDLinearBoundary() {
-}
+OperationHestonDLinearBoundary::~OperationHestonDLinearBoundary() {}
 
 void OperationHestonDLinearBoundary::up(SGPP::base::DataVector& alpha,
                                         SGPP::base::DataVector& result, size_t dim) {
@@ -37,7 +34,7 @@ void OperationHestonDLinearBoundary::up(SGPP::base::DataVector& alpha,
 }
 
 void OperationHestonDLinearBoundary::down(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                          SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiDownBBLinearBoundary func(this->storage);
   SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
@@ -46,7 +43,7 @@ void OperationHestonDLinearBoundary::down(SGPP::base::DataVector& alpha,
 }
 
 void OperationHestonDLinearBoundary::upOpDim(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                             SGPP::base::DataVector& result, size_t dim) {
   // x * dphi * dphi
   XdPhidPhiUpBBLinearBoundary func(this->storage);
   SGPP::base::sweep<XdPhidPhiUpBBLinearBoundary> s(func, this->storage);
@@ -55,13 +52,12 @@ void OperationHestonDLinearBoundary::upOpDim(SGPP::base::DataVector& alpha,
 }
 
 void OperationHestonDLinearBoundary::downOpDim(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, size_t dim) {
+                                               SGPP::base::DataVector& result, size_t dim) {
   // x * dphi * dphi
   XdPhidPhiDownBBLinearBoundary func(this->storage);
   SGPP::base::sweep<XdPhidPhiDownBBLinearBoundary> s(func, this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
-
-}
-}
+}  // namespace finance
+}  // namespace SGPP

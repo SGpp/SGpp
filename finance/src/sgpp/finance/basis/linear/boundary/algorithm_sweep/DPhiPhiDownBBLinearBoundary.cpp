@@ -7,22 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace finance {
 
+DPhiPhiDownBBLinearBoundary::DPhiPhiDownBBLinearBoundary(SGPP::base::GridStorage* storage)
+    : DPhiPhiDownBBLinear(storage) {}
 
-
-DPhiPhiDownBBLinearBoundary::DPhiPhiDownBBLinearBoundary(
-  SGPP::base::GridStorage* storage) : DPhiPhiDownBBLinear(storage) {
-}
-
-DPhiPhiDownBBLinearBoundary::~DPhiPhiDownBBLinearBoundary() {
-}
-
+DPhiPhiDownBBLinearBoundary::~DPhiPhiDownBBLinearBoundary() {}
 
 void DPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, grid_iterator& index, size_t dim) {
+                                             SGPP::base::DataVector& result, grid_iterator& index,
+                                             size_t dim) {
   // get boundary values
   float_t left_boundary;
   float_t right_boundary;
@@ -44,18 +39,17 @@ void DPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   seq_right = index.seq();
   right_boundary = source[seq_right];
 
-
   // the following is independent from a bounding box
 
   // check boundary conditions
   if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
-    result[seq_left] = 0.0; //left_boundary;
+    result[seq_left] = 0.0;  // left_boundary;
   } else {
     result[seq_left] = left_boundary * (-0.5);
   }
 
   if (this->boundingBox->hasDirichletBoundaryRight(dim)) {
-    result[seq_right] = 0.0; //right_boundary;
+    result[seq_right] = 0.0;  // right_boundary;
   } else {
     result[seq_right] = right_boundary * (0.5);
     // down
@@ -75,7 +69,5 @@ void DPhiPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 }
 
-// namespace detail
-
-} // namespace SGPP
-}
+}  // namespace finance
+}  // namespace SGPP
