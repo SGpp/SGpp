@@ -5,10 +5,15 @@
 
 #include <iostream>
 // All SG++ base headers
-#include <sgpp_base.hpp>
+#include "sgpp_base.hpp"
 
-using namespace std;
-using namespace SGPP::base;
+using std::cout;
+using std::endl;
+using SGPP::base::Grid;
+using SGPP::base::GridStorage;
+using SGPP::base::GridGenerator;
+using SGPP::base::DataVector;
+using SGPP::base::DataMatrix;
 
 // function to interpolate
 SGPP::float_t f(int dim, SGPP::float_t* x, void* clientdata) {
@@ -36,7 +41,7 @@ int main() {
 
   // create coefficient vector
   DataVector alpha(gridStorage->size());
-  GridIndex* gp;
+  SGPP::base::GridIndex* gp;
   SGPP::float_t p[2];
 
   for (size_t i = 0; i < gridStorage->size(); i++) {
@@ -46,17 +51,18 @@ int main() {
     alpha[i] = f(2, p, NULL);
   }
 
-  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-    alpha);
+  SGPP::op_factory::createOperationHierarchisation(*grid)
+      ->doHierarchisation(alpha);
 
   // direct quadrature
-  OperationQuadrature* opQ = SGPP::op_factory::createOperationQuadrature(*grid);
+  SGPP::base::OperationQuadrature* opQ =
+      SGPP::op_factory::createOperationQuadrature(*grid);
   SGPP::float_t res = opQ->doQuadrature(alpha);
   cout << "exact integral value:  " << res << endl;
   delete opQ;
 
   // Monte Carlo quadrature using 100000 paths
-  OperationQuadratureMC opMC(*grid, 100000);
+  SGPP::base::OperationQuadratureMC opMC(*grid, 100000);
   res = opMC.doQuadrature(alpha);
   cout << "Monte Carlo value:     " << res << endl;
   res = opMC.doQuadrature(alpha);
