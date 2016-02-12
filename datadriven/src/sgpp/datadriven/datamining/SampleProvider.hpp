@@ -11,6 +11,7 @@
 #include <memory>
 
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,19 +21,19 @@ namespace datadriven {
 
 class SampleProvider {
 public:
-	SampleProvider(){};
+	SampleProvider(datadriven::DataMiningConfiguration& config){};
 	virtual ~SampleProvider(){};
 
 	/**
 	 * Selects a certain number of samples
 	 * @param how_many number of samples to return
-	 * @param dataset pointer to the returned dataset
+	 * @return dataset
 	 */
 	virtual Dataset nextSamples(int how_many) = 0;
 
 	/**
 	 * Returns all samples
-	 * @param dataset pointer to the returned dataset
+	 * @return dataset
 	 */
 	virtual Dataset allSamples() = 0;
 

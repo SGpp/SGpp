@@ -27,123 +27,119 @@ using namespace combigrid;
 
 int fcalls = 0;
 
-	double f(int dim, std::vector<double> coordinates)
-	{
+double f(int dim, std::vector<double> coordinates) {
+  fcalls++;
+  double result = 1.0;
+  if (coordinates.size() != static_cast<size_t>(dim)) {
+    std::cout << " Size of coordinates vector and specified problem dimension "
+                 "do not match. Aborting \n";
+    exit(EXIT_FAILURE);
+  }
 
-		fcalls++;
-		double result = 1.0;
-		if (coordinates.size() != static_cast<size_t>(dim)) {
-				std::cout << " Size of coordinates vector and specified problem dimension do not match. Aborting \n";
-				exit(EXIT_FAILURE);
-		}
+  for (int d = 0; d < dim; d++)
+    result *= (1. + 1.0 / dim) * pow(coordinates[d], 1. / dim);
 
-		for (int d = 0; d< dim ; d++)
-				result *= (1.+1.0/dim)*pow(coordinates[d],1./dim);
-
-		return result ;
-	}
-
-
-double integrateByRule(AbstractQuadratureRule<double>* rule, CombiGrid<double>* grid){
-
-
-		// fill grid with function values.
-		double result = 0.0 ;
-		std::vector<double> coords(grid->getDim(),0.0);
-		int dim = grid->getDim();
-
-		int nr_fg = grid->getNrFullGrids();
-		for (int g = 0 ; g<nr_fg; g++){
-			FGridContainer<double>* wrapper = grid->getFullGrid(g);
-			if(wrapper->isActive()){
-				FullGrid<double>* fg = wrapper->fg();
-				int nr_elems = fg->getNrElements();
-				for(int e = 0; e < nr_elems; e++){
-					fg->getCoords(e,coords);
-					fg->getElementVector()[e] = f(dim,  coords);
-				}
-			}
-		}
-
-		result = rule->integrate(grid,NULL);
-
-		return result;
+  return result;
 }
 
+double integrateByRule(AbstractQuadratureRule<double>* rule,
+                       CombiGrid<double>* grid) {
+  // fill grid with function values.
+  double result = 0.0;
+  std::vector<double> coords(grid->getDim(), 0.0);
+  int dim = grid->getDim();
 
-int main (int argc, char** argv){
+  int nr_fg = grid->getNrFullGrids();
+  for (int g = 0; g < nr_fg; g++) {
+    FGridContainer<double>* wrapper = grid->getFullGrid(g);
+    if (wrapper->isActive()) {
+      FullGrid<double>* fg = wrapper->fg();
+      int nr_elems = fg->getNrElements();
+      for (int e = 0; e < nr_elems; e++) {
+        fg->getCoords(e, coords);
+        fg->getElementVector()[e] = f(dim, coords);
+      }
+    }
+  }
 
-	// initialize the combigrid and setup the combischeme...
+  result = rule->integrate(grid, NULL);
 
-	int dim = 5; int max_lvl = 7;
+  return result;
+}
 
-	std::vector<bool> hasbdries(dim,true);
+int main(int argc, char** argv) {
+  // initialize the combigrid and setup the combischeme...
 
-	double* errors = (double*) malloc(max_lvl*3*sizeof(double));
-	int* Fcalls = (int*)malloc(max_lvl*3*sizeof(int));
+  int dim = 5;
+  int max_lvl = 7;
 
-	double a =  0.;
-	double b =  1.;
-	// create some quadratures...
-	AbstractQuadratureRule<double>* trapz = new TrapezoidalRule<double>(max_lvl);
-	AbstractQuadratureRule<double>* clenshaw =new ClenshawCurtisQuadrature<double>(max_lvl);
-	AbstractQuadratureRule<double>* gauss =new GaussPattersonQuadrature<double>(max_lvl);
+  std::vector<bool> hasbdries(dim, true);
 
-	AbstractStretchingMaker* equidistant = new CombiEquidistantStretching();
-	AbstractStretchingMaker* chebishev = new CombiChebyshevStretching();
-	AbstractStretchingMaker* legendre  = new CombiLegendreStretching();
+  double* errors = (double*)malloc(max_lvl * 3 * sizeof(double));
+  int* Fcalls = (int*)malloc(max_lvl * 3 * sizeof(int));
 
+  double a = 0.;
+  double b = 1.;
+  // create some quadratures...
+  AbstractQuadratureRule<double>* trapz = new TrapezoidalRule<double>(max_lvl);
+  AbstractQuadratureRule<double>* clenshaw =
+      new ClenshawCurtisQuadrature<double>(max_lvl);
+  AbstractQuadratureRule<double>* gauss =
+      new GaussPattersonQuadrature<double>(max_lvl);
 
-	for (int l = 1; l<=max_lvl; l++)
-	{
-		std::cout<<"Computing errors for max level = " << l << "\n";
+  AbstractStretchingMaker* equidistant = new CombiEquidistantStretching();
+  AbstractStretchingMaker* chebishev = new CombiChebyshevStretching();
+  AbstractStretchingMaker* legendre = new CombiLegendreStretching();
 
-		std::vector<int> levels(dim,l);
-		CombiGrid<double>* grid  = new SerialCombiGrid<double>(dim,hasbdries);
-		AbstractCombiScheme<double>* scheme = new CombiS_CT<double>(levels);
+  for (int l = 1; l <= max_lvl; l++) {
+    std::cout << "Computing errors for max level = " << l << "\n";
 
-		grid->attachCombiScheme(scheme);
-		grid->re_init();
-		grid->createFullGrids();
+    std::vector<int> levels(dim, l);
+    CombiGrid<double>* grid = new SerialCombiGrid<double>(dim, hasbdries);
+    AbstractCombiScheme<double>* scheme = new CombiS_CT<double>(levels);
 
+    grid->attachCombiScheme(scheme);
+    grid->re_init();
+    grid->createFullGrids();
 
-		/**
-		* Integration via trapezoidal rule
-		*
-		*/
+    /**
+    * Integration via trapezoidal rule
+    *
+    */
 
-		/*
-		 * setup the domain
-		 *
-		 */
-		std::vector<double> min(dim,a);
-		std::vector<double> max(dim,b);
-		fcalls = 0;
-		grid->initializeActiveGridsDomain(min,max,equidistant);
-		*(errors +(l-1)*3) = abs(integrateByRule(trapz,grid) - 1.0);
-		*(Fcalls +(l-1)*3) = fcalls;
+    /*
+     * setup the domain
+     *
+     */
+    std::vector<double> min(dim, a);
+    std::vector<double> max(dim, b);
+    fcalls = 0;
+    grid->initializeActiveGridsDomain(min, max, equidistant);
+    *(errors + (l - 1) * 3) = abs(integrateByRule(trapz, grid) - 1.0);
+    *(Fcalls + (l - 1) * 3) = fcalls;
 
-		fcalls =0;
-		grid->initializeActiveGridsDomain(min,max,chebishev);
-		*(errors +(l-1)*3+1) = abs(integrateByRule(clenshaw,grid) - 1.0);
-		*(Fcalls +(l-1)*3+1) = fcalls;
+    fcalls = 0;
+    grid->initializeActiveGridsDomain(min, max, chebishev);
+    *(errors + (l - 1) * 3 + 1) = abs(integrateByRule(clenshaw, grid) - 1.0);
+    *(Fcalls + (l - 1) * 3 + 1) = fcalls;
 
-		fcalls =0;
-		grid->initializeActiveGridsDomain(min,max,legendre);
-		*(errors +(l-1)*3+2) = abs(integrateByRule(gauss,grid) - 1.0);
-		*(Fcalls +(l-1)*3+2) = fcalls;
+    fcalls = 0;
+    grid->initializeActiveGridsDomain(min, max, legendre);
+    *(errors + (l - 1) * 3 + 2) = abs(integrateByRule(gauss, grid) - 1.0);
+    *(Fcalls + (l - 1) * 3 + 2) = fcalls;
 
-		delete grid; delete scheme;
-	}
+    delete grid;
+    delete scheme;
+  }
 
-	std::cout<<"Integration completed!\n";
+  std::cout << "Integration completed!\n";
 
-	// print the errors table...
-	for(int i = 0; i < max_lvl;i++){
-		for(int j = 0; j <  3; j++){
-				std::cout<<*(Fcalls+i*3+j)<< " | "<<*(errors + i*3+j)<<"\t";
-		}
-		std::cout<<"\n";
-	}
-
+  // print the errors table...
+  for (int i = 0; i < max_lvl; i++) {
+    for (int j = 0; j < 3; j++) {
+      std::cout << *(Fcalls + i * 3 + j) << " | " << *(errors + i * 3 + j)
+                << "\t";
+    }
+    std::cout << "\n";
+  }
 }

@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -31,13 +31,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     config.env.AppendUnique(CPPPATH=[config.env['BOOST_INCLUDE_PATH']])
     config.env.AppendUnique(LIBPATH=[config.env['BOOST_LIBRARY_PATH']])
 
-    # check C++11 support
-    # C++11 support is enabled by default on win32; no avx support for win32
-    if env['PLATFORM'] not in ['cygwin', 'win32']:
-        if not config.CheckFlag("-std=c++11"):
-            sys.stderr.write("Error: compiler doesn't seem to support the C++11 standard. Abort!\n")
-            sys.exit(1) #TODO: exist undefined, fix
-        config.env.AppendUnique(CPPFLAGS=["-std=c++11"])
 
     # check whether swig installed
     if not config.CheckExec('doxygen'):
@@ -60,8 +53,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       else:
         sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
 
-      print config.env['CPPPATH']
-
       if not config.CheckCXXHeader('CL/cl.h'):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
@@ -75,6 +66,11 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
       if not config.CheckLib('OpenCL', language="c++", autoadd=0):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
+        sys.exit(1)
+        
+      if not config.CheckLib('boost_program_options', language="c++", autoadd=0):
+        sys.stderr.write("Error: \"libboost-program-options\" not found, but required for OpenCL\n")
+        sys.stderr.write("On debian-like system the package \"libboost-program-options-dev\" can be installed to solve this issue\n")
         sys.exit(1)
 
       config.env["CPPDEFINES"]["USE_OCL"] = "1"
@@ -187,7 +183,11 @@ Please install the corresponding package, e.g. using command on Ubuntu
     if not env['USE_DOUBLE_PRECISION']:
        env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
 
-    if env['COMPILER'].upper() == 'GNU':
+    # make settings case-insensitive
+    env['COMPILER'] = env['COMPILER'].lower()
+    env['ARCH'] = env['ARCH'].lower()
+
+    if env['COMPILER'] == 'gnu':
         gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
         gcc_ver = env._get_major_minor_revision(gcc_ver_str)
         print "Using default gcc " + gcc_ver_str
@@ -228,19 +228,19 @@ Please install the corresponding package, e.g. using command on Ubuntu
                 # disable all conversion warnings
                 env.Append(CPPFLAGS=['-Wno-conversion'])
 
-        if env['ARCH'].upper() == 'SSE3':
+        if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
-        elif env['ARCH'].upper() == 'SSE42':
+        elif env['ARCH'] == 'sse42':
             config.env.AppendUnique(CPPFLAGS=["-msse4.2"])
-        elif env['ARCH'].upper() == 'AVX':
+        elif env['ARCH'] == 'avx':
             config.env.AppendUnique(CPPFLAGS=["-mavx"])
-        elif env['ARCH'].upper() == 'FMA4':
+        elif env['ARCH'] == 'fma4':
             config.env.AppendUnique(CPPFLAGS=["-mavx"])
             config.env.AppendUnique(CPPFLAGS=["-mfma4"])
-        elif env['ARCH'].upper() == 'AVX2':
+        elif env['ARCH'] == 'avx2':
             config.env.AppendUnique(CPPFLAGS=["-mavx2"])
             config.env.AppendUnique(CPPFLAGS=["-mfma"])
-        elif env['ARCH'].upper() == 'AVX512':
+        elif env['ARCH'] == 'avx512':
             config.env.AppendUnique(CPPFLAGS=["-mavx512f"])
             config.env.AppendUnique(CPPFLAGS=["-mavx512cd"])
             config.env.AppendUnique(CPPFLAGS=["-mfma"])
@@ -248,7 +248,17 @@ Please install the corresponding package, e.g. using command on Ubuntu
             print "You must specify a valid ARCH value for gnu."
             print "Available configurations are: sse3, sse42, avx, fma4, avx2, avx512"
             sys.exit(1)
-    elif env['COMPILER'].upper() == 'CLANG':
+
+        # check if using MinGW (g++ on win32)
+        if env['PLATFORM'] == 'win32':
+            # disable warnings which occur when including Boost in the tests
+            env.Append(CPPFLAGS=['-Wno-switch-enum',
+                                 '-Wno-deprecated-declarations'])
+            # also use "lib" prefix on MinGW for consistency with Linux
+            # (default is no prefix)
+            env['SHLIBPREFIX'] = 'lib'
+            
+    elif env['COMPILER'] == 'clang':
         print "Using clang"
 
         env['CC'] = ('clang')
@@ -277,19 +287,19 @@ Please install the corresponding package, e.g. using command on Ubuntu
                 # disable all conversion warnings
                 env.Append(CPPFLAGS=['-Wno-conversion'])
 
-        if env['ARCH'].upper() == 'SSE3':
+        if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
-        elif env['ARCH'].upper() == 'SSE42':
+        elif env['ARCH'] == 'sse42':
             config.env.AppendUnique(CPPFLAGS=["-msse4.2"])
-        elif env['ARCH'].upper() == 'AVX':
+        elif env['ARCH'] == 'avx':
             config.env.AppendUnique(CPPFLAGS=["-mavx"])
-        elif env['ARCH'].upper() == 'FMA4':
+        elif env['ARCH'] == 'fma4':
             config.env.AppendUnique(CPPFLAGS=["-mavx"])
             config.env.AppendUnique(CPPFLAGS=["-mfma4"])
-        elif env['ARCH'].upper() == 'AVX2':
+        elif env['ARCH'] == 'avx2':
             config.env.AppendUnique(CPPFLAGS=["-mavx2"])
             config.env.AppendUnique(CPPFLAGS=["-mfma"])
-        elif env['ARCH'].upper() == 'AVX512':
+        elif env['ARCH'] == 'avx512':
             config.env.AppendUnique(CPPFLAGS=["-mavx512f"])
             config.env.AppendUnique(CPPFLAGS=["-mavx512cd"])
             config.env.AppendUnique(CPPFLAGS=["-mfma"])
@@ -298,7 +308,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
             sys.exit(1)
 
-    elif env['COMPILER'].upper() == 'INTEL':
+    elif env['COMPILER'] == 'intel':
         print "Using icc"
         env.AppendUnique(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
                                '-fno-strict-aliasing',
@@ -309,6 +319,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['CC'] = ('icc')
         env['LINK'] = ('icpc')
         env['CXX'] = ('icpc')
+
         env.AppendUnique(CPPFLAGS=['-openmp'])
         env.AppendUnique(LINKFLAGS=['-openmp'])
 
@@ -324,19 +335,19 @@ Please install the corresponding package, e.g. using command on Ubuntu
                 # disable all conversion warnings
                 env.AppendUnique(CPPFLAGS=['-Wno-conversion'])
 
-        if env['ARCH'].upper() == 'SSE3':
+        if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
-        elif env['ARCH'].upper() == 'SSE42':
+        elif env['ARCH'] == 'sse42':
             config.env.AppendUnique(CPPFLAGS=["-msse4.2"])
-        elif env['ARCH'].upper() == 'AVX':
+        elif env['ARCH'] == 'avx':
             config.env.AppendUnique(CPPFLAGS=["-mavx"])
-        elif env['ARCH'].upper() == 'AVX2':
+        elif env['ARCH'] == 'avx2':
             config.env.AppendUnique(CPPFLAGS=["-xCORE-AVX2"])
             config.env.AppendUnique(CPPFLAGS=["-fma"])
-        elif env['ARCH'].upper() == 'AVX512':
+        elif env['ARCH'] == 'avx512':
             config.env.AppendUnique(CPPFLAGS=["-xCOMMON-AVX512"])
             config.env.AppendUnique(CPPFLAGS=["-fma"])
-        elif env['ARCH'].upper() == 'MIC':
+        elif env['ARCH'] == 'mic':
             config.env.AppendUnique(CPPFLAGS=["-mmic"])
             config.env.AppendUnique(LINKFLAGS=['-mmic'])
         else:
@@ -372,24 +383,25 @@ Please install the corresponding package, e.g. using command on Ubuntu
         #env.Append(LIBPATH=[BUILD_DIR])
         pass
 
-    # will lead to a warning on cygwin (and we have -Werror enabled)
-    # is enabled by default on cygwin
+    # will lead to a warning on cygwin and win32
+    # ("all code is position independent")
     if env['PLATFORM'] not in ['cygwin', 'win32']:
         env.AppendUnique(CPPFLAGS=['-fPIC'])
 
     # setup the include base folder
     # env.Append(CPPPATH=['#/src/sgpp'])
     for moduleFolder in moduleFolders:
-      if moduleFolder in languageWrapperFolders:
+      if (moduleFolder in languageWrapperFolders) or \
+          (not env['SG_' + moduleFolder.upper()]):
         continue
       env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
 
     # check for mpic++
     if not env['CXX']=='mpic++':
         env['SG_PARALLEL'] = 0
-        print 'Warning: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
+        print 'Hint: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
     elif env['SG_PARALLEL'] != 0:
-        env['CPPDEFINES']['USE_MPI'] = 1
+        env['CPPDEFINES']['USE_MPI'] = '1'
         print 'Parallel module ("SG_PARALLEL") enabled'
     else:
         print 'Parallel module ("SG_PARALLEL") disabled'
@@ -404,11 +416,5 @@ Please install the corresponding package, e.g. using command on Ubuntu
         logFile.seek(0)
         logFile.truncate()
 
-    # check for mpic++
-    if not env['CXX']=='mpic++':
-        env['SG_PARALLEL'] = 0
-        print "Warning: not using mpic++, parallel module disabled, since it requires mpic++"
-    elif env['SG_PARALLEL'] != 0:
-        env['CPPDEFINES']['USE_MPI'] = 1
-        print "Parallel module enabled"
+
 

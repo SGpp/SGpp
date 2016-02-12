@@ -3,20 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/opencl/OCLManager.hpp>
-
-#include <sgpp/base/exception/operation_exception.hpp>
-
 #include <iostream>
 #include <sstream>
 #include <string>
 
+#include "sgpp/base/opencl/OCLManager.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+
 namespace SGPP {
 namespace base {
 
-OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
-                       parameters) :
-  parameters(parameters) {
+OCLManager::OCLManager(
+    std::shared_ptr<base::OCLOperationConfiguration> parameters)
+    : parameters(parameters) {
   // augment default values to configuration
   if (parameters->contains("LOCAL_SIZE") == false) {
     parameters->addIDAttr("LOCAL_SIZE", 64ul);
@@ -78,16 +77,15 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString <<
-                "OCL Error: Unable to get number of OpenCL platforms. "
-                "Error Code: " << err <<
-                std::endl;
+    errorString << "OCL Error: Unable to get number of OpenCL platforms. "
+                   "Error Code: "
+                << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
-    std::cout << "OCL Info: " << num_platforms <<
-              " OpenCL Platforms have been found" << std::endl;
+    std::cout << "OCL Info: " << num_platforms
+              << " OpenCL Platforms have been found" << std::endl;
   }
 
   // get available platforms
@@ -97,13 +95,13 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get Platform ID. "
-                "Error Code: " << err <<
-                std::endl;
+                   "Error Code: "
+                << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   for (cl_uint ui = 0; ui < num_platforms; ui++) {
-    char vendor_name[128] = { 0 };
+    char vendor_name[128] = {0};
     err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR,
                             128 * sizeof(char), vendor_name, nullptr);
 
@@ -113,13 +111,12 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
       throw SGPP::base::operation_exception(errorString.str());
     } else {
       if (vendor_name != nullptr && verbose) {
-        std::cout << "OCL Info: Platform " << ui << " vendor name: " <<
-                  vendor_name <<
-                  std::endl;
+        std::cout << "OCL Info: Platform " << ui
+                  << " vendor name: " << vendor_name << std::endl;
       }
     }
 
-    char version_info[128] = { 0 };
+    char version_info[128] = {0};
     err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VERSION,
                             128 * sizeof(char), version_info, nullptr);
 
@@ -129,16 +126,14 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
       throw SGPP::base::operation_exception(errorString.str());
     } else {
       if (version_info != nullptr && verbose) {
-        std::cout << "OCL Info: Platform " << ui << " version: " <<
-                  version_info <<
-                  std::endl;
+        std::cout << "OCL Info: Platform " << ui << " version: " << version_info
+                  << std::endl;
       }
     }
 
-    char platform_name[128] = { 0 };
+    char platform_name[128] = {0};
     err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_NAME,
-                            128 * sizeof(char),
-                            platform_name, nullptr);
+                            128 * sizeof(char), platform_name, nullptr);
 
     if (CL_SUCCESS != err) {
       std::stringstream errorString;
@@ -146,8 +141,8 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
       throw SGPP::base::operation_exception(errorString.str());
     } else {
       if (platform_name != nullptr && verbose) {
-        std::cout << "OCL Info: Platform " << ui << " name: " <<
-                  platform_name << std::endl;
+        std::cout << "OCL Info: Platform " << ui << " name: " << platform_name
+                  << std::endl;
       }
 
       if ((*parameters)["PLATFORM"].get().compare(platform_name) == 0) {
@@ -184,8 +179,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
     device_ids = new cl_device_id[num_devices];
     // get the device ids
     err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, num_devices,
-                         device_ids,
-                         nullptr);
+                         device_ids, nullptr);
   } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_GPU") {
     if (verbose) {
       std::cout << "OCL Info: looking for GPU device" << std::endl;
@@ -197,13 +191,12 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
     device_ids = new cl_device_id[num_devices];
     // get the device ids
     err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices,
-                         device_ids,
-                         nullptr);
+                         device_ids, nullptr);
   } else if ((*parameters)["DEVICE_TYPE"].get() ==
              "CL_DEVICE_TYPE_ACCELERATOR") {
     if (verbose) {
-      std::cout << "OCL Info: looking for device of accelerator type" <<
-                std::endl;
+      std::cout << "OCL Info: looking for device of accelerator type"
+                << std::endl;
     }
 
     // get the number of devices
@@ -215,8 +208,8 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
                          device_ids, nullptr);
   } else if ((*parameters)["DEVICE_TYPE"].get() == "CL_DEVICE_TYPE_ALL") {
     if (verbose) {
-      std::cout << "OCL Info: looking for device of all available devices" <<
-                std::endl;
+      std::cout << "OCL Info: looking for device of all available devices"
+                << std::endl;
     }
 
     // get the number of devices
@@ -225,26 +218,23 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
     device_ids = new cl_device_id[num_devices];
     // get the device ids
     err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ALL, num_devices,
-                         device_ids,
-                         nullptr);
+                         device_ids, nullptr);
   } else {
     throw SGPP::base::operation_exception(
-      "OCL Error: No device found or unknown type specified "
-      "(supported are: CPU, GPU, accelerator and all)");
+        "OCL Error: No device found or unknown type specified "
+        "(supported are: CPU, GPU, accelerator and all)");
   }
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Unable to get Device IDs. Error Code: " <<
-                err <<
-                std::endl;
+    errorString << "OCL Error: Unable to get Device IDs. Error Code: " << err
+                << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
-    std::cout << "OCL Info: " << num_devices <<
-              " OpenCL devices have been found!"
-              << std::endl;
+    std::cout << "OCL Info: " << num_devices
+              << " OpenCL devices have been found!" << std::endl;
   }
 
   bool isMaxDevicesEnabled = (*parameters).contains("MAX_DEVICES");
@@ -252,10 +242,9 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
   if ((*parameters).contains("SELECT_SPECIFIC_DEVICE")) {
     if (isMaxDevicesEnabled) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: Cannot select a specific device if more than "
-          "one device is used, MAX_DEVICES be set incorrectly"
-          << std::endl;
+      errorString << "OCL Error: Cannot select a specific device if more than "
+                     "one device is used, MAX_DEVICES be set incorrectly"
+                  << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
 
@@ -264,21 +253,21 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
     if (selectedDevice > num_devices) {
       std::stringstream errorString;
       errorString << "OCL Error: Illegal value set for "
-                  "\"SELECT_SPECIFIC_DEVICE\"" <<
-                  std::endl;
+                     "\"SELECT_SPECIFIC_DEVICE\""
+                  << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
 
     device_ids[0] = device_ids[selectedDevice];
 
     if (verbose) {
-      std::cout << "OCL Info: select device number " << selectedDevice <<
-                std::endl;
+      std::cout << "OCL Info: select device number " << selectedDevice
+                << std::endl;
     }
   }
 
   if (isMaxDevicesEnabled) {
-    cl_uint maxDevices = (cl_uint) (*parameters)["MAX_DEVICES"].getUInt();
+    cl_uint maxDevices = (cl_uint)(*parameters)["MAX_DEVICES"].getUInt();
 
     if (maxDevices < num_devices) {
       num_devices = maxDevices;
@@ -298,8 +287,8 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to create OpenCL context! "
-                "Error Code: " << err
-                << std::endl;
+                   "Error Code: "
+                << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -312,8 +301,8 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to read the device name for "
-                  "device: " << i <<
-                  std::endl;
+                     "device: "
+                  << i << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
 
@@ -327,17 +316,17 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration>
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create command queue! "
-                  "Error Code: " << err
-                  << std::endl;
+                     "Error Code: "
+                  << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
 
   if (verbose) {
     std::cout << "OCL Info: Successfully initialized OpenCL "
-              "(local workgroup size: "
-              << (*parameters)["LOCAL_SIZE"].getUInt() << ")" <<
-              std::endl << std::endl;
+                 "(local workgroup size: "
+              << (*parameters)["LOCAL_SIZE"].getUInt() << ")" << std::endl
+              << std::endl;
   }
 }
 
@@ -350,8 +339,8 @@ OCLManager::~OCLManager() {
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Could not release command queue! "
-                  "Error Code: " << err
-                  << std::endl;
+                     "Error Code: "
+                  << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
@@ -361,8 +350,8 @@ OCLManager::~OCLManager() {
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Could not release context! "
-                "Error Code: " << err <<
-                std::endl;
+                   "Error Code: "
+                << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -370,15 +359,19 @@ OCLManager::~OCLManager() {
 }
 
 /**
- * @brief buildKernel builds the program that is represented by @a program_src and creates @a num_devices kernel objects
- * that are stored into the array @a kernel (must be already allocated with at least @a num_devices )
+ * @brief buildKernel builds the program that is represented by @a program_src
+ * and creates @a num_devices kernel objects
+ * that are stored into the array @a kernel (must be already allocated with at
+ * least @a num_devices )
  *
  * @param program_src the source of the program to compile
- * @param kernel_name name of the kernel function (in program_src) to create the kernel for
+ * @param kernel_name name of the kernel function (in program_src) to create the
+ * kernel for
  * @param context OpenCL context
  * @param num_devices number of OpenCL devices
  * @param device_ids array with device ids, necessary for displaying build info
- * @param kernel already allocated array: the resulting kernels are put into this array, one for each device (=> at least num_devices entries)
+ * @param kernel already allocated array: the resulting kernels are put into
+ * this array, one for each device (=> at least num_devices entries)
  * @return
  */
 void OCLManager::buildKernel(const std::string& program_src,
@@ -389,13 +382,13 @@ void OCLManager::buildKernel(const std::string& program_src,
 
   // setting the program
   const char* kernel_src = program_src.c_str();
-  cl_program program = clCreateProgramWithSource(context, 1, &kernel_src,
-                       NULL, &err);
+  cl_program program =
+      clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Failed to create program! Error Code: " << err <<
-                std::endl;
+    errorString << "OCL Error: Failed to create program! Error Code: " << err
+                << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -403,8 +396,7 @@ void OCLManager::buildKernel(const std::string& program_src,
 
   if ((*parameters)["ENABLE_OPTIMIZATIONS"].getBool()) {
     // TODO(pfandedd): user should be able to change
-    build_opts =
-      (*parameters)["OPTIMIZATION_FLAGS"].get();
+    build_opts = (*parameters)["OPTIMIZATION_FLAGS"].get();
     // -O5  -cl-mad-enable -cl-denorms-are-zero -cl-no-signed-zeros
     // -cl-unsafe-math-optimizations -cl-finite-math-only -cl-fast-relaxed-math
   } else {
@@ -434,8 +426,8 @@ void OCLManager::buildKernel(const std::string& program_src,
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: OpenCL build error. Error code: " << err <<
-                std::endl;
+    errorString << "OCL Error: OpenCL build error. Error code: " << err
+                << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -446,8 +438,8 @@ void OCLManager::buildKernel(const std::string& program_src,
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel! "
-                  "Error code: " << err <<
-                  std::endl;
+                     "Error code: "
+                  << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }

@@ -23,26 +23,16 @@ namespace combigrid {
 */
 class AtanSpecialStretching : public AbstractStretchingMaker {
  public:
+  AtanSpecialStretching() : AbstractStretchingMaker() { ; }
 
-  AtanSpecialStretching(): AbstractStretchingMaker() {
-    ;
-  }
+  virtual ~AtanSpecialStretching() { ; }
 
-  virtual ~AtanSpecialStretching() {
-    ;
-  }
+  void get1DStretching(int level, double min, double max,
+                       std::vector<double>* stretching,
+                       std::vector<double>* jacobian) const;
 
-  void get1DStretching(
-    int level , double min, double max,
-    std::vector<double>& stretching,
-    std::vector<double>& jacobian) const;
-
-  Stretching getStretchingType() const {
-    return ATAN;
-  }
-
+  Stretching getStretchingType() const { return ATAN; }
 };
-
 }
 
 #endif /* COMBIATANSPECIALSTRETCHING_HPP_ */

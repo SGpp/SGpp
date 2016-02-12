@@ -5,13 +5,8 @@
 **************************************************************************** */
 // @author Janos Benk (benk@in.tum.de)
 
-
-
-#include "CombiLinearBasisFunction.hpp"
-
-using namespace std;
+#include <sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp>
 
 const combigrid::BasisFunctionBasis*
-combigrid::LinearBasisFunction::defaultBasis_ = new
-combigrid::LinearBasisFunction();
-
+    combigrid::LinearBasisFunction::defaultBasis_ =
+        new combigrid::LinearBasisFunction();

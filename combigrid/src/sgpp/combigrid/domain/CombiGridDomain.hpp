@@ -15,9 +15,7 @@ namespace combigrid {
 
 /** grid domain*/
 class GridDomain {
-
  public:
-
   /** Constructor for homogeneously stretched griddomain*/
   GridDomain(int dim, const std::vector<int>& levels,
              const std::vector<double>& min, const std::vector<double>& max,
@@ -33,15 +31,9 @@ class GridDomain {
   /**
    * Destructor!
    */
-  virtual ~GridDomain() {
+  virtual ~GridDomain() { ; }
 
-    ;
-
-  }
-
-  int getDim() const {
-    return (int)_axisDomains.size();
-  }
+  int getDim() const { return (int)_axisDomains.size(); }
   /** transform from real coordinate into unit coordinates
    * @param coords [IN/OUT]
    * @param levels_in [IN] the required levels
@@ -52,31 +44,20 @@ class GridDomain {
 
   /** return 1D axis, can be used for back transformation for each dimension
    * @param d [IN] the dimension */
-  const Domain1D& get1DDomain(int d) const {
-    return _axisDomains[d];
-  }
+  const Domain1D& get1DDomain(int d) const { return _axisDomains[d]; }
   /*Tell, to whoever is asking, which stretching type does this domain define...
    *
    **/
 
-  Stretching getStretchingType() const {
+  Stretching getStretchingType() const { return _stretching_type; }
 
-    return _stretching_type;
+  inline std::vector<double> getMin() const { return _min; }
 
-  }
-
-  inline std::vector<double> getMin() const {
-    return _min;
-  }
-
-  inline std::vector<double> getMax() const {
-    return _max;
-  }
+  inline std::vector<double> getMax() const { return _max; }
 
   void printDomain();
 
  private:
-
   /** dimension of the domain */
   int dim_;
 
@@ -88,9 +69,7 @@ class GridDomain {
 
   std::vector<double> _min;
   std::vector<double> _max;
-
 };
-
 }
 
 #endif /* COMBIGRIDDOMAIN_HPP_ */
