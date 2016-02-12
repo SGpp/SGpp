@@ -898,11 +898,12 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   gen->regular(2);
 
   DataVector alpha( factory->getStorage()->size() );
-  DataMatrix p(1, 1);
+  DataMatrix p(1, 2);
   DataVector beta(1);
 
   alpha.setAll(0.0);
   p.set(0, 0, 0.25);
+  p.set(0, 1, 0.25);
   beta[0] = 1.0;
 
   OperationMultipleEval* opb = SGPP::op_factory::createOperationMultipleEval(
@@ -939,7 +940,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   DataVector alpha( factory->getStorage()->size() );
   alpha.setAll( 1.0 );
 
-  DataVector p( 1 );
+  DataVector p( 2 );
   p.setAll(0.25);
 
   OperationEval* eval = SGPP::op_factory::createOperationEval( *factory );
