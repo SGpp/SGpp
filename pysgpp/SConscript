@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2008-today The SG++ project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -38,10 +38,15 @@ swigflags.extend(['-D' + c + "=" + py_env['CPPDEFINES'][c]
 if env['COMPILER'] == 'vcc':
     swigflags.append('-DSWIGWIN')
 
-py_env.AppendUnique(SWIGFLAGS=swigflags)
+# Python docstrings in SWIG-generated Python file
+if env['PYDOC']:
+    swigflags.append('-DPYDOC')
 
+# set single precision define
 if not py_env['USE_DOUBLE_PRECISION']:
-    py_env.AppendUnique(SWIGFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
+    swigflags.append('-DUSE_DOUBLE_PRECISION=0')
+
+py_env.AppendUnique(SWIGFLAGS=swigflags)
 
 pythonLibPaths = [BUILD_DIR]
 if env['PLATFORM'] == 'win32':
@@ -53,11 +58,18 @@ if env['PLATFORM'] == 'win32':
         sys.stderr.write("Error: I can't find the python lib path; the guessed location was %s\n" % pythonLibPath)
         sys.exit(1)
 
+libs = [flattenedDependencyGraph]
+
+if (env['PLATFORM'] == 'win32') and (env['COMPILER'] == 'gnu'):
+    py_env.AppendUnique(CPPDEFINES=['MS_WIN64'])
+    # TODO: replace hard-coded 'python27'
+    libs.append('python27')
+
 libPython = py_env.SharedLibrary(target='pysgpp_swig',
                                  source=["pysgpp.i"],
                                  SHLIBPREFIX='_',
                                  LIBPATH=pythonLibPaths,
-                                 LIBS=flattenedDependencyGraph)
+                                 LIBS=libs)
 # TODO libs are set hacky!
 
 # install python libraries routine
@@ -100,6 +112,10 @@ def setupPython(target, source, env):
     fd = open(os.path.join(PYSGPP_PACKAGE_PATH.abspath, "__init__.py"), "w")
     fd.close()
 
+if env['PYDOC']:
+    Import('pydocTargetList')
+    py_env.Depends(libPython, pydocTargetList)
+
 installLibPython = py_env.Install(PYSGPP_BUILD_PATH, libPython)
 installLibWrapperPython = py_env.Install(PYSGPP_BUILD_PATH, "pysgpp_swig.py")
 py_env.Depends(installLibPython, installLibWrapperPython)
@@ -107,5 +123,5 @@ if env['PLATFORM'] != 'win32':
     # windows does not support symbolic links out of the box
     # so we disable this feature
     moduleSetupPython = env.Command('setupPython', [], setupPython)
-    py_env.Depends(moduleSetupPython, installLibWrapperPython)
+    py_env.Depends(installLibWrapperPython, moduleSetupPython)
 installTargetList.append(installLibPython)

@@ -37,16 +37,19 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
    *              (j-th column contains hierarchical surplusses
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
-  InterpolantVectorFunctionGradient(base::Grid& grid, const base::DataMatrix& alpha)
-      : VectorFunctionGradient(grid.getStorage()->dim(), alpha.getNcols()),
-        grid(grid),
-        opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
-        alpha(alpha) {}
+  InterpolantVectorFunctionGradient(base::Grid& grid,
+                                    const base::DataMatrix& alpha) :
+    VectorFunctionGradient(grid.getStorage()->dim(), alpha.getNcols()),
+    grid(grid),
+    opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
+    alpha(alpha) {
+  }
 
   /**
    * Destructor.
    */
-  ~InterpolantVectorFunctionGradient() override {}
+  virtual ~InterpolantVectorFunctionGradient() override {
+  }
 
   /**
    * Evaluation of the function and its gradient.
@@ -56,8 +59,9 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
    * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
    *                      \mathbb{R}^{m \times d}\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value,
-                   base::DataMatrix& gradient) override {
+  inline virtual void eval(const base::DataVector& x,
+                           base::DataVector& value,
+                           base::DataMatrix& gradient) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         for (size_t j = 0; j < m; j++) {
@@ -81,20 +85,25 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunctionGradient>& clone) const override {
-    clone =
-        std::unique_ptr<VectorFunctionGradient>(new InterpolantVectorFunctionGradient(grid, alpha));
+  virtual void clone(std::unique_ptr<VectorFunctionGradient>& clone) const
+  override {
+    clone = std::unique_ptr<VectorFunctionGradient>(
+              new InterpolantVectorFunctionGradient(grid, alpha));
   }
 
   /**
    * @return coefficient matrix
    */
-  const base::DataMatrix& getAlpha() const { return alpha; }
+  const base::DataMatrix& getAlpha() const {
+    return alpha;
+  }
 
   /**
    * @param alpha coefficient matrix
    */
-  void setAlpha(const base::DataMatrix& alpha) { this->alpha = alpha; }
+  void setAlpha(const base::DataMatrix& alpha) {
+    this->alpha = alpha;
+  }
 
  protected:
   /// sparse grid
@@ -104,7 +113,8 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
   /// coefficient matrix
   base::DataMatrix alpha;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_INTERPOLANTVECTORFUNCTIONGRADIENT_HPP */

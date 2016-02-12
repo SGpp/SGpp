@@ -32,7 +32,9 @@ class Eigen : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const override;
+  virtual bool solve(SLE& system,
+                     base::DataVector& b,
+                     base::DataVector& x) const override;
 
   /**
    * @param       system  system to be solved
@@ -41,10 +43,13 @@ class Eigen : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  bool solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const override;
+  virtual bool solve(SLE& system,
+                     base::DataMatrix& B,
+                     base::DataMatrix& X) const override;
 };
-}  // namespace sle_solver
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_EIGEN_HPP */

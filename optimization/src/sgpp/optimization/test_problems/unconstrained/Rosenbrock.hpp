@@ -29,7 +29,7 @@ class RosenbrockObjective : public TestScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  explicit RosenbrockObjective(size_t d);
+  RosenbrockObjective(size_t d);
 
   /**
    * Destructor.
@@ -40,12 +40,14 @@ class RosenbrockObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  float_t evalUndisplaced(const base::DataVector& x) override;
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
 };
 
 /**
@@ -65,7 +67,7 @@ class Rosenbrock : public UnconstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  explicit Rosenbrock(size_t d);
+  Rosenbrock(size_t d);
 
   /**
    * Destructor.
@@ -83,14 +85,16 @@ class Rosenbrock : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
  protected:
   /// objective function
   RosenbrockObjective f;
 };
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_ROSENBROCK_HPP */

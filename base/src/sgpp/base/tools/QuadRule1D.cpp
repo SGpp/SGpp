@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/factory_exception.hpp>
-#include "QuadRule1D.hpp"
+#include <sgpp/base/tools/QuadRule1D.hpp>
 
 namespace SGPP {
 namespace base {

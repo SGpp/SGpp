@@ -14,7 +14,7 @@
 std::string uncompressFile(std::string fileName);
 
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen);
+                         SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen);
 
 void doDirectedRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen);
+                           SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen);

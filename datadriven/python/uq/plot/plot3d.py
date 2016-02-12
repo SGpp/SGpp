@@ -100,7 +100,7 @@ def plotSGNodal3d(grid, alpha):
         A[i, 1] = p[1]
         A[i, 2] = evalSGFunction(grid, alpha, p)
 
-    return plotNodal3d(A)
+    return plotNodal3d(A), A
 
 
 def plotNodal3d(A):

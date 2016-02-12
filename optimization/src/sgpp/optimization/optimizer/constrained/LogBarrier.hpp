@@ -12,8 +12,6 @@
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
-#include <vector>
-
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
@@ -43,11 +41,15 @@ class LogBarrier : public ConstrainedOptimizer {
    * @param barrierStartValue     barrier start value
    * @param barrierDecreaseFactor barrier decrease factor
    */
-  LogBarrier(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
-             VectorFunctionGradient& gGradient, size_t maxItCount = DEFAULT_N,
+  LogBarrier(ScalarFunction& f,
+             ScalarFunctionGradient& fGradient,
+             VectorFunction& g,
+             VectorFunctionGradient& gGradient,
+             size_t maxItCount = DEFAULT_N,
              float_t tolerance = DEFAULT_TOLERANCE,
              float_t barrierStartValue = DEFAULT_BARRIER_START_VALUE,
-             float_t barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+             float_t barrierDecreaseFactor =
+               DEFAULT_BARRIER_DECREASE_FACTOR);
 
   /**
    * Destructor.
@@ -106,7 +108,8 @@ class LogBarrier : public ConstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// objective function gradient
@@ -122,8 +125,9 @@ class LogBarrier : public ConstrainedOptimizer {
   /// search history (inner iterations)
   std::vector<size_t> kHist;
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_LOGBARRIER_HPP */

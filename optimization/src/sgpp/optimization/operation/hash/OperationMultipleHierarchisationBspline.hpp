@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINE_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINE_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONBSPLINE_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONBSPLINE_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,14 +19,15 @@ namespace optimization {
  * Hierarchisation operation for B-spline basis functions on
  * Noboundary grids.
  */
-class OperationMultipleHierarchisationBspline : public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationBspline :
+  public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  explicit OperationMultipleHierarchisationBspline(base::BsplineGrid& grid);
+  OperationMultipleHierarchisationBspline(base::BsplineGrid& grid);
 
   /**
    * Destructor.
@@ -67,7 +68,8 @@ class OperationMultipleHierarchisationBspline : public OperationMultipleHierarch
   /// storage of the sparse grid
   base::BsplineGrid& grid;
 };
-}  // namespace optimization
-}  // namespace SGPP
 
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERBSPLINE_HPP */
+}
+}
+
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONBSPLINE_HPP */

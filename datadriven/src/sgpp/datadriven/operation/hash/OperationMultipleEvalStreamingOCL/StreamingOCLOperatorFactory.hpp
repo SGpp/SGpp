@@ -16,8 +16,9 @@
 namespace SGPP {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid, base::DataMatrix& dataset,
-SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
+base::OperationMultipleEval* createStreamingOCLConfigured(base::Grid& grid,
+    base::DataMatrix& dataset,
+    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 }
 }

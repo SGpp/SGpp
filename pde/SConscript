@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -47,7 +47,7 @@ if env['USE_STATICLIB']:
                             source=objs,
                             LIBS=moduleDependencies)
 else:
-    # building shared libraries differ
+    # building of shared libraries differs
     libsuffix = env['SHLIBSUFFIX']
     lib = env.SharedLibrary(target=libname,
                             source=objs,
@@ -65,8 +65,8 @@ libInstall = env.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
+  py_test_env = env.Clone()
+  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
 for fileName in os.listdir("examples"):

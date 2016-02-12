@@ -12,11 +12,17 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-BubbleWrap::BubbleWrap(size_t d) : UnconstrainedTestProblem(d), f(d) {}
+BubbleWrap::BubbleWrap(size_t d) :
+  UnconstrainedTestProblem(d),
+  f(d) {
+}
 
-BubbleWrap::~BubbleWrap() {}
+BubbleWrap::~BubbleWrap() {
+}
 
-TestScalarFunction& BubbleWrap::getObjectiveFunction() { return f; }
+TestScalarFunction& BubbleWrap::getObjectiveFunction() {
+  return f;
+}
 
 float_t BubbleWrap::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
@@ -24,11 +30,15 @@ float_t BubbleWrap::getOptimalPointUndisplaced(base::DataVector& x) {
   return 0.0;
 }
 
-BubbleWrapObjective::BubbleWrapObjective(size_t d) : TestScalarFunction(d) {}
+BubbleWrapObjective::BubbleWrapObjective(size_t d) :
+  TestScalarFunction(d) {
+}
 
-BubbleWrapObjective::~BubbleWrapObjective() {}
+BubbleWrapObjective::~BubbleWrapObjective() {
+}
 
-float_t BubbleWrapObjective::evalUndisplaced(const base::DataVector& x) {
+float_t BubbleWrapObjective::evalUndisplaced(
+  const base::DataVector& x) {
   float_t product = 1.0;
 
   for (size_t t = 0; t < d; t++) {
@@ -39,9 +49,12 @@ float_t BubbleWrapObjective::evalUndisplaced(const base::DataVector& x) {
   return 1.0 - product;
 }
 
-void BubbleWrapObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new BubbleWrapObjective(*this));
+void BubbleWrapObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new BubbleWrapObjective(*this));
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

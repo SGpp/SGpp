@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "LearnerSGDE.hpp"
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>

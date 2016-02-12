@@ -13,26 +13,28 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-#include <vector>
 
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
 
-DifferentialEvolution::DifferentialEvolution(ScalarFunction& f, size_t maxFcnEvalCount,
-                                             size_t populationSize, float_t crossoverProbability,
-                                             float_t scalingFactor, size_t idleGenerationsCount,
-                                             float_t avgImprovementThreshold,
-                                             float_t maxDistanceThreshold)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
-      populationSize((populationSize > 0) ? populationSize : 10 * f.getNumberOfParameters()),
-      crossoverProbability(crossoverProbability),
-      scalingFactor(scalingFactor),
-      idleGenerationsCount(idleGenerationsCount),
-      avgImprovementThreshold(avgImprovementThreshold),
-      maxDistanceThreshold(maxDistanceThreshold) {}
+DifferentialEvolution::DifferentialEvolution(ScalarFunction& f,
+    size_t maxFcnEvalCount, size_t populationSize,
+    float_t crossoverProbability, float_t scalingFactor,
+    size_t idleGenerationsCount, float_t avgImprovementThreshold,
+    float_t maxDistanceThreshold) :
+  UnconstrainedOptimizer(f, maxFcnEvalCount),
+  populationSize((populationSize > 0) ? populationSize :
+                 10 * f.getNumberOfParameters()),
+  crossoverProbability(crossoverProbability),
+  scalingFactor(scalingFactor),
+  idleGenerationsCount(idleGenerationsCount),
+  avgImprovementThreshold(avgImprovementThreshold),
+  maxDistanceThreshold(maxDistanceThreshold) {
+}
 
-DifferentialEvolution::~DifferentialEvolution() {}
+DifferentialEvolution::~DifferentialEvolution() {
+}
 
 void DifferentialEvolution::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
@@ -45,7 +47,8 @@ void DifferentialEvolution::optimize() {
   fHist.resize(0);
 
   // vector of individuals
-  std::vector<base::DataVector> x1(populationSize, base::DataVector(d, 0.0));
+  std::vector<base::DataVector> x1(populationSize,
+                                   base::DataVector(d, 0.0));
   // another vector for the new population
   std::vector<base::DataVector> x2(x1);
 
@@ -79,10 +82,12 @@ void DifferentialEvolution::optimize() {
   // number of iterations
   size_t maxK = std::max(static_cast<size_t>(2), N / populationSize) - 1;
 
-  std::vector<std::vector<size_t>> a(maxK, std::vector<size_t>(populationSize, 0)), b = a, c = a,
-                                                                                    j = a;
-  std::vector<std::vector<base::DataVector>> prob(
-      maxK, std::vector<base::DataVector>(populationSize, base::DataVector(d, 0)));
+  std::vector<std::vector<size_t>> a(maxK, std::vector<size_t>(
+                                       populationSize, 0)),
+                                                       b = a, c = a, j = a;
+  std::vector<std::vector<base::DataVector>> prob(maxK,
+                                          std::vector<base::DataVector>(populationSize,
+                                              base::DataVector(d, 0)));
 
   // pregenerate all pseudorandom numbers because the
   // real algorithm is parallelized
@@ -91,16 +96,20 @@ void DifferentialEvolution::optimize() {
   for (size_t k = 0; k < maxK; k++) {
     for (size_t i = 0; i < populationSize; i++) {
       do {
-        a[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        a[k][i] = RandomNumberGenerator::getInstance().
+                  getUniformIndexRN(populationSize);
       } while (a[k][i] == i);
 
       do {
-        b[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        b[k][i] = RandomNumberGenerator::getInstance().
+                  getUniformIndexRN(populationSize);
       } while ((b[k][i] == i) || (b[k][i] == a[k][i]));
 
       do {
-        c[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
-      } while ((c[k][i] == i) || (c[k][i] == a[k][i]) || (c[k][i] == b[k][i]));
+        c[k][i] = RandomNumberGenerator::getInstance().
+                  getUniformIndexRN(populationSize);
+      } while ((c[k][i] == i) || (c[k][i] == a[k][i]) ||
+               (c[k][i] == b[k][i]));
 
       j[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(d);
 
@@ -115,13 +124,13 @@ void DifferentialEvolution::optimize() {
   // "real" algorithm loop
   for (size_t k = 0; k < maxK; k++) {
     // abbreviations
-    const std::vector<size_t> &a_k = a[k], &b_k = b[k], &c_k = c[k];
+    const std::vector<size_t>& a_k = a[k], &b_k = b[k], &c_k = c[k];
     const std::vector<size_t>& j_k = j[k];
     const std::vector<base::DataVector>& prob_k = prob[k];
 
-#pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, xOld, fx, fCurrentOpt, xOptIndex, \
-                            xNew) default(none)
-    {  // NOLINT(whitespace/braces)
+    #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, \
+    xOld, fx, fCurrentOpt, xOptIndex, xNew) default(none)
+    {
       base::DataVector y(d);
       ScalarFunction* curFPtr = &f;
 #ifdef _OPENMP
@@ -134,11 +143,11 @@ void DifferentialEvolution::optimize() {
 
 #endif /* _OPENMP */
 
-// for each point in the population
-#pragma omp for schedule(dynamic)
+      // for each point in the population
+      #pragma omp for schedule(dynamic)
 
       for (size_t i = 0; i < populationSize; i++) {
-        const size_t &cur_a = a_k[i], &cur_b = b_k[i], &cur_c = c_k[i];
+        const size_t& cur_a = a_k[i], &cur_b = b_k[i], &cur_c = c_k[i];
         const size_t& cur_j = j_k[i];
         const base::DataVector& prob_ki = prob_k[i];
         bool inDomain = true;
@@ -149,7 +158,9 @@ void DifferentialEvolution::optimize() {
 
           if ((t == cur_j) || (curProb < crossoverProbability)) {
             // mutate point in this dimension
-            y[t] = (*xOld)[cur_a][t] + scalingFactor * ((*xOld)[cur_b][t] - (*xOld)[cur_c][t]);
+            y[t] = (*xOld)[cur_a][t] +
+                   scalingFactor * ((*xOld)[cur_b][t] -
+                                    (*xOld)[cur_c][t]);
           } else {
             // don't mutate point in this dimension
             y[t] = (*xOld)[i][t];
@@ -166,8 +177,8 @@ void DifferentialEvolution::optimize() {
         const float_t fy = (inDomain ? curFPtr->eval(y) : INFINITY);
 
         if (fy < fx[i]) {
-// function_value is better ==> replace point with mutated one
-#pragma omp critical
+          // function_value is better ==> replace point with mutated one
+          #pragma omp critical
           {
             fx[i] = fy;
 
@@ -195,21 +206,21 @@ void DifferentialEvolution::optimize() {
 
     // calculate average function value
     for (size_t i = 0; i < populationSize; i++) {
-      avg += fx[i];
+    avg += fx[i];
     }
 
     avg /= static_cast<float_t>(populationSize);
 
     if (lastAvg - avg >= avgImprovementThreshold) {
-      // significant improvement
-      lastNonidleK = k;
-    } else if (k - lastNonidleK >= idleGenerationsCount) {
-      // last significant improvement too long ago
-      // ==> calculate maximum squared distance of all points
-      // to the best one
-      float_t maxDistance2 = 0.0;
+    // significant improvement
+    lastNonidleK = k;
+  } else if (k - lastNonidleK >= idleGenerationsCount) {
+    // last significant improvement too long ago
+    // ==> calculate maximum squared distance of all points
+    // to the best one
+    float_t maxDistance2 = 0.0;
 
-      for (size_t i = 0; i < populationSize; i++) {
+    for (size_t i = 0; i < populationSize; i++) {
         if (i == xOptIndex) {
           continue;
         }
@@ -217,8 +228,8 @@ void DifferentialEvolution::optimize() {
         float_t distance2 = 0.0;
 
         for (size_t t = 0; t < d; t++) {
-          distance2 +=
-              ((*xOld)[i][t] - (*xOld)[xOptIndex][t]) * ((*xOld)[i][t] - (*xOld)[xOptIndex][t]);
+          distance2 += ((*xOld)[i][t] - (*xOld)[xOptIndex][t]) *
+                       ((*xOld)[i][t] - (*xOld)[xOptIndex][t]);
         }
 
         if (distance2 > maxDistance2) {
@@ -237,8 +248,8 @@ void DifferentialEvolution::optimize() {
 
     // status message
     if (k % 10 == 0) {
-      Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                               std::to_string(fCurrentOpt));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
+          std::to_string(fCurrentOpt));
     }
 
     xHist.appendRow((*xOld)[xOptIndex]);
@@ -250,20 +261,25 @@ void DifferentialEvolution::optimize() {
   xOpt = (*xOld)[xOptIndex];
   fOpt = fCurrentOpt;
 
-  Printer::getInstance().printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
-                                           std::to_string(fCurrentOpt));
+  Printer::getInstance().printStatusUpdate(std::to_string(
+        maxK) + " steps, f(x) = " +
+      std::to_string(fCurrentOpt));
   Printer::getInstance().printStatusEnd();
 }
 
-size_t DifferentialEvolution::getPopulationSize() const { return populationSize; }
+size_t DifferentialEvolution::getPopulationSize() const {
+  return populationSize;
+}
 
 void DifferentialEvolution::setPopulationSize(size_t populationSize) {
   this->populationSize = populationSize;
 }
 
-void DifferentialEvolution::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(new DifferentialEvolution(*this));
+void DifferentialEvolution::clone(
+  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(
+            new DifferentialEvolution(*this));
 }
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+}
+}
+}

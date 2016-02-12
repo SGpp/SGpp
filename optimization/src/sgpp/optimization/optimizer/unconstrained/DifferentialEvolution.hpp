@@ -44,13 +44,21 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
    * @param avgImprovementThreshold   stopping criterion parameter 2
    * @param maxDistanceThreshold      stopping criterion parameter 3
    */
-  DifferentialEvolution(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
-                        size_t populationSize = 0,
-                        float_t crossoverProbability = DEFAULT_CROSSOVER_PROBABILITY,
-                        float_t scalingFactor = DEFAULT_SCALING_FACTOR,
-                        size_t idleGenerationsCount = DEFAULT_IDLE_GENERATIONS_COUNT,
-                        float_t avgImprovementThreshold = DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
-                        float_t maxDistanceThreshold = DEFAULT_MAX_DISTANCE_THRESHOLD);
+  DifferentialEvolution(ScalarFunction& f,
+                        size_t maxFcnEvalCount =
+                          DEFAULT_N,
+                        size_t populationSize =
+                          0,
+                        float_t crossoverProbability =
+                          DEFAULT_CROSSOVER_PROBABILITY,
+                        float_t scalingFactor =
+                          DEFAULT_SCALING_FACTOR,
+                        size_t idleGenerationsCount =
+                          DEFAULT_IDLE_GENERATIONS_COUNT,
+                        float_t avgImprovementThreshold =
+                          DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
+                        float_t maxDistanceThreshold =
+                          DEFAULT_MAX_DISTANCE_THRESHOLD);
 
   /**
    * Destructor.
@@ -72,7 +80,8 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// number of individuals
@@ -88,8 +97,9 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
   /// stopping criterion parameter 3
   float_t maxDistanceThreshold;
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_DIFFERENTIALEVOLUTION_HPP */

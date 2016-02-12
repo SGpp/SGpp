@@ -11,7 +11,7 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
-//#include "StreamingOCLParameters.hpp"
+//#include <StreamingOCLParameters.hpp>
 
 namespace SGPP {
 namespace datadriven {

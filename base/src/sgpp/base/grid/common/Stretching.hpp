@@ -15,7 +15,7 @@
 #include <time.h>
 
 #include <cstddef>
-#include <math.h>
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <fstream>

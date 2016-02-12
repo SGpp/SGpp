@@ -8,7 +8,7 @@
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "GeneralizedBoundaryGridGenerator.hpp"
+#include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
 
 
 namespace SGPP {

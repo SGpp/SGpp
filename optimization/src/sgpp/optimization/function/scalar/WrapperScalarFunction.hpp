@@ -21,7 +21,8 @@ namespace optimization {
  */
 class WrapperScalarFunction : public ScalarFunction {
  public:
-  typedef std::function<float_t(const base::DataVector&)> FunctionEvalType;
+  typedef std::function<float_t(const base::DataVector&)>
+  FunctionEvalType;
 
   /**
    * Constructor.
@@ -29,31 +30,38 @@ class WrapperScalarFunction : public ScalarFunction {
    * @param d         dimension of the domain
    * @param f         function to be wrapped
    */
-  WrapperScalarFunction(size_t d, FunctionEvalType f) : ScalarFunction(d), f(f) {}
+  WrapperScalarFunction(size_t d, FunctionEvalType f) :
+    ScalarFunction(d), f(f) {
+  }
 
   /**
    * Destructor.
    */
-  ~WrapperScalarFunction() override {}
+  virtual ~WrapperScalarFunction() override {
+  }
 
   /**
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x) override { return f(x); }
+  inline virtual float_t eval(const base::DataVector& x) override {
+    return f(x);
+  }
 
   /**
    * @param[out] clone pointer to cloned object
    */
   void clone(std::unique_ptr<ScalarFunction>& clone) const override {
-    clone = std::unique_ptr<ScalarFunction>(new WrapperScalarFunction(d, f));
+    clone = std::unique_ptr<ScalarFunction>(
+              new WrapperScalarFunction(d, f));
   }
 
  protected:
   /// function to be wrapped
   FunctionEvalType f;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_WRAPPERSCALARFUNCTION_HPP */

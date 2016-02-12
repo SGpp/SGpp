@@ -12,8 +12,6 @@
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
-#include <vector>
-
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
@@ -48,13 +46,20 @@ class SquaredPenalty : public ConstrainedOptimizer {
    * @param penaltyStartValue     penalty start value
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  SquaredPenalty(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
-                 VectorFunctionGradient& gGradient, VectorFunction& h,
-                 VectorFunctionGradient& hGradient, size_t maxItCount = DEFAULT_N,
+  SquaredPenalty(ScalarFunction& f,
+                 ScalarFunctionGradient& fGradient,
+                 VectorFunction& g,
+                 VectorFunctionGradient& gGradient,
+                 VectorFunction& h,
+                 VectorFunctionGradient& hGradient,
+                 size_t maxItCount = DEFAULT_N,
                  float_t xTolerance = DEFAULT_X_TOLERANCE,
-                 float_t constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
-                 float_t penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
-                 float_t penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+                 float_t constraintTolerance =
+                   DEFAULT_CONSTRAINT_TOLERANCE,
+                 float_t penaltyStartValue =
+                   DEFAULT_PENALTY_START_VALUE,
+                 float_t penaltyIncreaseFactor =
+                   DEFAULT_PENALTY_INCREASE_FACTOR);
 
   /**
    * Destructor.
@@ -128,7 +133,8 @@ class SquaredPenalty : public ConstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// objective function gradient
@@ -148,8 +154,9 @@ class SquaredPenalty : public ConstrainedOptimizer {
   /// search history (inner iterations)
   std::vector<size_t> kHist;
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_SQUAREDPENALTY_HPP */

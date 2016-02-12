@@ -15,13 +15,13 @@
 #define NUMEVALPOINTS 11
 
 #include <mpi.h>
-#include "sgpp_base.hpp"
-#include "sgpp_pde.hpp"
-#include "sgpp_finance.hpp"
-#include "sgpp_parallel.hpp"
-#include "sgpp_solver.hpp"
-#include "sgpp_datadriven.hpp"
-#include "sgpp_mpi.hpp"
+#include <sgpp_base.hpp>
+#include <sgpp_pde.hpp>
+#include <sgpp_finance.hpp>
+#include <sgpp_parallel.hpp>
+#include <sgpp_solver.hpp>
+#include <sgpp_datadriven.hpp>
+#include <sgpp_mpi.hpp>
 
 #include <cstdlib>
 #include <sstream>

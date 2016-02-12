@@ -6,10 +6,12 @@
 #pragma once
 
 #include <CL/cl.h>
-#include <map>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include <sgpp/globaldef.hpp>
+
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+
+#include <map>
 
 namespace SGPP {
 namespace base {
@@ -24,7 +26,7 @@ class OCLClonedBufferMultiPlatform {
 
  public:
   explicit OCLClonedBufferMultiPlatform(
-      std::shared_ptr<OCLManagerMultiPlatform> manager);
+    std::shared_ptr<OCLManagerMultiPlatform> manager);
 
   ~OCLClonedBufferMultiPlatform();
 
@@ -45,3 +47,4 @@ class OCLClonedBufferMultiPlatform {
 
 }  // namespace base
 }  // namespace SGPP
+

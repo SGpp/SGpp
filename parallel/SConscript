@@ -1,9 +1,10 @@
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import os
+import sys
 import fnmatch
 
 Import('env')
@@ -77,7 +78,7 @@ OCLOnlyFiles = [
 
 #-I$(ARBBINCLUDE) -DUSEARBB
 #-L$(ARBBLIB) -larbb -ltbb
-ArBBOnlyFiles = [ 
+ArBBOnlyFiles = [
     "OperationMultipleEvalIterativeArBBLinear.cpp",
     "OperationMultipleEvalIterativeSPArBBLinear.cpp",
     "OperationMultipleEvalIterativeArBBModLinear.cpp",
@@ -91,14 +92,14 @@ ArBBOnlyFiles = [
 
 MICOnlyFiles = [
     "MICKernelImpl.cpp",
-    "SPMICKernelImpl.cpp"       
+    "SPMICKernelImpl.cpp"
 ]
 
 moduleDependencies = ['sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
-if env['PLATFORM'] == 'win32':
-    sys.stderr.write("Error: the parallel package is not supported on windows platforms.\n")
+if env['COMPILER'] == 'vcc':
+    sys.stderr.write("Error: The parallel package is not supported on MSVC++.\n")
     sys.exit(1)
 
 libname = "sgpp%s" % moduleName
@@ -153,8 +154,8 @@ libInstall = env_parallel.Install(BUILD_DIR, lib)
 
 if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   Import('testTargetList')
-  moduleTest = env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  env.Requires(moduleTest, libInstall)
+  py_test_env = env.Clone()
+  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
   testTargetList.append(moduleTest)
 
 Import('exampleTargetList')

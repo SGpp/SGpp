@@ -9,7 +9,7 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
 #include <string>
-#include "StepsizeControl.hpp"
+#include <sgpp/solver/ode/StepsizeControl.hpp>
 
 //
 #include <sgpp/globaldef.hpp>

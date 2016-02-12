@@ -41,10 +41,15 @@ class Rprop : public UnconstrainedOptimizer {
    * @param stepSizeIncreaseFactor  step size increase factor
    * @param stepSizeDecreaseFactor  step size decrease factor
    */
-  Rprop(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount = DEFAULT_N,
-        float_t tolerance = DEFAULT_TOLERANCE, float_t initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
-        float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
-        float_t stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR);
+  Rprop(ScalarFunction& f,
+        ScalarFunctionGradient& fGradient,
+        size_t maxItCount = DEFAULT_N,
+        float_t tolerance = DEFAULT_TOLERANCE,
+        float_t initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
+        float_t stepSizeIncreaseFactor =
+          DEFAULT_STEP_SIZE_INCREASE_FACTOR,
+        float_t stepSizeDecreaseFactor =
+          DEFAULT_STEP_SIZE_DECREASE_FACTOR);
 
   /**
    * Destructor.
@@ -101,7 +106,8 @@ class Rprop : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// objective function gradient
@@ -115,8 +121,9 @@ class Rprop : public UnconstrainedOptimizer {
   /// step size decrease factor
   float_t rhoAlphaMinus;
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_RPROP_HPP */

@@ -9,7 +9,7 @@
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ode/StepsizeControl.hpp>
 #include <string>
-#include "VarTimestep.hpp"
+#include <sgpp/solver/ode/VarTimestep.hpp>
 
 
 #include <sgpp/globaldef.hpp>

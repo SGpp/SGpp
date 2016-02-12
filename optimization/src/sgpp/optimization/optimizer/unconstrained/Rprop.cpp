@@ -12,17 +12,24 @@ namespace SGPP {
 namespace optimization {
 namespace optimizer {
 
-Rprop::Rprop(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount,
-             float_t tolerance, float_t initialStepSize, float_t stepSizeIncreaseFactor,
-             float_t stepSizeDecreaseFactor)
-    : UnconstrainedOptimizer(f, maxItCount),
-      fGradient(fGradient),
-      theta(tolerance),
-      initialAlpha(initialStepSize),
-      rhoAlphaPlus(stepSizeIncreaseFactor),
-      rhoAlphaMinus(stepSizeDecreaseFactor) {}
+Rprop::Rprop(
+  ScalarFunction& f,
+  ScalarFunctionGradient& fGradient,
+  size_t maxItCount,
+  float_t tolerance,
+  float_t initialStepSize,
+  float_t stepSizeIncreaseFactor,
+  float_t stepSizeDecreaseFactor) :
+  UnconstrainedOptimizer(f, maxItCount),
+  fGradient(fGradient),
+  theta(tolerance),
+  initialAlpha(initialStepSize),
+  rhoAlphaPlus(stepSizeIncreaseFactor),
+  rhoAlphaMinus(stepSizeDecreaseFactor) {
+}
 
-Rprop::~Rprop() {}
+Rprop::~Rprop() {
+}
 
 void Rprop::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Rprop)...");
@@ -96,8 +103,9 @@ void Rprop::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(
+      std::to_string(k) + " evaluations, x = " + x.toString() +
+      ", f(x) = " + std::to_string(fx));
 
     xHist.appendRow(x);
     fHist.append(fx);
@@ -125,31 +133,49 @@ void Rprop::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& Rprop::getObjectiveGradient() const { return fGradient; }
+ScalarFunctionGradient& Rprop::getObjectiveGradient() const {
+  return fGradient;
+}
 
-float_t Rprop::getTolerance() const { return theta; }
+float_t Rprop::getTolerance() const {
+  return theta;
+}
 
-void Rprop::setTolerance(float_t tolerance) { theta = tolerance; }
+void Rprop::setTolerance(float_t tolerance) {
+  theta = tolerance;
+}
 
-float_t Rprop::getInitialStepSize() const { return initialAlpha; }
+float_t Rprop::getInitialStepSize() const {
+  return initialAlpha;
+}
 
-void Rprop::setInitialStepSize(float_t initialStepSize) { initialAlpha = initialStepSize; }
+void Rprop::setInitialStepSize(float_t initialStepSize) {
+  initialAlpha = initialStepSize;
+}
 
-float_t Rprop::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
+float_t Rprop::getStepSizeIncreaseFactor() const {
+  return rhoAlphaPlus;
+}
 
-void Rprop::setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor) {
+void Rprop::setStepSizeIncreaseFactor(
+  float_t stepSizeIncreaseFactor) {
   rhoAlphaPlus = stepSizeIncreaseFactor;
 }
 
-float_t Rprop::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
+float_t Rprop::getStepSizeDecreaseFactor() const {
+  return rhoAlphaMinus;
+}
 
-void Rprop::setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor) {
+void Rprop::setStepSizeDecreaseFactor(
+  float_t stepSizeDecreaseFactor) {
   rhoAlphaMinus = stepSizeDecreaseFactor;
 }
 
-void Rprop::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(new Rprop(*this));
+void Rprop::clone(
+  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(
+            new Rprop(*this));
 }
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+}
+}
+}

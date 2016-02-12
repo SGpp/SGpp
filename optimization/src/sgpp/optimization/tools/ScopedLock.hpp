@@ -26,12 +26,16 @@ class ScopedLock {
    *
    * @param m     MutexType object to be wrapped
    */
-  explicit ScopedLock(MutexType& m) : mut(m), locked(true) { mut.lock(); }
+  ScopedLock(MutexType& m) : mut(m), locked(true) {
+    mut.lock();
+  }
 
   /**
    * Destructor, unlocks the MutexType object.
    */
-  ~ScopedLock() { unlock(); }
+  ~ScopedLock() {
+    unlock();
+  }
 
   /**
    * Unlocks the MutexType object, if locked.
@@ -74,7 +78,8 @@ class ScopedLock {
    */
   void operator=(const ScopedLock& other);
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_SCOPEDLOCK_HPP */

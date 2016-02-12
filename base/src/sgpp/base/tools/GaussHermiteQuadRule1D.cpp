@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "GaussHermiteQuadRule1D.hpp"
+#include <sgpp/base/tools/GaussHermiteQuadRule1D.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 
 namespace SGPP {

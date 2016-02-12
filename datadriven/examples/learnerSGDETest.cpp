@@ -3,24 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <string>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/application/LearnerSGDE.hpp>
+#include <sgpp/datadriven/application/GaussianKDE.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/datadriven/application/LearnerSGDE.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
-#include "sgpp/datadriven/application/GaussianKDE.hpp"
-
-using std::cout;
-using std::endl;
+using namespace std;
 
 int main(int argc, char** argv) {
   std::string filename = "../tests/data/friedman_4d_2000.arff";
 
   cout << "# loading file: " << filename << endl;
-  SGPP::datadriven::Dataset dataset =
-      SGPP::datadriven::ARFFTools::readARFF(filename);
+  SGPP::datadriven::Dataset dataset = SGPP::datadriven::ARFFTools::readARFF(
+                                        filename);
   SGPP::base::DataMatrix& samples = dataset.getData();
 
   // configure grid
@@ -75,12 +73,13 @@ int main(int argc, char** argv) {
   }
 
   cout << "--------------------------------------------------------" << endl;
-  cout << (learner.getGrid())->getSize() << " -> "
-       << (learner.getAlpha())->sum() << endl;
-  cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x)
-       << " = pdf_KDE(x)" << endl;
-  cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean()
-       << " = mean_KDE(x)" << endl;
-  cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance()
-       << " = var_KDE(x)" << endl;
+  cout << (learner.getGrid())->getSize() << " -> " << (learner.getAlpha())->sum()
+       << endl;
+  cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(
+         x) << " = pdf_KDE(x)" << endl;
+  cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() <<
+       " = mean_KDE(x)" << endl;
+  cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() <<
+       " = var_KDE(x)" << endl;
 }
+

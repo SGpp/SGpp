@@ -12,11 +12,17 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-Rosenbrock::Rosenbrock(size_t d) : UnconstrainedTestProblem(d), f(d) {}
+Rosenbrock::Rosenbrock(size_t d) :
+  UnconstrainedTestProblem(d),
+  f(d) {
+}
 
-Rosenbrock::~Rosenbrock() {}
+Rosenbrock::~Rosenbrock() {
+}
 
-TestScalarFunction& Rosenbrock::getObjectiveFunction() { return f; }
+TestScalarFunction& Rosenbrock::getObjectiveFunction() {
+  return f;
+}
 
 float_t Rosenbrock::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
@@ -24,11 +30,15 @@ float_t Rosenbrock::getOptimalPointUndisplaced(base::DataVector& x) {
   return 0.0;
 }
 
-RosenbrockObjective::RosenbrockObjective(size_t d) : TestScalarFunction(d) {}
+RosenbrockObjective::RosenbrockObjective(size_t d) :
+  TestScalarFunction(d) {
+}
 
-RosenbrockObjective::~RosenbrockObjective() {}
+RosenbrockObjective::~RosenbrockObjective() {
+}
 
-float_t RosenbrockObjective::evalUndisplaced(const base::DataVector& x) {
+float_t RosenbrockObjective::evalUndisplaced(
+  const base::DataVector& x) {
   float_t result = 0.0;
 
   float_t xt = 15.0 * x[0] - 5.0;
@@ -45,9 +55,12 @@ float_t RosenbrockObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void RosenbrockObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new RosenbrockObjective(*this));
+void RosenbrockObjective::clone(
+  std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(
+            new RosenbrockObjective(*this));
 }
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}

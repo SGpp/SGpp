@@ -8,7 +8,7 @@
 
 #include <sgpp/base/application/ScreenOutput.hpp>
 #include <sgpp/solver/ODESolver.hpp>
-#include "VarTimestep.hpp"
+#include <sgpp/solver/ode/VarTimestep.hpp>
 
 #include <sgpp/globaldef.hpp>
 

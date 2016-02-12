@@ -7,6 +7,8 @@
 
 #include <sgpp/combigrid/basisfunction/CombiLinearBasisFunction.hpp>
 
+using namespace std;
+
 const combigrid::BasisFunctionBasis*
     combigrid::LinearBasisFunction::defaultBasis_ =
         new combigrid::LinearBasisFunction();

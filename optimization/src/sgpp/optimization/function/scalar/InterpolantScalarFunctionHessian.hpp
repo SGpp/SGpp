@@ -18,6 +18,7 @@
 namespace SGPP {
 namespace optimization {
 
+
 /**
  * Sparse grid interpolant Hessian of a scalar-valued function.
  *
@@ -33,16 +34,19 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
    * @param grid  sparse grid
    * @param alpha coefficient vector
    */
-  InterpolantScalarFunctionHessian(base::Grid& grid, const base::DataVector& alpha)
-      : ScalarFunctionHessian(grid.getStorage()->dim()),
-        grid(grid),
-        opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
-        alpha(alpha) {}
+  InterpolantScalarFunctionHessian(base::Grid& grid,
+                                   const base::DataVector& alpha) :
+    ScalarFunctionHessian(grid.getStorage()->dim()),
+    grid(grid),
+    opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
+    alpha(alpha) {
+  }
 
   /**
    * Destructor.
    */
-  ~InterpolantScalarFunctionHessian() override {}
+  virtual ~InterpolantScalarFunctionHessian() override {
+  }
 
   /**
    * Evaluation of the function, its gradient and its Hessian.
@@ -54,8 +58,9 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x, base::DataVector& gradient,
-                      base::DataMatrix& hessian) override {
+  inline virtual float_t eval(const base::DataVector& x,
+                              base::DataVector& gradient,
+                              base::DataMatrix& hessian) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         return INFINITY;
@@ -68,20 +73,25 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const override {
-    clone =
-        std::unique_ptr<ScalarFunctionHessian>(new InterpolantScalarFunctionHessian(grid, alpha));
+  virtual void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const
+  override {
+    clone = std::unique_ptr<ScalarFunctionHessian>(
+              new InterpolantScalarFunctionHessian(grid, alpha));
   }
 
   /**
    * @return coefficient vector
    */
-  const base::DataVector& getAlpha() const { return alpha; }
+  const base::DataVector& getAlpha() const {
+    return alpha;
+  }
 
   /**
    * @param alpha coefficient vector
    */
-  void setAlpha(const base::DataVector& alpha) { this->alpha = alpha; }
+  void setAlpha(const base::DataVector& alpha) {
+    this->alpha = alpha;
+  }
 
  protected:
   /// sparse grid
@@ -91,7 +101,8 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
   /// coefficient vector
   base::DataVector alpha;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_INTERPOLANTSCALARFUNCTIONHESSIAN_HPP */

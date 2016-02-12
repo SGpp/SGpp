@@ -6,10 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTVECTORFUNCTION_HPP
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTVECTORFUNCTION_HPP
 
+#include <cstddef>
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/vector/VectorFunction.hpp>
-
-#include <cstddef>
 
 namespace SGPP {
 namespace optimization {
@@ -51,7 +51,8 @@ class TestVectorFunction : public VectorFunction {
    * @param[out]  value   \f$\vec{f}(\vec{x} + \vec{d})\f$
    *                      with displacement \f$\vec{d}\f$
    */
-  void eval(const base::DataVector& x, base::DataVector& value) override;
+  virtual void eval(const base::DataVector& x,
+                    base::DataVector& value) override;
 
   /**
    * Pure virtual method for evaluating the undisplaced function.
@@ -59,7 +60,8 @@ class TestVectorFunction : public VectorFunction {
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
    * @param[out]  value   \f$\vec{f}(\vec{x})\f$
    */
-  virtual void evalUndisplaced(const base::DataVector& x, base::DataVector& value) = 0;
+  virtual void evalUndisplaced(const base::DataVector& x,
+                               base::DataVector& value) = 0;
 
   /**
    * @return                currently used displacement
@@ -77,8 +79,9 @@ class TestVectorFunction : public VectorFunction {
   /// temporary vector for displacing
   base::DataVector xTmp;
 };
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTVECTORFUNCTION_HPP */

@@ -29,7 +29,7 @@ class PermObjective : public TestScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  explicit PermObjective(size_t d);
+  PermObjective(size_t d);
 
   /**
    * Destructor.
@@ -40,12 +40,14 @@ class PermObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  float_t evalUndisplaced(const base::DataVector& x) override;
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
 };
 
 /**
@@ -65,7 +67,7 @@ class Perm : public UnconstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  explicit Perm(size_t d);
+  Perm(size_t d);
 
   /**
    * Destructor.
@@ -83,14 +85,16 @@ class Perm : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
  protected:
   /// objective function
   PermObjective f;
 };
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_PERM_HPP */

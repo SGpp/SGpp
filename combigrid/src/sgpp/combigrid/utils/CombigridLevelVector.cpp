@@ -5,7 +5,7 @@
 **************************************************************************** */
 // @author Christoph Kowitz (kowitz@in.tum.de)
 
-#include "CombigridLevelVector.hpp"
+#include <sgpp/combigrid/utils/CombigridLevelVector.hpp>
 
 using namespace combigrid;
 

@@ -6,7 +6,7 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include "SystemMatrixLeastSquaresIdentity.hpp"
+#include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
 
 #include <sgpp/globaldef.hpp>
 

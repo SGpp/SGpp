@@ -6,10 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_SLE_SYSTEM_SLE_HPP
 #define SGPP_OPTIMIZATION_SLE_SYSTEM_SLE_HPP
 
+#include <cstddef>
+
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-
-#include <cstddef>
 
 namespace SGPP {
 namespace optimization {
@@ -23,12 +23,14 @@ class SLE {
   /**
    * Constructor.
    */
-  SLE() {}
+  SLE() {
+  }
 
   /**
    * Destructor.
    */
-  virtual ~SLE() {}
+  virtual ~SLE() {
+  }
 
   /**
    * Pure virtual method for checking if a matrix entry vanishes or not.
@@ -56,7 +58,8 @@ class SLE {
    * @param       x   vector to be multiplied
    * @param[out]  y   \f$y = Ax\f$
    */
-  virtual void matrixVectorMultiplication(const base::DataVector& x, base::DataVector& y) {
+  virtual void matrixVectorMultiplication(const base::DataVector& x,
+                                          base::DataVector& y) {
     const size_t n = getDimension();
     y.resize(n);
     y.setAll(0.0);
@@ -101,9 +104,12 @@ class SLE {
    * @return whether this system derives from CloneableSLE or not
    *         (standard: false)
    */
-  virtual bool isCloneable() const { return false; }
+  virtual bool isCloneable() const {
+    return false;
+  }
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_SLE_SYSTEM_SLE_HPP */

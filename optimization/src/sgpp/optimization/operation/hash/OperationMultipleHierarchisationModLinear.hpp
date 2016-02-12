@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODLINEAR_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODLINEAR_HPP
+#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODLINEAR_HPP
+#define SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODLINEAR_HPP
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,14 +19,15 @@ namespace optimization {
  * Hierarchisation operation for modified linear basis functions on
  * Noboundary grids.
  */
-class OperationMultipleHierarchisationModLinear : public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationModLinear :
+  public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  explicit OperationMultipleHierarchisationModLinear(base::ModLinearGrid& grid);
+  OperationMultipleHierarchisationModLinear(base::ModLinearGrid& grid);
 
   /**
    * Destructor.
@@ -67,7 +68,8 @@ class OperationMultipleHierarchisationModLinear : public OperationMultipleHierar
   /// storage of the sparse grid
   base::ModLinearGrid& grid;
 };
-}  // namespace optimization
-}  // namespace SGPP
 
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODLINEAR_HPP */
+}
+}
+
+#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPERATIONMULTIPLEHIERARCHISATIONMODLINEAR_HPP */

@@ -16,6 +16,7 @@
 #include <cstddef>
 #include <memory>
 
+
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
@@ -60,10 +61,16 @@ class Newton : public UnconstrainedOptimizer {
    * @param alpha2            steepest descent restart parameter 2
    * @param p                 steepest descent restart exponent
    */
-  Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount = DEFAULT_N,
-         float_t beta = DEFAULT_BETA, float_t gamma = DEFAULT_GAMMA,
-         float_t tolerance = DEFAULT_TOLERANCE, float_t epsilon = DEFAULT_EPSILON,
-         float_t alpha1 = DEFAULT_ALPHA1, float_t alpha2 = DEFAULT_ALPHA2, float_t p = DEFAULT_P);
+  Newton(ScalarFunction& f,
+         ScalarFunctionHessian& fHessian,
+         size_t maxItCount = DEFAULT_N,
+         float_t beta = DEFAULT_BETA,
+         float_t gamma = DEFAULT_GAMMA,
+         float_t tolerance = DEFAULT_TOLERANCE,
+         float_t epsilon = DEFAULT_EPSILON,
+         float_t alpha1 = DEFAULT_ALPHA1,
+         float_t alpha2 = DEFAULT_ALPHA2,
+         float_t p = DEFAULT_P);
 
   /**
    * Constructor.
@@ -83,9 +90,17 @@ class Newton : public UnconstrainedOptimizer {
    *                          the linear systems
    *                          (Hessian as coefficient matrix)
    */
-  Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t maxItCount, float_t beta,
-         float_t gamma, float_t tolerance, float_t epsilon, float_t alpha1, float_t alpha2,
-         float_t p, const sle_solver::SLESolver& sleSolver);
+  Newton(ScalarFunction& f,
+         ScalarFunctionHessian& fHessian,
+         size_t maxItCount,
+         float_t beta,
+         float_t gamma,
+         float_t tolerance,
+         float_t epsilon,
+         float_t alpha1,
+         float_t alpha2,
+         float_t p,
+         const sle_solver::SLESolver& sleSolver);
 
   /**
    * Destructor.
@@ -172,7 +187,8 @@ class Newton : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
+  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
+  override;
 
  protected:
   /// objective function Hessian
@@ -196,8 +212,9 @@ class Newton : public UnconstrainedOptimizer {
   /// linear solver
   const sle_solver::SLESolver& sleSolver;
 };
-}  // namespace optimizer
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_NEWTON_HPP */

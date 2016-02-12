@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at 
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 %{
@@ -33,7 +33,7 @@
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
 %apply std::vector<std::pair<size_t, float_t> > *OUTPUT { std::vector<std::pair<size_t, float_t> >& result };
-%apply std::vector<float_t> *INPUT { std::vector<float_t>& point }; 
+%apply std::vector<float_t> *INPUT { std::vector<float_t>& point };
 
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationTest.hpp"
 %include "datadriven/src/sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"

@@ -7,9 +7,9 @@
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_EGGHOLDER_HPP
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 #include <cmath>
+#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
 namespace optimization {
@@ -41,12 +41,14 @@ class EggholderObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  float_t evalUndisplaced(const base::DataVector& x) override;
+  virtual float_t evalUndisplaced(const base::DataVector& x)
+  override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
+  const override;
 };
 
 /**
@@ -85,7 +87,8 @@ class Eggholder : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
+  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
+  override;
 
  protected:
   /**
@@ -99,8 +102,10 @@ class Eggholder : public UnconstrainedTestProblem {
   /// objective function
   EggholderObjective f;
 };
-}  // namespace test_problems
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_EGGHOLDER_HPP */
+

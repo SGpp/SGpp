@@ -16,7 +16,6 @@
 #include <sgpp/optimization/function/vector/VectorFunctionHessian.hpp>
 
 #include <cstddef>
-#include <vector>
 
 namespace SGPP {
 namespace optimization {
@@ -38,16 +37,19 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
    *              (j-th column contains hierarchical surplusses
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
-  InterpolantVectorFunctionHessian(base::Grid& grid, const base::DataMatrix& alpha)
-      : VectorFunctionHessian(grid.getStorage()->dim(), alpha.getNcols()),
-        grid(grid),
-        opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
-        alpha(alpha) {}
+  InterpolantVectorFunctionHessian(base::Grid& grid,
+                                   const base::DataMatrix& alpha) :
+    VectorFunctionHessian(grid.getStorage()->dim(), alpha.getNcols()),
+    grid(grid),
+    opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
+    alpha(alpha) {
+  }
 
   /**
    * Destructor.
    */
-  ~InterpolantVectorFunctionHessian() override {}
+  virtual ~InterpolantVectorFunctionHessian() override {
+  }
 
   /**
    * Evaluation of the function and its gradient.
@@ -60,9 +62,10 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
    *                      \f$\nabla^2 g_i(\vec{x}) \in
    *                      \mathbb{R}^{d \times d}\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value,
-                   base::DataMatrix& gradient,
-                   std::vector<base::DataMatrix>& hessian) override {
+  inline virtual void eval(const base::DataVector& x,
+                           base::DataVector& value,
+                           base::DataMatrix& gradient,
+                           std::vector<base::DataMatrix>& hessian) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         for (size_t j = 0; j < m; j++) {
@@ -79,7 +82,8 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
 
     for (size_t j = 0; j < m; j++) {
       alpha.getColumn(j, curAlpha);
-      value[j] = opEvalHessian->evalHessian(curAlpha, x, curGradient, hessian[j]);
+      value[j] = opEvalHessian->evalHessian(
+                   curAlpha, x, curGradient, hessian[j]);
       gradient.setRow(j, curGradient);
     }
   }
@@ -87,20 +91,25 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunctionHessian>& clone) const override {
-    clone =
-        std::unique_ptr<VectorFunctionHessian>(new InterpolantVectorFunctionHessian(grid, alpha));
+  virtual void clone(std::unique_ptr<VectorFunctionHessian>& clone) const
+  override {
+    clone = std::unique_ptr<VectorFunctionHessian>(
+              new InterpolantVectorFunctionHessian(grid, alpha));
   }
 
   /**
    * @return coefficient matrix
    */
-  const base::DataMatrix& getAlpha() const { return alpha; }
+  const base::DataMatrix& getAlpha() const {
+    return alpha;
+  }
 
   /**
    * @param alpha coefficient matrix
    */
-  void setAlpha(const base::DataMatrix& alpha) { this->alpha = alpha; }
+  void setAlpha(const base::DataMatrix& alpha) {
+    this->alpha = alpha;
+  }
 
  protected:
   /// sparse grid
@@ -110,7 +119,8 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
   /// coefficient matrix
   base::DataMatrix alpha;
 };
-}  // namespace optimization
-}  // namespace SGPP
+
+}
+}
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_INTERPOLANTVECTORFUNCTIONHESSIAN_HPP */
