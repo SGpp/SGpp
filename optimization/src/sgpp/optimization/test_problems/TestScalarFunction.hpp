@@ -6,10 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTSCALARFUNCTION_HPP
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTSCALARFUNCTION_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+
+#include <cstddef>
 
 namespace SGPP {
 namespace optimization {
@@ -39,7 +39,7 @@ class TestScalarFunction : public ScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  TestScalarFunction(size_t d);
+  explicit TestScalarFunction(size_t d);
 
   /**
    * Destructor.
@@ -79,9 +79,8 @@ class TestScalarFunction : public ScalarFunction {
   /// temporary vector for displacing
   base::DataVector xTmp;
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTSCALARFUNCTION_HPP */

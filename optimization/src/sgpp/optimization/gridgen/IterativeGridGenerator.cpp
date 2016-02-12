@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <numeric>
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -12,27 +10,20 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
+#include <numeric>
+#include <list>
+
 namespace SGPP {
 namespace optimization {
 
-IterativeGridGenerator::IterativeGridGenerator(
-  ScalarFunction& f, base::Grid& grid, size_t N) :
-  f(f),
-  grid(grid),
-  N(N),
-  functionValues(0) {
-}
+IterativeGridGenerator::IterativeGridGenerator(ScalarFunction& f, base::Grid& grid, size_t N)
+    : f(f), grid(grid), N(N), functionValues(0) {}
 
-IterativeGridGenerator::~IterativeGridGenerator() {
-}
+IterativeGridGenerator::~IterativeGridGenerator() {}
 
-base::Grid& IterativeGridGenerator::getGrid() const {
-  return grid;
-}
+base::Grid& IterativeGridGenerator::getGrid() const { return grid; }
 
-const base::DataVector& IterativeGridGenerator::getFunctionValues() const {
-  return functionValues;
-}
+const base::DataVector& IterativeGridGenerator::getFunctionValues() const { return functionValues; }
 
 void IterativeGridGenerator::undoRefinement(size_t oldGridSize) {
   base::GridStorage& gridStorage = *grid.getStorage();
@@ -47,8 +38,7 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
   const size_t curGridSize = gridStorage.size();
   base::DataVector& fX = functionValues;
 
-  #pragma omp parallel shared(fX, oldGridSize, gridStorage) \
-  default(none)
+#pragma omp parallel shared(fX, oldGridSize, gridStorage) default(none)
   {
     base::GridIndex* gp;
     base::DataVector x(d);
@@ -63,7 +53,7 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
 
 #endif /* _OPENMP */
 
-    #pragma omp for
+#pragma omp for
 
     for (size_t i = oldGridSize; i < curGridSize; i++) {
       // convert grid point to coordinate vector
@@ -78,6 +68,5 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
     }
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

@@ -78,12 +78,9 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V);
  * @param[out] Q  transformation matrix
  *                (must have correct size \f$(n-i) \times (n-i)\f$)
  */
-void householderTransformation(const base::DataMatrix& A,
-                               size_t i, size_t j,
-                               base::DataMatrix& Q);
-
-}
-}
-}
+void householderTransformation(const base::DataMatrix& A, size_t i, size_t j, base::DataMatrix& Q);
+}  // namespace math
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_MATH_HPP */

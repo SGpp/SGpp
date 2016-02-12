@@ -6,11 +6,11 @@
 #ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORSOO_HPP
 #define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORSOO_HPP
 
-#include <cstddef>
-#include <functional>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
+
+#include <cstddef>
+#include <functional>
 
 namespace SGPP {
 namespace optimization {
@@ -35,9 +35,7 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
    * @param N             maximal number of grid points
    * @param adaptivity    adaptivity (positive number)
    */
-  IterativeGridGeneratorSOO(ScalarFunction& f,
-                            base::Grid& grid,
-                            size_t N,
+  IterativeGridGeneratorSOO(ScalarFunction& f, base::Grid& grid, size_t N,
                             float_t adaptivity = DEFAULT_ADAPTIVITY);
 
   /**
@@ -73,8 +71,7 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
   /// adaptivity
   AdaptivityFunction hMax;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORSOO_HPP */

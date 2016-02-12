@@ -12,36 +12,34 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace SGPP {
 namespace optimization {
 namespace optimizer {
 
-MultiStart::MultiStart(ScalarFunction& f,
-                       size_t maxFcnEvalCount,
-                       size_t populationSize) :
-  UnconstrainedOptimizer(f, maxFcnEvalCount),
-  defaultOptimizer(NelderMead(f)),
-  optimizer(defaultOptimizer) {
+MultiStart::MultiStart(ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
+    : UnconstrainedOptimizer(f, maxFcnEvalCount),
+      defaultOptimizer(NelderMead(f)),
+      optimizer(defaultOptimizer) {
   initialize(populationSize);
 }
 
-MultiStart::MultiStart(UnconstrainedOptimizer& optimizer,
-                       size_t maxFcnEvalCount,
-                       size_t populationSize) :
-  UnconstrainedOptimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
-  defaultOptimizer(NelderMead(f)),
-  optimizer(optimizer) {
+MultiStart::MultiStart(UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount,
+                       size_t populationSize)
+    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
+      defaultOptimizer(NelderMead(f)),
+      optimizer(optimizer) {
   initialize(populationSize);
 }
 
-MultiStart::~MultiStart() {
-}
+MultiStart::~MultiStart() {}
 
 void MultiStart::initialize(size_t populationSize) {
-  this->populationSize = (populationSize > 0) ? populationSize :
-                         std::min(10 * f.getNumberOfParameters(),
-                                  static_cast<size_t>(100));
+  this->populationSize = (populationSize > 0)
+                             ? populationSize
+                             : std::min(10 * f.getNumberOfParameters(), static_cast<size_t>(100));
 }
 
 void MultiStart::optimize() {
@@ -63,8 +61,7 @@ void MultiStart::optimize() {
   // generate pseudorandom starting points
   for (size_t k = 0; k < populationSize; k++) {
     roundN[k] = static_cast<size_t>(
-                  std::ceil(static_cast<float_t>(remainingN) /
-                            static_cast<float_t>(populationSize - k)));
+        std::ceil(static_cast<float_t>(remainingN) / static_cast<float_t>(populationSize - k)));
     remainingN -= roundN[k];
 
     for (size_t t = 0; t < d; t++) {
@@ -135,15 +132,13 @@ void MultiStart::optimize() {
   // temporarily save x0 and N (will be overwritten by the loop)
   const base::DataVector tmpX0(optimizer.getStartingPoint());
   const size_t tmpN = optimizer.getN();
-  const bool statusPrintingEnabled =
-    Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
   if (statusPrintingEnabled) {
     Printer::getInstance().disableStatusPrinting();
   }
 
-  #pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt) \
-  default(none)
+#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt) default(none)
   {
     UnconstrainedOptimizer* curOptimizerPtr = &optimizer;
 #ifdef _OPENMP
@@ -159,7 +154,7 @@ void MultiStart::optimize() {
     base::DataVector xLocalOpt(d);
     float_t fLocalOpt;
 
-    #pragma omp for ordered schedule(dynamic)
+#pragma omp for ordered schedule(dynamic)
 
     for (size_t k = 0; k < populationSize; k++) {
       // optimize with k-th starting point
@@ -170,7 +165,7 @@ void MultiStart::optimize() {
       xLocalOpt = curOptimizerPtr->getOptimalPoint();
       fLocalOpt = curOptimizerPtr->getOptimalValue();
 
-      #pragma omp critical
+#pragma omp critical
       {
         if (fLocalOpt < fCurrentOpt) {
           // this point is the best so far
@@ -179,17 +174,16 @@ void MultiStart::optimize() {
         }
       }
 
-      // status printing
-      #pragma omp ordered
+// status printing
+#pragma omp ordered
       {
         char str[10];
-        snprintf(str, 10, "%.1f%%",
-                 static_cast<float_t>(k) /
-                 static_cast<float_t>(populationSize) * 100.0);
+        snprintf(str, sizeof(str), "%.1f%%",
+                 static_cast<float_t>(k) / static_cast<float_t>(populationSize) * 100.0);
         Printer::getInstance().getMutex().lock();
         Printer::getInstance().enableStatusPrinting();
-        Printer::getInstance().printStatusUpdate(std::string(str) +
-            ", f(x) = " + std::to_string(fCurrentOpt));
+        Printer::getInstance().printStatusUpdate(std::string(str) + ", f(x) = " +
+                                                 std::to_string(fCurrentOpt));
         Printer::getInstance().disableStatusPrinting();
         Printer::getInstance().getMutex().unlock();
       }
@@ -212,29 +206,19 @@ void MultiStart::optimize() {
     Printer::getInstance().enableStatusPrinting();
   }
 
-  Printer::getInstance().printStatusUpdate("100.0%, f(x) = " + std::to_string(
-        fOpt));
+  Printer::getInstance().printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
   Printer::getInstance().printStatusEnd();
 }
 
-size_t MultiStart::getPopulationSize() const {
-  return populationSize;
-}
+size_t MultiStart::getPopulationSize() const { return populationSize; }
 
-void MultiStart::setPopulationSize(size_t populationSize) {
-  this->populationSize = populationSize;
-}
+void MultiStart::setPopulationSize(size_t populationSize) { this->populationSize = populationSize; }
 
-const std::vector<size_t>&
-MultiStart::getHistoryOfInnerIterations() const {
-  return kHist;
-}
+const std::vector<size_t>& MultiStart::getHistoryOfInnerIterations() const { return kHist; }
 
-void MultiStart::clone(
-  std::unique_ptr<UnconstrainedOptimizer>& clone) const {
-  clone = std::unique_ptr<UnconstrainedOptimizer>(
-            new MultiStart(*this));
+void MultiStart::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
+  clone = std::unique_ptr<UnconstrainedOptimizer>(new MultiStart(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP

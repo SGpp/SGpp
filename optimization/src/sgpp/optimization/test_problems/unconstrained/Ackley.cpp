@@ -12,17 +12,11 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-Ackley::Ackley(size_t d) :
-  UnconstrainedTestProblem(d),
-  f(d) {
-}
+Ackley::Ackley(size_t d) : UnconstrainedTestProblem(d), f(d) {}
 
-Ackley::~Ackley() {
-}
+Ackley::~Ackley() {}
 
-TestScalarFunction& Ackley::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& Ackley::getObjectiveFunction() { return f; }
 
 float_t Ackley::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
@@ -30,15 +24,11 @@ float_t Ackley::getOptimalPointUndisplaced(base::DataVector& x) {
   return 0.0;
 }
 
-AckleyObjective::AckleyObjective(size_t d) :
-  TestScalarFunction(d) {
-}
+AckleyObjective::AckleyObjective(size_t d) : TestScalarFunction(d) {}
 
-AckleyObjective::~AckleyObjective() {
-}
+AckleyObjective::~AckleyObjective() {}
 
-float_t AckleyObjective::evalUndisplaced(
-  const base::DataVector& x) {
+float_t AckleyObjective::evalUndisplaced(const base::DataVector& x) {
   float_t result = 0.0;
 
   float_t arg1 = 0.0;
@@ -50,21 +40,15 @@ float_t AckleyObjective::evalUndisplaced(
     arg2 += std::cos(2.0 * M_PI * xt);
   }
 
-  result = 20.0 *
-           (1.0 -
-            std::exp(-0.2 *
-                     std::sqrt(arg1 / static_cast<float_t>(d))));
+  result = 20.0 * (1.0 - std::exp(-0.2 * std::sqrt(arg1 / static_cast<float_t>(d))));
   result += M_E - std::exp(arg2 / static_cast<float_t>(d));
 
   return result;
 }
 
-void AckleyObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new AckleyObjective(*this));
+void AckleyObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new AckleyObjective(*this));
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP

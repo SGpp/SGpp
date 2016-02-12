@@ -6,10 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_UNCONSTRAINEDTESTPROBLEM_HPP
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_UNCONSTRAINEDTESTPROBLEM_HPP
 
-#include <cstddef>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/TestScalarFunction.hpp>
+
+#include <cstddef>
 
 namespace SGPP {
 namespace optimization {
@@ -33,7 +33,7 @@ class UnconstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  UnconstrainedTestProblem(size_t d);
+  explicit UnconstrainedTestProblem(size_t d);
 
   /**
    * Destructor.
@@ -123,9 +123,8 @@ class UnconstrainedTestProblem {
    */
   virtual bool isDisplacementFeasible();
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_UNCONSTRAINEDTESTPROBLEM_HPP */

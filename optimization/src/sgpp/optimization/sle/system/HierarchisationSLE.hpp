@@ -55,9 +55,7 @@ class HierarchisationSLE : public CloneableSLE {
    *
    * @param grid              sparse grid
    */
-  HierarchisationSLE(base::Grid& grid)
-    : HierarchisationSLE(grid, *grid.getStorage()) {
-  }
+  explicit HierarchisationSLE(base::Grid& grid) : HierarchisationSLE(grid, *grid.getStorage()) {}
 
   /**
    * Constructor.
@@ -69,85 +67,65 @@ class HierarchisationSLE : public CloneableSLE {
    *                          grid points according to gridStorage)
    */
   HierarchisationSLE(base::Grid& grid, base::GridStorage& gridStorage)
-    : CloneableSLE(),
-      grid(grid),
-      gridStorage(gridStorage),
-      basisType(INVALID) {
+      : CloneableSLE(), grid(grid), gridStorage(gridStorage), basisType(INVALID) {
     // initialize the correct basis (according to the grid)
     if (grid.getType() == base::GridType::Bspline) {
       bsplineBasis = std::unique_ptr<base::SBsplineBase>(
-                       new base::SBsplineBase(
-                         dynamic_cast<base::BsplineGrid&>(grid).
-                         getDegree()));
+          new base::SBsplineBase(dynamic_cast<base::BsplineGrid&>(grid).getDegree()));
       basisType = BSPLINE;
     } else if (grid.getType() == base::GridType::BsplineBoundary) {
       bsplineBoundaryBasis =
-        std::unique_ptr<base::SBsplineBoundaryBase>(
-          new base::SBsplineBoundaryBase(
-            dynamic_cast<base::BsplineBoundaryGrid&>(grid)
-            .getDegree()));
+          std::unique_ptr<base::SBsplineBoundaryBase>(new base::SBsplineBoundaryBase(
+              dynamic_cast<base::BsplineBoundaryGrid&>(grid).getDegree()));
       basisType = BSPLINE_BOUNDARY;
     } else if (grid.getType() == base::GridType::BsplineClenshawCurtis) {
       bsplineClenshawCurtisBasis =
-        std::unique_ptr<base::SBsplineClenshawCurtisBase>(
-          new base::SBsplineClenshawCurtisBase(
-            dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).
-            getDegree()));
+          std::unique_ptr<base::SBsplineClenshawCurtisBase>(new base::SBsplineClenshawCurtisBase(
+              dynamic_cast<base::BsplineClenshawCurtisGrid&>(grid).getDegree()));
       basisType = BSPLINE_CLENSHAW_CURTIS;
     } else if (grid.getType() == base::GridType::ModBspline) {
       modBsplineBasis = std::unique_ptr<base::SBsplineModifiedBase>(
-                          new base::SBsplineModifiedBase(
-                            dynamic_cast<base::ModBsplineGrid&>(grid).
-                            getDegree()));
+          new base::SBsplineModifiedBase(dynamic_cast<base::ModBsplineGrid&>(grid).getDegree()));
       basisType = BSPLINE_MODIFIED;
     } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
-      modBsplineClenshawCurtisBasis =
-        std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase>(
+      modBsplineClenshawCurtisBasis = std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase>(
           new base::SBsplineModifiedClenshawCurtisBase(
-            dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).
-            getDegree()));
+              dynamic_cast<base::ModBsplineClenshawCurtisGrid&>(grid).getDegree()));
       basisType = BSPLINE_MODIFIED_CLENSHAW_CURTIS;
     } else if (grid.getType() == base::GridType::FundamentalSpline) {
-      fundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineBase>(
-                                 new base::SFundamentalSplineBase(
-                                   dynamic_cast<base::FundamentalSplineGrid&>(grid).
-                                   getDegree()));
+      fundamentalSplineBasis =
+          std::unique_ptr<base::SFundamentalSplineBase>(new base::SFundamentalSplineBase(
+              dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree()));
       basisType = FUNDAMENTAL_SPLINE;
     } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
-      modFundamentalSplineBasis =
-        std::unique_ptr<base::SFundamentalSplineModifiedBase>(
+      modFundamentalSplineBasis = std::unique_ptr<base::SFundamentalSplineModifiedBase>(
           new base::SFundamentalSplineModifiedBase(
-            dynamic_cast<base::ModFundamentalSplineGrid&>(grid).
-            getDegree()));
+              dynamic_cast<base::ModFundamentalSplineGrid&>(grid).getDegree()));
       basisType = FUNDAMENTAL_SPLINE_MODIFIED;
     } else if (grid.getType() == base::GridType::Linear) {
-      linearBasis = std::unique_ptr<base::SLinearBase>(
-                      new base::SLinearBase());
+      linearBasis = std::unique_ptr<base::SLinearBase>(new base::SLinearBase());
       basisType = LINEAR;
     } else if (grid.getType() == base::GridType::LinearBoundary) {
-      linearL0BoundaryBasis = std::unique_ptr<base::SLinearBoundaryBase>(
-                                new base::SLinearBoundaryBase());
+      linearL0BoundaryBasis =
+          std::unique_ptr<base::SLinearBoundaryBase>(new base::SLinearBoundaryBase());
       basisType = LINEAR_BOUNDARY;
     } else if (grid.getType() == base::GridType::LinearClenshawCurtis) {
       linearClenshawCurtisBasis =
-        std::unique_ptr<base::SLinearClenshawCurtisBase>(
-          new base::SLinearClenshawCurtisBase());
+          std::unique_ptr<base::SLinearClenshawCurtisBase>(new base::SLinearClenshawCurtisBase());
       basisType = LINEAR_CLENSHAW_CURTIS;
     } else if (grid.getType() == base::GridType::ModLinear) {
-      modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(
-                         new base::SLinearModifiedBase());
+      modLinearBasis = std::unique_ptr<base::SLinearModifiedBase>(new base::SLinearModifiedBase());
       basisType = LINEAR_MODIFIED;
     } else if (grid.getType() == base::GridType::Wavelet) {
-      waveletBasis = std::unique_ptr<base::SWaveletBase>(
-                       new base::SWaveletBase());
+      waveletBasis = std::unique_ptr<base::SWaveletBase>(new base::SWaveletBase());
       basisType = WAVELET;
     } else if (grid.getType() == base::GridType::WaveletBoundary) {
-      waveletBoundaryBasis = std::unique_ptr<base::SWaveletBoundaryBase>(
-                               new base::SWaveletBoundaryBase());
+      waveletBoundaryBasis =
+          std::unique_ptr<base::SWaveletBoundaryBase>(new base::SWaveletBoundaryBase());
       basisType = WAVELET_BOUNDARY;
     } else if (grid.getType() == base::GridType::ModWavelet) {
-      modWaveletBasis = std::unique_ptr<base::SWaveletModifiedBase>(
-                          new base::SWaveletModifiedBase());
+      modWaveletBasis =
+          std::unique_ptr<base::SWaveletModifiedBase>(new base::SWaveletModifiedBase());
       basisType = WAVELET_MODIFIED;
     } else {
       throw std::invalid_argument("Grid type not supported.");
@@ -160,7 +138,7 @@ class HierarchisationSLE : public CloneableSLE {
    * @return      whether the i-th grid point lies in the support of
    *              the j-th basis function
    */
-  inline virtual bool isMatrixEntryNonZero(size_t i, size_t j) override {
+  inline bool isMatrixEntryNonZero(size_t i, size_t j) override {
     return (evalBasisFunctionAtGridPoint(j, i) != 0.0);
   }
 
@@ -169,41 +147,32 @@ class HierarchisationSLE : public CloneableSLE {
    * @param j     column index
    * @return      value of the j-th basis function at the i-th grid point
    */
-  inline virtual float_t getMatrixEntry(size_t i, size_t j) override {
+  inline float_t getMatrixEntry(size_t i, size_t j) override {
     return evalBasisFunctionAtGridPoint(j, i);
   }
 
   /**
    * @return          sparse grid
    */
-  base::Grid& getGrid() {
-    return grid;
-  }
+  base::Grid& getGrid() { return grid; }
 
   /**
    * @param grid      sparse grid
    */
-  void setGrid(base::Grid& grid) {
-    this->grid = grid;
-  }
+  void setGrid(base::Grid& grid) { this->grid = grid; }
 
   /**
    * @return              grid storage
    */
-  base::GridStorage& getGridStorage() {
-    return gridStorage;
-  }
+  base::GridStorage& getGridStorage() { return gridStorage; }
 
-  virtual size_t getDimension() const override {
-    return gridStorage.size();
-  }
+  size_t getDimension() const override { return gridStorage.size(); }
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<CloneableSLE>& clone) const override {
-    clone = std::unique_ptr<CloneableSLE>(
-              new HierarchisationSLE(grid, gridStorage));
+  void clone(std::unique_ptr<CloneableSLE>& clone) const override {
+    clone = std::unique_ptr<CloneableSLE>(new HierarchisationSLE(grid, gridStorage));
   }
 
  protected:
@@ -217,25 +186,21 @@ class HierarchisationSLE : public CloneableSLE {
   /// B-spline boundary basis
   std::unique_ptr<base::SBsplineBoundaryBase> bsplineBoundaryBasis;
   /// B-spline Clenshaw-Curtis basis
-  std::unique_ptr<base::SBsplineClenshawCurtisBase>
-  bsplineClenshawCurtisBasis;
+  std::unique_ptr<base::SBsplineClenshawCurtisBase> bsplineClenshawCurtisBasis;
   /// modified B-spline basis
   std::unique_ptr<base::SBsplineModifiedBase> modBsplineBasis;
   /// modified B-spline Clenshaw-Curtis basis
-  std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase>
-  modBsplineClenshawCurtisBasis;
+  std::unique_ptr<base::SBsplineModifiedClenshawCurtisBase> modBsplineClenshawCurtisBasis;
   /// fundamental spline basis
   std::unique_ptr<base::SFundamentalSplineBase> fundamentalSplineBasis;
   /// modified fundamental spline basis
-  std::unique_ptr<base::SFundamentalSplineModifiedBase>
-  modFundamentalSplineBasis;
+  std::unique_ptr<base::SFundamentalSplineModifiedBase> modFundamentalSplineBasis;
   /// linear basis
   std::unique_ptr<base::SLinearBase> linearBasis;
   /// linear boundary basis
   std::unique_ptr<base::SLinearBoundaryBase> linearL0BoundaryBasis;
   /// linear Clenshaw-Curtis basis
-  std::unique_ptr<base::SLinearClenshawCurtisBase>
-  linearClenshawCurtisBasis;
+  std::unique_ptr<base::SLinearClenshawCurtisBase> linearClenshawCurtisBasis;
   /// modified linear basis
   std::unique_ptr<base::SLinearModifiedBase> modLinearBasis;
   /// wavelet basis
@@ -270,25 +235,21 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th basis function at the
    *                  pointJ-th grid point
    */
-  inline float_t evalBasisFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalBasisFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     if (basisType == BSPLINE) {
       return evalBsplineFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == BSPLINE_BOUNDARY) {
       return evalBsplineBoundaryFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == BSPLINE_CLENSHAW_CURTIS) {
-      return evalBsplineClenshawCurtisFunctionAtGridPoint(basisI,
-             pointJ);
+      return evalBsplineClenshawCurtisFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == BSPLINE_MODIFIED) {
       return evalBsplineModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == BSPLINE_MODIFIED_CLENSHAW_CURTIS) {
-      return evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(
-               basisI, pointJ);
+      return evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == FUNDAMENTAL_SPLINE) {
       return evalFundamentalSplineFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == FUNDAMENTAL_SPLINE_MODIFIED) {
-      return evalFundamentalSplineModifiedFunctionAtGridPoint(basisI,
-             pointJ);
+      return evalFundamentalSplineModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == LINEAR) {
       return evalLinearFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == LINEAR_BOUNDARY) {
@@ -314,17 +275,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th B-spline basis function
    *                  at the pointJ-th grid point
    */
-  inline float_t evalBsplineFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalBsplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = bsplineBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d =
+          bsplineBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -342,17 +300,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th B-spline boundary
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalBsplineBoundaryFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalBsplineBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = bsplineBoundaryBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d =
+          bsplineBoundaryBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -370,17 +325,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th B-spline Clenshaw-Curtis
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalBsplineClenshawCurtisFunctionAtGridPoint(
-    size_t basisI, size_t pointJ) {
+  inline float_t evalBsplineClenshawCurtisFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
       const float_t result1d = bsplineClenshawCurtisBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+          gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -398,17 +350,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th modified B-spline
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalBsplineModifiedFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalBsplineModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = modBsplineBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d =
+          modBsplineBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -426,17 +375,15 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th modified Clenshaw-Curtis
    *                  B-spline basis function at the pointJ-th grid point
    */
-  inline float_t evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(
-    size_t basisI, size_t pointJ) {
+  inline float_t evalBsplineModifiedClenshawCurtisFunctionAtGridPoint(size_t basisI,
+                                                                      size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
       const float_t result1d = modBsplineClenshawCurtisBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+          gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -454,8 +401,7 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th fundamental spline basis
    *                  function at the pointJ-th grid point
    */
-  inline float_t evalFundamentalSplineFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalFundamentalSplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
@@ -469,9 +415,7 @@ class HierarchisationSLE : public CloneableSLE {
         }
       } else {
         const float_t result1d = fundamentalSplineBasis->eval(
-                                   gpBasis.getLevel(t),
-                                   gpBasis.getIndex(t),
-                                   gpPoint.getCoord(t));
+            gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
         if (result1d == 0.0) {
           return 0.0;
@@ -490,8 +434,7 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th modified fundamental spline
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalFundamentalSplineModifiedFunctionAtGridPoint(
-    size_t basisI, size_t pointJ) {
+  inline float_t evalFundamentalSplineModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
@@ -505,9 +448,7 @@ class HierarchisationSLE : public CloneableSLE {
         }
       } else {
         const float_t result1d = modFundamentalSplineBasis->eval(
-                                   gpBasis.getLevel(t),
-                                   gpBasis.getIndex(t),
-                                   gpPoint.getCoord(t));
+            gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
         if (result1d == 0.0) {
           return 0.0;
@@ -526,17 +467,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th linear
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalLinearFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalLinearFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = linearBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d =
+          linearBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -554,17 +492,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th linear boundary
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalLinearBoundaryFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalLinearBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = linearL0BoundaryBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d = linearL0BoundaryBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t),
+                                                           gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -582,17 +517,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th linear Clenshaw-Curtis
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalLinearClenshawCurtisFunctionAtGridPoint(
-    size_t basisI, size_t pointJ) {
+  inline float_t evalLinearClenshawCurtisFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
       const float_t result1d = linearClenshawCurtisBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+          gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -610,17 +542,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th modified linear
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalLinearModifiedFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalLinearModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = modLinearBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d =
+          modLinearBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -638,17 +567,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th wavelet
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalWaveletFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalWaveletFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = waveletBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d =
+          waveletBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -666,17 +592,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th wavelet boundary
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalWaveletBoundaryFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalWaveletBoundaryFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = waveletBoundaryBasis->eval(
-                                 gpBasis.getLevel(t),
-                                 gpBasis.getIndex(t),
-                                 gpPoint.getCoord(t));
+      const float_t result1d =
+          waveletBoundaryBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -694,16 +617,14 @@ class HierarchisationSLE : public CloneableSLE {
    * @return          value of the basisI-th modified wavelet
    *                  basis function at the pointJ-th grid point
    */
-  inline float_t evalWaveletModifiedFunctionAtGridPoint(size_t basisI,
-      size_t pointJ) {
+  inline float_t evalWaveletModifiedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     const base::GridIndex& gpBasis = *gridStorage[basisI];
     const base::GridIndex& gpPoint = *gridStorage[pointJ];
     float_t result = 1.0;
 
     for (size_t t = 0; t < gridStorage.dim(); t++) {
-      const float_t result1d = modWaveletBasis->eval(gpBasis.getLevel(t),
-                               gpBasis.getIndex(t),
-                               gpPoint.getCoord(t));
+      const float_t result1d =
+          modWaveletBasis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), gpPoint.getCoord(t));
 
       if (result1d == 0.0) {
         return 0.0;
@@ -715,8 +636,7 @@ class HierarchisationSLE : public CloneableSLE {
     return result;
   }
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_SLE_SYSTEM_HIERARCHISATIONSLE_HPP */

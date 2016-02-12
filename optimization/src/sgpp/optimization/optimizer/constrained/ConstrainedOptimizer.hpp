@@ -42,35 +42,24 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    *              objective function evaluations
    *              (depending on the implementation)
    */
-  ConstrainedOptimizer(
-    ScalarFunction& f,
-    VectorFunction& g,
-    VectorFunction& h,
-    size_t N = DEFAULT_N) :
-    UnconstrainedOptimizer(f, N),
-    g(g),
-    h(h) {
-  }
+  ConstrainedOptimizer(ScalarFunction& f, VectorFunction& g, VectorFunction& h,
+                       size_t N = DEFAULT_N)
+      : UnconstrainedOptimizer(f, N), g(g), h(h) {}
 
   /**
    * Destructor.
    */
-  virtual ~ConstrainedOptimizer() override {
-  }
+  ~ConstrainedOptimizer() override {}
 
   /**
    * @return inequality constraint function
    */
-  VectorFunction& getInequalityConstraintFunction() const {
-    return g;
-  }
+  VectorFunction& getInequalityConstraintFunction() const { return g; }
 
   /**
    * @return equality constraint function
    */
-  VectorFunction& getEqualityConstraintFunction() const {
-    return h;
-  }
+  VectorFunction& getEqualityConstraintFunction() const { return h; }
 
  protected:
   /// inequality constraint function
@@ -78,9 +67,8 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
   /// equality constraint function
   VectorFunction& h;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_CONSTRAINEDOPTIMIZER_HPP */
