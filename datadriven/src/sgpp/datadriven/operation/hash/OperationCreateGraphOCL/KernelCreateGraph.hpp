@@ -22,7 +22,7 @@ namespace datadriven {
 namespace DensityOCLMultiPlatform {
 
 template<typename T>
-class KernelDensityB {
+class KernelCreateGraph {
 private:
 
 	std::shared_ptr<base::OCLDevice> device;
@@ -35,9 +35,9 @@ private:
 	base::OCLClonedBufferSD<T> deviceData;
 	base::OCLClonedBufferSD<T> deviceResultData;
 
-	cl_kernel kernelB;
+	cl_kernel kernel;
 
-	SGPP::datadriven::DensityOCLMultiPlatform::SourceBuilderB<T> kernelSourceBuilder;
+	SGPP::datadriven::DensityOCLMultiPlatform::SourceBuilderCreateGraph<T> kernelSourceBuilder;
 
 	std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
@@ -54,16 +54,16 @@ private:
 	size_t totalBlockSize;
 public:
 
-	KernelDensityB(std::shared_ptr<base::OCLDevice> dev, size_t dims,
+	KernelCreateGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims,
 					  std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration) :
 		device(dev), dims(dims), err(CL_SUCCESS), devicePoints(device),
-		deviceData(device), deviceResultData(device), kernelB(nullptr),
+		deviceData(device), deviceResultData(device), kernel(nullptr),
 		kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), deviceTimingMult(0.0),
 		kernelConfiguration(kernelConfiguration)
 	{
 		this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
-		/*if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
+		if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
 		  && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
 		  std::stringstream errorString;
 		  errorString
@@ -72,19 +72,19 @@ public:
 		  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \"" << device->deviceName
 		  << "\")" << std::endl;
 		  throw base::operation_exception(errorString.str());
-		  }*/
+		}
 
-		//localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-		//dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-		//scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
-		//totalBlockSize = dataBlockingSize * localSize;
+		localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+		dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+		scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
+		totalBlockSize = dataBlockingSize * localSize;
 	}
 
-	~KernelDensityB()
+	~KernelCreateGraph()
 	{
-		if (kernelB != nullptr) {
-			clReleaseKernel(kernelB);
-			this->kernelB = nullptr;
+		if (kernel != nullptr) {
+			clReleaseKernel(kernel);
+			this->kernel = nullptr;
 		}
 	}
 
@@ -92,7 +92,7 @@ public:
 	{
 	}
 
-	double rhs(std::vector<int> &points, std::vector<T> &data, std::vector<T> &result, size_t gridSize)
+	double create_graph(std::vector<T> &data, std::vector<T> &result, size_t k)
 	{
 		if (verbose)
 		{
@@ -101,7 +101,7 @@ public:
 		}
 
 		//Build kernel if not already done
-		if (this->kernelB == nullptr)
+		if (this->kernel == nullptr)
 		{
 			if(verbose)
 				std::cout<<"generating kernel source"<<std::endl;
@@ -110,49 +110,49 @@ public:
 				std::cout<<"Source: "<<std::endl<<program_src<<std::endl;
 			if(verbose)
 				std::cout<<"building kernel"<<std::endl;
-			this->kernelB = manager->buildKernel(program_src, device, "cscheme");
+			this->kernel = manager->buildKernel(program_src, device, "cscheme");
 		}
 
 		//Load data into buffers if not already done
-		if (!devicePoints.isInitialized())
+		if (!deviceDatao.isInitialized())
 		{
-			devicePoints.intializeTo(points, 1, 0, gridSize*dims*2);
 			deviceData.intializeTo(data, 1, 0, data.size());
-			std::vector<T> zeros(gridSize);
-			for (size_t i = 0; i < gridSize; i++) {
+			std::vector<T> zeros(data.size()*k);
+			for (size_t i = 0; i < data.size()*k; i++) {
 				zeros[i] = 0.0;
 			}
-			deviceResultData.intializeTo(zeros, 1, 0, gridSize);
+			deviceResultData.intializeTo(zeros, 1, 0, data.size()*k);
 			clFinish(device->commandQueue);
 		}
 		this->deviceTimingMult = 0.0;
+		size_t datasize=data.size()*k;
 
 		//Set kernel arguments
-		err = clSetKernelArg(this->kernelB, 0, sizeof(cl_mem), this->devicePoints.getBuffer());
+		err = clSetKernelArg(this->kernel, 0, sizeof(cl_mem), this->deviceData.getBuffer());
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
 			throw base::operation_exception(errorString.str());
 		}
-		err = clSetKernelArg(this->kernelB, 1, sizeof(cl_mem), this->deviceData.getBuffer());
+		err = clSetKernelArg(this->kernel, 1, sizeof(cl_uint), &dims);
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
 			throw base::operation_exception(errorString.str());
 		}
-		err = clSetKernelArg(this->kernelB, 2, sizeof(cl_mem), this->deviceResultData.getBuffer());
+		err = clSetKernelArg(this->kernel, 2, sizeof(cl_uint), &k);
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
 			throw base::operation_exception(errorString.str());
 		}
-		err = clSetKernelArg(this->kernelB, 3, sizeof(cl_uint), &dims);
+		err = clSetKernelArg(this->kernel, 3, sizeof(cl_uint), &datasize);
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
 			throw base::operation_exception(errorString.str());
 		}
-		err = clSetKernelArg(this->kernelB, 4, sizeof(cl_uint), &gridSize);
+		err = clSetKernelArg(this->kernel, 4, sizeof(cl_mem), this->deviceResultData.getBuffer());
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -166,7 +166,7 @@ public:
 			std::cout<<"Starting the kernel"<<std::endl;
 		size_t *globalworkrange=new size_t[1];
 		globalworkrange[0]=gridSize;
-		err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelB, 1, 0, globalworkrange,
+		err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
 									 NULL, 0, nullptr, &clTiming);
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
@@ -225,7 +225,7 @@ public:
 		}
 
 		this->deviceTimingMult += time;
-			return 0;
+		return 0;
 	}
 
 };
