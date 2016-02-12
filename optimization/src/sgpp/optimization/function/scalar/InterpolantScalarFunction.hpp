@@ -43,19 +43,16 @@ class InterpolantScalarFunction : public ScalarFunction {
    * @param grid  sparse grid
    * @param alpha coefficient vector
    */
-  InterpolantScalarFunction(base::Grid& grid,
-                            const base::DataVector& alpha) :
-    ScalarFunction(grid.getStorage()->dim()),
-    grid(grid),
-    opEval(op_factory::createOperationNaiveEval(grid)),
-    alpha(alpha) {
-  }
+  InterpolantScalarFunction(base::Grid& grid, const base::DataVector& alpha)
+      : ScalarFunction(grid.getStorage()->dim()),
+        grid(grid),
+        opEval(op_factory::createOperationNaiveEval(grid)),
+        alpha(alpha) {}
 
   /**
    * Destructor.
    */
-  virtual ~InterpolantScalarFunction() override {
-  }
+  ~InterpolantScalarFunction() override {}
 
   /**
    * Evaluation of the function.
@@ -63,7 +60,7 @@ class InterpolantScalarFunction : public ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  inline virtual float_t eval(const base::DataVector& x) override {
+  inline float_t eval(const base::DataVector& x) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         return INFINITY;
@@ -76,24 +73,19 @@ class InterpolantScalarFunction : public ScalarFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone) const override {
-    clone = std::unique_ptr<ScalarFunction>(
-              new InterpolantScalarFunction(grid, alpha));
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override {
+    clone = std::unique_ptr<ScalarFunction>(new InterpolantScalarFunction(grid, alpha));
   }
 
   /**
    * @return coefficient vector
    */
-  const base::DataVector& getAlpha() const {
-    return alpha;
-  }
+  const base::DataVector& getAlpha() const { return alpha; }
 
   /**
    * @param alpha coefficient vector
    */
-  void setAlpha(const base::DataVector& alpha) {
-    this->alpha = alpha;
-  }
+  void setAlpha(const base::DataVector& alpha) { this->alpha = alpha; }
 
  protected:
   /// sparse grid
@@ -103,8 +95,7 @@ class InterpolantScalarFunction : public ScalarFunction {
   /// coefficient vector
   base::DataVector alpha;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_INTERPOLANTSCALARFUNCTION_HPP */

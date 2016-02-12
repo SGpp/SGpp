@@ -39,14 +39,12 @@ class G09Objective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t evalUndisplaced(const base::DataVector& x)
-  override;
+  float_t evalUndisplaced(const base::DataVector& x) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
 /**
@@ -65,8 +63,7 @@ class G09Objective : public TestScalarFunction {
  *     2 \bar{x}_3^2 + 5 \bar{x}_6 - 11 \bar{x}_7
  * \end{pmatrix}\f]
  */
-class G09InequalityConstraint :
-  public TestVectorFunction {
+class G09InequalityConstraint : public TestVectorFunction {
  public:
   /**
    * Constructor.
@@ -82,14 +79,12 @@ class G09InequalityConstraint :
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
    * @param[out]  value   \f$\vec{f}(\vec{x})\f$
    */
-  virtual void evalUndisplaced(const base::DataVector& x,
-                               base::DataVector& value) override;
+  void evalUndisplaced(const base::DataVector& x, base::DataVector& value) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<VectorFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<VectorFunction>& clone) const override;
 };
 
 /**
@@ -97,8 +92,7 @@ class G09InequalityConstraint :
  *
  * Definition: empty, i.e., no constraint
  */
-class G09EqualityConstraint :
-  public TestVectorFunction {
+class G09EqualityConstraint : public TestVectorFunction {
  public:
   /**
    * Constructor.
@@ -114,14 +108,12 @@ class G09EqualityConstraint :
    * @param       x       point \f$\vec{x} \in \mathbb{R}^d\f$
    * @param[out]  value   \f$\vec{f}(\vec{x})\f$
    */
-  virtual void evalUndisplaced(const base::DataVector& x,
-                               base::DataVector& value) override;
+  void evalUndisplaced(const base::DataVector& x, base::DataVector& value) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<VectorFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<VectorFunction>& clone) const override;
 };
 
 /**
@@ -169,8 +161,7 @@ class G09 : public ConstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-  override;
+  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
   /// objective function
@@ -180,9 +171,8 @@ class G09 : public ConstrainedTestProblem {
   /// equality constraint function
   G09EqualityConstraint h;
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_G09_HPP */

@@ -13,45 +13,32 @@ namespace SGPP {
 namespace optimization {
 namespace optimizer {
 
-LevenbergMarquardt::LevenbergMarquardt(
-  VectorFunction& phi,
-  VectorFunctionGradient& phiGradient,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t initialDamping,
-  float_t acceptanceThreshold,
-  float_t effectivenessThreshold) :
-  LeastSquaresOptimizer(phi, maxItCount),
-  phiGradient(phiGradient),
-  tol(tolerance),
-  mu0(initialDamping),
-  beta0(acceptanceThreshold),
-  beta1(effectivenessThreshold),
-  defaultSleSolver(sle_solver::GaussianElimination()),
-  sleSolver(defaultSleSolver) {
-}
+LevenbergMarquardt::LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
+                                       size_t maxItCount, float_t tolerance, float_t initialDamping,
+                                       float_t acceptanceThreshold, float_t effectivenessThreshold)
+    : LeastSquaresOptimizer(phi, maxItCount),
+      phiGradient(phiGradient),
+      tol(tolerance),
+      mu0(initialDamping),
+      beta0(acceptanceThreshold),
+      beta1(effectivenessThreshold),
+      defaultSleSolver(sle_solver::GaussianElimination()),
+      sleSolver(defaultSleSolver) {}
 
-LevenbergMarquardt::LevenbergMarquardt(
-  VectorFunction& phi,
-  VectorFunctionGradient& phiGradient,
-  size_t maxItCount,
-  float_t tolerance,
-  float_t damping,
-  float_t acceptanceThreshold,
-  float_t effectivenessThreshold,
-  const sle_solver::SLESolver& sleSolver) :
-  LeastSquaresOptimizer(phi, maxItCount),
-  phiGradient(phiGradient),
-  tol(tolerance),
-  mu0(damping),
-  beta0(acceptanceThreshold),
-  beta1(effectivenessThreshold),
-  defaultSleSolver(sle_solver::GaussianElimination()),
-  sleSolver(sleSolver) {
-}
+LevenbergMarquardt::LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
+                                       size_t maxItCount, float_t tolerance, float_t damping,
+                                       float_t acceptanceThreshold, float_t effectivenessThreshold,
+                                       const sle_solver::SLESolver& sleSolver)
+    : LeastSquaresOptimizer(phi, maxItCount),
+      phiGradient(phiGradient),
+      tol(tolerance),
+      mu0(damping),
+      beta0(acceptanceThreshold),
+      beta1(effectivenessThreshold),
+      defaultSleSolver(sle_solver::GaussianElimination()),
+      sleSolver(sleSolver) {}
 
-LevenbergMarquardt::~LevenbergMarquardt() {
-}
+LevenbergMarquardt::~LevenbergMarquardt() {}
 
 void LevenbergMarquardt::optimize() {
   Printer::getInstance().printStatusBegin("Optimizing (Levenberg-Marquardt)...");
@@ -82,8 +69,7 @@ void LevenbergMarquardt::optimize() {
   base::DataMatrix gradPhixSquared(m, m);
 
   size_t k = 0;
-  const bool statusPrintingEnabled =
-    Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
 
   while (k < N) {
     // calculate gradient of phi
@@ -192,9 +178,8 @@ void LevenbergMarquardt::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
-      std::to_string(k) + " evaluations, x = " + x.toString() +
-      ", f(x) = " + std::to_string(fx));
+    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
+                                             x.toString() + ", f(x) = " + std::to_string(fx));
 
     x = y;
     xHist.appendRow(x);
@@ -212,49 +197,31 @@ void LevenbergMarquardt::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const {
-  return phiGradient;
-}
+VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const { return phiGradient; }
 
-float_t LevenbergMarquardt::getTolerance() const {
-  return tol;
-}
+float_t LevenbergMarquardt::getTolerance() const { return tol; }
 
-void LevenbergMarquardt::setTolerance(float_t tolerance) {
-  tol = tolerance;
-}
+void LevenbergMarquardt::setTolerance(float_t tolerance) { tol = tolerance; }
 
-float_t LevenbergMarquardt::getInitialDamping() const {
-  return mu0;
-}
+float_t LevenbergMarquardt::getInitialDamping() const { return mu0; }
 
-void LevenbergMarquardt::setInitialDamping(float_t initialDamping) {
-  mu0 = initialDamping;
-}
+void LevenbergMarquardt::setInitialDamping(float_t initialDamping) { mu0 = initialDamping; }
 
-float_t LevenbergMarquardt::getAcceptanceThreshold() const {
-  return beta0;
-}
+float_t LevenbergMarquardt::getAcceptanceThreshold() const { return beta0; }
 
-void LevenbergMarquardt::setAcceptanceThreshold(
-  float_t acceptanceThreshold) {
+void LevenbergMarquardt::setAcceptanceThreshold(float_t acceptanceThreshold) {
   beta0 = acceptanceThreshold;
 }
 
-float_t LevenbergMarquardt::getEffectivenessThreshold() const {
-  return beta1;
-}
+float_t LevenbergMarquardt::getEffectivenessThreshold() const { return beta1; }
 
-void LevenbergMarquardt::setEffectivenessThreshold(
-  float_t effectivenessThreshold) {
+void LevenbergMarquardt::setEffectivenessThreshold(float_t effectivenessThreshold) {
   beta1 = effectivenessThreshold;
 }
 
-void LevenbergMarquardt::clone(
-  std::unique_ptr<LeastSquaresOptimizer>& clone) const {
-  clone = std::unique_ptr<LeastSquaresOptimizer>(
-            new LevenbergMarquardt(*this));
+void LevenbergMarquardt::clone(std::unique_ptr<LeastSquaresOptimizer>& clone) const {
+  clone = std::unique_ptr<LeastSquaresOptimizer>(new LevenbergMarquardt(*this));
 }
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP

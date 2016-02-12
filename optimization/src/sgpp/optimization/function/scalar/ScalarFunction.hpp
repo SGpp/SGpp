@@ -27,14 +27,12 @@ class ScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  ScalarFunction(size_t d) : d(d) {
-  }
+  explicit ScalarFunction(size_t d) : d(d) {}
 
   /**
    * Destructor.
    */
-  virtual ~ScalarFunction() {
-  }
+  virtual ~ScalarFunction() {}
 
   /**
    * Pure virtual method for calculating \f$f(\vec{x})\f$.
@@ -47,9 +45,7 @@ class ScalarFunction {
   /**
    * @return dimension \f$d\f$ of the domain
    */
-  size_t getNumberOfParameters() const {
-    return d;
-  }
+  size_t getNumberOfParameters() const { return d; }
 
   /**
    * Pure virtual method for cloning the function.
@@ -59,15 +55,13 @@ class ScalarFunction {
    *
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(
-    std::unique_ptr<ScalarFunction>& clone) const = 0;
+  virtual void clone(std::unique_ptr<ScalarFunction>& clone) const = 0;
 
  protected:
   /// dimension of the domain
   size_t d;
 };
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARFUNCTION_HPP */

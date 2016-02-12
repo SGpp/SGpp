@@ -6,7 +6,7 @@
 /**
  * Java example for SGPP::optimization.
  */
-public class java_example {
+public class optimization {
   /**
    * Prints a separator line.
    */

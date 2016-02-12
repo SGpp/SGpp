@@ -12,17 +12,11 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-Eggholder::Eggholder() :
-  UnconstrainedTestProblem(2),
-  f() {
-}
+Eggholder::Eggholder() : UnconstrainedTestProblem(2), f() {}
 
-Eggholder::~Eggholder() {
-}
+Eggholder::~Eggholder() {}
 
-TestScalarFunction& Eggholder::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& Eggholder::getObjectiveFunction() { return f; }
 
 float_t Eggholder::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
@@ -36,29 +30,21 @@ bool Eggholder::isDisplacementFeasible() {
   return UnconstrainedTestProblem::isDisplacementFeasible();
 }
 
-EggholderObjective::EggholderObjective() :
-  TestScalarFunction(2) {
-}
+EggholderObjective::EggholderObjective() : TestScalarFunction(2) {}
 
-EggholderObjective::~EggholderObjective() {
-}
+EggholderObjective::~EggholderObjective() {}
 
-float_t EggholderObjective::evalUndisplaced(
-  const base::DataVector& x) {
+float_t EggholderObjective::evalUndisplaced(const base::DataVector& x) {
   const float_t x1 = 1024.0 * x[0] - 512.0;
   const float_t x2 = 1024.0 * x[1] - 512.0;
 
-  return -(x2 + 47.0) *
-         std::sin(std::sqrt(std::abs(x1 / 2.0 + x2 + 47.0))) -
+  return -(x2 + 47.0) * std::sin(std::sqrt(std::abs(x1 / 2.0 + x2 + 47.0))) -
          x1 * std::sin(std::sqrt(std::abs(x1 - (x2 + 47.0))));
 }
 
-void EggholderObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new EggholderObjective(*this));
+void EggholderObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new EggholderObjective(*this));
 }
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP

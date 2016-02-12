@@ -32,13 +32,10 @@ class Gmmpp : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system,
-                     base::DataVector& b,
-                     base::DataVector& x) const override;
+  bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const override;
 };
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_GMMPP_HPP */

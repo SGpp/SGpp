@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
-
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
@@ -16,23 +14,19 @@ namespace SGPP {
 namespace optimization {
 
 OperationMultipleHierarchisationLinear::OperationMultipleHierarchisationLinear(
-  base::LinearGrid& grid) :
-  grid(grid) {
-}
+    base::LinearGrid& grid)
+    : grid(grid) {}
 
-OperationMultipleHierarchisationLinear::~OperationMultipleHierarchisationLinear() {
-}
+OperationMultipleHierarchisationLinear::~OperationMultipleHierarchisationLinear() {}
 
-bool OperationMultipleHierarchisationLinear::doHierarchisation(
-  base::DataVector& nodeValues) {
+bool OperationMultipleHierarchisationLinear::doHierarchisation(base::DataVector& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
 
-void OperationMultipleHierarchisationLinear::doDehierarchisation(
-  base::DataVector& alpha) {
+void OperationMultipleHierarchisationLinear::doDehierarchisation(base::DataVector& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalLinear opNaiveEval(&storage);
@@ -53,16 +47,14 @@ void OperationMultipleHierarchisationLinear::doDehierarchisation(
   alpha = nodeValues;
 }
 
-bool OperationMultipleHierarchisationLinear::doHierarchisation(
-  base::DataMatrix& nodeValues) {
+bool OperationMultipleHierarchisationLinear::doHierarchisation(base::DataMatrix& nodeValues) {
   HierarchisationSLE system(grid);
   sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
 
-void OperationMultipleHierarchisationLinear::doDehierarchisation(
-  base::DataMatrix& alpha) {
+void OperationMultipleHierarchisationLinear::doDehierarchisation(base::DataMatrix& alpha) {
   base::GridStorage& storage = *grid.getStorage();
   const size_t d = storage.dim();
   base::OperationNaiveEvalLinear opNaiveEval(&storage);
@@ -86,6 +78,5 @@ void OperationMultipleHierarchisationLinear::doDehierarchisation(
     alpha.setColumn(i, nodeValues);
   }
 }
-
-}
-}
+}  // namespace optimization
+}  // namespace SGPP

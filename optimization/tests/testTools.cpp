@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/optimization/function/scalar/test/Sphere.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/tools/FileIO.hpp>
@@ -569,7 +569,7 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   const size_t d = 1;
   const size_t p = 5;
   const size_t N = 10;
-  test_functions::Sphere f(d);
+  test_problems::SphereObjective f(d);
   std::unique_ptr<base::Grid> grid(base::Grid::createModBsplineGrid(d, p));
   IterativeGridGeneratorRitterNovak gridGen(f, *grid, N, 0.85);
   BOOST_CHECK(gridGen.generate());

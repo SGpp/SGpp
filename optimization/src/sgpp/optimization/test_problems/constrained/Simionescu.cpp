@@ -12,27 +12,15 @@ namespace SGPP {
 namespace optimization {
 namespace test_problems {
 
-Simionescu::Simionescu() :
-  ConstrainedTestProblem(2),
-  f(),
-  g(),
-  h() {
-}
+Simionescu::Simionescu() : ConstrainedTestProblem(2), f(), g(), h() {}
 
-Simionescu::~Simionescu() {
-}
+Simionescu::~Simionescu() {}
 
-TestScalarFunction& Simionescu::getObjectiveFunction() {
-  return f;
-}
+TestScalarFunction& Simionescu::getObjectiveFunction() { return f; }
 
-TestVectorFunction& Simionescu::getInequalityConstraintFunction() {
-  return g;
-}
+TestVectorFunction& Simionescu::getInequalityConstraintFunction() { return g; }
 
-TestVectorFunction& Simionescu::getEqualityConstraintFunction() {
-  return h;
-}
+TestVectorFunction& Simionescu::getEqualityConstraintFunction() { return h; }
 
 float_t Simionescu::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
@@ -41,40 +29,26 @@ float_t Simionescu::getOptimalPointUndisplaced(base::DataVector& x) {
   return -0.072;
 }
 
+SimionescuObjective::SimionescuObjective() : TestScalarFunction(2) {}
 
+SimionescuObjective::~SimionescuObjective() {}
 
-SimionescuObjective::SimionescuObjective() :
-  TestScalarFunction(2) {
-}
-
-SimionescuObjective::~SimionescuObjective() {
-}
-
-float_t SimionescuObjective::evalUndisplaced(
-  const base::DataVector& x) {
+float_t SimionescuObjective::evalUndisplaced(const base::DataVector& x) {
   const float_t x1 = 2.5 * x[0] - 1.25;
   const float_t x2 = 2.5 * x[1] - 1.25;
   return 0.1 * x1 * x2;
 }
 
-void SimionescuObjective::clone(
-  std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
-            new SimionescuObjective(*this));
+void SimionescuObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
+  clone = std::unique_ptr<ScalarFunction>(new SimionescuObjective(*this));
 }
 
+SimionescuInequalityConstraint::SimionescuInequalityConstraint() : TestVectorFunction(2, 1) {}
 
+SimionescuInequalityConstraint::~SimionescuInequalityConstraint() {}
 
-SimionescuInequalityConstraint::SimionescuInequalityConstraint() :
-  TestVectorFunction(2, 1) {
-}
-
-SimionescuInequalityConstraint::~SimionescuInequalityConstraint() {
-}
-
-void SimionescuInequalityConstraint::evalUndisplaced(
-  const base::DataVector& x,
-  base::DataVector& value) {
+void SimionescuInequalityConstraint::evalUndisplaced(const base::DataVector& x,
+                                                     base::DataVector& value) {
   const float_t rT = 1;
   const float_t rS = 0.2;
   const float_t n = 8.0;
@@ -85,32 +59,20 @@ void SimionescuInequalityConstraint::evalUndisplaced(
   value[0] = x1 * x1 + x2 * x2 - tmp * tmp;
 }
 
-void SimionescuInequalityConstraint::clone(
-  std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(
-            new SimionescuInequalityConstraint(*this));
+void SimionescuInequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
+  clone = std::unique_ptr<VectorFunction>(new SimionescuInequalityConstraint(*this));
 }
 
+SimionescuEqualityConstraint::SimionescuEqualityConstraint() : TestVectorFunction(2, 0) {}
 
+SimionescuEqualityConstraint::~SimionescuEqualityConstraint() {}
 
-SimionescuEqualityConstraint::SimionescuEqualityConstraint() :
-  TestVectorFunction(2, 0) {
-}
+void SimionescuEqualityConstraint::evalUndisplaced(const base::DataVector& x,
+                                                   base::DataVector& value) {}
 
-SimionescuEqualityConstraint::~SimionescuEqualityConstraint() {
+void SimionescuEqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
+  clone = std::unique_ptr<VectorFunction>(new SimionescuEqualityConstraint(*this));
 }
-
-void SimionescuEqualityConstraint::evalUndisplaced(
-  const base::DataVector& x,
-  base::DataVector& value) {
-}
-
-void SimionescuEqualityConstraint::clone(
-  std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(
-            new SimionescuEqualityConstraint(*this));
-}
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP

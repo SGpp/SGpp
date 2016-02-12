@@ -24,10 +24,7 @@ class RandomNumberGenerator {
   /**
    * @return singleton instance
    */
-  inline static RandomNumberGenerator& getInstance() {
-    static RandomNumberGenerator rng;
-    return rng;
-  }
+  static RandomNumberGenerator& getInstance();
 
   /**
    * Generate a uniform pseudo-random number.
@@ -95,7 +92,7 @@ class RandomNumberGenerator {
    */
   void operator=(const RandomNumberGenerator&) = delete;
 };
-}
-}
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_RANDOMNUMBERGENERATOR_HPP */

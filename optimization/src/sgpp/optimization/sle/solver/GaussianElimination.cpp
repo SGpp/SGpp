@@ -16,14 +16,10 @@ namespace SGPP {
 namespace optimization {
 namespace sle_solver {
 
-GaussianElimination::~GaussianElimination() {
-}
+GaussianElimination::~GaussianElimination() {}
 
-bool GaussianElimination::solve(SLE& system,
-                                base::DataVector& b,
-                                base::DataVector& x) const {
-  Printer::getInstance().printStatusBegin(
-    "Solving linear system (Gaussian elimination)...");
+bool GaussianElimination::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
+  Printer::getInstance().printStatusBegin("Solving linear system (Gaussian elimination)...");
 
   // size of the system
   const size_t n = b.getSize();
@@ -71,8 +67,7 @@ bool GaussianElimination::solve(SLE& system,
 
     // all entries are zero ==> matrices W and A are rank deficient
     if (maxEntry == 0) {
-      Printer::getInstance().printStatusEnd(
-        "error: Could not solve linear system!");
+      Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
       return false;
     }
 
@@ -112,7 +107,6 @@ bool GaussianElimination::solve(SLE& system,
   Printer::getInstance().printStatusEnd();
   return true;
 }
-
-}
-}
-}
+}  // namespace sle_solver
+}  // namespace optimization
+}  // namespace SGPP

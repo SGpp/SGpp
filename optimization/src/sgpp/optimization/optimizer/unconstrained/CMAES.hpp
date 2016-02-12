@@ -31,8 +31,7 @@ class CMAES : public UnconstrainedOptimizer {
    * @param maxFcnEvalCount       maximal number of
    *                              function evaluations
    */
-  CMAES(ScalarFunction& f,
-        size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
+  explicit CMAES(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT);
 
   /**
    * Destructor.
@@ -44,12 +43,10 @@ class CMAES : public UnconstrainedOptimizer {
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const
-  override;
+  void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 };
-
-}
-}
-}
+}  // namespace optimizer
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_CMAES_HPP */

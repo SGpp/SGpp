@@ -7,9 +7,9 @@
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_RASTRIGIN_HPP
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 #include <cmath>
-#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 namespace SGPP {
 namespace optimization {
@@ -29,7 +29,7 @@ class RastriginObjective : public TestScalarFunction {
    *
    * @param d     dimension of the domain
    */
-  RastriginObjective(size_t d);
+  explicit RastriginObjective(size_t d);
 
   /**
    * Destructor.
@@ -40,14 +40,12 @@ class RastriginObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t evalUndisplaced(const base::DataVector& x)
-  override;
+  float_t evalUndisplaced(const base::DataVector& x) override;
 
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<ScalarFunction>& clone)
-  const override;
+  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
 /**
@@ -67,7 +65,7 @@ class Rastrigin : public UnconstrainedTestProblem {
    *
    * @param d     dimension of the domain
    */
-  Rastrigin(size_t d);
+  explicit Rastrigin(size_t d);
 
   /**
    * Destructor.
@@ -85,16 +83,14 @@ class Rastrigin : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x)
-  override;
+  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
   /// objective function
   RastriginObjective f;
 };
-
-}
-}
-}
+}  // namespace test_problems
+}  // namespace optimization
+}  // namespace SGPP
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_RASTRIGIN_HPP */
