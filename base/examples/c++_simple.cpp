@@ -5,19 +5,23 @@
 
 #include <iostream>
 // All SG++ headers
-//#include <sgpp_base.hpp>
+// #include <sgpp_base.hpp"
 
 // Or, better!, include only those that are required
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include "sgpp/base/datatypes/DataVector.hpp"
+#include "sgpp/base/grid/Grid.hpp"
+#include "sgpp/base/grid/GridStorage.hpp"
+#include "sgpp/base/grid/generation/GridGenerator.hpp"
+#include "sgpp/base/operation/hash/OperationEval.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
 
-using namespace std;
-using namespace SGPP::base;
-
+using std::cout;
+using std::endl;
+using SGPP::base::Grid;
+using SGPP::base::GridStorage;
+using SGPP::base::GridGenerator;
+using SGPP::base::DataVector;
+using SGPP::base::DataMatrix;
 
 // function to interpolate
 SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
@@ -43,7 +47,7 @@ int main() {
   cout << "length of alpha vector: " << alpha.getSize() << endl;
 
   // set function values in alpha
-  GridIndex* gp;
+  SGPP::base::GridIndex* gp;
 
   for (size_t i = 0; i < gridStorage->size(); i++) {
     gp = gridStorage->get(i);
@@ -53,15 +57,16 @@ int main() {
   cout << "alpha before hierarchization: " << alpha.toString() << endl;
 
   // hierarchize
-  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-    alpha);
+  SGPP::op_factory::createOperationHierarchisation(*grid)
+      ->doHierarchisation(alpha);
   cout << "alpha after hierarchization:  " << alpha.toString() << endl;
 
   // evaluate
   DataVector p(dim);
   p[0] = 0.52;
   p[1] = 0.73;
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
+  SGPP::base::OperationEval* opEval =
+      SGPP::op_factory::createOperationEval(*grid);
   cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << endl;
 
   delete grid;
