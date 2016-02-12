@@ -3,13 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
-
 #include <sstream>
 #include <iostream>
 #include <vector>
 #include <string>
 
+#include "sgpp/base/opencl/OCLPlatformWrapper.hpp"
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 

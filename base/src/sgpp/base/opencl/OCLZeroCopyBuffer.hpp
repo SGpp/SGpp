@@ -7,9 +7,8 @@
 
 #include <CL/cl.h>
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/opencl/OCLManager.hpp>
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/opencl/OCLManager.hpp"
 
 namespace SGPP {
 namespace base {

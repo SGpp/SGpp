@@ -3,14 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
-
 #include <iostream>
 #include <sstream>
 #include <map>
 #include <string>
 #include <vector>
 
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
 namespace SGPP {

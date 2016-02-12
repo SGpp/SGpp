@@ -12,8 +12,9 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
-#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
+#include "sgpp/base/opencl/OCLPlatformWrapper.hpp"
 #include "OCLOperationConfiguration.hpp"
 #include "OCLDevice.hpp"
 
@@ -45,7 +46,7 @@ class OCLManagerMultiPlatform {
   bool verbose;
 
  public:
-  OCLManagerMultiPlatform(bool verbose = false);
+  explicit OCLManagerMultiPlatform(bool verbose = false);
 
   OCLManagerMultiPlatform(
       std::shared_ptr<base::OCLOperationConfiguration> parameters);
@@ -106,5 +107,5 @@ class OCLManagerMultiPlatform {
 
   std::vector<std::shared_ptr<OCLDevice>> &getDevices();
 };
-}
-}
+}  // namespace base
+}  // namespace SGPP

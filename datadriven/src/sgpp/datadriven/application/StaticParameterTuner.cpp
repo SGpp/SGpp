@@ -92,7 +92,7 @@ SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
 
       // limit the number of devices used to 1 for tuning
       bool addedDeviceLimit = false;
-      size_t oldLimitValue;
+      size_t oldLimitValue = 0;
       if (!deviceNode.contains("COUNT")) {
         deviceNode.addIDAttr("COUNT", 1ul);
         addedDeviceLimit = true;

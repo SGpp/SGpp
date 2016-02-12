@@ -6,10 +6,10 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
-#include <CL/cl.h>
-
-#include <sgpp/globaldef.hpp>
+#include "CL/cl.h"
+#include "sgpp/globaldef.hpp"
 
 namespace SGPP {
 namespace base {
@@ -29,5 +29,5 @@ class OCLPlatformWrapper {
 
   size_t getDeviceCount();
 };
-}
-}
+}  // namespace base
+}  // namespace SGPP
