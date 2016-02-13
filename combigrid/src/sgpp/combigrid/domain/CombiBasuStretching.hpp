@@ -6,6 +6,7 @@
 #ifndef COMBIBASISTRETCHING_HPP_
 #define COMBIBASISTRETCHING_HPP_
 #include <sgpp/combigrid/domain/AbstractStretchingMaker.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <vector>
 
