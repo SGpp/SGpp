@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/quadratures/ClenshawCurtisQuadrature.hpp>
+#include <sgpp/globaldef.hpp>
 #include <vector>
 
 template <typename _Tp>

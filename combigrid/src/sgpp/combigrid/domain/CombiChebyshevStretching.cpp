@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/domain/CombiChebyshevStretching.hpp>
+#include <sgpp/globaldef.hpp>
 #include <math.h>
 
 #include <vector>
