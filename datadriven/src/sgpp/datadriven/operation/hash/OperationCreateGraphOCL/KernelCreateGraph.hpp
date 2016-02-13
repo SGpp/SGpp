@@ -15,7 +15,7 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
-#include "KernelSourceBuilderB.hpp"
+#include "KernelSourceBuilderCreateGraph.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -28,12 +28,12 @@ private:
 	std::shared_ptr<base::OCLDevice> device;
 
 	size_t dims;
+	size_t k;
 
 	cl_int err;
 
-	base::OCLClonedBufferSD<int> devicePoints;
 	base::OCLClonedBufferSD<T> deviceData;
-	base::OCLClonedBufferSD<T> deviceResultData;
+	base::OCLClonedBufferSD<int> deviceResultData;
 
 	cl_kernel kernel;
 
@@ -54,9 +54,9 @@ private:
 	size_t totalBlockSize;
 public:
 
-	KernelCreateGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims,
+	KernelCreateGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims, size_t k,
 					  std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration) :
-		device(dev), dims(dims), err(CL_SUCCESS), devicePoints(device),
+		device(dev), dims(dims), k(k), err(CL_SUCCESS),
 		deviceData(device), deviceResultData(device), kernel(nullptr),
 		kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), deviceTimingMult(0.0),
 		kernelConfiguration(kernelConfiguration)
@@ -92,7 +92,7 @@ public:
 	{
 	}
 
-	double create_graph(std::vector<T> &data, std::vector<T> &result, size_t k)
+	double create_graph(std::vector<T> &data, std::vector<int> &result)
 	{
 		if (verbose)
 		{
@@ -114,10 +114,10 @@ public:
 		}
 
 		//Load data into buffers if not already done
-		if (!deviceDatao.isInitialized())
+		if (!deviceData.isInitialized())
 		{
 			deviceData.intializeTo(data, 1, 0, data.size());
-			std::vector<T> zeros(data.size()*k);
+			std::vector<int> zeros(data.size()*k);
 			for (size_t i = 0; i < data.size()*k; i++) {
 				zeros[i] = 0.0;
 			}
@@ -165,7 +165,7 @@ public:
 		if(verbose)
 			std::cout<<"Starting the kernel"<<std::endl;
 		size_t *globalworkrange=new size_t[1];
-		globalworkrange[0]=gridSize;
+		globalworkrange[0]=data.size();
 		err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
 									 NULL, 0, nullptr, &clTiming);
 		if (err != CL_SUCCESS) {
@@ -180,8 +180,8 @@ public:
 		deviceResultData.readFromBuffer();
 		clFinish(device->commandQueue);
 
-		std::vector<T> &hostTemp = deviceResultData.getHostPointer();
-		for(size_t i=0; i<gridSize; i++)
+		std::vector<int> &hostTemp = deviceResultData.getHostPointer();
+		for(size_t i=0; i<data.size()*k; i++)
 		{
 			result[i]=hostTemp[i];
 		}

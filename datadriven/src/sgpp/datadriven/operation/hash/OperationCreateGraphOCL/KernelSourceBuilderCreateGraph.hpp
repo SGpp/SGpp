@@ -99,7 +99,7 @@ private:
 
 public:
 
-	SourceBuilderB(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration, size_t dims) :
+	SourceBuilderCreateGraph(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration, size_t dims) :
 		device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
 	}
 
@@ -163,7 +163,7 @@ public:
 					<<"	}"<<std::endl
 					<<"	}"<<std::endl
 					<<"	}"<<std::endl
-					<<"	}"<<std::endl
+					<<"	}"<<std::endl;
 			if(kernelConfiguration.contains("WRITE_SOURCE")) {
 				if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
 					this->writeSource("DensityOCLMultiPlatform_graph.cl", sourceStream.str());
