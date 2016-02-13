@@ -1,0 +1,21 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
+#include <iostream>
+
+#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+
+int main(int argc, char **argv) {
+  SGPP::base::OCLManagerMultiPlatform manager;
+
+  auto configuration = manager.getConfiguration();
+
+  configuration->serialize("detectedPlatform2.cfg");
+
+  std::cout << "done" << std::endl;
+
+  return 0;
+}

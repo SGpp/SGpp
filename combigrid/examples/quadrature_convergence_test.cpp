@@ -115,17 +115,17 @@ int main(int argc, char** argv) {
     std::vector<double> max(dim, b);
     fcalls = 0;
     grid->initializeActiveGridsDomain(min, max, equidistant);
-    *(errors + (l - 1) * 3) = abs(integrateByRule(trapz, grid) - 1.0);
+    *(errors + (l - 1) * 3) = fabs(integrateByRule(trapz, grid) - 1.0);
     *(Fcalls + (l - 1) * 3) = fcalls;
 
     fcalls = 0;
     grid->initializeActiveGridsDomain(min, max, chebishev);
-    *(errors + (l - 1) * 3 + 1) = abs(integrateByRule(clenshaw, grid) - 1.0);
+    *(errors + (l - 1) * 3 + 1) = fabs(integrateByRule(clenshaw, grid) - 1.0);
     *(Fcalls + (l - 1) * 3 + 1) = fcalls;
 
     fcalls = 0;
     grid->initializeActiveGridsDomain(min, max, legendre);
-    *(errors + (l - 1) * 3 + 2) = abs(integrateByRule(gauss, grid) - 1.0);
+    *(errors + (l - 1) * 3 + 2) = fabs(integrateByRule(gauss, grid) - 1.0);
     *(Fcalls + (l - 1) * 3 + 2) = fcalls;
 
     delete grid;

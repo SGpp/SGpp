@@ -284,7 +284,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   gen->regular(level);
   //  GridStorage* storage = grid->getStorage();
 
-  DataVector surplusses(1);
+  DataVector surplusses(5);
   surplusses[0] = 1.0;
   surplusses[1] = .5;
   surplusses[2] = .5;
