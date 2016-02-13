@@ -896,6 +896,11 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   Grid* factory = Grid::createLinearBoundaryGrid(2, 0);
   GridGenerator* gen = factory->createGridGenerator();
   gen->regular(2);
+  // point 0: l = (0,0), i = (0,0)
+  // point 1: l = (0,0), i = (1,0)
+  // point 2: l = (1,0), i = (1,0)
+  // point 3: l = (2,0), i = (1,0)
+  // point 4: l = (2,0), i = (3,0)
 
   DataVector alpha( factory->getStorage()->size() );
   DataMatrix p(1, 2);
@@ -910,21 +915,28 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
                                  *factory, p );
   opb->multTranspose( beta, alpha );
 
-  BOOST_CHECK_CLOSE( alpha[0], 0.75, 0.0 );
-  BOOST_CHECK_CLOSE( alpha[1], 0.25, 0.0 );
-  BOOST_CHECK_CLOSE( alpha[2], 0.5, 0.0 );
-  BOOST_CHECK_CLOSE( alpha[3], 1.0, 0.0 );
+  // should be phi_{(0,0),(0,0)}(p) = (3/4)^2 = 9/16
+  BOOST_CHECK_CLOSE( alpha[0], 0.5625, 0.0 );
+  // should be phi_{(0,0),(1,0)}(p) = (1/4)*(3/4) = 3/16
+  BOOST_CHECK_CLOSE( alpha[1], 0.1875, 0.0 );
+  // should be phi_{(1,0),(1,0)}(p) = (1/2)*(3/4) = 3/8
+  BOOST_CHECK_CLOSE( alpha[2], 0.375, 0.0 );
+  // should be phi_{(2,0),(1,0)}(p) = 1*3/4 = 3/4
+  BOOST_CHECK_CLOSE( alpha[3], 0.75, 0.0 );
+  // should be phi_{(2,0),(3,0)}(p) = 0*3/4 = 0
   BOOST_CHECK_CLOSE( alpha[4], 0.0, 0.0 );
 
   alpha.setAll(0.0);
   alpha[2] = 1.0;
 
-  p.set(0, 0, 0.25);
-
   beta[0] = 0.0;
 
   opb->mult( alpha, beta);
-  BOOST_CHECK_CLOSE( beta[0], 0.5, 0.0 );
+
+  // rationale behind 0.375: function no. 2 should have level
+  // l = (1,0) and index i = (1,0)
+  // ==>  function evaluated at (0.25, 0.25) should be 1/2 * 3/4 = 3/8
+  BOOST_CHECK_CLOSE( beta[0], 0.375, 0.0 );
 
   delete gen;
   delete opb;
@@ -945,7 +957,10 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
 
   OperationEval* eval = SGPP::op_factory::createOperationEval( *factory );
 
-  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), 1.5, 0.0 );
+  // rationale behind 2.0: four corner functions sum up to 1,
+  // two of the four edge functions are 1/8, the other two are 3/8
+  // ==>  1 + 2 * 1/8 + 2 * 3/8 = 2
+  BOOST_CHECK_CLOSE( eval->eval( alpha, p ), 2.0, 0.0 );
 
   delete( gen );
   delete( eval );
