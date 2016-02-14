@@ -118,18 +118,19 @@ for lib_str in moduleDependencies:
 
 libInstall = env.Install(BUILD_DIR, lib)
 
-if env['RUN_CPPLINT']:
-    for path in cpps + hpps:
-        lintCommand = env.Command(path + ".lint", path, lintAction)
-        env.Depends(lib, lintCommand)
-
+# build examples
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
-        example = env.Program(source=os.path.join("examples", fileName),
+        cpp = os.path.join("examples", fileName)
+        cpps.append(cpp)
+        example = env.Program(source=cpp,
                               LIBPATH=BUILD_DIR,
                               LIBS=[libname] + moduleDependencies)
         env.Requires(example, libInstall)
         exampleTargetList.append(example)
+    elif fnmatch.fnmatch(fileName, "*.hpp"):
+        hpp = os.path.join("examples", fileName)
+        hpps.append(hpp)
 
 # build unit tests
 if env['COMPILE_BOOST_TESTS']:
@@ -139,7 +140,12 @@ if env['COMPILE_BOOST_TESTS']:
     testObjects = []
     for fileName in os.listdir("tests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
-            testObjects += [test_env.Object(source=os.path.join("tests", fileName))]
+            cpp = os.path.join("tests", fileName)
+            cpps.append(cpp)
+            testObjects += [test_env.Object(source=cpp)]
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("tests", fileName)
+            hpps.append(hpp)
     if len(testObjects) > 0:
         fileName = os.path.join("tests", "test_{}_boost".format(moduleName)) + \
                 (".exe" if env['PLATFORM'] == 'win32' else '')
@@ -149,6 +155,11 @@ if env['COMPILE_BOOST_TESTS']:
             testRun = test_env.BoostTest(fileName + "_run", source=fileName)
             boostTestTargetList.append(testRun)
 
+# run cpplint
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)
