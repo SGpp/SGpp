@@ -26,6 +26,7 @@ public:
 	}
 
 	virtual void create_graph(base::DataVector& dataset, base::DataVector& result) {}
+	virtual void mult(base::DataVector& alpha, base::DataVector& result) {}
 };
 
 }
