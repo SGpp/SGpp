@@ -6,7 +6,6 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
@@ -18,7 +17,7 @@ namespace SGPP {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
-class OperationCreateGraphOCL : public SGPP::base::OperationMatrix
+class OperationCreateGraphOCL
 {
 protected:
 public:
@@ -26,7 +25,6 @@ public:
 	}
 
 	virtual void create_graph(base::DataVector& dataset, base::DataVector& result) {}
-	virtual void mult(base::DataVector& alpha, base::DataVector& result) {}
 };
 
 }
