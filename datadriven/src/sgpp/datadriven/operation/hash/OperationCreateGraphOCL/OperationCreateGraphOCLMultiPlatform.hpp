@@ -26,7 +26,7 @@ class OperationCreateGraphOCLMultiPlatform : public SGPP::datadriven::StreamingO
 private:
 	size_t dims;
 	json::Node &configuration;
-	SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T> *graph_kernel;
+	SGPP::datadriven::DensityOCLMultiPlatform::KernelCreateGraph<T> *graph_kernel;
 	std::vector<std::shared_ptr<base::OCLDevice>> devices;
 	bool verbose;
 	std::shared_ptr<base::OCLManagerMultiPlatform> manager;
