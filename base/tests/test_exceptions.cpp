@@ -36,8 +36,8 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 //For solver exception
-#include <sgpp/solver/ode/Euler.hpp>
-#include <sgpp/base/application/ScreenOutput.hpp>
+//#include <sgpp/solver/ode/Euler.hpp>
+//#include <sgpp/base/application/ScreenOutput.hpp>
 
 //For tool exception
 #include <sgpp/base/tools/GridPrinter.hpp>
@@ -45,7 +45,7 @@
 #include <sgpp/globaldef.hpp>
 
 using namespace SGPP::base;
-using namespace SGPP::solver;
+//using namespace SGPP::solver;
 
 
 BOOST_AUTO_TEST_CASE(test_AlgorithmException){
