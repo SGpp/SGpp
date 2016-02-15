@@ -59,11 +59,10 @@ class KernelMultTranspose {
   size_t scheduleSize;
 
  public:
-  KernelMultTranspose(
-      std::shared_ptr<base::OCLDevice> device, size_t dims,
-      std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-      json::Node &kernelConfiguration,
-      std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose)
+  KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
+                      std::shared_ptr<base::OCLManagerMultiPlatform> manager,
+                      json::Node &kernelConfiguration,
+                      std::shared_ptr<base::QueueLoadBalancer> queueBalancerMultTranpose)
       : device(device),
         dims(dims),
         err(CL_SUCCESS),
@@ -80,22 +79,19 @@ class KernelMultTranspose {
         queueLoadBalancerMultTranspose(queueBalancerMultTranpose) {
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
-    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") ==
-            0 &&
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
         kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
       std::stringstream errorString;
       errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" "
                      "requires value of \"KERNEL_MAX_DIM_UNROLL\"";
-      errorString
-          << " to be greater than the dimension of the data set, was set to"
-          << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
-          << "(device: \"" << device->deviceName << "\")" << std::endl;
+      errorString << " to be greater than the dimension of the data set, was set to"
+                  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \""
+                  << device->deviceName << "\")" << std::endl;
       throw base::operation_exception(errorString.str());
     }
 
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    gridBlockingSize =
-        kernelConfiguration["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+    gridBlockingSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
   }
 
@@ -117,30 +113,26 @@ class KernelMultTranspose {
     releaseGridResultBufferTranspose();
   }
 
-  double multTranspose(std::vector<T> &level, std::vector<T> &index,
-                       std::vector<T> &dataset, std::vector<T> &source,
-                       std::vector<T> &result, const size_t start_index_grid,
-                       const size_t end_index_grid,
-                       const size_t start_index_data,
-                       const size_t end_index_data) {
+  double multTranspose(std::vector<T> &level, std::vector<T> &index, std::vector<T> &dataset,
+                       std::vector<T> &source, std::vector<T> &result,
+                       const size_t start_index_grid, const size_t end_index_grid,
+                       const size_t start_index_data, const size_t end_index_data) {
     if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
       {
-        std::cout << "entering multTranspose, device: " << device->deviceName
-                  << " (" << device->deviceId << ")" << std::endl;
+        std::cout << "entering multTranspose, device: " << device->deviceName << " ("
+                  << device->deviceId << ")" << std::endl;
       }
     }
 
     // check if there is something to do at all
-    if (!(end_index_grid > start_index_grid &&
-          end_index_data > start_index_data)) {
+    if (!(end_index_grid > start_index_grid && end_index_data > start_index_data)) {
       return 0.0;
     }
 
     if (this->kernelMultTranspose == nullptr) {
       std::string program_src = kernelSourceBuilder.generateSource();
-      this->kernelMultTranspose =
-          manager->buildKernel(program_src, device, "multTransOCL");
+      this->kernelMultTranspose = manager->buildKernel(program_src, device, "multTransOCL");
     }
 
     this->deviceTimingMultTranspose = 0.0;
@@ -163,26 +155,23 @@ class KernelMultTranspose {
       }
 
       size_t rangeSize = kernelEndGrid - kernelStartGrid;
-      size_t rangeSizeAfterBlocking = (kernelEndGrid / gridBlockingSize) -
-                                      (kernelStartGrid / gridBlockingSize);
+      size_t rangeSizeAfterBlocking =
+          (kernelEndGrid / gridBlockingSize) - (kernelStartGrid / gridBlockingSize);
 
       size_t sourceSize = end_index_data - start_index_data;
 
       if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
         {
-          std::cout << "device: " << device->deviceName << " ("
-                    << device->deviceId << ") "
-                    << " kernel from: " << kernelStartGrid
-                    << " to: " << kernelEndGrid << " -> range: " << rangeSize
-                    << " (with blocking: " << rangeSizeAfterBlocking << ")"
-                    << std::endl;
+          std::cout << "device: " << device->deviceName << " (" << device->deviceId << ") "
+                    << " kernel from: " << kernelStartGrid << " to: " << kernelEndGrid
+                    << " -> range: " << rangeSize << " (with blocking: " << rangeSizeAfterBlocking
+                    << ")" << std::endl;
         }
       }
 
       initGridBuffersTranspose(level, index, kernelStartGrid, kernelEndGrid);
-      initDatasetBuffersTranspose(dataset, source, kernelStartData,
-                                  kernelEndData);
+      initDatasetBuffersTranspose(dataset, source, kernelStartData, kernelEndData);
       initGridResultBuffersTranspose(kernelStartGrid, kernelEndGrid);
 
       clFinish(device->commandQueue);
@@ -192,86 +181,65 @@ class KernelMultTranspose {
                              this->deviceLevelTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 1, sizeof(cl_mem),
                              this->deviceIndexTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 2, sizeof(cl_mem),
                              this->deviceDataTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 3, sizeof(cl_mem),
                              this->deviceSourceTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 4, sizeof(cl_mem),
                              this->deviceResultGridTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint),
-                             &sourceSize);
+        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &sourceSize);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint),
-                             &kernelStartData);
+        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint), &kernelStartData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint),
-                             &kernelEndData);
+        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelEndData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to create kernel arguments for device "
-              << std::endl;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
         cl_event clTiming;
 
-        err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose,
-                                     1, 0, &rangeSizeAfterBlocking, &localSize,
-                                     0, nullptr, &clTiming);
+        err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, 0,
+                                     &rangeSizeAfterBlocking, &localSize, 0, nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
-          errorString
-              << "OCL Error: Failed to enqueue kernel command! Error code: "
-              << err << std::endl;
+          errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
+                      << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -285,8 +253,7 @@ class KernelMultTranspose {
         //                std::cout << "read from buffer: " << device->deviceId
         //                << "" << std::endl;
 
-        std::vector<T> &deviceResultGridTransposeHost =
-            deviceResultGridTranspose.getHostPointer();
+        std::vector<T> &deviceResultGridTransposeHost = deviceResultGridTranspose.getHostPointer();
         for (size_t i = 0; i < rangeSize; i++) {
           if (kernelStartGrid + i >= end_index_grid) {
             break;
@@ -298,25 +265,23 @@ class KernelMultTranspose {
         cl_ulong startTime = 0;
         cl_ulong endTime = 0;
 
-        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_START,
-                                      sizeof(cl_ulong), &startTime, nullptr);
+        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_START, sizeof(cl_ulong),
+                                      &startTime, nullptr);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
-                         "queue (or crash in multTranspose)! Error code: "
-                      << err << std::endl;
+                         "queue (or crash in multTranspose)! Error code: " << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
-        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END,
-                                      sizeof(cl_ulong), &endTime, nullptr);
+        err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
+                                      &endTime, nullptr);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
-                         "queue! Error code: "
-                      << err << std::endl;
+                         "queue! Error code: " << err << std::endl;
           throw base::operation_exception(errorString.str());
         }
 
@@ -327,8 +292,7 @@ class KernelMultTranspose {
         if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMultTranspose)
           {
-            std::cout << "device: " << device->deviceName << " ("
-                      << device->deviceId << ") "
+            std::cout << "device: " << device->deviceName << " (" << device->deviceId << ") "
                       << "duration: " << time << std::endl;
           }
         }
@@ -352,30 +316,21 @@ class KernelMultTranspose {
     this->deviceDataTranspose.freeBuffer();
   }
 
-  void releaseGridResultBufferTranspose() {
-    this->deviceResultGridTranspose.freeBuffer();
-  }
+  void releaseGridResultBufferTranspose() { this->deviceResultGridTranspose.freeBuffer(); }
 
   void initGridBuffersTranspose(std::vector<T> &level, std::vector<T> &index,
                                 size_t kernelStartGrid, size_t kernelEndGrid) {
-    deviceLevelTranspose.intializeTo(level, dims, kernelStartGrid,
-                                     kernelEndGrid);
-    deviceIndexTranspose.intializeTo(index, dims, kernelStartGrid,
-                                     kernelEndGrid);
+    deviceLevelTranspose.intializeTo(level, dims, kernelStartGrid, kernelEndGrid);
+    deviceIndexTranspose.intializeTo(index, dims, kernelStartGrid, kernelEndGrid);
   }
 
-  void initDatasetBuffersTranspose(std::vector<T> &dataset,
-                                   std::vector<T> &source,
-                                   size_t kernelStartData,
-                                   size_t kernelEndData) {
-    deviceDataTranspose.intializeTo(dataset, dims, kernelStartData,
-                                    kernelEndData, true);
-    deviceSourceTranspose.intializeTo(source, 1, kernelStartData,
-                                      kernelEndData);
+  void initDatasetBuffersTranspose(std::vector<T> &dataset, std::vector<T> &source,
+                                   size_t kernelStartData, size_t kernelEndData) {
+    deviceDataTranspose.intializeTo(dataset, dims, kernelStartData, kernelEndData, true);
+    deviceSourceTranspose.intializeTo(source, 1, kernelStartData, kernelEndData);
   }
 
-  void initGridResultBuffersTranspose(size_t kernelStartGrid,
-                                      size_t kernelEndGrid) {
+  void initGridResultBuffersTranspose(size_t kernelStartGrid, size_t kernelEndGrid) {
     size_t range = kernelEndGrid - kernelStartGrid;
 
     std::vector<T> zeros(range);

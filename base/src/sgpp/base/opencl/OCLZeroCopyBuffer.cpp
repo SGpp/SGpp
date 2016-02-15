@@ -3,33 +3,28 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
-
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/exception/operation_exception.hpp>
-
 #include <sstream>
 #include <cstring>
+
+#include "sgpp/base/opencl/OCLZeroCopyBuffer.hpp"
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
 
 namespace SGPP {
 namespace base {
 
-OCLZeroCopyBuffer::OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager) :
-  m_manager(manager) {
+OCLZeroCopyBuffer::OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager)
+    : m_manager(manager) {
   m_initialized = false;
   m_mappedHostBuffer = nullptr;
   m_sizeofType = 0;
   m_elements = 0;
+  m_readOnly = false;
 }
 
-OCLZeroCopyBuffer::~OCLZeroCopyBuffer() {
-  this->freeBuffer();
-}
+OCLZeroCopyBuffer::~OCLZeroCopyBuffer() { this->freeBuffer(); }
 
-bool OCLZeroCopyBuffer::isInitialized() {
-  return this->m_initialized;
-}
+bool OCLZeroCopyBuffer::isInitialized() { return this->m_initialized; }
 
 cl_mem* OCLZeroCopyBuffer::getBuffer(size_t deviceNumber) {
   return &(m_hostBuffer);
@@ -41,24 +36,21 @@ cl_mem* OCLZeroCopyBuffer::getBuffer(size_t deviceNumber) {
 void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
   cl_int err;
 
-  m_mappedHostBuffer = clEnqueueMapBuffer(m_manager->command_queue[0],
-                                          m_hostBuffer, CL_TRUE,
-                                          CL_MAP_WRITE, 0,
-                                          m_sizeofType * m_elements, 0,
-                                          nullptr, nullptr, &err);
+  m_mappedHostBuffer = clEnqueueMapBuffer(
+      m_manager->command_queue[0], m_hostBuffer, CL_TRUE, CL_MAP_WRITE, 0,
+      m_sizeofType * m_elements, 0, nullptr, nullptr, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString <<
-                "OCL Error: Failed to enqueue map buffer command when "
-                "trying to write! Error code: "
+    errorString << "OCL Error: Failed to enqueue map buffer command when "
+                   "trying to write! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
-  if ( m_mappedHostBuffer == nullptr )
+  if (m_mappedHostBuffer == nullptr)
     throw std::runtime_error(
-      "OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
+        "OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
 
   /*for ( int i = 0; i < m_elements; i++)
   {
@@ -76,9 +68,8 @@ void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString <<
-                "OCL Error: Failed to enqueue unmap memobject command "
-                "when trying to write! Error code: "
+    errorString << "OCL Error: Failed to enqueue unmap memobject command "
+                   "when trying to write! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
@@ -87,24 +78,22 @@ void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
 void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
   cl_int err;
 
-  m_mappedHostBuffer = clEnqueueMapBuffer(m_manager->command_queue[0],
-                                          m_hostBuffer, CL_TRUE,
-                                          CL_MAP_READ, 0,
-                                          m_sizeofType * m_elements, 0,
-                                          nullptr, nullptr, &err);
+  m_mappedHostBuffer = clEnqueueMapBuffer(
+      m_manager->command_queue[0], m_hostBuffer, CL_TRUE, CL_MAP_READ, 0,
+      m_sizeofType * m_elements, 0, nullptr, nullptr, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString <<
-                "OCL Error: Failed to enqueue map buffer command "
-                "when trying to read! Error code: "
+    errorString << "OCL Error: Failed to enqueue map buffer command "
+                   "when trying to read! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
-  if ( m_mappedHostBuffer == nullptr )
-    throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer "
-                             "mappedHostBuffer == NULL");
+  if (m_mappedHostBuffer == nullptr)
+    throw std::runtime_error(
+        "OCLZeroCopyBuffer::writeToBuffer "
+        "mappedHostBuffer == NULL");
 
   memcpy(hostData, m_mappedHostBuffer, m_sizeofType * m_elements);
 
@@ -114,9 +103,8 @@ void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString <<
-                "OCL Error: Failed to enqueue unmap memobject command "
-                "when trying to read! Error code: "
+    errorString << "OCL Error: Failed to enqueue unmap memobject command "
+                   "when trying to read! Error code: "
                 << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
@@ -124,7 +112,7 @@ void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
 
 // read/write-flags are missing
 void OCLZeroCopyBuffer::initializeBuffer(void* initialValues, size_t sizeofType,
-    size_t elements, bool readOnly) {
+                                         size_t elements, bool readOnly) {
   cl_int err;
 
   cl_mem_flags flags = CL_MEM_ALLOC_HOST_PTR;
@@ -136,15 +124,13 @@ void OCLZeroCopyBuffer::initializeBuffer(void* initialValues, size_t sizeofType,
   }
 
   m_hostBuffer = clCreateBuffer(m_manager->context, flags,
-                                sizeofType * elements,
-                                nullptr, &err);
-
+                                sizeofType * elements, nullptr, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Could not allocate buffer! "
-                "Error code: " << err <<
-                std::endl;
+                   "Error code: "
+                << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
