@@ -3,47 +3,59 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/type/LinearGrid.hpp>
-#include <sgpp/base/grid/type/ModLinearGrid.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/tools/GridPrinter.hpp>
-
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/solver/sle/BiCGStab.hpp>
-
 #include <sgpp/datadriven/application/LearnerBase.hpp>
-
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 
 #include <iostream>
 #include <utility>
 #include <string>
 #include <vector>
 
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/grid/type/LinearGrid.hpp"
+#include "sgpp/base/grid/type/ModLinearGrid.hpp"
+#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include "sgpp/base/exception/application_exception.hpp"
+#include "sgpp/base/tools/GridPrinter.hpp"
+#include "sgpp/solver/sle/ConjugateGradients.hpp"
+#include "sgpp/solver/sle/BiCGStab.hpp"
+#include "sgpp/base/grid/type/LinearBoundaryGrid.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
-LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose) :
-  alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression),
-  isTrained_(false), execTime_(
-    0.0), stepExecTime_(0.0), GFlop_(0.0), stepGFlop_(0.0), GByte_(0.0),
-  stepGByte_(0.0), currentRefinementStep(0) {
-}
+LearnerBase::LearnerBase(const bool isRegression, const bool isVerbose)
+    : alpha_(NULL),
+      grid_(NULL),
+      isVerbose_(isVerbose),
+      isRegression_(isRegression),
+      isTrained_(false),
+      execTime_(0.0),
+      stepExecTime_(0.0),
+      GFlop_(0.0),
+      stepGFlop_(0.0),
+      GByte_(0.0),
+      stepGByte_(0.0),
+      currentRefinementStep(0) {}
 
 LearnerBase::LearnerBase(const std::string tGridFilename,
-                         const std::string tAlphaFilename, const bool isRegression,
-                         const bool isVerbose) :
-  alpha_(NULL), grid_(NULL), isVerbose_(isVerbose), isRegression_(isRegression),
-  isTrained_(false), execTime_(
-    0.0), stepExecTime_(0.0), GFlop_(0.0), stepGFlop_(0.0), GByte_(0.0),
-  stepGByte_(0.0), currentRefinementStep(0) {
-  throw base::application_exception("LearnerBase::LearnerBase: This construct isn't implemented, "
-    "yet!");
+                         const std::string tAlphaFilename,
+                         const bool isRegression, const bool isVerbose)
+    : alpha_(NULL),
+      grid_(NULL),
+      isVerbose_(isVerbose),
+      isRegression_(isRegression),
+      isTrained_(false),
+      execTime_(0.0),
+      stepExecTime_(0.0),
+      GFlop_(0.0),
+      stepGFlop_(0.0),
+      GByte_(0.0),
+      stepGByte_(0.0),
+      currentRefinementStep(0) {
+  throw base::application_exception(
+      "LearnerBase::LearnerBase: This construct isn't implemented, yet!");
 }
 
 LearnerBase::LearnerBase(const LearnerBase& copyMe) {
@@ -59,11 +71,9 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
   this->currentRefinementStep = 0;
 
   // safety, should not happen
-  if (alpha_ != NULL)
-    delete alpha_;
+  if (alpha_ != NULL) delete alpha_;
 
-  if (grid_ != NULL)
-    delete grid_;
+  if (grid_ != NULL) delete grid_;
 
   grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize());
   alpha_ = new SGPP::base::DataVector(*(copyMe.alpha_));
@@ -71,15 +81,13 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
 
 LearnerBase::~LearnerBase() {
   // if user does no cleaning
-  if (alpha_ != NULL)
-    delete alpha_;
+  if (alpha_ != NULL) delete alpha_;
 
-  if (grid_ != NULL)
-    delete grid_;
+  if (grid_ != NULL) delete grid_;
 }
 
-void LearnerBase::InitializeGrid(const SGPP::base::RegularGridConfiguration&
-                                 GridConfig) {
+void LearnerBase::InitializeGrid(
+    const SGPP::base::RegularGridConfiguration& GridConfig) {
   if (GridConfig.type_ == SGPP::base::GridType::LinearBoundary) {
     grid_ = new SGPP::base::LinearBoundaryGrid(GridConfig.dim_);
   } else if (GridConfig.type_ == SGPP::base::GridType::ModLinear) {
@@ -88,8 +96,8 @@ void LearnerBase::InitializeGrid(const SGPP::base::RegularGridConfiguration&
     grid_ = new SGPP::base::LinearGrid(GridConfig.dim_);
   } else {
     grid_ = NULL;
-    throw base::application_exception("LearnerBase::InitializeGrid: An unsupported grid type was "
-      "chosen!");
+    throw base::application_exception(
+        "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
@@ -102,8 +110,7 @@ void LearnerBase::InitializeGrid(const SGPP::base::RegularGridConfiguration&
   alpha_->setAll(0.0);
 }
 
-void LearnerBase::preProcessing() {
-}
+void LearnerBase::preProcessing() {}
 
 void LearnerBase::postProcessing(const SGPP::base::DataMatrix& trainDataset,
                                  const SGPP::solver::SLESolverType& solver,
@@ -115,19 +122,19 @@ void LearnerBase::postProcessing(const SGPP::base::DataMatrix& trainDataset,
   }
 }
 
-LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
-                                 SGPP::base::DataVector& classes,
-                                 const SGPP::base::RegularGridConfiguration& GridConfig,
-                                 const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
-                                 const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                                 const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                                 const bool testAccDuringAdapt,
-                                 const float_t lambdaRegularization) {
+LearnerTiming LearnerBase::train(
+    SGPP::base::DataMatrix& trainDataset, SGPP::base::DataVector& classes,
+    const SGPP::base::RegularGridConfiguration& GridConfig,
+    const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+    const SGPP::base::AdpativityConfiguration& AdaptConfig,
+    const bool testAccDuringAdapt, const float_t lambdaRegularization) {
   LearnerTiming result;
 
   if (trainDataset.getNrows() != classes.getSize()) {
-    throw base::application_exception("LearnerBase::train: length of classes vector does not match "
-      "to dataset!");
+    throw base::application_exception(
+        "LearnerBase::train: length of classes vector does not match to "
+        "dataset!");
   }
 
   result.timeComplete_ = 0.0;
@@ -146,47 +153,42 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
   float_t oldAcc = 0.0;
 
   // Construct Grid
-  if (alpha_ != NULL)
-    delete alpha_;
+  if (alpha_ != NULL) delete alpha_;
 
-  if (grid_ != NULL)
-    delete grid_;
+  if (grid_ != NULL) delete grid_;
 
-  if (isTrained_ == true)
-    isTrained_ = false;
+  if (isTrained_ == true) isTrained_ = false;
 
   InitializeGrid(GridConfig);
 
   // check if grid was created
-  if (grid_ == NULL)
-    return result;
+  if (grid_ == NULL) return result;
 
   // create DMSystem
-  SGPP::datadriven::DMSystemMatrixBase* DMSystem = createDMSystem(trainDataset,
-      lambdaRegularization);
+  SGPP::datadriven::DMSystemMatrixBase* DMSystem =
+      createDMSystem(trainDataset, lambdaRegularization);
 
   // check if System was created
-  if (DMSystem == NULL)
-    return result;
+  if (DMSystem == NULL) return result;
 
   SGPP::solver::SLESolver* myCG;
 
   if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
-    myCG = new SGPP::solver::ConjugateGradients(SolverConfigRefine.maxIterations_,
-        SolverConfigRefine.eps_);
-  } else if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
+    myCG = new SGPP::solver::ConjugateGradients(
+        SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
+  } else if (SolverConfigRefine.type_ ==
+             SGPP::solver::SLESolverType::BiCGSTAB) {
     myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
                                       SolverConfigRefine.eps_);
   } else {
-    throw base::application_exception("LearnerBase::train: An unsupported SLE solver type was "
-      "chosen!");
+    throw base::application_exception(
+        "LearnerBase::train: An unsupported SLE solver type was chosen!");
   }
 
   // Pre-Procession
   preProcessing();
 
-  if (isVerbose_)
-    std::cout << "Starting Learning...." << std::endl;
+  if (isVerbose_) std::cout << "Starting Learning...." << std::endl;
 
   // execute adaptsteps
   SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
@@ -205,21 +207,22 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
       myStopwatch2->start();
 
       // disable refinement here!
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-      SGPP::base::SurplusRefinementFunctor(alpha_,
-                                           AdaptConfig.noPoints_, AdaptConfig.threshold_);
+      SGPP::base::SurplusRefinementFunctor* myRefineFunc =
+          new SGPP::base::SurplusRefinementFunctor(
+              alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
       grid_->createGridGenerator()->refine(myRefineFunc);
       delete myRefineFunc;
 
-      // tell the SLE manager that the grid changed (for interal data structures)
+      // tell the SLE manager that the grid changed (for interal data
+      // structures)
       DMSystem->prepareGrid();
 
       alpha_->resizeZero(grid_->getSize());
       float_t refineTime = myStopwatch2->stop();
 
       if (isVerbose_)
-        std::cout << "New Grid Size: " << grid_->getSize() << " (Refinement took " <<
-                  refineTime << " secs)"
+        std::cout << "New Grid Size: " << grid_->getSize()
+                  << " (Refinement took " << refineTime << " secs)"
                   << std::endl;
     } else {
       if (isVerbose_)
@@ -242,7 +245,8 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
 
     if (isVerbose_) {
       std::cout << std::endl;
-      std::cout << "Needed Iterations: " << myCG->getNumberIterations() << std::endl;
+      std::cout << "Needed Iterations: " << myCG->getNumberIterations()
+                << std::endl;
       std::cout << "Final residuum: " << myCG->getResiduum() << std::endl;
     }
 
@@ -271,25 +275,25 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
 
       if (isVerbose_) {
         if (isRegression_) {
-          if (isVerbose_)
-            std::cout << "MSE (train): " << acc << std::endl;
+          if (isVerbose_) std::cout << "MSE (train): " << acc << std::endl;
         } else {
-          if (isVerbose_)
-            std::cout << "Acc (train): " << acc << std::endl;
+          if (isVerbose_) std::cout << "Acc (train): " << acc << std::endl;
         }
       }
 
       if (isRegression_) {
         if ((i > 0) && (oldAcc <= acc)) {
           if (isVerbose_)
-            std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+            std::cout << "The grid is becoming worse --> stop learning"
+                      << std::endl;
 
           break;
         }
       } else {
         if ((i > 0) && (oldAcc >= acc)) {
           if (isVerbose_)
-            std::cout << "The grid is becoming worse --> stop learning" << std::endl;
+            std::cout << "The grid is becoming worse --> stop learning"
+                      << std::endl;
 
           break;
         }
@@ -301,8 +305,8 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
 
   if (isVerbose_) {
     std::cout << "Finished Training!" << std::endl << std::endl;
-    std::cout << "Training took: " << execTime_ << " seconds" << std::endl <<
-              std::endl;
+    std::cout << "Training took: " << execTime_ << " seconds" << std::endl
+              << std::endl;
   }
 
   isTrained_ = true;
@@ -315,11 +319,11 @@ LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
   return result;
 }
 
-LearnerTiming LearnerBase::train(SGPP::base::DataMatrix& trainDataset,
-                                 SGPP::base::DataVector& classes,
-                                 const SGPP::base::RegularGridConfiguration& GridConfig,
-                                 const SGPP::solver::SLESolverConfiguration& SolverConfig,
-                                 const float_t lambdaRegularization) {
+LearnerTiming LearnerBase::train(
+    SGPP::base::DataMatrix& trainDataset, SGPP::base::DataVector& classes,
+    const SGPP::base::RegularGridConfiguration& GridConfig,
+    const SGPP::solver::SLESolverConfiguration& SolverConfig,
+    const float_t lambdaRegularization) {
   SGPP::base::AdpativityConfiguration AdaptConfig;
 
   AdaptConfig.maxLevelType_ = false;
@@ -337,13 +341,14 @@ void LearnerBase::predict(SGPP::base::DataMatrix& testDataset,
   classesComputed.resize(testDataset.getNrows());
 
   SGPP::base::OperationMultipleEval* MultEval =
-    SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset);
+      SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset);
   MultEval->mult(*alpha_, classesComputed);
   delete MultEval;
 }
 
 void LearnerBase::store(std::string tGridFilename, std::string tAlphaFilename) {
-  throw base::application_exception("LearnerBase::store: This method isn't implemented, yet!");
+  throw base::application_exception(
+      "LearnerBase::store: This method isn't implemented, yet!");
 }
 
 float_t LearnerBase::getAccuracy(SGPP::base::DataMatrix& testDataset,
@@ -363,8 +368,8 @@ float_t LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
   float_t result = -1.0;
 
   if (classesComputed.getSize() != classesReference.getSize()) {
-    throw base::application_exception("LearnerBase::getAccuracy: lengths of classes vectors do not "
-      "match!");
+    throw base::application_exception(
+        "LearnerBase::getAccuracy: lengths of classes vectors do not match!");
   }
 
   if (isRegression_) {
@@ -377,22 +382,24 @@ float_t LearnerBase::getAccuracy(const SGPP::base::DataVector& classesComputed,
     size_t correct = 0;
 
     for (size_t i = 0; i < classesComputed.getSize(); i++) {
-      if ((classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0)
-          || (classesComputed.get(i) < threshold && classesReference.get(i) < 0.0)) {
+      if ((classesComputed.get(i) >= threshold &&
+           classesReference.get(i) >= 0.0) ||
+          (classesComputed.get(i) < threshold &&
+           classesReference.get(i) < 0.0)) {
         correct++;
       }
     }
 
-    result = static_cast<float_t>(correct) / static_cast<float_t>
-             (classesComputed.getSize());
+    result = static_cast<float_t>(correct) /
+             static_cast<float_t>(classesComputed.getSize());
   }
 
   return result;
 }
 
 ClassificatorQuality LearnerBase::getCassificatorQuality(
-  SGPP::base::DataMatrix& testDataset,
-  const SGPP::base::DataVector& classesReference, const float_t threshold) {
+    SGPP::base::DataMatrix& testDataset,
+    const SGPP::base::DataVector& classesReference, const float_t threshold) {
   // evaluate test dataset
   SGPP::base::DataVector classesComputed(testDataset.getNrows());
   predict(testDataset, classesComputed);
@@ -401,18 +408,20 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(
 }
 
 ClassificatorQuality LearnerBase::getCassificatorQuality(
-  const SGPP::base::DataVector& classesComputed,
-  const SGPP::base::DataVector& classesReference, const float_t threshold) {
+    const SGPP::base::DataVector& classesComputed,
+    const SGPP::base::DataVector& classesReference, const float_t threshold) {
   ClassificatorQuality result;
 
   if (isRegression_) {
     throw base::application_exception(
-      "LearnerBase::getCassificatorQuality: this method is not valid for regression problems!");
+        "LearnerBase::getCassificatorQuality: this method is not valid for "
+        "regression problems!");
   }
 
   if (classesComputed.getSize() != classesReference.getSize()) {
     throw base::application_exception(
-      "LearnerBase::getCassificatorQuality: lengths of classes vectors do not match!");
+        "LearnerBase::getCassificatorQuality: lengths of classes vectors do "
+        "not match!");
   }
 
   result.truePositive_ = 0;
@@ -421,15 +430,17 @@ ClassificatorQuality LearnerBase::getCassificatorQuality(
   result.falseNegative_ = 0;
 
   for (size_t i = 0; i < classesComputed.getSize(); i++) {
-    if ((classesComputed.get(i) >= threshold && classesReference.get(i) >= 0.0)) {
+    if ((classesComputed.get(i) >= threshold &&
+         classesReference.get(i) >= 0.0)) {
       result.truePositive_++;
-    } else if ((classesComputed.get(i) < threshold
-                && classesReference.get(i) < 0.0)) {
+    } else if ((classesComputed.get(i) < threshold &&
+                classesReference.get(i) < 0.0)) {
       result.trueNegative_++;
-    } else if ((classesComputed.get(i) >= threshold
-                && classesReference.get(i) < 0.0)) {
+    } else if ((classesComputed.get(i) >= threshold &&
+                classesReference.get(i) < 0.0)) {
       result.falsePositive_++;
-    } else {  // ( (classesComputed.get(i) < threshold && classesReference.get(i) >= 0) )
+    } else {  // ( (classesComputed.get(i) < threshold &&
+              // classesReference.get(i) >= 0) )
       result.falseNegative_++;
     }
   }
@@ -451,39 +462,21 @@ void LearnerBase::dumpFunction(std::string tFilename, size_t resolution) {
   }
 }
 
-bool LearnerBase::getIsRegression() const {
-  return isRegression_;
-}
+bool LearnerBase::getIsRegression() const { return isRegression_; }
 
-bool LearnerBase::getIsVerbose() const {
-  return isVerbose_;
-}
+bool LearnerBase::getIsVerbose() const { return isVerbose_; }
 
-void LearnerBase::setIsVerbose(const bool isVerbose) {
-  isVerbose_ = isVerbose;
-}
+void LearnerBase::setIsVerbose(const bool isVerbose) { isVerbose_ = isVerbose; }
 
 std::vector<std::pair<size_t, float_t> > LearnerBase::getRefinementExecTimes() {
   return this->ExecTimeOnStep;
 }
 
-std::shared_ptr<base::Grid> LearnerBase::getGridCopy() {
+SGPP::base::Grid& LearnerBase::getGrid() {
   if (this->grid_ == nullptr) {
     throw;
   }
-
-  return std::shared_ptr<base::Grid>(base::Grid::unserialize(
-                                       this->grid_->serialize()));
+  return *this->grid_;
 }
-
-std::shared_ptr<base::DataVector> LearnerBase::getAlphaCopy() {
-  if (this->alpha_ == nullptr) {
-    throw;
-  }
-
-  return std::shared_ptr<base::DataVector>(new base::DataVector(*this->alpha_));
-}
-
 }  // namespace datadriven
 }  // namespace SGPP
-

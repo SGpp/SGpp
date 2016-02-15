@@ -23,8 +23,7 @@ class Configuration {
     return kernelName;
   }
 
-  static void augmentDefaultParameters(
-      SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -32,10 +31,9 @@ class Configuration {
 
         const std::string &kernelName = Configuration::getKernelName();
 
-        json::Node &kernelNode =
-            deviceNode["KERNELS"].contains(kernelName)
-                ? deviceNode["KERNELS"][kernelName]
-                : deviceNode["KERNELS"].addDictAttr(kernelName);
+        json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
+                                     ? deviceNode["KERNELS"][kernelName]
+                                     : deviceNode["KERNELS"].addDictAttr(kernelName);
 
         if (kernelNode.contains("VERBOSE") == false) {
           kernelNode.addIDAttr("VERBOSE", false);
