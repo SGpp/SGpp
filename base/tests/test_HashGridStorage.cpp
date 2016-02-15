@@ -1,7 +1,10 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
-#include <string.h>
 
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
@@ -11,7 +14,15 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 
-using namespace SGPP::base;
+#include <string>
+
+using SGPP::base::DataVector;
+using SGPP::base::HashGenerator;
+using SGPP::base::HashGridIndex;
+using SGPP::base::HashGridStorage;
+using SGPP::base::HashRefinement;
+using SGPP::base::HashRefinementBoundaries;
+using SGPP::base::SurplusRefinementFunctor;
 
 BOOST_AUTO_TEST_SUITE(TestHashGridStorage)
 
@@ -53,7 +64,6 @@ BOOST_AUTO_TEST_CASE(testSerialize) {
   delete s;
   delete g;
   delete s2;
-
 }
 
 BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
@@ -171,7 +181,6 @@ BOOST_AUTO_TEST_CASE(testTop) {
 
   BOOST_CHECK_EQUAL(l, l2);
   BOOST_CHECK_EQUAL(ind, ind2);
-
 }
 
 BOOST_AUTO_TEST_CASE(testSeq) {
@@ -414,7 +423,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
   r.free_refine(&s, &f);
 
   BOOST_CHECK_EQUAL(s.size(), 21U);
-
 }
 
 BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
@@ -446,7 +454,6 @@ BOOST_AUTO_TEST_CASE(testSurplusFunctor) {
 
   d[0] = -10.0;
   BOOST_CHECK_GT(f(&s, 0), f.start());
-
 
   d[0] = 10.0;
   BOOST_CHECK_GT(f(&s, 0), f.start());

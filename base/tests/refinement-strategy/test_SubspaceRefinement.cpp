@@ -3,10 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -16,8 +14,13 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include "sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 
-
-using namespace SGPP::base;
+using SGPP::base::DataVector;
+using SGPP::base::HashGenerator;
+using SGPP::base::HashGridIndex;
+using SGPP::base::HashGridStorage;
+using SGPP::base::HashRefinement;
+using SGPP::base::SubspaceRefinement;
+using SGPP::base::SurplusRefinementFunctor;
 
 BOOST_AUTO_TEST_SUITE(TestSubspaceRefinement)
 
@@ -33,7 +36,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTrivial) {
   SurplusRefinementFunctor functor(&datavector);
   HashRefinement* hash_refinement = new HashRefinement();
   SubspaceRefinement subspace_refinement(hash_refinement);
-
 
   subspace_refinement.free_refine(&storage, &functor);
 
@@ -52,7 +54,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
   data_vector.setAll(0.0);
   data_vector[9] = 2.0;
 
-
   SurplusRefinementFunctor functor(&data_vector, 1);
   HashRefinement* hash_refinement = new HashRefinement();
 
@@ -70,7 +71,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
   delete hash_refinement;
 }
 
-
 BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
   HashGridStorage storage(2);
   HashGenerator generator;
@@ -80,7 +80,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
   DataVector data_vector(storage.size());
   data_vector.setAll(0.0);
   data_vector[13] = 2.0;
-
 
   SurplusRefinementFunctor functor(&data_vector, 1);
   HashRefinement* hash_refinement = new HashRefinement();
@@ -98,6 +97,5 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
 
   delete hash_refinement;
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()

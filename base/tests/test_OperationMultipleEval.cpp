@@ -1,13 +1,23 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-//#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+// #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-using namespace SGPP::base;
+using SGPP::base::DataMatrix;
+using SGPP::base::DataVector;
+using SGPP::base::Grid;
+using SGPP::base::GridStorage;
+using SGPP::base::OperationMultipleEval;
+
 BOOST_AUTO_TEST_SUITE(TestOperationMultipleEval)
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
@@ -25,7 +35,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
     alpha[i] = static_cast<SGPP::float_t>(i + 1);
   }
 
-  SGPP::float_t points[3][2] = { { 0.5, 1.0 }, { 0.3, 0.4 }, { 0.9, 0.7 } };
+  SGPP::float_t points[3][2] = {{0.5, 1.0}, {0.3, 0.4}, {0.9, 0.7}};
   size_t numberDataPoints = 3;
 
   DataVector result(numberDataPoints);
@@ -47,7 +57,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   }
 
   OperationMultipleEval* multiEvalOp =
-    SGPP::op_factory::createOperationMultipleEval(*grid, dataset);
+      SGPP::op_factory::createOperationMultipleEval(*grid, dataset);
 
   multiEvalOp->mult(alpha, result);
 

@@ -3,14 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-
-#include "sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -19,13 +17,14 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
-
-using namespace SGPP::base;
+using SGPP::base::DataMatrix;
+using SGPP::base::DataVector;
+using SGPP::base::Grid;
+using SGPP::base::GridGenerator;
 
 BOOST_AUTO_TEST_SUITE(TestPredictiveRefinement)
 
 BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
-
   size_t dataset_size = 81;
   size_t dim = 2;
   size_t level = 2;
@@ -277,7 +276,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   data.set(80, 1, 0.9);
   error.set(80, 0.80);
 
-
   Grid* grid = Grid::createLinearGrid(dim);
 
   GridGenerator* gen = grid->createGridGenerator();
@@ -310,6 +308,5 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   //  delete gen;
   //  delete grid;
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()
