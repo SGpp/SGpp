@@ -44,7 +44,7 @@ public:
 		delete graph_kernel;
 	}
 
-	void create_graph(base::DataVector& data, std::vector<int> resultVector)  {
+	void create_graph(base::DataVector& data, std::vector<int> &resultVector)  {
 		std::vector<T> dataVector(data.getSize());
 		for(size_t i=0;i<data.getSize();i++)
 			dataVector[i]=data[i];

@@ -24,7 +24,7 @@ public:
 	OperationCreateGraphOCL()  {
 	}
 
-	virtual void create_graph(base::DataVector& dataset, base::DataVector& result) {}
+	virtual void create_graph(base::DataVector& data, std::vector<int> &resultVector) {}
 };
 
 }

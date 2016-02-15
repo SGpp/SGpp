@@ -117,58 +117,60 @@ public:
 		}
 
 		sourceStream<<""<<std::endl
-					<<"__kernel void connectNeighbors(__global "<<this->floatType()<<" *data, const int dimensions,"<<std::endl
-					<<"							   const int k, const int dataSize, __global int *neighbors)"<<std::endl
+					<<"void kernel connectNeighbors(global "<<this->floatType()<<" *data, const int dimensions,"<<std::endl
+					<<"							   const int k, const int dataSize, global int *neighbors)"<<std::endl
 					<<"{"<<std::endl
-					<<"	size_t global_index = get_global_id(0);"<<std::endl
-					<<"	size_t index = get_global_id(0);"<<std::endl
-					<<"	int size = 0;"<<std::endl
-					<<"	for (unsigned int i = 0; i < dataSize/dimensions; i++) {"<<std::endl
-					<<"	if (i != global_index) {"<<std::endl
-					<<"		//get distance to current point"<<std::endl
-					<<"	"<<this->floatType()<<" dist = 0.0;"<<std::endl
-					<<"	for (unsigned int j = 0; j < dimensions; j++) {"<<std::endl
-					<<"		dist += (data[global_index*dimensions + j] - data[j + i*dimensions])"<<std::endl
-					<<"			* (data[j + global_index*dimensions] - data[j + i*dimensions]);"<<std::endl
-					<<"	}"<<std::endl
-					<<""<<std::endl
-					<<"			//Not enough neighbors yet"<<std::endl
-					<<"			if (size < k)"<<std::endl
-					<<"		{"<<std::endl
+					<<"	  size_t global_index = get_global_id(0);"<<std::endl
+					<<"	  size_t index = get_global_id(0);"<<std::endl
+					<<"	  int size = 0;"<<std::endl
+					<<"	  for (unsigned int i = 0; i < dataSize/dimensions; i++) {"<<std::endl
+					<<"		 if (i != global_index) {"<<std::endl
+					<<"			 //get distance to current point"<<std::endl
+					<<"			"<<this->floatType()<<" dist = 0.0;"<<std::endl
+					<<"			 for (unsigned int j = 0; j < dimensions; j++) {"<<std::endl
+					<<"			 dist += (data[global_index*dimensions + j] - data[j + i*dimensions])"<<std::endl
+					<<"				   * (data[j + global_index*dimensions] - data[j + i*dimensions]);"<<std::endl
+					<<"		 }"<<std::endl
+					<<"		  "<<std::endl
+					<<"		 //Not enough neighbors yet"<<std::endl
+					<<"		 if (size < k)"<<std::endl
+					<<"		 {"<<std::endl
 					<<"			//Just add current point as a neighbori"<<std::endl
-					<<"		neighbors[(k*index)+size] = i;"<<std::endl
-					<<"		size++;"<<std::endl
-					<<"	}"<<std::endl
-					<<"	else"<<std::endl
-					<<"		{"<<std::endl
-					<<"		"<<this->floatType()<<" max=0.0;"<<std::endl
-					<<"	int maxindex=-1;"<<std::endl
-					<<"	for(int t=0;t<k;t++)"<<std::endl
-					<<"		{"<<std::endl
-					<<"			int currentneighbor=neighbors[k*index+t];"<<std::endl
-					<<"		"<<this->floatType()<<" currentdist=0.0;"<<std::endl
-					<<"		for (unsigned int j = 0; j < dimensions; j++) {"<<std::endl
-					<<"			currentdist += (data[global_index*dimensions + j] - data[j + currentneighbor*dimensions])"<<std::endl
-					<<"				* (data[j + global_index*dimensions] - data[j + currentneighbor*dimensions]);"<<std::endl
-					<<""<<std::endl
-					<<"if(max<currentdist)"<<std::endl
-					<<"	{"<<std::endl
-					<<"		max=currentdist;"<<std::endl
-					<<"		maxindex=t;"<<std::endl
-					<<"	}"<<std::endl
-					<<"	}"<<std::endl
-					<<"	if(dist<max)"<<std::endl
-					<<"	{"<<std::endl
-					<<"		neighbors[(k*index)+maxindex] = i;"<<std::endl
-					<<"	}"<<std::endl
+					<<"			neighbors[(k*index)+size] = i;"<<std::endl
+					<<"			size++;"<<std::endl
+					<<"		 }"<<std::endl
+					<<"		 else"<<std::endl
+					<<"		 {"<<std::endl
+					<<"			"<<this->floatType()<<" max=0.0;"<<std::endl
+					<<"			int maxindex=-1;"<<std::endl
+					<<"			for(int t=0;t<k;t++)"<<std::endl
+					<<"			{"<<std::endl
+					<<"				int currentneighbor=neighbors[k*index+t];"<<std::endl
+					<<"				"<<this->floatType()<<" currentdist=0.0;"<<std::endl
+					<<"				for (unsigned int j = 0; j < dimensions; j++) {"<<std::endl
+					<<"				   currentdist += (data[global_index*dimensions + j] - data[j + currentneighbor*dimensions])"<<std::endl
+					<<"								* (data[j + global_index*dimensions] - data[j + currentneighbor*dimensions]);"<<std::endl
+					<<"				"<<std::endl
+					<<"				if(max<currentdist)"<<std::endl
+					<<"				{"<<std::endl
+					<<"				   max=currentdist;"<<std::endl
+					<<"				   maxindex=t;"<<std::endl
+					<<"				}"<<std::endl
+					<<"			 }"<<std::endl
+					<<"			 if(dist<max)"<<std::endl
+					<<"			 {"<<std::endl
+					<<"				neighbors[(k*index)+maxindex] = i;"<<std::endl
+					<<"			 }"<<std::endl
+					<<"		  }"<<std::endl
+					<<"	   }"<<std::endl
 					<<"	}"<<std::endl
 					<<"	}"<<std::endl
 					<<"	}"<<std::endl;
-			if(kernelConfiguration.contains("WRITE_SOURCE")) {
-				if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-					this->writeSource("DensityOCLMultiPlatform_graph.cl", sourceStream.str());
-				}
+		if(kernelConfiguration.contains("WRITE_SOURCE")) {
+			if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
+				this->writeSource("DensityOCLMultiPlatform_graph.cl", sourceStream.str());
 			}
+		}
 
 
 		return sourceStream.str();

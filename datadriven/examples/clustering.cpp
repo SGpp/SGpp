@@ -15,11 +15,12 @@
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OperationDensityOCLMultiPlatform.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelMult.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
 
 using namespace SGPP::base;
 int main()
 {
-	int dimension,tiefe,k;
+	unsigned int dimension,tiefe,k;
 	double lambda,treshold;
 	std::string filename;
 	std::cout<<"Count of dimensions: ";
@@ -69,8 +70,6 @@ int main()
 	}
 	ifs.close();
 	std::cout<<"Dataset loaded!"<<std::endl;
-	//SGPP::datadriven::StreamingOCLMultiPlatform:: *operation_mult = new SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCLMultiPlatform<float>(*grid, dimension, manager, rootnode, lambda);
-	SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* operation_mult=SGPP::datadriven::createDensityOCLMultiPlatformConfigured(*grid,"MyOCLConf.cfg");
 
 	SGPP::base::DataVector alpha(gridsize);
 	SGPP::base::DataVector result(gridsize);
@@ -79,17 +78,31 @@ int main()
 		alpha[i] = 1.0;
 		result[i] = 0.0;
 	}
+
+	std::cout<<"Testing multiplication"<<std::endl;
+	SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* operation_mult=SGPP::datadriven::createDensityOCLMultiPlatformConfigured(*grid,"MyOCLConf.cfg");
 	operation_mult->mult(alpha,result);
 	for(size_t i=0;i<gridsize;i++)
 		std::cout<<result[i]<<" ";
 
-	std::cout<<"Starting rhs methode:"<<std::endl;
+	std::cout<<"Testing rhs"<<std::endl;
 	SGPP::base::DataVector b(gridsize);
 	SGPP::base::DataVector dataset(buffer_data.size());
 	for(size_t i=0; i < buffer_data.size();i++)
 		dataset[i]=buffer_data[i];
 	b.setAll(0.0);
 	operation_mult->generateb(dataset,b);
+
+	std::cout<<"Testing graph creation"<<std::endl;
+	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* operation_graph=SGPP::datadriven::createNearestNeighborGraphConfigured(dimension, k, "MyOCLConf.cfg");
+	std::vector<int> graph(counter*k);
+	operation_graph->create_graph(dataset, graph);
+	for(size_t i = 0; i < 10; i++) {
+		for(size_t spalte = 0; spalte < k; spalte ++)
+			std::cout<<graph[i * k + spalte]<<" ";
+		std::cout<<std::endl;
+	}
+
 	//cleanup
 	delete operation_mult;
 
