@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
@@ -28,8 +33,11 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
-using namespace SGPP;
-using namespace SGPP::optimization;
+#include <vector>
+
+using SGPP::optimization::Printer;
+using SGPP::optimization::RandomNumberGenerator;
+using SGPP::optimization::ScalarFunction;
 
 BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   // Test unconstrained test problems in SGPP::optimization::test_problems.
@@ -37,83 +45,83 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 6;
-  std::vector<std::unique_ptr<test_problems::UnconstrainedTestProblem>>
+  std::vector<std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>>
       testProblems;
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::AbsoluteValue(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::AbsoluteValue(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Ackley(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Ackley(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Beale())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Beale())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Branin())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Branin())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::BubbleWrap(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::BubbleWrap(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::EasomYang(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::EasomYang(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Eggholder())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Eggholder())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::GoldsteinPrice())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::GoldsteinPrice())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Griewank(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Griewank(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Hartman3())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Hartman3())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Hartman6())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Hartman6())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Himmelblau())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Himmelblau())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::HoelderTable())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::HoelderTable())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::IncreasingPower(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::IncreasingPower(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Michalewicz())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Michalewicz())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Mladineo())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Mladineo())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Perm(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Perm(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Rastrigin(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Rastrigin(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Rosenbrock(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Rosenbrock(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Schwefel(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Schwefel(d))));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::SHCB())));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::SHCB())));
   testProblems.push_back(
-    std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                new test_problems::Sphere(d))));
+    std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                new SGPP::optimization::test_problems::Sphere(d))));
 
   for (size_t p = 1; p <= 5; p++) {
     testProblems.push_back(
-      std::move(std::unique_ptr<test_problems::UnconstrainedTestProblem>(
-                  new test_problems::TremblingParabola(d, p))));
+      std::move(std::unique_ptr<SGPP::optimization::test_problems::UnconstrainedTestProblem>(
+                  new SGPP::optimization::test_problems::TremblingParabola(d, p))));
   }
 
   for (const auto& problem : testProblems) {
-    test_problems::TestScalarFunction& f = problem->getObjectiveFunction();
+    SGPP::optimization::test_problems::TestScalarFunction& f = problem->getObjectiveFunction();
     const size_t d = f.getNumberOfParameters();
 
     // test cloning
@@ -121,9 +129,9 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
     f.clone(fClone);
 
     // check displacement
-    base::DataVector displacement(d, 0.42);
+    SGPP::base::DataVector displacement(d, 0.42);
     f.setDisplacement(displacement);
-    base::DataVector displacement2(f.getDisplacement());
+    SGPP::base::DataVector displacement2(f.getDisplacement());
 
     for (size_t t = 0; t < d; t++) {
       BOOST_CHECK_EQUAL(displacement[t], displacement2[t]);
@@ -149,7 +157,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
     problem->generateDisplacement();
 
     // test minimal point
-    base::DataVector x(d), xOpt(0);
+    SGPP::base::DataVector x(d), xOpt(0);
     const SGPP::float_t fOpt = problem->getOptimalPoint(xOpt);
 
     BOOST_CHECK_EQUAL(xOpt.getSize(), d);

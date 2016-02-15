@@ -1,7 +1,10 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
-#include <vector>
 
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
@@ -16,6 +19,8 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
+#include <vector>
+
 #include "ObjectiveFunctions.hpp"
 #include "GridCreator.hpp"
 
@@ -26,18 +31,23 @@ const bool use_double_precision =
   false;
 #endif /* USE_DOUBLE_PRECISION */
 
-using namespace SGPP;
-using namespace SGPP::optimization;
+using SGPP::optimization::CloneableSLE;
+using SGPP::optimization::FullSLE;
+using SGPP::optimization::HierarchisationSLE;
+using SGPP::optimization::InterpolantScalarFunction;
+using SGPP::optimization::Printer;
+using SGPP::optimization::RandomNumberGenerator;
+using SGPP::optimization::SLE;
 
-void testSLESystem(SLE& system, const base::DataVector& x,
-                   const base::DataVector& b,
-                   base::DataMatrix& A) {
+void testSLESystem(SLE& system, const SGPP::base::DataVector& x,
+                   const SGPP::base::DataVector& b,
+                   SGPP::base::DataMatrix& A) {
   // Test SGPP::optimization::SLE::getMatrixEntry, isMatrixEntryNonZero and
   // matrixVectorMultiplication. Returns system matrix as pysgpp.DataMatrix.
   const size_t n = x.getSize();
   BOOST_CHECK_EQUAL(system.getDimension(), n);
   A.resize(n, n);
-  base::DataVector Ax(n, 0.0);
+  SGPP::base::DataVector Ax(n, 0.0);
 
   // A*x calculated directly
   for (size_t i = 0; i < n; i++) {
@@ -52,7 +62,7 @@ void testSLESystem(SLE& system, const base::DataVector& x,
   }
 
   // A*x calculated by SGPP::optimization
-  base::DataVector Ax2(0);
+  SGPP::base::DataVector Ax2(0);
   system.matrixVectorMultiplication(x, Ax2);
 
   for (size_t i = 0; i < n; i++) {
@@ -60,9 +70,9 @@ void testSLESystem(SLE& system, const base::DataVector& x,
   }
 }
 
-void testSLESolution(const base::DataMatrix& A,
-                     base::DataVector& x,
-                     const base::DataVector& b) {
+void testSLESolution(const SGPP::base::DataMatrix& A,
+                     SGPP::base::DataVector& x,
+                     const SGPP::base::DataVector& b) {
   const size_t n = b.getSize();
   BOOST_CHECK_EQUAL(x.getSize(), n);
   SGPP::float_t rNormSquared = 0.0;
@@ -93,35 +103,35 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
   const size_t m = 4;
 
   // default solvers
-  std::vector<std::unique_ptr<sle_solver::SLESolver>> solvers;
-  solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
-                                new sle_solver::BiCGStab())));
-  solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
-                                new sle_solver::GaussianElimination())));
-  solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
-                                new sle_solver::Auto())));
+  std::vector<std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>> solvers;
+  solvers.push_back(std::move(std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>(
+                                new SGPP::optimization::sle_solver::BiCGStab())));
+  solvers.push_back(std::move(std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>(
+                                new SGPP::optimization::sle_solver::GaussianElimination())));
+  solvers.push_back(std::move(std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>(
+                                new SGPP::optimization::sle_solver::Auto())));
 
   // additional solvers if SGPP::opt was compiled with them
 #ifdef USE_ARMADILLO
-  solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
-                                new sle_solver::Armadillo())));
+  solvers.push_back(std::move(std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>(
+                                new SGPP::optimization::sle_solver::Armadillo())));
 #endif /* USE_ARMADILLO */
 #ifdef USE_EIGEN
-  solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
-                                new sle_solver::Eigen())));
+  solvers.push_back(std::move(std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>(
+                                new SGPP::optimization::sle_solver::Eigen())));
 #endif /* USE_EIGEN */
 #ifdef USE_GMMPP
-  solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
-                                new sle_solver::Gmmpp())));
+  solvers.push_back(std::move(std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>(
+                                new SGPP::optimization::sle_solver::Gmmpp())));
 #endif /* USE_GMMPP */
 #ifdef USE_UMFPACK
-  solvers.push_back(std::move(std::unique_ptr<sle_solver::SLESolver>(
-                                new sle_solver::UMFPACK())));
+  solvers.push_back(std::move(std::unique_ptr<SGPP::optimization::sle_solver::SLESolver>(
+                                new SGPP::optimization::sle_solver::UMFPACK())));
 #endif /* USE_UMFPACK */
 
   // test getters/setters
   {
-    sle_solver::BiCGStab biCGStab;
+    SGPP::optimization::sle_solver::BiCGStab biCGStab;
 
     const size_t maxItCount = 42;
     biCGStab.setMaxItCount(maxItCount);
@@ -131,12 +141,12 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
     biCGStab.setTolerance(tolerance);
     BOOST_CHECK_EQUAL(biCGStab.getTolerance(), tolerance);
 
-    base::DataVector startingPoint(3);
+    SGPP::base::DataVector startingPoint(3);
     startingPoint[0] = 1.2;
     startingPoint[1] = 3.4;
     startingPoint[2] = 5.6;
     biCGStab.setStartingPoint(startingPoint);
-    base::DataVector startingPoint2 = biCGStab.getStartingPoint();
+    SGPP::base::DataVector startingPoint2 = biCGStab.getStartingPoint();
     BOOST_CHECK_EQUAL(startingPoint.getSize(), startingPoint2.getSize());
 
     for (size_t t = 0; t < startingPoint.getSize(); t++) {
@@ -149,9 +159,9 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 50, 100, 200
        }) {
     // generate random matrix and RHS
-    base::DataMatrix A(n, n);
-    base::DataVector b(n);
-    base::DataMatrix B(n, m);
+    SGPP::base::DataMatrix A(n, n);
+    SGPP::base::DataVector b(n);
+    SGPP::base::DataMatrix B(n, m);
 
     for (size_t i = 0; i < n; i++) {
       b[i] = RandomNumberGenerator::getInstance().getUniformRN(-1.0, 1.0);
@@ -169,7 +179,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
     FullSLE system(A);
 
     for (const auto& solver : solvers) {
-      if ((dynamic_cast<sle_solver::BiCGStab*>(solver.get()) != nullptr) &&
+      if ((dynamic_cast<SGPP::optimization::sle_solver::BiCGStab*>(solver.get()) != nullptr) &&
           (n > (use_double_precision ? 20 : 6))) {
         /*
          * BiCGStab is really weak and can't solve bigger systems
@@ -179,18 +189,18 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
          * should be used)
          */
         continue;
-      } else if ((dynamic_cast<sle_solver::Gmmpp*>(solver.get()) != nullptr) &&
+      } else if ((dynamic_cast<SGPP::optimization::sle_solver::Gmmpp*>(solver.get()) != nullptr) &&
                  (!use_double_precision) && (n > 50)) {
         // Gmm++ doesn't converge using single precision for larger systems
         continue;
       }
 
       // solve system and test solution
-      base::DataVector x(0);
+      SGPP::base::DataVector x(0);
       BOOST_CHECK(solver->solve(system, b, x));
       testSLESolution(A, x, b);
 
-      base::DataMatrix X(0, 0);
+      SGPP::base::DataMatrix X(0, 0);
       BOOST_CHECK(solver->solve(system, B, X));
 
       for (size_t j = 0; j < m; j++) {
@@ -204,7 +214,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
 
 BOOST_AUTO_TEST_CASE(TestFullSLE) {
   // Test SGPP::optimization::FullSLE.
-  base::DataMatrix A(3, 3, 0.0);
+  SGPP::base::DataMatrix A(3, 3, 0.0);
   A(0, 1) = 12.3;
   A(1, 2) = 42.1337;
 
@@ -235,27 +245,27 @@ BOOST_AUTO_TEST_CASE(TestHierarchisationSLE) {
   const size_t p = 3;
   const size_t l = 4;
 
-  base::DataVector x(d);
-  sle_solver::Auto solver;
+  SGPP::base::DataVector x(d);
+  SGPP::optimization::sle_solver::Auto solver;
   ExampleFunction f;
 
   // Test All The Grids!
-  std::vector<std::unique_ptr<base::Grid>> grids;
+  std::vector<std::unique_ptr<SGPP::base::Grid>> grids;
   createSupportedGrids(d, p, grids);
 
   for (auto& grid : grids) {
-    base::DataVector functionValues(0);
+    SGPP::base::DataVector functionValues(0);
     createSampleGrid(*grid, l, f, functionValues);
 
     // create hierarchization system
     HierarchisationSLE system(*grid);
-    base::DataVector alpha(0);
+    SGPP::base::DataVector alpha(0);
 
     // solve system
     BOOST_CHECK(solver.solve(system, functionValues, alpha));
 
     // test system
-    base::DataMatrix A(0, 0);
+    SGPP::base::DataMatrix A(0, 0);
     testSLESystem(system, alpha, functionValues, A);
 
     // test solution

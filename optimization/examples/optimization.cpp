@@ -3,11 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
-#include <iterator>
-
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
+
+#include <iostream>
+#include <iterator>
+#include <algorithm>
 
 /**
  * Example test function.
