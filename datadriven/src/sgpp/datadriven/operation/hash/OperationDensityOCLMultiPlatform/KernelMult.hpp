@@ -93,9 +93,9 @@ public:
 	{
 	}
 
-	double mult(std::vector<int> &points, std::vector<T> &alpha, std::vector<T> &result, size_t gridSize,
-				T lambda)
+	double mult(std::vector<int> &points, std::vector<T> &alpha, std::vector<T> &result,	T lambda)
 	{
+		size_t gridSize = points.size()/(2*dims);
 		if (verbose)
 		{
 			std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId << ")"
