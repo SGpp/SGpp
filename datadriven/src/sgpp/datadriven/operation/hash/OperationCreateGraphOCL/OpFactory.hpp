@@ -6,6 +6,6 @@
 namespace SGPP {
 namespace datadriven {
 
-SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* createNearestNeighbarGraphConfigured(SGPP::base::DataVector &data,std::string opencl_conf);
+SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* createNearestNeighborGraphConfigured(size_t k, size_t dimensions, std::string opencl_conf);
 }
 }

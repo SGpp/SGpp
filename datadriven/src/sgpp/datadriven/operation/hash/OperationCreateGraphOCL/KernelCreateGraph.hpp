@@ -61,7 +61,7 @@ public:
 		kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), deviceTimingMult(0.0),
 		kernelConfiguration(kernelConfiguration)
 	{
-		this->verbose = kernelConfiguration["VERBOSE"].getBool();
+		this->verbose = true;//kernelConfiguration["VERBOSE"].getBool();
 
 		if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
 		  && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
@@ -96,7 +96,7 @@ public:
 	{
 		if (verbose)
 		{
-			std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId << ")"
+			std::cout << "entering graph, device: " << device->deviceName << " (" << device->deviceId << ")"
 					  << std::endl;
 		}
 
@@ -110,7 +110,7 @@ public:
 				std::cout<<"Source: "<<std::endl<<program_src<<std::endl;
 			if(verbose)
 				std::cout<<"building kernel"<<std::endl;
-			this->kernel = manager->buildKernel(program_src, device, "cscheme");
+			this->kernel = manager->buildKernel(program_src, device, "connectNeighbors");
 		}
 
 		//Load data into buffers if not already done
@@ -226,6 +226,52 @@ public:
 
 		this->deviceTimingMult += time;
 		return 0;
+	}
+	static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters){
+        for (std::string &platformName : parameters["PLATFORMS"].keys()) {
+            json::Node &platformNode = parameters["PLATFORMS"][platformName];
+            for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+                json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+
+                const std::string &kernelName = "connectNeighbors";
+
+                json::Node &kernelNode =
+                        deviceNode["KERNELS"].contains(kernelName) ?
+                                deviceNode["KERNELS"][kernelName] : deviceNode["KERNELS"].addDictAttr(kernelName);
+
+                if (kernelNode.contains("VERBOSE") == false) {
+                    kernelNode.addIDAttr("VERBOSE", false);
+                }
+
+                if (kernelNode.contains("LOCAL_SIZE") == false) {
+                    kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
+                }
+
+                if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
+                    kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+                }
+
+                if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
+                    kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
+                }
+
+                if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
+                    kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+                }
+
+                if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
+                    kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+                }
+
+                if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
+                    kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+                }
+
+                if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
+                    kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
+                }
+            }
+        }
 	}
 
 };
