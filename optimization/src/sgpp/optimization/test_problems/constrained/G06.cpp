@@ -37,7 +37,7 @@ float_t G06Objective::evalUndisplaced(const base::DataVector& x) {
   const float_t x1 = 87.0 * x[0] + 13.0;
   const float_t x2 = 100.0 * x[1];
 
-  return 3.0 * x1 + 0.000001 * std::pow(x1, 3.0) + 2.0 * x2 + (0.000002 / 3.0) * std::pow(x2, 3.0);
+  return std::pow(x1 - 10.0, 3.0) + std::pow(x2 - 20.0, 3.0);
 }
 
 void G06Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
