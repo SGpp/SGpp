@@ -85,7 +85,7 @@ public:
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		start = std::chrono::system_clock::now();
 		try {
-			this->multKernel->mult(points, alphaVector, resultVector, gridSize, lambda);
+			this->multKernel->mult(points, alphaVector, resultVector, lambda);
 		}
 		catch(base::operation_exception &e) {
 			std::cerr<<"Error! Could not execute opencl density matrix-vector multiplication!"<<std::endl
@@ -119,7 +119,7 @@ public:
 		for(size_t i = 0; i < dataset.getSize(); i++)
 			datasetVector[i]=dataset[i];
 		try {
-			bKernel->rhs(points, datasetVector, bVector, gridSize);
+			bKernel->rhs(points, datasetVector, bVector);
 		}
 		catch(base::operation_exception &e) {
 			std::cerr<<"Error! Could not calculate right hand side vector!"<<std::endl

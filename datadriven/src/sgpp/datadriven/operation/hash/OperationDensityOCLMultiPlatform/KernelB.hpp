@@ -92,8 +92,9 @@ public:
 	{
 	}
 
-	double rhs(std::vector<int> &points, std::vector<T> &data, std::vector<T> &result, size_t gridSize)
+	double rhs(std::vector<int> &points, std::vector<T> &data, std::vector<T> &result)
 	{
+		size_t gridSize = points.size()/(2*dims);
 		if (verbose)
 		{
 			std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId << ")"
@@ -116,7 +117,7 @@ public:
 		//Load data into buffers if not already done
 		if (!devicePoints.isInitialized())
 		{
-			devicePoints.intializeTo(points, 1, 0, gridSize*dims*2);
+			devicePoints.intializeTo(points, 1, 0, points.size());
 			deviceData.intializeTo(data, 1, 0, data.size());
 			std::vector<T> zeros(gridSize);
 			for (size_t i = 0; i < gridSize; i++) {
