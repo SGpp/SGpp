@@ -1,32 +1,37 @@
-/*
- * Node.cpp
- *
- *  Created on: Jan 8, 2016
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
+#include <algorithm>
+#include <vector>
+
+#include "sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp"
 
 namespace SGPP {
 namespace datadriven {
 namespace PiecewiseConstantRegression {
 
 uint64_t Node::integratedNodes;
-
 uint64_t Node::hierarchizeMaxLevel;
 
-Node::Node(std::vector<float_t> x, std::vector<float_t> h,
-           std::vector<size_t> supportIndizes, base::DataMatrix& dataset,
-           base::DataVector& values, bool verbose) :
-  x(x), h(h), dim(x.size()), supportIndizes(supportIndizes), leftChild(nullptr),
-  rightChild(nullptr), childDim(
-    0), surplus(0.0), dataset(dataset), values(values), childCount(0),
-  verbose(verbose) {
-}
+Node::Node(std::vector<float_t> x, std::vector<float_t> h, std::vector<size_t> supportIndizes,
+           base::DataMatrix& dataset, base::DataVector& values, bool verbose)
+    : x(x),
+      h(h),
+      dim(x.size()),
+      supportIndizes(supportIndizes),
+      leftChild(nullptr),
+      rightChild(nullptr),
+      childDim(0),
+      surplus(0.0),
+      dataset(dataset),
+      values(values),
+      childCount(0),
+      verbose(verbose) {}
 
-std::vector<size_t> Node::getSupportIndizes(std::vector<float_t>& x,
-    std::vector<float_t>& h,
-    std::vector<size_t>& parentSupport) {
+std::vector<size_t> Node::getSupportIndizes(std::vector<float_t>& x, std::vector<float_t>& h,
+                                            std::vector<size_t>& parentSupport) {
   std::vector<size_t> supportIndizes;
 
   for (size_t i = 0; i < parentSupport.size(); i++) {
@@ -51,8 +56,8 @@ std::vector<size_t> Node::getSupportIndizes(std::vector<float_t>& x,
   return supportIndizes;
 }
 
-float_t Node::getAverage(std::vector<size_t>& supportIndizes,
-                         std::vector<float_t>& x, std::vector<float_t>& h) {
+float_t Node::getAverage(std::vector<size_t>& supportIndizes, std::vector<float_t>& x,
+                         std::vector<float_t>& h) {
   float_t sum = 0.0;
   size_t pointOnSupport = 0;
 
@@ -73,10 +78,8 @@ float_t Node::getAverage(std::vector<size_t>& supportIndizes,
   return average;
 }
 
-float_t Node::getMSE(std::vector<size_t>& supportIndizes,
-                     std::vector<float_t>& x, std::vector<float_t>& h,
-                     float_t supportValue) {
-
+float_t Node::getMSE(std::vector<size_t>& supportIndizes, std::vector<float_t>& x,
+                     std::vector<float_t>& h, float_t supportValue) {
   float_t sum = 0.0;
   size_t pointOnSupport = 0;
 
@@ -99,11 +102,11 @@ float_t Node::getMSE(std::vector<size_t>& supportIndizes,
   return mse;
 }
 
-std::unique_ptr<Node> Node::hierarchizeChild(std::vector<float_t>& x,
-    std::vector<float_t>& h,
-    std::vector<size_t>& parentSupport, float_t supportValue, float_t targetMSE,
-    size_t targetMaxLevel,
-    size_t nextDim, size_t levelLimit) {
+std::unique_ptr<Node> Node::hierarchizeChild(std::vector<float_t>& x, std::vector<float_t>& h,
+                                             std::vector<size_t>& parentSupport,
+                                             float_t supportValue, float_t targetMSE,
+                                             size_t targetMaxLevel, size_t nextDim,
+                                             size_t levelLimit) {
   std::vector<size_t> support = getSupportIndizes(x, h, parentSupport);
 
   if (support.size() == 0) {
@@ -124,18 +127,14 @@ std::unique_ptr<Node> Node::hierarchizeChild(std::vector<float_t>& x,
     return std::unique_ptr<Node>(nullptr);
   }
 
-  std::unique_ptr<Node> childNode = std::make_unique<Node>(x, h, support, dataset,
-                                    values);
-  childNode->hierarchize(targetMSE, targetMaxLevel, supportValue, nextDim,
-                         levelLimit);
+  std::unique_ptr<Node> childNode = std::make_unique<Node>(x, h, support, dataset, values);
+  childNode->hierarchize(targetMSE, targetMaxLevel, supportValue, nextDim, levelLimit);
 
   return std::move(childNode);
 }
 
-void Node::hierarchize(float_t targetMSE, size_t targetMaxLevel,
-                       float_t parentValue, size_t refineDim,
-                       size_t levelLimit) {
-
+void Node::hierarchize(float_t targetMSE, size_t targetMaxLevel, float_t parentValue,
+                       size_t refineDim, size_t levelLimit) {
   if (levelLimit > targetMaxLevel) {
     return;
   }
@@ -154,9 +153,8 @@ void Node::hierarchize(float_t targetMSE, size_t targetMaxLevel,
   std::vector<float_t> childH = getChildH(refineDim);
 
   std::vector<float_t> leftChildX = getLeftChildX(refineDim);
-  leftChild = hierarchizeChild(leftChildX, childH, supportIndizes, supportValue,
-                               targetMSE, targetMaxLevel,
-                               (refineDim + 1) % dim, levelLimit + 1);
+  leftChild = hierarchizeChild(leftChildX, childH, supportIndizes, supportValue, targetMSE,
+                               targetMaxLevel, (refineDim + 1) % dim, levelLimit + 1);
 
   if (leftChild.operator bool()) {
     refinedAnyChild = true;
@@ -164,9 +162,8 @@ void Node::hierarchize(float_t targetMSE, size_t targetMaxLevel,
   }
 
   std::vector<float_t> rightChildX = getRightChildX(refineDim);
-  rightChild = hierarchizeChild(rightChildX, childH, supportIndizes, supportValue,
-                                targetMSE, targetMaxLevel,
-                                (refineDim + 1) % dim, levelLimit + 1);
+  rightChild = hierarchizeChild(rightChildX, childH, supportIndizes, supportValue, targetMSE,
+                                targetMaxLevel, (refineDim + 1) % dim, levelLimit + 1);
 
   if (rightChild.operator bool()) {
     refinedAnyChild = true;
@@ -179,7 +176,6 @@ void Node::hierarchize(float_t targetMSE, size_t targetMaxLevel,
   }
 
   //        }
-
 }
 
 std::vector<float_t> Node::getLeftChildX(size_t d) {
@@ -234,12 +230,8 @@ float_t Node::evaluate(std::vector<float_t>& point) {
   return sum;
 }
 
-//#define LEVEL_TO_PRINT 0
-//#define INDEX_TO_PRINT 0
-
-float_t Node::integrate(SGPP::base::GridIndex& gridPoint,
-                        size_t& integratedNodes, size_t levelLimit) {
-
+float_t Node::integrate(SGPP::base::GridIndex& gridPoint, size_t& integratedNodes,
+                        size_t levelLimit) {
   if (levelLimit == 0) {
     integratedNodes = 1;
   } else {
@@ -253,7 +245,8 @@ float_t Node::integrate(SGPP::base::GridIndex& gridPoint,
 
   float_t sum = 0.0;
 
-  //        if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT) {
+  //        if (gridPoint.getLevel(0) == LEVEL_TO_PRINT and gridPoint.getIndex(0) == INDEX_TO_PRINT)
+  //        {
   //            std::cout << "x: ";
   //            for (size_t d = 0; d < dim; d++) {
   //                if (d > 0) {
@@ -276,7 +269,7 @@ float_t Node::integrate(SGPP::base::GridIndex& gridPoint,
   float_t integral = 1.0;
 
   for (size_t d = 0; d < dim; d++) {
-    //integrate left side of triangle
+    // integrate left side of triangle
     float_t integral1D = 0.0;
 
     float_t gridPointHat = gridPoint.getCoord(d);
@@ -293,20 +286,19 @@ float_t Node::integrate(SGPP::base::GridIndex& gridPoint,
     float_t leftSideRightBorder = std::min(gridPointHat, rightGridPointConstant);
 
     if (leftSideRightBorder > leftSideLeftBorder) {
-      float_t leftIntegral1D = (leftSideRightBorder - leftSideLeftBorder)
-                               * basis.eval(gridPoint.getLevel(d), gridPoint.getIndex(d),
-                                            (leftSideRightBorder + leftSideLeftBorder) / 2.0);
+      float_t leftIntegral1D = (leftSideRightBorder - leftSideLeftBorder) *
+                               basis.eval(gridPoint.getLevel(d), gridPoint.getIndex(d),
+                                          (leftSideRightBorder + leftSideLeftBorder) / 2.0);
       integral1D += leftIntegral1D;
     }
 
     float_t rightSideLeftBorder = std::max(gridPointHat, leftGridPointConstant);
-    float_t rightSideRightBorder = std::min(rightGridPointHat,
-                                            rightGridPointConstant);
+    float_t rightSideRightBorder = std::min(rightGridPointHat, rightGridPointConstant);
 
     if (rightSideRightBorder > rightSideLeftBorder) {
-      float_t rightIntegral1D = (rightSideRightBorder - rightSideLeftBorder)
-                                * basis.eval(gridPoint.getLevel(d), gridPoint.getIndex(d),
-                                             (rightSideRightBorder + rightSideLeftBorder) / 2.0);
+      float_t rightIntegral1D = (rightSideRightBorder - rightSideLeftBorder) *
+                                basis.eval(gridPoint.getLevel(d), gridPoint.getIndex(d),
+                                           (rightSideRightBorder + rightSideLeftBorder) / 2.0);
       integral1D += rightIntegral1D;
     }
 
@@ -328,14 +320,9 @@ float_t Node::integrate(SGPP::base::GridIndex& gridPoint,
   return sum + product;
 }
 
-uint64_t Node::getChildCount() {
-  return childCount;
-}
+uint64_t Node::getChildCount() { return childCount; }
 
-uint64_t Node::getHierarchizationMaxLevel() {
-  return hierarchizeMaxLevel;
-}
-
-}
-}
-}
+uint64_t Node::getHierarchizationMaxLevel() { return hierarchizeMaxLevel; }
+}  // namespace PiecewiseConstantRegression
+}  // namespace datadriven
+}  // namespace SGPP
