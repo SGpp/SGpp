@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 
 #include <boost/test/unit_test.hpp>
@@ -6,19 +11,30 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-using namespace SGPP::base;
+#include <vector>
+
+using SGPP::base::DataVector;
+using SGPP::base::DimensionBoundary;
+using SGPP::base::Grid;
+using SGPP::base::GridGenerator;
+using SGPP::base::GridStorage;
+using SGPP::base::OperationEval;
+using SGPP::base::OperationHierarchisation;
+using SGPP::base::OperationNaiveEval;
+using SGPP::base::Stretching;
+using SGPP::base::Stretching1D;
 
 void testHierarchisationDehierarchisation(SGPP::base::Grid* grid, size_t level,
-    SGPP::float_t (*func)(DataVector&), SGPP::float_t tolerance = 0.0,
-    bool naiveOp = false, bool doStretch = false) {
+                                          SGPP::float_t (*func)(DataVector&),
+                                          SGPP::float_t tolerance = 0.0, bool naiveOp = false,
+                                          bool doStretch = false) {
   GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   GridStorage* gridStore = grid->getStorage();
   size_t dim = gridStore->dim();
   Stretching* stretch = NULL;
 
-  if (doStretch)
-    stretch = gridStore->getStretching();
+  if (doStretch) stretch = gridStore->getStretching();
 
   DataVector node_values = DataVector(gridStore->size());
   DataVector coords = DataVector(dim);
@@ -35,7 +51,7 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid* grid, size_t level,
 
   DataVector alpha = DataVector(node_values);
   OperationHierarchisation* hierarchisation =
-    SGPP::op_factory::createOperationHierarchisation(*grid);
+      SGPP::op_factory::createOperationHierarchisation(*grid);
   hierarchisation->doHierarchisation(alpha);
 
   if (naiveOp == true) {
@@ -73,8 +89,6 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid* grid, size_t level,
     BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
   }
 }
-
-
 
 SGPP::float_t parabola(DataVector& input) {
   SGPP::float_t result = 1.;
@@ -148,9 +162,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createLinearBoundaryGrid(dim, 0);
 #if USE_DOUBLE_PRECISION
-    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12);
 #else
-    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-4);
 #endif
   }
 }
@@ -161,9 +175,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPrewavelet) {
   for (int dim = 1; dim < 4; dim++) {
     Grid* grid = Grid::createPrewaveletGrid(dim);
 #if USE_DOUBLE_PRECISION
-    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-12);
 #else
-    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-3 );
+    testHierarchisationDehierarchisation(grid, level, &parabola, 1e-3);
 #endif
   }
 }
@@ -200,7 +214,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModFundamentalSpline) {
 
 BOOST_AUTO_TEST_CASE(testHierarchisationPoly) {
   int level = 5;
-  int degree[4] = { 2, 3, 5, 8 };
+  int degree[4] = {2, 3, 5, 8};
 
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
@@ -212,7 +226,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPoly) {
 
 BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
   int level = 5;
-  int degree[4] = { 2, 3, 5, 8 };
+  int degree[4] = {2, 3, 5, 8};
 
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
@@ -236,11 +250,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
 #if USE_DOUBLE_PRECISION == 1
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-13,
-                                       false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-13, false, true);
 #else
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4,
-                                       false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4, false, true);
 #endif
   delete str1d;
   delete dimBound;
@@ -249,11 +261,11 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
 BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   int dim = 3;
   int level = 5;
-  Stretching1D str1d;// = new Stretching1D();
+  Stretching1D str1d;  // = new Stretching1D();
   str1d.type = "sinh";
   str1d.x_0 = 1.;
   str1d.xsi = 10;
-  DimensionBoundary dimBound;// = new DimensionBoundary();
+  DimensionBoundary dimBound;  // = new DimensionBoundary();
   dimBound.leftBoundary = 0.001;
   dimBound.rightBoundary = 1.;
 
@@ -270,11 +282,9 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {
   Grid* grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage()->setStretching(stretch);
 #if USE_DOUBLE_PRECISION == 1
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12,
-                                       false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-12, false, true);
 #else
-  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4,
-                                       false, true);
+  testHierarchisationDehierarchisation(grid, level, &parabolaBoundary, 1e-4, false, true);
 #endif
 }
 
