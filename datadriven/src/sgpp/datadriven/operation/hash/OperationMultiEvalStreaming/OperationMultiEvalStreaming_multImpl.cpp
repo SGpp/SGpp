@@ -150,8 +150,6 @@ void OperationMultiEvalStreaming::multImpl(
 
   for (size_t c = start_index_data; c < end_index_data;
        c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
-    size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c, end_index_data);
-
 #ifdef __ICC
 #pragma ivdep
 #pragma vector aligned
