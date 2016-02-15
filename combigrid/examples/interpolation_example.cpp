@@ -1,15 +1,14 @@
-/*
- * interpolation_example.cpp
- *
- *  Created on: Feb 8, 2016
- *      Author: ckow
- */
-
-#include <iostream>
-#include <vector>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/combigrid/combischeme/CombiS_CT.hpp>
 #include <sgpp/combigrid/combigrid/SerialCombiGrid.hpp>
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 /*
  * The 3D function to be interpolated
@@ -45,8 +44,7 @@ int main() {
   //
 
   // Create Combination Scheme which shall be used for combination
-  combigrid::AbstractCombiScheme<double> *scheme =
-      new combigrid::CombiS_CT<double>(levels);
+  combigrid::AbstractCombiScheme<double> *scheme = new combigrid::CombiS_CT<double>(levels);
 
   // set bool vector if boundary points are considered
   std::vector<bool> boundary_points(dim, true);
@@ -56,12 +54,10 @@ int main() {
   std::vector<double> max(dim, 1.0);
   // set the stretching of the domain --> in the simplest case the grid is not
   // stretched
-  combigrid::AbstractStretchingMaker *stretching =
-      new combigrid::CombiEquidistantStretching();
+  combigrid::AbstractStretchingMaker *stretching = new combigrid::CombiEquidistantStretching();
 
   // now the combination grid can be initialized (boundary fixed)
-  combigrid::CombiGrid<double> *grid =
-      new combigrid::SerialCombiGrid<double>(dim, boundary_points);
+  combigrid::CombiGrid<double> *grid = new combigrid::SerialCombiGrid<double>(dim, boundary_points);
 
   // a scheme can be attached, governing which grids are combined
   grid->attachCombiScheme(scheme);
@@ -104,8 +100,7 @@ int main() {
       std::cout << levels_vect[i][j] << '\t';
     }
 
-    std::cout << "|\t" << coeffs[i]
-              << "\t|\tstatus active: " << grid->getFullGrid(i)->isActive()
+    std::cout << "|\t" << coeffs[i] << "\t|\tstatus active: " << grid->getFullGrid(i)->isActive()
               << "\n";
   }
 
