@@ -24,7 +24,7 @@ public:
 	OperationPruneGraphOCL()  {
 	}
 
-//	virtual void prune_graph(std::vector<int> &graph) {}
+	virtual void prune_graph(std::vector<int> &graph)=0;
 };
 
 }
