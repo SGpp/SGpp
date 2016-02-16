@@ -11,15 +11,13 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperationMultiEvalStreamingModOCLFastMultiPlatform.hpp>
+#include "OperationMultiEvalStreamingModOCLFastMultiPlatform.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(
-  base::Grid& grid,
-  base::DataMatrix& dataset,
-  SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(base::Grid& grid,
+        base::DataMatrix& dataset, SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
 
 }
 }

@@ -3,20 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <map>
 #include <string>
 
+#include "sgpp/base/opencl/OCLConfigurationParameters.hpp"
+
 namespace SGPP {
 namespace base {
 
-OCLConfigurationParameters::OCLConfigurationParameters(std::string fileName,
+OCLConfigurationParameters::OCLConfigurationParameters(
+    std::string fileName,
     std::map<std::string, std::string> defaultParameters) {
-
   this->parameters["LOCAL_SIZE"] = "64";
   this->parameters["ENABLE_OPTIMIZATIONS"] = "true";
   this->parameters["OPTIMIZATION_FLAGS"] = "";
@@ -57,8 +57,7 @@ OCLConfigurationParameters::OCLConfigurationParameters() {
   this->parameters["SHOW_BUILD_LOG"] = "false";
 }
 
-OCLConfigurationParameters::~OCLConfigurationParameters() {
-}
+OCLConfigurationParameters::~OCLConfigurationParameters() {}
 
 std::shared_ptr<ConfigurationParameters> OCLConfigurationParameters::clone() {
   return std::make_shared<OCLConfigurationParameters>(*this);

@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 
   auto configuration = manager.getConfiguration();
 
-  configuration->serialize("detectedPlatform2.cfg");
+  configuration->serialize("detectedPlatform.cfg");
 
   std::cout << "done" << std::endl;
 
