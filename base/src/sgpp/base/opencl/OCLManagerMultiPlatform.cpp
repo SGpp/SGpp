@@ -23,6 +23,9 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(bool verbose) {
   parameters->replaceDictAttr("PLATFORMS");
   parameters->replaceIDAttr("LOAD_BALANCING_VERBOSE", false);
 
+  // TODO(pfandedd): is it a good idea to set default precision here?
+  parameters->replaceTextAttr("INTERNAL_PRECISION", "double");
+
   this->verbose = verbose;
   overallDeviceCount = 0;
 
@@ -48,6 +51,11 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(
     parameters->replaceIDAttr("LOAD_BALANCING_VERBOSE", false);
   }
 
+  // TODO(pfandedd): is it a good idea to set default precision here?
+  if (!parameters->contains("INTERNAL_PRECISION")) {
+    parameters->replaceTextAttr("INTERNAL_PRECISION", "double");
+  }
+
   this->verbose = (*parameters)["VERBOSE"].getBool();
   this->overallDeviceCount = 0;
 
@@ -61,17 +69,15 @@ OCLManagerMultiPlatform::~OCLManagerMultiPlatform() {
       err = clReleaseCommandQueue(platform.commandQueues[i]);
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString
-            << "OCL Error: Could not release command queue! Error Code: " << err
-            << std::endl;
+        errorString << "OCL Error: Could not release command queue! Error Code: " << err
+                    << std::endl;
         throw SGPP::base::operation_exception(errorString.str());
       }
     }
     cl_int err = clReleaseContext(platform.context);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Could not release context! Error Code: " << err
-                  << std::endl;
+      errorString << "OCL Error: Could not release context! Error Code: " << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
@@ -85,13 +91,11 @@ void OCLManagerMultiPlatform::buildKernel(
   for (OCLPlatformWrapper &platform : this->platforms) {
     // setting the program
     const char *kernel_src = program_src.c_str();
-    cl_program program =
-        clCreateProgramWithSource(platform.context, 1, &kernel_src, NULL, &err);
+    cl_program program = clCreateProgramWithSource(platform.context, 1, &kernel_src, NULL, &err);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Failed to create program! Error Code: " << err
-                  << std::endl;
+      errorString << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
 
@@ -104,11 +108,10 @@ void OCLManagerMultiPlatform::buildKernel(
       if ((*parameters).contains("OPTIMIZATION_FLAGS")) {
         optimizationFlags = (*parameters)["OPTIMIZATION_FLAGS"].get();
       }
-      build_opts =
-          optimizationFlags;  // -O5  -cl-mad-enable -cl-denorms-are-zero
-                              // -cl-no-signed-zeros
-                              // -cl-unsafe-math-optimizations
-                              // -cl-finite-math-only -cl-fast-relaxed-math
+      build_opts = optimizationFlags;  // -O5  -cl-mad-enable -cl-denorms-are-zero
+                                       // -cl-no-signed-zeros
+                                       // -cl-unsafe-math-optimizations
+                                       // -cl-finite-math-only -cl-fast-relaxed-math
     } else {
       build_opts = "-cl-opt-disable";  // -g
     }
@@ -119,20 +122,19 @@ void OCLManagerMultiPlatform::buildKernel(
     if (err != CL_SUCCESS) {
       // get the build log
       size_t len;
-      clGetProgramBuildInfo(program, platform.deviceIds[0],
-                            CL_PROGRAM_BUILD_LOG, 0, NULL, &len);
+      clGetProgramBuildInfo(program, platform.deviceIds[0], CL_PROGRAM_BUILD_LOG, 0, NULL, &len);
       std::string buffer(len, '\0');
-      clGetProgramBuildInfo(program, platform.deviceIds[0],
-                            CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
+      clGetProgramBuildInfo(program, platform.deviceIds[0], CL_PROGRAM_BUILD_LOG, len, &buffer[0],
+                            NULL);
       buffer = buffer.substr(0, buffer.find('\0'));
 
       if (verbose) {
-        std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
+        std::cout << "--- Build Log ---" << std::endl
+                  << buffer << std::endl;
       }
 
       std::stringstream errorString;
-      errorString << "OCL Error: OpenCL build error. Error code: " << err
-                  << std::endl;
+      errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
 
@@ -141,8 +143,7 @@ void OCLManagerMultiPlatform::buildKernel(
       cl_kernel kernel = clCreateKernel(program, kernel_name.c_str(), &err);
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
-        errorString << "OCL Error: Failed to create kernel! Error code: " << err
-                    << std::endl;
+        errorString << "OCL Error: Failed to create kernel! Error code: " << err << std::endl;
         throw SGPP::base::operation_exception(errorString.str());
       }
 
@@ -155,20 +156,18 @@ void OCLManagerMultiPlatform::buildKernel(
   }
 }
 
-cl_kernel OCLManagerMultiPlatform::buildKernel(
-    const std::string &source, std::shared_ptr<OCLDevice> device,
-    const std::string &kernelName) {
+cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
+                                               std::shared_ptr<OCLDevice> device,
+                                               const std::string &kernelName) {
   cl_int err;
 
   // setting the program
   const char *kernel_src = source.c_str();
-  cl_program program =
-      clCreateProgramWithSource(device->context, 1, &kernel_src, NULL, &err);
+  cl_program program = clCreateProgramWithSource(device->context, 1, &kernel_src, NULL, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Failed to create program! Error Code: " << err
-                << std::endl;
+    errorString << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -194,29 +193,26 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: OpenCL build error. Error code: " << err
-                << std::endl;
+    errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   // get the build log
   size_t len;
-  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0,
-                        NULL, &len);
+  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &len);
   std::string buffer(len, '\0');
-  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len,
-                        &buffer[0], NULL);
+  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
   buffer = buffer.substr(0, buffer.find('\0'));
 
   if (verbose) {
-    std::cout << "--- Build Log ---" << std::endl << buffer << std::endl;
+    std::cout << "--- Build Log ---" << std::endl
+              << buffer << std::endl;
   }
 
   cl_kernel kernel = clCreateKernel(program, kernelName.c_str(), &err);
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Failed to create kernel! Error code: " << err
-                << std::endl;
+    errorString << "OCL Error: Failed to create kernel! Error code: " << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -226,13 +222,12 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(
   return kernel;
 }
 
-std::shared_ptr<base::OCLOperationConfiguration>
-OCLManagerMultiPlatform::getConfiguration() {
+std::shared_ptr<base::OCLOperationConfiguration> OCLManagerMultiPlatform::getConfiguration() {
   return this->parameters;
 }
 
-void OCLManagerMultiPlatform::configure(
-    base::OCLOperationConfiguration &configuration, bool useConfiguration) {
+void OCLManagerMultiPlatform::configure(base::OCLOperationConfiguration &configuration,
+                                        bool useConfiguration) {
   cl_int err;
 
   // determine number of available OpenCL platforms
@@ -241,15 +236,13 @@ void OCLManagerMultiPlatform::configure(
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString
-        << "OCL Error: Unable to get number of OpenCL platforms. Error Code: "
-        << err << std::endl;
+    errorString << "OCL Error: Unable to get number of OpenCL platforms. Error Code: " << err
+                << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
-    std::cout << "OCL Info: " << platformCount
-              << " OpenCL platforms have been found" << std::endl;
+    std::cout << "OCL Info: " << platformCount << " OpenCL platforms have been found" << std::endl;
   }
 
   // get available platforms
@@ -258,8 +251,7 @@ void OCLManagerMultiPlatform::configure(
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Unable to get Platform ID. Error Code: " << err
-                << std::endl;
+    errorString << "OCL Error: Unable to get Platform ID. Error Code: " << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -268,14 +260,13 @@ void OCLManagerMultiPlatform::configure(
   }
 }
 
-void OCLManagerMultiPlatform::configurePlatform(
-    cl_platform_id platformId, base::OCLOperationConfiguration &configuration,
-    bool useConfiguration) {
+void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
+                                                base::OCLOperationConfiguration &configuration,
+                                                bool useConfiguration) {
   cl_int err;
 
   char platformName[128] = {0};
-  err = clGetPlatformInfo(platformId, CL_PLATFORM_NAME, 128 * sizeof(char),
-                          platformName, nullptr);
+  err = clGetPlatformInfo(platformId, CL_PLATFORM_NAME, 128 * sizeof(char), platformName, nullptr);
 
   if (CL_SUCCESS != err) {
     std::stringstream errorString;
@@ -283,23 +274,22 @@ void OCLManagerMultiPlatform::configurePlatform(
     throw SGPP::base::operation_exception(errorString.str());
   } else {
     if (verbose) {
-      std::cout << "OCL Info: detected platform, name: \"" << platformName
-                << "\"" << std::endl;
+      std::cout << "OCL Info: detected platform, name: \"" << platformName << "\"" << std::endl;
     }
   }
 
   if (verbose) {
     char vendor_name[128] = {0};
-    err = clGetPlatformInfo(platformId, CL_PLATFORM_VENDOR, 128 * sizeof(char),
-                            vendor_name, nullptr);
+    err =
+        clGetPlatformInfo(platformId, CL_PLATFORM_VENDOR, 128 * sizeof(char), vendor_name, nullptr);
 
     if (CL_SUCCESS != err) {
       std::stringstream errorString;
       errorString << "OCL Error: Can't get platform vendor!" << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     } else {
-      std::cout << "OCL Info: detected platform vendor name: \"" << vendor_name
-                << "\"" << std::endl;
+      std::cout << "OCL Info: detected platform vendor name: \"" << vendor_name << "\""
+                << std::endl;
     }
   }
 
@@ -309,39 +299,34 @@ void OCLManagerMultiPlatform::configurePlatform(
     }
   } else {
     // creating new configuration
-    json::Node &platformNode =
-        (*parameters)["PLATFORMS"].addDictAttr(platformName);
+    json::Node &platformNode = (*parameters)["PLATFORMS"].addDictAttr(platformName);
     platformNode.addDictAttr("DEVICES");
   }
 
   if (verbose) {
-    std::cout << "OCL Info: using platform, name: \"" << platformName << "\""
-              << std::endl;
+    std::cout << "OCL Info: using platform, name: \"" << platformName << "\"" << std::endl;
   }
 
   json::Node &devicesNode = (*parameters)["PLATFORMS"][platformName]["DEVICES"];
 
   uint32_t currentPlatformDevices;
   // get the number of devices
-  err = clGetDeviceIDs(platformId, CL_DEVICE_TYPE_ALL, 0, nullptr,
-                       &currentPlatformDevices);
+  err = clGetDeviceIDs(platformId, CL_DEVICE_TYPE_ALL, 0, nullptr, &currentPlatformDevices);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Unable to get device count. Error Code: " << err
-                << std::endl;
+    errorString << "OCL Error: Unable to get device count. Error Code: " << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   std::vector<cl_device_id> deviceIds(currentPlatformDevices);
-  err = clGetDeviceIDs(platformId, CL_DEVICE_TYPE_ALL,
-                       (cl_uint)currentPlatformDevices, deviceIds.data(),
-                       nullptr);
+  err = clGetDeviceIDs(platformId, CL_DEVICE_TYPE_ALL, (cl_uint)currentPlatformDevices,
+                       deviceIds.data(), nullptr);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Unable to get device id for platform \""
-                << platformName << "\". Error Code: " << err << std::endl;
+    errorString << "OCL Error: Unable to get device id for platform \"" << platformName
+                << "\". Error Code: " << err << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
@@ -353,50 +338,47 @@ void OCLManagerMultiPlatform::configurePlatform(
 
   for (cl_device_id deviceId : deviceIds) {
     // filter device ids
-    this->configureDevice(deviceId, devicesNode, filteredDeviceIds,
-                          filteredDeviceNames, countLimitMap, useConfiguration);
+    this->configureDevice(deviceId, devicesNode, filteredDeviceIds, filteredDeviceNames,
+                          countLimitMap, useConfiguration);
   }
 
   if (filteredDeviceIds.size() > 0) {
-    OCLPlatformWrapper platformWrapper(platformId, platformName,
-                                       filteredDeviceIds, filteredDeviceNames);
+    OCLPlatformWrapper platformWrapper(platformId, platformName, filteredDeviceIds,
+                                       filteredDeviceNames);
     //        platforms.emplace_back(platformId, platformName,
     //        filteredDeviceIds, filteredDeviceNames);
     //        OCLPlatformWrapper &platformWrapper = *(platforms.end() - 1);
     platforms.push_back(platformWrapper);
 
     // create linear device list
-    for (size_t deviceIndex = 0; deviceIndex < filteredDeviceIds.size();
-         deviceIndex++) {
+    for (size_t deviceIndex = 0; deviceIndex < filteredDeviceIds.size(); deviceIndex++) {
       this->devices.push_back(std::make_shared<OCLDevice>(
-          platformWrapper.platformId, platformWrapper.deviceIds[deviceIndex],
-          platformName, platformWrapper.deviceNames[deviceIndex],
-          platformWrapper.context, platformWrapper.commandQueues[deviceIndex]));
+          platformWrapper.platformId, platformWrapper.deviceIds[deviceIndex], platformName,
+          platformWrapper.deviceNames[deviceIndex], platformWrapper.context,
+          platformWrapper.commandQueues[deviceIndex]));
     }
   }
 }
 
-void OCLManagerMultiPlatform::configureDevice(
-    cl_device_id deviceId, json::Node &devicesNode,
-    std::vector<cl_device_id> &filteredDeviceIds,
-    std::vector<std::string> &filteredDeviceNames,
-    std::map<std::string, size_t> &countLimitMap, bool useConfiguration) {
+void OCLManagerMultiPlatform::configureDevice(cl_device_id deviceId, json::Node &devicesNode,
+                                              std::vector<cl_device_id> &filteredDeviceIds,
+                                              std::vector<std::string> &filteredDeviceNames,
+                                              std::map<std::string, size_t> &countLimitMap,
+                                              bool useConfiguration) {
   cl_int err;
 
   char deviceName[128] = {0};
-  err = clGetDeviceInfo(deviceId, CL_DEVICE_NAME, 128 * sizeof(char),
-                        &deviceName, nullptr);
+  err = clGetDeviceInfo(deviceId, CL_DEVICE_NAME, 128 * sizeof(char), &deviceName, nullptr);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
-    errorString << "OCL Error: Failed to read the device name for device: "
-                << deviceId << std::endl;
+    errorString << "OCL Error: Failed to read the device name for device: " << deviceId
+                << std::endl;
     throw SGPP::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
-    std::cout << "OCL Info: detected device, name: \"" << deviceName << "\""
-              << std::endl;
+    std::cout << "OCL Info: detected device, name: \"" << deviceName << "\"" << std::endl;
   }
 
   if (useConfiguration) {
@@ -404,15 +386,13 @@ void OCLManagerMultiPlatform::configureDevice(
       return;
     }
     if (countLimitMap.count(deviceName) > 0) {
-      if (countLimitMap[deviceName] >=
-          devicesNode[deviceName]["COUNT"].getUInt()) {
+      if (countLimitMap[deviceName] >= devicesNode[deviceName]["COUNT"].getUInt()) {
         return;
       } else {
         countLimitMap[deviceName] += 1;
       }
     } else if (devicesNode[deviceName].contains("COUNT")) {
-      if (countLimitMap[deviceName] >=
-          devicesNode[deviceName]["COUNT"].getUInt()) {
+      if (countLimitMap[deviceName] >= devicesNode[deviceName]["COUNT"].getUInt()) {
         return;
       } else {
         countLimitMap[deviceName] = 1;
@@ -426,8 +406,7 @@ void OCLManagerMultiPlatform::configureDevice(
   }
 
   if (verbose) {
-    std::cout << "OCL Info: using device, name: \"" << deviceName << "\""
-              << std::endl;
+    std::cout << "OCL Info: using device, name: \"" << deviceName << "\"" << std::endl;
   }
 
   filteredDeviceIds.push_back(deviceId);

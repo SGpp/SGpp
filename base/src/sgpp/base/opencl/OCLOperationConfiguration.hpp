@@ -22,6 +22,8 @@ class OCLOperationConfiguration : public OperationConfiguration {
   explicit OCLOperationConfiguration(const std::string& fileName);
 
   OperationConfiguration* clone() override;
+
+  std::vector<std::reference_wrapper<json::Node>> getAllDeviceNodes();
 };
 
 }  // namespace base
