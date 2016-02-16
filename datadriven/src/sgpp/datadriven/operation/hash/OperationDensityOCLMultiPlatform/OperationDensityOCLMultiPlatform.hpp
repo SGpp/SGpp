@@ -100,10 +100,7 @@ public:
 			std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
 		}
 		for(size_t i=0; i< gridSize; i++)
-		{
 			result[i] = resultVector[i];
-		}
-
 	}
 
 	void generateb(base::DataVector &dataset, SGPP::base::DataVector &b) {
@@ -130,12 +127,7 @@ public:
 		std::chrono::duration<double> elapsed_seconds = end - start;
 
 		for(size_t i = 0; i < b.getSize(); i++)
-		{
 			b[i]=bVector[i];
-			if (verbose) {
-				std::cout << b[i] << " ";
-			}
-		}
 		if (verbose) {
 			std::cout << "duration rhs ocl: " << elapsed_seconds.count() << std::endl;
 		}

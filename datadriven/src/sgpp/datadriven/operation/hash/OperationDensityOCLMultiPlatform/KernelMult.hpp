@@ -119,14 +119,14 @@ public:
 		if (!devicePoints.isInitialized())
 		{
 			devicePoints.intializeTo(points, 1, 0, gridSize*dims*2);
-			deviceAlpha.intializeTo(alpha, 1, 0, gridSize);
+			clFinish(device->commandQueue);
+		}
+		deviceAlpha.intializeTo(alpha, 1, 0, gridSize);
 			std::vector<T> zeros(gridSize);
 			for (size_t i = 0; i < gridSize; i++) {
 				zeros[i] = 0.0;
 			}
 			deviceResultData.intializeTo(zeros, 1, 0, gridSize);
-			clFinish(device->commandQueue);
-		}
 		this->deviceTimingMult = 0.0;
 
 		//Set kernel arguments
