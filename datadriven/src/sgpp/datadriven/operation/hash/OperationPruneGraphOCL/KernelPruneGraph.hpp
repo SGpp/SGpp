@@ -15,7 +15,7 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 #include <sgpp/base/opencl/OCLClonedBufferSD.hpp>
-#include "KernelSourceBuilderCreateGraph.hpp"
+#include "KernelSourceBuilderPruneGraph.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -28,6 +28,9 @@ private:
 	std::shared_ptr<base::OCLDevice> device;
 
 	size_t dims;
+	size_t gridSize;
+	size_t dataSize;
+	T treshold;
 	size_t k;
 
 	cl_int err;
@@ -56,14 +59,16 @@ private:
 	size_t totalBlockSize;
 public:
 
-	KernelPruneGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims, size_t k,
-					  std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration) :
-		device(dev), dims(dims), k(k), err(CL_SUCCESS),
-		deviceData(device), deviceResultData(device), kernel(nullptr),
+	KernelPruneGraph(std::shared_ptr<base::OCLDevice> dev, size_t dims, T treshold, int k,
+					 std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration,
+					 std::vector<int> &pointsVector, std::vector<T> &alphaVector, std::vector<T> &dataVector) :
+		device(dev), dims(dims), treshold(treshold), k(k), err(CL_SUCCESS), devicePoints(device), deviceAlpha(device),
+		deviceData(device), deviceGraph(device), kernel(nullptr),
 		kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), deviceTimingMult(0.0),
 		kernelConfiguration(kernelConfiguration)
 	{
 		this->verbose = kernelConfiguration["VERBOSE"].getBool();
+		gridSize = pointsVector.size()/(2*dims);
 
 		if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
 		  && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
@@ -80,6 +85,10 @@ public:
 		dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
 		scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
 		totalBlockSize = dataBlockingSize * localSize;
+
+		devicePoints.intializeTo(pointsVector, 1, 0, gridSize*dims*2);
+		deviceAlpha.intializeTo(alphaVector, 1, 0, gridSize);
+		deviceData.intializeTo(dataVector, 1, 0, dataVector.size());
 	}
 
 	~KernelPruneGraph()
@@ -96,11 +105,9 @@ public:
 
 	double prune_graph(std::vector<int> &points, std::vector<T> &alpha, std::vector<T> &data, std::vector<int> &graph)
 	{
-		size_t gridSize = points.size()/(2*dims);
-		size_t dataSize = data.size()/(i);
 		if (verbose)
 		{
-			std::cout << "entering graph, device: " << device->deviceName << " (" << device->deviceId << ")"
+			std::cout << "entering prune graph, device: " << device->deviceName << " (" << device->deviceId << ")"
 					  << std::endl;
 		}
 
@@ -120,10 +127,7 @@ public:
 		//Load data into buffers if not already done
 		if (!deviceData.isInitialized())
 		{
-			devicePoints.intializeTo(points, 1, 0, gridSize*dims*2);
-			devicePoints.intializeTo(alpha, 1, 0, gridSize);
-			deviceData.intializeTo(data, 1, 0, data.size());
-			deviceGraph.intializeTo(graph, 1, 0, graph.size);
+			deviceGraph.intializeTo(graph, 1, 0, graph.size());
 			clFinish(device->commandQueue);
 		}
 		this->deviceTimingMult = 0.0;
@@ -173,10 +177,10 @@ public:
 			throw base::operation_exception(errorString.str());
 		}
 		if(std::is_same<T, float>::value) {
-		err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_float), &lambda);
+		err = clSetKernelArg(this->kernel, 7, sizeof(cl_float), &treshold);
 		}
 		else {
-		err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_double), &lambda);
+		err = clSetKernelArg(this->kernel, 7, sizeof(cl_double), &treshold);
 		}
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
@@ -202,13 +206,13 @@ public:
 
 		if(verbose)
 			std::cout<<"Finished kernel execution"<<std::endl;
-		deviceResultData.readFromBuffer();
+		deviceGraph.readFromBuffer();
 		clFinish(device->commandQueue);
 
-		std::vector<int> &hostTemp = deviceResultData.getHostPointer();
-		for(size_t i=0; i<data.size()*k; i++)
+		std::vector<int> &hostTemp = deviceGraph.getHostPointer();
+		for(size_t i=0; i<graph.size()*k; i++)
 		{
-			result[i]=hostTemp[i];
+			graph[i]=hostTemp[i];
 		}
 		// determine kernel execution time
 		cl_ulong startTime = 0;
