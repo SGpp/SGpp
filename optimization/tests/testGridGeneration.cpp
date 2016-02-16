@@ -1,7 +1,10 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
-#include <vector>
 
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
@@ -10,10 +13,18 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
+#include <vector>
+
 #include "GridCreator.hpp"
 
-using namespace SGPP;
-using namespace SGPP::optimization;
+using SGPP::optimization::IterativeGridGenerator;
+using SGPP::optimization::IterativeGridGeneratorLinearSurplus;
+using SGPP::optimization::IterativeGridGeneratorRitterNovak;
+using SGPP::optimization::IterativeGridGeneratorSOO;
+using SGPP::optimization::Printer;
+using SGPP::optimization::RandomNumberGenerator;
+using SGPP::optimization::ScalarFunction;
+using SGPP::optimization::test_problems::Rosenbrock;
 
 BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
   // Test SGPP::optimization iterative grid generators.
@@ -24,12 +35,12 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
   const size_t p = 3;
   const size_t N = 200;
 
-  test_problems::Rosenbrock testProblem(d);
+  Rosenbrock testProblem(d);
   testProblem.generateDisplacement();
   ScalarFunction& f = testProblem.getObjectiveFunction();
 
   // Test All The Grids!
-  std::vector<std::unique_ptr<base::Grid>> grids;
+  std::vector<std::unique_ptr<SGPP::base::Grid>> grids;
   createSupportedGrids(d, p, grids);
 
   // test getters/setters
@@ -42,7 +53,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     gridGen.setAdaptivity(adaptivity);
     BOOST_CHECK_EQUAL(gridGen.getAdaptivity(), adaptivity);
 
-    const base::level_t maxLevel = 13;
+    const SGPP::base::level_t maxLevel = 13;
     gridGen.setMaxLevel(maxLevel);
     BOOST_CHECK_EQUAL(gridGen.getMaxLevel(), maxLevel);
 
@@ -105,11 +116,11 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
       BOOST_CHECK_LE(n, N);
 
       // test size of function value vector
-      const base::DataVector& functionValues = gridGen->getFunctionValues();
+      const SGPP::base::DataVector& functionValues = gridGen->getFunctionValues();
       BOOST_CHECK_EQUAL(n, functionValues.getSize());
 
       for (size_t i = 0; i < n; i++) {
-        base::DataVector x(d);
+        SGPP::base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
           x[t] = (*grid->getStorage())[i]->getCoord(t);

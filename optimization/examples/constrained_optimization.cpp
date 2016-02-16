@@ -1,4 +1,7 @@
-#include <iostream>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
@@ -16,6 +19,8 @@
 #include <sgpp/optimization/test_problems/constrained/G13.hpp>
 #include <sgpp/optimization/test_problems/constrained/Simionescu.hpp>
 #include <sgpp/optimization/test_problems/constrained/Soland.hpp>
+
+#include <iostream>
 
 int main() {
   std::cout << "Hello World!\n";
@@ -137,7 +142,7 @@ int main() {
   optimizer.setN(10000);
 
   const SGPP::base::DataVector x0(optimizer.findFeasiblePoint());
-  //const SGPP::base::DataVector x0(d, 0.2);
+  // const SGPP::base::DataVector x0(d, 0.2);
 
   optimizer.setStartingPoint(x0);
   optimizer.optimize();

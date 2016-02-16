@@ -1,10 +1,12 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <boost/lexical_cast.hpp>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <sstream>
+
 #include <zlib.h>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -14,10 +16,22 @@
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 
-using namespace SGPP::base;
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <algorithm>
+
+using SGPP::base::DataMatrix;
+using SGPP::base::DataVector;
+using SGPP::base::Grid;
+using SGPP::base::GridGenerator;
+using SGPP::base::GridStorage;
+using SGPP::base::HashGridIndex;
+using SGPP::base::OperationMatrix;
+using SGPP::base::SurplusRefinementFunctor;
 
 DataMatrix* generateLaplaceMatrix(Grid* grid,  size_t level) {
-
   GridStorage* storage = grid->getStorage();
 
   grid->createGridGenerator()->regular(level);
@@ -43,7 +57,6 @@ DataMatrix* generateLaplaceMatrix(Grid* grid,  size_t level) {
 }
 
 DataMatrix* generateLaplaceEnhancedMatrix(Grid* grid,  size_t level) {
-
   GridStorage* storage = grid->getStorage();
 
   grid->createGridGenerator()->regular(level);
@@ -70,7 +83,6 @@ DataMatrix* generateLaplaceEnhancedMatrix(Grid* grid,  size_t level) {
 }
 
 std::string uncompressFile(std::string fileName) {
-
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");
 
   if (inFileZ == NULL) {
@@ -106,7 +118,6 @@ std::string uncompressFile(std::string fileName) {
 }
 
 DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
-
   std::string content = uncompressFile(fileName);
 
   std::stringstream contentStream;
@@ -118,7 +129,6 @@ DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
   size_t currentRow = 0;
 
   while (!contentStream.eof()) {
-
     std::getline(contentStream, line);
 
     // for lines that only contain a newline
@@ -146,8 +156,8 @@ DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
 
   return m;
 }
-void compareStiffnessMatrices(DataMatrix* m1, DataMatrix* m2) {
 
+void compareStiffnessMatrices(DataMatrix* m1, DataMatrix* m2) {
 #if USE_DOUBLE_PRECISION
   double tolerance = 1E-5;
 #else
@@ -158,9 +168,9 @@ void compareStiffnessMatrices(DataMatrix* m1, DataMatrix* m2) {
   BOOST_CHECK_EQUAL(m1->getNrows(), m2->getNrows());
   BOOST_CHECK_EQUAL(m1->getNcols(), m2->getNcols());
 
-  size_t rows = m1->getNrows(); //was n
+  size_t rows = m1->getNrows();  // was n
 
-  size_t cols = m1->getNcols(); //was m
+  size_t cols = m1->getNcols();  // was m
 
   // check diagonal
   std::vector<SGPP::float_t> values;
@@ -236,7 +246,6 @@ void compareStiffnessMatrices(DataMatrix* m1, DataMatrix* m2) {
 BOOST_AUTO_TEST_SUITE(TestOperationLaplaceLinear)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D) {
-
   size_t dim = 1;
   size_t level = 7;
 
@@ -265,7 +274,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD) {
-
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
@@ -284,7 +292,6 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestOperationLaplaceEnhancedLinear)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D) {
-
   size_t dim = 1;
   size_t level = 7;
 
@@ -314,7 +321,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD) {
-
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
@@ -333,7 +339,6 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestOperationLaplaceModLinear)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D) {
-
   size_t dim = 1;
   size_t level = 5;
 
@@ -347,8 +352,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
 
   compareStiffnessMatrices(m, mRef);
 }
-BOOST_AUTO_TEST_CASE(testHatRegulardD) {
 
+BOOST_AUTO_TEST_CASE(testHatRegulardD) {
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
@@ -367,7 +372,6 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestOperationLaplaceLinearTruncatedBoundary)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
-
   size_t dim = 1;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -382,7 +386,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
-
   size_t dim = 1;
   size_t level = 5;
   Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -397,7 +400,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
-
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -412,7 +414,6 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
-
   size_t dim = 3;
   size_t level = 2;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -431,7 +432,6 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestOperationLaplaceEnhancedLinearTruncatedBoundary)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
-
   size_t dim = 1;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -446,7 +446,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
-
   size_t dim = 1;
   size_t level = 5;
   Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -461,7 +460,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
-
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -476,7 +474,6 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
-
   size_t dim = 3;
   size_t level = 2;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
@@ -495,7 +492,6 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestOperationLaplaceLinearBoundary)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
-
   size_t dim = 1;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -510,7 +506,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
-
   size_t dim = 1;
   size_t level = 5;
   Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -525,7 +520,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
-
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -540,7 +534,6 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
-
   size_t dim = 3;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -559,7 +552,6 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestOperationLaplaceEnhancedLinearBoundary)
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
-
   size_t dim = 1;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -574,7 +566,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
-
   size_t dim = 1;
   size_t level = 5;
   Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -589,7 +580,6 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
-
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -604,7 +594,6 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
-
   size_t dim = 3;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
@@ -623,7 +612,6 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestOperationLaplacePrewavelet)
 
 BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
-
   size_t dim = 1;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
@@ -638,7 +626,6 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
-
   size_t dim = 1;
   size_t level = 5;
   Grid* grid  = SGPP::base::Grid::createPrewaveletGrid(dim);
@@ -653,7 +640,6 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
 }
 
 BOOST_AUTO_TEST_CASE(testPrewaveletD_one) {
-
   size_t dim = 3;
   size_t level = 3;
   Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
@@ -668,7 +654,6 @@ BOOST_AUTO_TEST_CASE(testPrewaveletD_one) {
 }
 
 BOOST_AUTO_TEST_CASE(testPrewaveletD_two) {
-
   size_t dim = 3;
   size_t level = 4;
   Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
@@ -683,7 +668,6 @@ BOOST_AUTO_TEST_CASE(testPrewaveletD_two) {
 }
 
 BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
-
   size_t dim = 4;
   size_t level = 2;
   Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);

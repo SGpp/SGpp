@@ -95,12 +95,68 @@ refactorable code.
 We adhere mostly to the
 <a href="https://google.github.io/styleguide/cppguide.html" target="_blank">
 Google C++ Style Guide</a>.
-However, there are some exceptions, e.g.,
-the indentation of namespaces.
-The SG++ code style is defined by a set of
-<a href="http://astyle.sourceforge.net/" target="_blank">astyle</a>
-parameters.
-It can be found in the file <tt>tools/astylerc</tt>.
+However, there are some exceptions:
+- We use a maximum line length of 100 characters
+  (instead of Google's 80 characters).
+- We allow functions to have non-const reference arguments
+  for output parameters
+  (Google's style guide would require to use pointers instead).
+
+To ensure compliance with most rules of the style guide,
+Google's Python script cpplint.py is used
+(in a slightly modified version located in tools/cpplint.py).
+By default, on every invokation of SCons, it is automatically run
+on each *.cpp or *.hpp file which was modified since the last run of SCons.
+If issues are found, warnings of the following form are printed on the screen:
+@verbatim
+base/src/sgpp/globaldef.hpp:95: warning: Namespace should be terminated with "// namespace SGPP"  [readability/namespace] [5]
+@endverbatim
+The number in brackets at the end indicates the confidence that
+the line is indeed a problem, using a scale from 1 to 5
+(5 means certainness).
+Be aware that some warnings are filtered out deliberately
+to implement the exceptions above.
+
+Currently, SCons generates empty *.lint files
+whose modification times are used to track which files have to be analyzed.
+Delete the lint files to retrigger the analysis of all code files:
+@verbatim
+find base/src/ -name '*.cpp.lint' -or -name '*.hpp.lint' | xargs rm
+@endverbatim
+You can deactivate the style checking
+(and thus the creation of the *.lint files)
+by setting <tt>RUN_CPPLINT=0</tt> on the SCons command line.
+
+You can also use a formatter tool to automatically format your code
+which should fix most of the "easy" style warnings
+(indentation, line length, etc.).
+We recommend using clang-format,
+which can be installed on an Ubuntu system using
+@verbatim
+apt-get install clang-format-3.7
+@endverbatim
+You can format all files in-place with a command like the following:
+@verbatim
+find base/src/ -name '*.hpp' -or -name '*.cpp' | xargs clang-format-3.7 -style=file -i
+@endverbatim
+The configuration of the formatter is done via the file <tt>.clang-format</tt>
+at top level.
+
+If you are developing with Eclipse,
+clang-format and cpplint can also be applied automatically on every file save
+by using a slightly modified version of the
+<a href="https://github.com/wangzw/CppStyle" target="_blank">
+Eclipse plugin CppStyle</a>,
+which is also included in the tools directory of SG++
+(the modification was necessary since CppStyle does not analyze hpp files).
+To install the plugin, simply copy the *.jar to the dropins subdirectory
+in your Eclipse installation location (i.e., not your workspace directory).
+The configuration is then done by clicking on
+<i>Window</i> &rarr; <i>Preferences</i> &rarr; <i>C/C++</i> &rarr;
+<i>CppStyle</i>.
+Enter the paths to the clang-format executable (e.g., in /usr/bin)
+and to the cpplint.py script (tools/cpplint.py).
+Finally, check <i>Enable cpplint</i> and <i>Run clang-format on file save</i>.
 
 @subsection development_coding_naming Naming
 

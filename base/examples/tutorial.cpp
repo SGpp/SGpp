@@ -3,9 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
 // All SG++ headers
-//#include <sgpp_base.hpp>
+// #include <sgpp_base.hpp>
 
 // Or, better!, include only those that are required
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -15,8 +14,14 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-using namespace std;
-using namespace SGPP::base;
+#include <iostream>
+
+using SGPP::base::DataVector;
+using SGPP::base::Grid;
+using SGPP::base::GridGenerator;
+using SGPP::base::GridIndex;
+using SGPP::base::GridStorage;
+using SGPP::base::OperationEval;
 
 // function to interpolate
 SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
@@ -28,18 +33,18 @@ int main() {
   size_t dim = 2;
   Grid* grid = Grid::createLinearGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
-  cout << "dimensionality:         " << gridStorage->dim() << endl;
+  std::cout << "dimensionality:         " << gridStorage->dim() << std::endl;
 
   // create regular grid, level 3
   size_t level = 3;
   GridGenerator* gridGen = grid->createGridGenerator();
   gridGen->regular(level);
-  cout << "number of grid points:  " << gridStorage->size() << endl;
+  std::cout << "number of grid points:  " << gridStorage->size() << std::endl;
 
   // create coefficient vector
   DataVector alpha(gridStorage->size());
   alpha.setAll(0.0);
-  cout << "length of alpha vector: " << alpha.getSize() << endl;
+  std::cout << "length of alpha vector: " << alpha.getSize() << std::endl;
 
   // set function values in alpha
   GridIndex* gp;
@@ -49,19 +54,19 @@ int main() {
     alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
   }
 
-  cout << "alpha before hierarchization: " << alpha.toString() << endl;
+  std::cout << "alpha before hierarchization: " << alpha.toString() << std::endl;
 
   // hierarchize
   SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
     alpha);
-  cout << "alpha after hierarchization:  " << alpha.toString() << endl;
+  std::cout << "alpha after hierarchization:  " << alpha.toString() << std::endl;
 
   // evaluate
   DataVector p(dim);
   p[0] = 0.52;
   p[1] = 0.73;
   OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
-  cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << endl;
+  std::cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << std::endl;
 
   delete grid;
 }

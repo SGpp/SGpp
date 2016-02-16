@@ -31,7 +31,7 @@ float_t G09::getOptimalPointUndisplaced(base::DataVector& x) {
   x[4] = 0.46877565;
   x[5] = 0.55190655;
   x[6] = 0.57971135;
-  return 680.6300573;
+  return 680.630111240756;
 }
 
 G09Objective::G09Objective() : TestScalarFunction(7) {}
