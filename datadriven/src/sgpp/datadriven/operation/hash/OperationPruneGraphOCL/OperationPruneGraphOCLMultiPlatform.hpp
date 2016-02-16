@@ -89,7 +89,7 @@ public:
 
 		if (verbose)
 		{
-			std::cout << "duration create graph" << elapsed_seconds.count() << std::endl;
+			std::cout << "duration prune graph: " << elapsed_seconds.count() << std::endl;
 		}
 	}
 };

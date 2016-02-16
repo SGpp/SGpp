@@ -89,6 +89,7 @@ public:
 		devicePoints.intializeTo(pointsVector, 1, 0, gridSize*dims*2);
 		deviceAlpha.intializeTo(alphaVector, 1, 0, gridSize);
 		deviceData.intializeTo(dataVector, 1, 0, dataVector.size());
+		clFinish(device->commandQueue);
 	}
 
 	~KernelPruneGraph()
@@ -124,12 +125,8 @@ public:
 			this->kernel = manager->buildKernel(program_src, device, "removeEdges");
 		}
 
-		//Load data into buffers if not already done
-		if (!deviceData.isInitialized())
-		{
-			deviceGraph.intializeTo(graph, 1, 0, graph.size());
-			clFinish(device->commandQueue);
-		}
+		deviceGraph.intializeTo(graph, 1, 0, graph.size());
+		clFinish(device->commandQueue);
 		this->deviceTimingMult = 0.0;
 		size_t datasize=data.size()*k;
 
@@ -210,10 +207,8 @@ public:
 		clFinish(device->commandQueue);
 
 		std::vector<int> &hostTemp = deviceGraph.getHostPointer();
-		for(size_t i=0; i<graph.size()*k; i++)
-		{
+		for(size_t i=0; i<graph.size(); i++)
 			graph[i]=hostTemp[i];
-		}
 		// determine kernel execution time
 		cl_ulong startTime = 0;
 		cl_ulong endTime = 0;

@@ -6,6 +6,7 @@
 namespace SGPP {
 namespace datadriven {
 
-SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCL* pruneNearestNeighborGraphConfigured(size_t k, size_t dimensions, std::string opencl_conf);
+SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCL* pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
+																										 base::DataVector &data, double treshold, size_t k, std::string opencl_conf);
 }
 }
