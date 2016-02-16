@@ -3,26 +3,23 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
-#include <sgpp/base/exception/generation_exception.hpp>
 #include <algorithm>
 
-#include <sgpp/globaldef.hpp>
-
+#include "sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
+#include "sgpp/base/exception/generation_exception.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
-OperationRegularizationDiagonal::OperationRegularizationDiagonal(
-  base::GridStorage* storage, int mode, float_t k) : mode(mode), k(k),
-  size(storage->size()), storage(storage), diagonal(storage->size()) {
-
+OperationRegularizationDiagonal::OperationRegularizationDiagonal(base::GridStorage* storage,
+                                                                 int mode, float_t k)
+    : mode(mode), k(k), size(storage->size()), storage(storage), diagonal(storage->size()) {
   // remember size of grid to check for changes in grid
   this->size = storage->size();
 }
 
-void OperationRegularizationDiagonal::mult(base::DataVector& alpha,
-    base::DataVector& result) {
+void OperationRegularizationDiagonal::mult(base::DataVector& alpha, base::DataVector& result) {
   if (size != storage->size()) {
     diagonal = base::DataVector(size);
     init();
@@ -31,7 +28,6 @@ void OperationRegularizationDiagonal::mult(base::DataVector& alpha,
   // apply diagonal
   result.copyFrom(alpha);
   result.componentwise_mult(diagonal);
-
 }
 
 void OperationRegularizationDiagonal::init() {
@@ -44,7 +40,8 @@ void OperationRegularizationDiagonal::init() {
   } else if (mode == ANISOTROPIC_PENALTY) {
     initAnisotropicPenalty();
   } else {
-    throw new base::generation_exception("OperationRegularizationDiagonal: Unknown mode specified!");
+    throw new base::generation_exception(
+        "OperationRegularizationDiagonal: Unknown mode specified!");
   }
 }
 
@@ -65,11 +62,12 @@ void OperationRegularizationDiagonal::initAnisotropicPenalty() {
 
   for (size_t i = 0; i < size; i++) {
     gi = storage->get(i);
-    diagonal[i] = 0.5 * log(1. + static_cast<float_t>(gi->getLevelMax()) /
-                            static_cast<float_t>(std::max(static_cast<int>(gi->getLevelMin()), 1)) *
-                            static_cast<float_t>(dim));
+    diagonal[i] =
+        0.5 * log(1. +
+                  static_cast<float_t>(gi->getLevelMax()) /
+                      static_cast<float_t>(std::max(static_cast<int>(gi->getLevelMin()), 1)) *
+                      static_cast<float_t>(dim));
   }
 }
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

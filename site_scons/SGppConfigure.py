@@ -53,8 +53,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
       else:
         sys.stderr.write("Info: Trying to find the OpenCL without the variable \"OCL_INCLUDE_PATH\"\n")
 
-      print config.env['CPPPATH']
-
       if not config.CheckCXXHeader('CL/cl.h'):
         sys.stderr.write("Error: \"CL/cl.h\" not found, but required for OpenCL\n")
         sys.exit(1)
@@ -68,6 +66,11 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
       if not config.CheckLib('OpenCL', language="c++", autoadd=0):
         sys.stderr.write("Error: \"libOpenCL\" not found, but required for OpenCL\n")
+        sys.exit(1)
+        
+      if not config.CheckLib('boost_program_options', language="c++", autoadd=0):
+        sys.stderr.write("Error: \"libboost-program-options\" not found, but required for OpenCL\n")
+        sys.stderr.write("On debian-like system the package \"libboost-program-options-dev\" can be installed to solve this issue\n")
         sys.exit(1)
 
       config.env["CPPDEFINES"]["USE_OCL"] = "1"
@@ -204,16 +207,15 @@ Please install the corresponding package, e.g. using command on Ubuntu
         #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
         #     ensure you also compile with -fno-strict-aliasing"
         env.Append(CPPFLAGS=allWarnings + [
-                             # '-Wall', '-Wextra',
-                             # '-std=c++11',  # '-Wno-long-long', '-Wno-deprecated',
-                             # '-Werror',
                              '-Wno-unused-parameter',
-                             # '-Wconversion',
                              '-fno-strict-aliasing',
                              '-funroll-loops', '-mfpmath=sse',
                              '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4'])
         env.Append(CPPFLAGS=['-fopenmp'])
         env.Append(LINKFLAGS=['-fopenmp'])
+
+        # required for profiling
+        env.Append(CPPFLAGS=['-fno-omit-frame-pointer'])
 
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])

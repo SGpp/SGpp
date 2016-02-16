@@ -7,22 +7,20 @@
 
 #include <omp.h>
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/tools/SGppStopwatch.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-
-#include <sgpp/globaldef.hpp>
-
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/globaldef.hpp"
 
 #ifndef STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH
-//#define STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH 24
+// #define STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH 24
 #define STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH 96
 #endif
 
 namespace SGPP {
 namespace datadriven {
 
-class OperationMultiEvalStreaming: public base::OperationMultipleEval {
+class OperationMultiEvalStreaming : public base::OperationMultipleEval {
  protected:
   SGPP::base::DataMatrix preparedDataset;
   /// Member to store the sparse grid's levels for better vectorization
@@ -35,8 +33,8 @@ class OperationMultiEvalStreaming: public base::OperationMultipleEval {
   base::GridStorage* storage;
 
   float_t duration;
- public:
 
+ public:
   OperationMultiEvalStreaming(base::Grid& grid, base::DataMatrix& dataset);
 
   ~OperationMultiEvalStreaming();
@@ -45,40 +43,37 @@ class OperationMultiEvalStreaming: public base::OperationMultipleEval {
 
   size_t getChunkDataPoints();
 
-  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result)
-  override;
+  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override;
 
-  void multTranspose(SGPP::base::DataVector& source,
-                     SGPP::base::DataVector& result) override;
+  void multTranspose(SGPP::base::DataVector& source, SGPP::base::DataVector& result) override;
 
   void prepare() override;
 
   float_t getDuration() override;
 
  private:
-  void getPartitionSegment(size_t start, size_t end, size_t segmentCount,
-                           size_t segmentNumber, size_t* segmentStart, size_t* segmentEnd,
-                           size_t blockSize);
+  void getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber,
+                           size_t* segmentStart, size_t* segmentEnd, size_t blockSize);
 
   size_t padDataset(SGPP::base::DataMatrix& dataset);
 
-  void getOpenMPPartitionSegment(size_t start, size_t end,
-                                 size_t* segmentStart, size_t* segmentEnd, size_t blocksize);
+  void getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd,
+                                 size_t blocksize);
 
   void multImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                SGPP::base::DataMatrix* dataset,
-                SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
-                const size_t start_index_grid, const size_t end_index_grid,
-                const size_t start_index_data, const size_t end_index_data);
+                SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+                SGPP::base::DataVector& result, const size_t start_index_grid,
+                const size_t end_index_grid, const size_t start_index_data,
+                const size_t end_index_data);
 
-  void multTransposeImpl(SGPP::base::DataMatrix* level,
-                         SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
-                         SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                         const size_t start_index_grid, const size_t end_index_grid,
-                         const size_t start_index_data, const size_t end_index_data);
+  void multTransposeImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
+                         SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
+                         SGPP::base::DataVector& result, const size_t start_index_grid,
+                         const size_t end_index_grid, const size_t start_index_data,
+                         const size_t end_index_data);
 
   void recalculateLevelAndIndex();
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

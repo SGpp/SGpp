@@ -5,24 +5,24 @@
 
 #pragma once
 
-#include <chrono>
 #include <omp.h>
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/tools/SGppStopwatch.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/grid/type/BsplineGrid.hpp>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/base/opencl/OCLManager.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLKernelImpl.hpp>
+#include <chrono>
+
+#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
+#include "sgpp/base/tools/SGppStopwatch.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/grid/type/BsplineGrid.hpp"
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include "sgpp/base/opencl/OCLManager.hpp"
+#include "StreamingBSplineOCLKernelImpl.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
-template<typename T>
-class OperationMultiEvalStreamingBSplineOCL: public
-  base::OperationMultipleEval {
+template <typename T>
+class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval {
  protected:
   size_t dims;
   SGPP::base::DataMatrix preparedDataset;
@@ -43,20 +43,21 @@ class OperationMultiEvalStreamingBSplineOCL: public
 
   std::shared_ptr<base::OCLManager> manager;
   std::unique_ptr<StreamingBSplineOCLKernelImpl<T>> kernel;
+
  public:
-  OperationMultiEvalStreamingBSplineOCL(base::Grid& grid,
-                                        base::DataMatrix& dataset,
-                                        std::shared_ptr<base::OCLOperationConfiguration> parameters) :
-    OperationMultipleEval(grid, dataset), preparedDataset(dataset),
-    parameters(parameters), myTimer(SGPP::base::SGppStopwatch()), duration(-1.0) {
-    
+  OperationMultiEvalStreamingBSplineOCL(base::Grid& grid, base::DataMatrix& dataset,
+                                        std::shared_ptr<base::OCLOperationConfiguration> parameters)
+      : OperationMultipleEval(grid, dataset),
+        preparedDataset(dataset),
+        parameters(parameters),
+        myTimer(SGPP::base::SGppStopwatch()),
+        duration(-1.0) {
     this->manager = std::make_shared<base::OCLManager>(parameters);
 
-    this->dims = dataset.getNcols(); // be aware of transpose!
-    this->kernel = std::unique_ptr<StreamingBSplineOCLKernelImpl<T>>(
-                     new StreamingBSplineOCLKernelImpl<T>(dims,
-                         dynamic_cast<base::BsplineGrid&>(grid).getDegree(),
-                         this->manager, parameters));
+    this->dims = dataset.getNcols();  // be aware of transpose!
+    this->kernel =
+        std::unique_ptr<StreamingBSplineOCLKernelImpl<T>>(new StreamingBSplineOCLKernelImpl<T>(
+            dims, dynamic_cast<base::BsplineGrid&>(grid).getDegree(), this->manager, parameters));
 
     this->storage = grid.getStorage();
     this->padDataset(this->preparedDataset);
@@ -66,8 +67,8 @@ class OperationMultiEvalStreamingBSplineOCL: public
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-    this->kernelDataset = new T[this->preparedDataset.getNrows() *
-                                this->preparedDataset.getNcols()];
+    this->kernelDataset =
+        new T[this->preparedDataset.getNrows() * this->preparedDataset.getNcols()];
 
     for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
       this->kernelDataset[i] = (T) this->preparedDataset[i];
@@ -91,8 +92,7 @@ class OperationMultiEvalStreamingBSplineOCL: public
     }
   }
 
-  void mult(SGPP::base::DataVector& alpha,
-            SGPP::base::DataVector& result) override {
+  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override {
     this->myTimer.start();
 
     size_t gridFrom = 0;
@@ -103,7 +103,7 @@ class OperationMultiEvalStreamingBSplineOCL: public
     T* alphaArray = new T[this->gridSize];
 
     for (size_t i = 0; i < alpha.getSize(); i++) {
-      alphaArray[i] = (T) alpha[i];
+      alphaArray[i] = (T)alpha[i];
     }
 
     for (size_t i = alpha.getSize(); i < this->gridSize; i++) {
@@ -118,13 +118,12 @@ class OperationMultiEvalStreamingBSplineOCL: public
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->kernel->mult(this->level, this->index, this->gridSize,
-                       this->kernelDataset, this->datasetSize, alphaArray,
-                       resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+    this->kernel->mult(this->level, this->index, this->gridSize, this->kernelDataset,
+                       this->datasetSize, alphaArray, resultArray, gridFrom, gridTo, datasetFrom,
+                       datasetTo);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    std::cout << "duration mult ocl B-spline: " << elapsed_seconds.count() <<
-              std::endl;
+    std::cout << "duration mult ocl B-spline: " << elapsed_seconds.count() << std::endl;
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
@@ -135,9 +134,7 @@ class OperationMultiEvalStreamingBSplineOCL: public
     this->duration = this->myTimer.stop();
   }
 
-  void multTranspose(
-    SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result) override {
+  void multTranspose(SGPP::base::DataVector& source, SGPP::base::DataVector& result) override {
     this->myTimer.start();
 
     size_t gridFrom = 0;
@@ -148,7 +145,7 @@ class OperationMultiEvalStreamingBSplineOCL: public
     T* sourceArray = new T[this->datasetSize];
 
     for (size_t i = 0; i < source.getSize(); i++) {
-      sourceArray[i] = (T) source[i];
+      sourceArray[i] = (T)source[i];
     }
 
     for (size_t i = source.getSize(); i < this->datasetSize; i++) {
@@ -163,14 +160,12 @@ class OperationMultiEvalStreamingBSplineOCL: public
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->kernel->multTranspose(this->level, this->index, this->gridSize,
-                                this->kernelDataset,
-                                this->preparedDataset.getNcols(), sourceArray, resultArray, gridFrom, gridTo,
-                                datasetFrom, datasetTo);
+    this->kernel->multTranspose(this->level, this->index, this->gridSize, this->kernelDataset,
+                                this->preparedDataset.getNcols(), sourceArray, resultArray,
+                                gridFrom, gridTo, datasetFrom, datasetTo);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    std::cout << "duration multTranspose ocl B-spline: " << elapsed_seconds.count()
-              << std::endl;
+    std::cout << "duration multTranspose ocl B-spline: " << elapsed_seconds.count() << std::endl;
 
     for (size_t i = 0; i < result.getSize(); i++) {
       result[i] = resultArray[i];
@@ -181,9 +176,7 @@ class OperationMultiEvalStreamingBSplineOCL: public
     this->duration = this->myTimer.stop();
   }
 
-  float_t getDuration() {
-    return this->duration;
-  }
+  float_t getDuration() { return this->duration; }
 
   void prepare() override {
     this->recalculateLevelAndIndex();
@@ -194,12 +187,9 @@ class OperationMultiEvalStreamingBSplineOCL: public
   }
 
  private:
-
-  size_t padDataset(
-    SGPP::base::DataMatrix& dataset) {
-
-    size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt()
-                      * (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+  size_t padDataset(SGPP::base::DataMatrix& dataset) {
+    size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt() *
+                      (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
 
     // Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;
@@ -220,13 +210,11 @@ class OperationMultiEvalStreamingBSplineOCL: public
   }
 
   void recalculateLevelAndIndex() {
-    if (this->level != nullptr)
-      delete this->level;
+    if (this->level != nullptr) delete this->level;
 
-    if (this->index != nullptr)
-      delete this->index;
+    if (this->index != nullptr) delete this->index;
 
-    uint32_t localWorkSize = (uint32_t) (*parameters)["LOCAL_SIZE"].getUInt();
+    uint32_t localWorkSize = (uint32_t)(*parameters)["LOCAL_SIZE"].getUInt();
 
     size_t remainder = this->storage->size() % localWorkSize;
     size_t padding = 0;
@@ -237,10 +225,8 @@ class OperationMultiEvalStreamingBSplineOCL: public
 
     this->gridSize = this->storage->size() + padding;
 
-    SGPP::base::DataMatrix* levelMatrix = new SGPP::base::DataMatrix(this->gridSize,
-        this->dims);
-    SGPP::base::DataMatrix* indexMatrix = new SGPP::base::DataMatrix(this->gridSize,
-        this->dims);
+    SGPP::base::DataMatrix* levelMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
+    SGPP::base::DataMatrix* indexMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
 
     this->storage->getLevelIndexArraysForEval(*levelMatrix, *indexMatrix);
 
@@ -255,14 +241,13 @@ class OperationMultiEvalStreamingBSplineOCL: public
     this->index = new T[this->gridSize * this->dims];
 
     for (size_t i = 0; i < this->gridSize * this->dims; i++) {
-      this->level[i] = (T) (*levelMatrix)[i];
-      this->index[i] = (T) (*indexMatrix)[i];
+      this->level[i] = (T)(*levelMatrix)[i];
+      this->index[i] = (T)(*indexMatrix)[i];
     }
 
     delete levelMatrix;
     delete indexMatrix;
   }
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

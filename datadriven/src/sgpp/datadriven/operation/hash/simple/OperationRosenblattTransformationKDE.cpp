@@ -8,39 +8,39 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <vector>
 #include <cmath>
 #include <random>
 #include <algorithm>
 
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
+#include "sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp"
+#include "sgpp/globaldef.hpp"
 
-#include <sgpp/globaldef.hpp>
+// #ifdef _OPENMP
+// #include <omp.h>
+// #endif
 
-//#ifdef _OPENMP
-//#include <omp.h>
-//#endif
+// #define DEBUG_ROSENBLATT
 
-//#define DEBUG_ROSENBLATT
-
-using namespace SGPP::base;
-using namespace SGPP::datadriven;
+using SGPP::base::DataMatrix;
+using SGPP::base::DataVector;
 
 namespace SGPP {
 namespace datadriven {
 
-OperationRosenblattTransformationKDE::OperationRosenblattTransformationKDE(
-  GaussianKDE& density) :
-  kde(&density), bandwidths(density.getDim()), ndim(density.getDim()),
-  nsamples(density.getNsamples()) {
+OperationRosenblattTransformationKDE::OperationRosenblattTransformationKDE(GaussianKDE& density)
+    : kde(&density),
+      bandwidths(density.getDim()),
+      ndim(density.getDim()),
+      nsamples(density.getNsamples()) {
   // get the bandwidth from the density for optimized
   density.getBandwidths(bandwidths);
 }
 
-OperationRosenblattTransformationKDE::~OperationRosenblattTransformationKDE() {
-}
+OperationRosenblattTransformationKDE::~OperationRosenblattTransformationKDE() {}
 
-void OperationRosenblattTransformationKDE::doTransformation(
-  DataMatrix& pointsCdf, DataMatrix& pointsUniform) {
+void OperationRosenblattTransformationKDE::doTransformation(DataMatrix& pointsCdf,
+                                                            DataMatrix& pointsUniform) {
   // Work arrays
   DataVector unif(ndim);
   DataVector cdf(ndim);
@@ -58,13 +58,12 @@ void OperationRosenblattTransformationKDE::doTransformation(
       samples1d = kde->getSamples(idim);
 
       // transform the point in the current dimension
-      unif[idim] = doTransformation1D(cdf[idim], *samples1d,
-                                      bandwidths[idim], kern);
+      unif[idim] = doTransformation1D(cdf[idim], *samples1d, bandwidths[idim], kern);
 
       // Update the kernel for the next dimension
       for (size_t isamples = 0; isamples < nsamples; isamples++) {
         xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
-        kern[isamples] *= std::exp(-(xi * xi) / 2.); // (bw*sqrt(2*PI)) cancels;
+        kern[isamples] *= std::exp(-(xi * xi) / 2.);  // (bw*sqrt(2*PI)) cancels;
       }
     }
 
@@ -75,8 +74,8 @@ void OperationRosenblattTransformationKDE::doTransformation(
   return;
 }
 
-void OperationRosenblattTransformationKDE::doShuffledTransformation(
-  DataMatrix& pointsCdf, DataMatrix& pointsUniform) {
+void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& pointsCdf,
+                                                                    DataMatrix& pointsUniform) {
   // Work arrays
   DataVector unif(ndim);
   DataVector cdf(ndim);
@@ -103,13 +102,12 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(
       samples1d = kde->getSamples(idim);
 
       // transform the point in the current dimension
-      unif[idim] = doTransformation1D(cdf[idim], *samples1d,
-                                      bandwidths[idim], kern);
+      unif[idim] = doTransformation1D(cdf[idim], *samples1d, bandwidths[idim], kern);
 
       // Update the kernel for the next dimension
       for (size_t isamples = 0; isamples < nsamples; isamples++) {
         xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
-        kern[isamples] *= std::exp(-(xi * xi) / 2.); // (bw*sqrt(2*PI)) cancels;
+        kern[isamples] *= std::exp(-(xi * xi) / 2.);  // (bw*sqrt(2*PI)) cancels;
       }
     }
 
@@ -120,9 +118,8 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(
   return;
 }
 
-
-float_t OperationRosenblattTransformationKDE::doTransformation1D(float_t x,
-    DataVector& samples1d, float_t sigma, DataVector& kern) {
+float_t OperationRosenblattTransformationKDE::doTransformation1D(float_t x, DataVector& samples1d,
+                                                                 float_t sigma, DataVector& kern) {
   // helper variables
   float_t cdfNormal = 0.0;
   float_t cdfConditionalized = 0.0;
@@ -134,14 +131,13 @@ float_t OperationRosenblattTransformationKDE::doTransformation1D(float_t x,
   for (size_t isample = 0; isample < nsamples; isample++) {
     xi = (x - samples1d[isample]) / sigma;
     cdfNormal = 0.5 + 0.5 * std::erf(xi / M_SQRT2);
-    cdfConditionalized += kern[isample] * cdfNormal; // (xx > xi(id,is));
+    cdfConditionalized += kern[isample] * cdfNormal;  // (xx > xi(id,is));
     denom += kern[isample];
 
 #ifdef DEBUG_ROSENBLATT
-    std::cout << "i = " << isample << ": x_i = " << samples1d[isample]
-              << " -> y_i = " << xi << std::endl;
-    std::cout << "  cdfNormal = " << cdfNormal << ", denom = " << denom
+    std::cout << "i = " << isample << ": x_i = " << samples1d[isample] << " -> y_i = " << xi
               << std::endl;
+    std::cout << "  cdfNormal = " << cdfNormal << ", denom = " << denom << std::endl;
 #endif
   }
 
@@ -150,6 +146,5 @@ float_t OperationRosenblattTransformationKDE::doTransformation1D(float_t x,
 
   return cdfConditionalized;
 }
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
