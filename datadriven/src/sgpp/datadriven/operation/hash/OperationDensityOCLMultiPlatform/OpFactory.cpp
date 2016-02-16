@@ -11,7 +11,7 @@
 namespace SGPP {
 namespace datadriven {
 
-SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* createDensityOCLMultiPlatformConfigured(base::Grid& grid,std::string opencl_conf) {
+SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension, double lambda, std::string opencl_conf) {
 
 	std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
@@ -43,10 +43,10 @@ SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* createDensityO
 
 	if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
 		return new datadriven::StreamingOCLMultiPlatform::OperationDensityOCLMultiPlatform<float>(grid,
-																								  2, manager, firstDeviceConfig, 0.01);
+																								  dimension, manager, firstDeviceConfig, (float)lambda);
 	} else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
 		return new datadriven::StreamingOCLMultiPlatform::OperationDensityOCLMultiPlatform<double>(grid,
-																								   2, manager, firstDeviceConfig, 0.01);
+																								   2, manager, firstDeviceConfig, lambda);
 	} else {
 		throw base::factory_exception(
 			"Error creating operation\"OperationMultiEvalStreamingOCLMultiPlatform\": invalid value for parameter \"INTERNAL_PRECISION\"");
