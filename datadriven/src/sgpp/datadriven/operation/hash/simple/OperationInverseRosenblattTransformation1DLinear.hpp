@@ -14,12 +14,12 @@
 namespace SGPP {
 namespace datadriven {
 
-class OperationInverseRosenblattTransformation1DLinear : public
-  OperationTransformation1D {
+class OperationInverseRosenblattTransformation1DLinear : public OperationTransformation1D {
  protected:
   base::Grid* grid;
+
  public:
-  OperationInverseRosenblattTransformation1DLinear(base::Grid* grid);
+  explicit OperationInverseRosenblattTransformation1DLinear(base::Grid* grid);
   virtual ~OperationInverseRosenblattTransformation1DLinear();
 
   /**

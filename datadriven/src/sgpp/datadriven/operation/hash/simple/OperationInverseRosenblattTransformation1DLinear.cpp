@@ -10,6 +10,9 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
+#include <utility>
+#include <map>
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -18,14 +21,14 @@ namespace datadriven {
  * WARNING: the grid must be a 1D grid!
  */
 OperationInverseRosenblattTransformation1DLinear::OperationInverseRosenblattTransformation1DLinear(
-  base::Grid* grid) : grid(grid) {
-}
+    base::Grid* grid)
+    : grid(grid) {}
 
-OperationInverseRosenblattTransformation1DLinear::~OperationInverseRosenblattTransformation1DLinear() {
-}
+OperationInverseRosenblattTransformation1DLinear::
+    ~OperationInverseRosenblattTransformation1DLinear() {}
 
 float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
-  base::DataVector* alpha1d, float_t coord1d) {
+    base::DataVector* alpha1d, float_t coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_pdf, coord_cdf;
@@ -37,9 +40,7 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
 
   for (unsigned int i = 0; i < gs->size(); i++) {
     coord[0] = gs->get(i)->getCoord(0);
-    coord_pdf.insert(
-      std::pair<double, double>(coord[0],
-                                opEval->eval(*alpha1d, coord)));
+    coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }
 
@@ -59,17 +60,16 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   double sum = 0.0, area;
 
   for (++it2; it2 != coord_pdf.end(); ++it2) {
-    //(*it).first : the coordinate
-    //(*it).second : the function value
-    area = ((*it2).first - (*it1).first) / 2
-           * ((*it1).second + (*it2).second);
+    // (*it).first : the coordinate
+    // (*it).second : the function value
+    area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
 
     // make sure that the cdf is monotonically increasing
     // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
     // OF NON POSITIVE DENSITY
     if (area < 0) {
-      std::cerr << "warning: negative area encountered (inverse) "
-                << (*it1).second << ", " << (*it2).second << std::endl;
+      std::cerr << "warning: negative area encountered (inverse) " << (*it1).second << ", "
+                << (*it2).second << std::endl;
       area = 0;
     }
 
@@ -85,8 +85,7 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
     tmp_sum = 0.0;
 
-    for (unsigned int j = 0; j <= i; ++j)
-      tmp_sum += tmp[j];
+    for (unsigned int j = 0; j <= i; ++j) tmp_sum += tmp[j];
 
     ++i;
     (*it1).second = tmp_sum / sum;
@@ -101,8 +100,7 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
 
   // find cdf interval
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    if ((*it1).second >= coord1d)
-      break;
+    if ((*it1).second >= coord1d) break;
   }
 
   x2 = (*it1).first;

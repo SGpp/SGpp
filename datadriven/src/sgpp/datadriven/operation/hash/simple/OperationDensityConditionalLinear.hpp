@@ -8,10 +8,9 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
-
+#include <cstring>
 
 namespace SGPP {
 namespace datadriven {
@@ -22,7 +21,7 @@ namespace datadriven {
 
 class OperationDensityConditionalLinear : public OperationDensityConditional {
  public:
-  OperationDensityConditionalLinear(base::Grid* grid) : grid(grid) {}
+  explicit OperationDensityConditionalLinear(base::Grid* grid) : grid(grid) {}
   virtual ~OperationDensityConditionalLinear() {}
 
   /**
@@ -34,13 +33,12 @@ class OperationDensityConditionalLinear : public OperationDensityConditional {
    * @param mdim Marginalize in dimension mdim
    * @param xbar Point at which to conditionalize
    */
-  void doConditional(base::DataVector& alpha, base::Grid*& mg,
-                     base::DataVector& malpha, unsigned int mdim, float_t xbar);
+  void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
+                     unsigned int mdim, float_t xbar);
 
  protected:
   base::Grid* grid;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONDENSITYCONDITIONALLINEAR_HPP */

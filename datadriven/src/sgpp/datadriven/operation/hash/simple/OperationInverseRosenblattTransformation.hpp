@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -20,10 +19,8 @@ namespace datadriven {
 
 class OperationInverseRosenblattTransformation {
  public:
-  OperationInverseRosenblattTransformation() {
-  }
-  virtual ~OperationInverseRosenblattTransformation() {
-  }
+  OperationInverseRosenblattTransformation() {}
+  virtual ~OperationInverseRosenblattTransformation() {}
 
   /**
    * Rosenblatt Transformation with mixed starting dimension
@@ -32,8 +29,8 @@ class OperationInverseRosenblattTransformation {
    * @param pointscdf Input DataMatrix (rows: # of samples, columns: # of dims)
    * @param points Output DataMatrix (rows: # of samples, columns: # of dims)
    */
-  virtual void doTransformation(base::DataVector* alpha,
-                                base::DataMatrix* pointscdf, base::DataMatrix* points) = 0;
+  virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf,
+                                base::DataMatrix* points) = 0;
 
   /**
    * Rosenblatt Transformation with fixed starting dimension
@@ -43,11 +40,9 @@ class OperationInverseRosenblattTransformation {
    * @param points Output DataMatrix (rows: # of samples, columns: # of dims)
    * @param dim_start starting dimension
    */
-  virtual void doTransformation(base::DataVector* alpha,
-                                base::DataMatrix* pointscdf, base::DataMatrix* points,
-                                size_t dim_start) = 0;
+  virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* pointscdf,
+                                base::DataMatrix* points, size_t dim_start) = 0;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATION_HPP */
