@@ -386,8 +386,8 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   }
 
   void buildDatastructure() {
-    size_t dataBlocking = parameters["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-    size_t transGridBlocking = parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+    size_t dataBlocking = parameters["KERNEL_DATA_BLOCK_SIZE"].getUInt();
+    size_t transGridBlocking = parameters["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
 
     // TODO(leiterrl): is this a bug, Raphael? (David)
     size_t blockingSize = std::max(dataBlocking, transGridBlocking);

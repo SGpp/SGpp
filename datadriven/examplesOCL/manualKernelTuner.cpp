@@ -54,8 +54,7 @@ int main(int argc, char** argv) {
 
   double lambda = 0.000001;
 
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig,
-                                             SLESolverConfigRefine,
+  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
                                              SLESolverConfigFinal, adaptConfig);
 
   // TODO(pfandedd): kernel is set inside "StreamingOCLMultiPlatform", currently
@@ -68,8 +67,7 @@ int main(int argc, char** argv) {
   //    json::Node &kernelNode =
   //    parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS]"][kernelName];
 
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true,
-                                                              true);
+  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   //    staticParameterTuner.addFixedParameter("OCL_MANAGER_VERBOSE", "false",
   //    SGPP::datadriven::ParameterType::ID);
@@ -80,16 +78,11 @@ int main(int argc, char** argv) {
   //    staticParameterTuner.addFixedParameter("INTERNAL_PRECISION", "float",
   //    SGPP::datadriven::ParameterType::TEXT);
 
-  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY",
-                                    {"false"});  // , "true"
-  staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE",
-                                    {"1", "4"});  // , "2", "4", "8"
-  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE",
-                                    {"1", "4"});  // , "2", "4", "8"
-  staticParameterTuner.addParameter("KERNEL_STORE_DATA",
-                                    {"register"});  // "array",
-  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL",
-                                    {"4"});  // "1", "8", "16"
+  staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false"});        // , "true"
+  staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "4"});        // , "2", "4", "8"
+  staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "4"});  // , "2", "4", "8"
+  staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register"});           // "array",
+  staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"4"});              // "1", "8", "16"
 
   //    staticParameterTuner.writeToFile("testOut.tuner");
   //

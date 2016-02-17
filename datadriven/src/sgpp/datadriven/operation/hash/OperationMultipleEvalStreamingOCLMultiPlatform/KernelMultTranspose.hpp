@@ -91,7 +91,7 @@ class KernelMultTranspose {
     }
 
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    gridBlockingSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+    gridBlockingSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
   }
 

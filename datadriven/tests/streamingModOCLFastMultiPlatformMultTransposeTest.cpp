@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef DISABLED
-
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
@@ -36,17 +34,24 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("double");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -62,17 +67,25 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "register");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("double");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -88,17 +101,25 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiDevice();
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "register");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsMultiDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("double");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -114,17 +135,25 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiPlatform();
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "register");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsMultiPlatform();
+
+  (*parameters)["INTERNAL_PRECISION"].set("double");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -140,18 +169,25 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
-  parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "array");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("float");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 1ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -167,18 +203,25 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsSingleDevice();
-  parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "register");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("float");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -194,18 +237,25 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiDevice();
-  parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "register");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsMultiDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("float");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -221,18 +271,25 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
   uint32_t level = 4;
 
-  SGPP::base::OCLOperationConfiguration parameters = getConfigurationDefaultsMultiPlatform();
-  parameters.replaceTextAttr("INTERNAL_PRECISION", "float");
-  parameters.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-  parameters.replaceIDAttr("KERNEL_DATA_BLOCKING_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
-  parameters.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-  parameters.replaceTextAttr("KERNEL_STORE_DATA", "register");
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsMultiPlatform();
+
+  (*parameters)["INTERNAL_PRECISION"].set("float");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_TRANS_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+  }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
@@ -243,5 +300,4 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif
 #endif

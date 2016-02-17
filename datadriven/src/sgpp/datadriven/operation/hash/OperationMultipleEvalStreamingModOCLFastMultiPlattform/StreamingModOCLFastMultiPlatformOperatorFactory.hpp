@@ -1,9 +1,7 @@
-/*
- * OCLOperatorFactory.hpp
- *
- *  Created on: Mar 25, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -16,8 +14,8 @@
 namespace SGPP {
 namespace datadriven {
 
-base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(base::Grid& grid,
-        base::DataMatrix& dataset, SGPP::datadriven::OperationMultipleEvalConfiguration &configuration);
-
+base::OperationMultipleEval* createStreamingModOCLFastMultiPlatformConfigured(
+    base::Grid& grid, base::DataMatrix& dataset,
+    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 }
 }

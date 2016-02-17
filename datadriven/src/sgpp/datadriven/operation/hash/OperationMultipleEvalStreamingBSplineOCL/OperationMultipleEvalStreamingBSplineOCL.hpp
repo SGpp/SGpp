@@ -188,8 +188,8 @@ class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval
 
  private:
   size_t padDataset(SGPP::base::DataMatrix& dataset) {
-    size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt() *
-                      (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+    size_t vecWidth =
+        (*parameters)["LOCAL_SIZE"].getUInt() * (*parameters)["KERNEL_DATA_BLOCK_SIZE"].getUInt();
 
     // Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;

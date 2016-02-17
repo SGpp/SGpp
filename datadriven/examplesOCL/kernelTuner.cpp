@@ -71,14 +71,14 @@ int main(int argc, char **argv) {
 
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"true", "false"});
-    staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCKING_SIZE", {"1", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4", "8"});
     staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
     staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"4"});  // "1", "8", "16"
     staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});    // "1", "8", "16"
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
-    staticParameterTuner.addParameter("KERNEL_DATA_BLOCKING_SIZE", {"1", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
     staticParameterTuner.addParameter("KERNEL_TRANS_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
     staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "4", "2", "4", "8"});
     staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});

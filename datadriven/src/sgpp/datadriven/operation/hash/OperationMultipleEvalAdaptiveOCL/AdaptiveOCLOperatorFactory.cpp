@@ -32,8 +32,8 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(
       (*parameters).addIDAttr("LOCAL_SIZE", 128ul);
     }
 
-    if ((*parameters).contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-      (*parameters).addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+    if ((*parameters).contains("KERNEL_DATA_BLOCK_SIZE") == false) {
+      (*parameters).addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
     }
 
     if ((*parameters).contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {

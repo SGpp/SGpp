@@ -18,8 +18,7 @@ namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
 template <typename real_type>
-class SourceBuilderMultTranspose
-    : public base::KernelSourceBuilderBase<real_type> {
+class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_type> {
  private:
   std::shared_ptr<base::OCLDevice> device;
 
@@ -37,11 +36,9 @@ class SourceBuilderMultTranspose
     std::stringstream output;
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
       output << "level_" << gridBlockingIndex << "[" << dim << "]";
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare(
-                   "register") == 0) {
+    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
       output << "level_" << gridBlockingIndex << "_" << dim;
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare(
-                   "pointer") == 0) {
+    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
       output << "ptrLevel[dimLevelIndex]";
     } else {
       throw new base::operation_exception(
@@ -54,11 +51,9 @@ class SourceBuilderMultTranspose
     std::stringstream output;
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
       output << "index_" << gridBlockingIndex << "[" << dim << "]";
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare(
-                   "register") == 0) {
+    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
       output << "index_" << gridBlockingIndex << "_" << dim;
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare(
-                   "pointer") == 0) {
+    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
       output << "ptrIndex[dimLevelIndex]";
     } else {
       throw new base::operation_exception(
@@ -77,8 +72,7 @@ class SourceBuilderMultTranspose
     return output.str();
   }
 
-  std::string unrolledBasisFunctionEvalulation(size_t dims, size_t startDim,
-                                               size_t endDim,
+  std::string unrolledBasisFunctionEvalulation(size_t dims, size_t startDim, size_t endDim,
                                                std::string unrollVariable) {
     std::stringstream output;
 
@@ -93,8 +87,7 @@ class SourceBuilderMultTranspose
       std::string pointerAccess = dimElement.str();
 
       std::string dString;
-      if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") ==
-          0) {
+      if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
         std::stringstream stream;
         stream << (d);
         dString = stream.str();
@@ -103,11 +96,11 @@ class SourceBuilderMultTranspose
       }
 
       for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-        output << this->indent[2] << "curSupport_" << gridIndex
-               << " *= fmax(1.0" << this->constSuffix() << " - fabs((";
-        output << getLevel(dString, gridIndex) << " * " << getData(dString, 0)
-               << ") - " << getIndex(dString, gridIndex) << "), 0.0"
-               << this->constSuffix() << ");" << std::endl;
+        output << this->indent[2] << "curSupport_" << gridIndex << " *= fmax(1.0"
+               << this->constSuffix() << " - fabs((";
+        output << getLevel(dString, gridIndex) << " * " << getData(dString, 0) << ") - "
+               << getIndex(dString, gridIndex) << "), 0.0" << this->constSuffix() << ");"
+               << std::endl;
       }
     }
     return output.str();
@@ -119,9 +112,8 @@ class SourceBuilderMultTranspose
       : device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
     localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-    transGridBlockSize =
-        kernelConfiguration["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+    dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
+    transGridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
   }
 
@@ -131,58 +123,50 @@ class SourceBuilderMultTranspose
     }
 
     size_t localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    bool useLocalMemory =
-        kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    uint64_t maxDimUnroll =
-        kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
+    bool useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
+    uint64_t maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
 
     std::stringstream sourceStream;
 
     if (this->floatType().compare("double") == 0) {
-      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable"
-                   << std::endl
+      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
                    << std::endl;
     }
 
     sourceStream << "__kernel" << std::endl;
 
-    sourceStream << "__attribute__((reqd_work_group_size(" << localWorkgroupSize
-                 << ", 1, 1)))" << std::endl;
-    sourceStream << "void multTransOCL(__global const " << this->floatType()
-                 << "* ptrLevel," << std::endl;
-    sourceStream << "                  __global const " << this->floatType()
-                 << "* ptrIndex," << std::endl;
-    sourceStream << "                  __global const " << this->floatType()
-                 << "* ptrData," << std::endl;
-    sourceStream << "                  __global const " << this->floatType()
-                 << "* ptrSource," << std::endl;
-    sourceStream << "                  __global       " << this->floatType()
-                 << "* ptrResult," << std::endl;
+    sourceStream << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))"
+                 << std::endl;
+    sourceStream << "void multTransOCL(__global const " << this->floatType() << "* ptrLevel,"
+                 << std::endl;
+    sourceStream << "                  __global const " << this->floatType() << "* ptrIndex,"
+                 << std::endl;
+    sourceStream << "                  __global const " << this->floatType() << "* ptrData,"
+                 << std::endl;
+    sourceStream << "                  __global const " << this->floatType() << "* ptrSource,"
+                 << std::endl;
+    sourceStream << "                  __global       " << this->floatType() << "* ptrResult,"
+                 << std::endl;
     sourceStream << "                  uint sourceSize," << std::endl;
     sourceStream << "                  uint start_data," << std::endl;
     sourceStream << "                  uint end_data) {" << std::endl;
-    sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);"
-                 << std::endl;
-    sourceStream << this->indent[0] << "int localIdx = get_local_id(0);"
-                 << std::endl;
-    sourceStream << this->indent[0] << "int groupSize = get_local_size(0);"
-                 << std::endl;
-    sourceStream << this->indent[0] << "int globalSize = get_global_size(0);"
-                 << std::endl;
+    sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
+    sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
+    sourceStream << this->indent[0] << "int groupSize = get_local_size(0);" << std::endl;
+    sourceStream << this->indent[0] << "int globalSize = get_global_size(0);" << std::endl;
     sourceStream << std::endl;
 
     for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-      sourceStream << this->indent[0] << this->floatType() << " myResult_"
-                   << gridIndex << " = 0.0;" << std::endl;
+      sourceStream << this->indent[0] << this->floatType() << " myResult_" << gridIndex << " = 0.0;"
+                   << std::endl;
     }
     sourceStream << std::endl;
 
     if (useLocalMemory) {
-      sourceStream << this->indent[0] << "__local " << this->floatType()
-                   << " locData[" << dims * localWorkgroupSize << "];"
-                   << std::endl;
-      sourceStream << this->indent[0] << "__local " << this->floatType()
-                   << " locSource[" << localWorkgroupSize << "];" << std::endl
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " locData["
+                   << dims * localWorkgroupSize << "];" << std::endl;
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " locSource["
+                   << localWorkgroupSize << "];" << std::endl
                    << std::endl;
     }
 
@@ -190,109 +174,93 @@ class SourceBuilderMultTranspose
     // the work item
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
       for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-        sourceStream << this->indent[0] << this->floatType() << " level_"
-                     << gridIndex << "[" << dims << "];" << std::endl;
+        sourceStream << this->indent[0] << this->floatType() << " level_" << gridIndex << "["
+                     << dims << "];" << std::endl;
         for (size_t d = 0; d < dims; d++) {
           sourceStream << this->indent[0] << "level_" << gridIndex << "[" << d
-                       << "] = ptrLevel[(((globalSize * " << gridIndex
-                       << ") + globalIdx) * " << dims << ") + " << d << "];"
-                       << std::endl;
+                       << "] = ptrLevel[(((globalSize * " << gridIndex << ") + globalIdx) * "
+                       << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
-        sourceStream << this->indent[0] << this->floatType() << " index_"
-                     << gridIndex << "[" << dims << "];" << std::endl;
+        sourceStream << this->indent[0] << this->floatType() << " index_" << gridIndex << "["
+                     << dims << "];" << std::endl;
         for (size_t d = 0; d < dims; d++) {
           sourceStream << this->indent[0] << "index_" << gridIndex << "[" << d
-                       << "] = ptrIndex[(((globalSize * " << gridIndex
-                       << ") + globalIdx) * " << dims << ") + " << d << "];"
-                       << std::endl;
+                       << "] = ptrIndex[(((globalSize * " << gridIndex << ") + globalIdx) * "
+                       << dims << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
       }
-    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare(
-                   "register") == 0) {
+    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
       for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[0] << this->floatType() << " level_"
-                       << gridIndex << "_" << d
-                       << " = ptrLevel[(((globalSize * " << gridIndex
-                       << ") + globalIdx) * " << dims << ") + " << d << "];"
-                       << std::endl;
+          sourceStream << this->indent[0] << this->floatType() << " level_" << gridIndex << "_" << d
+                       << " = ptrLevel[(((globalSize * " << gridIndex << ") + globalIdx) * " << dims
+                       << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
 
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[0] << this->floatType() << " index_"
-                       << gridIndex << "_" << d
-                       << " = ptrIndex[(((globalSize * " << gridIndex
-                       << ") + globalIdx) * " << dims << ") + " << d << "];"
-                       << std::endl;
+          sourceStream << this->indent[0] << this->floatType() << " index_" << gridIndex << "_" << d
+                       << " = ptrIndex[(((globalSize * " << gridIndex << ") + globalIdx) * " << dims
+                       << ") + " << d << "];" << std::endl;
         }
         sourceStream << std::endl;
       }
     }
 
-    sourceStream << this->indent[0] << "// Iterate over all data points"
-                 << std::endl;
+    sourceStream << this->indent[0] << "// Iterate over all data points" << std::endl;
 
     if (useLocalMemory) {
-      sourceStream << this->indent[0]
-                   << "for(int dataBlockStart = start_data; dataBlockStart < "
-                      "end_data; dataBlockStart += "
-                   << localWorkgroupSize << ") {" << std::endl;
+      sourceStream << this->indent[0] << "for(int dataBlockStart = start_data; dataBlockStart < "
+                                         "end_data; dataBlockStart += " << localWorkgroupSize
+                   << ") {" << std::endl;
 
       if (dims > maxDimUnroll) {
-        sourceStream << this->indent[1] << "for (size_t d = 0; d < " << dims
-                     << "; d++) {" << std::endl;
+        sourceStream << this->indent[1] << "for (size_t d = 0; d < " << dims << "; d++) {"
+                     << std::endl;
         sourceStream << this->indent[2] << "locData[(" << localWorkgroupSize
                      << " * d) + localIdx] = ptrData[(d * sourceSize) + "
-                        "dataBlockStart + localIdx];"
-                     << std::endl;
+                        "dataBlockStart + localIdx];" << std::endl;
         sourceStream << this->indent[1] << "}" << std::endl;
       } else {
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[1] << "locData[(" << localWorkgroupSize
-                       << " * " << d << ") + localIdx] = ptrData[(" << d
-                       << " * sourceSize) + dataBlockStart + localIdx];"
-                       << std::endl;
+          sourceStream << this->indent[1] << "locData[(" << localWorkgroupSize << " * " << d
+                       << ") + localIdx] = ptrData[(" << d
+                       << " * sourceSize) + dataBlockStart + localIdx];" << std::endl;
         }
       }
 
-      sourceStream
-          << this->indent[1]
-          << "locSource[localIdx] = ptrSource[localIdx + dataBlockStart];"
-          << std::endl;
-      sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);"
-                   << std::endl;
+      sourceStream << this->indent[1]
+                   << "locSource[localIdx] = ptrSource[localIdx + dataBlockStart];" << std::endl;
+      sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
       sourceStream << std::endl;
-      sourceStream << this->indent[1] << "for(int k = 0; k < "
-                   << localWorkgroupSize << "; k++) {" << std::endl;
+      sourceStream << this->indent[1] << "for(int k = 0; k < " << localWorkgroupSize << "; k++) {"
+                   << std::endl;
 
       for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-        sourceStream << this->indent[2] << this->floatType() << " curSupport_"
-                     << gridIndex << " = locSource[k];" << std::endl;
+        sourceStream << this->indent[2] << this->floatType() << " curSupport_" << gridIndex
+                     << " = locSource[k];" << std::endl;
       }
     } else {
-      sourceStream << this->indent[0]
-                   << "for(int k = start_data; k < end_data; k++) {"
+      sourceStream << this->indent[0] << "for(int k = start_data; k < end_data; k++) {"
                    << std::endl;
 
       for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-        sourceStream << this->indent[1] << this->floatType() << " curSupport_"
-                     << gridIndex << " = ptrSource[k];" << std::endl;
+        sourceStream << this->indent[1] << this->floatType() << " curSupport_" << gridIndex
+                     << " = ptrSource[k];" << std::endl;
       }
     }
     sourceStream << std::endl;
 
     if (dims > maxDimUnroll) {
-      sourceStream << this->indent[1]
-                   << "for (size_t unrollDim = 0; unrollDim < "
-                   << ((dims / maxDimUnroll) * maxDimUnroll)
-                   << "; unrollDim += " << maxDimUnroll << ") {" << std::endl;
+      sourceStream << this->indent[1] << "for (size_t unrollDim = 0; unrollDim < "
+                   << ((dims / maxDimUnroll) * maxDimUnroll) << "; unrollDim += " << maxDimUnroll
+                   << ") {" << std::endl;
 
-      sourceStream << this->unrolledBasisFunctionEvalulation(
-          dims, 0, std::min(maxDimUnroll, dims), "unrollDim");
+      sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, std::min(maxDimUnroll, dims),
+                                                             "unrollDim");
       sourceStream << this->indent[1] << "}" << std::endl;
 
       if (dims % maxDimUnroll != 0) {
@@ -307,27 +275,25 @@ class SourceBuilderMultTranspose
     sourceStream << std::endl;
 
     for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
-      sourceStream << this->indent[1] << "myResult_" << gridIndex
-                   << " += curSupport_" << gridIndex << ";" << std::endl;
+      sourceStream << this->indent[1] << "myResult_" << gridIndex << " += curSupport_" << gridIndex
+                   << ";" << std::endl;
     }
-    sourceStream << this->indent[0] << "}" << std::endl << std::endl;
+    sourceStream << this->indent[0] << "}" << std::endl
+                 << std::endl;
 
     if (useLocalMemory) {
-      sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);"
-                   << std::endl;
+      sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
       sourceStream << this->indent[0] << "}" << std::endl;
     }
 
     for (size_t gridIndex = 0; gridIndex < transGridBlockSize; gridIndex++) {
       sourceStream << this->indent[0] << "ptrResult[(globalSize * " << gridIndex
-                   << ") + globalIdx] = myResult_" << gridIndex << ";"
-                   << std::endl;
+                   << ") + globalIdx] = myResult_" << gridIndex << ";" << std::endl;
     }
     sourceStream << "}" << std::endl;
 
     if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-      this->writeSource("StreamingOCLMultiPlatform_multTrans.cl",
-                        sourceStream.str());
+      this->writeSource("StreamingOCLMultiPlatform_multTrans.cl", sourceStream.str());
     }
 
     return sourceStream.str();
