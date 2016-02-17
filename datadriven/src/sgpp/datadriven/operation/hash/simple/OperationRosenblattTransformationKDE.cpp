@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
+
+#include <sgpp/globaldef.hpp>
 #include <map>
 #include <cstdlib>
 #include <fstream>
@@ -13,12 +16,9 @@
 #include <random>
 #include <algorithm>
 
-#include "sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp"
-#include "sgpp/globaldef.hpp"
-
-// #ifdef _OPENMP
-// #include <omp.h>
-// #endif
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 // #define DEBUG_ROSENBLATT
 

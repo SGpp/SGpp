@@ -8,10 +8,9 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
-
+#include <cstring>
 
 namespace SGPP {
 namespace datadriven {
@@ -22,7 +21,7 @@ namespace datadriven {
 
 class OperationDensityMargTo1DLinear : public OperationDensityMargTo1D {
  public:
-  OperationDensityMargTo1DLinear(base::Grid* grid) : grid(grid) {}
+  explicit OperationDensityMargTo1DLinear(base::Grid* grid) : grid(grid) {}
   virtual ~OperationDensityMargTo1DLinear() {}
 
   /**
@@ -33,19 +32,14 @@ class OperationDensityMargTo1DLinear : public OperationDensityMargTo1D {
    * @param alpha_x Coefficient vector for new grid (grid_x). Will be initialized.
    * @param dim_x Target dimension, all other dimensions will be marginalized
    */
-  void margToDimX(base::DataVector* alpha, base::Grid*& grid_x,
-                  base::DataVector*& alpha_x, size_t dim_x);
+  void margToDimX(base::DataVector* alpha, base::Grid*& grid_x, base::DataVector*& alpha_x,
+                  size_t dim_x);
 
  protected:
   base::Grid* grid;
   void marg_next_dim(base::Grid* g_in, base::DataVector* a_in, base::Grid*& g_out,
                      base::DataVector*& a_out, size_t dims, size_t dim_x, size_t& count);
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONDENSITYMARGTO1DLINEAR_HPP */
-
-
-
-
