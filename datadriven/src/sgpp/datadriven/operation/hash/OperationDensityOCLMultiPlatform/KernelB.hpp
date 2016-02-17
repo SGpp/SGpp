@@ -28,6 +28,7 @@ private:
 	std::shared_ptr<base::OCLDevice> device;
 
 	size_t dims;
+	size_t dataSize;
 
 	cl_int err;
 
@@ -115,8 +116,6 @@ public:
 		}
 
 		//Load data into buffers if not already done
-		if (!devicePoints.isInitialized())
-		{
 			devicePoints.intializeTo(points, 1, 0, points.size());
 			deviceData.intializeTo(data, 1, 0, data.size());
 			std::vector<T> zeros(gridSize);
@@ -125,8 +124,8 @@ public:
 			}
 			deviceResultData.intializeTo(zeros, 1, 0, gridSize);
 			clFinish(device->commandQueue);
-		}
 		this->deviceTimingMult = 0.0;
+		this->dataSize = data.size();
 
 		//Set kernel arguments
 		err = clSetKernelArg(this->kernelB, 0, sizeof(cl_mem), this->devicePoints.getBuffer());
@@ -153,7 +152,7 @@ public:
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
 			throw base::operation_exception(errorString.str());
 		}
-		err = clSetKernelArg(this->kernelB, 4, sizeof(cl_uint), &gridSize);
+		err = clSetKernelArg(this->kernelB, 4, sizeof(cl_uint), &dataSize);
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
