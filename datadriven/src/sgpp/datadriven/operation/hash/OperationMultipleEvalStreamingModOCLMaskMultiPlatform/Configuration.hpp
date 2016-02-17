@@ -81,6 +81,7 @@ class Configuration {
           kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
         }
 
+        // TODO(pfandedd): implement these parameters in the kernel
         if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
           kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
         }

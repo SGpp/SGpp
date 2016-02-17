@@ -61,7 +61,6 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   std::vector<StreamingOCLMultiPlatform::KernelMult<T>> multKernels;
   std::vector<StreamingOCLMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
-  // TODO(pfandedd): improve for per-device configuration
   json::Node &configuration;
 
   bool verbose;
@@ -82,46 +81,11 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
         manager(manager),
         devices(manager->getDevices()),
         configuration(configuration) {
-    // TODO(pfandedd): move check into kernel
-    //        std::string &firstPlatformName =
-    //        configuration["PLATFORMS"].keys()[0];
-    //        std::string &firstDeviceName =
-    //        configuration["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
-    //        json::Node &deviceNode =
-    //        configuration["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-    //        json::Node &firstDeviceConfig =
-    //        deviceNode["KERNELS"][StreamingOCLMultiPlatform::Configuration::getKernelName()];
-    //
-    //        if
-    //        (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register")
-    //        == 0
-    //                && dataset.getNcols() >
-    //                firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
-    //            std::stringstream errorString;
-    //            errorString
-    //                    << "OCL Error: setting \"KERNEL_DATA_STORE\" to
-    //                    \"register\" requires value of
-    //                    \"KERNEL_MAX_DIM_UNROLL\"";
-    //            errorString << " to be greater than the dimension of the data
-    //            set, was set to"
-    //                    <<
-    //                    firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt()
-    //                    << std::endl;
-    //            throw SGPP::base::operation_exception(errorString.str());
-    //        }
-
     this->dims = dataset.getNcols();  // be aware of transpose!
     this->verbose = configuration["VERBOSE"].getBool();
 
     this->commonDatasetPadding = calculateCommonDatasetPadding();
     this->commonGridPadding = calculateCommonGridPadding();
-
-    //        this->kernelMult = std::make_unique<KernelMult<T>>(dims,
-    //        this->manager, parameters, firstDeviceConfig);
-    //        this->kernelMultTranspose =
-    //        std::make_unique<KernelMultTranspose<T>>(dims, this->manager,
-    //        parameters,
-    //                firstDeviceConfig);
 
     queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancer>();
     queueLoadBalancerMultTranspose = std::make_shared<base::QueueLoadBalancer>();
@@ -153,8 +117,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
                                         kernelConfiguration, queueLoadBalancerMultTranspose);
     }
 
-    // create the kernel specific data structures and initialize gridSize and
-    // gridSizeExtra
+    // create the kernel specific data structures and initialize gridSize and gridSizeExtra
     this->prepare();
   }
 

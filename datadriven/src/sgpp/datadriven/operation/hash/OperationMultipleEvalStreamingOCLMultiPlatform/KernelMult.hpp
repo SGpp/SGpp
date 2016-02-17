@@ -76,6 +76,16 @@ class KernelMult {
         deviceTimingMult(0.0),
         kernelConfiguration(kernelConfiguration),
         queueLoadBalancerMult(queueBalancerMult) {
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
+        dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
+      std::stringstream errorString;
+      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
+                     "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
+                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
+                  << std::endl;
+      throw SGPP::base::operation_exception(errorString.str());
+    }
+
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
@@ -126,7 +136,7 @@ class KernelMult {
 
     if (this->kernelMult == nullptr) {
       std::string program_src = kernelSourceBuilder.generateSource();
-      this->kernelMult = manager->buildKernel(program_src, device, "multOCL");
+      this->kernelMult = manager->buildKernel(program_src, device, kernelConfiguration, "multOCL");
     }
 
     if (!deviceLevel.isInitialized()) {

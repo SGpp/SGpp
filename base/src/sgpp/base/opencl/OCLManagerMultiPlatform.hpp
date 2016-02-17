@@ -29,27 +29,15 @@ class OCLManagerMultiPlatform {
 
   // linear device list
   std::vector<std::shared_ptr<OCLDevice>> devices;
-  //        cl_uint platformCount;
-  //
-  //        std::map<cl_platform_id, size_t> platformDeviceCount; //devices on
-  //        the individual platforms
-  //        cl_platform_id *platformIds;
-  //
-  //        std::map<cl_platform_id, cl_device_id *> platformDeviceIds; //
-  //        device ids over all platforms
+
   cl_uint overallDeviceCount;  // devices over all platforms
 
-  //        //platforms -> (deviceId -> command_queue)
-  //        std::map<cl_uint, std::map<cl_uint, cl_command_queue> >
-  //        commandQueues;
-  //        std::vector<cl_context> platformContext;
   bool verbose;
 
  public:
   explicit OCLManagerMultiPlatform(bool verbose = false);
 
-  OCLManagerMultiPlatform(
-      std::shared_ptr<base::OCLOperationConfiguration> parameters);
+  explicit OCLManagerMultiPlatform(std::shared_ptr<base::OCLOperationConfiguration> parameters);
 
   ~OCLManagerMultiPlatform();
 
@@ -64,38 +52,21 @@ class OCLManagerMultiPlatform {
    * @param kernels the resulting kernels are put into this map, one for each platform
    * @return
    */
-  void buildKernel(const std::string &program_src,
-                   const std::string &kernel_name,
+  void buildKernel(const std::string &program_src, const std::string &kernel_name,
                    std::map<cl_platform_id, std::vector<cl_kernel>> &kernels);
 
-  cl_kernel buildKernel(const std::string &source,
-                        std::shared_ptr<OCLDevice> device,
-                        const std::string &kernelName);
+  cl_kernel buildKernel(const std::string &source, std::shared_ptr<OCLDevice> device,
+                        json::Node &kernelConfiguration, const std::string &kernelName);
 
-  //    void setPlatformIDs();
-  //
-  //    void printPlatformsInfo();
-  //
-  //    void setupPlatforms();
-  //
-  //    void setTotalDeviceCount();
-  //
-  //    void setDeviceType();
-  //
-  //    void setupDeviceIDs();
+  void configure(base::OCLOperationConfiguration &configuration, bool useConfiguration = false);
 
-  void configure(base::OCLOperationConfiguration &configuration,
-                 bool useConfiguration = false);
-
-  void configurePlatform(cl_platform_id platformId,
-                         base::OCLOperationConfiguration &configuration,
+  void configurePlatform(cl_platform_id platformId, base::OCLOperationConfiguration &configuration,
                          bool useConfiguration);
 
   void configureDevice(cl_device_id deviceId, json::Node &devicesNode,
                        std::vector<cl_device_id> &filteredDeviceIds,
                        std::vector<std::string> &filteredDeviceNames,
-                       std::map<std::string, size_t> &countLimitMap,
-                       bool useConfiguration);
+                       std::map<std::string, size_t> &countLimitMap, bool useConfiguration);
 
   std::shared_ptr<base::OCLOperationConfiguration> getConfiguration();
 

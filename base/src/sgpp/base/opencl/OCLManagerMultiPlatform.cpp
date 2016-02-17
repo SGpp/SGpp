@@ -158,6 +158,7 @@ void OCLManagerMultiPlatform::buildKernel(
 
 cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
                                                std::shared_ptr<OCLDevice> device,
+                                               json::Node &kernelConfiguration,
                                                const std::string &kernelName) {
   cl_int err;
 
@@ -172,14 +173,12 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   }
 
   std::string build_opts;
-
-  // TODO(pfandedd): add kernel specific parameters
-  if (!(*parameters).contains("ENABLE_OPTIMIZATIONS") ||
-      (*parameters)["ENABLE_OPTIMIZATIONS"].getBool()) {
+  if (!kernelConfiguration.contains("ENABLE_OPTIMIZATIONS") ||
+      kernelConfiguration["ENABLE_OPTIMIZATIONS"].getBool()) {
     // TODO(pfandedd): user should be able to change
     std::string optimizationFlags = "";
-    if ((*parameters).contains("OPTIMIZATION_FLAGS")) {
-      optimizationFlags = (*parameters)["OPTIMIZATION_FLAGS"].get();
+    if (kernelConfiguration.contains("OPTIMIZATION_FLAGS")) {
+      optimizationFlags = kernelConfiguration["OPTIMIZATION_FLAGS"].get();
     }
     build_opts = optimizationFlags;  // -O5  -cl-mad-enable -cl-denorms-are-zero
     // -cl-no-signed-zeros -cl-unsafe-math-optimizations

@@ -143,6 +143,7 @@ class StreamingModOCLFastMultiPlatformKernelImpl {
 
     if (!multKernelsBuilt) {
       std::string program_src = kernelSourceBuilder.generateSourceMult();
+      // TODO(pfandedd): change after kernelConfiguration is adopted
       manager->buildKernel(program_src, "multOCL", kernelsMult);
       multKernelsBuilt = true;
     }
