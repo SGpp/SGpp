@@ -273,7 +273,7 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
     operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
     operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
+    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP;
   } else {
     throw;
   }

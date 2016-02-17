@@ -46,12 +46,8 @@
 #endif
 
 #ifdef USE_OCL
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCL/StreamingOCLOperatorFactory.hpp>
 #include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCL/StreamingModOCLOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLMask/StreamingModOCLMaskOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLFast/StreamingModOCLFastOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/StreamingModOCLFastMultiPlatformOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalAdaptiveOCL/AdaptiveOCLOperatorFactory.hpp"
 #include "operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp"
@@ -235,16 +231,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with AVX1/2/512");
 #endif
-      } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
-#ifdef USE_OCL
-        return datadriven::createStreamingOCLConfigured(grid, dataset, configuration);
-#else
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled with OpenCL support");
-#endif
-      } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::OCLMP) {
+      }
+      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLMP) {
 #ifdef USE_OCL
         return datadriven::createStreamingOCLMultiPlatformConfigured(grid, dataset, configuration);
 #else
@@ -304,23 +292,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with AVX");
 #endif
-      } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
-#ifdef USE_OCL
-        return datadriven::createStreamingModOCLConfigured(grid, dataset, configuration);
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled with OpenCL support");
-#endif
-      } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::OCLFAST) {
-#ifdef USE_OCL
-        return datadriven::createStreamingModOCLFastConfigured(grid, dataset, configuration);
-#else
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled with OpenCL support");
-#endif
-      } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM) {
+      }
+      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP) {
 #ifdef USE_OCL
         return datadriven::createStreamingModOCLFastMultiPlatformConfigured(grid, dataset,
                                                                             configuration);
@@ -329,9 +302,10 @@ base::OperationMultipleEval* createOperationMultipleEval(
             "Error creating function: the library wasn't compiled with OpenCL support");
 #endif
       } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK) {
+                 SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP) {
 #ifdef USE_OCL
-        return datadriven::createStreamingModOCLMaskConfigured(grid, dataset, configuration);
+        return datadriven::createStreamingModOCLMaskMultiPlatformConfigured(grid, dataset,
+                                                                            configuration);
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with OpenCL support");

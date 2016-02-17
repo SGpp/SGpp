@@ -90,7 +90,7 @@ class KernelMult {
     }
 
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+    dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
     totalBlockSize = dataBlockingSize * localSize;
   }

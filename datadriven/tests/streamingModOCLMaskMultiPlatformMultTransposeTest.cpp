@@ -25,63 +25,64 @@
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/base/tools/ConfigurationParameters.hpp"
 
-BOOST_AUTO_TEST_SUITE(TestStreamingOCLMultiPlatformMultTranspose)
+using SGPP::datadriven::OperationMultipleEvalConfiguration;
+using SGPP::datadriven::OperationMultipleEvalType;
+using SGPP::datadriven::OperationMultipleEvalSubType;
+
+BOOST_AUTO_TEST_SUITE(TestStreamingModOCLMaskMultiPlatformMultTranspose)
 
 BOOST_AUTO_TEST_CASE(Simple) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-17)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-12),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-12)};
 
   uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  (*parameters)["INTERNAL_PRECISION"].set("double");
 
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
+    // TODO(pfandedd): add setup of blocking for all tests
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
 }
 
-BOOST_AUTO_TEST_CASE(Blocking) {
+BOOST_AUTO_TEST_CASE(Local) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-17)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-12),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-12)};
 
-  uint32_t level = 6;
+  uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  (*parameters)["INTERNAL_PRECISION"].set("double");
 
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
-    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -89,30 +90,27 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
 BOOST_AUTO_TEST_CASE(MultiDevice) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-13),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-17)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-12),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-12)};
 
-  uint32_t level = 6;
+  uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  (*parameters)["INTERNAL_PRECISION"].set("double");
 
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -120,30 +118,27 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
 BOOST_AUTO_TEST_CASE(MultiPlatform) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-13),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-17)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-12),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-12)};
 
-  uint32_t level = 6;
+  uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  (*parameters)["INTERNAL_PRECISION"].set("double");
 
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "register");
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -151,10 +146,10 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
 BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+4),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 20.0)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
 
-  uint32_t level = 6;
+  uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
@@ -162,32 +157,27 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
-
   for (json::Node &deviceNode : deviceNodes) {
-    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
-    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
 }
 
-BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
+BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+4),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 20.0)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
 
-  uint32_t level = 6;
+  uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
@@ -195,21 +185,16 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
-
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 4ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 4ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -217,10 +202,10 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+4),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 20.0)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
 
-  uint32_t level = 6;
+  uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
@@ -228,21 +213,16 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
-
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -250,10 +230,10 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
 BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
   std::vector<std::tuple<std::string, double>> fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+4),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 20.0)};
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E+7),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E+6)};
 
-  uint32_t level = 6;
+  uint32_t level = 5;
 
   std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
@@ -261,21 +241,16 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
-
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
-    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
-    deviceNode.replaceIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
-    deviceNode.replaceTextAttr("KERNEL_STORE_DATA", "array");
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::Linear,
+    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear,
                                              std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
