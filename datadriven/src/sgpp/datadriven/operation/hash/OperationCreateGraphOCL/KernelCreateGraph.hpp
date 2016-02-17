@@ -98,6 +98,14 @@ public:
 		{
 			std::cout << "entering graph, device: " << device->deviceName << " (" << device->deviceId << ")"
 					  << std::endl;
+			std::cout << "k: " << k << " Dims:" << dims
+					  << std::endl;
+		}
+		if(data.size() * k / dims != result.size())
+		{
+			std::stringstream errorString;
+			errorString << "Argument Error: Array sizes of graph and result do not match!" << std::endl;
+			throw base::operation_exception(errorString.str());
 		}
 
 		//Build kernel if not already done
@@ -117,15 +125,15 @@ public:
 		if (!deviceData.isInitialized())
 		{
 			deviceData.intializeTo(data, 1, 0, data.size());
-			std::vector<int> zeros(data.size()*k);
-			for (size_t i = 0; i < data.size()*k; i++) {
+			std::vector<int> zeros(data.size()*k/dims);
+			for (size_t i = 0; i < data.size()*k/dims; i++) {
 				zeros[i] = 0.0;
 			}
-			deviceResultData.intializeTo(zeros, 1, 0, data.size()*k);
+			deviceResultData.intializeTo(zeros, 1, 0, data.size()*k/dims);
 			clFinish(device->commandQueue);
 		}
 		this->deviceTimingMult = 0.0;
-		size_t datasize=data.size()*k;
+		size_t datasize=data.size();
 
 		//Set kernel arguments
 		err = clSetKernelArg(this->kernel, 0, sizeof(cl_mem), this->deviceData.getBuffer());
@@ -165,7 +173,7 @@ public:
 		if(verbose)
 			std::cout<<"Starting the kernel"<<std::endl;
 		size_t *globalworkrange=new size_t[1];
-		globalworkrange[0]=data.size();
+		globalworkrange[0]=data.size()/dims;
 		err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
 									 NULL, 0, nullptr, &clTiming);
 		if (err != CL_SUCCESS) {
@@ -181,7 +189,7 @@ public:
 		clFinish(device->commandQueue);
 
 		std::vector<int> &hostTemp = deviceResultData.getHostPointer();
-		for(size_t i=0; i<data.size()*k; i++)
+		for(size_t i=0; i<data.size()*k/dims; i++)
 		{
 			result[i]=hostTemp[i];
 		}
