@@ -150,7 +150,7 @@ public:
 					<<"				for (unsigned int j = 0; j < dimensions; j++) {"<<std::endl
 					<<"				   currentdist += (data[global_index*dimensions + j] - data[j + currentneighbor*dimensions])"<<std::endl
 					<<"								* (data[j + global_index*dimensions] - data[j + currentneighbor*dimensions]);"<<std::endl
-					<<"				"<<std::endl
+					<<"				}"<<std::endl
 					<<"				if(max<currentdist)"<<std::endl
 					<<"				{"<<std::endl
 					<<"				   max=currentdist;"<<std::endl
@@ -163,7 +163,6 @@ public:
 					<<"			 }"<<std::endl
 					<<"		  }"<<std::endl
 					<<"	   }"<<std::endl
-					<<"	}"<<std::endl
 					<<"	}"<<std::endl
 					<<"	}"<<std::endl;
 		if(kernelConfiguration.contains("WRITE_SOURCE")) {

@@ -19,8 +19,8 @@ SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* createNear
 	manager = std::make_shared<base::OCLManagerMultiPlatform>(true);
 	parameters->serialize("MyOCLConfDebug.cfg");
 	if(parameters->contains("INTERNAL_PRECISION")==false) {
-		std::cout<<"Warning! No internal precision setting detected. Using single precision from now on!"<<std::endl;
-		parameters->addIDAttr("INTERNAL_PRECISION", "float");
+		std::cout<<"Warning! No internal precision setting detected. Using double precision from now on!"<<std::endl;
+		parameters->addIDAttr("INTERNAL_PRECISION", "double");
 	}
 	if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
         SGPP::datadriven::DensityOCLMultiPlatform::KernelCreateGraph<float>::augmentDefaultParameters(*parameters);
