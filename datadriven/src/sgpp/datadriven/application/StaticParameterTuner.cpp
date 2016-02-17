@@ -21,12 +21,9 @@
 namespace SGPP {
 namespace datadriven {
 
-StaticParameterTuner::StaticParameterTuner(
-    SGPP::base::OCLOperationConfiguration &fixedParameters,
-    bool collectStatistics, bool verbose)
-    : collectStatistics(collectStatistics),
-      verbose(verbose),
-      fixedParameters(fixedParameters) {}
+StaticParameterTuner::StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
+                                           bool collectStatistics, bool verbose)
+    : collectStatistics(collectStatistics), verbose(verbose), fixedParameters(fixedParameters) {}
 
 // // write a file with detailed stats for the optimization
 // StaticParameterTuner::StaticParameterTuner(const std::string &tunerFileName,
@@ -46,16 +43,14 @@ StaticParameterTuner::StaticParameterTuner(
 //    }
 //}
 
-void StaticParameterTuner::addParameter(
-    const std::string &name, const std::vector<std::string> &valueRange) {
+void StaticParameterTuner::addParameter(const std::string &name,
+                                        const std::vector<std::string> &valueRange) {
   this->tunableParameters.push_back(TunableParameter(name, valueRange));
 }
 
 SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
-    SGPP::datadriven::LearnerScenario &scenario,
-    const std::string &kernelName) {
-  std::vector<std::string> platformsCopy =
-      this->fixedParameters["PLATFORMS"].keys();
+    SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName) {
+  std::vector<std::string> platformsCopy = this->fixedParameters["PLATFORMS"].keys();
   for (const std::string &platformName : platformsCopy) {
     json::Node &platformNode = this->fixedParameters["PLATFORMS"][platformName];
     std::vector<std::string> devicesCopy = platformNode["DEVICES"].keys();
@@ -68,13 +63,18 @@ SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         continue;
       }
       otherPlatformsName.push_back(otherPlatformName);
-      auto otherPlatformNode =
-          this->fixedParameters["PLATFORMS"][otherPlatformName].erase();
+      auto otherPlatformNode = this->fixedParameters["PLATFORMS"][otherPlatformName].erase();
       otherPlatforms.push_back(std::move(otherPlatformNode));
     }
 
     for (const std::string &deviceName : devicesCopy) {
       json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+
+      if (deviceNode.contains("COUNT")) {
+        if (deviceNode["COUNT"].getUInt() == 0) {
+          continue;
+        }
+      }
 
       std::cout << "tuning for device: " << deviceName << std::endl;
 
@@ -125,15 +125,12 @@ SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
 
       if (collectStatistics) {
         std::string safePlatformName = platformName;
-        std::replace(safePlatformName.begin(), safePlatformName.end(), ' ',
-                     '_');
+        std::replace(safePlatformName.begin(), safePlatformName.end(), ' ', '_');
         std::string safeDeviceName = deviceName;
         std::replace(safeDeviceName.begin(), safeDeviceName.end(), ' ', '_');
-        std::string statisticsFileName = "statistics_" + safePlatformName +
-                                         "_" + safeDeviceName + "_" +
-                                         kernelName + ".csv";
-        this->writeStatisticsToFile(statisticsFileName, platformName,
-                                    deviceName, kernelName);
+        std::string statisticsFileName =
+            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" + kernelName + ".csv";
+        this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
       }
 
       if (addedDeviceLimit) {
@@ -144,15 +141,14 @@ SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
 
       // add the removed devices again for the next iteration
       for (size_t i = 0; i < otherDevices.size(); i++) {
-        platformNode["DEVICES"].addAttribute(otherDevicesName[i],
-                                             std::move(otherDevices[i]));
+        platformNode["DEVICES"].addAttribute(otherDevicesName[i], std::move(otherDevices[i]));
       }
     }
 
     // add the removed platforms again for the next iteration
     for (size_t i = 0; i < otherPlatforms.size(); i++) {
-      this->fixedParameters["PLATFORMS"].addAttribute(
-          otherPlatformsName[i], std::move(otherPlatforms[i]));
+      this->fixedParameters["PLATFORMS"].addAttribute(otherPlatformsName[i],
+                                                      std::move(otherPlatforms[i]));
     }
   }
 
@@ -162,10 +158,10 @@ SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
   return this->fixedParameters;
 }
 
-void StaticParameterTuner::tuneParameters(
-    SGPP::datadriven::LearnerScenario &scenario,
-    const std::string &platformName, const std::string &deviceName,
-    const std::string &kernelName) {
+void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &scenario,
+                                          const std::string &platformName,
+                                          const std::string &deviceName,
+                                          const std::string &kernelName) {
   if (collectStatistics) {
     this->statistics.clear();
   }
@@ -177,21 +173,19 @@ void StaticParameterTuner::tuneParameters(
     if (platformName.compare(platformKey) != 0) {
       throw;
     }
-    for (std::string &deviceKey :
-         fixedParameters["PLATFORMS"][platformKey]["DEVICES"].keys()) {
+    for (std::string &deviceKey : fixedParameters["PLATFORMS"][platformKey]["DEVICES"].keys()) {
       if (deviceName.compare(deviceKey) != 0) {
         throw;
       }
-      if (!fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]
-                          ["KERNELS"]
-                              .contains(kernelName)) {
+      if (!fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"].contains(
+              kernelName)) {
         throw;
       }
     }
   }
 
-  json::Node &kernelNode = fixedParameters["PLATFORMS"][platformName]["DEVICES"]
-                                          [deviceName]["KERNELS"][kernelName];
+  json::Node &kernelNode =
+      fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
 
   // create initial parameter combination
   std::vector<size_t> valueIndices(tunableParameters.size());
@@ -203,16 +197,13 @@ void StaticParameterTuner::tuneParameters(
 
   std::cout << "-----------------------------------" << std::endl;
   for (std::string &key : kernelNode.keys()) {
-    std::cout << "key: " << key << " value: " << kernelNode[key].get()
-              << std::endl;
+    std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
   }
 
   // evaluate initial parameter combination
-  double shortestDuration =
-      evaluateSetup(scenario, fixedParameters, kernelName);
+  double shortestDuration = evaluateSetup(scenario, fixedParameters, kernelName);
   if (collectStatistics) {
-    this->statistics.push_back(
-        std::make_pair(fixedParameters, shortestDuration));
+    this->statistics.push_back(std::make_pair(fixedParameters, shortestDuration));
   }
 
   std::unique_ptr<json::Node> bestParameters(kernelNode.clone());
@@ -224,28 +215,25 @@ void StaticParameterTuner::tuneParameters(
     TunableParameter &parameter = tunableParameters[parameterIndex];
     if (valueIndices[parameterIndex] + 1 < parameter.getValues().size()) {
       valueIndices[parameterIndex] += 1;
-      kernelNode[parameter.getName()].set(
-          parameter.getValues()[valueIndices[parameterIndex]]);
+      kernelNode[parameter.getName()].set(parameter.getValues()[valueIndices[parameterIndex]]);
       // reset lower indices
       for (size_t i = 0; i < parameterIndex; i++) {
         valueIndices[i] = 0;
         TunableParameter &parameterForReset = tunableParameters[i];
-        kernelNode[parameterForReset.getName()].set(
-            parameterForReset.getValues()[0]);
+        kernelNode[parameterForReset.getName()].set(parameterForReset.getValues()[0]);
       }
       parameterIndex = 0;
 
       std::cout << "-----------------------------------" << std::endl;
       for (std::string &key : kernelNode.keys()) {
-        std::cout << "key: " << key << " value: " << kernelNode[key].get()
-                  << std::endl;
+        std::cout << "key: " << key << " value: " << kernelNode[key].get() << std::endl;
       }
 
       // evaluate current parameter combination
       double duration = evaluateSetup(scenario, fixedParameters, kernelName);
       if (duration < shortestDuration) {
-        std::cout << "new best combination! old: " << shortestDuration
-                  << " new: " << duration << std::endl;
+        std::cout << "new best combination! old: " << shortestDuration << " new: " << duration
+                  << std::endl;
         shortestDuration = duration;
         bestParameters = std::unique_ptr<json::Node>(kernelNode.clone());
         std::cout << *bestParameters << std::endl;
@@ -264,19 +252,17 @@ void StaticParameterTuner::tuneParameters(
   kernelNode = *bestParameters;
 
   std::cout << "written parameters:" << std::endl;
-  std::cout << this->fixedParameters["PLATFORMS"][platformName]["DEVICES"]
-                                    [deviceName]["KERNELS"][kernelName]
-            << std::endl;
+  std::cout << this->fixedParameters["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"]
+                                    [kernelName] << std::endl;
 }
 
-double StaticParameterTuner::evaluateSetup(
-    SGPP::datadriven::LearnerScenario &scenario,
-    SGPP::base::OCLOperationConfiguration &currentParameters,
-    const std::string &kernelName) {
+double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
+                                           SGPP::base::OCLOperationConfiguration &currentParameters,
+                                           const std::string &kernelName) {
   SGPP::datadriven::MetaLearner learner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
-      scenario.getSolverConfigurationFinal(),
-      scenario.getAdaptivityConfiguration(), scenario.getLambda(), verbose);
+      scenario.getSolverConfigurationFinal(), scenario.getAdaptivityConfiguration(),
+      scenario.getLambda(), verbose);
 
   SGPP::datadriven::OperationMultipleEvalType operationType;
   SGPP::datadriven::OperationMultipleEvalSubType operationSubType;
@@ -287,8 +273,7 @@ double StaticParameterTuner::evaluateSetup(
     operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
     operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    operationSubType =
-        SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
+    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM;
   } else {
     throw;
   }
@@ -429,9 +414,10 @@ double StaticParameterTuner::evaluateSetup(
  file.close();
  }*/
 
-void StaticParameterTuner::writeStatisticsToFile(
-    const std::string &statisticsFileName, const std::string &platformName,
-    const std::string &deviceName, const std::string &kernelName) {
+void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFileName,
+                                                 const std::string &platformName,
+                                                 const std::string &deviceName,
+                                                 const std::string &kernelName) {
   if (!collectStatistics) {
     throw;
   }
@@ -453,10 +439,9 @@ void StaticParameterTuner::writeStatisticsToFile(
   file << "duration" << std::endl;
 
   for (auto &parameterDurationPair : this->statistics) {
-    SGPP::base::OCLOperationConfiguration &parameter =
-        parameterDurationPair.first;
-    json::Node &kernelNode = parameter["PLATFORMS"][platformName]["DEVICES"]
-                                      [deviceName]["KERNELS"][kernelName];
+    SGPP::base::OCLOperationConfiguration &parameter = parameterDurationPair.first;
+    json::Node &kernelNode =
+        parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
     double duration = parameterDurationPair.second;
 
     first = true;
