@@ -85,7 +85,6 @@
 // 1/sqrt(2 pi)
 #undef M_1_SQRT2PI
 #define M_1_SQRT2PI 0.398942280401432702863218082712
-#endif
 
 namespace SGPP {
 
