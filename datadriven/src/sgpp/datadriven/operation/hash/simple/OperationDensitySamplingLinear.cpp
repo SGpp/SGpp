@@ -61,8 +61,8 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 #pragma omp critical
       {
 #ifdef _WIN32
-        float_t a = static_cast<float_t>(rand_r()) / RAND_MAX;
-        int64_t b = static_cast<int64_t>(rand_r());
+        float_t a = static_cast<float_t>(rand()) / RAND_MAX;
+        int64_t b = static_cast<int64_t>(rand());
 #else
         float_t a = static_cast<float_t>(rand_r(&tseedp)) / RAND_MAX;
         int64_t b = static_cast<int64_t>(rand_r(&tseedp));
@@ -129,8 +129,8 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 #pragma omp critical
     {
 #ifdef _WIN32
-      float_t a = static_cast<float_t>(rand_r()) / RAND_MAX;
-      int64_t b = static_cast<int64_t>(rand_r());
+      float_t a = static_cast<float_t>(rand()) / RAND_MAX;
+      int64_t b = static_cast<int64_t>(rand());
 #else
       float_t a = static_cast<float_t>(rand_r(&tseedp)) / RAND_MAX;
       int64_t b = static_cast<int64_t>(rand_r(&tseedp));
