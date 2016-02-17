@@ -7,7 +7,6 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/Configuration.hpp>
 #include <iostream>
@@ -16,6 +15,7 @@
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelMult.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 
 using namespace SGPP::base;
 int main()
@@ -40,7 +40,7 @@ int main()
 	size_t gridsize = grid->getStorage()->size();
 	std::cerr<<"Grid created! Number of grid points:	 "<<gridsize<<std::endl;
 	//Load dataset
-	filename="/home/g/SGppClusteringXeonPhi/datadriven/examples/datasets/dataset1_dim2.txt";
+	filename="simple_test.txt";
 	std::ifstream teststream(filename.c_str(),std::ifstream::in);
 	char zeile[256];
 	teststream.getline(zeile,256);
@@ -79,32 +79,43 @@ int main()
 		result[i] = 0.0;
 	}
 
+	sg::solver::ConjugateGradients *solver=new sg::solver::ConjugateGradients(17,0.0001);
 	std::cout<<"Testing multiplication"<<std::endl;
-	SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* operation_mult=SGPP::datadriven::createDensityOCLMultiPlatformConfigured(*grid,"MyOCLConf.cfg");
-	operation_mult->mult(alpha,result);
-	for(size_t i=0;i<gridsize;i++)
-		std::cout<<result[i]<<" ";
+	SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* operation_mult=SGPP::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda, "MyOCLConf.cfg");
 
-	std::cout<<"Testing rhs"<<std::endl;
+	std::cout<<"Creating rhs"<<std::endl;
 	SGPP::base::DataVector b(gridsize);
 	SGPP::base::DataVector dataset(buffer_data.size());
 	for(size_t i=0; i < buffer_data.size();i++)
 		dataset[i]=buffer_data[i];
 	b.setAll(0.0);
 	operation_mult->generateb(dataset,b);
+	for(size_t i=0;i<300;i++)
+		std::cout<<b[i]<<" ";
+	std::cout<<std::endl;
 
-	std::cout<<"Testing graph creation"<<std::endl;
-	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* operation_graph=SGPP::datadriven::createNearestNeighborGraphConfigured(dimension, k, "MyOCLConf.cfg");
-	std::vector<int> graph(counter*k);
+	std::cout<<"Creating alpha"<<std::endl;
+	alpha.setAll(1.0);
+	for(unsigned int i=0;i<gridsize;i++)
+		alpha[i]=(rand()%1000)/1000.0;
+	double norm=alpha.l2Norm();
+	alpha.mult(1.0/norm);
+	solver->solve(*operation_mult,alpha,b,false,true);
+
+	std::cout<<"Starting graph creation..."<<std::endl;
+	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* operation_graph=SGPP::datadriven::createNearestNeighborGraphConfigured(k, dimension, "MyOCLConf.cfg");
+	std::vector<int> graph(zeilencounter*k);
 	operation_graph->create_graph(dataset, graph);
-	for(size_t i = 0; i < 10; i++) {
-		for(size_t spalte = 0; spalte < k; spalte ++)
-			std::cout<<graph[i * k + spalte]<<" ";
-		std::cout<<std::endl;
-	}
+
+	std::cout<<"Starting graph pruning"<<std::endl;
+	SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCL* operation_prune=SGPP::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset, treshold, k, "MyOCLConf.cfg");
+	operation_prune->prune_graph(graph);
+
+	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
 
 	//cleanup
 	delete operation_mult;
+	delete solver;
 
 
 }
