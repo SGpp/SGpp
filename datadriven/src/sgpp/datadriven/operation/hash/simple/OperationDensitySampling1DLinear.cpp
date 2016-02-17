@@ -96,7 +96,7 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   for (size_t i = 0; i < num_samples; i++) {
 // drand48_r() is thread_safe
 #ifdef _WIN32
-    y = static_cast<float_t>(rand_r()) / RAND_MAX;
+    y = static_cast<float_t>(rand()) / RAND_MAX;
 #else
     y = static_cast<float_t>(rand_r(seedp)) / RAND_MAX;
 #endif

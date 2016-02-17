@@ -83,7 +83,7 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
         // pick a random data point "p"
         for (size_t d = 0; d < num_dims; d++)
 #ifdef _WIN32
-          p[d] = static_cast<float_t>(rand_r()) / RAND_MAX;
+          p[d] = static_cast<float_t>(rand()) / RAND_MAX;
 
 #else
           p[d] = static_cast<float_t>(rand_r(&seedp)) / RAND_MAX;
@@ -94,7 +94,7 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
 
 #ifdef _WIN32
 
-        if ((static_cast<float_t>(rand_r()) / RAND_MAX * maxValue < fhat) &&
+        if ((static_cast<float_t>(rand()) / RAND_MAX * maxValue < fhat) &&
             (fhat > maxValue * 0.01)) {
 #else
 
