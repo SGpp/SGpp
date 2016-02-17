@@ -9,6 +9,7 @@
 
 #include <chrono>
 #include <vector>
+#include <algorithm>
 
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/base/tools/SGppStopwatch.hpp"
@@ -16,7 +17,10 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/base/opencl/OCLManager.hpp"
-#include "StreamingModOCLFastMultiPlatformKernelImpl.hpp"
+#include "sgpp/base/opencl/QueueLoadBalancer.hpp"
+#include "KernelMult.hpp"
+#include "KernelMultTranspose.hpp"
+#include "Configuration.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -25,8 +29,11 @@ template <typename T>
 class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::OperationMultipleEval {
  protected:
   size_t dims;
+
   SGPP::base::DataMatrix preparedDataset;
+
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
+
   std::vector<T> kernelDataset;
   size_t datasetSize = 0;
   /// Member to store the sparse grid's levels for better vectorization
@@ -35,75 +42,92 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
   std::vector<T> index;
 
   size_t gridSize = 0;
+
   /// Timer object to handle time measurements
   SGPP::base::SGppStopwatch myTimer;
 
-  base::GridStorage* storage;
-
   float_t duration;
 
-  std::shared_ptr<base::OCLManagerMultiPlatform> manager;
-  StreamingModOCLFastMultiPlatformKernelImpl<T> kernel;
+  std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMult;
+  std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
 
-  // TODO(pfandedd): improve for per-device configuration
-  json::Node& firstDeviceConfig;
+  std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+  std::vector<std::shared_ptr<base::OCLDevice>> devices;
+
+  std::vector<StreamingModOCLFastMultiPlatform::KernelMult<T>> multKernels;
+  std::vector<StreamingModOCLFastMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
+
+  json::Node& configuration;
+
+  bool verbose;
+
+  size_t commonDatasetPadding;
+  size_t commonGridPadding;
 
  public:
   OperationMultiEvalStreamingModOCLFastMultiPlatform(
       base::Grid& grid, base::DataMatrix& dataset,
       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-      std::shared_ptr<base::OCLOperationConfiguration> parameters, json::Node& firstDeviceConfig)
+      std::shared_ptr<base::OCLOperationConfiguration> parameters)
       : OperationMultipleEval(grid, dataset),
         preparedDataset(dataset),
         parameters(parameters),
-        myTimer(SGPP::base::SGppStopwatch()),
+        myTimer(base::SGppStopwatch()),
         duration(-1.0),
         manager(manager),
-        kernel(dataset.getNcols(), this->manager, parameters, firstDeviceConfig),
-        firstDeviceConfig(firstDeviceConfig) {
-    if (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
-        dataset.getNcols() > firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
-      std::stringstream errorString;
-      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
-                     "\"KERNEL_MAX_DIM_UNROLL\"";
-      errorString << " to be greater than the dimension of the data set" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
-    }
-
+        devices(manager->getDevices()),
+        configuration(configuration) {
     this->dims = dataset.getNcols();  // be aware of transpose!
-    //        this->kernel = std::make_shared<StreamingModOCLFastMultiPlatformKernelImpl<T>>(dims,
-    //        this->manager, parameters);
+    this->verbose = configuration["VERBOSE"].getBool();
 
-    this->storage = grid.getStorage();
-    this->padDataset(this->preparedDataset);
+    this->commonDatasetPadding = calculateCommonDatasetPadding();
+    this->commonGridPadding = calculateCommonGridPadding();
+
+    queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancer>();
+    queueLoadBalancerMultTranspose = std::make_shared<base::QueueLoadBalancer>();
+
+    this->padDataset(this->preparedDataset, datasetSize);
     this->preparedDataset.transpose();
-    this->datasetSize = this->preparedDataset.getNcols();
 
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
     this->kernelDataset =
         std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
-    //        this->kernelDataset = std::unique_ptr<T>(new T[this->preparedDataset.getNrows() *
-    //        this->preparedDataset.getNcols()]);
 
     for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
       this->kernelDataset[i] = (T) this->preparedDataset[i];
     }
 
-    //        create the kernel specific data structures
+    for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
+      json::Node& platformConfiguration =
+          (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
+      json::Node& deviceConfiguration =
+          platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
+      json::Node& kernelConfiguration = deviceConfiguration
+          ["KERNELS"][StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
+
+      multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
+                               queueLoadBalancerMult);
+      multTransposeKernels.emplace_back(devices[deviceIndex], dims, this->manager,
+                                        kernelConfiguration, queueLoadBalancerMultTranspose);
+    }
+
+    // create the kernel specific data structures and initialize gridSize and gridSizeExtra
     this->prepare();
   }
 
   ~OperationMultiEvalStreamingModOCLFastMultiPlatform() {}
 
-  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override {
+  void mult(base::DataVector& alpha, base::DataVector& result) override {
     this->myTimer.start();
 
     size_t gridFrom = 0;
     size_t gridTo = this->gridSize;
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSize;
+
+    queueLoadBalancerMult->initialize(datasetFrom, datasetTo);
 
     std::vector<T> alphaArray(this->gridSize);
 
@@ -115,6 +139,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
       alphaArray[i] = 0.0;
     }
 
+    // additional padding to allow for devices with different block sizes
     std::vector<T> resultArray(this->datasetSize);
 
     for (size_t i = 0; i < this->datasetSize; i++) {
@@ -123,13 +148,25 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->kernel.mult(this->level, this->index, this->gridSize, this->kernelDataset,
-                      this->datasetSize, alphaArray, resultArray, gridFrom, gridTo, datasetFrom,
-                      datasetTo);
+
+    omp_set_num_threads(static_cast<int>(devices.size()));
+
+    for (size_t i = 0; i < devices.size(); i++) {
+      std::cout << devices[i]->deviceName << std::endl;
+    }
+
+#pragma omp parallel
+    {
+      size_t threadId = omp_get_thread_num();
+      this->multKernels[threadId].mult(this->level, this->index, this->gridSize,
+                                       this->kernelDataset, this->datasetSize, alphaArray,
+                                       resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+    }
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    if ((*parameters)["VERBOSE"].getBool()) {
-      std::cout << "duration mult ocl mod fast: " << elapsed_seconds.count() << std::endl;
+
+    if (verbose) {
+      std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
     }
 
     for (size_t i = 0; i < result.getSize(); i++) {
@@ -139,13 +176,17 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     this->duration = this->myTimer.stop();
   }
 
-  void multTranspose(SGPP::base::DataVector& source, SGPP::base::DataVector& result) override {
+  void multTranspose(base::DataVector& source, base::DataVector& result) override {
+    this->prepare();
+
     this->myTimer.start();
 
     size_t gridFrom = 0;
     size_t gridTo = this->gridSize;
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSize;
+
+    queueLoadBalancerMultTranspose->initialize(gridFrom, gridTo);
 
     std::vector<T> sourceArray(this->datasetSize);
 
@@ -159,20 +200,25 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
 
     std::vector<T> resultArray(this->gridSize);
 
-    for (size_t i = 0; i < this->gridSize; i++) {
-      resultArray[i] = 0.0;
-    }
+    std::fill(resultArray.begin(), resultArray.end(), 0.0);
 
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
-    this->kernel.multTranspose(this->level, this->index, this->gridSize, this->kernelDataset,
-                               this->preparedDataset.getNcols(), sourceArray, resultArray, gridFrom,
-                               gridTo, datasetFrom, datasetTo);
+
+    omp_set_num_threads(static_cast<int>(devices.size()));
+
+#pragma omp parallel
+    {
+      size_t threadId = omp_get_thread_num();
+
+      this->multTransposeKernels[threadId].multTranspose(
+          this->level, this->index, this->kernelDataset, sourceArray, resultArray, gridFrom, gridTo,
+          datasetFrom, datasetTo);
+    }
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-
-    if ((*parameters)["VERBOSE"].getBool()) {
-      std::cout << "duration multTranspose ocl mod fast: " << elapsed_seconds.count() << std::endl;
+    if (verbose) {
+      std::cout << "duration multTranspose ocl: " << elapsed_seconds.count() << std::endl;
     }
 
     for (size_t i = 0; i < result.getSize(); i++) {
@@ -182,91 +228,108 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     this->duration = this->myTimer.stop();
   }
 
-  float_t getDuration() { return this->duration; }
+  float_t getDuration() override { return this->duration; }
 
   void prepare() override {
-    this->recalculateLevelAndIndex();
+    this->recalculateLevelAndIndex(gridSize);
 
-    this->kernel.resetKernel();
-
-    //    std::cout << "gridSize: " << this->gridSize << std::endl;
+    for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
+      this->multKernels[deviceIndex].resetKernel();
+      this->multTransposeKernels[deviceIndex].resetKernel();
+    }
   }
 
  private:
-  size_t padDataset(SGPP::base::DataMatrix& dataset) {
-    // TODO(pfandedd): padding has to be least common multiple of "LOCAL_SIZE" and
-    // "KERNEL_DATA_BLOCK_SIZE"
-    // and "KERNEL_TRANS_DATA_BLOCK_SIZE"
-    // TODO(pfandedd): choose max from DATA_BLOCK_SIZE and TRANS_DATA_BLOCK_SIZE
-    size_t vecWidth = firstDeviceConfig["LOCAL_SIZE"].getUInt() *
-                      firstDeviceConfig["KERNEL_DATA_BLOCK_SIZE"].getUInt();
+  void padDataset(base::DataMatrix& dataset, size_t& datasetSize) {
+    // Assure that data has a even number of instances -> padding might be
+    // needed
+    size_t remainder = dataset.getNrows() % commonDatasetPadding;
+    size_t padding = commonDatasetPadding - remainder;
 
-    // Assure that data has a even number of instances -> padding might be needed
-    size_t remainder = dataset.getNrows() % vecWidth;
-    size_t loopCount = vecWidth - remainder;
+    datasetSize = dataset.getNrows() + padding;
 
-    if (loopCount != vecWidth) {
-      SGPP::base::DataVector lastRow(dataset.getNcols());
+    if (padding != commonDatasetPadding) {
+      base::DataVector lastRow(dataset.getNcols());
       size_t oldSize = dataset.getNrows();
       dataset.getRow(dataset.getNrows() - 1, lastRow);
-      dataset.resize(dataset.getNrows() + loopCount);
+      dataset.resize(dataset.getNrows() + padding);
 
-      for (size_t i = 0; i < loopCount; i++) {
+      for (size_t i = 0; i < padding; i++) {
         dataset.setRow(oldSize + i, lastRow);
       }
     }
-
-    return dataset.getNrows();
   }
 
-  void recalculateLevelAndIndex() {
-    //        if (this->level != nullptr)
-    //            delete this->level;
-    //
-    //        if (this->index != nullptr)
-    //            delete this->index;
+  void recalculateLevelAndIndex(size_t& gridSize) {
+    base::GridStorage* storage = grid.getStorage();
 
-    // TODO(pfandedd): padding has to be least common multiple of "LOCAL_SIZE" and
-    // "KERNEL_TRANS_GRID_BLOCK_SIZE"
-    uint32_t localWorkSize =
-        static_cast<uint32_t>(firstDeviceConfig["LOCAL_SIZE"].getUInt()) *
-        static_cast<uint32_t>(firstDeviceConfig["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt());
-
-    size_t remainder = this->storage->size() % localWorkSize;
+    size_t remainder = storage->size() % commonGridPadding;
     size_t padding = 0;
 
     if (remainder != 0) {
-      padding = localWorkSize - remainder;
+      padding = commonGridPadding - remainder;
     }
 
-    this->gridSize = this->storage->size() + padding;
+    gridSize = storage->size() + padding;
 
-    // TODO(pfandedd): change to vector
-    SGPP::base::DataMatrix* levelMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
-    SGPP::base::DataMatrix* indexMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
+    level = std::vector<T>(gridSize * dims);
+    index = std::vector<T>(gridSize * dims);
 
-    this->storage->getLevelIndexArraysForEval(*levelMatrix, *indexMatrix);
+    base::HashGridIndex::level_type curLevel;
+    base::HashGridIndex::index_type curIndex;
 
-    for (size_t i = this->storage->size(); i < this->gridSize; i++) {
-      for (size_t j = 0; j < this->storage->dim(); j++) {
-        levelMatrix->set(i, j, 1.0);
-        indexMatrix->set(i, j, 1.0);
+    /// pointer to index_type
+    base::HashGridStorage::index_pointer gridPoint;
+
+    for (size_t i = 0; i < storage->size(); i++) {
+      gridPoint = storage->get(i);
+      for (size_t dim = 0; dim < dims; dim++) {
+        gridPoint->get(dim, curLevel, curIndex);
+        level[i * dims + dim] = static_cast<T>(1 << curLevel);
+        index[i * dims + dim] = static_cast<T>(curIndex);
       }
     }
 
-    this->level = std::vector<T>(this->gridSize * this->dims);
-    this->index = std::vector<T>(this->gridSize * this->dims);
-
-    //        this->level = new T[this->gridSize * this->dims];
-    //        this->index = new T[this->gridSize * this->dims];
-
-    for (size_t i = 0; i < this->gridSize * this->dims; i++) {
-      this->level[i] = (T)(*levelMatrix)[i];
-      this->index[i] = (T)(*indexMatrix)[i];
+    for (size_t i = storage->size(); i < this->gridSize; i++) {
+      for (size_t dim = 0; dim < storage->dim(); dim++) {
+        level[i * dims + dim] = 1.0;
+        index[i * dims + dim] = 1.0;
+      }
     }
+  }
 
-    delete levelMatrix;
-    delete indexMatrix;
+  size_t calculateCommonDatasetPadding() {
+    size_t commonPaddingRequiredment = 1;
+    for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
+      json::Node& platformConfiguration =
+          (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
+      json::Node& deviceConfiguration =
+          platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
+      json::Node& kernelConfiguration = deviceConfiguration
+          ["KERNELS"][StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
+
+      commonPaddingRequiredment = std::max(commonPaddingRequiredment,
+                                           kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt() *
+                                               kernelConfiguration["LOCAL_SIZE"].getUInt());
+    }
+    return commonPaddingRequiredment;
+  }
+
+  size_t calculateCommonGridPadding() {
+    size_t commonPaddingRequiredment = 1;
+    for (size_t deviceIndex = 0; deviceIndex < devices.size(); deviceIndex++) {
+      json::Node& platformConfiguration =
+          (*parameters)["PLATFORMS"][devices[deviceIndex]->platformName];
+      json::Node& deviceConfiguration =
+          platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
+      json::Node& kernelConfiguration = deviceConfiguration
+          ["KERNELS"][StreamingModOCLFastMultiPlatform::Configuration::getKernelName()];
+
+      commonPaddingRequiredment = std::max(
+          commonPaddingRequiredment, kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt() *
+                                         kernelConfiguration["LOCAL_SIZE"].getUInt());
+    }
+    return commonPaddingRequiredment;
   }
 };
 }  // namespace datadriven

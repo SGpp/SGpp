@@ -8,13 +8,15 @@
 #include <string>
 
 #include "sgpp/globaldef.hpp"
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 namespace SGPP {
 namespace datadriven {
+namespace StreamingModOCLFastMultiPlatform {
 
-class StreamingModOCLFastMultiPlatformConfiguration {
+class Configuration {
  private:
-  StreamingModOCLFastMultiPlatformConfiguration() = default;
+  Configuration() = default;
 
  public:
   static const std::string &getKernelName() {
@@ -29,7 +31,7 @@ class StreamingModOCLFastMultiPlatformConfiguration {
         json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
         const std::string &kernelName =
-            SGPP::datadriven::StreamingModOCLFastMultiPlatformConfiguration::getKernelName();
+            StreamingModOCLFastMultiPlatform::Configuration::getKernelName();
 
         json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
                                      ? deviceNode["KERNELS"][kernelName]
@@ -88,5 +90,6 @@ class StreamingModOCLFastMultiPlatformConfiguration {
     }
   }
 };
+}  // namespace StreamingModOCLFastMultiPlatform
 }  // namespace datadriven
 }  // namespace SGPP

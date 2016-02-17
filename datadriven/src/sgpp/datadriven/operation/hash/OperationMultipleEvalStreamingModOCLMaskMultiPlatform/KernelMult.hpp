@@ -120,7 +120,8 @@ class KernelMult {
 
     if (this->kernelMult == nullptr) {
       std::string program_src = kernelSourceBuilder.generateSource();
-      this->kernelMult = manager->buildKernel(program_src, device, "multOCLMask");
+      this->kernelMult =
+          manager->buildKernel(program_src, device, kernelConfiguration, "multOCLMask");
     }
 
     if (!deviceLevel.isInitialized()) {
@@ -137,13 +138,7 @@ class KernelMult {
       size_t kernelStartGrid = start_index_grid;
       size_t kernelEndGrid = end_index_grid;
 
-      // TODO(pfandedd): change after blocking is implemented
-      // TODO(pfandedd): don't forget to set padding to DATA_BLOCKING *
-      // THREAD_BLOCK_SIZE
-      //            size_t dataBlockingSize = 1;
-
-      // TODO(pfandedd): start_index_data not considered!
-      //            size_t scheduleSize = 10000;
+      // TODO(pfandedd): implement blocking analog to StreamingOCLMultiPlatform
 
       bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, dataBlockingSize,
                                                                     kernelStartData, kernelEndData);
