@@ -5,16 +5,17 @@
 
 #pragma once
 
-#include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <utility>
+#include <string>
+#include <vector>
 
-#include <sgpp/solver/SLESolver.hpp>
-
-#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
-#include <sgpp/datadriven/tools/TypesDatadriven.hpp>
-
-#include <sgpp/globaldef.hpp>
+#include "sgpp/base/grid/Grid.hpp"
+#include "sgpp/base/datatypes/DataVector.hpp"
+#include "sgpp/base/datatypes/DataMatrix.hpp"
+#include "sgpp/solver/SLESolver.hpp"
+#include "sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
+#include "sgpp/datadriven/tools/TypesDatadriven.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -89,8 +90,7 @@ class LearnerBase {
    *
    * @param GridConfig structure which describes the regular start grid
    */
-  virtual void InitializeGrid(
-      const SGPP::base::RegularGridConfiguration& GridConfig);
+  virtual void InitializeGrid(const SGPP::base::RegularGridConfiguration& GridConfig);
 
   /**
    * abstract method that constructs the corresponding system of linear
@@ -100,8 +100,8 @@ class LearnerBase {
    * @param trainDataset training dataset
    * @param lambda lambda regularization parameter
    */
-  virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(
-      SGPP::base::DataMatrix& trainDataset, float_t lambda) = 0;
+  virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset,
+                                                               float_t lambda) = 0;
 
  public:
   /**
@@ -110,7 +110,7 @@ class LearnerBase {
    * @param isRegression flag for regression
    * @param isVerbose flag for verbose output
    */
-  LearnerBase(const bool isRegression, const bool isVerbose = true);
+  explicit LearnerBase(const bool isRegression, const bool isVerbose = true);
 
   /**
    * Constructor
@@ -120,8 +120,8 @@ class LearnerBase {
    * @param isRegression set to true if a regression task should be executed
    * @param isVerbose set to true in order to allow console output
    */
-  LearnerBase(std::string tGridFilename, std::string tAlphaFilename,
-              const bool isRegression, const bool isVerbose = true);
+  LearnerBase(std::string tGridFilename, std::string tAlphaFilename, const bool isRegression,
+              const bool isVerbose = true);
 
   /**
    * Copy-Constructor
@@ -150,13 +150,12 @@ class LearnerBase {
    * determined in evert refinement step
    * @param lambdaRegularization regularization parameter lambda
    */
-  virtual LearnerTiming train(
-      SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
-      const SGPP::base::RegularGridConfiguration& GridConfig,
-      const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
-      const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-      const SGPP::base::AdpativityConfiguration& AdaptConfig,
-      bool testAccDuringAdapt, const float_t lambdaRegularization);
+  virtual LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
+                              const SGPP::base::RegularGridConfiguration& GridConfig,
+                              const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+                              const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+                              const SGPP::base::AdpativityConfiguration& AdaptConfig,
+                              bool testAccDuringAdapt, const float_t lambdaRegularization);
 
   /**
    * Learning a dataset with regular sparse grids
@@ -167,8 +166,7 @@ class LearnerBase {
    * @param SolverConfig configuration of the SLE solver
    * @param lambdaRegularization regularization parameter lambda
    */
-  LearnerTiming train(SGPP::base::DataMatrix& testDataset,
-                      SGPP::base::DataVector& classes,
+  LearnerTiming train(SGPP::base::DataMatrix& testDataset, SGPP::base::DataVector& classes,
                       const SGPP::base::RegularGridConfiguration& GridConfig,
                       const SGPP::solver::SLESolverConfiguration& SolverConfig,
                       const float_t lambdaRegularization);
@@ -236,8 +234,7 @@ class LearnerBase {
    * @return quality structure containing tp, tn, fp, fn counts
    */
   virtual ClassificatorQuality getCassificatorQuality(
-      SGPP::base::DataMatrix& testDataset,
-      const SGPP::base::DataVector& classesReference,
+      SGPP::base::DataMatrix& testDataset, const SGPP::base::DataVector& classesReference,
       const float_t threshold = 0.0);
 
   /**
@@ -251,8 +248,7 @@ class LearnerBase {
    * @return quality structure containing tp, tn, fp, fn counts
    */
   virtual ClassificatorQuality getCassificatorQuality(
-      const SGPP::base::DataVector& classesComputed,
-      const SGPP::base::DataVector& classesReference,
+      const SGPP::base::DataVector& classesComputed, const SGPP::base::DataVector& classesReference,
       const float_t threshold = 0.0);
 
   /**
@@ -310,5 +306,5 @@ class LearnerBase {
 
   SGPP::base::Grid& getGrid();
 };
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
