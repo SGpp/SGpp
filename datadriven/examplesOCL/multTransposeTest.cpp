@@ -42,8 +42,8 @@ void doAllRefinements(const SGPP::base::AdpativityConfiguration& adaptConfig,
 int main(int argc, char** argv) {
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "debugging.arff";
-  std::string fileName = "friedman_4d.arff";
-  //    std::string fileName = "friedman_10d.arff";
+  //  std::string fileName = "friedman_4d.arff";
+  std::string fileName = "friedman_10d.arff";
   //  std::string fileName = "DR5_train.arff";
   // std::string fileName = "debugging_small.arff";
 
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating result" << std::endl;
 
-  for (size_t i = 0; i < 1; i++) {
+  for (size_t i = 0; i < 10; i++) {
     std::cout << "repeated multTranspose: " << i << std::endl;
     eval->multTranspose(dataSizeVector, alphaResult);
   }

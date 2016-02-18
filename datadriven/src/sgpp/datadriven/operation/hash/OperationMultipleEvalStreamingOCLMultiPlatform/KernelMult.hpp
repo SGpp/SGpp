@@ -53,7 +53,7 @@ class KernelMult {
   bool verbose;
 
   size_t localSize;
-  size_t dataBlockingSize;
+  size_t dataBlockSize;
   size_t scheduleSize;
   size_t totalBlockSize;
 
@@ -100,9 +100,9 @@ class KernelMult {
     }
 
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
+    dataBlockSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
-    totalBlockSize = dataBlockingSize * localSize;
+    totalBlockSize = dataBlockSize * localSize;
   }
 
   ~KernelMult() {
@@ -114,7 +114,7 @@ class KernelMult {
 
   void resetKernel() {
     // leads to a reallocation before next kernel execution
-    releaseGridBuffers();
+    //    releaseGridBuffers();
   }
 
   double mult(std::vector<T> &level, std::vector<T> &index, size_t gridSize,
@@ -164,7 +164,7 @@ class KernelMult {
 
       size_t rangeSize = kernelEndData - kernelStartData;
       size_t rangeSizeAfterBlocking =
-          (kernelEndData / dataBlockingSize) - (kernelStartData / dataBlockingSize);
+          (kernelEndData / dataBlockSize) - (kernelStartData / dataBlockSize);
 
       if (verbose) {
 #pragma omp critical(StreamingOCLMultiPlatformKernelMult)
@@ -333,18 +333,18 @@ class KernelMult {
   }
 
  private:
-  void releaseGridBuffers() {
-    this->deviceLevel.freeBuffer();
-    this->deviceIndex.freeBuffer();
-    this->deviceAlpha.freeBuffer();
-  }
+  //  void releaseGridBuffers() {
+  //    this->deviceLevel.freeBuffer();
+  //    this->deviceIndex.freeBuffer();
+  //    this->deviceAlpha.freeBuffer();
+  //  }
 
-  void releaseDataBuffers() {
-    this->deviceData.freeBuffer();
-    this->deviceResultData.freeBuffer();
-  }
-
-  void releaseDatasetResultBuffer() { this->deviceResultData.freeBuffer(); }
+  //  void releaseDataBuffers() {
+  //    this->deviceData.freeBuffer();
+  //    this->deviceResultData.freeBuffer();
+  //  }
+  //
+  //  void releaseDatasetResultBuffer() { this->deviceResultData.freeBuffer(); }
 
   void initGridBuffers(std::vector<T> &level, std::vector<T> &index, std::vector<T> &alpha,
                        size_t kernelStartGrid, size_t kernelEndGrid) {

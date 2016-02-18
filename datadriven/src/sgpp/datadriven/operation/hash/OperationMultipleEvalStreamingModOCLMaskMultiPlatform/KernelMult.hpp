@@ -59,6 +59,7 @@ class KernelMult {
   size_t localSize;
   size_t dataBlockingSize;
   size_t scheduleSize;
+  size_t totalBlockSize;
 
  public:
   KernelMult(std::shared_ptr<base::OCLDevice> device, size_t dims,
@@ -88,6 +89,7 @@ class KernelMult {
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
+    totalBlockSize = localSize * dataBlockingSize;
   }
 
   ~KernelMult() {
@@ -98,13 +100,9 @@ class KernelMult {
   }
 
   void resetKernel() {
-    // TODO(pfandedd): fix for splittedkernel -> currently won't work for
-    // multiple
-    // iterations
-    // leads to a reallocation before next kernel execution
-    releaseGridBuffers();
-    releaseDataBuffers();
-    releaseDatasetResultBuffer();
+    //    releaseGridBuffers();
+    //    releaseDataBuffers();
+    //    releaseDatasetResultBuffer();
   }
 
   double mult(std::vector<real_type> &level, std::vector<real_type> &index,
@@ -138,9 +136,7 @@ class KernelMult {
       size_t kernelStartGrid = start_index_grid;
       size_t kernelEndGrid = end_index_grid;
 
-      // TODO(pfandedd): implement blocking analog to StreamingOCLMultiPlatform
-
-      bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, dataBlockingSize,
+      bool segmentAvailable = queueLoadBalancerMult->getNextSegment(scheduleSize, totalBlockSize,
                                                                     kernelStartData, kernelEndData);
       if (!segmentAvailable) {
         break;
@@ -324,20 +320,20 @@ class KernelMult {
   }
 
  private:
-  void releaseGridBuffers() {
-    this->deviceLevel.freeBuffer();
-    this->deviceIndex.freeBuffer();
-    this->deviceMask.freeBuffer();
-    this->deviceOffset.freeBuffer();
-    this->deviceAlpha.freeBuffer();
-  }
-
-  void releaseDataBuffers() {
-    this->deviceData.freeBuffer();
-    this->deviceResultData.freeBuffer();
-  }
-
-  void releaseDatasetResultBuffer() { this->deviceResultData.freeBuffer(); }
+  //  void releaseGridBuffers() {
+  //    this->deviceLevel.freeBuffer();
+  //    this->deviceIndex.freeBuffer();
+  //    this->deviceMask.freeBuffer();
+  //    this->deviceOffset.freeBuffer();
+  //    this->deviceAlpha.freeBuffer();
+  //  }
+  //
+  //  void releaseDataBuffers() {
+  //    this->deviceData.freeBuffer();
+  //    this->deviceResultData.freeBuffer();
+  //  }
+  //
+  //  void releaseDatasetResultBuffer() { this->deviceResultData.freeBuffer(); }
 
   void initGridBuffers(std::vector<real_type> &level, std::vector<real_type> &index,
                        std::vector<real_type> &mask, std::vector<real_type> &offset,
