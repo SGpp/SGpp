@@ -29,6 +29,7 @@ private:
 
 	size_t dims;
 	size_t dataSize;
+	size_t gridSize;
 
 	cl_int err;
 
@@ -56,46 +57,45 @@ private:
 public:
 
 	KernelDensityB(std::shared_ptr<base::OCLDevice> dev, size_t dims,
-					  std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration) :
+				   std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration,
+				   std::vector<int> &points) :
 		device(dev), dims(dims), err(CL_SUCCESS), devicePoints(device),
 		deviceData(device), deviceResultData(device), kernelB(nullptr),
 		kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), deviceTimingMult(0.0),
-		kernelConfiguration(kernelConfiguration)
-	{
+		kernelConfiguration(kernelConfiguration) {
+		gridSize = points.size()/(2*dims);
 		this->verbose = kernelConfiguration["VERBOSE"].getBool();
 
 		if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
-		  && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
-		  std::stringstream errorString;
-		  errorString
-		  << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
-		  errorString << " to be greater than the dimension of the data set, was set to"
-		  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \"" << device->deviceName
-		  << "\")" << std::endl;
-		  throw base::operation_exception(errorString.str());
-		  }
+			&& kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
+			std::stringstream errorString;
+			errorString
+				<< "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+			errorString << " to be greater than the dimension of the data set, was set to"
+						<< kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \"" << device->deviceName
+						<< "\")" << std::endl;
+			throw base::operation_exception(errorString.str());
+		}
 
 		localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
 		dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
 		scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
 		totalBlockSize = dataBlockingSize * localSize;
+
+		devicePoints.intializeTo(points, 1, 0, points.size());
 	}
 
-	~KernelDensityB()
-	{
+	~KernelDensityB() {
 		if (kernelB != nullptr) {
 			clReleaseKernel(kernelB);
 			this->kernelB = nullptr;
 		}
 	}
 
-	void resetKernel()
-	{
+	void resetKernel() {
 	}
 
-	double rhs(std::vector<int> &points, std::vector<T> &data, std::vector<T> &result)
-	{
-		size_t gridSize = points.size()/(2*dims);
+	double rhs(std::vector<T> &data, std::vector<T> &result) {
 		if (verbose)
 		{
 			std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId << ")"
@@ -116,14 +116,14 @@ public:
 		}
 
 		//Load data into buffers if not already done
-			devicePoints.intializeTo(points, 1, 0, points.size());
+		if(!deviceData.isInitialized())
 			deviceData.intializeTo(data, 1, 0, data.size());
-			std::vector<T> zeros(gridSize);
-			for (size_t i = 0; i < gridSize; i++) {
-				zeros[i] = 0.0;
-			}
-			deviceResultData.intializeTo(zeros, 1, 0, gridSize);
-			clFinish(device->commandQueue);
+		std::vector<T> zeros(gridSize);
+		for (size_t i = 0; i < gridSize; i++) {
+			zeros[i] = 0.0;
+		}
+		deviceResultData.intializeTo(zeros, 1, 0, gridSize);
+		clFinish(device->commandQueue);
 		this->deviceTimingMult = 0.0;
 		this->dataSize = data.size();
 
@@ -225,53 +225,53 @@ public:
 		}
 
 		this->deviceTimingMult += time;
-			return 0;
+		return 0;
 	}
 	static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters){
-        for (std::string &platformName : parameters["PLATFORMS"].keys()) {
-            json::Node &platformNode = parameters["PLATFORMS"][platformName];
-            for (std::string &deviceName : platformNode["DEVICES"].keys()) {
-                json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+		for (std::string &platformName : parameters["PLATFORMS"].keys()) {
+			json::Node &platformNode = parameters["PLATFORMS"][platformName];
+			for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+				json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
-                const std::string &kernelName = "cscheme";
+				const std::string &kernelName = "cscheme";
 
-                json::Node &kernelNode =
-                        deviceNode["KERNELS"].contains(kernelName) ?
-                                deviceNode["KERNELS"][kernelName] : deviceNode["KERNELS"].addDictAttr(kernelName);
+				json::Node &kernelNode =
+					deviceNode["KERNELS"].contains(kernelName) ?
+					deviceNode["KERNELS"][kernelName] : deviceNode["KERNELS"].addDictAttr(kernelName);
 
-                if (kernelNode.contains("VERBOSE") == false) {
-                    kernelNode.addIDAttr("VERBOSE", false);
-                }
+				if (kernelNode.contains("VERBOSE") == false) {
+					kernelNode.addIDAttr("VERBOSE", false);
+				}
 
-                if (kernelNode.contains("LOCAL_SIZE") == false) {
-                    kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
-                }
+				if (kernelNode.contains("LOCAL_SIZE") == false) {
+					kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
+				}
 
-                if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
-                    kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-                }
+				if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
+					kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+				}
 
-                if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
-                    kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
-                }
+				if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
+					kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
+				}
 
-                if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
-                    kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-                }
+				if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
+					kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+				}
 
-                if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
-                }
+				if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
+					kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+				}
 
-                if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
-                }
+				if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
+					kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+				}
 
-                if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
-                }
-            }
-        }
+				if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
+					kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
+				}
+			}
+		}
 	}
 };
 
