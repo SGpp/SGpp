@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -19,14 +18,10 @@ namespace datadriven {
  * keep applying marginalize to function until it's reduced to only 1 dimension
  */
 
-class OperationRosenblattTransformationLinear: public
-  OperationRosenblattTransformation {
+class OperationRosenblattTransformationLinear : public OperationRosenblattTransformation {
  public:
-  OperationRosenblattTransformationLinear(base::Grid* grid) :
-    grid(grid) {
-  }
-  virtual ~OperationRosenblattTransformationLinear() {
-  }
+  explicit OperationRosenblattTransformationLinear(base::Grid* grid) : grid(grid) {}
+  virtual ~OperationRosenblattTransformationLinear() {}
 
   /**
    * Transformation with mixed starting dimensions
@@ -51,16 +46,16 @@ class OperationRosenblattTransformationLinear: public
 
  protected:
   base::Grid* grid;
-  void doTransformation_start_dimX(base::Grid* g_in, base::DataVector* a_in,
-                                   size_t dim_start, base::DataVector* coords1d,
-                                   base::DataVector* cdfs1d);
-  void doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in,
-                                    size_t dim_x, base::DataVector* coords1d, base::DataVector* cdfs1d,
+  void doTransformation_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start,
+                                   base::DataVector* coords1d, base::DataVector* cdfs1d);
+  void doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x,
+                                    base::DataVector* coords1d, base::DataVector* cdfs1d,
                                     size_t& curr_dim);
-  virtual float_t doTransformation1D(base::Grid* grid1d,
-                                     base::DataVector* alpha1d, float_t coord1d);
+  virtual float_t doTransformation1D(base::Grid* grid1d, base::DataVector* alpha1d,
+                                     float_t coord1d);
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
+
 #endif /* OPERATIONROSENBLATTTRANSFORMATIONLINEAR_HPP */

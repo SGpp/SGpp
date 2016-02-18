@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -41,10 +40,9 @@ class OperationDensitySampling {
    * @param num_samples # of samples to draw
    * @param dim_x Starting dimension
    */
-  virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
-                          size_t num_samples, size_t dim_x) = 0;
+  virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples,
+                          size_t dim_x) = 0;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONDENSITYSAMPLING_HPP_ */

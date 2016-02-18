@@ -3,17 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySamplingLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/globaldef.hpp>
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-#include "sgpp/datadriven/operation/hash/simple/OperationDensitySamplingLinear.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -62,10 +62,10 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
       {
 #ifdef _WIN32
         float_t a = static_cast<float_t>(rand()) / RAND_MAX;
-        long int b = static_cast<long int>(rand());
+        int64_t b = static_cast<int64_t>(rand());
 #else
         float_t a = static_cast<float_t>(rand_r(&tseedp)) / RAND_MAX;
-        long int b = static_cast<long int>(rand_r(&tseedp));
+        int64_t b = static_cast<int64_t>(rand_r(&tseedp));
 #endif
 #ifdef _OPENMP
         seedp =
@@ -125,15 +125,15 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
   {
     base::DataVector* sampleVec = new base::DataVector(num_dims);
     unsigned int seedp = 0;
-    ;
+
 #pragma omp critical
     {
 #ifdef _WIN32
       float_t a = static_cast<float_t>(rand()) / RAND_MAX;
-      long int b = static_cast<long int>(rand());
+      int64_t b = static_cast<int64_t>(rand());
 #else
       float_t a = static_cast<float_t>(rand_r(&tseedp)) / RAND_MAX;
-      long int b = static_cast<long int>(rand_r(&tseedp));
+      int64_t b = static_cast<int64_t>(rand_r(&tseedp));
 #endif
 #ifdef _OPENMP
       seedp =
