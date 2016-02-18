@@ -62,7 +62,7 @@ public:
 	OperationCreateGraphOCL()  {
 	}
 
-	virtual void create_graph(base::DataVector& data, std::vector<int> &resultVector) {}
+	virtual void create_graph(std::vector<int> &resultVector)=0;
 	static std::vector<int> find_clusters(std::vector<int> &graph, size_t k) {
 		std::vector<int> clusters(graph.size()/k);
 		int clustercount = 0;
