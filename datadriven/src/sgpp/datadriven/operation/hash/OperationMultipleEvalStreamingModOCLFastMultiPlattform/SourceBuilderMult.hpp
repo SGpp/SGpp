@@ -142,17 +142,14 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       return this->reuseSource("StreamingOCLMultiPlatform_mult.cl");
     }
 
-    size_t localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    bool useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
-    uint64_t maxDimUnroll = kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt();
-
     std::stringstream sourceStream;
 
-    if (this->floatType().compare("double") == 0) {
+    if (std::is_same<real_type, double>::value) {
       sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
                    << std::endl;
     }
 
+    // write signature
     sourceStream << "__kernel" << std::endl;
     sourceStream << "__attribute__((reqd_work_group_size(" << localWorkgroupSize << ", 1, 1)))"
                  << std::endl;
@@ -166,34 +163,24 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
                  << std::endl;
     sourceStream << "             __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    sourceStream << "             int resultSize," << std::endl;
-    sourceStream << "             int start_grid," << std::endl;
-    sourceStream << "             int end_grid) {" << std::endl;
+    sourceStream << "             uint resultSize," << std::endl;
+    sourceStream << "             uint start_grid," << std::endl;
+    sourceStream << "             uint end_grid) {" << std::endl;
     sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
-    sourceStream << this->indent[0] << "int groupSize = get_local_size(0);" << std::endl;
-    sourceStream << this->indent[0] << "int globalSize = get_global_size(0);" << std::endl;
-
     sourceStream << std::endl;
 
-    if (useLocalMemory) {
-      sourceStream << this->indent[0] << "__local " << this->floatType() << " locLevel["
-                   << dims * localWorkgroupSize << "];" << std::endl;
-      sourceStream << this->indent[0] << "__local " << this->floatType() << " locIndex["
-                   << dims * localWorkgroupSize << "];" << std::endl;
-      sourceStream << this->indent[0] << "__local " << this->floatType() << " locAlpha["
-                   << localWorkgroupSize << "];" << std::endl;
-      sourceStream << std::endl;
-    }
-
+    // blocked result variables
     for (size_t i = 0; i < dataBlockSize; i++) {
+      sourceStream << this->indent[0] << this->floatType() << " curSupport_" << i << ";"
+                   << std::endl;
       sourceStream << this->indent[0] << this->floatType() << " myResult_" << i << " = 0.0;"
+                   << std::endl
                    << std::endl;
     }
-    sourceStream << std::endl;
 
-    // caching data in register array, this also requires loading the data into
-    // the registers (in contrast using pointers to data directly)
+    // caching data in register array, this also requires loading the data into the registers (in
+    // contrast using pointers to data directly)
     if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
       for (size_t i = 0; i < dataBlockSize; i++) {
         sourceStream << this->indent[0] << this->floatType() << " data_" << i << "[" << dims << "];"
@@ -202,9 +189,9 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       sourceStream << std::endl;
       for (size_t i = 0; i < dataBlockSize; i++) {
         for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[0] << getData(d, i) << " = ptrData[(resultSize * " << d
-                       << ") + (globalSize * " << i << ") + globalIdx"
-                       << "];" << std::endl;
+          sourceStream << this->indent[0] << getData(d, i) << " = ptrData[" << i << " + ("
+                       << dataBlockSize << " * globalIdx) + (resultSize * " << d << ")];"
+                       << std::endl;
         }
         sourceStream << std::endl;
       }
@@ -212,9 +199,8 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       for (size_t i = 0; i < dataBlockSize; i++) {
         for (size_t d = 0; d < dims; d++) {
           sourceStream << this->indent[0] << this->floatType() << " " << getData(d, i)
-                       << " = ptrData[(resultSize * " << d << ") + (globalSize * " << i
-                       << ") + globalIdx"
-                       << "];" << std::endl;
+                       << " = ptrData[" << i << " + (" << dataBlockSize
+                       << " * globalIdx) + (resultSize * " << d << ")];" << std::endl;
         }
         sourceStream << std::endl;
       }
@@ -224,65 +210,54 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
 
     sourceStream << std::endl;
 
+    // arrays for prefetching a chunk of levels and indices in shared memory (in contrast to using
+    // pointer to level/index directly)
     if (useLocalMemory) {
-      sourceStream << " // Iterate over all grid points (fast ones, with cache)" << std::endl;
-      sourceStream << this->indent[0] << "int chunkSizeGrid = end_grid - start_grid;" << std::endl;
-      sourceStream << this->indent[0] << "int fastChunkSizeGrid = (chunkSizeGrid / "
-                   << localWorkgroupSize << ") * " << localWorkgroupSize << ";" << std::endl;
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " locLevel["
+                   << dims * localWorkgroupSize << "];" << std::endl;
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " locIndex["
+                   << dims * localWorkgroupSize << "];" << std::endl;
+      sourceStream << this->indent[0] << "__local " << this->floatType() << " locAlpha["
+                   << localWorkgroupSize << "];" << std::endl;
       sourceStream << std::endl;
+
       sourceStream << this->indent[0]
-                   << "for(int gridBlockStart = start_grid; gridBlockStart < "
-                      "start_grid + fastChunkSizeGrid; gridBlockStart += " << localWorkgroupSize
-                   << ") {" << std::endl;
+                   << "// grid is always divisible by workgroup size (by padding)" << std::endl;
+      sourceStream << this->indent[0] << "uint chunkSizeGrid = end_grid - start_grid;" << std::endl;
+      sourceStream << this->indent[0] << "uint fastChunkSizeGrid = (chunkSizeGrid / "
+                   << localWorkgroupSize << ") * " << localWorkgroupSize << ";" << std::endl;
+      sourceStream << this->indent[0]
+                   << "for(int j = start_grid; j < start_grid + fastChunkSizeGrid; j+="
+                   << localWorkgroupSize << ") {" << std::endl;
 
-      if (dims > maxDimUnroll) {
-        sourceStream << this->indent[1] << "for (size_t d = 0; d < " << dims << "; d++) {"
+      for (size_t d = 0; d < dims; d++) {
+        sourceStream << this->indent[1] << "locLevel[(localIdx * " << dims << ") + " << d
+                     << "] = ptrLevel[((j + localIdx) * " << dims << ") + " << d << "];"
                      << std::endl;
-        sourceStream << this->indent[2]
-                     << "locLevel[d * groupSize + localIdx] = ptrLevel[gridBlockStart * " << dims
-                     << " +  (groupSize * d) + localIdx];" << std::endl;
-        sourceStream << this->indent[1] << "}" << std::endl;
-
-        sourceStream << this->indent[1] << "for (size_t d = 0; d < " << dims << "; d++) {"
+        sourceStream << this->indent[1] << "locIndex[(localIdx * " << dims << ") + " << d
+                     << "] = ptrIndex[((j + localIdx) * " << dims << ") + " << d << "];"
                      << std::endl;
-        sourceStream << this->indent[2]
-                     << "locIndex[d * groupSize + localIdx] = ptrIndex[gridBlockStart * " << dims
-                     << " +  (groupSize * d) + localIdx];" << std::endl;
-        sourceStream << this->indent[1] << "}" << std::endl;
-      } else {
-        for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[1] << "locLevel[" << d
-                       << " * groupSize + localIdx] = ptrLevel[gridBlockStart * " << dims
-                       << " +  (groupSize * " << d << ") + localIdx];" << std::endl;
-        }
-        sourceStream << this->indent[1] << std::endl;
-        for (size_t d = 0; d < dims; d++) {
-          sourceStream << this->indent[1] << "locIndex[" << d
-                       << " * groupSize + localIdx] = ptrIndex[gridBlockStart * " << dims
-                       << " +  (groupSize * " << d << ") + localIdx];" << std::endl;
-        }
       }
 
-      sourceStream << this->indent[1] << std::endl;
-      sourceStream << this->indent[1] << "locAlpha[localIdx] = ptrAlpha[gridBlockStart + localIdx];"
+      sourceStream << this->indent[1] << "locAlpha[localIdx] = ptrAlpha[j + localIdx];"
                    << std::endl;
       sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
       sourceStream << std::endl;
-      sourceStream << this->indent[1] << "for(int k = 0; k < " << localWorkgroupSize << "; k++) {"
-                   << std::endl;
+      sourceStream << this->indent[1] << "for (size_t m = 0; m < " << localWorkgroupSize
+                   << "; m++) {" << std::endl;
       for (size_t i = 0; i < dataBlockSize; i++) {
-        sourceStream << this->indent[2] << this->floatType() << " curSupport_" << i
-                     << " = locAlpha[k];" << std::endl;
+        sourceStream << this->indent[2] << "curSupport_" << i << " = locAlpha[m];" << std::endl
+                     << std::endl;
       }
-      sourceStream << std::endl;
     } else {
-      sourceStream << this->indent[0] << "for(int k = start_grid; k < end_grid; k++) {"
+      sourceStream << this->indent[0]
+                   << "// Iterate over all grid points (slow ones, without cache)" << std::endl;
+      sourceStream << this->indent[0] << "for (int m = start_grid; m < end_grid; m++) {"
                    << std::endl;
       for (size_t i = 0; i < dataBlockSize; i++) {
-        sourceStream << this->indent[1] << this->floatType() << " curSupport_" << i
-                     << " = ptrAlpha[k];" << std::endl;
+        sourceStream << this->indent[1] << "curSupport_" << i << " = ptrAlpha[m];" << std::endl
+                     << std::endl;
       }
-      sourceStream << std::endl;
     }
 
     if (dims > maxDimUnroll) {
@@ -291,8 +266,8 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
                    << ") {" << std::endl;
       sourceStream << this->unrolledBasisFunctionEvalulation(dims, 0, std::min(maxDimUnroll, dims),
                                                              "unrollDim");
-      sourceStream << this->indent[1] << "}" << std::endl;
 
+      sourceStream << this->indent[1] << "}" << std::endl;
       if (dims % maxDimUnroll != 0) {
         sourceStream << this->unrolledBasisFunctionEvalulation(
             dims, (dims / maxDimUnroll) * maxDimUnroll, dims, "");
@@ -305,19 +280,20 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       sourceStream << this->indent[1] << "myResult_" << i << " += curSupport_" << i << ";"
                    << std::endl;
     }
+
+    if (useLocalMemory) {
+      sourceStream << this->indent[1] << "}" << std::endl;
+      sourceStream << std::endl;
+      sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
+    }
     sourceStream << this->indent[0] << "}" << std::endl;
     sourceStream << std::endl;
 
-    if (useLocalMemory) {
-      sourceStream << this->indent[1] << "barrier(CLK_LOCAL_MEM_FENCE);" << std::endl;
-      sourceStream << this->indent[0] << "}" << std::endl;
+    for (size_t i = 0; i < dataBlockSize; i++) {
+      sourceStream << this->indent[0] << "ptrResult[(" << dataBlockSize << " * globalIdx) + " << i
+                   << "] = myResult_" << i << ";" << std::endl;
     }
 
-    sourceStream << std::endl;
-    for (size_t i = 0; i < dataBlockSize; i++) {
-      sourceStream << this->indent[0] << "ptrResult[(globalSize * " << i
-                   << ") + globalIdx] = myResult_" << i << ";" << std::endl;
-    }
     sourceStream << "}" << std::endl;
 
     if (kernelConfiguration["WRITE_SOURCE"].getBool()) {

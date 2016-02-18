@@ -5,6 +5,7 @@
 
 #include <random>
 #include <string>
+#include <limits>
 
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
@@ -59,7 +60,7 @@ int main(int argc, char** argv) {
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
   SGPP::datadriven::ARFFTools arffTools;
   SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -109,7 +110,11 @@ int main(int argc, char** argv) {
   eval->prepare();
 
   std::cout << "calculating result" << std::endl;
-  eval->multTranspose(dataSizeVector, alphaResult);
+
+  for (size_t i = 0; i < 1; i++) {
+    std::cout << "repeated multTranspose: " << i << std::endl;
+    eval->multTranspose(dataSizeVector, alphaResult);
+  }
 
   std::cout << "duration: " << eval->getDuration() << std::endl;
 
@@ -124,11 +129,28 @@ int main(int argc, char** argv) {
 
   double mse = 0.0;
 
+  double largestDifferenceMine = 0.0;
+  double largestDifferenceReference = 0.0;
+  double largestDifference = 0.0;
+
   for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
     //    std::cout << "mine: " << alphaResult[i] << " ref: " <<
     //    alphaResultCompare[i] << std::endl;
-    mse += (alphaResult[i] - alphaResultCompare[i]) * (alphaResult[i] - alphaResultCompare[i]);
+    double difference = std::abs(alphaResult[i] - alphaResultCompare[i]);
+    if (difference > largestDifference) {
+      largestDifference = difference;
+      largestDifferenceMine = alphaResult[i];
+      largestDifferenceReference = alphaResultCompare[i];
+    }
+
+    std::cout << "difference: " << difference << " mine: " << alphaResult[i]
+              << " ref: " << alphaResultCompare[i] << std::endl;
+
+    mse += difference * difference;
   }
+
+  std::cout << "largestDifference: " << largestDifference << " mine: " << largestDifferenceMine
+            << " ref: " << largestDifferenceReference << std::endl;
 
   mse = mse / static_cast<double>(alphaResult.getSize());
   std::cout << "mse: " << mse << std::endl;

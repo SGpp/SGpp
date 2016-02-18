@@ -57,8 +57,6 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
   std::vector<StreamingModOCLFastMultiPlatform::KernelMult<T>> multKernels;
   std::vector<StreamingModOCLFastMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
-  json::Node& configuration;
-
   bool verbose;
 
   size_t commonDatasetPadding;
@@ -75,10 +73,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
         myTimer(base::SGppStopwatch()),
         duration(-1.0),
         manager(manager),
-        devices(manager->getDevices()),
-        configuration(configuration) {
+        devices(manager->getDevices()) {
     this->dims = dataset.getNcols();  // be aware of transpose!
-    this->verbose = configuration["VERBOSE"].getBool();
+    this->verbose = (*parameters)["VERBOSE"].getBool();
 
     this->commonDatasetPadding = calculateCommonDatasetPadding();
     this->commonGridPadding = calculateCommonGridPadding();
