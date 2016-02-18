@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_SUITE(TestStreamingMultTranspose)
 
 BOOST_AUTO_TEST_CASE(Simple) {
   std::vector<std::tuple<std::string, double> > fileNamesError = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-15),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-14),
       std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-18)};
 
   uint32_t level = 5;
