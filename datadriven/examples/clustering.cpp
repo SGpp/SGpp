@@ -80,7 +80,6 @@ int main()
 	}
 
 	sg::solver::ConjugateGradients *solver=new sg::solver::ConjugateGradients(17,0.0001);
-	std::cout<<"Testing multiplication"<<std::endl;
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* operation_mult=
 		SGPP::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda, "MyOCLConf.cfg");
 
