@@ -55,8 +55,9 @@ class KernelMultTranspose {
   bool verbose;
 
   size_t localSize;
-  size_t gridBlockingSize;
+  size_t gridBlockSize;
   size_t scheduleSize;
+  size_t totalBlockSize;
 
  public:
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
@@ -101,8 +102,9 @@ class KernelMultTranspose {
     }
 
     localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-    gridBlockingSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
+    gridBlockSize = kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
     scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
+    totalBlockSize = localSize * gridBlockSize;
   }
 
   ~KernelMultTranspose() {
@@ -113,14 +115,9 @@ class KernelMultTranspose {
   }
 
   void resetKernel() {
-    // TODO(pfandedd): fix for splittedkernel -> currently won't work for
-    // multiple
-    // iterations
-    // leads to a reallocation before next kernel execution
-
-    releaseGridBuffersTranspose();
-    releaseDataBuffersTranspose();
-    releaseGridResultBufferTranspose();
+    //    releaseGridBuffersTranspose();
+    //    releaseDataBuffersTranspose();
+    //    releaseGridResultBufferTranspose();
   }
 
   double multTranspose(std::vector<T> &level, std::vector<T> &index, std::vector<T> &dataset,
@@ -160,14 +157,14 @@ class KernelMultTranspose {
       size_t kernelEndGrid;
 
       bool segmentAvailable = queueLoadBalancerMultTranspose->getNextSegment(
-          scheduleSize, gridBlockingSize, kernelStartGrid, kernelEndGrid);
+          scheduleSize, totalBlockSize, kernelStartGrid, kernelEndGrid);
       if (!segmentAvailable) {
         break;
       }
 
       size_t rangeSize = kernelEndGrid - kernelStartGrid;
       size_t rangeSizeAfterBlocking =
-          (kernelEndGrid / gridBlockingSize) - (kernelStartGrid / gridBlockingSize);
+          (kernelEndGrid / gridBlockSize) - (kernelStartGrid / gridBlockSize);
 
       size_t sourceSize = end_index_data - start_index_data;
 
@@ -189,7 +186,7 @@ class KernelMultTranspose {
 
       if (rangeSize > 0) {
         size_t resultOffset =
-            kernelStartGrid / (cl_uint)gridBlockingSize;  // based on work groups, cannot be
+            kernelStartGrid / (cl_uint)gridBlockSize;  // based on work groups, cannot be
                                                           // transmitted through
                                                           // global_work_offset mechanism
 
@@ -347,17 +344,17 @@ class KernelMultTranspose {
   }
 
  private:
-  void releaseGridBuffersTranspose() {
-    this->deviceLevelTranspose.freeBuffer();
-    this->deviceIndexTranspose.freeBuffer();
-  }
-
-  void releaseDataBuffersTranspose() {
-    this->deviceSourceTranspose.freeBuffer();
-    this->deviceDataTranspose.freeBuffer();
-  }
-
-  void releaseGridResultBufferTranspose() { this->deviceResultGridTranspose.freeBuffer(); }
+  //  void releaseGridBuffersTranspose() {
+  //    this->deviceLevelTranspose.freeBuffer();
+  //    this->deviceIndexTranspose.freeBuffer();
+  //  }
+  //
+  //  void releaseDataBuffersTranspose() {
+  //    this->deviceSourceTranspose.freeBuffer();
+  //    this->deviceDataTranspose.freeBuffer();
+  //  }
+  //
+  //  void releaseGridResultBufferTranspose() { this->deviceResultGridTranspose.freeBuffer(); }
 
   void initGridBuffersTranspose(std::vector<T> &level, std::vector<T> &index,
                                 size_t kernelStartGrid, size_t kernelEndGrid) {

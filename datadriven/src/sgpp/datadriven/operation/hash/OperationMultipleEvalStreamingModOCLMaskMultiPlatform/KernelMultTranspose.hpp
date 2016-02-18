@@ -56,6 +56,11 @@ class KernelMultTranspose {
 
   bool verbose;
 
+  size_t localSize;
+  size_t transGridBlockingSize;
+  size_t scheduleSize;
+  size_t totalBlockSize;
+
  public:
   KernelMultTranspose(std::shared_ptr<base::OCLDevice> device, size_t dims,
                       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
@@ -80,6 +85,11 @@ class KernelMultTranspose {
     // beginning
     this->deviceTimingMultTranspose = 1.0;
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
+
+    localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+    transGridBlockingSize = kernelConfiguration["KERNEL_TRANS_DATA_BLOCK_SIZE"].getUInt();
+    scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
+    totalBlockSize = localSize * transGridBlockingSize;
   }
 
   ~KernelMultTranspose() {
@@ -90,14 +100,9 @@ class KernelMultTranspose {
   }
 
   void resetKernel() {
-    // TODO(pfandedd): fix for splittedkernel -> currently won't work for
-    // multiple
-    // iterations
-    // leads to a reallocation before next kernel execution
-
-    releaseGridBuffersTranspose();
-    releaseDataBuffersTranspose();
-    releaseGridResultBufferTranspose();
+    //    releaseGridBuffersTranspose();
+    //    releaseDataBuffersTranspose();
+    //    releaseGridResultBufferTranspose();
   }
 
   double multTranspose(std::vector<real_type> &level, std::vector<real_type> &index,
@@ -127,16 +132,8 @@ class KernelMultTranspose {
       size_t kernelStartGrid;
       size_t kernelEndGrid;
 
-      // TODO(pfandedd): change after blocking is implemented
-      // TODO(pfandedd): don't forget to set padding to DATA_BLOCKING *
-      // THREAD_BLOCK_SIZE
-      size_t dataBlockingSize = 1;
-
-      size_t scheduleSize = 10000;
-
-      // TODO(pfandedd): start_index_data not considered!
       bool segmentAvailable = queueLoadBalancerMultTranspose->getNextSegment(
-          scheduleSize, dataBlockingSize, kernelStartGrid, kernelEndGrid);
+          scheduleSize, totalBlockSize, kernelStartGrid, kernelEndGrid);
       if (!segmentAvailable) {
         break;
       }
@@ -157,7 +154,7 @@ class KernelMultTranspose {
       //            << std::endl;
 
       size_t rangeSizeBlocked =
-          (kernelEndGrid / dataBlockingSize) - (kernelStartGrid / dataBlockingSize);
+          (kernelEndGrid / transGridBlockingSize) - (kernelStartGrid / transGridBlockingSize);
 
       if (rangeSizeBlocked > 0) {
         err = clSetKernelArg(kernelMultTranspose, 0, sizeof(cl_mem),
@@ -209,16 +206,6 @@ class KernelMultTranspose {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw SGPP::base::operation_exception(errorString.str());
         }
-        //                err = clSetKernelArg(kernelMultTranspose, 7,
-        //                sizeof(cl_uint), &rangeSizeUnblocked); // sourceSize
-        //                == number of entries in dataset
-        //                if (err != CL_SUCCESS) {
-        //                    std::stringstream errorString;
-        //                    errorString << "OCL Error: Failed to create kernel
-        //                    arguments for device " << std::endl;
-        //                    throw
-        //                    SGPP::base::operation_exception(errorString.str());
-        //                }
         err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelStartData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
@@ -308,19 +295,19 @@ class KernelMultTranspose {
   }
 
  private:
-  void releaseGridBuffersTranspose() {
-    this->deviceLevelTranspose.freeBuffer();
-    this->deviceIndexTranspose.freeBuffer();
-    this->deviceMaskTranspose.freeBuffer();
-    this->deviceOffsetTranspose.freeBuffer();
-  }
-
-  void releaseDataBuffersTranspose() {
-    this->deviceSourceTranspose.freeBuffer();
-    this->deviceDataTranspose.freeBuffer();
-  }
-
-  void releaseGridResultBufferTranspose() { this->deviceResultGridTranspose.freeBuffer(); }
+  //  void releaseGridBuffersTranspose() {
+  //    this->deviceLevelTranspose.freeBuffer();
+  //    this->deviceIndexTranspose.freeBuffer();
+  //    this->deviceMaskTranspose.freeBuffer();
+  //    this->deviceOffsetTranspose.freeBuffer();
+  //  }
+  //
+  //  void releaseDataBuffersTranspose() {
+  //    this->deviceSourceTranspose.freeBuffer();
+  //    this->deviceDataTranspose.freeBuffer();
+  //  }
+  //
+  //  void releaseGridResultBufferTranspose() { this->deviceResultGridTranspose.freeBuffer(); }
 
   void initGridBuffersTranspose(std::vector<real_type> &level, std::vector<real_type> &index,
                                 std::vector<real_type> &mask, std::vector<real_type> &offset,
