@@ -30,30 +30,32 @@ private:
 	std::vector<std::shared_ptr<base::OCLDevice>> devices;
 	bool verbose;
 	std::shared_ptr<base::OCLManagerMultiPlatform> manager;
+	std::vector<T> dataVector;
 public:
 
-	OperationCreateGraphOCLMultiPlatform(size_t dimensions,
+	OperationCreateGraphOCLMultiPlatform(base::DataVector& data, size_t dimensions,
 									 std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-										 json::Node &configuration, size_t k) : OperationCreateGraphOCL(),dims(dimensions),configuration(configuration),devices(manager->getDevices()),manager(manager)
+										 json::Node &configuration, size_t k) : OperationCreateGraphOCL(),dims(dimensions),configuration(configuration),devices(manager->getDevices()),manager(manager),
+																				dataVector(data.getSize())
 	{
 		verbose=true;
-		graph_kernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelCreateGraph<T>(devices[0], dims, k, manager, configuration);
+		for(size_t i=0;i<data.getSize();i++)
+			dataVector[i]=data[i];
+		graph_kernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelCreateGraph<T>(devices[0], dims, k, dataVector,
+																						 manager, configuration);
 	}
 
 	~OperationCreateGraphOCLMultiPlatform() {
 		delete graph_kernel;
 	}
 
-	void create_graph(base::DataVector& data, std::vector<int> &resultVector)  {
-		std::vector<T> dataVector(data.getSize());
-		for(size_t i=0;i<data.getSize();i++)
-			dataVector[i]=data[i];
+	void create_graph( std::vector<int> &resultVector)  {
 		if(verbose)
-			std::cout<<"Creating graph for"<<data.getSize()<<" datapoints"<<std::endl;
+			std::cout<<"Creating graph for"<<dataVector.size()<<" datapoints"<<std::endl;
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		start = std::chrono::system_clock::now();
 		try {
-			this->graph_kernel->create_graph(dataVector, resultVector);
+			this->graph_kernel->create_graph(resultVector);
 		}
 		catch(base::operation_exception &e) {
 			std::cerr<<"Error! Could not create graph."<<std::endl
