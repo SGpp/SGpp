@@ -3,27 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+
+#include <sgpp/globaldef.hpp>
 #include <map>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/base/operation/hash/OperationEval.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/datatypes/DataVector.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationLinear.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <vector>
+#include <utility>
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-#include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace datadriven {
@@ -44,16 +44,14 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
   // 2. 1D transformation on dim_start
-  float_t y = 0;
-
   // 3. for every sample do...
-  //#pragma omp parallel
+  // #pragma omp parallel
   //  {
-  //#pragma omp for schedule(dynamic)
+  // #pragma omp for schedule(dynamic)
   //
   for (size_t i = 0; i < pointscdf->getNrows(); i++) {
     // transform the point in the current dimension
-    y = doTransformation1D(g1d, a1d, pointscdf->get(i, dim_start));
+    float_t y = doTransformation1D(g1d, a1d, pointscdf->get(i, dim_start));
     // and write it to the output
     points->set(i, dim_start, y);
 
@@ -96,9 +94,9 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
   OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*this->grid);
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
-  //#pragma omp parallel
+  // #pragma omp parallel
   //  {
-  //#pragma omp for schedule(dynamic)
+  // #pragma omp for schedule(dynamic)
 
   for (size_t i = 0; i < pointscdf->getNrows(); i++) {
     // 2. 1D transformation on dim_start
@@ -222,8 +220,8 @@ float_t OperationInverseRosenblattTransformationLinear::doTransformation1D(
   float_t sum = 0.0, area;
 
   for (++it2; it2 != coord_pdf.end(); ++it2) {
-    //(*it).first : the coordinate
-    //(*it).second : the function value
+    // (*it).first : the coordinate
+    // (*it).second : the function value
     area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
 
     // make sure that the cdf is monotonically increasing
@@ -276,5 +274,5 @@ float_t OperationInverseRosenblattTransformationLinear::doTransformation1D(
   /***************** STEP 2. Done  ********************/
   return y;
 }  // end of compute_1D_cdf()
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

@@ -49,12 +49,12 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid);
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used for OperationRegularizationDiagonal
- * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
+ * @param mode Mode, specifying which regularization to use. Example:
+ * OperationRegularizationDiagonal::HKMIX.
  * @param k Parameter for @f$H^k@f$
  * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
  */
-base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid,
-    int mode, float_t k);
+base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, int mode, float_t k);
 
 /**
  * Factory method, returning an OperationDensityMarginalize for the grid.
@@ -63,8 +63,7 @@ base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid,
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalize for the Grid grid
  */
-datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(
-  base::Grid& grid);
+datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensityMargTo1D for the grid.
@@ -73,8 +72,7 @@ datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalize for the Grid grid
  */
-datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(
-  base::Grid& grid);
+datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensitySampling1D for the grid.
@@ -83,8 +81,7 @@ datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(
-  base::Grid& grid);
+datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensitySampling for the grid.
@@ -93,8 +90,7 @@ datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-datadriven::OperationDensitySampling* createOperationDensitySampling(
-  base::Grid& grid);
+datadriven::OperationDensitySampling* createOperationDensitySampling(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensityRejectionSampling for the grid.
@@ -103,9 +99,8 @@ datadriven::OperationDensitySampling* createOperationDensitySampling(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensitySampling1D for the Grid grid
  */
-datadriven::OperationDensityRejectionSampling*
-createOperationDensityRejectionSampling(
-  base::Grid& grid);
+datadriven::OperationDensityRejectionSampling* createOperationDensityRejectionSampling(
+    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationDensityConditional for the grid.
@@ -114,8 +109,7 @@ createOperationDensityRejectionSampling(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationDensityConditional for the Grid grid
  */
-datadriven::OperationDensityConditional* createOperationDensityConditional(
-  base::Grid& grid);
+datadriven::OperationDensityConditional* createOperationDensityConditional(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationRosenblattTransformation for the grid.
@@ -124,9 +118,8 @@ datadriven::OperationDensityConditional* createOperationDensityConditional(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationRosenblattTransformation for the Grid grid
  */
-datadriven::OperationRosenblattTransformation*
-createOperationRosenblattTransformation(
-  base::Grid& grid);
+datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(
+    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationRosenblattTransformation for the grid.
@@ -135,9 +128,7 @@ createOperationRosenblattTransformation(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationRosenblattTransformation1D for the Grid grid
  */
-datadriven::OperationTransformation1D*
-createOperationRosenblattTransformation1D(
-  base::Grid& grid);
+datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationInverseRosenblattTransformation for the grid.
@@ -147,8 +138,7 @@ createOperationRosenblattTransformation1D(
  * @return Pointer to new OperationInverseRosenblattTransformation for the Grid grid
  */
 datadriven::OperationInverseRosenblattTransformation*
-createOperationInverseRosenblattTransformation(
-  base::Grid& grid);
+createOperationInverseRosenblattTransformation(base::Grid& grid);
 
 /**
  * Factory method, returning an OperationInverseRosenblattTransformation1D for the grid.
@@ -156,9 +146,8 @@ createOperationInverseRosenblattTransformation(
  * @param grid Grid which is to be used for the operation
  * @return Pointer to new OperationInverseRosenblattTransformation1D for the Grid grid
  */
-datadriven::OperationTransformation1D*
-createOperationInverseRosenblattTransformation1D(
-  base::Grid& grid);
+datadriven::OperationTransformation1D* createOperationInverseRosenblattTransformation1D(
+    base::Grid& grid);
 
 /**
  * Factory method, returning an OperationRosenblattTransformationKDE for the kde.
@@ -167,9 +156,8 @@ createOperationInverseRosenblattTransformation1D(
  * @param kde GaussianKDE for which the Rosenblatt transformation should be computed
  * @return Pointer to new OperationRosenblattTransformationKDE for the kde
  */
-datadriven::OperationRosenblattTransformationKDE*
-createOperationRosenblattTransformationKDE(
-  datadriven::GaussianKDE& kde);
+datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
+    datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationInverseRosenblattTransformationKDE for the kde.
@@ -179,8 +167,7 @@ createOperationRosenblattTransformationKDE(
  * @return Pointer to new OperationInverseRosenblattTransformationKDE for the kde
  */
 datadriven::OperationInverseRosenblattTransformationKDE*
-createOperationInverseRosenblattTransformationKDE(
-  datadriven::GaussianKDE& kde);
+createOperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationDensityMarginalizeKDE for the kernel density.
@@ -189,9 +176,8 @@ createOperationInverseRosenblattTransformationKDE(
  * @param kde kernel density which is to be used for the operation
  * @return Pointer to new OperationDensityMarginalizeKDE
  */
-datadriven::OperationDensityMarginalizeKDE*
-createOperationDensityMarginalizeKDE(
-  datadriven::GaussianKDE& kde);
+datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
+    datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationDensityConditionalKDE for the kernel density.
@@ -200,9 +186,8 @@ createOperationDensityMarginalizeKDE(
  * @param kde kernel density which is to be used for the operation
  * @return Pointer to new OperationDensityConditionalKDE
  */
-datadriven::OperationDensityConditionalKDE*
-createOperationDensityConditionalKDE(
-  datadriven::GaussianKDE& kde);
+datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
+    datadriven::GaussianKDE& kde);
 
 /**
  * Factory method, returning an OperationMultipleEval for the grid.
@@ -213,11 +198,11 @@ createOperationDensityConditionalKDE(
  * @return Pointer to new OperationMultipleEval for the Grid grid
  */
 
-base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
-    base::DataMatrix& dataset,
+base::OperationMultipleEval* createOperationMultipleEval(
+    base::Grid& grid, base::DataMatrix& dataset,
     SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
 
-}
-}
+}  // namespace op_factory
+}  // namespace SGPP
 
 #endif /*DATADRIVEN_OP_FACTORY_HPP*/

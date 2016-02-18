@@ -5,6 +5,13 @@
  **************************************************************************** */
 // @author Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de
 // some defines for the following algorithm
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
+
+#include <sgpp/globaldef.hpp>
+
 #include <map>
 #include <cstdlib>
 #include <fstream>
@@ -13,22 +20,13 @@
 #include <cmath>
 #include <random>
 #include <algorithm>
+#include <vector>
 
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
-#include <sgpp/globaldef.hpp>
-
-//#ifdef _OPENMP
-//#include <omp.h>
-//#endif
-
-//#define DEBUG_INVERSE_ROSENBLATT
-
-using namespace SGPP::base;
-using namespace SGPP::datadriven;
+// #define DEBUG_INVERSE_ROSENBLATT
 
 namespace SGPP {
 namespace datadriven {
@@ -36,9 +34,12 @@ namespace datadriven {
 // ----------------------------------------------------------------------------
 
 OperationInverseRosenblattTransformationKDE::OperationInverseRosenblattTransformationKDE(
-  GaussianKDE& kde, float_t sigmaFactor, float_t inversionEpsilon) :
-  kde(&kde), bandwidths(kde.getDim()), xlimits(2, kde.getDim()), ylimits(
-    2, kde.getDim()), inversionEpsilon(inversionEpsilon) {
+    GaussianKDE& kde, float_t sigmaFactor, float_t inversionEpsilon)
+    : kde(&kde),
+      bandwidths(kde.getDim()),
+      xlimits(2, kde.getDim()),
+      ylimits(2, kde.getDim()),
+      inversionEpsilon(inversionEpsilon) {
   // estimate bandwidth and copy result to local sigma
   kde.getBandwidths(bandwidths);
 
@@ -50,8 +51,7 @@ OperationInverseRosenblattTransformationKDE::OperationInverseRosenblattTransform
   recalcLimits(sigmaFactor);
 }
 
-OperationInverseRosenblattTransformationKDE::~OperationInverseRosenblattTransformationKDE() {
-}
+OperationInverseRosenblattTransformationKDE::~OperationInverseRosenblattTransformationKDE() {}
 
 // ----------------------------------------------------------------------------
 
@@ -59,21 +59,20 @@ float_t OperationInverseRosenblattTransformationKDE::getMaxInversionError() {
   return inversionEpsilon;
 }
 
-void OperationInverseRosenblattTransformationKDE::recalcLimits(
-  float_t sigmaFactor) {
-  DataVector* samples1d = nullptr;
+void OperationInverseRosenblattTransformationKDE::recalcLimits(float_t sigmaFactor) {
+  base::DataVector* samples1d = nullptr;
 
   xlimits.resize(2, ndim);
   ylimits.resize(2, ndim);
 
-  DataVector xlimits_1d(2);
-  DataVector ylimits_1d(2);
+  base::DataVector xlimits_1d(2);
+  base::DataVector ylimits_1d(2);
 
-  DataVector kern(nsamples);
+  base::DataVector kern(nsamples);
   kern.setAll(1.0f);
 
   OperationRosenblattTransformationKDE* opRosen =
-    op_factory::createOperationRosenblattTransformationKDE(*kde);
+      op_factory::createOperationRosenblattTransformationKDE(*kde);
 
   // get minimum and maximum of the data in every dimension
   for (size_t idim = 0; idim < ndim; idim++) {
@@ -84,10 +83,8 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(
     xlimits_1d[1] = samples1d->max() + sigmaFactor * bandwidths[idim];
 
     // transform the limits to obtain the limits in [0, 1] for inversion
-    ylimits_1d[0] = opRosen->doTransformation1D(xlimits_1d[0], *samples1d,
-                    bandwidths[idim], kern);
-    ylimits_1d[1] = opRosen->doTransformation1D(xlimits_1d[1], *samples1d,
-                    bandwidths[idim], kern);
+    ylimits_1d[0] = opRosen->doTransformation1D(xlimits_1d[0], *samples1d, bandwidths[idim], kern);
+    ylimits_1d[1] = opRosen->doTransformation1D(xlimits_1d[1], *samples1d, bandwidths[idim], kern);
 
     // store the obtained limits
     xlimits.setColumn(idim, xlimits_1d);
@@ -95,14 +92,11 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(
 
 #ifdef DEBUG_INVERSE_ROSENBLATT
     std::cout << "d=" << idim << ":" << std::endl;
-    std::cout << " data in [" << samples1d->min() << ", "
-              << samples1d->max() << "], length = " << samples1d->getSize()
-              << std::endl;
+    std::cout << " data in [" << samples1d->min() << ", " << samples1d->max()
+              << "], length = " << samples1d->getSize() << std::endl;
     std::cout << " sigma = " << bandwidths[idim] << std::endl;
-    std::cout << " x    in [" << xlimits_1d[0] << ", " << xlimits_1d[1]
-              << "]" << std::endl;
-    std::cout << " y    in [" << ylimits_1d[0] << ", " << ylimits_1d[1]
-              << "]" << std::endl;
+    std::cout << " x    in [" << xlimits_1d[0] << ", " << xlimits_1d[1] << "]" << std::endl;
+    std::cout << " y    in [" << ylimits_1d[0] << ", " << ylimits_1d[1] << "]" << std::endl;
 #endif
   }
 
@@ -111,13 +105,13 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(
   return;
 }
 
-void OperationInverseRosenblattTransformationKDE::doTransformation(
-  DataMatrix& pointsUniform, DataMatrix& pointsCdf) {
+void OperationInverseRosenblattTransformationKDE::doTransformation(base::DataMatrix& pointsUniform,
+                                                                   base::DataMatrix& pointsCdf) {
   // Work arrays
-  DataVector unif(ndim);
-  DataVector cdf(ndim);
-  DataVector kern(nsamples);
-  DataVector* samples1d = nullptr;
+  base::DataVector unif(ndim);
+  base::DataVector cdf(ndim);
+  base::DataVector kern(nsamples);
+  base::DataVector* samples1d = nullptr;
 
   float_t xi = 0;
 
@@ -130,15 +124,14 @@ void OperationInverseRosenblattTransformationKDE::doTransformation(
       samples1d = kde->getSamples(idim);
 
       // transform the point in the current dimension
-      cdf[idim] = doTransformation1D(unif[idim], *samples1d,
-                                     bandwidths[idim], xlimits.get(0, idim),
+      cdf[idim] = doTransformation1D(unif[idim], *samples1d, bandwidths[idim], xlimits.get(0, idim),
                                      xlimits.get(1, idim), ylimits.get(0, idim),
                                      ylimits.get(1, idim), kern);
 
       // Update the kernel for the next dimension
       for (size_t isamples = 0; isamples < nsamples; isamples++) {
         xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
-        kern[isamples] *= exp(-(xi * xi) / 2.); // (bw*sqrt(2*PI)) cancels;
+        kern[isamples] *= exp(-(xi * xi) / 2.);  // (bw*sqrt(2*PI)) cancels;
       }
     }
 
@@ -150,12 +143,12 @@ void OperationInverseRosenblattTransformationKDE::doTransformation(
 }
 
 void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
-  DataMatrix& pointsUniform, DataMatrix& pointsCdf) {
+    base::DataMatrix& pointsUniform, base::DataMatrix& pointsCdf) {
   // Work arrays
-  DataVector unif(ndim);
-  DataVector cdf(ndim);
-  DataVector kern(nsamples);
-  DataVector* samples1d = nullptr;
+  base::DataVector unif(ndim);
+  base::DataVector cdf(ndim);
+  base::DataVector kern(nsamples);
+  base::DataVector* samples1d = nullptr;
 
   float_t xi = 0;
 
@@ -177,15 +170,14 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
       samples1d = kde->getSamples(idim);
 
       // transform the point in the current dimension
-      cdf[idim] = doTransformation1D(unif[idim], *samples1d,
-                                     bandwidths[idim], xlimits.get(0, idim),
+      cdf[idim] = doTransformation1D(unif[idim], *samples1d, bandwidths[idim], xlimits.get(0, idim),
                                      xlimits.get(1, idim), ylimits.get(0, idim),
                                      ylimits.get(1, idim), kern);
 
       // Update the kernel for the next dimension
       for (size_t isamples = 0; isamples < nsamples; isamples++) {
         xi = (cdf[idim] - samples1d->get(isamples)) / bandwidths[idim];
-        kern[isamples] *= exp(-(xi * xi) / 2.); // (bw*sqrt(2*PI)) cancels;
+        kern[isamples] *= exp(-(xi * xi) / 2.);  // (bw*sqrt(2*PI)) cancels;
       }
     }
 
@@ -196,7 +188,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
   return;
 }
 
-//void OperationInverseRosenblattTransformationKDE::doTransformation_start_dimX(
+// void OperationInverseRosenblattTransformationKDE::doTransformation_start_dimX(
 //        Grid* g_in, DataVector* a_in, size_t dim_start,
 //        DataVector* cdfs1d, DataVector* coords1d) {
 //
@@ -217,7 +209,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //    return;
 //}
 //
-//void OperationInverseRosenblattTransformationKDE::doTransformation_in_next_dim(
+// void OperationInverseRosenblattTransformationKDE::doTransformation_in_next_dim(
 //        Grid* g_in, DataVector* a_in, size_t op_dim,
 //        DataVector* cdfs1d, DataVector* coords1d,
 //        size_t& curr_dim) {
@@ -274,8 +266,8 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //}
 
 float_t OperationInverseRosenblattTransformationKDE::doTransformation1D(
-  float_t coord1d, DataVector& samples1d, float_t sigma, float_t xlower,
-  float_t xupper, float_t ylower, float_t yupper, DataVector& kern) {
+    float_t coord1d, base::DataVector& samples1d, float_t sigma, float_t xlower, float_t xupper,
+    float_t ylower, float_t yupper, base::DataVector& kern) {
   // Cure against extremes
   if (coord1d <= ylower) {
     return xlower;
@@ -303,37 +295,35 @@ float_t OperationInverseRosenblattTransformationKDE::doTransformation1D(
   float_t xacc = 1e-1;
 
   float_t xBisection = 0.0;
-  xerr = bisection(coord1d, xBisection, xlower, xupper, samples1d, sigma,
-                   kern, denom, xacc);
+  xerr = bisection(coord1d, xBisection, xlower, xupper, samples1d, sigma, kern, denom, xacc);
   // use this as starting point for next solver
   float_t xNext = xBisection;
 
   // use this as starting point for next solver (newton) with higher accuracy
-  xerr = newton(coord1d, xNext, samples1d, sigma, kern, denom,
-                inversionEpsilon);
+  xerr = newton(coord1d, xNext, samples1d, sigma, kern, denom, inversionEpsilon);
   //    xerr = halley(coord1d, xNext, dim, kern, denom, xacc);
 
   if (std::isnan(xNext) || xerr > inversionEpsilon) {
     // newton is not converged -> run bisection again with higher accuracy
-    xerr = bisection(coord1d, xBisection, xlower, xupper, samples1d, sigma,
-                     kern, denom, inversionEpsilon);
+    xerr = bisection(coord1d, xBisection, xlower, xupper, samples1d, sigma, kern, denom,
+                     inversionEpsilon);
     xres = xBisection;
 
     if (xerr > xacc) {
-      throw algorithm_exception(
-        "Error: inversion with Rosenblatt is not converged. Search interval for root is possibly too small.");
+      throw base::algorithm_exception(
+          "Error: inversion with Rosenblatt is not converged. Search interval for root is possibly "
+          "too small.");
     }
   } else {
     xres = xNext;
   }
 
   return xres;
-} // end of compute_1D_cdf()
+}  // end of compute_1D_cdf()
 
-float_t OperationInverseRosenblattTransformationKDE::bisection(float_t y,
-    float_t& x, float_t& xlower, float_t& xupper,
-    base::DataVector& samples1d, float_t sigma, DataVector& kern,
-    float_t denom, float_t xacc, size_t maxIterations) {
+float_t OperationInverseRosenblattTransformationKDE::bisection(
+    float_t y, float_t& x, float_t& xlower, float_t& xupper, base::DataVector& samples1d,
+    float_t sigma, base::DataVector& kern, float_t denom, float_t xacc, size_t maxIterations) {
   // iteration counter
   size_t ii = 0;
   size_t ns = samples1d.getSize();
@@ -353,7 +343,7 @@ float_t OperationInverseRosenblattTransformationKDE::bisection(float_t y,
     for (size_t is = 0; is < ns; is++) {
       xi = (x - samples1d[is]) / sigma;
       cdfNormal = 0.5 + 0.5 * erf(xi / M_SQRT2);
-      cdfConditionalized += kern[is] * cdfNormal; // (xx > xi(id,is));
+      cdfConditionalized += kern[is] * cdfNormal;  // (xx > xi(id,is));
     }
 
     // divide result by denominator
@@ -375,9 +365,9 @@ float_t OperationInverseRosenblattTransformationKDE::bisection(float_t y,
 #ifdef DEBUG_INVERSE_ROSENBLATT
 
   if (ii >= maxIterations || std::isnan(x) || xerr > xacc) {
-    std::cout << "Warning: bisection not converged for x " << " in ["
-              << xlower << ", " << xupper << "], err=" << xerr << " > "
-              << xacc << ", iterations=" << ii << std::endl;
+    std::cout << "Warning: bisection not converged for x "
+              << " in [" << xlower << ", " << xupper << "], err=" << xerr << " > " << xacc
+              << ", iterations=" << ii << std::endl;
   } else {
     std::cout << "bisection: x = " << x << ", err=" << xerr << " < " << xacc
               << ", iterations=" << ii << "/" << maxIterations << std::endl;
@@ -388,9 +378,11 @@ float_t OperationInverseRosenblattTransformationKDE::bisection(float_t y,
   return xerr;
 }
 
-float_t OperationInverseRosenblattTransformationKDE::newton(float_t y,
-    float_t& x, base::DataVector& samples1d, float_t sigma,
-    DataVector& kern, float_t denom, float_t xacc, size_t maxIterations) {
+float_t OperationInverseRosenblattTransformationKDE::newton(float_t y, float_t& x,
+                                                            base::DataVector& samples1d,
+                                                            float_t sigma, base::DataVector& kern,
+                                                            float_t denom, float_t xacc,
+                                                            size_t maxIterations) {
   // newton method
   size_t ii = 0;
   size_t ns = samples1d.getSize();
@@ -434,13 +426,13 @@ float_t OperationInverseRosenblattTransformationKDE::newton(float_t y,
     ii++;
   } while ((xerr > xacc) && (ii < maxIterations));
 
-  // end of newton method
+// end of newton method
 
 #ifdef DEBUG_INVERSE_ROSENBLATT
 
   if (ii >= maxIterations || std::isnan(x) || xerr > xacc) {
-    std::cout << "Warning: newton not converged for x " << ", err=" << xerr
-              << " > " << xacc << ", iterations=" << ii << std::endl;
+    std::cout << "Warning: newton not converged for x "
+              << ", err=" << xerr << " > " << xacc << ", iterations=" << ii << std::endl;
   } else {
     std::cout << "newton   : x = " << x << ", err=" << xerr << " < " << xacc
               << ", iterations=" << ii << "/" << maxIterations << std::endl;
@@ -450,9 +442,11 @@ float_t OperationInverseRosenblattTransformationKDE::newton(float_t y,
   return xerr;
 }
 
-float_t OperationInverseRosenblattTransformationKDE::halley(float_t y,
-    float_t& x, base::DataVector& samples1d, float_t sigma,
-    DataVector& kern, float_t denom, float_t xacc, size_t maxIterations) {
+float_t OperationInverseRosenblattTransformationKDE::halley(float_t y, float_t& x,
+                                                            base::DataVector& samples1d,
+                                                            float_t sigma, base::DataVector& kern,
+                                                            float_t denom, float_t xacc,
+                                                            size_t maxIterations) {
   size_t ii = 0;
   size_t ns = samples1d.getSize();
 
@@ -507,21 +501,20 @@ float_t OperationInverseRosenblattTransformationKDE::halley(float_t y,
     ii++;
   } while ((xerr > xacc) && (ii < maxIterations));
 
-  // end of halleys method
+// end of halleys method
 
 #ifdef DEBUG_INVERSE_ROSENBLATT
 
   if (ii >= maxIterations || std::isnan(x) || xerr > xacc) {
-    std::cout << "Warning: halley not converged, err=" << xerr << " > "
-              << xacc << ", iterations=" << ii << std::endl;
+    std::cout << "Warning: halley not converged, err=" << xerr << " > " << xacc
+              << ", iterations=" << ii << std::endl;
   } else {
-    std::cout << "halley: err=" << xerr << " < " << xacc << ", iterations="
-              << ii << "/" << maxIterations << std::endl;
+    std::cout << "halley: err=" << xerr << " < " << xacc << ", iterations=" << ii << "/"
+              << maxIterations << std::endl;
   }
 
 #endif
   return xerr;
 }
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

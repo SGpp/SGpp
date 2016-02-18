@@ -20,17 +20,17 @@ namespace datadriven {
  */
 class OperationRosenblattTransformationKDE {
  public:
-  OperationRosenblattTransformationKDE(GaussianKDE& kde);
+  explicit OperationRosenblattTransformationKDE(GaussianKDE& kde);
   virtual ~OperationRosenblattTransformationKDE();
 
   /**
    * Rosenblatt Transformation with mixed starting dimension
    *
    * @param pointsCdf Output base::DataMatrix (rows: # of samples, columns: # of dims)
-   * @param pointsUniform data points to be transformed base::DataMatrix (rows: # of samples, columns: # of dims)
+   * @param pointsUniform data points to be transformed base::DataMatrix (rows: # of samples,
+   * columns: # of dims)
    */
-  virtual void doTransformation(base::DataMatrix& pointsCdf,
-                                base::DataMatrix& pointsUniform);
+  virtual void doTransformation(base::DataMatrix& pointsCdf, base::DataMatrix& pointsUniform);
 
   virtual void doShuffledTransformation(base::DataMatrix& pointsCdf,
                                         base::DataMatrix& pointsUniform);
@@ -44,8 +44,8 @@ class OperationRosenblattTransformationKDE {
    * @param sigma bandwidth of the kernels in the current dimension
    * @param kern kernel evaluations
    */
-  float_t doTransformation1D(float_t x, base::DataVector& samples1d,
-                             float_t sigma, base::DataVector& kern);
+  float_t doTransformation1D(float_t x, base::DataVector& samples1d, float_t sigma,
+                             base::DataVector& kern);
 
  private:
   datadriven::GaussianKDE* kde;
@@ -55,6 +55,6 @@ class OperationRosenblattTransformationKDE {
   size_t nsamples;
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONKDE_HPP */

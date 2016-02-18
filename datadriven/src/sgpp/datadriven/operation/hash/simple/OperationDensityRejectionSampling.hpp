@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -29,12 +28,12 @@ class OperationDensityRejectionSampling {
    * @param alpha Coefficient vector for current grid
    * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
    * @param num_samples # of samples to draw
-   * @param trial_max maximum # of trials for drawing a sample (exceeding will cause operation to stop)
+   * @param trial_max maximum # of trials for drawing a sample (exceeding will cause operation to
+   * stop)
    */
-  virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
-                          size_t num_samples, size_t trial_max) = 0;
+  virtual void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples,
+                          size_t trial_max) = 0;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONDENSITYREJECTIONSAMPLING_HPP_ */
