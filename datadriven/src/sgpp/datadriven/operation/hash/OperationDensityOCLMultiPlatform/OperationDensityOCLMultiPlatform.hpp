@@ -63,7 +63,8 @@ public:
 		}
 		if(verbose)
 			std::cout<<"Grid stored into integer array! Number of gridpoints: "<<pointscount<<std::endl;
-		multKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T>(devices[0], dims, manager, configuration);
+		multKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T>(devices[0], dims,
+																					   manager, configuration, points, lambda);
 		bKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityB<T>(devices[0], dims, manager, configuration);
 	}
 
@@ -85,7 +86,7 @@ public:
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		start = std::chrono::system_clock::now();
 		try {
-			this->multKernel->mult(points, alphaVector, resultVector, lambda);
+			this->multKernel->mult(alphaVector, resultVector);
 		}
 		catch(base::operation_exception &e) {
 			std::cerr<<"Error! Could not execute opencl density matrix-vector multiplication!"<<std::endl
