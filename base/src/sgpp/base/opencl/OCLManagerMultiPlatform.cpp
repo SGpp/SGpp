@@ -163,8 +163,8 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   cl_int err;
 
   // setting the program
-  const char *kernel_src = source.c_str();
-  cl_program program = clCreateProgramWithSource(device->context, 1, &kernel_src, NULL, &err);
+  const char *kernelSourcePtr = source.c_str();
+  cl_program program = clCreateProgramWithSource(device->context, 1, &kernelSourcePtr, NULL, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;

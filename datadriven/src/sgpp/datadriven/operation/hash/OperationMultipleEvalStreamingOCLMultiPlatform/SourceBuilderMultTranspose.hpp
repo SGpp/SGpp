@@ -128,7 +128,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
 
     std::stringstream sourceStream;
 
-    if (this->floatType().compare("double") == 0) {
+    if (std::is_same<real_type, double>::value) {
       sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
                    << std::endl;
     }

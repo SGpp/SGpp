@@ -188,6 +188,11 @@ class KernelMultTranspose {
       clFinish(device->commandQueue);
 
       if (rangeSize > 0) {
+        size_t resultOffset =
+            kernelStartGrid / (cl_uint)gridBlockingSize;  // based on work groups, cannot be
+                                                          // transmitted through
+                                                          // global_work_offset mechanism
+
         err = clSetKernelArg(kernelMultTranspose, 0, sizeof(cl_mem),
                              this->deviceLevelTranspose.getBuffer());
         if (err != CL_SUCCESS) {
@@ -223,19 +228,25 @@ class KernelMultTranspose {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &sourceSize);
+        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &resultOffset);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint), &kernelStartData);
+        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint), &sourceSize);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelEndData);
+        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelStartData);
+        if (err != CL_SUCCESS) {
+          std::stringstream errorString;
+          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+          throw base::operation_exception(errorString.str());
+        }
+        err = clSetKernelArg(kernelMultTranspose, 8, sizeof(cl_uint), &kernelEndData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -244,8 +255,27 @@ class KernelMultTranspose {
 
         cl_event clTiming;
 
-        err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, 0,
-                                     &rangeSizeAfterBlocking, &localSize, 0, nullptr, &clTiming);
+        // //////////////////////////////////////////////////////////////////////////////////////
+        //        size_t gpuEndGrid = gpu_end_index_grid[platform.platformId][i];
+        //        size_t gpuStartGrid = gpu_start_index_grid[platform.platformId][i];
+        //        size_t rangeSize = (gpuEndGrid / gridBlockingSize) - (gpuStartGrid /
+        //        gridBlockingSize);
+        //
+        //        if (rangeSize > 0) {
+        //          size_t totalWorkItems =
+        //              rangeSize * local;  // TODO(pfandedd): possible bug -> variable might be
+        //                                  // reallocated, the kernel uses a reference...
+        //          // TODO(pfandedd): don't forget the "reqd_work_group_size" kernel attribute
+        //          err = clEnqueueNDRangeKernel(
+        //              platform.commandQueues[i], kernelsMultTrans[platform.platformId][i], 1,
+        //              &gpu_start_index_grid[platform.platformId][i], &totalWorkItems, &local, 0,
+        //              nullptr,
+        //              &(clTimings[platform.platformId][i]));
+        // ///////////////////////////////////////////////////////////////////////////////////////
+
+        size_t threads = rangeSizeAfterBlocking * localSize;
+        err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, &kernelStartGrid,
+                                     &threads, &localSize, 0, nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;

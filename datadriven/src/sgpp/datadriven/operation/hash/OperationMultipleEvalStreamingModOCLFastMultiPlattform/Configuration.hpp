@@ -25,6 +25,11 @@ class Configuration {
   }
 
   static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+    // setup verbose variable for the operation
+    if (parameters.contains("VERBOSE") == false) {
+      parameters.addIDAttr("VERBOSE", false);
+    }
+
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -43,6 +48,7 @@ class Configuration {
         //                std::endl;
         //            }
 
+        // set verbosity for the individual kernels
         if (kernelNode.contains("VERBOSE") == false) {
           kernelNode.addIDAttr("VERBOSE", false);
         }
@@ -59,6 +65,10 @@ class Configuration {
           kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
         }
 
+        if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 12800ul);
+        }
+
         if (kernelNode.contains("INTERNAL_PRECISION") == false) {
           kernelNode.addTextAttr("INTERNAL_PRECISION", "double");
         }
@@ -72,7 +82,7 @@ class Configuration {
         }
 
         if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
-          kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+          kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
         }
 
         if (kernelNode.contains("KERNEL_DATA_BLOCK_SIZE") == false) {
