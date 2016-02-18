@@ -28,6 +28,8 @@ private:
 	std::shared_ptr<base::OCLDevice> device;
 
 	size_t dims;
+	size_t gridSize;
+	T lambda;
 
 	cl_int err;
 
@@ -56,46 +58,48 @@ private:
 public:
 
 	KernelDensityMult(std::shared_ptr<base::OCLDevice> dev, size_t dims,
-					  std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration) :
-		device(dev), dims(dims), err(CL_SUCCESS), devicePoints(device),
+					  std::shared_ptr<base::OCLManagerMultiPlatform> manager, json::Node &kernelConfiguration,
+					  std::vector<int> &points, T lambda) :
+		device(dev), dims(dims), lambda(lambda), err(CL_SUCCESS), devicePoints(device),
 		deviceAlpha(device), deviceResultData(device), kernelMult(nullptr),
 		kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), deviceTimingMult(0.0),
 		kernelConfiguration(kernelConfiguration)
-	{
-		this->verbose = kernelConfiguration["VERBOSE"].getBool();
+		{
+			this->verbose = kernelConfiguration["VERBOSE"].getBool();
+			gridSize = points.size()/(2*dims);
+			if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
+				&& kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
+				std::stringstream errorString;
+				errorString
+					<< "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
+				errorString << " to be greater than the dimension of the data set, was set to"
+							<< kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \"" << device->deviceName
+							<< "\")" << std::endl;
+				throw base::operation_exception(errorString.str());
+			}
 
-		if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
-		  && kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
-		  std::stringstream errorString;
-		  errorString
-		  << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of \"KERNEL_MAX_DIM_UNROLL\"";
-		  errorString << " to be greater than the dimension of the data set, was set to"
-		  << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() << "(device: \"" << device->deviceName
-		  << "\")" << std::endl;
-		  throw base::operation_exception(errorString.str());
-		  }
+			localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
+			dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+			scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
+			totalBlockSize = dataBlockingSize * localSize;
 
-		localSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
-		dataBlockingSize = kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-		scheduleSize = kernelConfiguration["KERNEL_SCHEDULE_SIZE"].getUInt();
-		totalBlockSize = dataBlockingSize * localSize;
-	}
+			devicePoints.intializeTo(points, 1, 0, gridSize*dims*2);
+			clFinish(device->commandQueue);
+		}
 
 	~KernelDensityMult()
-	{
-		if (kernelMult != nullptr) {
-			clReleaseKernel(kernelMult);
-			this->kernelMult = nullptr;
+		{
+			if (kernelMult != nullptr) {
+				clReleaseKernel(kernelMult);
+				this->kernelMult = nullptr;
+			}
 		}
-	}
 
 	void resetKernel()
-	{
-	}
+		{
+		}
 
-	double mult(std::vector<int> &points, std::vector<T> &alpha, std::vector<T> &result,	T lambda)
-	{
-		size_t gridSize = points.size()/(2*dims);
+	double mult(std::vector<T> &alpha, std::vector<T> &result) {
 		if (verbose)
 		{
 			std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId << ")"
@@ -116,17 +120,12 @@ public:
 		}
 
 		//Load data into buffers if not already done
-		if (!devicePoints.isInitialized())
-		{
-			devicePoints.intializeTo(points, 1, 0, gridSize*dims*2);
-			clFinish(device->commandQueue);
-		}
 		deviceAlpha.intializeTo(alpha, 1, 0, gridSize);
-			std::vector<T> zeros(gridSize);
-			for (size_t i = 0; i < gridSize; i++) {
-				zeros[i] = 0.0;
-			}
-			deviceResultData.intializeTo(zeros, 1, 0, gridSize);
+		std::vector<T> zeros(gridSize);
+		for (size_t i = 0; i < gridSize; i++) {
+			zeros[i] = 0.0;
+		}
+		deviceResultData.intializeTo(zeros, 1, 0, gridSize);
 		this->deviceTimingMult = 0.0;
 
 		//Set kernel arguments
@@ -161,10 +160,10 @@ public:
 			throw base::operation_exception(errorString.str());
 		}
 		if(std::is_same<T, float>::value) {
-		err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_float), &lambda);
+			err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_float), &lambda);
 		}
 		else {
-		err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_double), &lambda);
+			err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_double), &lambda);
 		}
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
@@ -238,53 +237,53 @@ public:
 		}
 
 		this->deviceTimingMult += time;
-			return 0;
+		return 0;
 	}
-	static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters){
-        for (std::string &platformName : parameters["PLATFORMS"].keys()) {
-            json::Node &platformNode = parameters["PLATFORMS"][platformName];
-            for (std::string &deviceName : platformNode["DEVICES"].keys()) {
-                json::Node &deviceNode = platformNode["DEVICES"][deviceName];
+	static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+		for (std::string &platformName : parameters["PLATFORMS"].keys()) {
+			json::Node &platformNode = parameters["PLATFORMS"][platformName];
+			for (std::string &deviceName : platformNode["DEVICES"].keys()) {
+				json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
-                const std::string &kernelName = "multdensity";
+				const std::string &kernelName = "multdensity";
 
-                json::Node &kernelNode =
-                        deviceNode["KERNELS"].contains(kernelName) ?
-                                deviceNode["KERNELS"][kernelName] : deviceNode["KERNELS"].addDictAttr(kernelName);
+				json::Node &kernelNode =
+					deviceNode["KERNELS"].contains(kernelName) ?
+					deviceNode["KERNELS"][kernelName] : deviceNode["KERNELS"].addDictAttr(kernelName);
 
-                if (kernelNode.contains("VERBOSE") == false) {
-                    kernelNode.addIDAttr("VERBOSE", false);
-                }
+				if (kernelNode.contains("VERBOSE") == false) {
+					kernelNode.addIDAttr("VERBOSE", false);
+				}
 
-                if (kernelNode.contains("LOCAL_SIZE") == false) {
-                    kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
-                }
+				if (kernelNode.contains("LOCAL_SIZE") == false) {
+					kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
+				}
 
-                if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
-                    kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
-                }
+				if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
+					kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
+				}
 
-                if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
-                    kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
-                }
+				if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
+					kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
+				}
 
-                if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
-                    kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
-                }
+				if (kernelNode.contains("KERNEL_MAX_DIM_UNROLL") == false) {
+					kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+				}
 
-                if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
-                }
+				if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
+					kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+				}
 
-                if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
-                }
+				if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
+					kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+				}
 
-                if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
-                    kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
-                }
-            }
-        }
+				if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
+					kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
+				}
+			}
+		}
 	}
 };
 

@@ -25,8 +25,8 @@ public:
 	OperationDensityOCL()  {
 	}
 
-	virtual void mult(base::DataVector& alpha, base::DataVector& result ) {}
-	virtual void generateb(base::DataVector &dataset, SGPP::base::DataVector &b) {}
+	virtual void mult(base::DataVector& alpha, base::DataVector& result)=0;
+	virtual void generateb(base::DataVector &dataset, SGPP::base::DataVector &b)=0;
 };
 
 }
