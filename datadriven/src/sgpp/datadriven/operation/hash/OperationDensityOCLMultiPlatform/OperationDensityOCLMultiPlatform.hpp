@@ -65,7 +65,8 @@ public:
 			std::cout<<"Grid stored into integer array! Number of gridpoints: "<<pointscount<<std::endl;
 		multKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T>(devices[0], dims,
 																					   manager, configuration, points, lambda);
-		bKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityB<T>(devices[0], dims, manager, configuration);
+		bKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityB<T>(devices[0], dims, manager, configuration,
+																				 points);
 	}
 
 	~OperationDensityOCLMultiPlatform() {
@@ -112,12 +113,10 @@ public:
 		}
 		std::vector<T> bVector(b.getSize());
 		std::vector<T> datasetVector(dataset.getSize());
-		for(size_t i = 0; i < b.getSize(); i++)
-			bVector[i]=b[i];
 		for(size_t i = 0; i < dataset.getSize(); i++)
 			datasetVector[i]=dataset[i];
 		try {
-			bKernel->rhs(points, datasetVector, bVector);
+			bKernel->rhs(datasetVector, bVector);
 		}
 		catch(base::operation_exception &e) {
 			std::cerr<<"Error! Could not calculate right hand side vector!"<<std::endl
