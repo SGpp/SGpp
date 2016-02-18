@@ -39,14 +39,15 @@ SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* createDensityO
 	std::string &firstPlatformName = (*parameters)["PLATFORMS"].keys()[0];
 	std::string &firstDeviceName = (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
 	json::Node &deviceNode = (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-	json::Node &firstDeviceConfig = deviceNode["KERNELS"]["multdensity"];
+	json::Node &firstKernelConfig = deviceNode["KERNELS"]["multdensity"];
+	json::Node &secondKernelConfig = deviceNode["KERNELS"]["cscheme"];
 
 	if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
 		return new datadriven::StreamingOCLMultiPlatform::OperationDensityOCLMultiPlatform<float>(grid,
-																								  dimension, manager, firstDeviceConfig, (float)lambda);
+																								  dimension, manager, firstKernelConfig, secondKernelConfig, (float)lambda);
 	} else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
 		return new datadriven::StreamingOCLMultiPlatform::OperationDensityOCLMultiPlatform<double>(grid,
-																								   2, manager, firstDeviceConfig, lambda);
+																								   2, manager, firstKernelConfig, secondKernelConfig, lambda);
 	} else {
 		throw base::factory_exception(
 			"Error creating operation\"OperationMultiEvalStreamingOCLMultiPlatform\": invalid value for parameter \"INTERNAL_PRECISION\"");

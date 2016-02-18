@@ -36,7 +36,7 @@ SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCL* pruneNeares
 	std::string &firstPlatformName = (*parameters)["PLATFORMS"].keys()[0];
 	std::string &firstDeviceName = (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
 	json::Node &deviceNode = (*parameters)["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-	json::Node &firstDeviceConfig = deviceNode["KERNELS"]["connectNeighbors"];
+	json::Node &firstDeviceConfig = deviceNode["KERNELS"]["removeEdges"];
 
 	if ((*parameters)["INTERNAL_PRECISION"].get().compare("float") == 0) {
 		return new SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCLMultiPlatform<float>(grid, alpha, data, dimensions, manager, firstDeviceConfig, (float)treshold, k);

@@ -33,7 +33,8 @@ private:
 	size_t dims;
 	size_t gridSize;
 	SGPP::base::Grid& grid;
-	json::Node &configuration;
+	json::Node &firstKernelConfig;
+	json::Node &secondKernelConfig;
 	SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T> *multKernel;
 	SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityB<T> *bKernel;
 	std::vector<std::shared_ptr<base::OCLDevice>> devices;
@@ -45,7 +46,8 @@ public:
 
 	OperationDensityOCLMultiPlatform(base::Grid& grid,size_t dimensions,
 									 std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-									 json::Node &configuration,T lambda) : OperationDensityOCL(),dims(dimensions),gridSize(grid.getStorage()->size()),grid(grid),configuration(configuration),devices(manager->getDevices()),manager(manager),lambda(lambda)
+									 json::Node &firstKernelConfig, json::Node &secondKernelConfig, T lambda) : OperationDensityOCL(),dims(dimensions),gridSize(grid.getStorage()->size()),grid(grid),firstKernelConfig(firstKernelConfig),
+																												secondKernelConfig(secondKernelConfig), devices(manager->getDevices()),manager(manager),lambda(lambda)
 	{
 		verbose=true;
 		//Store Grid in a opencl compatible buffer
@@ -64,8 +66,8 @@ public:
 		if(verbose)
 			std::cout<<"Grid stored into integer array! Number of gridpoints: "<<pointscount<<std::endl;
 		multKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityMult<T>(devices[0], dims,
-																					   manager, configuration, points, lambda);
-		bKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityB<T>(devices[0], dims, manager, configuration,
+																					   manager, firstKernelConfig, points, lambda);
+		bKernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelDensityB<T>(devices[0], dims, manager, secondKernelConfig,
 																				 points);
 	}
 

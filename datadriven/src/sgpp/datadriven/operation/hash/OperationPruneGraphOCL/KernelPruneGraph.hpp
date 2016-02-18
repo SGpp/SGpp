@@ -257,7 +257,7 @@ public:
             for (std::string &deviceName : platformNode["DEVICES"].keys()) {
                 json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
-                const std::string &kernelName = "connectNeighbors";
+                const std::string &kernelName = "removeEdges";
 
                 json::Node &kernelNode =
                         deviceNode["KERNELS"].contains(kernelName) ?
