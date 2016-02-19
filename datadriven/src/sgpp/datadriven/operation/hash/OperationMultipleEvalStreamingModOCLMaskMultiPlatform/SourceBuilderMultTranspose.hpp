@@ -60,16 +60,14 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
     sourceStream << "void multTransOCLMask(__global const " << this->floatType() << "* ptrLevel,"
                  << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrIndex," << std::endl;
-    sourceStream << "           __global const " << this->floatType() << "* ptrMask,"
-                 << std::endl;  // not needed for this kernel, but there for uniformity
+    sourceStream << "           __global const " << this->floatType() << "* ptrMask," << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrOffset,"
-                 << std::endl;  // not needed for this kernel, but there for uniformity
+                 << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrData," << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrSource,"
                  << std::endl;
     sourceStream << "           __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    //    sourceStream << "           uint sourceSize," << std::endl;
     sourceStream << "           uint start_data," << std::endl;
     sourceStream << "           uint end_data)" << std::endl;
     sourceStream << "{" << std::endl;

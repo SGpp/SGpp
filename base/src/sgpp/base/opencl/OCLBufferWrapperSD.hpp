@@ -16,7 +16,7 @@ namespace SGPP {
 namespace base {
 
 template <typename T>
-class OCLClonedBufferSD {
+class OCLBufferWrapperSD {
  private:
   std::shared_ptr<OCLDevice> device;
   bool initialized;
@@ -26,10 +26,10 @@ class OCLClonedBufferSD {
   std::vector<T> hostData;
 
  public:
-  explicit OCLClonedBufferSD(std::shared_ptr<base::OCLDevice> device)
+  explicit OCLBufferWrapperSD(std::shared_ptr<base::OCLDevice> device)
       : device(device), initialized(false), buffer(nullptr), elements(0) {}
 
-  ~OCLClonedBufferSD() { this->freeBuffer(); }
+  ~OCLBufferWrapperSD() { this->freeBuffer(); }
 
   bool isInitialized() { return this->initialized; }
 

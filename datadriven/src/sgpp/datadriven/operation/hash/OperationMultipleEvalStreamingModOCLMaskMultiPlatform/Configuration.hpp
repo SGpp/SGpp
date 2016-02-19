@@ -64,8 +64,6 @@ class Configuration {
           kernelNode.addIDAttr("LOCAL_SIZE", 128ul);
         }
 
-        // TODO(pfandedd): if schedule size is not a multiple of LOCAL_SIZE, the kernel crashes with
-        // a cryptic error messag, improve
         if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
           kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 12800ul);
         }
