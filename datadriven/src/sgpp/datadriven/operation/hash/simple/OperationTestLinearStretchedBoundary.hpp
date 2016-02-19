@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -29,31 +28,31 @@ class OperationTestLinearStretchedBoundary : public OperationTest {
    *
    * @param storage the grid's base::GridStorage object
    */
-  OperationTestLinearStretchedBoundary(base::GridStorage* storage) : storage(
-      storage) {}
+  explicit OperationTestLinearStretchedBoundary(base::GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
   virtual ~OperationTestLinearStretchedBoundary() {}
 
-  virtual float_t test(base::DataVector& alpha, base::DataMatrix& data,
-                       base::DataVector& classes);
+  virtual float_t test(base::DataVector& alpha, base::DataMatrix& data, base::DataVector& classes);
   virtual float_t testMSE(base::DataVector& alpha, base::DataMatrix& data,
                           base::DataVector& refValues);
   virtual float_t testWithCharacteristicNumber(SGPP::base::DataVector& alpha,
-      SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
-      SGPP::base::DataVector& charaNumbers);
-  virtual void calculateROCcurve(SGPP::base::DataVector& alpha,
-                                 SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
-                                 SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve);
+                                               SGPP::base::DataMatrix& data,
+                                               SGPP::base::DataVector& classes,
+                                               SGPP::base::DataVector& charaNumbers);
+  virtual void calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
+                                 SGPP::base::DataVector& classes,
+                                 SGPP::base::DataVector& thresholds,
+                                 SGPP::base::DataMatrix& ROC_curve);
 
  protected:
   /// Pointer to base::GridStorage object
   base::GridStorage* storage;
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* OPERATIONTESTLINEARSTRETCHEDBOUNDARY_HPP */

@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -21,7 +20,7 @@ namespace datadriven {
  * DataVector for regularization.
  * This class implements several scaling possibilities.
  */
-class OperationRegularizationDiagonal: public base::OperationMatrix {
+class OperationRegularizationDiagonal : public base::OperationMatrix {
  protected:
   // to remember mode
   int mode;
@@ -35,7 +34,7 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
   base::DataVector diagonal;
 
   // Diagonal entries have been provided
-  //static const int DIAGMATRIX = 0;
+  // static const int DIAGMATRIX = 0;
 
   /**
    * Check for mode and run corresponding init
@@ -73,7 +72,6 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    */
   virtual void initAnisotropicPenalty();
 
-
  public:
   /// Diagonal scaling for @f$H^k_\textbf{mix}@f$-norm (product of
   /// @f$H^k@f$ 1D norms)
@@ -90,16 +88,16 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    * Constructor of OperationRegularizationDiagonal.
    * Constructor should most likely call init() in subclasses.
    * @param storage Pointer to grid's storage object
-   * @param mode Mode, specifying which regularization to use. Example: OperationRegularizationDiagonal::HKMIX.
+   * @param mode Mode, specifying which regularization to use. Example:
+   * OperationRegularizationDiagonal::HKMIX.
    * @param k Parameter for @f$H^k@f$
    */
-  OperationRegularizationDiagonal(base::GridStorage* storage, int mode,
-                                  float_t k);
+  OperationRegularizationDiagonal(base::GridStorage* storage, int mode, float_t k);
 
   /**
    * Destructor
    */
-  virtual ~OperationRegularizationDiagonal() {};
+  virtual ~OperationRegularizationDiagonal();
 
   /**
    * Multiplication with diagonal matrix.
@@ -108,7 +106,6 @@ class OperationRegularizationDiagonal: public base::OperationMatrix {
    */
   virtual void mult(base::DataVector& alpha, base::DataVector& result);
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONREGULARIZATIONDIAGONAL_HPP */

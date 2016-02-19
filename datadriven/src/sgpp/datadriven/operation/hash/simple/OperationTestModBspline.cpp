@@ -12,33 +12,34 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
-float_t OperationTestModBspline::test(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes) {
+float_t OperationTestModBspline::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
+                                      SGPP::base::DataVector& classes) {
   return test_dataset(this->storage, base, alpha, data, classes);
 }
 
 float_t OperationTestModBspline::testMSE(SGPP::base::DataVector& alpha,
-    SGPP::base::DataMatrix& data, SGPP::base::DataVector& refValues) {
+                                         SGPP::base::DataMatrix& data,
+                                         SGPP::base::DataVector& refValues) {
   return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
 float_t OperationTestModBspline::testWithCharacteristicNumber(
-  SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
-  SGPP::base::DataVector& classes, SGPP::base::DataVector& charaNumbers) {
-  return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data,
-         classes, charaNumbers, 0.0);
+    SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
+    SGPP::base::DataVector& charaNumbers) {
+  return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes,
+                                              charaNumbers, 0.0);
 }
 
 void OperationTestModBspline::calculateROCcurve(SGPP::base::DataVector& alpha,
-    SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
-    SGPP::base::DataVector& thresholds, SGPP::base::DataMatrix& ROC_curve) {
-  test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds,
-                         ROC_curve);
+                                                SGPP::base::DataMatrix& data,
+                                                SGPP::base::DataVector& classes,
+                                                SGPP::base::DataVector& thresholds,
+                                                SGPP::base::DataMatrix& ROC_curve) {
+  test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
 }
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
+#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include "sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonal.hpp"
-#include "sgpp/base/exception/generation_exception.hpp"
-#include "sgpp/globaldef.hpp"
+#include <algorithm>
 
 namespace SGPP {
 namespace datadriven {

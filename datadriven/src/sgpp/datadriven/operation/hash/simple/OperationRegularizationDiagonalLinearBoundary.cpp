@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cmath>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp"
-#include "sgpp/base/grid/GridStorage.hpp"
+#include <cmath>
 
 namespace SGPP {
 namespace datadriven {
