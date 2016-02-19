@@ -37,17 +37,17 @@ std::string LearnerScenario::getDatasetFileName() { return this->datasetFileName
 
 double LearnerScenario::getLambda() { return this->lambda; }
 
-sg::base::RegularGridConfiguration LearnerScenario::getGridConfig() { return gridConfig; }
+SGPP::base::RegularGridConfiguration LearnerScenario::getGridConfig() { return gridConfig; }
 
-sg::solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationRefine() {
+SGPP::solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationRefine() {
   return solverConfigRefine;
 }
 
-sg::solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
+SGPP::solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
   return solverConfigFinal;
 }
 
-sg::base::AdpativityConfiguration LearnerScenario::getAdaptivityConfiguration() {
+SGPP::base::AdpativityConfiguration LearnerScenario::getAdaptivityConfiguration() {
   return adaptConfig;
 }
 
