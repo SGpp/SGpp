@@ -13,8 +13,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 #ifndef STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH
-//#define STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH 24
+// #define STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH 24
 #define STREAMING_MODLINEAR_MIC_AVX512_UNROLLING_WIDTH 96
 #endif
 
@@ -87,5 +89,5 @@ class OperationMultiEvalModMaskStreaming : public base::OperationMultipleEval {
 
   void recalculateLevelIndexMask();
 };
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
