@@ -11,11 +11,11 @@
 #include <string>
 #include <vector>
 
+#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLClonedBufferSD.hpp"
 #include "SourceBuilderMult.hpp"
 
 namespace SGPP {
@@ -31,12 +31,12 @@ class KernelMult {
 
   cl_int err;
 
-  base::OCLClonedBufferSD<T> deviceData;
-  base::OCLClonedBufferSD<T> deviceLevel;
-  base::OCLClonedBufferSD<T> deviceIndex;
+  base::OCLBufferWrapperSD<T> deviceData;
+  base::OCLBufferWrapperSD<T> deviceLevel;
+  base::OCLBufferWrapperSD<T> deviceIndex;
 
-  base::OCLClonedBufferSD<T> deviceAlpha;
-  base::OCLClonedBufferSD<T> deviceResultData;
+  base::OCLBufferWrapperSD<T> deviceAlpha;
+  base::OCLBufferWrapperSD<T> deviceResultData;
 
   cl_kernel kernelMult;
 

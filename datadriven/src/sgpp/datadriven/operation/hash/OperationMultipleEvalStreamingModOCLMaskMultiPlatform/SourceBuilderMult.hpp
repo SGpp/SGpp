@@ -19,7 +19,7 @@ namespace datadriven {
 namespace StreamingModOCLMaskMultiPlatform {
 
 template <typename T>
-class KernelSourceBuilderMult : public base::KernelSourceBuilderBase<T> {
+class SourceBuilderMult : public base::KernelSourceBuilderBase<T> {
  private:
   std::shared_ptr<base::OCLDevice> device;
 
@@ -31,8 +31,8 @@ class KernelSourceBuilderMult : public base::KernelSourceBuilderBase<T> {
   bool useLocalMemory;
 
  public:
-  KernelSourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
-                          size_t dims)
+  SourceBuilderMult(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
+                    size_t dims)
       : device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
     localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
     useLocalMemory = kernelConfiguration["KERNEL_USE_LOCAL_MEMORY"].getBool();
@@ -60,10 +60,9 @@ class KernelSourceBuilderMult : public base::KernelSourceBuilderBase<T> {
     sourceStream << "void multOCLMask(__global const " << this->floatType() << "* ptrLevel,"
                  << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrIndex," << std::endl;
-    sourceStream << "           __global const " << this->floatType() << "* ptrMask,"
-                 << std::endl;  // not needed for this kernel, but there for uniformity
+    sourceStream << "           __global const " << this->floatType() << "* ptrMask," << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrOffset,"
-                 << std::endl;  // not needed for this kernel, but there for uniformity
+                 << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrData," << std::endl;
     sourceStream << "           __global const " << this->floatType() << "* ptrAlpha," << std::endl;
     sourceStream << "           __global       " << this->floatType() << "* ptrResult,"
