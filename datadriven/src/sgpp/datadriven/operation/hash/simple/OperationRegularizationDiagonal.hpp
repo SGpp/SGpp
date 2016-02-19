@@ -97,7 +97,7 @@ class OperationRegularizationDiagonal : public base::OperationMatrix {
   /**
    * Destructor
    */
-  virtual ~OperationRegularizationDiagonal();
+  virtual ~OperationRegularizationDiagonal() {}
 
   /**
    * Multiplication with diagonal matrix.
