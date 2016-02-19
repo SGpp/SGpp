@@ -43,13 +43,13 @@ int main(int argc, char** argv) {
    << std::endl;*/
 
   //  std::string fileName = "friedman2_90000.arff";
-  //    std::string fileName = "debugging.arff";
-  std::string fileName = "friedman_4d.arff";
+  std::string fileName = "debugging.arff";
+  //  std::string fileName = "friedman_4d.arff";
   //  std::string fileName = "friedman_10d.arff";
   //  std::string fileName = "DR5_train.arff";
   //  std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 5;
+  uint32_t level = 2;
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -136,10 +136,26 @@ int main(int argc, char** argv) {
 
   double mse = 0.0;
 
+  double largestDifferenceMine = 0.0;
+  double largestDifferenceReference = 0.0;
+  double largestDifference = 0.0;
+
   for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-    mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]) *
-           (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    double difference = std::abs(dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    if (difference > largestDifference) {
+      largestDifference = difference;
+      largestDifferenceMine = dataSizeVectorResult[i];
+      largestDifferenceReference = dataSizeVectorResultCompare[i];
+    }
+
+    std::cout << "difference: " << difference << " mine: " << dataSizeVectorResult[i]
+              << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+
+    mse += difference * difference;
   }
+
+  std::cout << "largestDifference: " << largestDifference << " mine: " << largestDifferenceMine
+            << " ref: " << largestDifferenceReference << std::endl;
 
   mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
   std::cout << "mse: " << mse << std::endl;

@@ -275,6 +275,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   void padDataset(SGPP::base::DataMatrix &dataset) {
     size_t oldSize = dataset.getNrows();
 
+    // TODO(pfandedd): verify that the padding does not add unnecesarry components, especially check
+    // "commonDatasetPadding - remainder"
+
     size_t commonDatasetPadding = calculateCommonDatasetPadding();
 
     // Assure that data has a even number of instances -> padding might be
