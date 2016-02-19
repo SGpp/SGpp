@@ -12,7 +12,7 @@
 #endif
 
 #if defined(__MIC__)
-#include <immintrin.h>
+#include <immintrin.h>  // NOLINT(build/include)
 #endif
 
 #include <cmath>
@@ -25,6 +25,7 @@
 namespace SGPP {
 namespace datadriven {
 
+#if defined(__SSE3__) && !defined(__AVX__) && !defined(__AVX512F__)
 void OperationMultiEvalModMaskStreaming::multImpl(
     std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
     std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
@@ -40,8 +41,6 @@ void OperationMultiEvalModMaskStreaming::multImpl(
   double* ptrResult = result.getPointer();
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
-
-#if defined(__SSE3__) && !defined(__AVX__) && !defined(__AVX512F__)
 
   for (size_t c = start_index_data; c < end_index_data;
        c += std::min<size_t>((size_t)getChunkDataPoints(), (end_index_data - c))) {
@@ -152,8 +151,30 @@ void OperationMultiEvalModMaskStreaming::multImpl(
       }
     }
   }
+#else  /* USE_DOUBLE_PRECISION */
+  throw std::logic_error(
+      "Not implemented when compiling with single "
+      "precision support.");
+#endif /* USE_DOUBLE_PRECISION */
+}
 #endif
+
 #if defined(__SSE3__) && defined(__AVX__) && !defined(__AVX512F__)
+void OperationMultiEvalModMaskStreaming::multImpl(
+    std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
+    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    const size_t start_index_data, const size_t end_index_data) {
+#if USE_DOUBLE_PRECISION == 1
+  double* ptrLevel = level.data();
+  double* ptrIndex = index.data();
+  double* ptrMask = mask.data();
+  double* ptrOffset = offset.data();
+  double* ptrAlpha = alpha.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
+  size_t result_size = result.getSize();
+  size_t dims = dataset->getNrows();
 
   for (size_t c = start_index_data; c < end_index_data;
        c += std::min<size_t>((size_t)getChunkDataPoints(), (end_index_data - c))) {
@@ -273,9 +294,31 @@ void OperationMultiEvalModMaskStreaming::multImpl(
       }
     }
   }
+#else  /* USE_DOUBLE_PRECISION */
+  throw std::logic_error(
+      "Not implemented when compiling with single "
+      "precision support.");
+#endif /* USE_DOUBLE_PRECISION */
+}
 #endif
 
 #if defined(__MIC__) || defined(__AVX512F__)
+void OperationMultiEvalModMaskStreaming::multImpl(
+    std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
+    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    const size_t start_index_data, const size_t end_index_data) {
+#if USE_DOUBLE_PRECISION == 1
+  double* ptrLevel = level.data();
+  double* ptrIndex = index.data();
+  double* ptrMask = mask.data();
+  double* ptrOffset = offset.data();
+  double* ptrAlpha = alpha.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
+  size_t result_size = result.getSize();
+  size_t dims = dataset->getNrows();
+
 #if defined(__MIC__)
 #define _mm512_broadcast_sd(A) \
   _mm512_extload_pd(A, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE)
@@ -565,9 +608,31 @@ void OperationMultiEvalModMaskStreaming::multImpl(
 #endif
     }
   }
+#else  /* USE_DOUBLE_PRECISION */
+  throw std::logic_error(
+      "Not implemented when compiling with single "
+      "precision support.");
+#endif /* USE_DOUBLE_PRECISION */
+}
 #endif
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
+void OperationMultiEvalModMaskStreaming::multImpl(
+    std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
+    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    const size_t start_index_data, const size_t end_index_data) {
+#if USE_DOUBLE_PRECISION == 1
+  double* ptrLevel = level.data();
+  double* ptrIndex = index.data();
+  double* ptrMask = mask.data();
+  double* ptrOffset = offset.data();
+  double* ptrAlpha = alpha.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
+  size_t result_size = result.getSize();
+  size_t dims = dataset->getNrows();
+
 #warning "warning: using fallback implementation for OperationMultiEvalModMaskStreaming_mult"
 
   for (size_t c = start_index_data; c < end_index_data;
@@ -607,13 +672,13 @@ void OperationMultiEvalModMaskStreaming::multImpl(
       }
     }
   }
-#endif
-
 #else  /* USE_DOUBLE_PRECISION */
   throw std::logic_error(
       "Not implemented when compiling with single "
       "precision support.");
 #endif /* USE_DOUBLE_PRECISION */
 }
+#endif
+
 }  // namespace datadriven
 }  // namespace SGPP

@@ -15,7 +15,7 @@
 #endif
 
 #if defined(__MIC__)
-#include <immintrin.h>
+#include <immintrin.h>  // NOLINT(build/include)
 #endif
 
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
@@ -24,6 +24,7 @@
 namespace SGPP {
 namespace datadriven {
 
+#if defined(__SSE3__) && !defined(__AVX__) && !defined(__AVX512F__)
 void OperationMultiEvalStreaming::multImpl(
     SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
     SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
@@ -36,11 +37,8 @@ void OperationMultiEvalStreaming::multImpl(
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
 
-#if defined(__SSE3__) && !defined(__AVX__) && !defined(__AVX512F__)
-
   for (size_t c = start_index_data; c < end_index_data;
        c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
-
 #ifdef __ICC
 #pragma ivdep
 #pragma vector aligned
@@ -144,8 +142,21 @@ void OperationMultiEvalStreaming::multImpl(
       }
     }
   }
+}
 #endif
+
 #if defined(__SSE3__) && defined(__AVX__) && !defined(__AVX512F__)
+void OperationMultiEvalStreaming::multImpl(
+    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
+    const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
+  float_t* ptrLevel = level->getPointer();
+  float_t* ptrIndex = index->getPointer();
+  float_t* ptrAlpha = alpha.getPointer();
+  float_t* ptrData = dataset->getPointer();
+  float_t* ptrResult = result.getPointer();
+  size_t result_size = result.getSize();
+  size_t dims = dataset->getNrows();
 
   for (size_t c = start_index_data; c < end_index_data;
        c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
@@ -261,9 +272,22 @@ void OperationMultiEvalStreaming::multImpl(
       }
     }
   }
+}
 #endif
 
 #if defined(__MIC__) || defined(__AVX512F__)
+void OperationMultiEvalStreaming::multImpl(
+    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
+    const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
+  float_t* ptrLevel = level->getPointer();
+  float_t* ptrIndex = index->getPointer();
+  float_t* ptrAlpha = alpha.getPointer();
+  float_t* ptrData = dataset->getPointer();
+  float_t* ptrResult = result.getPointer();
+  size_t result_size = result.getSize();
+  size_t dims = dataset->getNrows();
+
 #if defined(__MIC__)
 #define _mm512_broadcast_sd(A) \
   _mm512_extload_pd(A, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE)
@@ -543,9 +567,22 @@ void OperationMultiEvalStreaming::multImpl(
   }
 //}
 //}
+}
 #endif
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
+void OperationMultiEvalStreaming::multImpl(
+    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
+    const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
+  float_t* ptrLevel = level->getPointer();
+  float_t* ptrIndex = index->getPointer();
+  float_t* ptrAlpha = alpha.getPointer();
+  float_t* ptrData = dataset->getPointer();
+  float_t* ptrResult = result.getPointer();
+  size_t result_size = result.getSize();
+  size_t dims = dataset->getNrows();
+
 #warning "warning: using fallback implementation for OperationMultiEvalStreaming mult kernel"
 
   for (size_t c = start_index_data; c < end_index_data;
@@ -579,7 +616,8 @@ void OperationMultiEvalStreaming::multImpl(
       }
     }
   }
-#endif
 }
+#endif
+
 }  // namespace datadriven
 }  // namespace SGPP

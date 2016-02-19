@@ -12,7 +12,7 @@
 #endif
 
 #if defined(__MIC__)
-#include <immintrin.h>
+#include <immintrin.h>  // NOLINT(build/include)
 #endif
 
 #include <vector>
