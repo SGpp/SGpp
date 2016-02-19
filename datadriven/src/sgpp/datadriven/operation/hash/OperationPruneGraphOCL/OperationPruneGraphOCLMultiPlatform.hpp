@@ -38,10 +38,10 @@ private:
 	std::vector<T> dataVector;
 public:
 
-	OperationPruneGraphOCLMultiPlatform( base::Grid& grid, base::DataVector& alpha, base::DataVector &data, size_t dims,
+	OperationPruneGraphOCLMultiPlatform( base::Grid& grid, base::DataVector& alpha, base::DataMatrix &data, size_t dims,
 										 std::shared_ptr<base::OCLManagerMultiPlatform> manager,
 										 json::Node &configuration, T treshold, size_t k) :
-		OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage()->size()), dataSize(data.getSize()), configuration(configuration),
+		OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage()->size()), dataSize(data.getSize()), configuration(configuration), dataVector(data.getSize()),
 		devices(manager->getDevices()), manager(manager)
 	{
 		verbose=true;
@@ -62,8 +62,9 @@ public:
 			std::cout<<"Grid stored into integer array! Number of gridpoints: "<<pointscount<<std::endl;
 		for(size_t i=0;i<gridSize;i++)
 			alphaVector.push_back(alpha[i]);
-		for(size_t i=0;i<dataSize;i++)
-			dataVector.push_back(data[i]);
+		double *data_raw = data.getPointer();
+		for(size_t i = 0; i < data.getSize(); i++)
+			dataVector[i]=data_raw[i];
 		graph_kernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelPruneGraph<T>(devices[0], dims, treshold, k, manager, configuration, pointsVector, alphaVector, dataVector);
 	}
 

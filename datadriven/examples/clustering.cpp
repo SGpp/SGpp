@@ -17,14 +17,21 @@
 #include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
 using namespace SGPP::base;
 int main()
 {
-	unsigned int dimension,tiefe,k;
+
+  std::string filename = "simple_test.arff";
+
+  std::cout << "Loading file: " << filename << std::endl;
+  SGPP::datadriven::Dataset data =
+      SGPP::datadriven::ARFFTools::readARFF(filename);
+  SGPP::base::DataMatrix& dataset = data.getData();
+  std::cout<<"Loaded "<<dataset.getNcols()<<" dimensional dataset with "<<dataset.getNrows()<<" datapoints."<<std::endl;
+
+  unsigned int dimension=dataset.getNcols(),tiefe,k;
 	double lambda,treshold;
-	std::string filename;
-	std::cout<<"Count of dimensions: ";
-	std::cin>>dimension;
 	std::cout<<"Size of Grid (3-18): ";
 	std::cin>>tiefe;
 	std::cout<<"Lambda (controlls smoothness of the density function. 0.01 - 0.0001 recommended.): ";
@@ -39,37 +46,6 @@ int main()
 	gridGen->regular(tiefe);
 	size_t gridsize = grid->getStorage()->size();
 	std::cerr<<"Grid created! Number of grid points:	 "<<gridsize<<std::endl;
-	//Load dataset
-	filename="simple_test.txt";
-	std::ifstream teststream(filename.c_str(),std::ifstream::in);
-	char zeile[256];
-	teststream.getline(zeile,256);
-	std::string zeilenstring(zeile);
-	std::stringstream stream(zeilenstring);
-	int spaltencounter=0;
-	int zeilencounter=1;
-	double dummy=0;
-	while(stream.good())
-	{
-		stream>>dummy;
-		spaltencounter++;
-	}
-	while(teststream.getline(zeile,256))
-		zeilencounter++;
-	std::cout<<"Number of datapoints:"<<zeilencounter<<std::endl;
-	teststream.close();
-	std::ifstream ifs(filename.c_str(),std::ifstream::in);
-	float tmp=0;
-	unsigned int counter=0;
-	std::vector<float> buffer_data;
-	while(counter<zeilencounter*spaltencounter)
-	{
-		ifs>>tmp;
-		buffer_data.push_back(tmp);
-		counter++;
-	}
-	ifs.close();
-	std::cout<<"Dataset loaded!"<<std::endl;
 
 	SGPP::base::DataVector alpha(gridsize);
 	SGPP::base::DataVector result(gridsize);
@@ -85,9 +61,6 @@ int main()
 
 	std::cout<<"Creating rhs"<<std::endl;
 	SGPP::base::DataVector b(gridsize);
-	SGPP::base::DataVector dataset(buffer_data.size());
-	for(size_t i=0; i < buffer_data.size();i++)
-		dataset[i]=buffer_data[i];
 	b.setAll(0.0);
 	operation_mult->generateb(dataset,b);
 	for(size_t i=0;i<300;i++)
@@ -105,7 +78,7 @@ int main()
 	std::cout<<"Starting graph creation..."<<std::endl;
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* operation_graph=
 		SGPP::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension, "MyOCLConf.cfg");
-	std::vector<int> graph(zeilencounter*k);
+	std::vector<int> graph(dataset.getNrows()*k);
 	operation_graph->create_graph(graph);
 
 	std::cout<<"Starting graph pruning"<<std::endl;

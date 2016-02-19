@@ -107,7 +107,7 @@ public:
 			result[i] = resultVector[i];
 	}
 
-	void generateb(base::DataVector &dataset, SGPP::base::DataVector &b) {
+	void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b) {
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		start = std::chrono::system_clock::now();
 		if (verbose) {
@@ -115,8 +115,9 @@ public:
 		}
 		std::vector<T> bVector(b.getSize());
 		std::vector<T> datasetVector(dataset.getSize());
+		double *data_raw = dataset.getPointer();
 		for(size_t i = 0; i < dataset.getSize(); i++)
-			datasetVector[i]=dataset[i];
+			datasetVector[i]=data_raw[i];
 		try {
 			bKernel->rhs(datasetVector, bVector);
 		}
