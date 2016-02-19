@@ -7,9 +7,7 @@
 #define OPERATIONROSENBLATTTRANSFORMATION_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace datadriven {
@@ -20,10 +18,8 @@ namespace datadriven {
 
 class OperationRosenblattTransformation {
  public:
-  OperationRosenblattTransformation() {
-  }
-  virtual ~OperationRosenblattTransformation() {
-  }
+  OperationRosenblattTransformation() {}
+  virtual ~OperationRosenblattTransformation() {}
 
   /**
    * Rosenblatt Transformation with mixed starting dimension
@@ -32,8 +28,8 @@ class OperationRosenblattTransformation {
    * @param points Input DataMatrix (rows: # of samples, columns: # of dims)
    * @param pointscdf Output DataMatrix (rows: # of samples, columns: # of dims)
    */
-  virtual void doTransformation(base::DataVector* alpha,
-                                base::DataMatrix* points, base::DataMatrix* pointscdf) = 0;
+  virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* points,
+                                base::DataMatrix* pointscdf) = 0;
 
   /**
    * Rosenblatt Transformation with fixed starting dimension
@@ -43,11 +39,9 @@ class OperationRosenblattTransformation {
    * @param pointscdf Output DataMatrix (rows: # of samples, columns: # of dims)
    * @param dim_start starting dimension
    */
-  virtual void doTransformation(base::DataVector* alpha,
-                                base::DataMatrix* points, base::DataMatrix* pointscdf,
-                                size_t dim_start) = 0;
+  virtual void doTransformation(base::DataVector* alpha, base::DataMatrix* points,
+                                base::DataMatrix* pointscdf, size_t dim_start) = 0;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONROSENBLATTTRANSFORMATION_HPP */

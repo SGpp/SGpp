@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "sgpp/datadriven/algorithm/test_dataset.hpp"
-#include "sgpp/datadriven/operation/hash/simple/OperationTestModPoly.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/datadriven/algorithm/test_dataset.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTestModPoly.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace datadriven {
