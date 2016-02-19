@@ -26,7 +26,7 @@ public:
 	}
 
 	virtual void mult(base::DataVector& alpha, base::DataVector& result)=0;
-	virtual void generateb(base::DataVector &dataset, SGPP::base::DataVector &b)=0;
+	virtual void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b)=0;
 };
 
 }

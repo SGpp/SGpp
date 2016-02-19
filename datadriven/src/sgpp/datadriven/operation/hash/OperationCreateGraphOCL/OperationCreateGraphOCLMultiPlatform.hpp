@@ -33,14 +33,15 @@ private:
 	std::vector<T> dataVector;
 public:
 
-	OperationCreateGraphOCLMultiPlatform(base::DataVector& data, size_t dimensions,
+	OperationCreateGraphOCLMultiPlatform(base::DataMatrix& data, size_t dimensions,
 									 std::shared_ptr<base::OCLManagerMultiPlatform> manager,
 										 json::Node &configuration, size_t k) : OperationCreateGraphOCL(),dims(dimensions),configuration(configuration),devices(manager->getDevices()),manager(manager),
 																				dataVector(data.getSize())
 	{
 		verbose=true;
-		for(size_t i=0;i<data.getSize();i++)
-			dataVector[i]=data[i];
+		double *data_raw = data.getPointer();
+		for(size_t i = 0; i < data.getSize(); i++)
+			dataVector[i]=data_raw[i];
 		graph_kernel=new SGPP::datadriven::DensityOCLMultiPlatform::KernelCreateGraph<T>(devices[0], dims, k, dataVector,
 																						 manager, configuration);
 	}
