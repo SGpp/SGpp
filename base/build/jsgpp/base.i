@@ -120,8 +120,6 @@ namespace std {
 
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
-%include "base/src/sgpp/base/grid/type/PeriodicGrid.hpp"
-
 /*%include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemFreeBoundaries.hpp"*/

@@ -83,7 +83,7 @@ void PDESolver::setGrid(const std::string& serializedGrid) {
     myGridStorage = NULL;
   }
 
-  myGrid = SGPP::base::Grid::unserialize(serializedGrid);
+  myGrid = SGPP::base::Grid::unserialize(serializedGrid).release();
 
   myBoundingBox = myGrid->getBoundingBox();
   myGridStorage = myGrid->getStorage();

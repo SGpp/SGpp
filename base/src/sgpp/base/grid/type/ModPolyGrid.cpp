@@ -56,8 +56,8 @@ size_t ModPolyGrid::getDegree() const {
   return this->degree;
 }
 
-Grid* ModPolyGrid::unserialize(std::istream& istr) {
-  return new ModPolyGrid(istr);
+std::unique_ptr<Grid> ModPolyGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new ModPolyGrid(istr));
 }
 
 void ModPolyGrid::serialize(std::ostream& ostr) {

@@ -40,7 +40,7 @@ class PeriodicGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };
 
 }  // namespace base

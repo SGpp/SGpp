@@ -46,8 +46,8 @@ const SBasis& ModLinearGridStencil::getBasis() {
   return basis;
 }
 
-Grid* ModLinearGridStencil::unserialize(std::istream& istr) {
-  return new ModLinearGridStencil(istr);
+std::unique_ptr<Grid> ModLinearGridStencil::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new ModLinearGridStencil(istr));
 }
 
 /**

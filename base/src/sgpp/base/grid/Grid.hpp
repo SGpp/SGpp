@@ -311,14 +311,14 @@ class Grid {
    * @param istr string that contains the grid information
    * @return grid
    */
-  static Grid* unserialize(const std::string& istr);
+  static std::unique_ptr<Grid> unserialize(const std::string& istr);
 
   /**
    * reads a grid out of a stream
    * @param istr inputstream that contains the grid information
    * @return grid
    */
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
  protected:
   /**
@@ -498,11 +498,11 @@ class Grid {
   /// pointer the GridStorage object of the grid
   GridStorage* storage;
 
-  typedef Grid* (*Factory)(std::istream&);
+  typedef std::unique_ptr<Grid> (*Factory)(std::istream&);
   typedef std::map<std::string, Grid::Factory> factoryMap;
   typedef std::map<SGPP::base::GridType, std::string> gridTypeVerboseMap;
 
-  static Grid* nullFactory(std::istream&);
+  static std::unique_ptr<Grid> nullFactory(std::istream&);
 
  private:
   /**

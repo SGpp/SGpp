@@ -154,14 +154,14 @@ std::unique_ptr<Grid> Grid::createPeriodicGrid(size_t dim) {
   return std::unique_ptr<Grid>(new PeriodicGrid(dim));
 }
 
-Grid* Grid::unserialize(const std::string& istr) {
+std::unique_ptr<Grid> Grid::unserialize(const std::string& istr) {
   std::istringstream istream;
   istream.str(istr);
 
   return Grid::unserialize(istream);
 }
 
-Grid* Grid::unserialize(std::istream& istr) {
+std::unique_ptr<Grid> Grid::unserialize(std::istream& istr) {
   std::string gridtype;
   istr >> gridtype;
 
@@ -410,10 +410,10 @@ std::map<SGPP::base::GridType, std::string>& Grid::typeVerboseMap() {
 /**
  * Factory for everything we don't know.
  */
-Grid* Grid::nullFactory(std::istream&) {
+std::unique_ptr<Grid> Grid::nullFactory(std::istream&) {
   throw factory_exception(
     "factory_exeception unserialize: unsupported gridtype");
-  return NULL;
+  return std::unique_ptr<Grid>(nullptr);
 }
 
 Grid::Grid(std::istream& istr) : storage(NULL) {

@@ -53,8 +53,8 @@ size_t ModBsplineGrid::getDegree() {
   return this->degree;
 }
 
-Grid* ModBsplineGrid::unserialize(std::istream& istr) {
-  return new ModBsplineGrid(istr);
+std::unique_ptr<Grid> ModBsplineGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new ModBsplineGrid(istr));
 }
 
 void ModBsplineGrid::serialize(std::ostream& ostr) {

@@ -44,7 +44,7 @@ class WaveletBoundaryGrid : public Grid {
 
   GridGenerator* createGridGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
  protected:
   /// 1 + how much levels the boundary is coarser than the main axes

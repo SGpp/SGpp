@@ -107,8 +107,6 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
-%include "base/src/sgpp/base/grid/type/PeriodicGrid.hpp"
-
 %include "base/src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
 %include "base/src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"
 %include "base/src/sgpp/base/algorithm/GetAffectedBasisFunctions.hpp"

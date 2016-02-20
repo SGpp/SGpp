@@ -54,8 +54,8 @@ size_t FundamentalSplineGrid::getDegree() {
   return this->degree;
 }
 
-Grid* FundamentalSplineGrid::unserialize(std::istream& istr) {
-  return new FundamentalSplineGrid(istr);
+std::unique_ptr<Grid> FundamentalSplineGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new FundamentalSplineGrid(istr));
 }
 
 void FundamentalSplineGrid::serialize(std::ostream& ostr) {

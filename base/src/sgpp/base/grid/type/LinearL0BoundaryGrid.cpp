@@ -33,8 +33,8 @@ const SBasis& LinearL0BoundaryGrid::getBasis() {
   return basis;
 }
 
-Grid* LinearL0BoundaryGrid::unserialize(std::istream& istr) {
-  return new LinearL0BoundaryGrid(istr);
+std::unique_ptr<Grid> LinearL0BoundaryGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearL0BoundaryGrid(istr));
 }
 
 /**

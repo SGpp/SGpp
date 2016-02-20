@@ -53,8 +53,8 @@ size_t PolyBoundaryGrid::getDegree() const {
   return this->degree;
 }
 
-Grid* PolyBoundaryGrid::unserialize(std::istream& istr) {
-  return new PolyBoundaryGrid(istr);
+std::unique_ptr<Grid> PolyBoundaryGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new PolyBoundaryGrid(istr));
 }
 
 void PolyBoundaryGrid::serialize(std::ostream& ostr) {
