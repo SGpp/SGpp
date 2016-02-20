@@ -20,6 +20,6 @@
  * Version 7: PointDistribution changed from enum to enum class
  * Version 8: Add custom boundaryLevel (>= 1) for LinearBoundaryGrid etc.
  */
-#define SERIALIZATION_VERSION 7
+#define SERIALIZATION_VERSION 8
 
 #endif /* SERIALIZATIONVERSION_HPP */
