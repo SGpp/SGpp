@@ -43,7 +43,7 @@ void PDESolver::getGridNormalDistribution(SGPP::base::DataVector& alpha,
     float_t value;
     SGPP::base::StdNormalDistribution myNormDistr;
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
       std::stringstream coordsStream(coords);
 
@@ -85,10 +85,10 @@ void PDESolver::setGrid(const std::string& serializedGrid) {
 
   myGrid = SGPP::base::Grid::unserialize(serializedGrid).release();
 
-  myBoundingBox = myGrid->getBoundingBox();
-  myGridStorage = myGrid->getStorage();
+  myBoundingBox = &myGrid->getBoundingBox();
+  myGridStorage = &myGrid->getStorage();
 
-  dim = myGrid->getStorage()->dim();
+  dim = myGrid->getStorage().dim();
   levels = 0;
 
   bGridConstructed = true;
@@ -224,7 +224,7 @@ void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t
   if (bGridConstructed) {
     std::unique_ptr<SGPP::base::GridGenerator> myGenerator = myGrid->createGridGenerator();
     size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-    size_t originalGridSize = myGrid->getStorage()->size();
+    size_t originalGridSize = myGrid->getStorage().size();
     SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
         new SGPP::base::SurplusCoarseningFunctor(&alpha, numCoarsen, dThreshold);
 

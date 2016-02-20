@@ -17,7 +17,7 @@ namespace base {
 
 
 HierarchisationLinearStretched::HierarchisationLinearStretched(
-  GridStorage* storage) : storage(storage), stretch(storage->getStretching()) {
+  GridStorage& storage) : storage(storage), stretch(storage.getStretching()) {
 }
 
 HierarchisationLinearStretched::~HierarchisationLinearStretched() {
@@ -41,14 +41,14 @@ void HierarchisationLinearStretched::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 

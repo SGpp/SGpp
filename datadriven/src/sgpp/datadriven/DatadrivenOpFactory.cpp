@@ -64,29 +64,29 @@ namespace op_factory {
 
 datadriven::OperationTest* createOperationTest(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
-    return new datadriven::OperationTestLinear(grid.getStorage());
+    return new datadriven::OperationTestLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
-    return new datadriven::OperationTestLinearBoundary(grid.getStorage());
+    return new datadriven::OperationTestLinearBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::ModBspline) {
-    return new datadriven::OperationTestModBspline(grid.getStorage(),
+    return new datadriven::OperationTestModBspline(&grid.getStorage(),
                                                    ((base::ModBsplineGrid*)&grid)->getDegree());
   } else if (grid.getType() == base::GridType::ModLinear) {
-    return new datadriven::OperationTestModLinear(grid.getStorage());
+    return new datadriven::OperationTestModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
-    return new datadriven::OperationTestPoly(grid.getStorage(),
+    return new datadriven::OperationTestPoly(&grid.getStorage(),
                                              ((base::PolyGrid*)&grid)->getDegree());
   } else if (grid.getType() == base::GridType::ModPoly) {
-    return new datadriven::OperationTestModPoly(grid.getStorage(),
+    return new datadriven::OperationTestModPoly(&grid.getStorage(),
                                                 ((base::ModPolyGrid*)&grid)->getDegree());
   } else if (grid.getType() == base::GridType::ModWavelet) {
-    return new datadriven::OperationTestModWavelet(grid.getStorage());
+    return new datadriven::OperationTestModWavelet(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
-    return new datadriven::OperationTestPrewavelet(grid.getStorage());
+    return new datadriven::OperationTestPrewavelet(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretched) {
-    return new datadriven::OperationTestLinearStretched(grid.getStorage());
+    return new datadriven::OperationTestLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
-    return new datadriven::OperationTestLinearStretchedBoundary(grid.getStorage());
+    return new datadriven::OperationTestLinearStretchedBoundary(&grid.getStorage());
   } else {
     throw base::factory_exception("OperationTest is not implemented for this grid type.");
   }
@@ -98,8 +98,8 @@ base::OperationMatrix* createOperationRegularizationDiagonal(base::Grid& grid, i
       grid.getType() == base::GridType::LinearL0Boundary ||
       grid.getType() == base::GridType::LinearBoundary ||
       grid.getType() == base::GridType::ModLinear) {
-    return new datadriven::OperationRegularizationDiagonalLinearBoundary(grid.getStorage(), mode,
-                                                                         k);
+    return new datadriven::OperationRegularizationDiagonalLinearBoundary(
+        &grid.getStorage(), mode, k);
   } else {
     throw base::factory_exception(
         "OperationRegularizationDiagonal is not implemented for this grid type.");

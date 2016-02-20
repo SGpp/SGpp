@@ -151,7 +151,7 @@ DataVector LearnerSGDE::getSurpluses() {
 }
 
 GridStorage* LearnerSGDE::getGridStorage() {
-  return grid->getStorage();
+  return &grid->getStorage();
 }
 // ---------------------------------------------------------------------------
 
@@ -270,10 +270,10 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
                         float_t lambdaReg) {
   size_t dim = train.getNcols();
 
-  GridStorage* gridStorage = grid.getStorage();
+  GridStorage* gridStorage = &grid.getStorage();
   std::unique_ptr<GridGenerator> gridGen = grid.createGridGenerator();
-  DataVector rhs(grid.getStorage()->size());
-  alpha.resize(grid.getStorage()->size());
+  DataVector rhs(grid.getStorage().size());
+  alpha.resize(grid.getStorage().size());
   alpha.setAll(0.0);
 
   if (!learnerSGDEConfig.silent_) {
@@ -321,11 +321,11 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
       if (!learnerSGDEConfig.silent_) {
         cout << "# LearnerSGDE: ref " << ref << "/"
              << adaptivityConfig.numRefinements_ - 1 << ": "
-             << grid.getStorage()->size() << endl;
+             << grid.getStorage().size() << endl;
       }
 
-      alpha.resize(grid.getStorage()->size());
-      rhs.resize(grid.getStorage()->size());
+      alpha.resize(grid.getStorage().size());
+      rhs.resize(grid.getStorage().size());
       alpha.setAll(0.0);
       rhs.setAll(0.0);
     }

@@ -54,7 +54,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorI
       ->multParallelBuildingBlock(alpha, result);
   result.mult(-0.5);
 #else
-  std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 
 #ifdef _OPENMP
@@ -102,7 +102,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorC
       ->multParallelBuildingBlock(alpha, result);
   result.mult(-0.5);
 #else
-  std::vector<size_t> algoDims = this->BoundGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->BoundGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t LaplaceMutex;

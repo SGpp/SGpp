@@ -362,7 +362,7 @@ void BatchLearner::processBatch(string workData) {
                             p.first));
     datadriven::DensitySystemMatrix DMatrix(*grids.at(p.first),
         *dataInBatch.at(p.first), *id, batchConf.lambda);
-    base::DataVector rhs(grids.at(p.first)->getStorage()->size());
+    base::DataVector rhs(grids.at(p.first)->getStorage().size());
     DMatrix.generateb(rhs);
     myCG->setMaxIterations(solverConf.maxIterations_);
     myCG->setEpsilon(solverConf.eps_);

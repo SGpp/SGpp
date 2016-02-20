@@ -65,8 +65,8 @@ void HullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
   std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
   myGenerator->regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   // std::string serGrid;
   // myGrid->serialize(serGrid);
@@ -201,7 +201,7 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       coordsStream >> tmp;

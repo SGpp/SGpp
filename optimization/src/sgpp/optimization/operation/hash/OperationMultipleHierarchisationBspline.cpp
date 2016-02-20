@@ -27,9 +27,9 @@ bool OperationMultipleHierarchisationBspline::doHierarchisation(base::DataVector
 }
 
 void OperationMultipleHierarchisationBspline::doDehierarchisation(base::DataVector& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalBspline opNaiveEval(&storage, grid.getDegree());
+  base::OperationNaiveEvalBspline opNaiveEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.size());
   base::DataVector x(d, 0.0);
 
@@ -55,9 +55,9 @@ bool OperationMultipleHierarchisationBspline::doHierarchisation(base::DataMatrix
 }
 
 void OperationMultipleHierarchisationBspline::doDehierarchisation(base::DataMatrix& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalBspline opNaiveEval(&storage, grid.getDegree());
+  base::OperationNaiveEvalBspline opNaiveEval(storage, grid.getDegree());
   base::DataVector nodeValues(storage.size(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.size(), 0.0);

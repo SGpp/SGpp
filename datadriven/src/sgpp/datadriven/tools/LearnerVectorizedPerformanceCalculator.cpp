@@ -23,12 +23,12 @@ LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(base::Grid& grid,
   result.GByte_ = 0.0;
   result.GFlop_ = 0.0;
 
-  size_t nDim = grid.getStorage()->dim();
+  size_t nDim = grid.getStorage().dim();
   size_t nGridsize = grid.getSize();
 
   if (grid.getType() == base::GridType::ModLinear) {
     for (size_t g = 0; g < grid.getSize(); g++) {
-      base::GridIndex* curPoint = grid.getStorage()->get(g);
+      base::GridIndex* curPoint = grid.getStorage().get(g);
 
       for (size_t h = 0; h < nDim; h++) {
         base::GridStorage::index_type::level_type level;

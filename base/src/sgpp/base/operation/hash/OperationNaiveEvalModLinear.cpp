@@ -11,12 +11,12 @@ namespace base {
 
 float_t OperationNaiveEvalModLinear::eval(const DataVector& alpha,
     const DataVector& point) {
-  const size_t n = storage->size();
-  const size_t d = storage->dim();
+  const size_t n = storage.size();
+  const size_t d = storage.dim();
   float_t result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *(*storage)[i];
+    const GridIndex& gp = *storage[i];
     float_t curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {

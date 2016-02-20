@@ -39,7 +39,7 @@ AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(base::Grid& SparseGrid,
      "point percentage)!");
   }
 
-  base::GridStorage* gridStorage = SparseGrid.getStorage();
+  base::GridStorage* gridStorage = &SparseGrid.getStorage();
   this->grid = &SparseGrid;
   this->type = gridType;
   this->gridPoint = gridStorage->size();
@@ -1040,7 +1040,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
     myGenerator->refine(myRefineFunc);
     delete myRefineFunc;
 
-    base::GridStorage* gridStorage_ada = this->grid->getStorage();
+    base::GridStorage* gridStorage_ada = &this->grid->getStorage();
     size_t gridPts = gridStorage_ada->size();
 
     std::cout << std::endl;

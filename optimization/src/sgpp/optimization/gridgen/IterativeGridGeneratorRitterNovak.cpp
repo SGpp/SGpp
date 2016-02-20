@@ -83,7 +83,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
   bool result = true;
   base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
-  base::GridStorage& gridStorage = *grid.getStorage();
+  base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   HashRefinementMultiple refinement;

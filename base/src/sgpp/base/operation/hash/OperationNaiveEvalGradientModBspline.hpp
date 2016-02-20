@@ -27,7 +27,7 @@ class OperationNaiveEvalGradientModBspline : public OperationNaiveEvalGradient {
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalGradientModBspline(GridStorage* storage, size_t degree) :
+  OperationNaiveEvalGradientModBspline(GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -49,7 +49,7 @@ class OperationNaiveEvalGradientModBspline : public OperationNaiveEvalGradient {
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineModifiedBase base;
 };

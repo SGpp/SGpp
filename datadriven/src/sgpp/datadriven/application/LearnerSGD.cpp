@@ -38,8 +38,10 @@ void LearnerSGD::train(
 
   alpha_->setAll(0.0);
 
-  size_t num_coeff = grid_->getStorage()->size();
+  size_t num_coeff = grid_->getStorage().size();
   size_t dim = trainDataset.getNcols();
+
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid_));
 
   // Execute SGD
   size_t numIterations = 0;
@@ -55,7 +57,7 @@ void LearnerSGD::train(
 
     // tmp1 = (b_k^T * a^n - y_k) where
     // b_k = (phi_1(x_k) ... phi_N(x_k))
-    float_t tmp1 = grid_->eval(*alpha_, x) - y;
+    float_t tmp1 = opEval->eval(*alpha_, x) - y;
 
     // delta^n = 2 * gamma * (b_k * tmp1 + lambda * a^n)
     DataVector delta(num_coeff);
@@ -65,7 +67,7 @@ void LearnerSGD::train(
       unit_alpha.setAll(0.0);
       unit_alpha[i] = 1;
 
-      delta[i] = 2 * gamma * (grid_->eval(unit_alpha, x) * tmp1 + lambda * (*alpha_)[i]);
+      delta[i] = 2 * gamma * (opEval->eval(unit_alpha, x) * tmp1 + lambda * (*alpha_)[i]);
     }
 
     // update alpha

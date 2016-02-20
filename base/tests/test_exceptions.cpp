@@ -139,9 +139,9 @@ BOOST_AUTO_TEST_CASE(test_FileException) {
 BOOST_AUTO_TEST_CASE(test_GenerationException) {
   size_t dimension = 2;
   std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
-  GridStorage* linearGridStorage = linearGrid->getStorage();
+  GridStorage& linearGridStorage = linearGrid->getStorage();
 
-  PeriodicGridGenerator gridGen(linearGridStorage);
+  PeriodicGridGenerator gridGen(&linearGridStorage);
   size_t level = 3;
   generation_exception expectedException("PeriodicGridGenerator::full is not implemented");
 

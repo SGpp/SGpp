@@ -26,7 +26,7 @@ float_t OperationEvalModWavelet::eval(const DataVector& alpha,
   IndexValVector vec;
   WaveletModifiedBasis<unsigned int, unsigned int> base;
   GetAffectedBasisFunctions <
-  WaveletModifiedBasis<unsigned int, unsigned int> > ga(storage);
+  WaveletModifiedBasis<unsigned int, unsigned int> > ga(&storage);
 
   ga(base, point, vec);
 

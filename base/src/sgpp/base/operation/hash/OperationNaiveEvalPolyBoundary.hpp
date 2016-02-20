@@ -24,7 +24,7 @@ class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
    * @param storage   storage of the sparse grid
    * @param degree    polynomial degree
    */
-  OperationNaiveEvalPolyBoundary(GridStorage* storage, size_t degree) :
+  OperationNaiveEvalPolyBoundary(GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -40,7 +40,7 @@ class OperationNaiveEvalPolyBoundary: public OperationNaiveEval {
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SPolyBoundaryBase base;
 };

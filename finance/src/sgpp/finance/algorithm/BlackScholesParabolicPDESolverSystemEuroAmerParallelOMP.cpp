@@ -42,7 +42,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInne
     SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
-  std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t DeltaMutex;
@@ -130,7 +130,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComp
     SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
-  std::vector<size_t> algoDims = this->BoundGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->BoundGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t DeltaMutex;

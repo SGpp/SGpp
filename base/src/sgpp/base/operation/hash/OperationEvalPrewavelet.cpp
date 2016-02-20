@@ -25,8 +25,7 @@ float_t OperationEvalPrewavelet::eval(const DataVector& alpha,
 
   IndexValVector vec;
   PrewaveletBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(
-    storage);
+  GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(&storage);
 
   ga(base, point, vec);
 
@@ -48,13 +47,13 @@ float_t OperationEvalPrewavelet::test(const DataVector& alpha,
 float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
   float_t result = 0.0;
 
-  for (size_t i = 0; i < storage->size(); i++) {
+  for (size_t i = 0; i < storage.size(); i++) {
     float_t temp_result = 1;
 
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage.dim(); d++) {
       GridStorage::index_type::level_type level;
       GridStorage::index_type::index_type index;
-      (*storage)[i]->get(d, level, index);
+      storage[i]->get(d, level, index);
 
       if (index != 1 && index != (unsigned int)((1 << level) - 1)) {
         temp_result = 0.0;

@@ -18,22 +18,22 @@ namespace base {
 
 void OperationHierarchisationLinearStretched::doHierarchisation(
   DataVector& node_values) {
-  HierarchisationLinearStretched func(this->storage);
-  sweep<HierarchisationLinearStretched> s(func, this->storage);
+  HierarchisationLinearStretched func(storage);
+  sweep<HierarchisationLinearStretched> s(func, &storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.dim(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
 
 void OperationHierarchisationLinearStretched::doDehierarchisation(
   DataVector& alpha) {
-  DehierarchisationLinearStretched func(this->storage);
-  sweep<DehierarchisationLinearStretched> s(func, this->storage);
+  DehierarchisationLinearStretched func(storage);
+  sweep<DehierarchisationLinearStretched> s(func, &storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.dim(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }

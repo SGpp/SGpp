@@ -164,7 +164,7 @@ base::OperationHierarchisation* createOperationHierarchisation(
            dynamic_cast<base::ModPolyGrid*>(&grid)->getDegree());
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationHierarchisationPrewavelet(grid.getStorage(),
-           dynamic_cast<base::PrewaveletGrid*>(&grid)->getShadowStorage());
+           *dynamic_cast<base::PrewaveletGrid*>(&grid)->getShadowStorage());
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationHierarchisationFundamentalSpline(
              dynamic_cast<base::FundamentalSplineGrid*>(&grid));
@@ -216,7 +216,7 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
 base::OperationConvert* createOperationConvert(base::Grid& grid) {
   if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationConvertPrewavelet(grid.getStorage(),
-           ((base::PrewaveletGrid*) &grid)->getShadowStorage());
+           *((base::PrewaveletGrid*) &grid)->getShadowStorage());
   } else {
     throw base::factory_exception(
       "OperationConvert is not implemented for this grid type.");

@@ -21,7 +21,7 @@ void OperationMultipleEvalModLinear::mult(DataVector& alpha,
   AlgorithmDGEMV<SLinearModifiedBase> op;
   LinearModifiedBasis<unsigned int, unsigned int> base;
 
-  op.mult(storage, base, alpha, this->dataset, result);
+  op.mult(&storage, base, alpha, this->dataset, result);
 }
 
 void OperationMultipleEvalModLinear::multTranspose(DataVector& source,
@@ -29,7 +29,7 @@ void OperationMultipleEvalModLinear::multTranspose(DataVector& source,
   AlgorithmDGEMV<SLinearModifiedBase> op;
   LinearModifiedBasis<unsigned int, unsigned int> base;
 
-  op.mult_transposed(storage, base, source, this->dataset, result);
+  op.mult_transposed(&storage, base, source, this->dataset, result);
 }
 
 }  // namespace base

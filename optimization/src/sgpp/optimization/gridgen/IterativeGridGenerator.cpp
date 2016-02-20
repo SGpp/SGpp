@@ -26,7 +26,7 @@ base::Grid& IterativeGridGenerator::getGrid() const { return grid; }
 const base::DataVector& IterativeGridGenerator::getFunctionValues() const { return functionValues; }
 
 void IterativeGridGenerator::undoRefinement(size_t oldGridSize) {
-  base::GridStorage& gridStorage = *grid.getStorage();
+  base::GridStorage& gridStorage = grid.getStorage();
   std::list<size_t> indicesToRemove(gridStorage.size() - oldGridSize);
   std::iota(indicesToRemove.begin(), indicesToRemove.end(), oldGridSize);
   gridStorage.deletePoints(indicesToRemove);
@@ -34,7 +34,7 @@ void IterativeGridGenerator::undoRefinement(size_t oldGridSize) {
 
 void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
   const size_t d = f.getNumberOfParameters();
-  base::GridStorage& gridStorage = *grid.getStorage();
+  base::GridStorage& gridStorage = grid.getStorage();
   const size_t curGridSize = gridStorage.size();
   base::DataVector& fX = functionValues;
 

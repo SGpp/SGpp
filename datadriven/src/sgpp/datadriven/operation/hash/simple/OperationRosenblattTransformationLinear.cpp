@@ -33,7 +33,7 @@ void OperationRosenblattTransformationLinear::doTransformation(base::DataVector*
                                                                base::DataMatrix* points,
                                                                base::DataMatrix* pointscdf) {
   size_t dim_start = 0;
-  size_t num_dims = this->grid->getStorage()->dim();
+  size_t num_dims = this->grid->getStorage().dim();
   size_t bucket_size = points->getNrows() / num_dims + 1;
   base::DataVector* coords1d = new base::DataVector(points->getNcols());
   base::DataVector* cdfs1d = new base::DataVector(points->getNcols());
@@ -153,12 +153,12 @@ void OperationRosenblattTransformationLinear::doTransformation_in_next_dim(
 
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
-  op_dim = (op_dim + 1) % g_out->getStorage()->dim();
+  op_dim = (op_dim + 1) % g_out->getStorage().dim();
 
   /* Step 2: draw a sample in next dim */
   float_t y = 0;
 
-  if (g_out->getStorage()->dim() > 1) {
+  if (g_out->getStorage().dim() > 1) {
     // Marginalize to next dimension
     base::Grid* g1d = NULL;
     base::DataVector* a1d = NULL;
@@ -180,7 +180,7 @@ void OperationRosenblattTransformationLinear::doTransformation_in_next_dim(
   cdfs1d->set(curr_dim, y);
 
   /* Step 4: sample in next dimension */
-  if (g_out->getStorage()->dim() > 1)
+  if (g_out->getStorage().dim() > 1)
     doTransformation_in_next_dim(g_out, a_out, op_dim, coords1d, cdfs1d, curr_dim);
 
   delete g_out;
@@ -198,7 +198,7 @@ float_t OperationRosenblattTransformationLinear::doTransformation1D(base::Grid* 
   std::multimap<float_t, float_t> coord_pdf, coord_cdf;
   std::multimap<float_t, float_t>::iterator it1, it2;
 
-  base::GridStorage* gs = grid1d->getStorage();
+  base::GridStorage* gs = &grid1d->getStorage();
   base::OperationEval* opEval = op_factory::createOperationEval(*(grid1d));
   base::DataVector coord(1);
 

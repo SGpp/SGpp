@@ -196,7 +196,7 @@ void PiecewiseConstantSmoothedRegressionMetaLearner::train(
 
   // initialize standard grid and alpha vector
   grid = std::shared_ptr<base::Grid>(createRegularGrid(this->dim));
-  alpha = std::make_shared<base::DataVector>(grid->getStorage()->size());
+  alpha = std::make_shared<base::DataVector>(grid->getStorage().size());
 
   learner.train(*piecewiseRegressor, *grid, *alpha, lambda);
 

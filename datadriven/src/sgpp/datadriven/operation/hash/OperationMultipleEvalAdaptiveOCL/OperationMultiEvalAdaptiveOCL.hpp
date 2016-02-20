@@ -72,7 +72,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     this->kernel = std::unique_ptr<AdaptiveOCLKernelImpl<T>>(
         new AdaptiveOCLKernelImpl<T>(m_dims, this->manager, parameters));
 
-    this->storage = grid.getStorage();
+    this->storage = &grid.getStorage();
     this->gridSize = grid.getSize();
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();

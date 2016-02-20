@@ -14,7 +14,7 @@ namespace base {
 
 
 DehierarchisationLinearStretched::DehierarchisationLinearStretched(
-  GridStorage* storage) : storage(storage) {
+  GridStorage& storage) : storage(storage) {
 }
 
 DehierarchisationLinearStretched::~DehierarchisationLinearStretched() {
@@ -42,7 +42,7 @@ void DehierarchisationLinearStretched::rec(DataVector& source,
   // get the positions of the current index as
   // well as its left and right neighbors
   float_t posl = 0, posr = 0, posc = 0;
-  storage->getStretching()->getAdjacentPositions(
+  storage.getStretching()->getAdjacentPositions(
     static_cast<int>(current_level),
     static_cast<int>(current_index), dim, posc, posl, posr);
 
@@ -56,14 +56,14 @@ void DehierarchisationLinearStretched::rec(DataVector& source,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 

@@ -25,7 +25,7 @@ class OperationFirstMomentLinear : public OperationFirstMoment {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationFirstMomentLinear(GridStorage* storage) :
+  explicit OperationFirstMomentLinear(GridStorage& storage) :
     storage(storage) {}
 
   ~OperationFirstMomentLinear() override {}
@@ -40,7 +40,7 @@ class OperationFirstMomentLinear : public OperationFirstMoment {
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

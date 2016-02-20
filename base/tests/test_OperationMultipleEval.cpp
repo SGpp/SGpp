@@ -25,9 +25,9 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   grid->createGridGenerator()->regular(2);
 
-  GridStorage* gS = grid->getStorage();
+  GridStorage& gS = grid->getStorage();
 
-  size_t N = gS->size();
+  size_t N = gS.size();
 
   DataVector alpha(N);
 

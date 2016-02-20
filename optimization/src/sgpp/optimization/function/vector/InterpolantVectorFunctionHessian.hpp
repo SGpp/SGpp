@@ -39,7 +39,7 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
   InterpolantVectorFunctionHessian(base::Grid& grid, const base::DataMatrix& alpha)
-      : VectorFunctionHessian(grid.getStorage()->dim(), alpha.getNcols()),
+      : VectorFunctionHessian(grid.getStorage().dim(), alpha.getNcols()),
         grid(grid),
         opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
         alpha(alpha) {}

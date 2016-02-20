@@ -59,7 +59,7 @@ class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval
         std::unique_ptr<StreamingBSplineOCLKernelImpl<T>>(new StreamingBSplineOCLKernelImpl<T>(
             dims, dynamic_cast<base::BsplineGrid&>(grid).getDegree(), this->manager, parameters));
 
-    this->storage = grid.getStorage();
+    this->storage = &grid.getStorage();
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
     this->datasetSize = this->preparedDataset.getNcols();

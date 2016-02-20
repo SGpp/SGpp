@@ -110,15 +110,14 @@ public:
   virtual ~Grid();
 
 public:	
-  virtual SGPP::base::GridStorage* getStorage();
-  virtual SGPP::base::BoundingBox* getBoundingBox();
-  virtual SGPP::base::Stretching* getStretching();
+  virtual SGPP::base::GridStorage& getStorage();
+  virtual SGPP::base::BoundingBox& getBoundingBox();
+  virtual SGPP::base::Stretching& getStretching();
 
   virtual SGPP::base::GridType getType() = 0;
   virtual const SBasis& getBasis() = 0;
   virtual void serialize(std::string& ostr);
   void refine(SGPP::base::DataVector* vector, int num);
-  float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
 };

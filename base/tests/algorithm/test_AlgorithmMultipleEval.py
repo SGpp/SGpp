@@ -134,7 +134,8 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
 
         if inside:
             p = DataVector(x_trans)
-            expected = self.grid.eval(alpha, p)
+            opEval = createOperationEval(self.grid)
+            expected = opEval.eval(alpha, p)
         else:
             expected = 0.0
 

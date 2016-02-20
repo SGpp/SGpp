@@ -34,7 +34,7 @@ HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverS
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
 
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(&SparseGrid.getStorage());
   this->GridConverter = new SGPP::base::DirichletGridConverter();
 
   this->OpLaplaceBound = op_factory::createOperationLaplace(SparseGrid);
@@ -93,7 +93,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(
   SGPP::base::DataVector temp(alpha.getSize());
   temp.setAll(0.0);
 
-  std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t Mutex;
@@ -148,7 +148,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(
   SGPP::base::DataVector temp(alpha.getSize());
   temp.setAll(0.0);
 
-  std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t Mutex;

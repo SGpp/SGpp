@@ -276,8 +276,8 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     for (size_t ii = 0; ii < trainDataClasses.size(); ii++) {
       SGPP::datadriven::DensitySystemMatrix DMatrix(*gridVec_[ii],
           trainDataClasses[ii], *(CVec_[ii]), lambda);
-      SGPP::base::DataVector rhs(gridVec_[ii]->getStorage()->size());
-      SGPP::base::DataVector alpha(gridVec_[ii]->getStorage()->size());
+      SGPP::base::DataVector rhs(gridVec_[ii]->getStorage().size());
+      SGPP::base::DataVector alpha(gridVec_[ii]->getStorage().size());
       alpha.setAll(0.0);
       DMatrix.generateb(rhs);
 

@@ -21,7 +21,7 @@ void OperationMultipleEvalPeriodic::mult(DataVector& alpha,
   AlgorithmDGEMV<SLinearPeriodicBasis> op;
   LinearPeriodicBasis<unsigned int, unsigned int> base;
 
-  op.mult(storage, base, alpha, this->dataset, result);
+  op.mult(&storage, base, alpha, this->dataset, result);
 }
 
 void OperationMultipleEvalPeriodic::multTranspose(DataVector& source,
@@ -29,7 +29,7 @@ void OperationMultipleEvalPeriodic::multTranspose(DataVector& source,
   AlgorithmDGEMV<SLinearPeriodicBasis> op;
   LinearPeriodicBasis<unsigned int, unsigned int> base;
 
-  op.mult_transposed(storage, base, source, this->dataset, result);
+  op.mult_transposed(&storage, base, source, this->dataset, result);
 }
 
 }  // namespace base

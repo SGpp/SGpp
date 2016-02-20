@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
 
   std::unique_ptr<GridGenerator> gen = grid->createGridGenerator();
   gen->regular(level);
-  //  GridStorage* storage = grid->getStorage();
+  //  GridStorage& storage = grid->getStorage();
 
   DataVector surplusses(5);
   surplusses[0] = 1.0;
@@ -294,12 +294,12 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   //  PredictiveRefinement predictive_refinement(hash_refinement);
   //
   //
-  //  predictive_refinement.free_refine(storage, &functor);
+  //  predictive_refinement.free_refine(&storage, &functor);
   //
-  //  BOOST_CHECK_EQUAL(storage->size(), 9);
+  //  BOOST_CHECK_EQUAL(storage.size(), 9);
   //
-  //  for (size_t i = 0; i < storage->size(); i++) {
-  //    HashGridIndex* index = storage->get(i);
+  //  for (size_t i = 0; i < storage.size(); i++) {
+  //    HashGridIndex* index = storage.get(i);
   //    BOOST_CHECK((index->getIndex(0) == 4) == false);
   //  }
   //

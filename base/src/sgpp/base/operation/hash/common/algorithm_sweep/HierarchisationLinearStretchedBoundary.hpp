@@ -32,7 +32,7 @@ class HierarchisationLinearStretchedBoundary: public
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  explicit HierarchisationLinearStretchedBoundary(GridStorage* storage);
+  explicit HierarchisationLinearStretchedBoundary(GridStorage& storage);
 
   /**
    * Destructor

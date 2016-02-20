@@ -24,11 +24,11 @@ namespace base {
 GridDataBase::GridDataBase(size_t dim) : _map(), _dim(static_cast<int>(dim)) {}
 
 GridDataBase::GridDataBase(Grid* grid, DataVector& values) : _map(),
-  _dim(static_cast<int>(grid->getStorage()->dim())) {
-  GridStorage* gs = grid->getStorage();
+  _dim(static_cast<int>(grid->getStorage().dim())) {
+  GridStorage& gs = grid->getStorage();
 
-  for (size_t i = 0; i < gs->size(); i++) {
-    set(gs->get(i), values[gs->seq(gs->get(i))]);
+  for (size_t i = 0; i < gs.size(); i++) {
+    set(gs.get(i), values[gs.seq(gs.get(i))]);
   }
 }
 
@@ -91,9 +91,9 @@ void GridDataBase::set(GridIndex* gi, float_t value) {
 }
 
 void GridDataBase::setValuesFor(Grid* grid, DataVector& values) {
-  GridStorage* gs = grid->getStorage();
+  GridStorage& gs = grid->getStorage();
 
-  for (GridStorage::grid_map_iterator iter = gs->begin(); iter != gs->end();
+  for (GridStorage::grid_map_iterator iter = gs.begin(); iter != gs.end();
        iter++) {
     values[iter->second] = get(iter->first);
   }

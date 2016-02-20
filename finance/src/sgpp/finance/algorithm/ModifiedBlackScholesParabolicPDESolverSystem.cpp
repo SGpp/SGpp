@@ -31,17 +31,17 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
                                            refineThreshold, refineMode, refineMaxLevel) {
   this->OpFBound = SGPP::op_factory::createOperationLF(*this->BoundGrid);
   this->dim_r = dim_HW;
-  this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
+  this->variableDiscountFactor = new VariableDiscountFactor(&SparseGrid.getStorage(), dim_HW);
 }
 
 void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(
     SGPP::base::DataVector& updateVector) {
   float_t tmp;
 
-  for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
+  for (size_t i = 0; i < this->BoundGrid->getStorage().size(); i++) {
     // std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
-    std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(
-        *this->BoundGrid->getBoundingBox());
+    std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(
+        this->BoundGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
     float_t dblFuncValues[2];
 
@@ -107,7 +107,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage()->size();
+    size_t originalGridSize = this->BoundGrid->getStorage().size();
 
     // Coarsen the grid
     std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->BoundGrid->createGridGenerator();
@@ -122,12 +122,12 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
 
       if (this->refineMode == "maxLevel") {
         myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
       }
 
       if (this->refineMode == "classic") {
         myGenerator->refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
       }
 
       delete myRefineFunc;

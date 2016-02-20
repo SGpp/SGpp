@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
 
     for (auto& gridGen : gridGens) {
       // empty grid
-      grid->getStorage()->emptyStorage();
+      grid->getStorage().emptyStorage();
 
       // generate grid
       BOOST_CHECK(gridGen->generate());
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
         SGPP::base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
-          x[t] = (*grid->getStorage())[i]->getCoord(t);
+          x[t] = (grid->getStorage())[i]->getCoord(t);
         }
 
         // test function value

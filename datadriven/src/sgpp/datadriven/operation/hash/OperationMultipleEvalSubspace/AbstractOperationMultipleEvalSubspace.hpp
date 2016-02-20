@@ -28,7 +28,7 @@ class AbstractOperationMultipleEvalSubspace: public
  public:
   AbstractOperationMultipleEvalSubspace(base::Grid& grid,
                                         base::DataMatrix& dataset) :
-    base::OperationMultipleEval(grid, dataset), storage(grid.getStorage()),
+    base::OperationMultipleEval(grid, dataset), storage(&grid.getStorage()),
     duration(-1.0) {
 
   }

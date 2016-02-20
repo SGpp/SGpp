@@ -29,9 +29,9 @@ bool OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(base::DataVector& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalWaveletBoundary opNaiveEval(&storage);
+  base::OperationNaiveEvalWaveletBoundary opNaiveEval(storage);
   base::DataVector nodeValues(storage.size());
   base::DataVector x(d, 0.0);
 
@@ -58,9 +58,9 @@ bool OperationMultipleHierarchisationWaveletBoundary::doHierarchisation(
 }
 
 void OperationMultipleHierarchisationWaveletBoundary::doDehierarchisation(base::DataMatrix& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalWaveletBoundary opNaiveEval(&storage);
+  base::OperationNaiveEvalWaveletBoundary opNaiveEval(storage);
   base::DataVector nodeValues(storage.size(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.size(), 0.0);
