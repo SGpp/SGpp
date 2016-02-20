@@ -109,14 +109,14 @@ float_t PredictiveRefinementIndicator::operator ()(
 }
 
 
-/*float_t PredictiveRefinementIndicator::operator ()(GridStorage* storage, size_t seq) {
+/*float_t PredictiveRefinementIndicator::operator ()(GridStorage& storage, size_t seq) {
   return errorVector->get(seq);
 }*/
 
 
-float_t PredictiveRefinementIndicator::runOperator(GridStorage* storage,
+float_t PredictiveRefinementIndicator::runOperator(GridStorage& storage,
     size_t seq) {
-  return (*this)(storage->get(seq));
+  return (*this)(storage.get(seq));
 }
 
 
@@ -132,7 +132,7 @@ float_t PredictiveRefinementIndicator::start() const {
   return 0.0;
 }
 
-float_t PredictiveRefinementIndicator::operator()(GridStorage* storage,
+float_t PredictiveRefinementIndicator::operator()(GridStorage& storage,
     size_t seq) const {
   throw std::logic_error("This form of the operator() is not implemented "
                          "for predictive indicators.");

@@ -43,7 +43,7 @@ float_t test_dataset(base::GridStorage* storage, BASIS& basis,
 
     base::DataVector point(data.getNcols());
 
-    base::GetAffectedBasisFunctions<BASIS> ga(storage);
+    base::GetAffectedBasisFunctions<BASIS> ga(*storage);
 
     #pragma omp for schedule(static)
 
@@ -92,7 +92,7 @@ float_t test_dataset_mse(base::GridStorage* storage, BASIS& basis,
   {
     size_t size = data.getNrows();
     base::DataVector point(data.getNcols());
-    base::GetAffectedBasisFunctions<BASIS> ga(storage);
+    base::GetAffectedBasisFunctions<BASIS> ga(*storage);
 
     #pragma omp for schedule(static)
 
@@ -150,7 +150,7 @@ float_t test_datasetWithCharacteristicNumber(base::GridStorage* storage,
 
     base::DataVector point(data.getNcols());
 
-    base::GetAffectedBasisFunctions<BASIS> ga(storage);
+    base::GetAffectedBasisFunctions<BASIS> ga(*storage);
 
     #pragma omp for schedule(static)
 

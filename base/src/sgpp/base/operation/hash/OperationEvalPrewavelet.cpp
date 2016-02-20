@@ -25,7 +25,7 @@ float_t OperationEvalPrewavelet::eval(const DataVector& alpha,
 
   IndexValVector vec;
   PrewaveletBasis<unsigned int, unsigned int> base;
-  GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(&storage);
+  GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > ga(storage);
 
   ga(base, point, vec);
 

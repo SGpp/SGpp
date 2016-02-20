@@ -30,7 +30,7 @@ class BoundaryGridGenerator : public GridGenerator {
    *                      1 means same level,
    *                      2 means one level coarser, etc.
    */
-  explicit BoundaryGridGenerator(GridStorage* storage,
+  explicit BoundaryGridGenerator(GridStorage& storage,
                                  level_t boundaryLevel = 1);
 
   /**
@@ -53,8 +53,8 @@ class BoundaryGridGenerator : public GridGenerator {
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
  protected:
-  /// Pointer to the grid's storage object
-  GridStorage* storage;
+  /// reference to the grid's storage object
+  GridStorage& storage;
   /// level at which the boundary points should be inserted
   level_t boundaryLevel;
 };

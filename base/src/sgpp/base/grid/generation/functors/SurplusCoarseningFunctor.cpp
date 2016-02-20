@@ -19,7 +19,7 @@ SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha,
 SurplusCoarseningFunctor::~SurplusCoarseningFunctor() {}
 
 
-float_t SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
+float_t SurplusCoarseningFunctor::operator()(GridStorage& storage, size_t seq) {
   return fabs(alpha->get(seq));
 }
 

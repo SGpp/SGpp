@@ -20,7 +20,7 @@ namespace base {
 class PrewaveletGrid : public Grid {
  protected:
   explicit PrewaveletGrid(std::istream& istr);
-  GridStorage* shadowStorage;
+  std::unique_ptr<GridStorage> shadowStorage;
 
  public:
   explicit PrewaveletGrid(size_t dim);
@@ -35,11 +35,11 @@ class PrewaveletGrid : public Grid {
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
   /**
-   * gets a pointer to the GridStorage object
+   * gets a reference to the GridStorage object
    *
-   * @return pointer to the GridStorage object
+   * @return reference to the GridStorage object
    */
-  GridStorage* getShadowStorage();
+  GridStorage& getShadowStorage();
 };
 
 }  // namespace base

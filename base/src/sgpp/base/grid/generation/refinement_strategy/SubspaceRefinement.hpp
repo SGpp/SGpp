@@ -44,7 +44,7 @@ class SubspaceRefinement: public RefinementDecorator {
   * @param storage hashmap that stores the grid points
   * @param functor a RefinementFunctor specifying the refinement criteria
   */
-  void free_refine(GridStorage* storage,
+  void free_refine(GridStorage& storage,
                    RefinementFunctor* functor) override;
 
 
@@ -63,7 +63,7 @@ class SubspaceRefinement: public RefinementDecorator {
    * @param collection container that contains elements to refine (empty initially)
    */
   void collectRefinablePoints(
-    GridStorage* storage,
+    GridStorage& storage,
     RefinementFunctor* functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
@@ -76,7 +76,7 @@ class SubspaceRefinement: public RefinementDecorator {
    * @param collection container that contains elements to refine (empty initially)
    */
   void refineGridpointsCollection(
-    GridStorage* storage,
+    GridStorage& storage,
     RefinementFunctor* functor,
     AbstractRefinement::refinement_container_type& collection) override;
 

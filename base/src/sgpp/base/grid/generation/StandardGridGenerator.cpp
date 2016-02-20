@@ -18,7 +18,7 @@
 namespace SGPP {
 namespace base {
 
-StandardGridGenerator::StandardGridGenerator(GridStorage* storage) : storage(
+StandardGridGenerator::StandardGridGenerator(GridStorage& storage) : storage(
     storage) {
 }
 

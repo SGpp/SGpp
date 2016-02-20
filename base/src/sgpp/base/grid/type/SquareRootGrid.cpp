@@ -50,15 +50,15 @@ std::unique_ptr<Grid> SquareRootGrid::unserialize(std::istream& istr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> SquareRootGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new SquareRootGridGenerator(this->storage));
+  return std::unique_ptr<GridGenerator>(new SquareRootGridGenerator(*this->storage));
 }
 // OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
 // {
-//   return new OperationHierarchisationLinearBoundary(this->storage);
+//   return new OperationHierarchisationLinearBoundary(*this->storage);
 // }
 // OperationEval* SquareRootGrid::createOperationEval()
 // {
-//   return new OperationEvalLinearBoundary(this->storage);
+//   return new OperationEvalLinearBoundary(*this->storage);
 // }
 
 // OperationConvert* SquareRootGrid::createOperationConvert()

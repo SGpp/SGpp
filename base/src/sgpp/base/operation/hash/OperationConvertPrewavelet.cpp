@@ -21,7 +21,7 @@ namespace base {
 void OperationConvertPrewavelet::doConvertToLinear(
   DataVector& alpha) {
   ConvertPrewaveletToLinear func(storage);
-  sweep<ConvertPrewaveletToLinear> s(func, &storage);
+  sweep<ConvertPrewaveletToLinear> s(func, storage);
 
 
   for (size_t i = 0; i < this->storage.dim(); i++) {
@@ -31,7 +31,7 @@ void OperationConvertPrewavelet::doConvertToLinear(
 
 void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha) {
   ConvertLinearToPrewavelet func(this->storage, this->shadowstorage);
-  sweep<ConvertLinearToPrewavelet> s(func, &storage);
+  sweep<ConvertLinearToPrewavelet> s(func, storage);
 
   for (size_t i = 0; i < this->storage.dim(); i++) {
     s.sweep1D(alpha, alpha, i);

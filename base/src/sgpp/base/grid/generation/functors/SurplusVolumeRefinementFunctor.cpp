@@ -21,10 +21,10 @@ SurplusVolumeRefinementFunctor::SurplusVolumeRefinementFunctor(
 SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor() {
 }
 
-float_t SurplusVolumeRefinementFunctor::operator()(GridStorage* storage,
+float_t SurplusVolumeRefinementFunctor::operator()(GridStorage& storage,
     size_t seq) const {
   return pow(2, static_cast<float_t>(
-               -(static_cast<int>(storage->get(seq)->getLevelSum())))) *
+               -(static_cast<int>(storage.get(seq)->getLevelSum())))) *
          fabs(alpha->get(seq));
 }
 

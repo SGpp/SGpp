@@ -19,7 +19,7 @@ namespace base {
 void OperationHierarchisationLinear::doHierarchisation(DataVector&
     node_values) {
   HierarchisationLinear func(storage);
-  sweep<HierarchisationLinear> s(func, &storage);
+  sweep<HierarchisationLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.dim(); i++) {
@@ -29,7 +29,7 @@ void OperationHierarchisationLinear::doHierarchisation(DataVector&
 
 void OperationHierarchisationLinear::doDehierarchisation(DataVector& alpha) {
   DehierarchisationLinear func(storage);
-  sweep<DehierarchisationLinear> s(func, &storage);
+  sweep<DehierarchisationLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.dim(); i++) {

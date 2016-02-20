@@ -15,9 +15,9 @@
 namespace SGPP {
 namespace base {
 
-void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
+void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
     RefinementFunctor* functor, unsigned int maxLevel) {
-  if (storage->size() == 0) {
+  if (storage.size() == 0) {
     throw generation_exception("storage empty");
   }
 
@@ -39,10 +39,10 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
   size_t max_index = max_indexes[min_idx];
 
   index_type index;
-  GridStorage::grid_map_iterator end_iter = storage->end();
+  GridStorage::grid_map_iterator end_iter = storage.end();
 
   // I think this may be dependent on local support
-  for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
     index = *(iter->first);
 
@@ -50,7 +50,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
     bool refineCandidate = false;
 
     // check if point is on max level in every dimension
-    for (size_t dTest = 0; dTest < storage->dim(); dTest++) {
+    for (size_t dTest = 0; dTest < storage.dim(); dTest++) {
       index_t source_index;
       level_t source_level;
       index.get(dTest, source_level, source_index);
@@ -64,7 +64,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
     // std::cout << index.toString() << " " << refineCandidate << std::endl;
 
     if (refineCandidate == true) {
-      for (size_t d = 0; d < storage->dim(); d++) {
+      for (size_t d = 0; d < storage.dim(); d++) {
         index_t source_index;
         level_t source_level;
         index.get(d, source_level, source_index);
@@ -72,7 +72,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
         if (source_level == 0) {
           // we only have one child on level 1
           index.set(d, 1, 1);
-          child_iter = storage->find(&index);
+          child_iter = storage.find(&index);
 
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
@@ -95,7 +95,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
         } else {
           // left child
           index.set(d, source_level + 1, 2 * source_index - 1);
-          child_iter = storage->find(&index);
+          child_iter = storage.find(&index);
 
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
@@ -118,7 +118,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
 
           // right child
           index.set(d, source_level + 1, 2 * source_index + 1);
-          child_iter = storage->find(&index);
+          child_iter = storage.find(&index);
 
           if (child_iter == end_iter) {
             RefinementFunctor::value_type current_value =
@@ -169,18 +169,18 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage* storage,
 
 
 size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
-  GridStorage* storage, unsigned int maxLevel) {
+  GridStorage& storage, unsigned int maxLevel) {
   size_t counter = 0;
 
-  if (storage->size() == 0) {
+  if (storage.size() == 0) {
     throw generation_exception("storage empty");
   }
 
   index_type index;
-  GridStorage::grid_map_iterator end_iter = storage->end();
+  GridStorage::grid_map_iterator end_iter = storage.end();
 
   // I think this may be dependent on local support
-  for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
     index = *(iter->first);
 
@@ -188,7 +188,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
     bool refineCandidate = false;
 
     // check if point is on max level in every dimension
-    for (size_t dTest = 0; dTest < storage->dim(); dTest++) {
+    for (size_t dTest = 0; dTest < storage.dim(); dTest++) {
       index_t source_index;
       level_t source_level;
       index.get(dTest, source_level, source_index);
@@ -199,7 +199,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
     }
 
     if (refineCandidate == true) {
-      for (size_t d = 0; d < storage->dim(); d++) {
+      for (size_t d = 0; d < storage.dim(); d++) {
         index_t source_index;
         level_t source_level;
         index.get(d, source_level, source_index);
@@ -207,7 +207,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
         if (source_level == 0) {
           // level 1
           index.set(d, 1, 1);
-          child_iter = storage->find(&index);
+          child_iter = storage.find(&index);
 
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
@@ -217,7 +217,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
         } else {
           // left child
           index.set(d, source_level + 1, 2 * source_index - 1);
-          child_iter = storage->find(&index);
+          child_iter = storage.find(&index);
 
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
@@ -227,7 +227,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
 
           // right child
           index.set(d, source_level + 1, 2 * source_index + 1);
-          child_iter = storage->find(&index);
+          child_iter = storage.find(&index);
 
           if (child_iter == end_iter) {
             counter++;
@@ -247,7 +247,7 @@ size_t HashRefinementBoundariesMaxLevel::getNumberOfRefinablePointsToMaxLevel(
 }
 
 
-void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage* storage,
+void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage& storage,
     AbstractRefinement::index_type& index, size_t d, unsigned int maxLevel) {
   index_t source_index;
   level_t source_level;
@@ -258,7 +258,7 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage* storage,
       // we only have one child on level 1
       index.set(d, 1, 1);
 
-      if (!storage->has_key(&index)) {
+      if (!storage.has_key(&index)) {
         index.setLeaf(true);
         createGridpoint(storage, index);
       }
@@ -266,7 +266,7 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage* storage,
       // generate left child, if necessary
       index.set(d, source_level + 1, 2 * source_index - 1);
 
-      if (!storage->has_key(&index)) {
+      if (!storage.has_key(&index)) {
         index.setLeaf(true);
         createGridpoint(storage, index);
       }
@@ -274,7 +274,7 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage* storage,
       // generate right child, if necessary
       index.set(d, source_level + 1, 2 * source_index + 1);
 
-      if (!storage->has_key(&index)) {
+      if (!storage.has_key(&index)) {
         index.setLeaf(true);
         createGridpoint(storage, index);
       }
@@ -285,14 +285,14 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint1D(GridStorage* storage,
 }
 
 
-void HashRefinementBoundariesMaxLevel::refineGridpoint(GridStorage* storage,
+void HashRefinementBoundariesMaxLevel::refineGridpoint(GridStorage& storage,
     size_t refine_index, unsigned int maxLevel) {
-  index_type index(*(*storage)[refine_index]);
+  index_type index(*storage[refine_index]);
 
   // Sets leaf property of index, which is refined to false
-  (*storage)[refine_index]->setLeaf(false);
+  storage[refine_index]->setLeaf(false);
 
-  for (size_t d = 0; d < storage->dim(); d++) {
+  for (size_t d = 0; d < storage.dim(); d++) {
     refineGridpoint1D(storage, index, d, maxLevel);
   }
 }

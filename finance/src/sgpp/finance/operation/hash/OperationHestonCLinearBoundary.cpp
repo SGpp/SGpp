@@ -73,7 +73,7 @@ void OperationHestonCLinearBoundary::up(SGPP::base::DataVector& alpha,
                                         SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -82,7 +82,7 @@ void OperationHestonCLinearBoundary::down(SGPP::base::DataVector& alpha,
                                           SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -91,7 +91,7 @@ void OperationHestonCLinearBoundary::upOpDimOne(SGPP::base::DataVector& alpha,
                                                 SGPP::base::DataVector& result, size_t dim) {
   // phi * dphi
   PhidPhiUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<PhidPhiUpBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<PhidPhiUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -100,7 +100,7 @@ void OperationHestonCLinearBoundary::downOpDimOne(SGPP::base::DataVector& alpha,
                                                   SGPP::base::DataVector& result, size_t dim) {
   // phi * dphi
   PhidPhiDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<PhidPhiDownBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<PhidPhiDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -109,7 +109,7 @@ void OperationHestonCLinearBoundary::upOpDimTwo(SGPP::base::DataVector& alpha,
                                                 SGPP::base::DataVector& result, size_t dim) {
   // x * dphi * phi
   XdPhiPhiUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<XdPhiPhiUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -118,7 +118,7 @@ void OperationHestonCLinearBoundary::downOpDimTwo(SGPP::base::DataVector& alpha,
                                                   SGPP::base::DataVector& result, size_t dim) {
   // x * dphi * phi
   XdPhiPhiDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<XdPhiPhiDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }

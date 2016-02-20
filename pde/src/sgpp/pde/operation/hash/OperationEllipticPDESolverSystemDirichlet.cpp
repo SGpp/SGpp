@@ -16,7 +16,7 @@ namespace pde {
 OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDirichlet(
     SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs)
     : OperationEllipticPDESolverSystem(SparseGrid, rhs) {
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(&SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->GridConverter = new SGPP::base::DirichletGridConverter();
 
   this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->rhs, &(this->InnerGrid),

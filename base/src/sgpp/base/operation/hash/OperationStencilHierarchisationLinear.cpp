@@ -23,7 +23,7 @@ void OperationStencilHierarchisationLinear::doHierarchisation(
   weightStencil.clear();
   StencilHierarchisationLinear func(this->storage, surplusStencil,
                                     neighborStencil, weightStencil);
-  sweep<StencilHierarchisationLinear> s(func, &storage);
+  sweep<StencilHierarchisationLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.dim(); i++) {
@@ -38,7 +38,7 @@ void OperationStencilHierarchisationLinear::doDehierarchisation(
   weightStencil.clear();
   StencilDehierarchisationLinear func(this->storage, surplusStencil,
                                       neighborStencil, weightStencil);
-  sweep<StencilDehierarchisationLinear> s(func, &storage);
+  sweep<StencilDehierarchisationLinear> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.dim(); i++) {

@@ -18,7 +18,7 @@ namespace SGPP {
 namespace base {
 
 StretchedBoundaryGridGenerator::StretchedBoundaryGridGenerator(
-  GridStorage* storage) : storage(storage) {
+  GridStorage& storage) : storage(storage) {
 }
 
 StretchedBoundaryGridGenerator::~StretchedBoundaryGridGenerator() {

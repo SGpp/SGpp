@@ -27,7 +27,7 @@ float_t OperationEvalPeriodic::eval(const DataVector& alpha,
   IndexValVector vec;
   LinearPeriodicBasis<unsigned int, unsigned int> base;
   GetAffectedBasisFunctions <
-  LinearPeriodicBasis<unsigned int, unsigned int> > ga(&storage);
+  LinearPeriodicBasis<unsigned int, unsigned int> > ga(storage);
 
   ga(base, point, vec);
 

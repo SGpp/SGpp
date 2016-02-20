@@ -25,7 +25,7 @@ class StandardGridGenerator : public GridGenerator {
    *
    * @param storage the grid's storage object
    */
-  explicit StandardGridGenerator(GridStorage* storage);
+  explicit StandardGridGenerator(GridStorage& storage);
 
   /**
    * Destructor
@@ -47,8 +47,8 @@ class StandardGridGenerator : public GridGenerator {
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
  protected:
-  /// pointer to the storage object
-  GridStorage* storage;
+  /// reference to the storage object
+  GridStorage& storage;
 };
 
 }  // namespace base

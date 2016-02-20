@@ -17,7 +17,7 @@
 namespace SGPP {
 namespace base {
 
-L0BoundaryGridGenerator::L0BoundaryGridGenerator(GridStorage* storage) :
+L0BoundaryGridGenerator::L0BoundaryGridGenerator(GridStorage& storage) :
   storage(storage) {
 }
 

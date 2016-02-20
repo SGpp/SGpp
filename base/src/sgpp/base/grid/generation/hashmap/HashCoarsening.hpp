@@ -50,10 +50,10 @@ class HashCoarsening {
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
    * @param numFirstPoints number of grid points that are regarded to be coarsened
    */
-  void free_coarsen_NFirstOnly(GridStorage* storage, CoarseningFunctor* functor,
+  void free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor* functor,
                                DataVector* alpha, size_t numFirstPoints) {
     // check if the grid has any points
-    if (storage->size() == 0) {
+    if (storage.size() == 0) {
       throw generation_exception("storage empty");
     }
 
@@ -81,7 +81,7 @@ class HashCoarsening {
 
     // assure that only the first numFirstPoints are checked for coarsening
     for (size_t z = 0; z < numFirstPoints; z++) {
-      index_type* index = storage->get(z);
+      index_type* index = storage.get(z);
 
       if (index->isLeaf() && index->isInnerPoint()) {
         CoarseningFunctor::value_type current_value = (*functor)(storage, z);
@@ -137,7 +137,7 @@ class HashCoarsening {
     //   std::cout << "Index: " << *iter << std::endl;
     // }
 
-    remainingIndex = storage->deletePoints(deletePoints);
+    remainingIndex = storage.deletePoints(deletePoints);
 
     // DEBUG
     // std::cout << "List of remaining GridPoints (indices)" << std::endl;
@@ -167,9 +167,9 @@ class HashCoarsening {
    * @param functor a function used to determine if refinement is needed
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
    */
-  void free_coarsen(GridStorage* storage, CoarseningFunctor* functor,
+  void free_coarsen(GridStorage& storage, CoarseningFunctor* functor,
                     DataVector* alpha) {
-    free_coarsen_NFirstOnly(storage, functor, alpha, storage->size());
+    free_coarsen_NFirstOnly(storage, functor, alpha, storage.size());
   }
 
   /**
@@ -177,17 +177,17 @@ class HashCoarsening {
    *
    * @param storage hashmap that stores the grid points
    */
-  size_t getNumberOfRemovablePoints(GridStorage* storage) {
+  size_t getNumberOfRemovablePoints(GridStorage& storage) {
     size_t counter = 0;
 
-    if (storage->size() == 0) {
+    if (storage.size() == 0) {
       throw generation_exception("storage empty");
     }
 
     index_type index;
-    GridStorage::grid_map_iterator end_iter = storage->end();
+    GridStorage::grid_map_iterator end_iter = storage.end();
 
-    for (GridStorage::grid_map_iterator iter = storage->begin();
+    for (GridStorage::grid_map_iterator iter = storage.begin();
          iter != end_iter;
          iter++) {
       index = *(iter->first);

@@ -20,7 +20,7 @@ float_t OperationEvalPolyBoundary::eval(const DataVector& alpha,
   typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
   IndexValVector vec;
-  GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > ga(&storage);
+  GetAffectedBasisFunctions<PolyBoundaryBasis<unsigned int, unsigned int> > ga(storage);
 
   ga(base, point, vec);
 

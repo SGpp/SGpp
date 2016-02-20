@@ -28,7 +28,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
    */
-  void free_refine(GridStorage* storage, RefinementFunctor* functor);
+  void free_refine(GridStorage& storage, RefinementFunctor* functor);
 
 
   /**
@@ -36,9 +36,9 @@ class HashRefinementBoundaries: public AbstractRefinement {
    *
    * @param storage hashmap that stores the grid points
    */
-  size_t getNumberOfRefinablePoints(GridStorage* storage);
+  size_t getNumberOfRefinablePoints(GridStorage& storage);
 
-  void refineGridpoint1D(GridStorage* storage,
+  void refineGridpoint1D(GridStorage& storage,
                          AbstractRefinement::index_type& index, size_t d);
 
  protected:
@@ -49,7 +49,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param refine_index the index in the hashmap of the point that should be refined
    */
-  void refineGridpoint(GridStorage* storage, size_t refine_index);
+  void refineGridpoint(GridStorage& storage, size_t refine_index);
 
 
   /**
@@ -60,7 +60,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoinrs
    * @param index the point that should be inserted
    */
-  void createGridpoint(GridStorage* storage, index_type& index);
+  void createGridpoint(GridStorage& storage, index_type& index);
 
 
   /**
@@ -70,7 +70,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoinrs
    * @param index the point that should be inserted
    */
-  void createGridpointGeneral(GridStorage* storage, index_type& index);
+  void createGridpointGeneral(GridStorage& storage, index_type& index);
 
 
   /**
@@ -80,7 +80,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoinrs
    * @param index the point that should be inserted
    */
-  void createGridpointLevelZeroConsistency(GridStorage* storage,
+  void createGridpointLevelZeroConsistency(GridStorage& storage,
       index_type& index);
 
   /**
@@ -93,7 +93,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
          * @param source_level level value in the dimension d
          */
   void createGridpoint1D(index_type& index,
-                         size_t d, GridStorage* storage,
+                         size_t d, GridStorage& storage,
                          index_t& source_index, level_t& source_level);
 
   /**
@@ -105,7 +105,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
   * @param collection container that contains elements to refine (empty initially)
   */
   void collectRefinablePoints(
-    GridStorage* storage,
+    GridStorage& storage,
     RefinementFunctor* functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
@@ -117,7 +117,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
   * @param collection container that contains elements to refine (empty initially)
   */
   void refineGridpointsCollection(
-    GridStorage* storage,
+    GridStorage& storage,
     RefinementFunctor* functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
@@ -146,7 +146,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
   * @return list with indicator elements
   */
   AbstractRefinement::refinement_list_type getIndicator(
-    GridStorage* storage,
+    GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
     const RefinementFunctor* functor) const;
 };

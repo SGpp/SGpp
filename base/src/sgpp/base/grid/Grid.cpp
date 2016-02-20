@@ -421,9 +421,9 @@ Grid::Grid(std::istream& istr) {
   istr >> hasStorage;
 
   if (hasStorage == 1) {
-    storage = new GridStorage(istr);
+    storage.reset(new GridStorage(istr));
   } else {
-    storage = new GridStorage(0);
+    storage.reset(new GridStorage(0));
   }
 }
 
@@ -440,10 +440,6 @@ Grid::Grid(Stretching& BB) : storage(new GridStorage(BB)) {
 }
 
 Grid::~Grid() {
-  if (storage != nullptr) {
-    delete storage;
-    storage = nullptr;
-  }
 }
 
 GridStorage& Grid::getStorage() {

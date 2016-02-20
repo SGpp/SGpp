@@ -26,7 +26,7 @@ float_t OperationEvalModLinear::eval(const DataVector& alpha,
   IndexValVector vec;
   LinearModifiedBasis<unsigned int, unsigned int> base;
   GetAffectedBasisFunctions <
-  LinearModifiedBasis<unsigned int, unsigned int> > ga(&storage);
+  LinearModifiedBasis<unsigned int, unsigned int> > ga(storage);
 
   /* Scale point to bounding box */
 

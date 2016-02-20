@@ -37,7 +37,7 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(&SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
   // set Eigenvalues, Eigenvector of covariance matrix and mu_hat

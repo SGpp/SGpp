@@ -20,8 +20,8 @@ namespace SGPP {
 namespace base {
 
 
-PrewaveletGridGenerator::PrewaveletGridGenerator(GridStorage* storage,
-    GridStorage* shadowstorage) :
+PrewaveletGridGenerator::PrewaveletGridGenerator(GridStorage& storage,
+    GridStorage& shadowstorage) :
   storage(storage), shadowstorage(shadowstorage) {
 }
 
@@ -49,15 +49,15 @@ void PrewaveletGridGenerator::full(size_t level) {
  */
 void PrewaveletGridGenerator::refine(RefinementFunctor* func) {
   HashRefinement refine;
-  size_t start = this->storage->size();
+  size_t start = this->storage.size();
   refine.free_refine(this->storage, func);
-  size_t end = this->storage->size();
+  size_t end = this->storage.size();
   // All added gridpoint are between [start,end[
 
   // Check if a gridpoint within the shadow storage
   // is now part of the actual grid!
   for (size_t i = start; i < end; i++) {
-    if (shadowstorage->find(storage->get(i)) != shadowstorage->end()) {
+    if (shadowstorage.find(storage.get(i)) != shadowstorage.end()) {
       consolidateShadow();
       break;
     }
@@ -65,11 +65,11 @@ void PrewaveletGridGenerator::refine(RefinementFunctor* func) {
 
   // Now add all missing neigbours to the shadowStorage
   for (size_t i = start; i < end; i++) {
-    GridStorage::index_pointer index = this->storage->get(i);
+    GridStorage::index_pointer index = this->storage.get(i);
 
     level_t sum = 0;
 
-    for (size_t d = 0; d < storage->dim(); ++d) {
+    for (size_t d = 0; d < storage.dim(); ++d) {
       index_t current_index;
       level_t current_level;
       index->get(d, current_level, current_index);
@@ -78,7 +78,7 @@ void PrewaveletGridGenerator::refine(RefinementFunctor* func) {
 
     GridStorage::grid_iterator iter(storage);
     GridStorage::grid_iterator shadowIter(shadowstorage);
-    addNeighbours(*this->storage->get(i), 0, sum, iter, shadowIter);
+    addNeighbours(*this->storage.get(i), 0, sum, iter, shadowIter);
   }
 }
 
@@ -90,7 +90,7 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePoints() {
 void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
     GridStorage::grid_iterator& shadowIter) {
   // Call parents in every dimension
-  for (size_t d = 0; d < storage->dim(); d++) {
+  for (size_t d = 0; d < storage.dim(); d++) {
     index_t current_index;
     level_t current_level;
     iter.get(d, current_level, current_index);
@@ -100,14 +100,14 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
 
     iter.up(d);
     shadowIter.up(d);
-    this->storage->get(iter.seq())->setLeaf(false);
+    this->storage.get(iter.seq())->setLeaf(false);
 
     // Ok, point is neither in storage, nor in shadowstorage ...
-    if (storage->end(iter.seq()) && shadowstorage->end(shadowIter.seq())) {
+    if (storage.end(iter.seq()) && shadowstorage.end(shadowIter.seq())) {
       GridStorage::index_pointer new_index = new GridStorage::index_type(
-        storage->dim());
+        storage.dim());
 
-      for (size_t dim = 0; dim < storage->dim(); ++dim) {
+      for (size_t dim = 0; dim < storage.dim(); ++dim) {
         index_t target_index;
         level_t target_level;
 
@@ -116,7 +116,7 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
         new_index->set(dim, target_level, target_index);
       }
 
-      shadowstorage->insert(*new_index);
+      shadowstorage.insert(*new_index);
       delete new_index;
       insertParents(iter, shadowIter);
     }
@@ -133,7 +133,7 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
 
   level_t sum = 0;
 
-  for (size_t d = 0; d < storage->dim(); ++d) {
+  for (size_t d = 0; d < storage.dim(); ++d) {
     index_t current_index;
     level_t current_level;
     iter.get(d, current_level, current_index);
@@ -142,12 +142,12 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
 
   if (sum == target_level) {
     GridStorage::index_pointer new_index = new GridStorage::index_type(
-      storage->dim());
+      storage.dim());
 
-    if (storage->end(iter.seq()) && shadowstorage->end(shadowIter.seq())) {
+    if (storage.end(iter.seq()) && shadowstorage.end(shadowIter.seq())) {
       // Ok, point is neither in storage, nor in shadowstorage ...
       // check if the border of index and iter touching
-      for (size_t d = 0; d < storage->dim(); ++d) {
+      for (size_t d = 0; d < storage.dim(); ++d) {
         index_t target_index;
         level_t target_level;
 
@@ -185,7 +185,7 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
       }
 
       // Yepp, the supports touching each other! Add point to shadow!
-      shadowstorage->insert(*new_index);
+      shadowstorage.insert(*new_index);
       delete new_index;
       // Call for parents
       insertParents(iter, shadowIter);
@@ -196,7 +196,7 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
     return;
   }
 
-  for (size_t d = current_dim; d < storage->dim(); d++) {
+  for (size_t d = current_dim; d < storage.dim(); d++) {
     index_t save_index;
     level_t save_level;
     iter.get(d, save_level, save_index);  // Save current index
@@ -220,21 +220,19 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
  * to the actual grid then we have to remove these points from the shadow storage.
  */
 void PrewaveletGridGenerator::consolidateShadow() {
-  GridStorage* temp = new GridStorage(storage->dim());
+  GridStorage temp(storage.dim());
 
-  for (size_t i = 0; i < shadowstorage->size(); i++) {
-    temp->insert(*shadowstorage->get(i));
+  for (size_t i = 0; i < shadowstorage.size(); i++) {
+    temp.insert(*shadowstorage.get(i));
   }
 
-  shadowstorage->emptyStorage();
+  shadowstorage.emptyStorage();
 
-  for (size_t i = 0; i < temp->size(); i++) {
-    if (storage->find(temp->get(i)) == storage->end()) {
-      shadowstorage->insert(*temp->get(i));
+  for (size_t i = 0; i < temp.size(); i++) {
+    if (storage.find(temp.get(i)) == storage.end()) {
+      shadowstorage.insert(*temp.get(i));
     }
   }
-
-  delete temp;
 }
 
 void PrewaveletGridGenerator::coarsen(CoarseningFunctor* func,

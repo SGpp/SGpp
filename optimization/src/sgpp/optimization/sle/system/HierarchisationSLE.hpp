@@ -157,11 +157,6 @@ class HierarchisationSLE : public CloneableSLE {
   base::Grid& getGrid() { return grid; }
 
   /**
-   * @param grid      sparse grid
-   */
-  void setGrid(base::Grid& grid) { this->grid = grid; }
-
-  /**
    * @return              grid storage
    */
   base::GridStorage& getGridStorage() { return gridStorage; }

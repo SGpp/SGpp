@@ -28,7 +28,7 @@ namespace base {
 template<class BASIS>
 class AlgorithmEvaluationTransposed {
  public:
-  explicit AlgorithmEvaluationTransposed(GridStorage* storage) :
+  explicit AlgorithmEvaluationTransposed(GridStorage& storage) :
     storage(storage) {
   }
 
@@ -57,10 +57,10 @@ class AlgorithmEvaluationTransposed {
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
 
-    size_t dim = storage->dim();
+    size_t dim = storage.dim();
 
     // Check for bounding box
-    BoundingBox* bb = storage->getBoundingBox();
+    BoundingBox* bb = storage.getBoundingBox();
 
     if ( bb != NULL ) {
       bool inside = true;
@@ -107,7 +107,7 @@ class AlgorithmEvaluationTransposed {
   }
 
  protected:
-  GridStorage* storage;
+  GridStorage& storage;
 
   /**
    * Recursive traversal of the "tree" of basis functions for evaluation, used in operator().
@@ -141,7 +141,7 @@ class AlgorithmEvaluationTransposed {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage->end(seq)) {
+      if (storage.end(seq)) {
         break;
       } else {
         index_type work_index;
@@ -153,7 +153,7 @@ class AlgorithmEvaluationTransposed {
                                        point[current_dim]);
         new_value *= value;
 
-        if (current_dim == storage->dim() - 1) {
+        if (current_dim == storage.dim() - 1) {
           result[seq] += (alpha * new_value);
         } else {
           rec(basis, point, current_dim + 1, new_value,

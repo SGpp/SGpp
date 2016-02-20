@@ -77,7 +77,7 @@ class BreadthFirstSearch {
     const size_t d = storage.dim();
 
     std::vector<bool> visited(n, false);
-    grid_iterator iterator(&storage);
+    grid_iterator iterator(storage);
     std::queue<size_t> queue;
     size_t index = iterator.seq();
     queue.push(index);

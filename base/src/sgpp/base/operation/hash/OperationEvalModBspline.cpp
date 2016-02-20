@@ -22,7 +22,7 @@ float_t OperationEvalModBspline::eval(const DataVector& alpha,
   typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
   IndexValVector vec;
-  GetAffectedBasisFunctions<SBsplineModifiedBase> ga(&storage);
+  GetAffectedBasisFunctions<SBsplineModifiedBase> ga(storage);
 
   ga(base, point, vec);
 

@@ -178,13 +178,13 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     }
 
     // calculate number of points to be refined
-    refinablePtsCount = abstractRefinement->getNumberOfRefinablePoints(&gridStorage);
+    refinablePtsCount = abstractRefinement->getNumberOfRefinablePoints(gridStorage);
     ptsToBeRefinedCount =
         static_cast<int>(1.0 + refineFactor * gamma * static_cast<float_t>(refinablePtsCount));
 
     // refine
     base::SurplusRefinementFunctor refineFunc(&coeffs, ptsToBeRefinedCount);
-    abstractRefinement->free_refine(&gridStorage, &refineFunc);
+    abstractRefinement->free_refine(gridStorage, &refineFunc);
 
     // new grid size
     size_t newN = gridStorage.size();
