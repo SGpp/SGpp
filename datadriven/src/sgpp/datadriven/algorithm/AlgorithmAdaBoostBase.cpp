@@ -310,15 +310,15 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
@@ -449,15 +449,15 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
@@ -649,15 +649,15 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {
@@ -838,15 +838,15 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     if (count < this->numBaseLearners - 1 && this->refinement) {
       // reset the grid to the regular grid
       if (this->type == 1) {
-        this->grid = base::Grid::createLinearGrid(this->dim);
+        this->grid = base::Grid::createLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearGrid" << std::endl;
       } else if (this->type == 2) {
-        this->grid = base::Grid::createLinearBoundaryGrid(this->dim);
+        this->grid = base::Grid::createLinearBoundaryGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular LinearBoundaryGrid" << std::endl;
       } else if (this->type == 3) {
-        this->grid = base::Grid::createModLinearGrid(this->dim);
+        this->grid = base::Grid::createModLinearGrid(this->dim).release();
         std::cout << std::endl;
         std::cout << "Reset to the regular ModLinearGrid" << std::endl;
       } else {

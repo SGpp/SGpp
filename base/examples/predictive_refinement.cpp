@@ -56,7 +56,7 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
 int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
-  Grid* grid = Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createModLinearGrid(dim);
   GridStorage* hashGridStorage = grid->getStorage();
   std::cout << "dimensionality:                   " << hashGridStorage->dim() << std::endl;
 
@@ -113,7 +113,7 @@ int main() {
 
     // refine a single grid point each time
     std::cout << "Error over all = "  << errorVector.sum() << std::endl;
-    PredictiveRefinementIndicator indicator(grid, &dataSet, &errorVector, 1);
+    PredictiveRefinementIndicator indicator(grid.get(), &dataSet, &errorVector, 1);
     decorator.free_refine(hashGridStorage, &indicator);
 
     std::cout << "Refinement step " << step + 1 << ", new grid size: " <<
@@ -124,6 +124,4 @@ int main() {
     // extend alpha vector (new entries uninitialized)
     alpha.resize(hashGridStorage->size());
   }
-
-  delete grid;
 }

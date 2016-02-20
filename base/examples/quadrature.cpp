@@ -30,7 +30,7 @@ SGPP::float_t f(int dim, SGPP::float_t* x, void* clientdata) {
 int main() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 
@@ -75,6 +75,4 @@ int main() {
   // Monte Carlo quadrature of error
   res = opMC.doQuadratureL2Error(f, NULL, alpha);
   std::cout << "MC L2-error:           " << res << std::endl;
-
-  delete grid;
 }

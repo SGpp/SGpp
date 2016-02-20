@@ -32,7 +32,7 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
 int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:                   " << gridStorage->dim() << std::endl;
 
@@ -69,6 +69,4 @@ int main() {
     // extend alpha vector (new entries uninitialized)
     alpha.resize(gridStorage->size());
   }
-
-  delete grid;
 }
