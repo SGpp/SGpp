@@ -366,25 +366,25 @@ class Grid {
   virtual ~Grid();
 
   /**
-   * gets a pointer to the GridStorage object
+   * gets a reference to the GridStorage object
    *
-   * @return pointer to the GridStorage obeject
+   * @return reference to the GridStorage obeject
    */
-  virtual GridStorage* getStorage();
+  virtual GridStorage& getStorage();
 
   /**
-   * gets a pointer to the GridStorage's BoundingsBox object
+   * gets a reference to the GridStorage's BoundingsBox object
    *
-   * @return pointer to the GridStorage's BoundingsBox object
+   * @return reference to the GridStorage's BoundingsBox object
    */
-  virtual BoundingBox* getBoundingBox();
+  virtual BoundingBox& getBoundingBox();
 
   /**
-   * gets a pointer to the GridStorage's Stretching object
+   * gets a reference to the GridStorage's Stretching object
    *
-   * @return pointer to the GridStorage's Stretching object
+   * @return reference to the GridStorage's Stretching object
    */
-  virtual Stretching* getStretching();
+  virtual Stretching& getStretching();
 
   /**
    * sets the GridStorage's BoundingsBox pointer to a BoundingBox object
@@ -454,14 +454,6 @@ class Grid {
   void refine(DataVector* vector, int numOfPoints);
 
   /**
-   * Evaluate the value of function in the point
-   *
-   * @param alpha DataVector alpha vector of the grid
-   * @param point DataVector point where the function should be evaluated
-   */
-  float_t eval(DataVector& alpha, DataVector& point);
-
-  /**
    * Insert one point to the grid
    *
    * @param dim dimension of the grid
@@ -519,9 +511,6 @@ class Grid {
    *  of all available grids.
    */
   static gridTypeVerboseMap& typeVerboseMap();
-
-  // pointer to the Operation Eval used in Grid.eval()
-  static OperationEval* evalOp;
 };
 
 }  // namespace base

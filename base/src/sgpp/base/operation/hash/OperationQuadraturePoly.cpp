@@ -16,10 +16,10 @@ float_t OperationQuadraturePoly::doQuadrature(DataVector& alpha) {
   GridIndex* gp;
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
-    gp = storage->get(i);
+    gp = storage.get(i);
     tmpres = 1.;
 
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage.dim(); d++) {
       tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
     }
 

@@ -27,9 +27,9 @@ bool OperationMultipleHierarchisationModWavelet::doHierarchisation(base::DataVec
 }
 
 void OperationMultipleHierarchisationModWavelet::doDehierarchisation(base::DataVector& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalModWavelet opNaiveEval(&storage);
+  base::OperationNaiveEvalModWavelet opNaiveEval(storage);
   base::DataVector nodeValues(storage.size());
   base::DataVector x(d, 0.0);
 
@@ -55,9 +55,9 @@ bool OperationMultipleHierarchisationModWavelet::doHierarchisation(base::DataMat
 }
 
 void OperationMultipleHierarchisationModWavelet::doDehierarchisation(base::DataMatrix& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalModWavelet opNaiveEval(&storage);
+  base::OperationNaiveEvalModWavelet opNaiveEval(storage);
   base::DataVector nodeValues(storage.size(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.size(), 0.0);

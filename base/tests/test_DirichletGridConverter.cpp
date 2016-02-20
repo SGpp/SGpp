@@ -39,18 +39,18 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   int level = 3;
   int dimension = 2;
   std::unique_ptr<Grid> linearBoundaryGrid = Grid::createLinearBoundaryGrid(dimension);
-  GridStorage* linearBoundaryGridStorageExact = linearBoundaryGrid->getStorage();
+  GridStorage& linearBoundaryGridStorageExact = linearBoundaryGrid->getStorage();
   std::unique_ptr<GridGenerator> gridGen = linearBoundaryGrid->createGridGenerator();
   gridGen->regular(level);
 
   // determine the number of grid points for both grids
-  numTotalGridPoints = linearBoundaryGridStorageExact->size();
-  numInnerGridPoints = linearBoundaryGridStorageExact->getNumInnerPoints();
+  numTotalGridPoints = linearBoundaryGridStorageExact.size();
+  numInnerGridPoints = linearBoundaryGridStorageExact.getNumInnerPoints();
 
   DataVector boundaryGridCoeffs(numTotalGridPoints);
   GridIndex* gp;
   for (size_t i = 0; i < numTotalGridPoints; ++i) {
-    gp = linearBoundaryGridStorageExact->get(i);
+    gp = linearBoundaryGridStorageExact.get(i);
     boundaryGridCoeffs[i] =
         gp->getCoord(0) * (gp->getCoord(0)) + gp->getCoord(1) * (gp->getCoord(1));
   }
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   std::vector<size_t> BSalgoDims = linearBoundaryGrid->getAlgorithmicDimensions();
 
   // create new inner Grid, with one grid point
-  innerGridExact = new LinearGrid(*(linearBoundaryGrid->getBoundingBox()));
+  innerGridExact = new LinearGrid(linearBoundaryGrid->getBoundingBox());
 
   // Set algorithmic dimensions for inner Grid
   innerGridExact->setAlgorithmicDimensions(BSalgoDims);
@@ -77,14 +77,14 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   size_t numInner = 0;
 
   for (size_t i = 0; i < numTotalGridPoints; ++i) {
-    GridIndex* curPoint = linearBoundaryGridStorageExact->get(i);
+    GridIndex* curPoint = linearBoundaryGridStorageExact.get(i);
     if (curPoint->isInnerPoint() == true) {
       // handle coefficients
       conCoefArray[numInner] = i;
       innerCoeffsExact.set(numInner, boundaryGridCoeffs.get(i));
       numInner++;
       // insert point into inner grid
-      innerGridExact->getStorage()->insert(*curPoint);
+      innerGridExact->getStorage().insert(*curPoint);
     }
   }
 
@@ -104,15 +104,17 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   GridIndex* curPointExact;
   GridIndex* curPointActual;
   int innerPointIndex = 0;
-  GridStorage* linearBoundaryGridStorageActual = innerGridActual->getStorage();
-  for (size_t i = 0; i < numTotalGridPoints; ++i) {
-    curPointExact = linearBoundaryGridStorageExact->get(i);
-    if (curPointExact->isInnerPoint() == true) {
-      curPointActual = linearBoundaryGridStorageActual->get(innerPointIndex);
-      for (size_t curDim = 0; curDim < curPointExact->dim(); ++curDim) {
-        BOOST_CHECK_EQUAL(curPointActual->getCoord(curDim), curPointExact->getCoord(curDim));
+  {
+    GridStorage& linearBoundaryGridStorageActual = innerGridActual->getStorage();
+    for (size_t i = 0; i < numTotalGridPoints; ++i) {
+      curPointExact = linearBoundaryGridStorageExact.get(i);
+      if (curPointExact->isInnerPoint() == true) {
+        curPointActual = linearBoundaryGridStorageActual.get(innerPointIndex);
+        for (size_t curDim = 0; curDim < curPointExact->dim(); ++curDim) {
+          BOOST_CHECK_EQUAL(curPointActual->getCoord(curDim), curPointExact->getCoord(curDim));
+        }
+        innerPointIndex++;
       }
-      innerPointIndex++;
     }
   }
 
@@ -127,15 +129,17 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   }
 
   innerPointIndex = 0;
-  linearBoundaryGridStorageActual = innerGridActual->getStorage();
-  for (size_t i = 0; i < numTotalGridPoints; ++i) {
-    curPointExact = linearBoundaryGridStorageExact->get(i);
-    if (curPointExact->isInnerPoint() == true) {
-      curPointActual = linearBoundaryGridStorageActual->get(innerPointIndex);
-      for (size_t curDim = 0; curDim < curPointExact->dim(); ++curDim) {
-        BOOST_CHECK_EQUAL(curPointActual->getCoord(curDim), curPointExact->getCoord(curDim));
+  {
+    GridStorage& linearBoundaryGridStorageActual = innerGridActual->getStorage();
+    for (size_t i = 0; i < numTotalGridPoints; ++i) {
+      curPointExact = linearBoundaryGridStorageExact.get(i);
+      if (curPointExact->isInnerPoint() == true) {
+        curPointActual = linearBoundaryGridStorageActual.get(innerPointIndex);
+        for (size_t curDim = 0; curDim < curPointExact->dim(); ++curDim) {
+          BOOST_CHECK_EQUAL(curPointActual->getCoord(curDim), curPointExact->getCoord(curDim));
+        }
+        innerPointIndex++;
       }
-      innerPointIndex++;
     }
   }
 

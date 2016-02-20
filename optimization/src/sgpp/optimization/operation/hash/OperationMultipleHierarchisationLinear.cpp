@@ -27,9 +27,9 @@ bool OperationMultipleHierarchisationLinear::doHierarchisation(base::DataVector&
 }
 
 void OperationMultipleHierarchisationLinear::doDehierarchisation(base::DataVector& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalLinear opNaiveEval(&storage);
+  base::OperationNaiveEvalLinear opNaiveEval(storage);
   base::DataVector nodeValues(storage.size());
   base::DataVector x(d, 0.0);
 
@@ -55,9 +55,9 @@ bool OperationMultipleHierarchisationLinear::doHierarchisation(base::DataMatrix&
 }
 
 void OperationMultipleHierarchisationLinear::doDehierarchisation(base::DataMatrix& alpha) {
-  base::GridStorage& storage = *grid.getStorage();
+  base::GridStorage& storage = grid.getStorage();
   const size_t d = storage.dim();
-  base::OperationNaiveEvalLinear opNaiveEval(&storage);
+  base::OperationNaiveEvalLinear opNaiveEval(storage);
   base::DataVector nodeValues(storage.size(), 0.0);
   base::DataVector x(d, 0.0);
   base::DataVector alpha1(storage.size(), 0.0);

@@ -25,7 +25,7 @@ HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
 
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(&SparseGrid.getStorage());
   this->GridConverter = new SGPP::base::DirichletGridConverter();
 
   this->OpLaplaceBound = op_factory::createOperationLaplace(SparseGrid);

@@ -25,7 +25,7 @@ class OperationHierarchisationModWavelet : public OperationHierarchisation {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationHierarchisationModWavelet(GridStorage* storage) :
+  explicit OperationHierarchisationModWavelet(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -51,7 +51,7 @@ class OperationHierarchisationModWavelet : public OperationHierarchisation {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

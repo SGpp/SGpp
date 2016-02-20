@@ -101,8 +101,8 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
   std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
   myGenerator->regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   this->bGridConstructed = true;
 }
@@ -125,7 +125,7 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, float_t 
         float_t* dblFuncValues = new float_t[dim];
         float_t dDistance = 0.0;
 
-        for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
           std::string coords =
               this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
           std::stringstream coordsStream(coords);
@@ -203,7 +203,7 @@ void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha
 
         this->tBoundaryType = "Dirichlet";
 
-        for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
 
@@ -445,7 +445,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, float_t strike
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+      for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
         this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
@@ -493,7 +493,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
   if (this->bGridConstructed) {
     std::ofstream fileout;
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 
       base::GridIndex* curPoint = (*myGridStorage)[i];
@@ -656,7 +656,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, flo
   // BlackScholesSolver* bsSolver = new BlackScholesSolver();
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -919,7 +919,7 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, float_t m
 
   float_t tmp;
 
-  for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+  for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
     std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[dim];
@@ -957,7 +957,7 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, float_
 
   float_t tmp;
 
-  for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+  for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
     std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[dim];
@@ -1037,8 +1037,8 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
                                          float_t v) {
   float_t tmp;
 
-  for (size_t i = 0; i < grid1d->getStorage()->size(); i++) {
-    std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
+  for (size_t i = 0; i < grid1d->getStorage().size(); i++) {
+    std::string coords = grid1d->getStorage().get(i)->getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[1];
     coordsStream >> tmp;
@@ -1063,8 +1063,8 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
 
   finance::BlackScholesSolver* myBSSolver = new finance::BlackScholesSolver(false);
 
-  for (size_t i = 0; i < grid1d->getStorage()->size(); i++) {
-    std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
+  for (size_t i = 0; i < grid1d->getStorage().size(); i++) {
+    std::string coords = grid1d->getStorage().get(i)->getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[1];
     coordsStream >> tmp;
@@ -1264,9 +1264,9 @@ void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base
   fileout.open(filename.c_str());
   base::OperationEval* myEval = op_factory::createOperationEval(*myGrid);
 
-  if (myGrid->getStorage()->dim() == 2) {
-    dimOne = myGrid->getBoundingBox()->getBoundary(0);
-    dimTwo = myGrid->getBoundingBox()->getBoundary(1);
+  if (myGrid->getStorage().dim() == 2) {
+    dimOne = myGrid->getBoundingBox().getBoundary(0);
+    dimTwo = myGrid->getBoundingBox().getBoundary(1);
 
     float_t offset_x = dimOne.leftBoundary;
     float_t offset_y = dimTwo.leftBoundary;

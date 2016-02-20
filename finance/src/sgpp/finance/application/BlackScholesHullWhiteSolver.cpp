@@ -84,8 +84,8 @@ void BlackScholesHullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, 
   std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
   myGenerator->regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   // std::string serGrid;
   // myGrid->serialize(serGrid);
@@ -140,7 +140,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
     myStopwatch->start();
 
     // DimensionBoundary* myBoundaries = new DimensionBoundary[2];
-    base::BoundingBox* t = this->myGrid->getBoundingBox();
+    base::BoundingBox* t = &this->myGrid->getBoundingBox();
 
     base::DimensionBoundary* myBoundaries = new base::DimensionBoundary[dim];
 
@@ -277,7 +277,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+      for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
         this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
@@ -319,7 +319,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
   if (this->bGridConstructed) {
     float_t* dblFuncValues = new float_t[dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 

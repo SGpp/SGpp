@@ -25,7 +25,7 @@ OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(SGPP::base::Grid& g
                                                              size_t numberOfSamples,
                                                              std::uint64_t seed)
     : grid(&grid), numberOfSamples(numberOfSamples), seed(seed) {
-  dimensions = grid.getStorage()->dim();
+  dimensions = grid.getStorage().dim();
   myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
 }
 

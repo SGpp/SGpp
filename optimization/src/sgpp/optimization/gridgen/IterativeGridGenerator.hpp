@@ -66,7 +66,7 @@ class IterativeGridGenerator {
 
   /**
    * Removes grid points with indices
-   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage().size() - 1]
    * from the grid.
    *
    * @param oldGridSize   number of grid points after removal
@@ -75,7 +75,7 @@ class IterativeGridGenerator {
 
   /**
    * Evaluates the objective function at grid points with indices
-   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage()->size() - 1]
+   * [oldGridSize, oldGridSize + 1, ..., grid.getStorage().size() - 1]
    * and saves values in functionValues.
    *
    * @param oldGridSize   number of grid points already evaluated

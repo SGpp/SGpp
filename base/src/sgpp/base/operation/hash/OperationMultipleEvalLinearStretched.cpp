@@ -19,7 +19,7 @@ void OperationMultipleEvalLinearStretched::mult(DataVector& alpha,
   AlgorithmDGEMV<SLinearStretchedBase> op;
   LinearStretchedBasis<unsigned int, unsigned int> base;
 
-  op.mult(storage, base, alpha, this->dataset, result);
+  op.mult(&storage, base, alpha, this->dataset, result);
 }
 
 void OperationMultipleEvalLinearStretched::multTranspose(DataVector& source,
@@ -27,7 +27,7 @@ void OperationMultipleEvalLinearStretched::multTranspose(DataVector& source,
   AlgorithmDGEMV<SLinearStretchedBase> op;
   LinearStretchedBasis<unsigned int, unsigned int> base;
 
-  op.mult_transposed(storage, base, source, this->dataset, result);
+  op.mult_transposed(&storage, base, source, this->dataset, result);
 }
 
 }  // namespace base

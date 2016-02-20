@@ -41,7 +41,7 @@ void createSupportedGrids(size_t d, size_t p,
 
 void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::ScalarFunction& f,
                       SGPP::base::DataVector& functionValues) {
-  SGPP::base::GridStorage& gridStorage = *grid.getStorage();
+  SGPP::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   // generate regular sparse grid
@@ -74,7 +74,7 @@ void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::Scal
 
 void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::VectorFunction& f,
                       SGPP::base::DataMatrix& functionValues) {
-  SGPP::base::GridStorage& gridStorage = *grid.getStorage();
+  SGPP::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
   const size_t m = f.getNumberOfComponents();
 

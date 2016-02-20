@@ -26,7 +26,7 @@ OperationQuadratureMC::OperationQuadratureMC(Grid& grid,
 }
 
 float_t OperationQuadratureMC::doQuadrature(DataVector& alpha) {
-  size_t dim = grid->getStorage()->dim();
+  size_t dim = grid->getStorage().dim();
   // create number of paths (uniformly drawn from [0,1]^d)
   DataMatrix dm(mcPaths, dim);
 
@@ -44,7 +44,7 @@ float_t OperationQuadratureMC::doQuadrature(DataVector& alpha) {
 }
 
 float_t OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
-  size_t dim = grid->getStorage()->dim();
+  size_t dim = grid->getStorage().dim();
   float_t* p = new float_t[dim];
 
   // create number of paths (uniformly drawn from [0,1]^d)
@@ -64,7 +64,7 @@ float_t OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
 
 float_t OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
     DataVector& alpha) {
-  size_t dim = grid->getStorage()->dim();
+  size_t dim = grid->getStorage().dim();
   float_t x;
   float_t* p = new float_t[dim];
 

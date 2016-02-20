@@ -100,7 +100,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     abstractRefinement = std::unique_ptr<base::AbstractRefinement>(new base::HashRefinement());
   }
 
-  base::GridStorage& gridStorage = *grid.getStorage();
+  base::GridStorage& gridStorage = grid.getStorage();
   // Set up linear system for hierarchization with the linear grid as
   // underlying grid, but set the internal grid storage to the one of the
   // B-spline/wavelet grid.

@@ -28,7 +28,7 @@ class OperationNaiveEvalPartialDerivativeModBspline :
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalPartialDerivativeModBspline(GridStorage* storage,
+  OperationNaiveEvalPartialDerivativeModBspline(GridStorage& storage,
       size_t degree) :
     storage(storage), base(degree) {
   }
@@ -51,7 +51,7 @@ class OperationNaiveEvalPartialDerivativeModBspline :
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineModifiedBase base;
 };

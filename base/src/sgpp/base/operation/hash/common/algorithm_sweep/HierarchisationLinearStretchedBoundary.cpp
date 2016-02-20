@@ -15,7 +15,7 @@ namespace base {
 
 HierarchisationLinearStretchedBoundary::
 HierarchisationLinearStretchedBoundary(
-  GridStorage* storage) : HierarchisationLinearStretched(storage) {
+  GridStorage& storage) : HierarchisationLinearStretched(storage) {
 }
 
 HierarchisationLinearStretchedBoundary::
@@ -41,7 +41,7 @@ void HierarchisationLinearStretchedBoundary::operator()(DataVector& source,
   if (!index.hint()) {
     index.resetToLevelOne(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, left_boundary, right_boundary);
     }
 

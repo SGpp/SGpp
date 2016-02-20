@@ -35,15 +35,15 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
 
   this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
   this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
+  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
+  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
 
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(&SparseGrid.getStorage());
   this->GridConverter = new SGPP::base::DirichletGridConverter();
   this->r = r;
   this->thetas = &thetas;
@@ -69,7 +69,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
   }
 
   // throw exception if grid dimensions not equal algorithmic dimensions
-  if (this->HestonAlgoDims.size() != this->BoundGrid->getStorage()->dim()) {
+  if (this->HestonAlgoDims.size() != this->BoundGrid->getStorage().dim()) {
     throw SGPP::base::algorithm_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Number "
         "of algorithmic dimensions is not equal to the number of grid's dimensions.");
@@ -77,17 +77,17 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
 
   // Test if 2*dimC = dimG, where dimC is the number of dimensions in the coefficient vectors and
   // dimG is the number of grid dimensions
-  if (this->BoundGrid->getStorage()->dim() != (2 * this->thetas->getSize()) ||
-      this->BoundGrid->getStorage()->dim() != (2 * this->kappas->getSize()) ||
-      this->BoundGrid->getStorage()->dim() != (2 * this->volvols->getSize())) {
+  if (this->BoundGrid->getStorage().dim() != (2 * this->thetas->getSize()) ||
+      this->BoundGrid->getStorage().dim() != (2 * this->kappas->getSize()) ||
+      this->BoundGrid->getStorage().dim() != (2 * this->volvols->getSize())) {
     throw SGPP::base::algorithm_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : "
         "Dimension of theta/volvol/kappa parameters != half of grid's dimensions!");
   }
 
   // Test if number of dimensions in the coefficients match the numbers of grid dimensions (hmatrix)
-  if (this->BoundGrid->getStorage()->dim() != this->hMatrix->getNrows() ||
-      this->BoundGrid->getStorage()->dim() != this->hMatrix->getNcols()) {
+  if (this->BoundGrid->getStorage().dim() != this->hMatrix->getNrows() ||
+      this->BoundGrid->getStorage().dim() != this->hMatrix->getNcols()) {
     throw SGPP::base::algorithm_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Row or "
         "col of hmatrix parameter don't match the grid's dimensions!");
@@ -95,7 +95,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
 
   // Test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->HestonAlgoDims.size(); i++) {
-    if (this->HestonAlgoDims[i] >= this->BoundGrid->getStorage()->dim()) {
+    if (this->HestonAlgoDims[i] >= this->BoundGrid->getStorage().dim()) {
       throw SGPP::base::algorithm_exception(
           "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : "
           "Minimum one algorithmic dimension is not inside the grid's dimensions!");
@@ -511,7 +511,7 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage()->size();
+    size_t originalGridSize = this->BoundGrid->getStorage().size();
 
     // Coarsen the grid
     std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->BoundGrid->createGridGenerator();
@@ -523,12 +523,12 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
 
       if (this->refineMode == "maxLevel") {
         myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
       }
 
       if (this->refineMode == "classic") {
         myGenerator->refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
       }
 
       delete myRefineFunc;
@@ -559,7 +559,7 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep() {
   // Adjust the boundaries with the riskfree rate
   if (this->r != 0.0) {
     if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul") {
-      SGPP::base::GridStorage* storage = this->BoundGrid->getStorage();
+      SGPP::base::GridStorage* storage = &this->BoundGrid->getStorage();
 
       for (size_t i = 0; i < storage->size(); i++) {
         SGPP::base::GridIndex* curPoint = (*storage)[i];

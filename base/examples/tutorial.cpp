@@ -32,25 +32,25 @@ int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
-  GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:         " << gridStorage->dim() << std::endl;
+  GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:         " << gridStorage.dim() << std::endl;
 
   // create regular grid, level 3
   size_t level = 3;
   std::unique_ptr<GridGenerator> gridGen = grid->createGridGenerator();
   gridGen->regular(level);
-  std::cout << "number of grid points:  " << gridStorage->size() << std::endl;
+  std::cout << "number of grid points:  " << gridStorage.size() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage->size());
+  DataVector alpha(gridStorage.size());
   alpha.setAll(0.0);
   std::cout << "length of alpha vector: " << alpha.getSize() << std::endl;
 
   // set function values in alpha
   GridIndex* gp;
 
-  for (size_t i = 0; i < gridStorage->size(); i++) {
-    gp = gridStorage->get(i);
+  for (size_t i = 0; i < gridStorage.size(); i++) {
+    gp = gridStorage.get(i);
     alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
   }
 

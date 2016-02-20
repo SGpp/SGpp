@@ -31,7 +31,7 @@ class OperationEvalPolyBoundary : public OperationEval {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationEvalPolyBoundary(GridStorage* storage,
+  OperationEvalPolyBoundary(GridStorage& storage,
                             size_t degree) : storage(storage), base(degree) {}
 
   /**
@@ -44,7 +44,7 @@ class OperationEvalPolyBoundary : public OperationEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Poly Basis object
   SPolyBoundaryBase base;
 };

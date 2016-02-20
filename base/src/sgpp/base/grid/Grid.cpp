@@ -181,7 +181,7 @@ std::unique_ptr<Grid> Grid::unserialize(std::istream& istr) {
     throw factory_exception(errMsg.c_str());
   }
 
-  return NULL;
+  return nullptr;
 }
 
 std::map<std::string, Grid::Factory>& Grid::typeMap() {
@@ -416,16 +416,18 @@ std::unique_ptr<Grid> Grid::nullFactory(std::istream&) {
   return std::unique_ptr<Grid>(nullptr);
 }
 
-Grid::Grid(std::istream& istr) : storage(NULL) {
+Grid::Grid(std::istream& istr) {
   int hasStorage;
   istr >> hasStorage;
 
   if (hasStorage == 1) {
     storage = new GridStorage(istr);
+  } else {
+    storage = new GridStorage(0);
   }
 }
 
-Grid::Grid() : storage(NULL) {
+Grid::Grid() : storage(new GridStorage(0)) {
 }
 
 Grid::Grid(size_t dim) : storage(new GridStorage(dim)) {
@@ -438,26 +440,22 @@ Grid::Grid(Stretching& BB) : storage(new GridStorage(BB)) {
 }
 
 Grid::~Grid() {
-  if (storage != NULL) {
+  if (storage != nullptr) {
     delete storage;
-  }
-
-  if (evalOp != NULL) {
-    delete evalOp;
-    evalOp = NULL;
+    storage = nullptr;
   }
 }
 
-GridStorage* Grid::getStorage() {
-  return this->storage;
+GridStorage& Grid::getStorage() {
+  return *this->storage;
 }
 
-BoundingBox* Grid::getBoundingBox() {
-  return this->storage->getBoundingBox();
+BoundingBox& Grid::getBoundingBox() {
+  return *this->storage->getBoundingBox();
 }
 
-Stretching* Grid::getStretching() {
-  return this->storage->getStretching();
+Stretching& Grid::getStretching() {
+  return *this->storage->getStretching();
 }
 
 void Grid::setBoundingBox(BoundingBox& bb) {
@@ -485,7 +483,7 @@ std::string Grid::serialize() {
 void Grid::serialize(std::ostream& ostr) {
   ostr << typeVerboseMap()[this->getType()] << std::endl;
 
-  if (storage != NULL) {
+  if ((storage != nullptr) && (storage->dim() > 0)) {
     ostr << "1" << std::endl;
     storage->serialize(ostr);
   } else {
@@ -496,16 +494,6 @@ void Grid::serialize(std::ostream& ostr) {
 void Grid::refine(DataVector* vector, int numOfPoints) {
   this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector,
                                       numOfPoints));
-}
-
-OperationEval* Grid::evalOp(NULL);
-
-float_t Grid::eval(DataVector& alpha, DataVector& point) {
-  if (this->evalOp == NULL) this->evalOp =
-      SGPP::op_factory::createOperationEval(
-        *this);
-
-  return this->evalOp->eval(alpha, point);
 }
 
 void Grid::insertPoint(size_t dim, unsigned int levels[],

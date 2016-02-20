@@ -21,7 +21,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
    * Compute vector with values
    * (phi_{l1,i1}(xbar) = phi_{l1,i1}(xbar)*phi_{l2,i2}(0.5)
    */
-  SGPP::base::GridStorage* gs = this->grid->getStorage();
+  SGPP::base::GridStorage* gs = &this->grid->getStorage();
   SGPP::base::DataVector zeta(alpha.getSize());
   SGPP::base::GridIndex* gp;
 
@@ -67,7 +67,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
         "OperationDensityConditional is not possible for less than 2 dimensions");
 
   mg = base::Grid::createLinearGrid(gs->dim() - 1).release();
-  base::GridStorage* mgs = mg->getStorage();
+  base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
   SGPP::base::GridIndex mgp(mgs->dim());

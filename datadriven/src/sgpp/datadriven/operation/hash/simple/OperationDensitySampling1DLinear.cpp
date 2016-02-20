@@ -37,7 +37,7 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   std::multimap<float_t, float_t> coord_pdf, coord_cdf;
   std::multimap<float_t, float_t>::iterator it1, it2;
 
-  base::GridStorage* gs = this->grid->getStorage();
+  base::GridStorage* gs = &this->grid->getStorage();
   base::OperationEval* opEval = op_factory::createOperationEval(*(this->grid));
   base::DataVector coord(1);
 

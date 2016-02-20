@@ -34,7 +34,7 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   std::multimap<double, double> coord_pdf, coord_cdf;
   std::multimap<double, double>::iterator it1, it2;
 
-  base::GridStorage* gs = grid->getStorage();
+  base::GridStorage* gs = &grid->getStorage();
   base::OperationEval* opEval = op_factory::createOperationEval(*grid);
   base::DataVector coord(1);
 

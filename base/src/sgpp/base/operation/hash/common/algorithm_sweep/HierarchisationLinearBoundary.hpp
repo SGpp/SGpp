@@ -31,7 +31,7 @@ class HierarchisationLinearBoundary: public HierarchisationLinear {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  explicit HierarchisationLinearBoundary(GridStorage* storage);
+  explicit HierarchisationLinearBoundary(GridStorage& storage);
 
   /**
    * Destructor

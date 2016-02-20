@@ -18,7 +18,7 @@ OperationMultiEvalModMaskStreaming::OperationMultiEvalModMaskStreaming(base::Gri
       preparedDataset(dataset),
       myTimer_(SGPP::base::SGppStopwatch()),
       duration(-1.0) {
-  this->storage = grid.getStorage();
+  this->storage = &grid.getStorage();
   this->padDataset(this->preparedDataset);
   this->preparedDataset.transpose();
 

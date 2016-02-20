@@ -15,7 +15,7 @@ namespace SGPP {
 
 namespace base {
 
-HierarchisationPoly::HierarchisationPoly(GridStorage* storage,
+HierarchisationPoly::HierarchisationPoly(GridStorage& storage,
     SPolyBase* base) :
   storage(storage), base(base) {
 }
@@ -55,14 +55,14 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 

@@ -37,8 +37,8 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation {
    * @param storage Pointer to the grid's gridstorage obejct
    * @param shadowStorage shadow points (see detailed description)
    */
-  OperationHierarchisationPrewavelet(GridStorage* storage,
-                                     GridStorage* shadowStorage) :
+  OperationHierarchisationPrewavelet(GridStorage& storage,
+                                     GridStorage& shadowStorage) :
     storage(storage), shadowStorage(shadowStorage) {
   }
 
@@ -52,9 +52,9 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation {
   void doDehierarchisation(DataVector& alpha) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
-  GridStorage* shadowStorage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
+  GridStorage& shadowStorage;
 
   void expandGrid();
 

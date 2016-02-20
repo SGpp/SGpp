@@ -17,7 +17,7 @@ namespace base {
 
 
 StencilHierarchisationLinear::StencilHierarchisationLinear(
-  GridStorage* storage,
+  GridStorage& storage,
   OperationStencilHierarchisation::IndexStencil& surplusStencil,
   OperationStencilHierarchisation::IndexStencil& neighborStencil,
   OperationStencilHierarchisation::WeightStencil& weightStencil) :
@@ -44,14 +44,14 @@ void StencilHierarchisationLinear::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, seql, seqm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, seqm, seqr);
     }
 

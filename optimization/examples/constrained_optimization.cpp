@@ -90,7 +90,7 @@ int main() {
   std::unique_ptr<SGPP::base::GridGenerator>(
     grid->createGridGenerator())->regular(l);
 
-  SGPP::base::GridStorage& gridStorage = *grid->getStorage();
+  SGPP::base::GridStorage& gridStorage = grid->getStorage();
 
   const size_t N = grid->getSize();
 

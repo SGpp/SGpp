@@ -49,7 +49,7 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::mult(
 void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
   base::DataVector& rhs) {
   // store result in rhs!
-  base::GridStorage* storage = grid.getStorage();
+  base::GridStorage* storage = &grid.getStorage();
   uint64_t totalIntegratedNodes = 0;
   #pragma omp parallel for
 

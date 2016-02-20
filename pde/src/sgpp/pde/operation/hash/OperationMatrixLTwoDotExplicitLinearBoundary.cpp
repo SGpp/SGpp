@@ -23,7 +23,7 @@ OperationMatrixLTwoDotExplicitLinearBoundary::OperationMatrixLTwoDotExplicitLine
 OperationMatrixLTwoDotExplicitLinearBoundary::OperationMatrixLTwoDotExplicitLinearBoundary(
     SGPP::base::Grid* grid)
     : ownsMatrix_(true) {
-  m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(), grid->getStorage()->size());
+  m_ = new SGPP::base::DataMatrix(grid->getStorage().size(), grid->getStorage().size());
   buildMatrix(grid);
 }
 
@@ -35,7 +35,7 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(SGPP::base::Grid*
   // Build matrix (in the moment just by multiplying the OperationMatrix with the unit vectors):
   OperationMatrix* opMatrix = SGPP::op_factory::createOperationLTwoDotProduct(*grid);
 
-  size_t size = grid->getStorage()->size();
+  size_t size = grid->getStorage().size();
   SGPP::base::DataVector unit(size);
   unit.setAll(0.0);
   SGPP::base::DataVector result(size);

@@ -33,9 +33,9 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
   grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
+  GridStorage& gS = grid->getStorage();
 
-  size_t N = gS->size();
+  size_t N = gS.size();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v.push_back(static_cast<int>(i));
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   SGPP::float_t lSum;
 
   for (size_t i = 0; i < N; i++) {
-    lSum = static_cast<SGPP::float_t>(gS->get(i)->getLevelSum());
+    lSum = static_cast<SGPP::float_t>(gS.get(i)->getLevelSum());
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
@@ -69,8 +69,8 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
   grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
-  size_t N = gS->size();
+  GridStorage& gS = grid->getStorage();
+  size_t N = gS.size();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
@@ -98,8 +98,8 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
 
   std::unique_ptr<Grid> grid = Grid::createPolyGrid(dim, deg);
   grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
-  size_t N = gS->size();
+  GridStorage& gS = grid->getStorage();
+  size_t N = gS.size();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   SGPP::float_t quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridIndex* gp = gS->get(i);
+    HashGridIndex* gp = gS.get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
     SGPP::float_t quadSGPP =
@@ -136,8 +136,8 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
 
   std::unique_ptr<Grid> grid = Grid::createPolyBoundaryGrid(dim, deg);
   grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
-  size_t N = gS->size();
+  GridStorage& gS = grid->getStorage();
+  size_t N = gS.size();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   SGPP::float_t quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridIndex* gp = gS->get(i);
+    HashGridIndex* gp = gS.get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
     SGPP::float_t quadSGPP =

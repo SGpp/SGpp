@@ -19,7 +19,7 @@ OperationMultipleEvalSubspaceCombined::OperationMultipleEvalSubspaceCombined(
   Grid& grid, DataMatrix& dataset) :
   AbstractOperationMultipleEvalSubspace(grid, dataset) {
   this->paddedDataset = this->padDataset(dataset);
-  this->storage = grid.getStorage();
+  this->storage = &grid.getStorage();
   //this->dataset = dataset;
   this->dim = dataset.getNcols();
 

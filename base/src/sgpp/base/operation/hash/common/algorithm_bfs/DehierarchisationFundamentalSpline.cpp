@@ -21,14 +21,14 @@ void DehierarchisationFundamentalSpline::operator()(
   const DataVector& source,
   DataVector& result,
   const grid_iterator& iterator) {
-  const size_t n = storage->size();
-  const size_t d = storage->dim();
+  const size_t n = storage.size();
+  const size_t d = storage.dim();
   const size_t pointIndex = iterator.seq();
 
   SFundamentalSplineBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *(*storage)[q];
+    const GridIndex& point = *storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {
@@ -79,14 +79,14 @@ void DehierarchisationFundamentalSpline::operator()(
   const DataMatrix& source,
   DataMatrix& result,
   const grid_iterator& iterator) {
-  const size_t n = storage->size();
-  const size_t d = storage->dim();
+  const size_t n = storage.size();
+  const size_t d = storage.dim();
   const size_t pointIndex = iterator.seq();
 
   SFundamentalSplineBase base(grid->getDegree());
 
   for (size_t q = 0; q < n; q++) {
-    const GridIndex& point = *(*storage)[q];
+    const GridIndex& point = *storage[q];
     bool skipChild = false;
 
     if (q == pointIndex) {

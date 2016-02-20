@@ -55,7 +55,7 @@ class HierarchisationSLE : public CloneableSLE {
    *
    * @param grid              sparse grid
    */
-  explicit HierarchisationSLE(base::Grid& grid) : HierarchisationSLE(grid, *grid.getStorage()) {}
+  explicit HierarchisationSLE(base::Grid& grid) : HierarchisationSLE(grid, grid.getStorage()) {}
 
   /**
    * Constructor.

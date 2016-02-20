@@ -34,7 +34,7 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
    * @param alpha coefficient vector
    */
   InterpolantScalarFunctionHessian(base::Grid& grid, const base::DataVector& alpha)
-      : ScalarFunctionHessian(grid.getStorage()->dim()),
+      : ScalarFunctionHessian(grid.getStorage().dim()),
         grid(grid),
         opEvalHessian(op_factory::createOperationNaiveEvalHessian(grid)),
         alpha(alpha) {}

@@ -59,12 +59,12 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
   SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
   Grid& grid,
   DataVector& alpha, float_t lambda) {
-  size_t dim = grid.getStorage()->dim();
+  size_t dim = grid.getStorage().dim();
 
-  GridStorage* gridStorage = grid.getStorage();
+  GridStorage* gridStorage = &grid.getStorage();
   std::unique_ptr<GridGenerator> gridGen = grid.createGridGenerator();
-  DataVector rhs(grid.getStorage()->size());
-  alpha.resize(grid.getStorage()->size());
+  DataVector rhs(grid.getStorage().size());
+  alpha.resize(grid.getStorage().size());
   alpha.setAll(0.0);
 
   if (verbose) {
@@ -118,11 +118,11 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
       if (verbose) {
         cout << "# LearnerDensityRegression: ref " << ref << "/" <<
              adaptivityConfig.numRefinements_ - 1 << ": "
-             << grid.getStorage()->size() << endl;
+             << grid.getStorage().size() << endl;
       }
 
-      alpha.resize(grid.getStorage()->size());
-      rhs.resize(grid.getStorage()->size());
+      alpha.resize(grid.getStorage().size());
+      rhs.resize(grid.getStorage().size());
       alpha.setAll(0.0);
       rhs.setAll(0.0);
     }

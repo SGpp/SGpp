@@ -170,9 +170,10 @@ class Learner(object):
         dim = points.getNcols()
         values = DataVector(size)
         row = DataVector(dim)
+        opEval = createOperationEval(self.grid)
         for i in xrange(size):
             points.getRow(i, row)
-            values[i] = self.grid.eval(self.knowledge.getAlphas(), row)
+            values[i] = opEval.eval(self.knowledge.getAlphas(), row)
         self.notifyEventControllers(LearnerEvents.APPLICATION_COMPLETE)
         return values
 

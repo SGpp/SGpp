@@ -22,7 +22,7 @@ float_t OperationEvalPoly::eval(const DataVector& alpha,
   typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
 
   IndexValVector vec;
-  GetAffectedBasisFunctions<SPolyBase> ga(storage);
+  GetAffectedBasisFunctions<SPolyBase> ga(&storage);
 
   ga(base, point, vec);
 

@@ -18,12 +18,12 @@ namespace base {
 
 void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(
   DataVector& node_values) {
-  HierarchisationLinearStretchedBoundary func(this->storage);
-  sweep<HierarchisationLinearStretchedBoundary> s(func, this->storage);
+  HierarchisationLinearStretchedBoundary func(storage);
+  sweep<HierarchisationLinearStretchedBoundary> s(func, &storage);
 
   // N D case
-  if (this->storage->dim() > 1) {
-    for (size_t i = 0; i < this->storage->dim(); i++) {
+  if (this->storage.dim() > 1) {
+    for (size_t i = 0; i < this->storage.dim(); i++) {
       s.sweep1D_Boundary(node_values, node_values, i);
     }
   } else {  // 1 D case
@@ -33,12 +33,12 @@ void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(
 
 void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(
   DataVector& alpha) {
-  DehierarchisationLinearStretchedBoundary func(this->storage);
-  sweep<DehierarchisationLinearStretchedBoundary> s(func, this->storage);
+  DehierarchisationLinearStretchedBoundary func(storage);
+  sweep<DehierarchisationLinearStretchedBoundary> s(func, &storage);
 
   // N D case
-  if (this->storage->dim() > 1) {
-    for (size_t i = 0; i < this->storage->dim(); i++) {
+  if (this->storage.dim() > 1) {
+    for (size_t i = 0; i < this->storage.dim(); i++) {
       s.sweep1D_Boundary(alpha, alpha, i);
     }
   } else {  // 1 D case

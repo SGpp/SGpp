@@ -19,14 +19,14 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
    * to the new grid mg
    */
   // create grid of dimensions d - 1 of the same type
-  base::GridStorage* gs = this->grid->getStorage();
+  base::GridStorage* gs = &this->grid->getStorage();
 
   if (gs->dim() < 2)
     throw SGPP::base::operation_exception(
         "OperationDensityMarginalize is not possible for less than 2 dimensions");
 
   mg = base::Grid::createLinearGrid(gs->dim() - 1).release();
-  base::GridStorage* mgs = mg->getStorage();
+  base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
   SGPP::base::GridIndex* gp;

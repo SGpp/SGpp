@@ -227,11 +227,11 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //
 //    // move on to next dim
 //    curr_dim = (curr_dim + 1) % dims;
-//    op_dim = (op_dim + 1) % g_out->getStorage()->dim();
+//    op_dim = (op_dim + 1) % g_out->getStorage().dim();
 //
 //    /* Step 2: draw a sample in next dim */
 //    float_t x = 0;
-//    if (g_out->getStorage()->dim() > 1) {
+//    if (g_out->getStorage().dim() > 1) {
 //
 //        // Marginalize to next dimension
 //        Grid* g1d = NULL;
@@ -255,7 +255,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //    coords1d->set(curr_dim, x);
 //
 //    /* Step 4: sample in next dimension */
-//    if (g_out->getStorage()->dim() > 1)
+//    if (g_out->getStorage().dim() > 1)
 //        doTransformation_in_next_dim(g_out, a_out, op_dim, cdfs1d, coords1d,
 //                curr_dim);
 //

@@ -29,7 +29,7 @@ class HierarchisationPoly {
   typedef GridStorage::index_type::index_type index_type;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
   /// the base
   SPolyBase* base;
@@ -41,7 +41,7 @@ class HierarchisationPoly {
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    * @param base The polynomial basis functions
    */
-  HierarchisationPoly(GridStorage* storage, SPolyBase* base);
+  HierarchisationPoly(GridStorage& storage, SPolyBase* base);
 
   /**
    * Destructor

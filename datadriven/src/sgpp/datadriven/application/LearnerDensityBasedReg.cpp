@@ -175,7 +175,7 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
 
     SGPP::datadriven::DensitySystemMatrix DMatrix(*grid_, densityMatrix, *C_,
         lambda);
-    SGPP::base::DataVector rhs(grid_->getStorage()->size());
+    SGPP::base::DataVector rhs(grid_->getStorage().size());
     DMatrix.generateb(rhs);
 
     if (i == AdaptConfig.numRefinements_) {

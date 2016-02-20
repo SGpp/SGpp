@@ -24,11 +24,11 @@ namespace base {
  */
 void OperationHierarchisationModLinear::doHierarchisation(
   DataVector& node_values) {
-  HierarchisationModLinear func(this->storage);
-  sweep<HierarchisationModLinear> s(func, this->storage);
+  HierarchisationModLinear func(storage);
+  sweep<HierarchisationModLinear> s(func, &storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.dim(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
@@ -40,11 +40,11 @@ void OperationHierarchisationModLinear::doHierarchisation(
  *
  */
 void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha) {
-  DehierarchisationModLinear func(this->storage);
-  sweep<DehierarchisationModLinear> s(func, this->storage);
+  DehierarchisationModLinear func(storage);
+  sweep<DehierarchisationModLinear> s(func, &storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.dim(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }

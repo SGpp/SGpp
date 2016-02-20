@@ -82,7 +82,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->verbose = (*parameters)["VERBOSE"].getBool();
 
     this->dims = dataset.getNcols();  // be aware of transpose!
-    this->storage = grid.getStorage();
+    this->storage = &grid.getStorage();
 
     // padded grid size is set by prepare
     this->gridSizeUnpadded = this->storage->size();

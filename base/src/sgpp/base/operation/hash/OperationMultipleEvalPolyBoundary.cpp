@@ -14,14 +14,14 @@ void OperationMultipleEvalPolyBoundary::mult(DataVector& alpha,
     DataVector& result) {
   AlgorithmDGEMV<SPolyBoundaryBase> op;
 
-  op.mult(storage, base, alpha, this->dataset, result);
+  op.mult(&storage, base, alpha, this->dataset, result);
 }
 
 void OperationMultipleEvalPolyBoundary::multTranspose(DataVector& source,
     DataVector& result) {
   AlgorithmDGEMV<SPolyBoundaryBase> op;
 
-  op.mult_transposed(storage, base, source, this->dataset, result);
+  op.mult_transposed(&storage, base, source, this->dataset, result);
 }
 
 }  // namespace base

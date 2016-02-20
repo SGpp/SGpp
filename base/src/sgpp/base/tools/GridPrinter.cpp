@@ -29,14 +29,14 @@ GridPrinter::~GridPrinter() {
 void GridPrinter::printLevelIndexGrid(std::string tFilename) {
   std::ofstream fileout;
 
-  if (myGrid->getStorage()->size() > 0) {
+  if (myGrid->getStorage().size() > 0) {
     // Open filehandle
     fileout.open(tFilename.c_str());
 
-    for (size_t i = 0; i < myGrid->getStorage()->size(); i++) {
-      for (size_t j = 0; j < myGrid->getStorage()->get(i)->dim(); j++) {
-        fileout << myGrid->getStorage()->get(i)->getLevel(j) << " "
-                << myGrid->getStorage()->get(i)->getIndex(j) << " ";
+    for (size_t i = 0; i < myGrid->getStorage().size(); i++) {
+      for (size_t j = 0; j < myGrid->getStorage().get(i)->dim(); j++) {
+        fileout << myGrid->getStorage().get(i)->getLevel(j) << " "
+                << myGrid->getStorage().get(i)->getIndex(j) << " ";
       }
 
       fileout << std::endl;
@@ -59,8 +59,8 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
   DimensionBoundary dimTwo;
   std::ofstream fileout;
 
-  if (myGrid->getStorage()->size() > 0) {
-    if (myGrid->getStorage()->dim() != 2) {
+  if (myGrid->getStorage().size() > 0) {
+    if (myGrid->getStorage().dim() != 2) {
       throw new tool_exception("GridPrinter::printGridDomain : "
                                "The grid has more not two dimensions. "
                                "Thus it cannot be printed!");
@@ -107,8 +107,8 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
   DimensionBoundary dimTwo;
   std::ofstream fileout;
 
-  if (myGrid->getStorage()->size() > 0) {
-    if (myGrid->getStorage()->dim() > 2) {
+  if (myGrid->getStorage().size() > 0) {
+    if (myGrid->getStorage().dim() > 2) {
       throw new tool_exception("GridPrinter::printGrid : "
                                "The grid has more than two dimensions. "
                                "Thus it cannot be printed!");
@@ -117,8 +117,8 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
       fileout.open(tFilename.c_str());
       OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
 
-      if (myGrid->getStorage()->dim() == 1) {
-        dimOne = myGrid->getBoundingBox()->getBoundary(0);
+      if (myGrid->getStorage().dim() == 1) {
+        dimOne = myGrid->getBoundingBox().getBoundary(0);
 
         float_t offset_x = dimOne.leftBoundary;
         float_t inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary) /
@@ -132,9 +132,9 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
           fileout << (offset_x + ((float_t)(i))*inc_x) << " " <<
                   myEval->eval(alpha, point) << std::endl;
         }
-      } else if (myGrid->getStorage()->dim() == 2) {
-        dimOne = myGrid->getBoundingBox()->getBoundary(0);
-        dimTwo = myGrid->getBoundingBox()->getBoundary(1);
+      } else if (myGrid->getStorage().dim() == 2) {
+        dimOne = myGrid->getBoundingBox().getBoundary(0);
+        dimTwo = myGrid->getBoundingBox().getBoundary(1);
 
         float_t offset_x = dimOne.leftBoundary;
         float_t offset_y = dimTwo.leftBoundary;
@@ -174,7 +174,7 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename,
                                   bool bSurplus) {
   DataVector temp(alpha);
   float_t tmp = 0.0;
-  size_t dim = myGrid->getStorage()->dim();
+  size_t dim = myGrid->getStorage().dim();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified
@@ -188,9 +188,9 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename,
   // Open filehandle
   fileout.open(tFilename.c_str());
 
-  for (size_t i = 0; i < myGrid->getStorage()->size(); i++) {
-    std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringBB(
-                            *myGrid->getBoundingBox());
+  for (size_t i = 0; i < myGrid->getStorage().size(); i++) {
+    std::string coords =  myGrid->getStorage().get(i)->getCoordsStringBB(
+                            myGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {
@@ -208,7 +208,7 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha,
     std::string tFilename, bool bSurplus) {
   DataVector temp(alpha);
   float_t tmp = 0.0;
-  size_t dim = myGrid->getStorage()->dim();
+  size_t dim = myGrid->getStorage().dim();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified
@@ -222,9 +222,9 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha,
   // Open filehandle
   fileout.open(tFilename.c_str());
 
-  for (size_t i = 0; i < myGrid->getStorage()->size(); i++) {
-    std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringBB(
-                            *myGrid->getBoundingBox());
+  for (size_t i = 0; i < myGrid->getStorage().size(); i++) {
+    std::string coords =  myGrid->getStorage().get(i)->getCoordsStringBB(
+                            myGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
 
     for (size_t j = 0; j < dim; j++) {

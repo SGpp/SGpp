@@ -455,7 +455,7 @@ void LearnerBase::dumpGrid(std::string tFilename) {
 }
 
 void LearnerBase::dumpFunction(std::string tFilename, size_t resolution) {
-  if (isTrained_ && grid_->getStorage()->dim() <= 2) {
+  if (isTrained_ && grid_->getStorage().dim() <= 2) {
     SGPP::base::GridPrinter myPlotter(*grid_);
     myPlotter.printGrid(*alpha_, tFilename, resolution);
   }

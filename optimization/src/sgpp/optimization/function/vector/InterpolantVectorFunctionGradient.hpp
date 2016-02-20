@@ -38,7 +38,7 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
   InterpolantVectorFunctionGradient(base::Grid& grid, const base::DataMatrix& alpha)
-      : VectorFunctionGradient(grid.getStorage()->dim(), alpha.getNcols()),
+      : VectorFunctionGradient(grid.getStorage().dim(), alpha.getNcols()),
         grid(grid),
         opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
         alpha(alpha) {}

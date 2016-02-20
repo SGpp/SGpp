@@ -28,10 +28,8 @@ class OperationMultipleEvalModPoly: public OperationMultipleEval {
    * @param degree the polynom's max. degree
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalModPoly(Grid& grid, size_t degree,
-                               DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), base(degree) {
-    this->storage = grid.getStorage();
+  OperationMultipleEvalModPoly(Grid& grid, size_t degree, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {
   }
 
   /**
@@ -45,7 +43,7 @@ class OperationMultipleEvalModPoly: public OperationMultipleEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Mod Poly Basis object
   SPolyModifiedBase base;
 };
