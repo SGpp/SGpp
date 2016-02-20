@@ -38,7 +38,7 @@ int main() {
 
   // create regular grid, level 3
   size_t level = 3;
-  GridGenerator* gridGen = grid->createGridGenerator();
+  std::unique_ptr<GridGenerator> gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   std::cout << "number of initial grid points:    " << gridStorage->size() << std::endl;
 

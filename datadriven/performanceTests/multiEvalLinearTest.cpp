@@ -98,7 +98,7 @@ void getRuntime(SGPP::base::GridType gridType, const std::string& kernel, std::s
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->dim());
 
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
+  std::unique_ptr<SGPP::base::GridGenerator> gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
   BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
@@ -458,7 +458,7 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string& kern
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->dim());
 
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
+  std::unique_ptr<SGPP::base::GridGenerator> gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
   BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());

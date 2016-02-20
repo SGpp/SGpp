@@ -72,8 +72,8 @@ void BsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* BsplineClenshawCurtisGrid::createGridGenerator() {
-  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+std::unique_ptr<GridGenerator> BsplineClenshawCurtisGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(this->storage, boundaryLevel));
 }
 
 }  // namespace base

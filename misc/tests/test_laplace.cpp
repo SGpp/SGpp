@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridStorage* storage = grid->getStorage();
 
-  GridGenerator* generator = grid->createGridGenerator();
+  std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
   generator->regular(level);
 
   OperationMatrix* laplace = SGPP::op_factory::createOperationLaplace(*grid);
@@ -297,7 +297,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridStorage* storage = grid->getStorage();
 
-  GridGenerator* generator = grid->createGridGenerator();
+  std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
   generator->regular(level);
 
   OperationMatrix* laplace = SGPP::op_factory::createOperationLaplaceEnhanced(
@@ -670,7 +670,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
   size_t dim = 4;
   size_t level = 2;
   std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
-  GridGenerator* generator = grid->createGridGenerator();
+  std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
   generator->regular(level);
 
   GridStorage* gridStorage = grid->getStorage();

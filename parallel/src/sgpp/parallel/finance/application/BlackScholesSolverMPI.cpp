@@ -127,7 +127,7 @@ void BlackScholesSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox,
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  SGPP::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+  std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
   myGenerator->regular(this->levels);
   delete myGenerator;
 

@@ -514,7 +514,7 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
     size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+    std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->BoundGrid->createGridGenerator();
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator->getNumberOfRefinablePoints();
@@ -542,8 +542,6 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
       myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
       delete myCoarsenFunctor;
     }
-
-    delete myGenerator;
 
     ///////////////////////////////////////////////////
     // End integrated refinement & coarsening

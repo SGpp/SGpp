@@ -167,7 +167,7 @@ void LearnerSGDE::createRegularGrid(Grid*& grid, size_t ndim) {
     throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
   }
 
-  GridGenerator* gridGen = grid->createGridGenerator();
+  std::unique_ptr<GridGenerator> gridGen = grid->createGridGenerator();
   gridGen->regular(gridConfig.level_);
 }
 
@@ -271,7 +271,7 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
   size_t dim = train.getNcols();
 
   GridStorage* gridStorage = grid.getStorage();
-  GridGenerator* gridGen = grid.createGridGenerator();
+  std::unique_ptr<GridGenerator> gridGen = grid.createGridGenerator();
   DataVector rhs(grid.getStorage()->size());
   alpha.resize(grid.getStorage()->size());
   alpha.setAll(0.0);

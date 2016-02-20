@@ -52,8 +52,8 @@ std::unique_ptr<Grid> LinearGridStencil::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearGridStencil::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+std::unique_ptr<GridGenerator> LinearGridStencil::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(this->storage));
 }
 
 

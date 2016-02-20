@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
+  std::unique_ptr<SGPP::base::GridGenerator> gridGen = grid->createGridGenerator();
   gridGen->regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << std::endl;
   std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;

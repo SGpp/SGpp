@@ -103,9 +103,8 @@ void LearnerBaseSP::InitializeGrid(const SGPP::base::RegularGridConfiguration&
   }
 
   // Generate regular Grid with LEVELS Levels
-  SGPP::base::GridGenerator* myGenerator = grid_->createGridGenerator();
+  std::unique_ptr<SGPP::base::GridGenerator> myGenerator = grid_->createGridGenerator();
   myGenerator->regular(GridConfig.level_);
-  delete myGenerator;
 
   // Create alpha
   alpha_ = new SGPP::base::DataVectorSP(grid_->getSize());

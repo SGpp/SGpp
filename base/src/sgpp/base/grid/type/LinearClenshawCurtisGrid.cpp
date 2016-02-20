@@ -60,8 +60,8 @@ void LinearClenshawCurtisGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearClenshawCurtisGrid::createGridGenerator() {
-  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+std::unique_ptr<GridGenerator> LinearClenshawCurtisGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(this->storage, boundaryLevel));
 }
 
 

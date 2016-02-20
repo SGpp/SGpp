@@ -30,7 +30,7 @@ class PrewaveletGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  GridGenerator* createGridGenerator() override;
+  std::unique_ptr<GridGenerator> createGridGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 

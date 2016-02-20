@@ -44,7 +44,7 @@ class PolyBoundaryGrid : public Grid {
   SGPP::base::GridType getType() override;
   void serialize(std::ostream& ostr) override;
 
-  GridGenerator* createGridGenerator() override;
+  std::unique_ptr<GridGenerator> createGridGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
   size_t getDegree() const;

@@ -112,7 +112,6 @@ public:
   virtual ~Grid();
 
 public:	
-  virtual SGPP::base::GridGenerator* createGridGenerator() = 0;
   virtual SGPP::base::GridStorage* getStorage();
   virtual SGPP::base::BoundingBox* getBoundingBox();
   virtual SGPP::base::Stretching* getStretching();
@@ -233,6 +232,10 @@ public:
 
   static SGPP::base::Grid* unserialize(std::string& istr) {
     return SGPP::base::Grid::unserialize(istr).release();
+  }
+
+  SGPP::base::GridGenerator* createGridGenerator() {
+    return $self->createGridGenerator().release();
   }
 };
   

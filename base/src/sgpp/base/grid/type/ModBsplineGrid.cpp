@@ -66,8 +66,8 @@ void ModBsplineGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* ModBsplineGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+std::unique_ptr<GridGenerator> ModBsplineGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(this->storage));
 }
 
 }  // namespace base

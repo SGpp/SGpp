@@ -87,9 +87,8 @@ void LearnerDensityBased::InitializeGrid(const
     }
 
     // Generate regular Grid with LEVELS Levels
-    SGPP::base::GridGenerator* myGenerator = gridVec_[i]->createGridGenerator();
+    std::unique_ptr<SGPP::base::GridGenerator> myGenerator = gridVec_[i]->createGridGenerator();
     myGenerator->regular(GridConfig.level_);
-    delete myGenerator;
 
     // Create alpha
     alphaVec_.push_back(SGPP::base::DataVector(gridVec_[i]->getSize()));

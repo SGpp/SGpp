@@ -99,9 +99,8 @@ void BlackScholesSolverWithStretching::constructGridStretching(SGPP::base::Stret
 
   this->myGrid = new SGPP::base::LinearStretchedBoundaryGrid(stretching);
 
-  SGPP::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+  std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
   myGenerator->regular(this->levels);
-  delete myGenerator;
 
   this->myStretching = this->myGrid->getStretching();
   this->myGridStorage = this->myGrid->getStorage();

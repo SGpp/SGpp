@@ -36,7 +36,7 @@ class PeriodicGrid : public Grid {
 
   SGPP::base::GridType getType() override;
 
-  GridGenerator* createGridGenerator() override;
+  std::unique_ptr<GridGenerator> createGridGenerator() override;
 
   const SBasis& getBasis() override;
 

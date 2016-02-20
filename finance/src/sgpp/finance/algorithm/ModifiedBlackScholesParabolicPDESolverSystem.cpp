@@ -110,7 +110,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
     size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+    std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->BoundGrid->createGridGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
@@ -141,8 +141,6 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
       myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
       delete myCoarsenFunctor;
     }
-
-    delete myGenerator;
 
     ///////////////////////////////////////////////////
     // End integrated refinement & coarsening
