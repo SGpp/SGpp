@@ -14,7 +14,7 @@
 namespace SGPP {
 namespace base {
 
-SquareRootGridGenerator::SquareRootGridGenerator(GridStorage* storage) :
+SquareRootGridGenerator::SquareRootGridGenerator(GridStorage& storage) :
   storage(storage) {
 }
 

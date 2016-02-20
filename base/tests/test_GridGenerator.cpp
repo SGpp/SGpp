@@ -35,7 +35,7 @@ using SGPP::base::SurplusRefinementFunctor;
 
 BOOST_AUTO_TEST_CASE(testPeriodicGridGenerator) {
   GridStorage storage(2);
-  PeriodicGridGenerator* gridgen = new PeriodicGridGenerator(&storage);
+  PeriodicGridGenerator* gridgen = new PeriodicGridGenerator(storage);
 
   gridgen->regular(2);
   BOOST_CHECK_EQUAL(storage.size(), 12);
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(testPeriodicGridGenerator) {
 
 BOOST_AUTO_TEST_CASE(testSquareRootGridGenerator) {
   GridStorage storage(2);
-  SquareRootGridGenerator* gridgen = new SquareRootGridGenerator(&storage);
+  SquareRootGridGenerator* gridgen = new SquareRootGridGenerator(storage);
 
   gridgen->regular(2);
   BOOST_CHECK_EQUAL(storage.size(), 21);
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(testSquareRootGridGenerator) {
 
 BOOST_AUTO_TEST_CASE(testGeneralizedBoundaryGridGenerator) {
   GridStorage storage(2);
-  GeneralizedBoundaryGridGenerator* gridgen = new GeneralizedBoundaryGridGenerator(&storage);
+  GeneralizedBoundaryGridGenerator* gridgen = new GeneralizedBoundaryGridGenerator(storage);
 
   gridgen->regular(2);
   BOOST_CHECK_EQUAL(storage.size(), 21);
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(testGeneralizedBoundaryGridGenerator) {
 
 BOOST_AUTO_TEST_CASE(testL0BoundaryGridGenerator) {
   GridStorage storage(2);
-  L0BoundaryGridGenerator* gridgen = new L0BoundaryGridGenerator(&storage);
+  L0BoundaryGridGenerator* gridgen = new L0BoundaryGridGenerator(storage);
 
   gridgen->regular(2);
   BOOST_CHECK_EQUAL(storage.size(), 17);
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(testL0BoundaryGridGenerator) {
 
 BOOST_AUTO_TEST_CASE(testBoundaryGridGenerator) {
   GridStorage storage(2);
-  BoundaryGridGenerator* gridgen = new BoundaryGridGenerator(&storage);
+  BoundaryGridGenerator* gridgen = new BoundaryGridGenerator(storage);
 
   gridgen->regular(2);
   BOOST_CHECK_EQUAL(storage.size(), 21);
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(testBoundaryGridGenerator) {
 
 BOOST_AUTO_TEST_CASE(testStretchedBoundaryGridGenerator) {
   GridStorage storage(2);
-  StretchedBoundaryGridGenerator* gridgen = new StretchedBoundaryGridGenerator(&storage);
+  StretchedBoundaryGridGenerator* gridgen = new StretchedBoundaryGridGenerator(storage);
 
   gridgen->regular(2);
   BOOST_CHECK_EQUAL(storage.size(), 21);
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(testStretchedBoundaryGridGenerator) {
 
 BOOST_AUTO_TEST_CASE(testStandardGridGenerator) {
   GridStorage storage(2);
-  StandardGridGenerator* gridgen = new StandardGridGenerator(&storage);
+  StandardGridGenerator* gridgen = new StandardGridGenerator(storage);
 
   gridgen->regular(2);
   BOOST_CHECK_EQUAL(storage.size(), 5);

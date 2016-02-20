@@ -21,7 +21,7 @@ void OperationMultipleEvalPrewavelet::mult(DataVector& alpha,
   AlgorithmDGEMV<SPrewaveletBase> op;
   PrewaveletBasis<unsigned int, unsigned int> base;
 
-  op.mult(&storage, base, alpha, this->dataset, result);
+  op.mult(storage, base, alpha, this->dataset, result);
 }
 
 void OperationMultipleEvalPrewavelet::multTranspose(DataVector& source,
@@ -29,7 +29,7 @@ void OperationMultipleEvalPrewavelet::multTranspose(DataVector& source,
   AlgorithmDGEMV<SPrewaveletBase> op;
   PrewaveletBasis<unsigned int, unsigned int> base;
 
-  op.mult_transposed(&storage, base, source, this->dataset, result);
+  op.mult_transposed(storage, base, source, this->dataset, result);
 }
 
 }  // namespace base

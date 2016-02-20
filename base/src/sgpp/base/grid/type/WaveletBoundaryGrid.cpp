@@ -53,7 +53,7 @@ std::unique_ptr<Grid> WaveletBoundaryGrid::unserialize(std::istream& istr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> WaveletBoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(this->storage, boundaryLevel));
+  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(*this->storage, boundaryLevel));
 }
 
 

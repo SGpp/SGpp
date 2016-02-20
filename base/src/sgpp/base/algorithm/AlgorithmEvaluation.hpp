@@ -53,7 +53,7 @@ namespace base {
 template<class BASIS>
 class AlgorithmEvaluation {
  public:
-  explicit AlgorithmEvaluation(GridStorage* storage) :
+  explicit AlgorithmEvaluation(GridStorage& storage) :
     storage(storage) {
   }
 
@@ -83,10 +83,10 @@ class AlgorithmEvaluation {
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
 
-    size_t dim = storage->dim();
+    size_t dim = storage.dim();
 
     // Check for bounding box
-    BoundingBox* bb = storage->getBoundingBox();
+    BoundingBox* bb = storage.getBoundingBox();
     DataVector newPoint(point);
 
     if ( bb != NULL ) {
@@ -137,7 +137,7 @@ class AlgorithmEvaluation {
   }
 
  protected:
-  GridStorage* storage;
+  GridStorage& storage;
 
   /**
    * Recursive traversal of the "tree" of basis functions for evaluation, used in operator().
@@ -171,7 +171,7 @@ class AlgorithmEvaluation {
     while (true) {
       size_t seq = working.seq();
 
-      if (storage->end(seq)) {
+      if (storage.end(seq)) {
         break;
       } else {
         index_type work_index;
@@ -183,7 +183,7 @@ class AlgorithmEvaluation {
                                        point[current_dim]);
         new_value *= value;
 
-        if (current_dim == storage->dim() - 1) {
+        if (current_dim == storage.dim() - 1) {
           result += (alpha[seq] * new_value);
         } else {
           rec(basis, point, current_dim + 1, new_value,

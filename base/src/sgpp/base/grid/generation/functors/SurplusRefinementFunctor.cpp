@@ -20,7 +20,7 @@ SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector* alpha,
 SurplusRefinementFunctor::~SurplusRefinementFunctor() {
 }
 
-float_t SurplusRefinementFunctor::operator()(GridStorage* storage,
+float_t SurplusRefinementFunctor::operator()(GridStorage& storage,
     size_t seq) const {
   float_t val = fabs(alpha->get(seq));
   // std::cout << seq << ", ";

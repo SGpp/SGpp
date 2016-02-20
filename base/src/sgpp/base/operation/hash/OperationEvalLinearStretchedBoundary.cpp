@@ -26,7 +26,7 @@ float_t OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
   LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
   GetAffectedBasisFunctions <
   LinearStretchedBoundaryBasis<unsigned int, unsigned int> >
-  ga(&storage);
+  ga(storage);
 
   ga(base, point, vec);
 

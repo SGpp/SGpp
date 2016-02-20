@@ -20,9 +20,9 @@ namespace base {
  */
 class PrewaveletGridGenerator: public GridGenerator {
  protected:
-  /// pointer to the storage object
-  GridStorage* storage;
-  GridStorage* shadowstorage;
+  /// reference to the storage object
+  GridStorage& storage;
+  GridStorage& shadowstorage;
   typedef GridStorage::index_type index_type;
   typedef index_type::index_type index_t;
   typedef index_type::level_type level_t;
@@ -69,7 +69,7 @@ class PrewaveletGridGenerator: public GridGenerator {
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    * @param shadowstorage shadow points (see detailed description)
    */
-  PrewaveletGridGenerator(GridStorage* storage, GridStorage* shadowstorage);
+  PrewaveletGridGenerator(GridStorage& storage, GridStorage& shadowstorage);
 
   /**
    * Destructor

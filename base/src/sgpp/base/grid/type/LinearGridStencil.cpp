@@ -22,11 +22,11 @@ LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {
 }
 
 LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim) {
-  this->storage = new GridStorage(dim);
+  storage.reset(new GridStorage(dim));
 }
 
 LinearGridStencil::LinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
-  this->storage = new GridStorage(BB);
+  storage.reset(new GridStorage(BB));
 }
 
 LinearGridStencil::~LinearGridStencil() {
@@ -53,7 +53,7 @@ std::unique_ptr<Grid> LinearGridStencil::unserialize(std::istream& istr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> LinearGridStencil::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(this->storage));
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(*this->storage));
 }
 
 

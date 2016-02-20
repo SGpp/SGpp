@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTrivial) {
   HashGridStorage storage(2);
   HashGenerator generator;
 
-  generator.regular(&storage, 1);
+  generator.regular(storage, 1);
 
   DataVector datavector(1);
   datavector[0] = 1.0;
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTrivial) {
   HashRefinement* hash_refinement = new HashRefinement();
   SubspaceRefinement subspace_refinement(hash_refinement);
 
-  subspace_refinement.free_refine(&storage, &functor);
+  subspace_refinement.free_refine(storage, &functor);
 
   BOOST_CHECK_EQUAL(storage.size(), 5);
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
   HashGridStorage storage(2);
   HashGenerator generator;
 
-  generator.regular(&storage, 3);
+  generator.regular(storage, 3);
 
   DataVector data_vector(storage.size());
   data_vector.setAll(0.0);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
 
   SubspaceRefinement subspace_refinement(hash_refinement);
 
-  subspace_refinement.free_refine(&storage, &functor);
+  subspace_refinement.free_refine(storage, &functor);
 
   BOOST_CHECK_EQUAL(storage.size(), 33);
 
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
   HashGridStorage storage(2);
   HashGenerator generator;
 
-  generator.regular(&storage, 3);
+  generator.regular(storage, 3);
 
   DataVector data_vector(storage.size());
   data_vector.setAll(0.0);
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
 
   SubspaceRefinement subspace_refinement(hash_refinement);
 
-  subspace_refinement.free_refine(&storage, &functor);
+  subspace_refinement.free_refine(storage, &functor);
 
   BOOST_CHECK_EQUAL(storage.size(), 33);
 

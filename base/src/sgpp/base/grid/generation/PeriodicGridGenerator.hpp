@@ -25,7 +25,7 @@ class PeriodicGridGenerator : public GridGenerator {
    *
    * @param storage the grid's storage object
    */
-  explicit PeriodicGridGenerator(GridStorage* storage);
+  explicit PeriodicGridGenerator(GridStorage& storage);
 
   /**
    * Destructor
@@ -47,8 +47,8 @@ class PeriodicGridGenerator : public GridGenerator {
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
  protected:
-  /// pointer to the storage object
-  GridStorage* storage;
+  /// reference to the storage object
+  GridStorage& storage;
 };
 
 }  // namespace base

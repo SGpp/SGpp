@@ -19,7 +19,7 @@ namespace base {
 void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(
   DataVector& node_values) {
   HierarchisationLinearStretchedBoundary func(storage);
-  sweep<HierarchisationLinearStretchedBoundary> s(func, &storage);
+  sweep<HierarchisationLinearStretchedBoundary> s(func, storage);
 
   // N D case
   if (this->storage.dim() > 1) {
@@ -34,7 +34,7 @@ void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(
 void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(
   DataVector& alpha) {
   DehierarchisationLinearStretchedBoundary func(storage);
-  sweep<DehierarchisationLinearStretchedBoundary> s(func, &storage);
+  sweep<DehierarchisationLinearStretchedBoundary> s(func, storage);
 
   // N D case
   if (this->storage.dim() > 1) {

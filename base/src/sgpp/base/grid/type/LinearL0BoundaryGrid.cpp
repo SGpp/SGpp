@@ -42,7 +42,7 @@ std::unique_ptr<Grid> LinearL0BoundaryGrid::unserialize(std::istream& istr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> LinearL0BoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new L0BoundaryGridGenerator(this->storage));
+  return std::unique_ptr<GridGenerator>(new L0BoundaryGridGenerator(*this->storage));
 }
 
 }  // namespace base

@@ -17,7 +17,7 @@ namespace base {
 
 void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values) {
   HierarchisationPoly func(storage, &base);
-  sweep<HierarchisationPoly> s(func, &storage);
+  sweep<HierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.dim(); i++) {
@@ -27,7 +27,7 @@ void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values) {
 
 void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha) {
   DehierarchisationPoly func(storage, &base);
-  sweep<DehierarchisationPoly> s(func, &storage);
+  sweep<DehierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
   for (size_t i = 0; i < this->storage.dim(); i++) {

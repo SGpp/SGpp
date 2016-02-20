@@ -25,7 +25,7 @@ class SquareRootGridGenerator : public GridGenerator {
    *
    * @param storage template type that holds the grid points
    */
-  explicit SquareRootGridGenerator(GridStorage* storage);
+  explicit SquareRootGridGenerator(GridStorage& storage);
 
   /**
    * Destructor
@@ -54,8 +54,8 @@ class SquareRootGridGenerator : public GridGenerator {
   };
 
  protected:
-  /// Pointer to the grid's storage object
-  GridStorage* storage;
+  /// reference to the grid's storage object
+  GridStorage& storage;
 };
 
 }  // namespace base

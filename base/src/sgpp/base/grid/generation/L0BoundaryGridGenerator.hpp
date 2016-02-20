@@ -26,7 +26,7 @@ class L0BoundaryGridGenerator : public GridGenerator {
    *
    * @param storage template type that holds the grid points
    */
-  explicit L0BoundaryGridGenerator(GridStorage* storage);
+  explicit L0BoundaryGridGenerator(GridStorage& storage);
 
   /**
    * Destructor
@@ -48,8 +48,8 @@ class L0BoundaryGridGenerator : public GridGenerator {
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
  protected:
-  /// Pointer to the grid's storage object
-  GridStorage* storage;
+  /// reference to the grid's storage object
+  GridStorage& storage;
 };
 
 }  // namespace base

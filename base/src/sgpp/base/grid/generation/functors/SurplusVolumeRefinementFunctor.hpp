@@ -37,7 +37,7 @@ class SurplusVolumeRefinementFunctor : public RefinementFunctor {
    */
   ~SurplusVolumeRefinementFunctor() override;
 
-  float_t operator()(GridStorage* storage, size_t seq) const override;
+  float_t operator()(GridStorage& storage, size_t seq) const override;
 
 
   float_t start() const override;

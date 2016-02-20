@@ -40,7 +40,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(&SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->GridConverter = new SGPP::base::DirichletGridConverter();
   this->r = r;
   this->mus = &mu;

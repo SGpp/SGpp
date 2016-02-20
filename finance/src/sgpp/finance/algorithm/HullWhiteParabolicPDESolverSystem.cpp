@@ -36,7 +36,7 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(&SparseGrid.getStorage());
+  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->variableDiscountFactor = new VariableDiscountFactor(&SparseGrid.getStorage(), dim_HW);
   this->a = a;
   this->theta = theta;

@@ -21,7 +21,7 @@ namespace base {
 
 PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
   Grid(istr),
-  shadowStorage(NULL) {
+  shadowStorage(nullptr) {
 }
 
 PrewaveletGrid::PrewaveletGrid(size_t dim) :
@@ -30,9 +30,6 @@ PrewaveletGrid::PrewaveletGrid(size_t dim) :
 }
 
 PrewaveletGrid::~PrewaveletGrid() {
-  if (shadowStorage != NULL) {
-    delete shadowStorage;
-  }
 }
 
 SGPP::base::GridType PrewaveletGrid::getType() {
@@ -54,12 +51,12 @@ std::unique_ptr<Grid> PrewaveletGrid::unserialize(std::istream& istr) {
  */
 std::unique_ptr<GridGenerator> PrewaveletGrid::createGridGenerator() {
   return std::unique_ptr<GridGenerator>(
-      new PrewaveletGridGenerator(this->storage, this->shadowStorage));
+      new PrewaveletGridGenerator(*this->storage, *this->shadowStorage));
 }
 
 
-GridStorage* PrewaveletGrid::getShadowStorage() {
-  return this->shadowStorage;
+GridStorage& PrewaveletGrid::getShadowStorage() {
+  return *shadowStorage;
 }
 
 }  // namespace base

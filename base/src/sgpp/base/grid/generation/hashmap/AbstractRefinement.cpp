@@ -34,7 +34,7 @@ size_t AbstractRefinement::getIndexOfMin(RefinementFunctor::value_type* array,
 
 
 void AbstractRefinement::createGridpoint1D(index_type& index,
-    size_t d, GridStorage* storage, index_t& source_index,
+    size_t d, GridStorage& storage, index_t& source_index,
     level_t& source_level) {
   index.get(d, source_level, source_index);
 
@@ -51,42 +51,42 @@ void AbstractRefinement::createGridpoint1D(index_type& index,
   }
 }
 
-void AbstractRefinement::refineGridpoint1D(GridStorage* storage, size_t seq,
+void AbstractRefinement::refineGridpoint1D(GridStorage& storage, size_t seq,
     size_t d) {
-  this->refineGridpoint1D(storage, *(storage->get(seq)), d);
+  this->refineGridpoint1D(storage, *(storage.get(seq)), d);
 }
 
 
-/*void AbstractRefinement::strategy_refine(GridStorage* storage,
+/*void AbstractRefinement::strategy_refine(GridStorage& storage,
         RefinementStrategy& refinement_strategy)
 {
     refinement_strategy.refine(storage, this);
 }*/
 
-bool AbstractRefinement::isRefinable(GridStorage* storage, index_type& index) {
+bool AbstractRefinement::isRefinable(GridStorage& storage, index_type& index) {
   GridStorage::grid_map_iterator child_iter;
 
   if (index.isLeaf()) return true;
 
-  for (size_t d = 0; d < storage->dim(); d++) {
+  for (size_t d = 0; d < storage.dim(); d++) {
     index_t source_index;
     level_t source_level;
     index.get(d, source_level, source_index);
 
     // test existence of left child
     index.set(d, source_level + 1, 2 * source_index - 1);
-    child_iter = storage->find(&index);
+    child_iter = storage.find(&index);
 
     // if there no more grid points --> test if we should refine the grid
-    if (child_iter == storage->end()) {
+    if (child_iter == storage.end()) {
       return true;
     }
 
     // test existance of right child
     index.set(d, source_level + 1, 2 * source_index + 1);
-    child_iter = storage->find(&index);
+    child_iter = storage.find(&index);
 
-    if (child_iter == storage->end()) {
+    if (child_iter == storage.end()) {
       return true;
     }
 

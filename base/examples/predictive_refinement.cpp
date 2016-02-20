@@ -114,7 +114,7 @@ int main() {
     // refine a single grid point each time
     std::cout << "Error over all = "  << errorVector.sum() << std::endl;
     PredictiveRefinementIndicator indicator(grid.get(), &dataSet, &errorVector, 1);
-    decorator.free_refine(&gridStorage, &indicator);
+    decorator.free_refine(gridStorage, &indicator);
 
     std::cout << "Refinement step " << step + 1 << ", new grid size: " <<
          gridStorage.size() << std::endl;

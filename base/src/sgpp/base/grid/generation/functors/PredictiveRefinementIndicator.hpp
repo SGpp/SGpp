@@ -76,7 +76,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    */
   virtual float_t operator()(AbstractRefinement::index_type* gridPoint) const;
 
-  float_t runOperator(GridStorage* storage, size_t seq);
+  float_t runOperator(GridStorage& storage, size_t seq);
 
 
   /**
@@ -116,12 +116,12 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   * This should be returning a refinement value for every grid point.
   * The point with the highest value will be refined first.
   *
-  * @param storage pointer to the grids storage object
+  * @param storage reference to the grids storage object
   * @param seq sequence number in the coefficients array
   *
   * @return refinement value
   */
-  float_t operator()(GridStorage* storage, size_t seq) const override;
+  float_t operator()(GridStorage& storage, size_t seq) const override;
 
  protected:
   // for each Point in the dataSet, this Contains the squared absolute

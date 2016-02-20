@@ -24,7 +24,7 @@ void OperationLTwoDotProductLinear::up(SGPP::base::DataVector& alpha,
                                        SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   PhiPhiUpBBLinear func(this->storage);
-  SGPP::base::sweep<PhiPhiUpBBLinear> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiUpBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
@@ -33,7 +33,7 @@ void OperationLTwoDotProductLinear::down(SGPP::base::DataVector& alpha,
                                          SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   PhiPhiDownBBLinear func(this->storage);
-  SGPP::base::sweep<PhiPhiDownBBLinear> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiDownBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }

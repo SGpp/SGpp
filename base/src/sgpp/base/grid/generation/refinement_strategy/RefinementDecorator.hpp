@@ -48,7 +48,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  virtual void free_refine(GridStorage* storage, RefinementFunctor* functor);
+  virtual void free_refine(GridStorage& storage, RefinementFunctor* functor);
 
 
   /**
@@ -58,7 +58,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @return The number of grid points that can be refined
    */
-  virtual size_t getNumberOfRefinablePoints(GridStorage* storage);
+  virtual size_t getNumberOfRefinablePoints(GridStorage& storage);
 
 
   /**
@@ -67,7 +67,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @param index point to refine
    * @param d direction
    */
-  // virtual void strategy_refine(GridStorage* storage,
+  // virtual void strategy_refine(GridStorage& storage,
   // RefinementStrategy& refinement_strategy);
 
   /**
@@ -76,10 +76,10 @@ class RefinementDecorator: public AbstractRefinement {
    * @param index point to refine
    * @param d direction
    */
-  virtual void refineGridpoint1D(GridStorage* storage, index_type& index,
+  virtual void refineGridpoint1D(GridStorage& storage, index_type& index,
                                  size_t d);
 
-  bool checkAdmissibility(GridStorage* storage, index_type& subspace);
+  bool checkAdmissibility(GridStorage& storage, index_type& subspace);
 
  protected:
   /**
@@ -105,7 +105,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param refine_index The index in the hashmap of the point that should be refined
    */
-  virtual void refineGridpoint(GridStorage* storage, size_t refine_index);
+  virtual void refineGridpoint(GridStorage& storage, size_t refine_index);
 
   /**
    * This method creates a new point on the grid. It checks if some parents or
@@ -114,7 +114,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param index The point that should be inserted
    */
-  virtual void createGridpoint(GridStorage* storage, index_type& index);
+  virtual void createGridpoint(GridStorage& storage, index_type& index);
 
   /**
   * Examines the grid points and stores the indices those that can be refined
@@ -125,7 +125,7 @@ class RefinementDecorator: public AbstractRefinement {
   * @param collection container that contains elements to refine (empty initially)
   */
   virtual void collectRefinablePoints(
-    GridStorage* storage,
+    GridStorage& storage,
     RefinementFunctor* functor,
     AbstractRefinement::refinement_container_type& collection);
 
@@ -138,7 +138,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @param collection container that contains elements to refine (empty initially)
    */
   virtual void refineGridpointsCollection(
-    GridStorage* storage,
+    GridStorage& storage,
     RefinementFunctor* functor,
     AbstractRefinement::refinement_container_type& collection);
 
@@ -153,7 +153,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @return list with indicator elements
    */
   virtual AbstractRefinement::refinement_list_type getIndicator(
-    GridStorage* storage,
+    GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
     const RefinementFunctor* functor) const;
 

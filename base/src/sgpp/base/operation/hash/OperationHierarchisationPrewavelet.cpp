@@ -28,14 +28,14 @@ void OperationHierarchisationPrewavelet::doHierarchisation(
    */
 
   HierarchisationLinear func(storage);
-  sweep<HierarchisationLinear> s(func, &storage);
+  sweep<HierarchisationLinear> s(func, storage);
 
   for (size_t i = 0; i < this->storage.dim(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 
   ConvertLinearToPrewavelet func2(storage, shadowStorage);
-  sweep<ConvertLinearToPrewavelet> s2(func2, &storage);
+  sweep<ConvertLinearToPrewavelet> s2(func2, storage);
 
   for (size_t i = 0; i < this->storage.dim(); i++) {
     s2.sweep1D(node_values, node_values, i);
@@ -45,14 +45,14 @@ void OperationHierarchisationPrewavelet::doHierarchisation(
 void OperationHierarchisationPrewavelet::doDehierarchisation(
   DataVector& alpha) {
   ConvertPrewaveletToLinear func(storage);
-  sweep<ConvertPrewaveletToLinear> s(func, &storage);
+  sweep<ConvertPrewaveletToLinear> s(func, storage);
 
   for (size_t i = 0; i < this->storage.dim(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 
   DehierarchisationLinear func2(storage);
-  sweep<DehierarchisationLinear> s2(func2, &storage);
+  sweep<DehierarchisationLinear> s2(func2, storage);
 
   for (size_t i = 0; i < this->storage.dim(); i++) {
     s2.sweep1D(alpha, alpha, (this->storage.dim() - (i + 1)));

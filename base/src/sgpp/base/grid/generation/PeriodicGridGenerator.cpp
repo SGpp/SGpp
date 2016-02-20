@@ -19,7 +19,7 @@
 namespace SGPP {
 namespace base {
 
-PeriodicGridGenerator::PeriodicGridGenerator(GridStorage* storage) : storage(
+PeriodicGridGenerator::PeriodicGridGenerator(GridStorage& storage) : storage(
     storage) {
 }
 

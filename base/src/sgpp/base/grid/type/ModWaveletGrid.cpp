@@ -49,7 +49,7 @@ std::unique_ptr<Grid> ModWaveletGrid::unserialize(std::istream& istr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> ModWaveletGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(this->storage));
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(*this->storage));
 }
 
 

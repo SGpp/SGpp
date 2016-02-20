@@ -27,93 +27,83 @@ using SGPP::base::SurplusRefinementFunctor;
 BOOST_AUTO_TEST_SUITE(TestHashGridStorage)
 
 BOOST_AUTO_TEST_CASE(testCreateDestroy) {
-  HashGridIndex* i = new HashGridIndex(1);
+  HashGridIndex i(1);
   HashGridStorage s(1);
 
-  i->set(0, 1, 1);
-  HashGridIndex* i2 = s.create(*i);
+  i.set(0, 1, 1);
+  HashGridIndex* i2 = s.create(i);
 
   HashGridIndex::level_type l, l2;
   HashGridIndex::index_type ind, ind2;
 
-  i->get(0, l, ind);
+  i.get(0, l, ind);
   i2->get(0, l2, ind2);
 
   BOOST_CHECK_EQUAL(ind, ind2);
   BOOST_CHECK_EQUAL(l, l2);
 
   s.destroy(i2);
-  s.destroy(i);
 }
 
 BOOST_AUTO_TEST_CASE(testSerialize) {
-  HashGridStorage* s = new HashGridStorage(2);
-  HashGenerator* g = new HashGenerator();
+  HashGridStorage s(2);
+  HashGenerator g;
 
-  g->regular(s, 2);
+  g.regular(s, 2);
 
-  std::string str = s->serialize();
+  std::string str = s.serialize();
 
   BOOST_TEST_MESSAGE(str);
   BOOST_CHECK_NE(str.length(), 0U);
 
-  HashGridStorage* s2 = new HashGridStorage(str);
+  HashGridStorage s2(str);
 
-  BOOST_CHECK_EQUAL(s->size(), s2->size());
-
-  delete s;
-  delete g;
-  delete s2;
+  BOOST_CHECK_EQUAL(s.size(), s2.size());
 }
 
 BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
-  HashGridStorage* s = new HashGridStorage(2);
-  HashGenerator* g = new HashGenerator();
+  HashGridStorage s(2);
+  HashGenerator g;
 
-  g->regular(s, 2);
+  g.regular(s, 2);
 
-  bool* srcLeaf = new bool[s->size()];
+  bool* srcLeaf = new bool[s.size()];
 
-  for (unsigned int i = 0; i < s->size(); ++i) {
-    srcLeaf[i] = s->get(i)->isLeaf();
+  for (unsigned int i = 0; i < s.size(); ++i) {
+    srcLeaf[i] = s.get(i)->isLeaf();
   }
 
-  std::string str = s->serialize();
+  std::string str = s.serialize();
 
   BOOST_CHECK_NE(str.length(), 0U);
 
-  HashGridStorage* s2 = new HashGridStorage(str);
+  HashGridStorage s2(str);
 
-  BOOST_CHECK_EQUAL(s->size(), s2->size());
+  BOOST_CHECK_EQUAL(s.size(), s2.size());
 
-  for (unsigned int i = 0; i < s->size(); ++i) {
-    BOOST_CHECK_EQUAL(s2->get(i)->isLeaf(), srcLeaf[i]);
+  for (unsigned int i = 0; i < s.size(); ++i) {
+    BOOST_CHECK_EQUAL(s2.get(i)->isLeaf(), srcLeaf[i]);
   }
 
-  delete s;
-  delete g;
-  delete s2;
-  delete srcLeaf;
+  delete[] srcLeaf;
 }
 
 BOOST_AUTO_TEST_CASE(testInsert) {
   HashGridIndex i(1);
-  HashGridStorage* s = new HashGridStorage(1);
+  HashGridStorage s(1);
 
   i.set(0, 1, 1);
-  size_t i2 = s->insert(i);
+  size_t i2 = s.insert(i);
 
   BOOST_CHECK_EQUAL(i2, 0U);
-  BOOST_CHECK_EQUAL(s->size(), 1U);
-
-  delete s;
+  BOOST_CHECK_EQUAL(s.size(), 1U);
 }
 
 BOOST_AUTO_TEST_CASE(testChilds) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regular(&s, 2);
+  g.regular(s, 2);
 
   HashGridIndex i(1);
 
@@ -140,7 +130,7 @@ BOOST_AUTO_TEST_CASE(testLevelZero) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regular(&s, 2);
+  g.regular(s, 2);
 
   HashGridIndex i(1);
 
@@ -166,7 +156,7 @@ BOOST_AUTO_TEST_CASE(testTop) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regular(&s, 2);
+  g.regular(s, 2);
 
   HashGridIndex i(1);
 
@@ -187,7 +177,7 @@ BOOST_AUTO_TEST_CASE(testSeq) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regular(&s, 2);
+  g.regular(s, 2);
 
   HashGridIndex i(1);
 
@@ -211,7 +201,7 @@ BOOST_AUTO_TEST_CASE(testPeriodic1D) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regularWithPeriodicBoundaries(&s, 2);
+  g.regularWithPeriodicBoundaries(s, 2);
 
   BOOST_CHECK_EQUAL(s.size(), 4U);
 }
@@ -220,12 +210,12 @@ BOOST_AUTO_TEST_CASE(testPeriodic2D) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regularWithPeriodicBoundaries(&s, 2);
+  g.regularWithPeriodicBoundaries(s, 2);
 
   BOOST_CHECK_EQUAL(s.size(), 12U);
 
   HashGridStorage s2(2);
-  g.regularWithPeriodicBoundaries(&s2, 3);
+  g.regularWithPeriodicBoundaries(s2, 3);
   BOOST_CHECK_EQUAL(s2.size(), 32U);
 
   HashGridIndex i(2);
@@ -269,7 +259,7 @@ BOOST_AUTO_TEST_CASE(testPeriodic3D) {
   HashGridStorage s(3);
   HashGenerator g;
 
-  g.regularWithPeriodicBoundaries(&s, 2);
+  g.regularWithPeriodicBoundaries(s, 2);
 
   BOOST_CHECK_EQUAL(s.size(), 32U);
 }
@@ -278,7 +268,7 @@ BOOST_AUTO_TEST_CASE(testRegular1D) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regular(&s, 2);
+  g.regular(s, 2);
 
   BOOST_CHECK_EQUAL(s.size(), 3U);
 }
@@ -287,12 +277,12 @@ BOOST_AUTO_TEST_CASE(testRegular2D) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regular(&s, 2);
+  g.regular(s, 2);
 
   BOOST_CHECK_EQUAL(s.size(), 5U);
 
   HashGridStorage s2(2);
-  g.regular(&s2, 3);
+  g.regular(s2, 3);
 
   BOOST_CHECK_EQUAL(s2.size(), 17U);
 
@@ -319,7 +309,7 @@ BOOST_AUTO_TEST_CASE(testRegular3D) {
   HashGridStorage s(3);
   HashGenerator g;
 
-  g.regular(&s, 2);
+  g.regular(s, 2);
 
   BOOST_CHECK_EQUAL(s.size(), 7U);
 }
@@ -328,7 +318,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries1D) {
   HashGridStorage s(1);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, 1);
+  g.regularWithBoundaries(s, 2, 1);
 
   BOOST_CHECK_EQUAL(s.size(), 5U);
 }
@@ -337,12 +327,12 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, 1);
+  g.regularWithBoundaries(s, 2, 1);
 
   BOOST_CHECK_EQUAL(s.size(), 21U);
 
   HashGridStorage s2(2);
-  g.regularWithBoundaries(&s2, 3, 1);
+  g.regularWithBoundaries(s2, 3, 1);
 
   BOOST_CHECK_EQUAL(s2.size(), 49U);
 
@@ -375,7 +365,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
   HashGridStorage s(3);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, 1);
+  g.regularWithBoundaries(s, 2, 1);
   BOOST_CHECK_EQUAL(s.size(), 81U);
 }
 
@@ -387,7 +377,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regular(&s, 1);
+  g.regular(s, 1);
 
   DataVector d(1);
   d[0] = 1.0;
@@ -395,7 +385,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine) {
   SurplusRefinementFunctor f(&d);
   HashRefinement r;
 
-  r.free_refine(&s, &f);
+  r.free_refine(s, &f);
 
   BOOST_CHECK_EQUAL(s.size(), 5U);
 }
@@ -404,7 +394,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 1, 1);
+  g.regularWithBoundaries(s, 1, 1);
 
   DataVector d(9);
   d[0] = 0.0;
@@ -420,7 +410,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
   SurplusRefinementFunctor f(&d);
   HashRefinementBoundaries r;
 
-  r.free_refine(&s, &f);
+  r.free_refine(s, &f);
 
   BOOST_CHECK_EQUAL(s.size(), 21U);
 }
@@ -429,7 +419,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
   HashGridStorage s(2);
   HashGenerator g;
 
-  g.regularWithBoundaries(&s, 2, 0);
+  g.regularWithBoundaries(s, 2, 0);
 
   DataVector d(17);
 
@@ -442,7 +432,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
   SurplusRefinementFunctor f(&d);
   HashRefinementBoundaries r;
 
-  r.free_refine(&s, &f);
+  r.free_refine(s, &f);
 
   BOOST_CHECK_EQUAL(s.size(), 21U);
 }
@@ -453,10 +443,10 @@ BOOST_AUTO_TEST_CASE(testSurplusFunctor) {
   SurplusRefinementFunctor f(&d);
 
   d[0] = -10.0;
-  BOOST_CHECK_GT(f(&s, 0), f.start());
+  BOOST_CHECK_GT(f(s, 0), f.start());
 
   d[0] = 10.0;
-  BOOST_CHECK_GT(f(&s, 0), f.start());
+  BOOST_CHECK_GT(f(s, 0), f.start());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

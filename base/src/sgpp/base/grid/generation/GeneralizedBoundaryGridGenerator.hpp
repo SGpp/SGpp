@@ -25,7 +25,7 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
    *
    * @param storage template type that holds the grid points
    */
-  explicit GeneralizedBoundaryGridGenerator(GridStorage* storage);
+  explicit GeneralizedBoundaryGridGenerator(GridStorage& storage);
 
   /**
    * Destructor
@@ -66,8 +66,8 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
   }
 
  protected:
-  /// Pointer to the grid's storage object
-  GridStorage* storage;
+  /// reference to the grid's storage object
+  GridStorage& storage;
 };
 
 }  // namespace base
