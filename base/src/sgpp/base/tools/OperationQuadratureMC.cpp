@@ -36,10 +36,8 @@ float_t OperationQuadratureMC::doQuadrature(DataVector& alpha) {
     }
   }
 
-  OperationMultipleEval* opEval = SGPP::op_factory::createOperationMultipleEval(
-                                    *grid, dm);
   DataVector res = DataVector(mcPaths);
-  opEval->mult(alpha, res);
+  SGPP::op_factory::createOperationMultipleEval(*grid, dm)->mult(alpha, res);
   return res.sum() / static_cast<float_t>(mcPaths);
 }
 
@@ -58,7 +56,7 @@ float_t OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
     res += func(*reinterpret_cast<int*>(&dim), p, clientdata);
   }
 
-  delete p;
+  delete[] p;
   return res / static_cast<float_t>(mcPaths);
 }
 
@@ -69,7 +67,7 @@ float_t OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
   float_t* p = new float_t[dim];
 
   SGPP::base::DataVector point(dim);
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
+  std::unique_ptr<OperationEval> opEval = SGPP::op_factory::createOperationEval(*grid);
   // create number of paths (uniformly drawn from [0,1]^d)
   float_t res = 0;
 
@@ -84,7 +82,7 @@ float_t OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata,
                     clientdata) - opEval->eval(alpha, point), 2);
   }
 
-  delete p;
+  delete[] p;
   return sqrt(res / static_cast<float_t>(mcPaths));
 }
 

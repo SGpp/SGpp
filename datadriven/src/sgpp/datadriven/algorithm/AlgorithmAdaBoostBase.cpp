@@ -87,7 +87,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     base::DataMatrix& algorithmValueTest) {
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(*this->grid);
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -334,8 +334,6 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
       std::cout << std::endl;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
@@ -343,8 +341,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     base::DataMatrix& algorithmValueTest) {
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(
-                                        *this->grid);
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -472,8 +469,6 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
       std::cout << std::endl;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
@@ -487,7 +482,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
 
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(*this->grid);
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -671,8 +666,6 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
       std::cout << std::endl;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
@@ -691,8 +684,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
 
   base::DataVector weight(this->numData);
   weight.setAll(1.0 / float_t(this->numData));
-  base::OperationEval* opEval = op_factory::createOperationEval(
-                                        *this->grid);
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*this->grid);
   // to store certain train data point
   base::DataVector p_train(this->dim);
   // to store certain train data point
@@ -859,8 +851,6 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
       std::cout << std::endl;
     }
   }
-
-  delete opEval;
 }
 
 void AlgorithmAdaBoostBase::eval(base::DataMatrix& testData,

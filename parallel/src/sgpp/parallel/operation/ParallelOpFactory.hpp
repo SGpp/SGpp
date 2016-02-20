@@ -61,7 +61,7 @@ createOperationMultipleEvalVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-base::OperationMatrix* createOperationLTwoDotProductVectorized(base::Grid& grid,
+std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(base::Grid& grid,
     const parallel::VectorizationType& vecType);
 
 /**
@@ -75,7 +75,7 @@ base::OperationMatrix* createOperationLTwoDotProductVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-parallel::OperationParabolicPDEMatrixCombined*
+std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
 createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
                                         SGPP::base::DataVector& lambda, const parallel::VectorizationType& vecType);
 
@@ -89,7 +89,7 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-parallel::OperationParabolicPDEMatrixCombined*
+std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
 createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
                                         const parallel::VectorizationType& vecType);
 
@@ -103,7 +103,7 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid,
+std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(base::Grid& grid,
     base::DataVector& lambda, const parallel::VectorizationType& vecType);
 
 /**
@@ -117,7 +117,7 @@ base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid,
+std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(base::Grid& grid,
     const parallel::VectorizationType& vecType);
 #endif
 }

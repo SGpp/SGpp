@@ -317,7 +317,8 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
         std::ofstream file;
         file.open(tFilename.c_str());
 
-        SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*this->myGrid);
+        std::unique_ptr<SGPP::base::OperationEval> myEval(
+            SGPP::op_factory::createOperationEval(*this->myGrid));
 
         for (size_t i = 0; i < numTestpoints; i++) {
           std::vector<float_t> point;
@@ -333,8 +334,6 @@ void BlackScholesSolverWithStretching::printPayoffInterpolationError2D(
           dX += dInc;
           dY -= dInc;
         }
-
-        delete myEval;
 
         file.close();
       }
@@ -427,10 +426,7 @@ void BlackScholesSolverWithStretching::initCartesianGridWithPayoff(SGPP::base::D
       delete[] dblFuncValues;
     }
 
-    SGPP::base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new SGPP::base::application_exception(
         "BlackScholesSolverWithStretching::initCartesianGridWithPayoff : A grid wasn't constructed "
@@ -480,10 +476,7 @@ void BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff(
       delete[] dblFuncValues;
     }
 
-    SGPP::base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new SGPP::base::application_exception(
         "BlackScholesSolverWithStretching::initLogTransformedGridWithPayoff : A grid wasn't "
@@ -529,11 +522,8 @@ void BlackScholesSolverWithStretching::getAnalyticAlpha1D(base::DataVector& alph
 
   if (hierarchized) {
     // hierarchize computed values
-    base::OperationHierarchisation* myHier =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHier->doHierarchisation(alpha_analytic);
-
-    delete myHier;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->
+        doHierarchisation(alpha_analytic);
   }
 }
 

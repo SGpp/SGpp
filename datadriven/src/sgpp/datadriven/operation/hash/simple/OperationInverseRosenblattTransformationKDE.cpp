@@ -71,8 +71,8 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(float_t sigmaFact
   base::DataVector kern(nsamples);
   kern.setAll(1.0f);
 
-  OperationRosenblattTransformationKDE* opRosen =
-      op_factory::createOperationRosenblattTransformationKDE(*kde);
+  std::unique_ptr<OperationRosenblattTransformationKDE> opRosen(
+      op_factory::createOperationRosenblattTransformationKDE(*kde));
 
   // get minimum and maximum of the data in every dimension
   for (size_t idim = 0; idim < ndim; idim++) {
@@ -99,8 +99,6 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(float_t sigmaFact
     std::cout << " y    in [" << ylimits_1d[0] << ", " << ylimits_1d[1] << "]" << std::endl;
 #endif
   }
-
-  delete opRosen;
 
   return;
 }

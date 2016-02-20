@@ -639,10 +639,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
     int k = 0;
     k++;
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "HestonSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
@@ -792,10 +789,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, flo
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "HestonSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
@@ -814,9 +808,7 @@ float_t HestonSolver::evalOption(std::vector<float_t>& eval_point, base::DataVec
     }
   }
 
-  base::OperationEval* myEval = op_factory::createOperationEval(*this->myGrid);
-  float_t result = myEval->eval(alpha, trans_eval);
-  delete myEval;
+  float_t result = op_factory::createOperationEval(*this->myGrid)->eval(alpha, trans_eval);
 
   return result;
 }
@@ -939,10 +931,7 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, float_t m
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*this->myGrid);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
 }
 
 void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, float_t maturity) {
@@ -977,10 +966,7 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, float_
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*this->myGrid);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
 }
 
 void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
@@ -1050,10 +1036,7 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*grid1d);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);
 }
 
 void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d,
@@ -1075,10 +1058,7 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*grid1d);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);
   delete myBSSolver;
 }
 
@@ -1137,10 +1117,7 @@ void HestonSolver::GetBsExactSolution(base::DataVector& alphaBS, float_t maturit
           myBSSolver->getAnalyticSolution1D(S, true, maturity, sqrt(v), this->r, this->dStrike);
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*this->myGrid);
-  myHierarchisation->doHierarchisation(alphaBS);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alphaBS);
 }
 
 void HestonSolver::CompareHestonBsExact(base::DataVector& alpha, float_t maturity) {
@@ -1262,7 +1239,7 @@ void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base
   std::ofstream fileout;
 
   fileout.open(filename.c_str());
-  base::OperationEval* myEval = op_factory::createOperationEval(*myGrid);
+  std::unique_ptr<base::OperationEval> myEval(op_factory::createOperationEval(*myGrid));
 
   if (myGrid->getStorage().dim() == 2) {
     dimOne = myGrid->getBoundingBox().getBoundary(0);
@@ -1291,17 +1268,15 @@ void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base
     }
   }
 
-  delete myEval;
   // close filehandle
   fileout.close();
 }
 
 float_t HestonSolver::EvalSinglePoint1Asset(float_t s, float_t v, base::DataVector& alphaVec) {
-  base::OperationEval* myEval = op_factory::createOperationEval(*myGrid);
   std::vector<float_t> point;
   point.push_back(s);
   point.push_back(v);
-  return myEval->eval(alphaVec, point);
+  return op_factory::createOperationEval(*myGrid)->eval(alphaVec, point);
 }
 }  // namespace finance
 }  // namespace SGPP

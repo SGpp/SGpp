@@ -50,12 +50,11 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
+  SGPP::float_t quadOperation =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
   delete alpha;
-  delete quadOp;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -77,8 +76,8 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   DataVector* alpha = new DataVector(v);
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t resDirect = quadOp->doQuadrature(*alpha);
+  SGPP::float_t resDirect =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
 
   // Monte Carlo quadrature
   OperationQuadratureMC* opMC = new OperationQuadratureMC(*grid, 100000);
@@ -88,7 +87,6 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   delete alpha;
   delete opMC;
-  delete quadOp;
 }
 
 BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
@@ -121,14 +119,14 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
     quadManual += alpha->get(i) * quad[i];
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
+  SGPP::float_t quadOperation =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
   delete alpha;
   delete basis;
-  delete quadOp;
 }
+
 BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   size_t dim = 1;
   size_t level = 3;
@@ -160,12 +158,11 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
     quadManual += alpha->get(i) * quad[i];
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
+  SGPP::float_t quadOperation =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 
   delete alpha;
   delete basis;
-  delete quadOp;
 }
 BOOST_AUTO_TEST_SUITE_END()

@@ -65,6 +65,6 @@ int main() {
   DataVector p(dim);
   p[0] = 0.52;
   p[1] = 0.73;
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
+  std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(*grid));
   std::cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << std::endl;
 }

@@ -242,10 +242,7 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
       // delete dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "HullWhiteSolver::initGridWithPayoff : A grid wasn't constructed before!");

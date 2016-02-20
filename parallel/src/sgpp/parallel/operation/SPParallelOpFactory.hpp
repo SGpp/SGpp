@@ -43,7 +43,7 @@ namespace op_factory {
  *
  * @return Pointer to the new OperationMultipleEvalVectorizedSP for the Grid grid
  */
-parallel::OperationMultipleEvalVectorizedSP*
+std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>
 createOperationMultipleEvalVectorizedSP(base::Grid& grid,
                                         const parallel::VectorizationType& vecType, base::DataMatrixSP* dataset,
                                         size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(),

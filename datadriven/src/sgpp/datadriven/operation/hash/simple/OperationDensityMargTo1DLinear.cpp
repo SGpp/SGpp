@@ -35,9 +35,7 @@ void OperationDensityMargTo1DLinear::marg_next_dim(base::Grid* g_in, base::DataV
 
   base::Grid* g_tmp = NULL;
   base::DataVector* a_tmp = new base::DataVector(1);
-  OperationDensityMarginalize* marg = op_factory::createOperationDensityMarginalize(*g_in);
-  marg->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
-  delete marg;
+  op_factory::createOperationDensityMarginalize(*g_in)->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
 
   count++;
 

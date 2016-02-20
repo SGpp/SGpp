@@ -28,7 +28,8 @@ using SGPP::base::OperationMultipleEval;
 DataMatrix* generateBTMatrix(Grid& grid, DataMatrix& training) {
   GridStorage& storage = grid.getStorage();
 
-  OperationMultipleEval* b = SGPP::op_factory::createOperationMultipleEval(grid, training);
+  std::unique_ptr<OperationMultipleEval> b(
+      SGPP::op_factory::createOperationMultipleEval(grid, training));
 
   DataVector alpha(storage.size());
   DataVector temp(training.getNrows());

@@ -36,7 +36,8 @@ DataMatrix* generateLaplaceMatrix(Grid& grid,  size_t level) {
 
   grid.createGridGenerator()->regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplace(grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplace(grid));
 
   // create vector
   DataVector alpha(storage.size());
@@ -61,7 +62,8 @@ DataMatrix* generateLaplaceEnhancedMatrix(Grid& grid,  size_t level) {
 
   grid.createGridGenerator()->regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplaceEnhanced(grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplaceEnhanced(grid));
 
   // create vector
   DataVector alpha(storage.size());
@@ -254,7 +256,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
   generator->regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplace(*grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplace(*grid));
 
   DataVector alpha(storage.size());
   DataVector result(storage.size());
@@ -300,8 +303,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
   generator->regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplaceEnhanced(
-                               *grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplaceEnhanced(*grid));
 
   DataVector alpha(storage.size());
   DataVector result(storage.size());
@@ -686,7 +689,8 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
                                  threshold);
   generator->refine(&srf);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplace(*grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplace(*grid));
 
   DataVector alpha2(gridStorage.size());
   DataVector erg(gridStorage.size());

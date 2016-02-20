@@ -42,7 +42,7 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
 
   // traverse dataSet
   DataVector vec(2);
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+  std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
 
   for (unsigned int i = 0; i < dataSet.getNrows(); i++) {
     dataSet.getRow(i, vec);

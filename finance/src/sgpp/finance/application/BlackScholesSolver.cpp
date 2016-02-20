@@ -1279,11 +1279,7 @@ void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, fl
 
   if (hierarchized) {
     // hierarchize computed values
-    base::OperationHierarchisation* myHier =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHier->doHierarchisation(alpha_analytic);
-
-    delete myHier;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha_analytic);
   }
 }
 
@@ -1361,7 +1357,8 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
         std::ofstream file;
         file.open(tFilename.c_str());
 
-        base::OperationEval* myEval = op_factory::createOperationEval(*this->myGrid);
+        std::unique_ptr<base::OperationEval> myEval(
+            op_factory::createOperationEval(*this->myGrid));
 
         for (size_t i = 0; i < numTestpoints; i++) {
           std::vector<float_t> point;
@@ -1377,8 +1374,6 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
           dX += dInc;
           dY -= dInc;
         }
-
-        delete myEval;
 
         file.close();
       }
@@ -1467,10 +1462,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
@@ -1518,10 +1510,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
@@ -1581,10 +1570,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "BlackScholesSolver::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
@@ -1615,9 +1601,8 @@ float_t BlackScholesSolver::evalOption(std::vector<float_t>& eval_point, base::D
     }
   }
 
-  base::OperationEval* myEval = op_factory::createOperationEval(*this->myGrid);
-  float_t result = myEval->eval(alpha, trans_eval);
-  delete myEval;
+
+  float_t result = op_factory::createOperationEval(*this->myGrid)->eval(alpha, trans_eval);
 
   // discounting, if PAT is used
   if (this->usePAT == true && this->payoffType != "std_amer_put") {
@@ -1663,9 +1648,7 @@ void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    base::OperationHierarchisation* myHier = op_factory::createOperationHierarchisation(*myGrid);
-    myHier->doDehierarchisation(temp);
-    delete myHier;
+    op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
   }
 
   // Open filehandle

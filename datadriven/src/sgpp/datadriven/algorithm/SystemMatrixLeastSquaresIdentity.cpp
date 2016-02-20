@@ -25,7 +25,7 @@ SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(base::Grid& g
   // datadriven::OperationMultipleEvalType type =
   // datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
   this->B = op_factory::createOperationMultipleEval(grid, *(this->dataset_),
-                                                    this->implementationConfiguration);
+                                                    this->implementationConfiguration).release();
   // padded during Operator construction, fetch new size
   this->paddedInstances = this->dataset_->getNrows();
 }

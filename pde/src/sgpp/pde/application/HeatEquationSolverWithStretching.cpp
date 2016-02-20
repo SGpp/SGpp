@@ -219,10 +219,7 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(base::DataVector& 
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "HeatEquationSolverWithStretching::initGridWithSmoothHeat : A grid wasn't constructed "

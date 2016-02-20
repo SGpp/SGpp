@@ -340,7 +340,7 @@ void LearnerBase::predict(SGPP::base::DataMatrix& testDataset,
   classesComputed.resize(testDataset.getNrows());
 
   SGPP::base::OperationMultipleEval* MultEval =
-      SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset);
+      SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset).release();
   MultEval->mult(*alpha_, classesComputed);
   delete MultEval;
 }

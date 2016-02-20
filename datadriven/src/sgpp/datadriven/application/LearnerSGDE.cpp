@@ -92,31 +92,19 @@ void LearnerSGDE::initialize(SGPP::base::DataMatrix& psamples) {
 // ---------------------------------------------------------------------------
 
 float_t LearnerSGDE::pdf(DataVector& x) {
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
-  float_t ret = opEval->eval(alpha, x);
-  delete opEval;
-  return ret;
+  return SGPP::op_factory::createOperationEval(*grid)->eval(alpha, x);
 }
 
 void LearnerSGDE::pdf(DataMatrix& points, DataVector& res) {
-  OperationMultipleEval* opEvalMulti =
-    SGPP::op_factory::createOperationMultipleEval(*grid, points);
-  opEvalMulti->eval(alpha, res);
+  SGPP::op_factory::createOperationMultipleEval(*grid, points)->eval(alpha, res);
 }
 
 float_t LearnerSGDE::mean() {
-  OperationFirstMoment* opMoment = op_factory::createOperationFirstMoment(
-                                     *grid);
-  float_t res = opMoment->doQuadrature(alpha);
-  delete opMoment;
-  return res;
+  return op_factory::createOperationFirstMoment(*grid)->doQuadrature(alpha);
 }
 
 float_t LearnerSGDE::variance() {
-  OperationSecondMoment* opMoment = op_factory::createOperationSecondMoment(
-                                      *grid);
-  float_t secondMoment = opMoment->doQuadrature(alpha);
-  delete opMoment;
+  float_t secondMoment = op_factory::createOperationSecondMoment(*grid)->doQuadrature(alpha);
 
   // use Steiners translation theorem to compute the variance
   float_t firstMoment = mean();
@@ -300,7 +288,7 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
       }
 
       // Weight surplus with function evaluation at grid points
-      OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+      std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
       GridIndex* gp;
       DataVector p(dim);
       DataVector alphaWeight(alpha.getSize());
@@ -310,9 +298,6 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
         gp->getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
-
-      delete opEval;
-      opEval = NULL;
 
       SurplusRefinementFunctor srf(&alphaWeight,
                                    adaptivityConfig.noPoints_, adaptivityConfig.threshold_);
@@ -360,10 +345,10 @@ OperationMatrix* LearnerSGDE::computeRegularizationMatrix(
 
   if (regularizationConfig.regType_
       == SGPP::datadriven::RegularizationType::Identity) {
-    C = SGPP::op_factory::createOperationIdentity(grid);
+    C = SGPP::op_factory::createOperationIdentity(grid).release();
   } else if (regularizationConfig.regType_
              == SGPP::datadriven::RegularizationType::Laplace) {
-    C = SGPP::op_factory::createOperationLaplace(grid);
+    C = SGPP::op_factory::createOperationLaplace(grid).release();
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }

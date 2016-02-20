@@ -39,16 +39,13 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
     // 1. marginalize to dim_start
     base::Grid* g1d = NULL;
     base::DataVector* a1d = NULL;
-    OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*this->grid);
-    marg1d->margToDimX(alpha, g1d, a1d, dim_start);
-    delete marg1d;
+    op_factory::createOperationDensityMargTo1D(*this->grid)->margToDimX(alpha, g1d, a1d, dim_start);
 
     // 2. 1D sampling on dim_start
     base::DataVector* samples_start = NULL;
-    OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
     unsigned int tseedp = static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * 0.0001);
-    samp1d->doSampling1D(a1d, size, samples_start, &tseedp);
-    delete samp1d;
+    op_factory::createOperationDensitySampling1D(*g1d)->doSampling1D(
+        a1d, size, samples_start, &tseedp);
     delete g1d;
     delete a1d;
 
@@ -107,16 +104,13 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
   // 1. marginalize to dim_x
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
-  OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*this->grid);
-  marg1d->margToDimX(alpha, g1d, a1d, dim_x);
-  delete marg1d;
+  op_factory::createOperationDensityMargTo1D(*this->grid)->margToDimX(alpha, g1d, a1d, dim_x);
 
   // 2. 1D sampling on dim_start
   base::DataVector* samples_start = NULL;
-  OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
   unsigned int tseedp = static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * 0.0001);
-  samp1d->doSampling1D(a1d, num_samples, samples_start, &tseedp);
-  delete samp1d;
+  op_factory::createOperationDensitySampling1D(*g1d)->doSampling1D(
+      a1d, num_samples, samples_start, &tseedp);
   delete g1d;
   delete a1d;
 
@@ -186,9 +180,8 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
   /* Step 1: do conditional in current dim */
   base::Grid* g_out = NULL;
   base::DataVector* a_out = new base::DataVector(1);
-  OperationDensityConditional* cond = op_factory::createOperationDensityConditional(*g_in);
-  cond->doConditional(*a_in, g_out, *a_out, op_dim, sampleVec->get(curr_dim));
-  delete cond;
+  op_factory::createOperationDensityConditional(*g_in)->doConditional(
+      *a_in, g_out, *a_out, op_dim, sampleVec->get(curr_dim));
 
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
@@ -201,22 +194,16 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
     // Marginalize to next dimension
     base::Grid* g1d = NULL;
     base::DataVector* a1d = NULL;
-    OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*g_out);
-    marg1d->margToDimX(a_out, g1d, a1d, op_dim);
-    delete marg1d;
+    op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension
-    OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g1d);
-    samp1d->doSampling1D(a1d, 1, sample, seedp);
-    delete samp1d;
+    op_factory::createOperationDensitySampling1D(*g1d)->doSampling1D(a1d, 1, sample, seedp);
     delete g1d;
     delete a1d;
 
   } else {
     // skip Marginalize, directly draw a sample in next dimension
-    OperationDensitySampling1D* samp1d = op_factory::createOperationDensitySampling1D(*g_out);
-    samp1d->doSampling1D(a_out, 1, sample, seedp);
-    delete samp1d;
+    op_factory::createOperationDensitySampling1D(*g_out)->doSampling1D(a_out, 1, sample, seedp);
   }
 
   /* Step 3: copy sample to output */

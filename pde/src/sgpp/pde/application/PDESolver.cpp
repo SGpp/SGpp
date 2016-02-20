@@ -270,9 +270,7 @@ float_t PDESolver::evaluatePoint(std::vector<float_t>& evalPoint, SGPP::base::Da
   float_t result = 0.0;
 
   if (bGridConstructed) {
-    SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
-    result = myEval->eval(alpha, evalPoint);
-    delete myEval;
+    result = SGPP::op_factory::createOperationEval(*myGrid)->eval(alpha, evalPoint);
   } else {
     throw new SGPP::base::application_exception(
         "PDESolver::evaluatePoint : A grid wasn't constructed before!");
@@ -290,10 +288,8 @@ void PDESolver::evaluateCuboid(SGPP::base::DataVector& alpha, SGPP::base::DataVe
           "evaluation points' vector!");
     }
 
-    SGPP::base::OperationMultipleEval* myOpMultEval =
-        SGPP::op_factory::createOperationMultipleEval(*myGrid, EvaluationPoints);
-    myOpMultEval->mult(alpha, OptionPrices);
-    delete myOpMultEval;
+    SGPP::op_factory::createOperationMultipleEval(*myGrid, EvaluationPoints)->
+        mult(alpha, OptionPrices);
   } else {
     throw new SGPP::base::application_exception(
         "PDESolver::evaluateCuboid : A grid wasn't constructed before!");

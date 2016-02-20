@@ -35,7 +35,7 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
   std::multimap<double, double>::iterator it1, it2;
 
   base::GridStorage* gs = &grid->getStorage();
-  base::OperationEval* opEval = op_factory::createOperationEval(*grid);
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*grid);
   base::DataVector coord(1);
 
   for (unsigned int i = 0; i < gs->size(); i++) {
@@ -44,8 +44,6 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }
 
-  delete opEval;
-  opEval = NULL;
   // include values at the boundary [0,1]
   coord_pdf.insert(std::pair<double, double>(0.0, 0.0));
   coord_pdf.insert(std::pair<double, double>(1.0, 0.0));

@@ -30,7 +30,8 @@ using SGPP::base::OperationMultipleEval;
 DataMatrix* generateBBTMatrix(Grid& grid, DataMatrix& training) {
   GridStorage& storage = grid.getStorage();
 
-  OperationMultipleEval* b = SGPP::op_factory::createOperationMultipleEval(grid, training);
+  std::unique_ptr<OperationMultipleEval> b(
+      SGPP::op_factory::createOperationMultipleEval(grid, training));
 
   DataVector alpha(storage.size());
   DataVector erg(storage.size());
@@ -677,7 +678,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(*grid);
+  std::unique_ptr<SGPP::datadriven::OperationTest> testOP(
+      SGPP::op_factory::createOperationTest(*grid));
 
   alpha.setAll(1.0);
   SGPP::float_t c = testOP->test(alpha, data, classes);
@@ -705,7 +707,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(*grid);
+  std::unique_ptr<SGPP::datadriven::OperationTest> testOP(
+      SGPP::op_factory::createOperationTest(*grid));
 
   alpha[0] = 0.0;
   alpha[1] = 0.0;
@@ -737,7 +740,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  SGPP::datadriven::OperationTest* testOP = SGPP::op_factory::createOperationTest(*grid);
+  std::unique_ptr<SGPP::datadriven::OperationTest> testOP(
+      SGPP::op_factory::createOperationTest(*grid));
 
   alpha[0] = 0.0;
   alpha[1] = 0.0;
