@@ -158,11 +158,11 @@ GridStorage* LearnerSGDE::getGridStorage() {
 void LearnerSGDE::createRegularGrid(Grid*& grid, size_t ndim) {
   // load grid
   if (gridConfig.type_ == GridType::Linear) {
-    grid = Grid::createLinearGrid(ndim);
+    grid = Grid::createLinearGrid(ndim).release();
   } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
-    grid = Grid::createLinearBoundaryGrid(ndim, 0);
+    grid = Grid::createLinearBoundaryGrid(ndim, 0).release();
   } else if (gridConfig.type_ == GridType::LinearBoundary) {
-    grid = Grid::createLinearBoundaryGrid(ndim);
+    grid = Grid::createLinearBoundaryGrid(ndim).release();
   } else {
     throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
   }

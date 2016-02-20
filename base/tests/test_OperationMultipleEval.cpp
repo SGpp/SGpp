@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_SUITE(TestOperationMultipleEval)
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   size_t dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   grid->createGridGenerator()->regular(2);
 
   GridStorage* gS = grid->getStorage();
@@ -79,7 +79,6 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   BOOST_CHECK_CLOSE(result[2], result_ref[2], 1e-4);
 #endif
 
-  delete grid;
   delete multiEvalOp;
 }
 

@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();
-  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
   // create regular grid, level 3

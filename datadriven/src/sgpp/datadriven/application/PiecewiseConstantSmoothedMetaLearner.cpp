@@ -211,11 +211,11 @@ base::Grid* PiecewiseConstantSmoothedRegressionMetaLearner::createRegularGrid(
 
   // load grid
   if (gridConfig.type_ == base::GridType::Linear) {
-    grid = base::Grid::createLinearGrid(dim);
+    grid = base::Grid::createLinearGrid(dim).release();
   } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-    grid = base::Grid::createLinearBoundaryGrid(dim, 0);
+    grid = base::Grid::createLinearBoundaryGrid(dim, 0).release();
   } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-    grid = base::Grid::createLinearBoundaryGrid(dim);
+    grid = base::Grid::createLinearBoundaryGrid(dim).release();
   } else {
     throw base::application_exception("DensityRegressionMetaLearner::initialize : grid type is "
       "not supported");

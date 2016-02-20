@@ -66,7 +66,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
     throw SGPP::base::operation_exception(
         "OperationDensityConditional is not possible for less than 2 dimensions");
 
-  mg = base::Grid::createLinearGrid(gs->dim() - 1);
+  mg = base::Grid::createLinearGrid(gs->dim() - 1).release();
   base::GridStorage* mgs = mg->getStorage();
 
   // run through grid g and add points to mg

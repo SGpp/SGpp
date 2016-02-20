@@ -27,10 +27,10 @@ using SGPP::base::GridStorage;
 using SGPP::base::GridGenerator;
 using SGPP::base::OperationMultipleEval;
 
-DataMatrix* generateBBTMatrix(Grid* grid, DataMatrix& training) {
-  GridStorage* storage = grid->getStorage();
+DataMatrix* generateBBTMatrix(Grid& grid, DataMatrix& training) {
+  GridStorage* storage = grid.getStorage();
 
-  OperationMultipleEval* b = SGPP::op_factory::createOperationMultipleEval(*grid, training);
+  OperationMultipleEval* b = SGPP::op_factory::createOperationMultipleEval(grid, training);
 
   DataVector alpha(storage->size());
   DataVector erg(storage->size());
@@ -166,12 +166,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -190,12 +190,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -214,12 +214,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -238,12 +238,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -267,12 +267,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -291,12 +291,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -315,12 +315,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -339,12 +339,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -367,12 +367,12 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -391,12 +391,12 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -415,12 +415,12 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -439,12 +439,12 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -463,7 +463,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
   SGPP::base::SurplusRefinementFunctor functor(&alpha, 1);
   generator->refine(&functor);
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -500,12 +500,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -524,12 +524,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -548,12 +548,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -576,12 +576,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -600,12 +600,12 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -624,12 +624,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -648,12 +648,12 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
 
   size_t dim = dataset.getDimension();
 
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
 
-  DataMatrix* m = generateBBTMatrix(grid, trainingData);
+  DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 
   DataMatrix* mRef = readReferenceMatrix(gridStorage, referenceMatrixFileName);
 
@@ -666,7 +666,7 @@ BOOST_AUTO_TEST_SUITE(TestLinearGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   size_t level = 1;
-  Grid* grid = SGPP::base::Grid::createLinearGrid(1);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(1);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -694,7 +694,7 @@ BOOST_AUTO_TEST_SUITE(TestLinearBoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   size_t level = 1;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(1);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(1);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();
@@ -726,7 +726,7 @@ BOOST_AUTO_TEST_SUITE(TestLinearL0BoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   size_t level = 1;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(1, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(1, 0);
   GridGenerator* generator = grid->createGridGenerator();
   generator->regular(level);
   GridStorage* gridStorage = grid->getStorage();

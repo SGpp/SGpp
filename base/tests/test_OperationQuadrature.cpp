@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   size_t dim = 3;
   size_t level = 4;
 
-  Grid* grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
   grid->createGridGenerator()->regular(level);
   GridStorage* gS = grid->getStorage();
@@ -54,7 +54,6 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
-  delete grid;
   delete alpha;
   delete quadOp;
 }
@@ -67,7 +66,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
   size_t dim = 3;
   size_t level = 3;
 
-  Grid* grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
   grid->createGridGenerator()->regular(level);
   GridStorage* gS = grid->getStorage();
@@ -87,7 +86,6 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   BOOST_CHECK_CLOSE(resDirect, resMC, 1.0);
 
-  delete grid;
   delete alpha;
   delete opMC;
   delete quadOp;
@@ -98,7 +96,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   size_t level = 3;
   size_t deg = 4;
 
-  Grid* grid = Grid::createPolyGrid(dim, deg);
+  std::unique_ptr<Grid> grid = Grid::createPolyGrid(dim, deg);
   grid->createGridGenerator()->regular(level);
   GridStorage* gS = grid->getStorage();
   size_t N = gS->size();
@@ -127,7 +125,6 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
-  delete grid;
   delete alpha;
   delete basis;
   delete quadOp;
@@ -137,7 +134,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   size_t level = 3;
   size_t deg = 4;
 
-  Grid* grid = Grid::createPolyBoundaryGrid(dim, deg);
+  std::unique_ptr<Grid> grid = Grid::createPolyBoundaryGrid(dim, deg);
   grid->createGridGenerator()->regular(level);
   GridStorage* gS = grid->getStorage();
   size_t N = gS->size();
@@ -167,7 +164,6 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 
-  delete grid;
   delete alpha;
   delete basis;
   delete quadOp;

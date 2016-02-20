@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
   SGPP::base::DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
-  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 
