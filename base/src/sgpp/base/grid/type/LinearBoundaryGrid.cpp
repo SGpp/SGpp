@@ -55,8 +55,8 @@ void LinearBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearBoundaryGrid::createGridGenerator() {
-  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+std::unique_ptr<GridGenerator> LinearBoundaryGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(this->storage, boundaryLevel));
 }
 
 

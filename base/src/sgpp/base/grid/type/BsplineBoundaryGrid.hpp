@@ -60,7 +60,7 @@ class BsplineBoundaryGrid : public Grid {
   /**
    * @return pointer to a GridGenerator object
    */
-  GridGenerator* createGridGenerator() override;
+  std::unique_ptr<GridGenerator> createGridGenerator() override;
 
   /**
    * reads a grid out of a string

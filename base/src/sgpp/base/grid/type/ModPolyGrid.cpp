@@ -70,8 +70,8 @@ void ModPolyGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* ModPolyGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+std::unique_ptr<GridGenerator> ModPolyGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(this->storage));
 }
 
 

@@ -52,8 +52,9 @@ std::unique_ptr<Grid> PrewaveletGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* PrewaveletGrid::createGridGenerator() {
-  return new PrewaveletGridGenerator(this->storage, this->shadowStorage);
+std::unique_ptr<GridGenerator> PrewaveletGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(
+      new PrewaveletGridGenerator(this->storage, this->shadowStorage));
 }
 
 

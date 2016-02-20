@@ -28,7 +28,7 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid& grid, size_t level,
                                           SGPP::float_t (*func)(DataVector&),
                                           SGPP::float_t tolerance = 0.0, bool naiveOp = false,
                                           bool doStretch = false) {
-  GridGenerator* gridGen = grid.createGridGenerator();
+  std::unique_ptr<GridGenerator> gridGen = grid.createGridGenerator();
   gridGen->regular(level);
   GridStorage* gridStore = grid.getStorage();
   size_t dim = gridStore->dim();

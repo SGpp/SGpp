@@ -62,7 +62,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
   size_t dim = grid.getStorage()->dim();
 
   GridStorage* gridStorage = grid.getStorage();
-  GridGenerator* gridGen = grid.createGridGenerator();
+  std::unique_ptr<GridGenerator> gridGen = grid.createGridGenerator();
   DataVector rhs(grid.getStorage()->size());
   alpha.resize(grid.getStorage()->size());
   alpha.setAll(0.0);

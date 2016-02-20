@@ -98,9 +98,8 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+  std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
   myGenerator->regular(this->levels);
-  delete myGenerator;
 
   this->myBoundingBox = this->myGrid->getBoundingBox();
   this->myGridStorage = this->myGrid->getStorage();
@@ -1005,7 +1004,7 @@ void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
 
   base::Grid* grid1d = new base::LinearBoundaryGrid(*boundingBox1d);
 
-  base::GridGenerator* myGenerator = grid1d->createGridGenerator();
+  std::unique_ptr<base::GridGenerator> myGenerator = grid1d->createGridGenerator();
   myGenerator->regular(levels1d);
 
   base::DataVector* alphaHeston = new base::DataVector(grid1d->getSize());
@@ -1029,7 +1028,6 @@ void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
 
   delete boundaries1d;
   delete grid1d;
-  delete myGenerator;
   delete alphaHeston;
   delete alphaBS;
 }

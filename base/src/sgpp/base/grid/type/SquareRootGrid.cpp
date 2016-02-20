@@ -49,8 +49,8 @@ std::unique_ptr<Grid> SquareRootGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* SquareRootGrid::createGridGenerator() {
-  return new SquareRootGridGenerator(this->storage);
+std::unique_ptr<GridGenerator> SquareRootGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new SquareRootGridGenerator(this->storage));
 }
 // OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
 // {

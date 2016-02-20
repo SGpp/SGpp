@@ -221,7 +221,7 @@ base::Grid* PiecewiseConstantSmoothedRegressionMetaLearner::createRegularGrid(
       "not supported");
   }
 
-  base::GridGenerator* gridGen = grid->createGridGenerator();
+  std::unique_ptr<base::GridGenerator> gridGen = grid->createGridGenerator();
   gridGen->regular(gridConfig.level_);
 
   return grid;

@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
 
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
-  GridGenerator* gen = grid->createGridGenerator();
+  std::unique_ptr<GridGenerator> gen = grid->createGridGenerator();
   gen->regular(level);
   //  GridStorage* storage = grid->getStorage();
 
@@ -305,7 +305,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   //
   //
   //  delete hash_refinement;
-  //  delete gen;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

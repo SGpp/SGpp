@@ -403,7 +403,7 @@ class Grid {
   /**
    * @return pointer to a GridGenerator object
    */
-  virtual GridGenerator* createGridGenerator() = 0;
+  virtual std::unique_ptr<GridGenerator> createGridGenerator() = 0;
 
   /**
    * Returns a string that identifies the grid type uniquely

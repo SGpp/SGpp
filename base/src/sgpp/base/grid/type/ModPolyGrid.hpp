@@ -42,7 +42,7 @@ class ModPolyGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator();
+  virtual std::unique_ptr<GridGenerator> createGridGenerator();
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
   virtual size_t getDegree() const;

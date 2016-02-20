@@ -222,7 +222,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
 
 void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t dThreshold) {
   if (bGridConstructed) {
-    SGPP::base::GridGenerator* myGenerator = myGrid->createGridGenerator();
+    std::unique_ptr<SGPP::base::GridGenerator> myGenerator = myGrid->createGridGenerator();
     size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
     size_t originalGridSize = myGrid->getStorage()->size();
     SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
@@ -231,7 +231,6 @@ void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t
     myGenerator->coarsenNFirstOnly(myCoarsenFunctor, &alpha, originalGridSize);
 
     delete myCoarsenFunctor;
-    delete myGenerator;
   } else {
     throw new SGPP::base::application_exception(
         "PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");

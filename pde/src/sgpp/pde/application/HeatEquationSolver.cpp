@@ -40,9 +40,8 @@ void HeatEquationSolver::constructGrid(base::BoundingBox& BoundingBox, int level
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
+  std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
   myGenerator->regular(levels);
-  delete myGenerator;
 
   this->myBoundingBox = this->myGrid->getBoundingBox();
   this->myGridStorage = this->myGrid->getStorage();

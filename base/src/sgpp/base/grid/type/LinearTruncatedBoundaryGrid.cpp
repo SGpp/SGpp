@@ -47,8 +47,8 @@ std::unique_ptr<Grid> LinearTruncatedBoundaryGrid::unserialize(std::istream& ist
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearTruncatedBoundaryGrid::createGridGenerator() {
-  return new GeneralizedBoundaryGridGenerator(this->storage);
+std::unique_ptr<GridGenerator> LinearTruncatedBoundaryGrid::createGridGenerator() {
+  return std::unique_ptr<GridGenerator>(new GeneralizedBoundaryGridGenerator(this->storage));
 }
 
 }  // namespace base
