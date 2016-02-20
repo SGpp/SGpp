@@ -102,9 +102,6 @@ enum class GridType {
     
 class Grid
 {
-public:
-  static Grid* unserialize(std::string& istr);
-	
 protected:
   Grid();
   Grid(Grid& o);
@@ -231,6 +228,10 @@ public:
   static SGPP::base::Grid* createPeriodicGrid(size_t dim) {
     return SGPP::base::Grid::createPeriodicGrid(dim).release();
   }
+
+  static SGPP::base::Grid* unserialize(std::string& istr) {
+    return SGPP::base::Grid::unserialize(istr).release();
+  }
 };
   
 // these are just two new interfaces for consistency with Memento design pattern
@@ -240,7 +241,7 @@ public:
   }
 
   static SGPP::base::Grid* setMemento(std::string& istr) {
-    return SGPP::base::Grid::unserialize(istr);
+    return SGPP::base::Grid::unserialize(istr).release();
   }
 };
 

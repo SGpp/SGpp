@@ -39,8 +39,8 @@ const SBasis& LinearTruncatedBoundaryGrid::getBasis() {
   return basis;
 }
 
-Grid* LinearTruncatedBoundaryGrid::unserialize(std::istream& istr) {
-  return new LinearTruncatedBoundaryGrid(istr);
+std::unique_ptr<Grid> LinearTruncatedBoundaryGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearTruncatedBoundaryGrid(istr));
 }
 
 /**

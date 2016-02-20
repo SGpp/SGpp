@@ -52,13 +52,12 @@ BOOST_AUTO_TEST_CASE(testSerializationLinear) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationModLinear) {
@@ -73,13 +72,12 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinear) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundary) {
@@ -93,13 +91,12 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundary) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundary) {
@@ -113,13 +110,12 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundary) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationPrewavelet) {
@@ -133,13 +129,12 @@ BOOST_AUTO_TEST_CASE(testSerializationPrewavelet) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
@@ -164,7 +159,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -179,7 +174,6 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
@@ -204,7 +198,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -219,7 +213,6 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
@@ -244,7 +237,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -259,7 +252,6 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
@@ -284,7 +276,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -299,7 +291,6 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
@@ -320,7 +311,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -330,7 +321,6 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
@@ -351,7 +341,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -361,7 +351,6 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
@@ -382,7 +371,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -392,7 +381,6 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
@@ -413,7 +401,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
   std::string str = factory->serialize();
   BOOST_CHECK(str.size() > 0);
 
-  Grid* newfac = Grid::unserialize(str);
+  std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != NULL);
 
   BOOST_CHECK(factory->getStorage()->size() == newfac->getStorage()->size());
@@ -423,7 +411,6 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
   }
 
   delete (gen);
-  delete (newfac);
 }
 
 // end test suite TestGridFactory

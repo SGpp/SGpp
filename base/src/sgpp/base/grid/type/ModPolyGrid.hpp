@@ -44,7 +44,7 @@ class ModPolyGrid : public Grid {
 
   virtual GridGenerator* createGridGenerator();
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
   virtual size_t getDegree() const;
 
  protected:

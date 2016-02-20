@@ -48,7 +48,7 @@ class ModLinearGridStencil : public GridStencil {
 
   GridGenerator* createGridGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };
 
 }  // namespace base

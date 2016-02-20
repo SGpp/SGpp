@@ -54,8 +54,8 @@ size_t BsplineGrid::getDegree() {
   return this->degree;
 }
 
-Grid* BsplineGrid::unserialize(std::istream& istr) {
-  return new BsplineGrid(istr);
+std::unique_ptr<Grid> BsplineGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new BsplineGrid(istr));
 }
 
 void BsplineGrid::serialize(std::ostream& ostr) {

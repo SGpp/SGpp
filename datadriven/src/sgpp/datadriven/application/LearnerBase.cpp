@@ -75,7 +75,7 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
 
   if (grid_ != NULL) delete grid_;
 
-  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize());
+  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize()).release();
   alpha_ = new SGPP::base::DataVector(*(copyMe.alpha_));
 }
 

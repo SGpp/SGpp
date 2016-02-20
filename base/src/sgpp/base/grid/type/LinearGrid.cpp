@@ -44,8 +44,8 @@ const SBasis& LinearGrid::getBasis() {
   return basis;
 }
 
-Grid* LinearGrid::unserialize(std::istream& istr) {
-  return new LinearGrid(istr);
+std::unique_ptr<Grid> LinearGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearGrid(istr));
 }
 
 /**

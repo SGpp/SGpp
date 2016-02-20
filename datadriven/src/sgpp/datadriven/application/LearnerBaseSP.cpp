@@ -75,7 +75,7 @@ LearnerBaseSP::LearnerBaseSP(const LearnerBaseSP& copyMe) :
     delete grid_;
 
   // can be solved better with a grid copy constructor
-  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize());
+  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize()).release();
   alpha_ = new SGPP::base::DataVectorSP(*(copyMe.alpha_));
 }
 
