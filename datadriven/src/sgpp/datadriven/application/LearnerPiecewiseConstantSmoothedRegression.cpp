@@ -97,7 +97,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
       }
 
       // Weight surplus with function evaluation at grid points
-      OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+      std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
       GridIndex* gp;
       DataVector p(dim);
       DataVector alphaWeight(alpha.getSize());
@@ -107,9 +107,6 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
         gp->getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
-
-      delete opEval;
-      opEval = NULL;
 
       SurplusRefinementFunctor srf(&alphaWeight, adaptivityConfig.noPoints_,
                                    adaptivityConfig.threshold_);
@@ -140,10 +137,10 @@ LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
 
   if (regularizationConfig.regType_ ==
       SGPP::datadriven::RegularizationType::Identity) {
-    C = SGPP::op_factory::createOperationIdentity(grid);
+    C = SGPP::op_factory::createOperationIdentity(grid).release();
   } else if (regularizationConfig.regType_ ==
              SGPP::datadriven::RegularizationType::Laplace) {
-    C = SGPP::op_factory::createOperationLaplace(grid);
+    C = SGPP::op_factory::createOperationLaplace(grid).release();
   } else {
     throw application_exception("LearnerDensityRegression::train : unknown regularization type");
   }

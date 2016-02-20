@@ -156,8 +156,8 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
   size_t dimension = 7;
   std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
   DataMatrix dummyMatrix(10, 7);
-  OperationMultipleEval* opEval =
-      SGPP::op_factory::createOperationMultipleEval(*linearGrid, dummyMatrix);
+  std::unique_ptr<OperationMultipleEval> opEval(
+      SGPP::op_factory::createOperationMultipleEval(*linearGrid, dummyMatrix));
 
   operation_exception expectedException(
       "error: OperationMultipleEval::getDuration(): "

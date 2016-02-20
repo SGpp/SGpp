@@ -33,7 +33,8 @@ OperationMatrixLTwoDotExplicitLinearBoundary::~OperationMatrixLTwoDotExplicitLin
 
 void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(SGPP::base::Grid* grid) {
   // Build matrix (in the moment just by multiplying the OperationMatrix with the unit vectors):
-  OperationMatrix* opMatrix = SGPP::op_factory::createOperationLTwoDotProduct(*grid);
+  std::unique_ptr<OperationMatrix> opMatrix(
+      SGPP::op_factory::createOperationLTwoDotProduct(*grid));
 
   size_t size = grid->getStorage().size();
   SGPP::base::DataVector unit(size);

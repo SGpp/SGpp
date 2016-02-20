@@ -344,7 +344,7 @@ SGPP::base::DataVectorSP LearnerBaseSP::predict(SGPP::base::DataMatrixSP&
       alphaDP);
 
   SGPP::base::OperationMultipleEval* MultEval =
-    SGPP::op_factory::createOperationMultipleEval(*grid_, testDatasetDP);
+    SGPP::op_factory::createOperationMultipleEval(*grid_, testDatasetDP).release();
   MultEval->mult(alphaDP, classesComputedDP);
   delete MultEval;
 

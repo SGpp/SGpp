@@ -56,10 +56,9 @@ int main() {
     alpha);
 
   // direct quadrature
-  OperationQuadrature* opQ = SGPP::op_factory::createOperationQuadrature(*grid);
+  std::unique_ptr<OperationQuadrature> opQ(SGPP::op_factory::createOperationQuadrature(*grid));
   SGPP::float_t res = opQ->doQuadrature(alpha);
   std::cout << "exact integral value:  " << res << std::endl;
-  delete opQ;
 
   // Monte Carlo quadrature using 100000 paths
   OperationQuadratureMC opMC(*grid, 100000);

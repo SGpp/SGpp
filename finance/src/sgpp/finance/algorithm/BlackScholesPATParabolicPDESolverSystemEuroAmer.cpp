@@ -100,11 +100,13 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
                                                &this->InnerGrid, &this->alpha_inner);
 
   // Create operations
-  this->OpLaplaceInner = SGPP::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda);
-  this->OpLaplaceBound = SGPP::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda);
+  this->OpLaplaceInner =
+      SGPP::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda).release();
+  this->OpLaplaceBound =
+      SGPP::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda).release();
 
-  this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
-  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
+  this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
+  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
 
   // right hand side if System
   this->rhs = NULL;
@@ -210,8 +212,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep() {
   if (this->option_type == "std_amer_put") {
     float_t current_time = static_cast<float_t>(this->nExecTimesteps) * this->TimestepSize;
 
-    SGPP::base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
+    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation(
+        SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid));
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
     size_t dim = this->BoundGrid->getStorage().dim();
     SGPP::base::BoundingBox* myBB =
@@ -256,7 +258,6 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep() {
     delete[] coords_val;
 
     myHierarchisation->doHierarchisation(*this->alpha_complete);
-    delete myHierarchisation;
     delete myBB;
   }
 }

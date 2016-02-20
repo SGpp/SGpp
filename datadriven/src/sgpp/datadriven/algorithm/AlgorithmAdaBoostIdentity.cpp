@@ -31,8 +31,8 @@ AlgorithmAdaBoostIdentity::~AlgorithmAdaBoostIdentity() {
 
 void AlgorithmAdaBoostIdentity::alphaSolver(float_t& lambda,
     SGPP::base::DataVector& weight, SGPP::base::DataVector& alpha, bool final) {
-  SGPP::base::OperationMatrix* C = SGPP::op_factory::createOperationIdentity(
-                                     *this->grid);
+  std::unique_ptr<SGPP::base::OperationMatrix> C(
+      SGPP::op_factory::createOperationIdentity(*this->grid));
   SGPP::datadriven::DMWeightMatrix WMatrix(*this->grid, *this->data, *C, lambda,
       weight);
   SGPP::base::DataVector rhs(alpha.getSize());
@@ -45,8 +45,6 @@ void AlgorithmAdaBoostIdentity::alphaSolver(float_t& lambda,
     SGPP::solver::ConjugateGradients myCG(this->imax, this->epsilon);
     myCG.solve(WMatrix, alpha, rhs, false, false, -1.0);
   }
-
-  delete C;
 }
 
 }  // namespace datadriven

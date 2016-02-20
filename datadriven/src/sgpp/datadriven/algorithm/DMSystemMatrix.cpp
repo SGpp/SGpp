@@ -22,7 +22,7 @@ DMSystemMatrix::DMSystemMatrix(SGPP::base::Grid& grid,
   this->C = &C;
   // this->B = SGPP::op_factory::createOperationMultiEval(grid);
   this->B = SGPP::op_factory::createOperationMultipleEval(grid,
-            *(this->dataset_));
+            *(this->dataset_)).release();
 }
 
 DMSystemMatrix::~DMSystemMatrix() {
@@ -42,7 +42,7 @@ void DMSystemMatrix::mult(SGPP::base::DataVector& alpha,
   // this->B->mult(alpha, temp);
 
   base::OperationMultipleEval* op = SGPP::op_factory::createOperationMultipleEval(
-                                      grid, *(this->dataset_));
+                                      grid, *(this->dataset_)).release();
   SGPP::base::DataVector temp2(this->dataset_->getNrows());
   // op->mult(*(this->dataset_), alpha, temp2);
   op->mult(alpha, temp);
@@ -89,7 +89,7 @@ void DMSystemMatrix::generateb(SGPP::base::DataVector& classes,
   // this->B->multTranspose(classes, b);
 
   base::OperationMultipleEval* op = SGPP::op_factory::createOperationMultipleEval(
-                                      grid, *(this->dataset_));
+                                      grid, *(this->dataset_)).release();
   op->multTranspose(classes, b);
   delete op;
 }

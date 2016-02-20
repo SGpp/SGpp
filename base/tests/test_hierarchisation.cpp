@@ -50,12 +50,12 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid& grid, size_t level,
   }
 
   DataVector alpha = DataVector(node_values);
-  OperationHierarchisation* hierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(grid);
+  std::unique_ptr<OperationHierarchisation> hierarchisation(
+      SGPP::op_factory::createOperationHierarchisation(grid));
   hierarchisation->doHierarchisation(alpha);
 
   if (naiveOp == true) {
-    OperationNaiveEval* op = SGPP::op_factory::createOperationNaiveEval(grid);
+    std::unique_ptr<OperationNaiveEval> op(SGPP::op_factory::createOperationNaiveEval(grid));
 
     for (size_t n = 0; n < gridStore.size(); n++) {
       if (doStretch) {
@@ -68,7 +68,7 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid& grid, size_t level,
       BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
     }
   } else {
-    OperationEval* op = SGPP::op_factory::createOperationEval(grid);
+    std::unique_ptr<OperationEval> op(SGPP::op_factory::createOperationEval(grid));
 
     for (size_t n = 0; n < gridStore.size(); n++) {
       if (doStretch) {

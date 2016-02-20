@@ -76,8 +76,8 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
                                        size_t numSamples,
                                        std::vector<size_t>& blockSize, SGPP::float_t analyticResult,
                                        double tol, uint64_t seed = 1234567) {
-  SGPP::quadrature::OperationQuadratureMCAdvanced* opQuad =
-    SGPP::op_factory::createOperationQuadratureMCAdvanced(grid, numSamples, seed);
+  std::unique_ptr<SGPP::quadrature::OperationQuadratureMCAdvanced> opQuad(
+    SGPP::op_factory::createOperationQuadratureMCAdvanced(grid, numSamples, seed));
 
   switch (samplerType) {
     case SGPP::quadrature::SamplerTypes::Naive:
@@ -120,8 +120,8 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
   DataVector alpha(1);
   alpha[0] = 1.0f;
 
-  SGPP::base::OperationQuadrature* opQuad =
-    SGPP::op_factory::createOperationQuadrature(*grid);
+  std::unique_ptr<SGPP::base::OperationQuadrature> opQuad(
+    SGPP::op_factory::createOperationQuadrature(*grid));
   SGPP::float_t analyticIntegral = opQuad->doQuadrature(alpha);
 
 #if USE_DOUBLE_PRECISION == 1

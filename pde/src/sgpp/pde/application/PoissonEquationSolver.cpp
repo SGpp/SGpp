@@ -143,10 +143,7 @@ void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, floa
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
@@ -182,10 +179,7 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& a
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
@@ -239,10 +233,7 @@ void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, float_t
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
@@ -283,10 +274,7 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alph
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw new base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");

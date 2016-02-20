@@ -48,7 +48,7 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval = SGPP::op_factory::createOperationEval(*myGrid);
 
       dimOne = GridArea.getBoundary(0);
       dimTwo = GridArea.getBoundary(1);
@@ -71,7 +71,6 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
         fileout << std::endl;
       }
 
-      delete myEval;
       // close filehandle
       fileout.close();
     }
@@ -96,7 +95,7 @@ void GridPrinterForStretching::printGrid(DataVector& alpha,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      OperationEval* myEval = SGPP::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval = SGPP::op_factory::createOperationEval(*myGrid);
 
       if (myGrid->getStorage().dim() == 1) {
         dimOne = myGrid->getStretching().getBoundary(0);
@@ -139,7 +138,6 @@ void GridPrinterForStretching::printGrid(DataVector& alpha,
         }
       }
 
-      delete myEval;
       // close filehandle
       fileout.close();
     }
@@ -160,10 +158,7 @@ void GridPrinterForStretching::printSparseGrid(DataVector& alpha,
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    OperationHierarchisation* myHier =
-      SGPP::op_factory::createOperationHierarchisation(*myGrid);
-    myHier->doDehierarchisation(temp);
-    delete myHier;
+    SGPP::op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
   }
 
   // Open filehandle
@@ -195,10 +190,7 @@ void GridPrinterForStretching::printSparseGridExpTransform(DataVector& alpha,
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    OperationHierarchisation* myHier =
-      SGPP::op_factory::createOperationHierarchisation(*myGrid);
-    myHier->doDehierarchisation(temp);
-    delete myHier;
+    SGPP::op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
   }
 
   // Open filehandle

@@ -154,20 +154,34 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
     buildDCoefficients();
 
     // Create operators
-    this->OpXBound = SGPP::op_factory::createOperationHestonX(*this->BoundGrid, *this->xCoeff);
-    this->OpXInner = SGPP::op_factory::createOperationHestonX(*this->InnerGrid, *this->xCoeff);
-    this->OpYBound = SGPP::op_factory::createOperationHestonY(*this->BoundGrid, *this->yCoeff);
-    this->OpYInner = SGPP::op_factory::createOperationHestonY(*this->InnerGrid, *this->yCoeff);
-    this->OpWBound = SGPP::op_factory::createOperationHestonW(*this->BoundGrid, *this->wCoeff);
-    this->OpWInner = SGPP::op_factory::createOperationHestonW(*this->InnerGrid, *this->wCoeff);
-    this->OpZBound = SGPP::op_factory::createOperationHestonZ(*this->BoundGrid, *this->zCoeff);
-    this->OpZInner = SGPP::op_factory::createOperationHestonZ(*this->InnerGrid, *this->zCoeff);
-    this->OpGBound = SGPP::op_factory::createOperationHestonGLog(*this->BoundGrid, *this->gCoeff);
-    this->OpGInner = SGPP::op_factory::createOperationHestonGLog(*this->InnerGrid, *this->gCoeff);
-    this->OpDBound = SGPP::op_factory::createOperationHestonDLog(*this->BoundGrid, *this->dCoeff);
-    this->OpDInner = SGPP::op_factory::createOperationHestonDLog(*this->InnerGrid, *this->dCoeff);
-    this->OpFBound = SGPP::op_factory::createOperationHestonFLog(*this->BoundGrid, *this->fCoeff);
-    this->OpFInner = SGPP::op_factory::createOperationHestonFLog(*this->InnerGrid, *this->fCoeff);
+    this->OpXBound = SGPP::op_factory::createOperationHestonX(
+        *this->BoundGrid, *this->xCoeff).release();
+    this->OpXInner = SGPP::op_factory::createOperationHestonX(
+        *this->InnerGrid, *this->xCoeff).release();
+    this->OpYBound = SGPP::op_factory::createOperationHestonY(
+        *this->BoundGrid, *this->yCoeff).release();
+    this->OpYInner = SGPP::op_factory::createOperationHestonY(
+        *this->InnerGrid, *this->yCoeff).release();
+    this->OpWBound = SGPP::op_factory::createOperationHestonW(
+        *this->BoundGrid, *this->wCoeff).release();
+    this->OpWInner = SGPP::op_factory::createOperationHestonW(
+        *this->InnerGrid, *this->wCoeff).release();
+    this->OpZBound = SGPP::op_factory::createOperationHestonZ(
+        *this->BoundGrid, *this->zCoeff).release();
+    this->OpZInner = SGPP::op_factory::createOperationHestonZ(
+        *this->InnerGrid, *this->zCoeff).release();
+    this->OpGBound = SGPP::op_factory::createOperationHestonGLog(
+        *this->BoundGrid, *this->gCoeff).release();
+    this->OpGInner = SGPP::op_factory::createOperationHestonGLog(
+        *this->InnerGrid, *this->gCoeff).release();
+    this->OpDBound = SGPP::op_factory::createOperationHestonDLog(
+        *this->BoundGrid, *this->dCoeff).release();
+    this->OpDInner = SGPP::op_factory::createOperationHestonDLog(
+        *this->InnerGrid, *this->dCoeff).release();
+    this->OpFBound = SGPP::op_factory::createOperationHestonFLog(
+        *this->BoundGrid, *this->fCoeff).release();
+    this->OpFInner = SGPP::op_factory::createOperationHestonFLog(
+        *this->InnerGrid, *this->fCoeff).release();
   } else {
     // Log-transformed case
     // Build coefficients
@@ -181,27 +195,43 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
     buildKCoefficientsLogTransform();
 
     // Create operators
-    this->OpBBound = SGPP::op_factory::createOperationHestonBLog(*this->BoundGrid, *this->bCoeff);
-    this->OpBInner = SGPP::op_factory::createOperationHestonBLog(*this->InnerGrid, *this->bCoeff);
-    this->OpCBound = SGPP::op_factory::createOperationHestonCLog(*this->BoundGrid, *this->cCoeff);
-    this->OpCInner = SGPP::op_factory::createOperationHestonCLog(*this->InnerGrid, *this->cCoeff);
-    this->OpDBound = SGPP::op_factory::createOperationHestonDLog(*this->BoundGrid, *this->dCoeff);
-    this->OpDInner = SGPP::op_factory::createOperationHestonDLog(*this->InnerGrid, *this->dCoeff);
-    this->OpEBound = SGPP::op_factory::createOperationHestonELog(*this->BoundGrid, *this->eCoeff);
-    this->OpEInner = SGPP::op_factory::createOperationHestonELog(*this->InnerGrid, *this->eCoeff);
-    this->OpFBound = SGPP::op_factory::createOperationHestonFLog(*this->BoundGrid, *this->fCoeff);
-    this->OpFInner = SGPP::op_factory::createOperationHestonFLog(*this->InnerGrid, *this->fCoeff);
-    this->OpGBound = SGPP::op_factory::createOperationHestonGLog(*this->BoundGrid, *this->gCoeff);
-    this->OpGInner = SGPP::op_factory::createOperationHestonGLog(*this->InnerGrid, *this->gCoeff);
-    this->OpHBound = SGPP::op_factory::createOperationHestonHLog(*this->BoundGrid, *this->hCoeff);
-    this->OpHInner = SGPP::op_factory::createOperationHestonHLog(*this->InnerGrid, *this->hCoeff);
-    this->OpKBound = SGPP::op_factory::createOperationHestonKLog(*this->BoundGrid, &(this->kCoeff));
-    this->OpKInner = SGPP::op_factory::createOperationHestonKLog(*this->InnerGrid, &(this->kCoeff));
+    this->OpBBound = SGPP::op_factory::createOperationHestonBLog(
+        *this->BoundGrid, *this->bCoeff).release();
+    this->OpBInner = SGPP::op_factory::createOperationHestonBLog(
+        *this->InnerGrid, *this->bCoeff).release();
+    this->OpCBound = SGPP::op_factory::createOperationHestonCLog(
+        *this->BoundGrid, *this->cCoeff).release();
+    this->OpCInner = SGPP::op_factory::createOperationHestonCLog(
+        *this->InnerGrid, *this->cCoeff).release();
+    this->OpDBound = SGPP::op_factory::createOperationHestonDLog(
+        *this->BoundGrid, *this->dCoeff).release();
+    this->OpDInner = SGPP::op_factory::createOperationHestonDLog(
+        *this->InnerGrid, *this->dCoeff).release();
+    this->OpEBound = SGPP::op_factory::createOperationHestonELog(
+        *this->BoundGrid, *this->eCoeff).release();
+    this->OpEInner = SGPP::op_factory::createOperationHestonELog(
+        *this->InnerGrid, *this->eCoeff).release();
+    this->OpFBound = SGPP::op_factory::createOperationHestonFLog(
+        *this->BoundGrid, *this->fCoeff).release();
+    this->OpFInner = SGPP::op_factory::createOperationHestonFLog(
+        *this->InnerGrid, *this->fCoeff).release();
+    this->OpGBound = SGPP::op_factory::createOperationHestonGLog(
+        *this->BoundGrid, *this->gCoeff).release();
+    this->OpGInner = SGPP::op_factory::createOperationHestonGLog(
+        *this->InnerGrid, *this->gCoeff).release();
+    this->OpHBound = SGPP::op_factory::createOperationHestonHLog(
+        *this->BoundGrid, *this->hCoeff).release();
+    this->OpHInner = SGPP::op_factory::createOperationHestonHLog(
+        *this->InnerGrid, *this->hCoeff).release();
+    this->OpKBound = SGPP::op_factory::createOperationHestonKLog(
+        *this->BoundGrid, &(this->kCoeff)).release();
+    this->OpKInner = SGPP::op_factory::createOperationHestonKLog(
+        *this->InnerGrid, &(this->kCoeff)).release();
   }
 
   // Create operations that are needed by both the log-transformed and Cartesian case
-  this->OpAInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
-  this->OpABound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
+  this->OpAInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
+  this->OpABound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
 
   // right hand side if System
   this->rhs = NULL;

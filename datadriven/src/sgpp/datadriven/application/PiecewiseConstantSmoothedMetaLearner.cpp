@@ -233,7 +233,7 @@ float_t PiecewiseConstantSmoothedRegressionMetaLearner::calculateMSE(
   bool verbose) {
   float_t mse = 0.0;
 
-  base::OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+  std::unique_ptr<base::OperationEval> opEval = SGPP::op_factory::createOperationEval(grid);
 
   for (size_t i = 0; i < testSubset.getNrows(); i++) {
     base::DataVector point(dim);

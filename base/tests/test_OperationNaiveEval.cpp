@@ -152,10 +152,10 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     std::unique_ptr<OperationNaiveEvalPartialDerivative> opEvalPartialDerivative(nullptr);
 
     if (hasGradients) {
-      opEvalGradient.reset(SGPP::op_factory::createOperationNaiveEvalGradient(grid));
-      opEvalHessian.reset(SGPP::op_factory::createOperationNaiveEvalHessian(grid));
-      opEvalPartialDerivative.reset(
-          SGPP::op_factory::createOperationNaiveEvalPartialDerivative(grid));
+      opEvalGradient = SGPP::op_factory::createOperationNaiveEvalGradient(grid);
+      opEvalHessian = SGPP::op_factory::createOperationNaiveEvalHessian(grid);
+      opEvalPartialDerivative =
+          SGPP::op_factory::createOperationNaiveEvalPartialDerivative(grid);
     }
 
     DataVector x(d);

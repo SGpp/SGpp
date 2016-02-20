@@ -433,7 +433,8 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   p.set(0, 0, 0.25);
   beta[0] = 1.0;
 
-  OperationMultipleEval* opb = SGPP::op_factory::createOperationMultipleEval(*factory, p);
+  std::unique_ptr<OperationMultipleEval> opb(
+      SGPP::op_factory::createOperationMultipleEval(*factory, p));
   opb->multTranspose(beta, alpha);
 
   BOOST_CHECK_CLOSE(alpha[0], 0.5, 0.0);
@@ -449,8 +450,6 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 
   opb->mult(alpha, beta);
   BOOST_CHECK_CLOSE(beta[0], 0.5, 0.0);
-
-  delete (opb);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
@@ -464,10 +463,8 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   DataVector p(1);
   p.setAll(0.25);
 
-  OperationEval* eval = SGPP::op_factory::createOperationEval(*factory);
+  std::unique_ptr<OperationEval> eval(SGPP::op_factory::createOperationEval(*factory));
   BOOST_CHECK_CLOSE(eval->eval(alpha, p), 0.5, 0.0);
-
-  delete (eval);
 }
 
 // end test suite TestLinearGrid
@@ -546,7 +543,8 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
   p.set(0, 0, 0.25);
   beta[0] = 1.0;
 
-  OperationMultipleEval* opb = SGPP::op_factory::createOperationMultipleEval(*factory, p);
+  std::unique_ptr<OperationMultipleEval> opb(
+      SGPP::op_factory::createOperationMultipleEval(*factory, p));
   opb->multTranspose(beta, alpha);
 
   BOOST_CHECK_CLOSE(alpha[0], 0.75, 0.0);
@@ -564,8 +562,6 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
 
   opb->mult(alpha, beta);
   BOOST_CHECK_CLOSE(beta[0], 0.5, 0.0);
-
-  delete (opb);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
@@ -579,11 +575,9 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   DataVector p(1);
   p.setAll(0.25);
 
-  OperationEval* eval = SGPP::op_factory::createOperationEval(*factory);
+  std::unique_ptr<OperationEval> eval(SGPP::op_factory::createOperationEval(*factory));
 
   BOOST_CHECK_CLOSE(eval->eval(alpha, p), 1.5, 0.0);
-
-  delete (eval);
 }
 
 // end test suite TestLinearBoundaryGrid
@@ -793,7 +787,8 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   p.set(0, 1, 0.25);
   beta[0] = 1.0;
 
-  OperationMultipleEval* opb = SGPP::op_factory::createOperationMultipleEval(*factory, p);
+  std::unique_ptr<OperationMultipleEval> opb(
+      SGPP::op_factory::createOperationMultipleEval(*factory, p));
   opb->multTranspose(beta, alpha);
 
   // should be phi_{(0,0),(0,0)}(p) = (3/4)^2 = 9/16
@@ -818,8 +813,6 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   // l = (1,0) and index i = (1,0)
   // ==>  function evaluated at (0.25, 0.25) should be 1/2 * 3/4 = 3/8
   BOOST_CHECK_CLOSE(beta[0], 0.375, 0.0);
-
-  delete opb;
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
@@ -833,14 +826,13 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   DataVector p(2);
   p.setAll(0.25);
 
-  OperationEval* eval = SGPP::op_factory::createOperationEval(*factory);
+  std::unique_ptr<OperationEval> eval(
+      SGPP::op_factory::createOperationEval(*factory));
 
   // rationale behind 2.0: four corner functions sum up to 1,
   // two of the four edge functions are 1/8, the other two are 3/8
   // ==>  1 + 2 * 1/8 + 2 * 3/8 = 2
   BOOST_CHECK_CLOSE(eval->eval(alpha, p), 2.0, 0.0);
-
-  delete (eval);
 }
 
 // end test suite TestLinearL0BoundaryGrid
@@ -947,7 +939,8 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   p.set(0, 0, 0.25);
   beta[0] = 1.0;
 
-  OperationMultipleEval* opb = SGPP::op_factory::createOperationMultipleEval(*factory, p);
+  std::unique_ptr<OperationMultipleEval> opb(
+      SGPP::op_factory::createOperationMultipleEval(*factory, p));
   opb->multTranspose(beta, alpha);
 
 #if USE_DOUBLE_PRECISION == 1
@@ -1027,7 +1020,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   DataVector p(1);
   p.setAll(0.25);
 
-  OperationEval* eval = SGPP::op_factory::createOperationEval(*factory);
+  std::unique_ptr<OperationEval> eval(SGPP::op_factory::createOperationEval(*factory));
 
 #if USE_DOUBLE_PRECISION == 1
   BOOST_CHECK_CLOSE(eval->eval(alpha, p), SGPP::float_t(0.8176285620), SGPP::float_t(1e-8));

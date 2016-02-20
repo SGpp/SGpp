@@ -263,9 +263,9 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
 
     for (size_t ii = 0; ii < class_indeces.size(); ii++) {
       if (this->CMode_ == SGPP::datadriven::RegularizationType::Laplace) {
-        CVec_.push_back(SGPP::op_factory::createOperationLaplace(*this->gridVec_[ii]));
+        CVec_.push_back(SGPP::op_factory::createOperationLaplace(*this->gridVec_[ii]).release());
       } else if (this->CMode_ == SGPP::datadriven::RegularizationType::Identity) {
-        CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]));
+        CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]).release());
       } else {
         throw base::application_exception("LearnerDensityBased::train: Unknown regularization "
           "operator");
@@ -387,8 +387,8 @@ SGPP::base::DataVector LearnerDensityBased::predict(
       int class_index = 0;
 
       for (it = alphaVec_.begin(); it != alphaVec_.end(); it++) {
-        SGPP::base::OperationEval* Eval = SGPP::op_factory::createOperationEval(
-                                            *gridVec_[class_index]);
+        std::unique_ptr<SGPP::base::OperationEval> Eval(
+            SGPP::op_factory::createOperationEval(*gridVec_[class_index]));
         SGPP::base::DataVector alpha = *it;
         // posterior = likelihood*prior
         float_t res = Eval->eval(alpha, p) * this->prior[class_index];
@@ -399,7 +399,6 @@ SGPP::base::DataVector LearnerDensityBased::predict(
         }
 
         class_index++;
-        delete Eval;
       }
 
       result[i] = index_to_class_[max_index];

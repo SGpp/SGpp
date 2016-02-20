@@ -40,7 +40,8 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
-  OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*this->grid);
+  std::unique_ptr<OperationDensityMargTo1D> marg1d(
+      op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
   // 2. 1D transformation on dim_start
@@ -73,7 +74,6 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
 
   //  }
 
-  delete marg1d;
   delete g1d;
   delete a1d;
   delete coords1d;
@@ -91,7 +91,8 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
   // 1. marginalize to dim_start
   base::Grid* g1d = NULL;
   base::DataVector* a1d = NULL;
-  OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*this->grid);
+  std::unique_ptr<OperationDensityMargTo1D> marg1d(
+      op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
 
   // #pragma omp parallel
@@ -111,7 +112,6 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
 
   //  }
 
-  delete marg1d;
   delete g1d;
   delete a1d;
   delete cdfs1d;
@@ -143,10 +143,8 @@ void OperationInverseRosenblattTransformationLinear::doTransformation_in_next_di
   /* Step 1: do conditional in current dim */
   base::Grid* g_out = NULL;
   base::DataVector* a_out = new base::DataVector(1);
-  OperationDensityConditional* cond = op_factory::createOperationDensityConditional(*g_in);
-  cond->doConditional(*a_in, g_out, *a_out, static_cast<unsigned int>(op_dim),
-                      coords1d->get(curr_dim));
-  delete cond;
+  op_factory::createOperationDensityConditional(*g_in)->doConditional(
+      *a_in, g_out, *a_out, static_cast<unsigned int>(op_dim), coords1d->get(curr_dim));
 
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
@@ -159,9 +157,7 @@ void OperationInverseRosenblattTransformationLinear::doTransformation_in_next_di
     // Marginalize to next dimension
     base::Grid* g1d = NULL;
     base::DataVector* a1d = NULL;
-    OperationDensityMargTo1D* marg1d = op_factory::createOperationDensityMargTo1D(*g_out);
-    marg1d->margToDimX(a_out, g1d, a1d, op_dim);
-    delete marg1d;
+    op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension
     x = doTransformation1D(g1d, a1d, cdfs1d->get(curr_dim));
@@ -195,7 +191,7 @@ float_t OperationInverseRosenblattTransformationLinear::doTransformation1D(
   std::multimap<float_t, float_t>::iterator it1, it2;
 
   base::GridStorage* gs = &grid1d->getStorage();
-  base::OperationEval* opEval = op_factory::createOperationEval(*(grid1d));
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(grid1d));
   base::DataVector coord(1);
 
   for (unsigned int i = 0; i < gs->size(); i++) {
@@ -204,8 +200,6 @@ float_t OperationInverseRosenblattTransformationLinear::doTransformation1D(
     coord_cdf.insert(std::pair<float_t, float_t>(coord[0], i));
   }
 
-  delete opEval;
-  opEval = NULL;
   // include values at the boundary [0,1]
   coord_pdf.insert(std::pair<float_t, float_t>(0.0, 0.0));
   coord_pdf.insert(std::pair<float_t, float_t>(1.0, 0.0));
