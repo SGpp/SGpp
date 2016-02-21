@@ -43,7 +43,7 @@ void PDESolver::getGridNormalDistribution(SGPP::base::DataVector& alpha,
     float_t value;
     SGPP::base::StdNormalDistribution myNormDistr;
 
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
       std::stringstream coordsStream(coords);
 
@@ -88,7 +88,7 @@ void PDESolver::setGrid(const std::string& serializedGrid) {
   myBoundingBox = &myGrid->getBoundingBox();
   myGridStorage = &myGrid->getStorage();
 
-  dim = myGrid->getStorage().dim();
+  dim = myGrid->getDimension();
   levels = 0;
 
   bGridConstructed = true;
@@ -122,7 +122,7 @@ void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numR
     SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
     myGrid->getGenerator().refine(myRefineFunc);
 
-    alpha.resize(myGridStorage->size());
+    alpha.resize(myGridStorage->getSize());
   } else {
     throw SGPP::base::application_exception(
         "PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
@@ -153,7 +153,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
     SGPP::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
     myGrid->getGenerator().refine(myRefineFunc);
 
-    alpha.resize(myGridStorage->size());
+    alpha.resize(myGridStorage->getSize());
   } else {
     throw SGPP::base::application_exception(
         "PDESolver::refineIntialGridSurplusSubDomain : The grid wasn't initialized before!");
@@ -170,7 +170,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(
     SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
     myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
-    alpha.resize(myGridStorage->size());
+    alpha.resize(myGridStorage->getSize());
   } else {
     throw SGPP::base::application_exception(
         "PDESolver::refineInitialGridSurplusToMaxLevel : The grid wasn't initialized before!");
@@ -196,7 +196,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
     SGPP::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
     myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
-    alpha.resize(myGridStorage->size());
+    alpha.resize(myGridStorage->getSize());
   } else {
     throw SGPP::base::application_exception(
         "PDESolver::refineInitialGridSurplusToMaxLevelSubDomain : The grid wasn't initialized "
@@ -208,7 +208,7 @@ void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t
   if (bGridConstructed) {
     SGPP::base::GridGenerator& myGenerator = myGrid->getGenerator();
     size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
-    size_t originalGridSize = myGrid->getStorage().size();
+    size_t originalGridSize = myGrid->getSize();
     SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(alpha, numCoarsen, dThreshold);
     myGenerator.coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize);
   } else {
@@ -278,7 +278,7 @@ void PDESolver::evaluateCuboid(SGPP::base::DataVector& alpha, SGPP::base::DataVe
 
 size_t PDESolver::getNumberGridPoints() const {
   if (bGridConstructed) {
-    return myGridStorage->size();
+    return myGridStorage->getSize();
   } else {
     throw SGPP::base::application_exception(
         "PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
@@ -296,7 +296,7 @@ size_t PDESolver::getNumberInnerGridPoints() const {
 
 size_t PDESolver::getNumberDimensions() const {
   if (bGridConstructed) {
-    return myGridStorage->dim();
+    return myGridStorage->getDimension();
   } else {
     throw SGPP::base::application_exception(
         "PDESolver::getNumberDimensions : A grid wasn't constructed before!");

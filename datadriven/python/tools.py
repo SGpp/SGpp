@@ -247,11 +247,11 @@ def readData(filename):
 # @param data points to plot (optional)
 # @param fvals corresponding function values (optional)
 def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=None):
-    p = DataVector(grid.getStorage().dim())
+    p = DataVector(grid.getDimension())
     fout = gzOpen(filename, mode)
 
     # evaluate 1d function
-    if grid.getStorage().dim() == 1:
+    if grid.getDimension() == 1:
         fout.write("#set term png truecolor enhanced\n")
         fout.write("#set out '%s.png'\n" % (filename))
         if data and fvals:
@@ -266,7 +266,7 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=N
                 pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
-    elif grid.getStorage().dim() == 2:
+    elif grid.getDimension() == 2:
         fout.write("#set term png truecolor enhanced\n")
         fout.write("#set out '%s.png'\n" % (filename))
         if data and fvals:
@@ -286,7 +286,7 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=N
         fout.write("e\n")
     # can't plot anything else
     else:
-        sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (grid.getStorage().dim()))
+        sys.stderr.write("Error! Can't plot grid with dimensionality %d..." % (grid.getDimension()))
     fout.close()
     return
 
@@ -332,11 +332,11 @@ def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
 # @param filename Filename to which data is written
 # @param grid Grid
 def writeGnuplotGrid(filename, grid):
-    dim = grid.getStorage().dim()
+    dim = grid.getDimension()
     if dim == 2:
         p = DataVector(dim)
         fout = file(filename, "w")
-        for i in range(grid.getStorage().size()):
+        for i in range(grid.getSize()):
             grid.getStorage().get(i).getCoords(p)
             fout.write("%f %f\n" % (p[0],p[1]))
     # can't plot anything else
@@ -1022,10 +1022,10 @@ class Matrix:
         elif self.CMode == "anisotropicpenalty":
             self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.ANISOTROPIC_PENALTY, 0)
         elif self.CMode == "levelsum":
-            temp = DataVector(grid.getStorage().size())
+            temp = DataVector(grid.getSize())
             # fill temp vector with levelsums
             gridStorage = self.grid.getStorage()
-            for i in range(gridStorage.size()):
+            for i in range(gridStorage.getSize()):
                 gp = gridStorage.get(i)
                 temp[i] = gp.getLevelSum()
             class Diagop(object):
@@ -1040,7 +1040,7 @@ class Matrix:
             self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.ISOTROPIC_PENALTY, 0)
         elif self.CMode == "rowsum":
             opL = createOperationLaplace(grid)
-            dva = DataVector(grid.getStorage().size())
+            dva = DataVector(grid.getSize())
             dva.setAll(1)
             dres = DataVector(len(dva))
             opL.mult(dva, dres)
@@ -1059,7 +1059,7 @@ class Matrix:
             self.C = createOperationRegularizationDiagonal(grid, OperationRegularizationDiagonal.H0HKLAPLACE, Hk)
     
     def generateb(self, y):
-        b = DataVector(self.grid.getStorage().size())
+        b = DataVector(self.grid.getSize())
         self.B.multTranspose(y, b)
         return b
     
@@ -1088,8 +1088,8 @@ class Matrix:
             result.axpy(M*self.l, alpha)
             # now correct for level 1 again
             gridStorage = self.grid.getStorage()
-            gi = GridIndex(gridStorage.dim())
-            for d in range(gridStorage.dim()):
+            gi = GridIndex(gridStorage.getDimension())
+            for d in range(gridStorage.getDimension()):
                 gi.set(d, 1, 1)
             i = gridStorage.seq(gi)
             result[i] = result[i] - M*self.l*alpha[i]
@@ -1098,7 +1098,7 @@ class Matrix:
 #            temp = DataVector(len(alpha))
 #            # fill temp vector with levelsums
 #            gridStorage = self.grid.getStorage()
-#            for i in range(gridStorage.size()):
+#            for i in range(gridStorage.getSize()):
 #                gp = gridStorage.get(i)
 #                temp[i] = gp.getLevelSum()*alpha[i]
 #            result.axpy(M*self.l, temp)

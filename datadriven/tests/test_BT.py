@@ -43,13 +43,13 @@ def generateBTMatrix(factory, training, verbose=False):
        
     b = createOperationMultipleEval(factory, training)
     
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     temp = DataVector(training.getNrows())
     
     # create BT matrix
-    m = DataMatrix(training.getNrows(), storage.size())
+    m = DataMatrix(training.getNrows(), storage.getSize())
     
-    for i in xrange(storage.size()):
+    for i in xrange(storage.getSize()):
       
         # apply unit vectors
         temp.setAll(0.0)
@@ -80,7 +80,7 @@ def readReferenceMatrix(self, storage, filename):
     dat = map(lambda l: l.strip().split(None), dat)
 
     # right number of entries?
-    self.assertEqual(storage.size(), len(dat[0]))
+    self.assertEqual(storage.getSize(), len(dat[0]))
 
     m_ref = DataMatrix(len(dat), len(dat[0]))
     for i in xrange(len(dat)):

@@ -109,7 +109,7 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         # compute nodalValues
 #         ngs = ngrid.getStorage()
 #         nodalValues = DataVector(ngs.size())
-#         p = DataVector(ngs.dim())
+#         p = DataVector(ngs.getDimension())
 #         for i in xrange(ngs.size()):
 #             ngs.get(i).getCoords(p)
 #             nodalValues[i] = evalSGFunction(grid, alpha, p) - mean

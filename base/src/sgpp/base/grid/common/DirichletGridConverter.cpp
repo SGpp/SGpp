@@ -37,7 +37,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       GridStorage& myGridStorage = boundaryGrid.getStorage();
 
       // determine the number of grid points for both grids
-      this->numTotalGridPoints = myGridStorage.size();
+      this->numTotalGridPoints = myGridStorage.getSize();
       this->numInnerGridPoints = myGridStorage.getNumInnerPoints();
 
       // std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
@@ -86,7 +86,7 @@ void DirichletGridConverter::buildInnerGridWithCoefs(Grid& boundaryGrid,
       GridStorage& myGridStorage = boundaryGrid.getStorage();
 
       // determine the number of grid points for both grids
-      this->numTotalGridPoints = myGridStorage.size();
+      this->numTotalGridPoints = myGridStorage.getSize();
       this->numInnerGridPoints = myGridStorage.getNumInnerPoints();
 
       // std::cout << "Total Points: " << this->numTotalGridPoints << std::endl;
@@ -151,7 +151,7 @@ void DirichletGridConverter::rebuildInnerGridWithCoefs(Grid& boundaryGrid,
       GridStorage& myGridStorage = boundaryGrid.getStorage();
 
       // determine the number of grid points for both grids
-      this->numTotalGridPoints = myGridStorage.size();
+      this->numTotalGridPoints = myGridStorage.getSize();
       this->numInnerGridPoints = myGridStorage.getNumInnerPoints();
 
       // allocate the translation array for the coefficients

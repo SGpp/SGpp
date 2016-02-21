@@ -19,12 +19,12 @@ namespace parallel {
 OperationLTwoDotProductVectorizedLinearOCL::OperationLTwoDotProductVectorizedLinearOCL(
   SGPP::base::GridStorage* storage) : storage(storage) {
 
-  this->lcl_q = new double[this->storage->dim()];
+  this->lcl_q = new double[this->storage->getDimension()];
   this->OCLPDEKernelsHandle = OCLPDEKernels();
 
-  this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
-  this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
-  this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
@@ -43,7 +43,7 @@ void OperationLTwoDotProductVectorizedLinearOCL::mult(SGPP::base::DataVector&
     alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
-  for (size_t d = 0; d < this->storage->dim(); d++) {
+  for (size_t d = 0; d < this->storage->getDimension(); d++) {
     SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     this->lcl_q[d] = boundingBox->getIntervalWidth(d);
   }
@@ -54,8 +54,8 @@ void OperationLTwoDotProductVectorizedLinearOCL::mult(SGPP::base::DataVector&
                            this->level_->getPointer(),
                            this->index_->getPointer(),
                            this->level_int_->getPointer(),
-                           storage->size(),
-                           storage->dim(),
+                           storage->getSize(),
+                           storage->getDimension(),
                            storage);
 }
 

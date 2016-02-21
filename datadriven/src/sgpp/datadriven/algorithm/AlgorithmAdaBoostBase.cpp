@@ -42,13 +42,13 @@ AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(base::Grid& SparseGrid,
   base::GridStorage* gridStorage = &SparseGrid.getStorage();
   this->grid = &SparseGrid;
   this->type = gridType;
-  this->gridPoint = gridStorage->size();
+  this->gridPoint = gridStorage->getSize();
   this->level = static_cast<base::HashGenerator::level_t>(gridLevel);
   this->lamb = lambda;
   this->data = &trainData;
   this->classes = &trainDataClass;
   this->numData = trainData.getNrows();
-  this->dim = gridStorage->dim();
+  this->dim = gridStorage->getDimension();
   this->numBaseLearners = NUM;
   this->imax = IMAX;
   this->epsilon = eps;
@@ -1025,7 +1025,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
     myGenerator.refine(myRefineFunc);
 
     base::GridStorage* gridStorage_ada = &this->grid->getStorage();
-    size_t gridPts = gridStorage_ada->size();
+    size_t gridPts = gridStorage_ada->getSize();
 
     std::cout << std::endl;
     std::cout << "Refinement time step: " << adaptiveStep << ", new grid size: " <<

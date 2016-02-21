@@ -115,7 +115,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   // generate initial grid
   grid.getGenerator().regular(initialLevel);
 
-  size_t currentN = gridStorage.size();
+  size_t currentN = gridStorage.getSize();
   // coeffs always has as much elements as there are grid points in
   // the grid, but fX has N elements (no resizing during the main loop)
   base::DataVector coeffs(currentN);
@@ -184,7 +184,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     abstractRefinement->free_refine(gridStorage, refineFunc);
 
     // new grid size
-    size_t newN = gridStorage.size();
+    size_t newN = gridStorage.getSize();
 
     if (newN == currentN) {
       // size unchanged ==> nothing refined (should not happen)

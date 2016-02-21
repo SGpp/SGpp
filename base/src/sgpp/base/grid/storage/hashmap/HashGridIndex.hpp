@@ -91,7 +91,7 @@ class HashGridIndex {
    *
    * @return the dimension of the gridpoint
    */
-  size_t dim() const;
+  size_t getDimension() const;
 
   /**
    * Sets level <i>l</i> and index <i>i</i> in dimension <i>d</i> and rehashs the HashGridIndex object

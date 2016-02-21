@@ -21,8 +21,8 @@ OperationMultipleEvalIterativeSPArBBLinear::OperationMultipleEvalIterativeSPArBB
   SGPP::parallel::OperationMultipleEvalVectorizedSP(dataset) {
   this->storage = storage;
 
-  this->level_ = new SGPP::base::DataMatrixSP(storage->size(), storage->dim());
-  this->index_ = new SGPP::base::DataMatrixSP(storage->size(), storage->dim());
+  this->level_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
+  this->index_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
@@ -47,8 +47,8 @@ void OperationMultipleEvalIterativeSPArBBLinear::rebuildLevelAndIndex() {
   delete this->level_;
   delete this->index_;
 
-  this->level_ = new SGPP::base::DataMatrixSP(storage->size(), storage->dim());
-  this->index_ = new SGPP::base::DataMatrixSP(storage->size(), storage->dim());
+  this->level_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
+  this->index_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
@@ -62,8 +62,8 @@ void OperationMultipleEvalIterativeSPArBBLinear::rebuildLevelAndIndex() {
 double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(
   SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
   size_t result_size = result.getSize();
-  size_t dims = storage->dim();
-  size_t storageSize = storage->size();
+  size_t dims = storage->getDimension();
+  size_t storageSize = storage->getSize();
 
   result.setAll(0.0f);
 
@@ -123,8 +123,8 @@ double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(
 double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(
   SGPP::base::DataVectorSP& source, SGPP::base::DataVectorSP& result) {
   size_t source_size = source.getSize();
-  size_t dims = storage->dim();
-  size_t storageSize = storage->size();
+  size_t dims = storage->getDimension();
+  size_t storageSize = storage->getSize();
 
   result.setAll(0.0f);
 

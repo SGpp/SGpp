@@ -33,14 +33,14 @@ DataMatrix* generateBBTMatrix(Grid& grid, DataMatrix& training) {
   std::unique_ptr<OperationMultipleEval> b(
       SGPP::op_factory::createOperationMultipleEval(grid, training));
 
-  DataVector alpha(storage.size());
-  DataVector erg(storage.size());
+  DataVector alpha(storage.getSize());
+  DataVector erg(storage.getSize());
   DataVector temp(training.getNrows());
 
   // create BT matrix
-  DataMatrix* m = new DataMatrix(storage.size(), storage.size());
+  DataMatrix* m = new DataMatrix(storage.getSize(), storage.getSize());
 
-  for (size_t i = 0; i < storage.size(); i++) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
     temp.setAll(0.0);
     erg.setAll(0.0);
     alpha.setAll(0.0);
@@ -50,8 +50,8 @@ DataMatrix* generateBBTMatrix(Grid& grid, DataMatrix& training) {
     m->setColumn(i, erg);
   }
 
-  //  for (size_t i = 0; i < storage->size(); i++) {
-  //    for (size_t j = 0; j< storage->size(); j++) {
+  //  for (size_t i = 0; i < storage->getSize(); i++) {
+  //    for (size_t j = 0; j< storage->getSize(); j++) {
   //      std::cout << "BBT[" << i << ", " << j << "] = " << m->get(i, j) << std::endl;
   //    }
   //  }
@@ -456,9 +456,9 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
 
-  for (size_t i = 0; i < gridStorage.size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     alpha[i] = static_cast<double>(i + 1);
   }
 
@@ -651,7 +651,7 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
   DataMatrix data(1, 1);
   data.setAll(0.25);
   DataVector classes(1);
@@ -679,7 +679,7 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
   DataMatrix data(1, 1);
   data.setAll(0.25);
   DataVector classes(1);
@@ -711,7 +711,7 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
   DataMatrix data(1, 1);
   data.setAll(0.25);
   DataVector classes(1);

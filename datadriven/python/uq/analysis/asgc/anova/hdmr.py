@@ -87,7 +87,7 @@ class HDMR(object):
         # hierarchize without pdf
         gs = grid.getStorage()
         nodalValues = DataVector(gs.size())
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
             gs.get(i).getCoords(p)
             nodalValues[i] = evalSGFunction(self.__grid, self.__alpha, p)

@@ -32,19 +32,19 @@ int main() {
   int dim = 2;
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   GridStorage& gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage.dim() << std::endl;
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   int level = 3;
   grid->getGenerator().regular(level);
-  std::cout << "number of grid points: " << gridStorage.size() << std::endl;
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
   GridIndex* gp;
   SGPP::float_t p[2];
 
-  for (size_t i = 0; i < gridStorage.size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     gp = gridStorage.get(i);
     p[0] = gp->getCoord(0);
     p[1] = gp->getCoord(1);

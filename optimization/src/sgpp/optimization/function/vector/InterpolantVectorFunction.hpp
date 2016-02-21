@@ -46,7 +46,7 @@ class InterpolantVectorFunction : public VectorFunction {
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
   InterpolantVectorFunction(base::Grid& grid, const base::DataMatrix& alpha)
-      : VectorFunction(grid.getStorage().dim(), alpha.getNcols()),
+      : VectorFunction(grid.getDimension(), alpha.getNcols()),
         grid(grid),
         opEval(op_factory::createOperationNaiveEval(grid)),
         alpha(alpha) {}

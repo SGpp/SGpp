@@ -18,7 +18,7 @@ namespace base {
 
 PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
   Grid(istr),
-  shadowStorage(storage.dim()),
+  shadowStorage(storage.getDimension()),
   generator(storage, shadowStorage) {
 }
 

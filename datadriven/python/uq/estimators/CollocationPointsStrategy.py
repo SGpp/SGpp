@@ -22,7 +22,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
 
         # multiply the result with the corresponding pdf value
         gs = grid.getStorage()
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
             gs.get(i).getCoords(p)
             res[i] *= W.pdf(T.unitToProbabilistic(p))
@@ -46,7 +46,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
 
         # multiply the result with the corresponding pdf value
         gs = grid.getStorage()
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
             gs.get(i).getCoords(p)
             res[i] *= (res[i] - mean) * W.pdf(T.unitToProbabilistic(p))

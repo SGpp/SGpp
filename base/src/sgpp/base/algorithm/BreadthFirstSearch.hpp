@@ -73,8 +73,8 @@ class BreadthFirstSearch {
    */
   template<class DataType>
   void execute(const DataType& source, DataType& result) {
-    const size_t n = storage.size();
-    const size_t d = storage.dim();
+    const size_t n = storage.getSize();
+    const size_t d = storage.getDimension();
 
     std::vector<bool> visited(n, false);
     grid_iterator iterator(storage);

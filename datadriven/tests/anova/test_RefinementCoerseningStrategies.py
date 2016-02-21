@@ -104,7 +104,7 @@ class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
         
     def process_grid_statistics(self, storage):
         grid_statistics = {}
-        for i in xrange(storage.size()):
+        for i in xrange(storage.getSize()):
             point = storage.get(i)
             key = (point.getLevel(0),point.getLevel(1))
             if grid_statistics.has_key(key):
@@ -178,7 +178,7 @@ class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
             print "ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" % \
-            (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
+            (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val)           
             learner.iteration += 1
             if learner.iteration == 5: 
                 pass
@@ -245,7 +245,7 @@ class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
             print "Space %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" % \
-            (suffix, learner.iteration, storage.size(), learner.trainAccuracy[-1], p_val)           
+            (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val)           
             learner.iteration += 1
             if(learner.stopPolicy.isTrainingComplete(learner)): break
             

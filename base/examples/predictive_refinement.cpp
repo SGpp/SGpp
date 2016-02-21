@@ -58,15 +58,15 @@ int main() {
   size_t dim = 2;
   std::unique_ptr<Grid> grid = Grid::createModLinearGrid(dim);
   GridStorage& gridStorage = grid->getStorage();
-  std::cout << "dimensionality:                   " << gridStorage.dim() << std::endl;
+  std::cout << "dimensionality:                   " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   size_t level = 1;
   grid->getGenerator().regular(level);
-  std::cout << "number of initial grid points:    " << gridStorage.size() << std::endl;
+  std::cout << "number of initial grid points:    " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
   std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
 
@@ -93,7 +93,7 @@ int main() {
     // set function values in alpha
     DataVector gridPointCoordinates(dim);
 
-    for (size_t i = 0; i < gridStorage.size(); i++) {
+    for (size_t i = 0; i < gridStorage.getSize(); i++) {
       gridStorage.get(i)->getCoords(gridPointCoordinates);
       alpha[i] = f(gridPointCoordinates[0], gridPointCoordinates[1]);
     }
@@ -116,11 +116,11 @@ int main() {
     decorator.free_refine(gridStorage, indicator);
 
     std::cout << "Refinement step " << step + 1 << ", new grid size: " <<
-         gridStorage.size() << std::endl;
+         gridStorage.getSize() << std::endl;
 
     // plot grid
 
     // extend alpha vector (new entries uninitialized)
-    alpha.resize(gridStorage.size());
+    alpha.resize(gridStorage.getSize());
   }
 }

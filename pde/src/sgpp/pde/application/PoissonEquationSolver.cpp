@@ -106,7 +106,7 @@ void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, floa
     float_t tmp;
     float_t* dblFuncValues = new float_t[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       bool isInner = true;
@@ -155,7 +155,7 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& a
     float_t tmp;
     float_t* dblFuncValues = new float_t[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 
@@ -197,7 +197,7 @@ void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, float_t
       rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
     }
 
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       bool isInner = true;
@@ -251,7 +251,7 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alph
       rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
     }
 
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       tmp = 0.0;

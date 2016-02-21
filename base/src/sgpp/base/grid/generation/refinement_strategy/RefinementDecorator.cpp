@@ -62,7 +62,7 @@ bool RefinementDecorator::checkAdmissibility(GridStorage& storage,
   index_t parentIndex = 0;
 
   //go through all dimensions and check if all parents are availabe
-  while(dim < gridPoint.dim() && isAdmissible)
+  while(dim < gridPoint.getDimension() && isAdmissible)
   {
     //get the parent index
     index.getParentLevelAndIndex(&parentLevel,&parentIndex,dim);

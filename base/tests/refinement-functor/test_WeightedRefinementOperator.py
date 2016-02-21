@@ -68,10 +68,10 @@ class TestWeightedRefinementOperator(unittest.TestCase):
 
     def test_1(self):
         storage = self.grid.getStorage()
-        coord = DataVector(storage.dim())
+        coord = DataVector(storage.getDimension())
         num_coeff = self.alpha.__len__()
 
-        values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
+        values = [self.functor.__call__(storage,i) for i in xrange(storage.getSize())]
         expect = []
         opEval = createOperationEval(self.grid)
         for i in xrange(num_coeff):

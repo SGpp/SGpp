@@ -129,7 +129,7 @@ void OperationMultiEvalStreaming::multTranspose(SGPP::base::DataVector& source,
     size_t start;
     size_t end;
 
-    getOpenMPPartitionSegment(0, this->storage->size(), &start, &end, 1);
+    getOpenMPPartitionSegment(0, this->storage->getSize(), &start, &end, 1);
 
     this->multTransposeImpl(this->level_, this->index_, &this->preparedDataset, source, result,
                             start, end, 0, this->preparedDataset.getNcols());
@@ -143,8 +143,10 @@ void OperationMultiEvalStreaming::recalculateLevelAndIndex() {
 
   if (this->index_ != nullptr) delete this->index_;
 
-  this->level_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
-  this->index_ = new SGPP::base::DataMatrix(this->storage->size(), this->storage->dim());
+  this->level_ = new SGPP::base::DataMatrix(this->storage->getSize(),
+                                            this->storage->getDimension());
+  this->index_ = new SGPP::base::DataMatrix(this->storage->getSize(),
+                                            this->storage->getDimension());
 
   this->storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 }

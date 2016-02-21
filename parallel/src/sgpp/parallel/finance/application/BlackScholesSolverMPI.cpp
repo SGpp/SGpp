@@ -1033,7 +1033,7 @@ void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
     std::string tfilename, bool bSurplus) const {
   base::DataVector temp(alpha);
   double tmp = 0.0;
-  size_t dim = myGrid->getStorage()->dim();
+  size_t dim = myGrid->getStorage()->getDimension();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified

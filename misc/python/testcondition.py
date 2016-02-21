@@ -50,7 +50,7 @@ def calc_condition():
     aem = 345
     lam = 0.001
     
-    print "Number of gridpoints:" + str(factory.getStorage().size())
+    print "Number of gridpoints:" + str(factory.getSize())
     print "generating laplacian matrix..."
     laplace_m = generateCMatrix(factory)
     print laplace_m

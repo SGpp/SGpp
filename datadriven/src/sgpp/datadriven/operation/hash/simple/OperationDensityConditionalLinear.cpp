@@ -40,11 +40,11 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
   float_t theta = 0;
   float_t tmpint = 0;
 
-  for (size_t seqNr = 0; seqNr < gs->size(); seqNr++) {
+  for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
     gp = gs->get(seqNr);
     tmpint = 1;
 
-    for (unsigned int d = 0; d < gs->dim(); d++) {
+    for (unsigned int d = 0; d < gs->getDimension(); d++) {
       if (d != mdim) tmpint *= pow(2.0, -static_cast<float_t>(gp->getLevel(d)));
     }
 
@@ -62,20 +62,20 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
    * to the new grid mg
    */
   // create grid of dimensions d - 1 of the same type
-  if (gs->dim() < 2)
+  if (gs->getDimension() < 2)
     throw SGPP::base::operation_exception(
         "OperationDensityConditional is not possible for less than 2 dimensions");
 
-  mg = base::Grid::createLinearGrid(gs->dim() - 1).release();
+  mg = base::Grid::createLinearGrid(gs->getDimension() - 1).release();
   base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
-  SGPP::base::GridIndex mgp(mgs->dim());
+  SGPP::base::GridIndex mgp(mgs->getDimension());
 
-  for (size_t seqNr = 0; seqNr < gs->size(); seqNr++) {
+  for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
     gp = gs->get(seqNr);
 
-    for (unsigned int d = 0; d < gs->dim(); d++) {
+    for (unsigned int d = 0; d < gs->getDimension(); d++) {
       // skip direction in which we marginalize
       if (d == mdim) {
         continue;
@@ -96,14 +96,14 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
   /**
    * Compute coefficients malpha for grid mg
    */
-  malpha.resize(mgs->size());
+  malpha.resize(mgs->getSize());
   malpha.setAll(0.0);
   size_t mseqNr;
 
-  for (size_t seqNr = 0; seqNr < gs->size(); seqNr++) {
+  for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
     gp = gs->get(seqNr);
 
-    for (unsigned int d = 0; d < gs->dim(); d++) {
+    for (unsigned int d = 0; d < gs->getDimension(); d++) {
       if (d < mdim)
         mgp.set(d, gp->getLevel(d), gp->getIndex(d));
       else if (d > mdim)

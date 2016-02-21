@@ -10,8 +10,8 @@
 #
 #     # dehierarchization
 #     n_gs = n_grid.getStorage()
-#     ps = DataMatrix(n_gs.size(), n_gs.dim())
-#     p = DataVector(n_gs.dim())
+#     ps = DataMatrix(n_gs.size(), n_gs.getDimension())
+#     p = DataVector(n_gs.getDimension())
 #     for i in xrange(n_gs.size()):
 #         n_gs.get(i).getCoords(p)
 #         ps.setRow(i, p)
@@ -37,7 +37,7 @@
 #
 #         # # -----------------------------------------
 #         # # check if interpolation property is given
-#         # p = DataVector(n_gs.dim())
+#         # p = DataVector(n_gs.getDimension())
 #         # for i in xrange(n_gs.size()):
 #         #     gp = n_gs.get(i)
 #         #     gp.getCoords(p)

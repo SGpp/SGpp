@@ -27,13 +27,13 @@ OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(
 OperationMatrixLTwoDotExplicitPeriodic::OperationMatrixLTwoDotExplicitPeriodic(
     SGPP::base::Grid* grid)
     : ownsMatrix_(true) {
-  m_ = new SGPP::base::DataMatrix(grid->getStorage().size(), grid->getStorage().size());
+  m_ = new SGPP::base::DataMatrix(grid->getSize(), grid->getSize());
   buildMatrix(grid);
 }
 
 void OperationMatrixLTwoDotExplicitPeriodic::buildMatrix(SGPP::base::Grid* grid) {
-  size_t gridSize = grid->getStorage().size();
-  size_t gridDim = grid->getStorage().dim();
+  size_t gridSize = grid->getSize();
+  size_t gridDim = grid->getDimension();
 
   SGPP::base::DataMatrix level(gridSize, gridDim);
   SGPP::base::DataMatrix index(gridSize, gridDim);

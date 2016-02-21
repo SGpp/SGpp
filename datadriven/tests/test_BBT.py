@@ -43,13 +43,13 @@ def generateBBTMatrix(factory, training, verbose=False):
 
     b = createOperationMultipleEval(factory, training)
 
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     erg = DataVector(len(alpha))
     temp = DataVector(training.getNrows())
 
     # create B matrix
-    m = DataMatrix(storage.size(), storage.size())
-    for i in xrange(storage.size()):
+    m = DataMatrix(storage.getSize(), storage.getSize())
+    for i in xrange(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         erg.setAll(0.0)
@@ -80,8 +80,8 @@ def readReferenceMatrix(self, storage, filename):
     dat = map(lambda l: l.strip().split(None), dat)
 
     # right number of entries?
-    self.assertEqual(storage.size(), len(dat))
-    self.assertEqual(storage.size(), len(dat[0]))
+    self.assertEqual(storage.getSize(), len(dat))
+    self.assertEqual(storage.getSize(), len(dat[0]))
 
     m_ref = DataMatrix(len(dat), len(dat[0]))
     for i in xrange(len(dat)):
@@ -422,8 +422,8 @@ class TestOperationBBTPrewavelet(unittest.TestCase):
         gen = factory.getGenerator()
         gen.regular(level)
 
-        alpha = DataVector(factory.getStorage().size())
-        for i in xrange(factory.getStorage().size()):
+        alpha = DataVector(factory.getSize())
+        for i in xrange(factory.getSize()):
             alpha[i] = i + 1
         gen.refine(SurplusRefinementFunctor(alpha, 1));
 

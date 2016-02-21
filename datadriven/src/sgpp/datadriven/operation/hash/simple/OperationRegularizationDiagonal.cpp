@@ -14,13 +14,13 @@ namespace datadriven {
 
 OperationRegularizationDiagonal::OperationRegularizationDiagonal(base::GridStorage* storage,
                                                                  int mode, float_t k)
-    : mode(mode), k(k), size(storage->size()), storage(storage), diagonal(storage->size()) {
+    : mode(mode), k(k), size(storage->getSize()), storage(storage), diagonal(storage->getSize()) {
   // remember size of grid to check for changes in grid
-  this->size = storage->size();
+  this->size = storage->getSize();
 }
 
 void OperationRegularizationDiagonal::mult(base::DataVector& alpha, base::DataVector& result) {
-  if (size != storage->size()) {
+  if (size != storage->getSize()) {
     diagonal = base::DataVector(size);
     init();
   }
@@ -47,7 +47,7 @@ void OperationRegularizationDiagonal::init() {
 
 void OperationRegularizationDiagonal::initIsotropicPenalty() {
   // \frac{1}{\max\{l_1,\dots,l_d\}-\min\{l_1,\dots,l_d\}+1}d
-  size_t dim = storage->dim();
+  size_t dim = storage->getDimension();
   base::GridIndex* gi;
 
   for (size_t i = 0; i < size; i++) {
@@ -57,7 +57,7 @@ void OperationRegularizationDiagonal::initIsotropicPenalty() {
 }
 void OperationRegularizationDiagonal::initAnisotropicPenalty() {
   // \frac{1}{2}\log(1+(\frac{\max\{l_1,\dots,l_d\}}{\max\{\min\{l_1,\dots,l_d\},1\}})d)
-  size_t dim = storage->dim();
+  size_t dim = storage->getDimension();
   base::GridIndex* gi;
 
   for (size_t i = 0; i < size; i++) {

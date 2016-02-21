@@ -68,7 +68,7 @@ bool AbstractRefinement::isRefinable(GridStorage& storage, index_type& index) {
 
   if (index.isLeaf()) return true;
 
-  for (size_t d = 0; d < storage.dim(); d++) {
+  for (size_t d = 0; d < storage.getDimension(); d++) {
     index_t source_index;
     level_t source_level;
     index.get(d, source_level, source_index);

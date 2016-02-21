@@ -40,14 +40,14 @@ DataMatrix* generateLaplaceMatrix(Grid& grid,  size_t level) {
       SGPP::op_factory::createOperationLaplace(grid));
 
   // create vector
-  DataVector alpha(storage.size());
-  DataVector erg(storage.size());
+  DataVector alpha(storage.getSize());
+  DataVector erg(storage.getSize());
 
   // create stiffness matrix
-  DataMatrix* m = new DataMatrix( storage.size(), storage.size());
+  DataMatrix* m = new DataMatrix( storage.getSize(), storage.getSize());
   m->setAll(0);
 
-  for (size_t i = 0; i < storage.size(); i++) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
     alpha.setAll(0.0);
     alpha[i] = 1.0;
     laplace->mult(alpha, erg);
@@ -66,14 +66,14 @@ DataMatrix* generateLaplaceEnhancedMatrix(Grid& grid,  size_t level) {
       SGPP::op_factory::createOperationLaplaceEnhanced(grid));
 
   // create vector
-  DataVector alpha(storage.size());
-  DataVector erg(storage.size());
+  DataVector alpha(storage.getSize());
+  DataVector erg(storage.getSize());
 
   // create stiffness matrix
-  DataMatrix* m = new DataMatrix( storage.size(), storage.size());
+  DataMatrix* m = new DataMatrix( storage.getSize(), storage.getSize());
   m->setAll(0);
 
-  for (size_t i = 0; i < storage.size(); i++) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
     alpha.setAll(0.0);
     alpha[i] = 1.0;
     laplace->mult(alpha, erg);
@@ -125,7 +125,7 @@ DataMatrix* readReferenceMatrix(GridStorage& storage, std::string fileName) {
   contentStream << content;
   std::string line;
 
-  DataMatrix* m = new DataMatrix(0, storage.size());
+  DataMatrix* m = new DataMatrix(0, storage.getSize());
 
   size_t currentRow = 0;
 
@@ -144,7 +144,7 @@ DataMatrix* readReferenceMatrix(GridStorage& storage, std::string fileName) {
     std::string curValue;
     float_t floatValue;
 
-    for (size_t i = 0; i < storage.size(); i++) {
+    for (size_t i = 0; i < storage.getSize(); i++) {
       curFind = std::min(line.find(" ", curPos), line.find("\t", curPos));
       curValue = line.substr(curPos, curFind - curPos);
       floatValue = boost::lexical_cast<float_t>(curValue);
@@ -258,8 +258,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplace(*grid));
 
-  DataVector alpha(storage.size());
-  DataVector result(storage.size());
+  DataVector alpha(storage.getSize());
+  DataVector result(storage.getSize());
 
   alpha.setAll(1.0);
 
@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   HashGridIndex::index_type idx;
   HashGridIndex::level_type lvl;
 
-  for (size_t seq = 0; seq < storage.size(); seq++) {
+  for (size_t seq = 0; seq < storage.getSize(); seq++) {
     storage.get(seq)->get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<SGPP::float_t>(lvl + 1)),
                       0.0);
@@ -304,8 +304,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplaceEnhanced(*grid));
 
-  DataVector alpha(storage.size());
-  DataVector result(storage.size());
+  DataVector alpha(storage.getSize());
+  DataVector result(storage.getSize());
 
   alpha.setAll(1.0);
 
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   HashGridIndex::index_type idx;
   HashGridIndex::level_type lvl;
 
-  for (size_t seq = 0; seq < storage.size(); seq++) {
+  for (size_t seq = 0; seq < storage.getSize(); seq++) {
     storage.get(seq)->get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<SGPP::float_t>(lvl + 1)),
                       0.0);
@@ -675,9 +675,9 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
   generator.regular(level);
 
   GridStorage& gridStorage = grid->getStorage();
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
 
-  for (size_t i = 0; i < gridStorage.size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     alpha[i] = static_cast<SGPP::float_t>(i + 1);
   }
 
@@ -690,13 +690,13 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplace(*grid));
 
-  DataVector alpha2(gridStorage.size());
-  DataVector erg(gridStorage.size());
-  DataMatrix m(gridStorage.size(), gridStorage.size());
+  DataVector alpha2(gridStorage.getSize());
+  DataVector erg(gridStorage.getSize());
+  DataMatrix m(gridStorage.getSize(), gridStorage.getSize());
 
   m.setAll(0.0);
 
-  for (size_t i = 0; i < gridStorage.size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     alpha2.setAll(0.0);
     alpha2[i] = 1.0;
     laplace->mult(alpha2, erg);

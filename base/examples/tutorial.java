@@ -45,24 +45,24 @@ public class tutorial {
     int dim = 2;
     Grid grid = Grid.createLinearGrid(dim);
     GridStorage gridStorage = grid.getStorage();
-    System.out.println("dimensionality:         " + gridStorage.dim());
+    System.out.println("dimensionality:         " + gridStorage.getDimension());
 
     // create regular grid, level 3
     int level = 3;
     GridGenerator gridGen = grid.getGenerator();
     gridGen.regular(level);
 
-    System.out.println("number of grid points:  " + gridStorage.size());
+    System.out.println("number of grid points:  " + gridStorage.getSize());
 
     // create coefficient vector
-    DataVector alpha = new DataVector(gridStorage.size());
+    DataVector alpha = new DataVector(gridStorage.getSize());
     alpha.setAll(0.0);
     System.out.println("length of alpha vector: " + alpha.getSize());
 
     // set function values in alpha
     GridIndex gp = new GridIndex();
 
-    for (int i = 0; i < gridStorage.size(); i++) {
+    for (int i = 0; i < gridStorage.getSize(); i++) {
       gp = gridStorage.get(i);
       alpha.set(i, f(gp.getCoord(0), gp.getCoord(1)));
     }

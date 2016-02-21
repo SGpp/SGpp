@@ -41,7 +41,7 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(this->grid));
   base::DataVector coord(1);
 
-  for (unsigned int i = 0; i < gs->size(); i++) {
+  for (unsigned int i = 0; i < gs->getSize(); i++) {
     coord[0] = gs->get(i)->getCoord(0);
     coord_pdf.insert(std::pair<float_t, float_t>(coord[0], opEval->eval(*alpha, coord)));
     coord_cdf.insert(std::pair<float_t, float_t>(coord[0], i));

@@ -22,7 +22,7 @@ void OperationHierarchisationLinearStretched::doHierarchisation(
   sweep<HierarchisationLinearStretched> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
@@ -33,7 +33,7 @@ void OperationHierarchisationLinearStretched::doDehierarchisation(
   sweep<DehierarchisationLinearStretched> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }

@@ -11,22 +11,22 @@ from pysgpp import DataVector, Grid, createOperationHierarchisation, createOpera
 dim = 2
 grid = Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
-print "dimensionality:         {}".format(gridStorage.dim())
+print "dimensionality:         {}".format(gridStorage.getDimension())
 
 # create regular grid, level 3
 level = 3
 gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of grid points:  {}".format(gridStorage.size())
+print "number of grid points:  {}".format(gridStorage.getSize())
 
 # create coefficient vector
-alpha = DataVector(gridStorage.size())
+alpha = DataVector(gridStorage.getSize())
 alpha.setAll(0.0)
 print "length of alpha vector: {}".format(len(alpha))
 
 # set function values in alpha
 f = lambda x0, x1: 16.0 * (x0-1.0)*x0 * (x1-1.0)*x1
-for i in xrange(gridStorage.size()):
+for i in xrange(gridStorage.getSize()):
     gp = gridStorage.get(i)
     alpha[i] = f(gp.getCoord(0), gp.getCoord(1))
 print "alpha before hierarchization: {}".format(alpha)

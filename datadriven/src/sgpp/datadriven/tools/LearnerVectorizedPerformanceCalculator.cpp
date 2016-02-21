@@ -23,7 +23,7 @@ LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(base::Grid& grid,
   result.GByte_ = 0.0;
   result.GFlop_ = 0.0;
 
-  size_t nDim = grid.getStorage().dim();
+  size_t nDim = grid.getDimension();
   size_t nGridsize = grid.getSize();
 
   if (grid.getType() == base::GridType::ModLinear) {

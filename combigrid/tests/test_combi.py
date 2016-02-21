@@ -44,11 +44,11 @@ def testFG(obj, grid, level, function):
     generator.regular(level)
 
     storage = grid.getStorage()
-    dim = storage.dim()
+    dim = storage.getDimension()
 
     # generate the node_values vector
     fgs = FullGridSet(dim,level, grid.getType())
-    node_values = DataVector(storage.size())
+    node_values = DataVector(storage.getSize())
     for i in xrange(fgs.getSize()):
         fg=fgs.at(i)  
         m=fg.getSize()

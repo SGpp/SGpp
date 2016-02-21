@@ -23,14 +23,14 @@ print "dimensionality:                   {}".format(dim)
 level = 3
 gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of initial grid points:    {}".format(HashGridStorage.size())
+print "number of initial grid points:    {}".format(HashGridStorage.getSize())
 
 # definition of function to interpolate - nonsymmetric(!)
 #f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1-x1
 f = lambda x0, x1: math.sin(x0*10)+x1
 
 # create coefficient vectors
-alpha = DataVector(HashGridStorage.size())
+alpha = DataVector(HashGridStorage.getSize())
 print "length of alpha vector:           {}".format(alpha.getSize())
 
 
@@ -67,7 +67,7 @@ xCoordsOld = []
 yCoordsOld = []
  
 opEval = createOperationEval(grid)
-for i in xrange(HashGridStorage.size()):
+for i in xrange(HashGridStorage.getSize()):
         gridPointCoordinates = DataVector(dim)
         HashGridStorage.get(i).getCoords(gridPointCoordinates)
         xCoordsOld.append(gridPointCoordinates[0])
@@ -76,7 +76,7 @@ for i in xrange(HashGridStorage.size()):
 # now refine adaptively 20 times
 for refnum in range(20):
     # set function values in alpha
-    for i in xrange(HashGridStorage.size()):
+    for i in xrange(HashGridStorage.getSize()):
         gp = HashGridStorage.get(i)
         alpha[i] = f(gp.getCoord(0), gp.getCoord(1))
   
@@ -94,7 +94,7 @@ for refnum in range(20):
     
     opEval = createOperationEval(grid)
     
-    for i in xrange(HashGridStorage.size()):
+    for i in xrange(HashGridStorage.getSize()):
         gridPointCoordinates = DataVector(dim)
         HashGridStorage.get(i).getCoords(gridPointCoordinates)
         xCoordinates.append(gridPointCoordinates[0])
@@ -123,7 +123,7 @@ for refnum in range(20):
     indicator = PredictiveRefinementIndicator(grid,dataSet,errorVector,1)
     decorator.free_refine(HashGridStorage,indicator)
     
-    print "Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.size())
+    print "Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.getSize())
      
     #
     #plot grid
@@ -131,4 +131,4 @@ for refnum in range(20):
   
   
     # extend alpha vector (new entries uninitialized)
-    alpha.resize(HashGridStorage.size())
+    alpha.resize(HashGridStorage.getSize())

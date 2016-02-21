@@ -11,8 +11,8 @@ namespace base {
 
 float_t OperationNaiveEvalPartialDerivativeBspline::evalPartialDerivative(
   const DataVector& alpha, const DataVector& point, size_t derivDim) {
-  const size_t n = storage.size();
-  const size_t d = storage.dim();
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
   float_t result = 0.0;
 
   for (size_t i = 0; i < n; i++) {

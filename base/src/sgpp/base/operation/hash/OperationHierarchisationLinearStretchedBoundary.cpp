@@ -22,8 +22,8 @@ void OperationHierarchisationLinearStretchedBoundary::doHierarchisation(
   sweep<HierarchisationLinearStretchedBoundary> s(func, storage);
 
   // N D case
-  if (this->storage.dim() > 1) {
-    for (size_t i = 0; i < this->storage.dim(); i++) {
+  if (this->storage.getDimension() > 1) {
+    for (size_t i = 0; i < this->storage.getDimension(); i++) {
       s.sweep1D_Boundary(node_values, node_values, i);
     }
   } else {  // 1 D case
@@ -37,8 +37,8 @@ void OperationHierarchisationLinearStretchedBoundary::doDehierarchisation(
   sweep<DehierarchisationLinearStretchedBoundary> s(func, storage);
 
   // N D case
-  if (this->storage.dim() > 1) {
-    for (size_t i = 0; i < this->storage.dim(); i++) {
+  if (this->storage.getDimension() > 1) {
+    for (size_t i = 0; i < this->storage.getDimension(); i++) {
       s.sweep1D_Boundary(alpha, alpha, i);
     }
   } else {  // 1 D case

@@ -30,15 +30,15 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid& grid, size_t level,
                                           bool doStretch = false) {
   grid.getGenerator().regular(level);
   GridStorage& gridStore = grid.getStorage();
-  size_t dim = gridStore.dim();
+  size_t dim = gridStore.getDimension();
   Stretching* stretch = NULL;
 
   if (doStretch) stretch = gridStore.getStretching();
 
-  DataVector node_values = DataVector(gridStore.size());
+  DataVector node_values = DataVector(gridStore.getSize());
   DataVector coords = DataVector(dim);
 
-  for (size_t n = 0; n < gridStore.size(); n++) {
+  for (size_t n = 0; n < gridStore.getSize(); n++) {
     if (doStretch) {
       gridStore.get(n)->getCoordsStretching(coords, *stretch);
     } else {
@@ -56,7 +56,7 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid& grid, size_t level,
   if (naiveOp == true) {
     std::unique_ptr<OperationNaiveEval> op(SGPP::op_factory::createOperationNaiveEval(grid));
 
-    for (size_t n = 0; n < gridStore.size(); n++) {
+    for (size_t n = 0; n < gridStore.getSize(); n++) {
       if (doStretch) {
         gridStore.get(n)->getCoordsStretching(coords, *stretch);
       } else {
@@ -69,7 +69,7 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid& grid, size_t level,
   } else {
     std::unique_ptr<OperationEval> op(SGPP::op_factory::createOperationEval(grid));
 
-    for (size_t n = 0; n < gridStore.size(); n++) {
+    for (size_t n = 0; n < gridStore.getSize(); n++) {
       if (doStretch) {
         gridStore.get(n)->getCoordsStretching(coords, *stretch);
       } else {
@@ -84,7 +84,7 @@ void testHierarchisationDehierarchisation(SGPP::base::Grid& grid, size_t level,
   DataVector node_values_back = DataVector(alpha);
   hierarchisation->doDehierarchisation(node_values_back);
 
-  for (size_t n = 0; n < gridStore.size(); n++) {
+  for (size_t n = 0; n < gridStore.getSize(); n++) {
     BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
   }
 }

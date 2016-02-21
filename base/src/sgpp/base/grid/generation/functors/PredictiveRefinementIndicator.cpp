@@ -69,7 +69,7 @@ float_t PredictiveRefinementIndicator::operator ()(
     float_t funcval = 1.0;
 
     // calculate error Indicator
-    for (size_t dim = 0; dim < gridPoint.dim() && funcval != 0; ++dim) {
+    for (size_t dim = 0; dim < gridPoint.getDimension() && funcval != 0; ++dim) {
       level = gridPoint.getLevel(dim);
       index = gridPoint.getIndex(dim);
 

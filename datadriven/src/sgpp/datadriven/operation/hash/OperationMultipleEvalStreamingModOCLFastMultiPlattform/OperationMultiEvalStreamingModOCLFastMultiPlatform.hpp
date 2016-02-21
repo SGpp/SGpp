@@ -260,14 +260,14 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
   void recalculateLevelAndIndex(size_t& gridSize) {
     base::GridStorage* storage = grid.getStorage();
 
-    size_t remainder = storage->size() % commonGridPadding;
+    size_t remainder = storage->getSize() % commonGridPadding;
     size_t padding = 0;
 
     if (remainder != 0) {
       padding = commonGridPadding - remainder;
     }
 
-    gridSize = storage->size() + padding;
+    gridSize = storage->getSize() + padding;
 
     level = std::vector<T>(gridSize * dims);
     index = std::vector<T>(gridSize * dims);
@@ -278,7 +278,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     /// pointer to index_type
     base::HashGridStorage::index_pointer gridPoint;
 
-    for (size_t i = 0; i < storage->size(); i++) {
+    for (size_t i = 0; i < storage->getSize(); i++) {
       gridPoint = storage->get(i);
       for (size_t dim = 0; dim < dims; dim++) {
         gridPoint->get(dim, curLevel, curIndex);
@@ -287,8 +287,8 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
       }
     }
 
-    for (size_t i = storage->size(); i < this->gridSize; i++) {
-      for (size_t dim = 0; dim < storage->dim(); dim++) {
+    for (size_t i = storage->getSize(); i < this->gridSize; i++) {
+      for (size_t dim = 0; dim < storage->getDimension(); dim++) {
         level[i * dims + dim] = 1.0;
         index[i * dims + dim] = 1.0;
       }

@@ -68,7 +68,7 @@ class OperationMakePositive(object):
         candidates = {}
 
         # lookup dimension-wise
-        for d in xrange(gs.dim()):
+        for d in xrange(gs.getDimension()):
             # compute starting points by level sum
             anchors = []
             for i in xrange(gs.size()):
@@ -151,7 +151,7 @@ class OperationMakePositive(object):
     def lookupFullGridPoints(self, grid, alpha, candidates):
         acc = []
         gs = grid.getStorage()
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
         opEval = createOperationEval(grid)
         # TODO: find local max level for adaptively refined grids
         maxLevel = gs.getMaxLevel()
@@ -159,7 +159,7 @@ class OperationMakePositive(object):
             maxLevel += 1
 
         for gp in candidates:
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 if 0 < gp.getLevel(d) < maxLevel:
                     self.lookupFullGridPointsRec1d(grid, alpha, gp, d, p,
                                                    opEval, maxLevel, acc)
@@ -202,7 +202,7 @@ class OperationMakePositive(object):
         gs = grid.getStorage()
         newAlpha = DataVector(alpha)
         notAffectedGridPoints = []
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
         # remove all entirely negative weighted sub-branches in the tree
         # just consider the newly added ones by discretization
         iteration = 1

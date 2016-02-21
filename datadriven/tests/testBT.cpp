@@ -31,13 +31,13 @@ DataMatrix* generateBTMatrix(Grid& grid, DataMatrix& training) {
   std::unique_ptr<OperationMultipleEval> b(
       SGPP::op_factory::createOperationMultipleEval(grid, training));
 
-  DataVector alpha(storage.size());
+  DataVector alpha(storage.getSize());
   DataVector temp(training.getNrows());
 
   // create BT matrix
-  DataMatrix* m = new DataMatrix(training.getNrows(), storage.size());
+  DataMatrix* m = new DataMatrix(training.getNrows(), storage.getSize());
 
-  for (size_t i = 0; i < storage.size(); i++) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
     temp.setAll(0.0);
     alpha.setAll(0.0);
     alpha[i] = 1.0;

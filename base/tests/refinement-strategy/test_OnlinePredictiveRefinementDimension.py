@@ -66,7 +66,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
         storage = self.grid.getStorage()
         gridSize = self.grid.getSize()
-        numDim = storage.dim()
+        numDim = storage.getDimension()
 
         print "######"
         print "Expected result:"

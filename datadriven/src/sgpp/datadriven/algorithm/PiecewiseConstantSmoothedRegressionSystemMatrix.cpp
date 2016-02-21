@@ -53,7 +53,7 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
   uint64_t totalIntegratedNodes = 0;
   #pragma omp parallel for
 
-  for (size_t gridIndex = 0; gridIndex < storage->size(); gridIndex++) {
+  for (size_t gridIndex = 0; gridIndex < storage->getSize(); gridIndex++) {
     base::GridIndex* gridPoint = storage->get(gridIndex);
     size_t integratedNodes;
     rhs[gridIndex] = piecewiseRegressor.integrate(*gridPoint, integratedNodes);
@@ -64,7 +64,7 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
   std::cout << "totalIntegratedNodes: " << totalIntegratedNodes << std::endl;
   std::cout << "integrated nodes per grid point: "
             << (static_cast<float_t>(totalIntegratedNodes) / static_cast<float_t>
-                (storage->size())) << std::endl;
+                (storage->getSize())) << std::endl;
 }
 
 PiecewiseConstantSmoothedRegressionSystemMatrix::

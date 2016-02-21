@@ -65,7 +65,7 @@ AbstractRefinement::refinement_list_type PredictiveRefinement::getIndicator(
   GridStorage::grid_map_iterator child_iter;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
-  for (size_t d = 0; d < storage.dim(); d++) {
+  for (size_t d = 0; d < storage.getDimension(); d++) {
     index_t source_index;
     level_t source_level;
     index.get(d, source_level, source_index);
@@ -152,7 +152,7 @@ void PredictiveRefinement::refineGridpointsCollection(
 
 void PredictiveRefinement::free_refine(GridStorage& storage,
                                        PredictiveRefinementIndicator& functor) {
-  if (storage.size() == 0) {
+  if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
 

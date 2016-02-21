@@ -81,7 +81,7 @@ class sweep {
     // from dimension recursion unrolling
     std::vector<size_t> dim_list;
 
-    for (size_t i = 0; i < storage.dim(); i++) {
+    for (size_t i = 0; i < storage.getDimension(); i++) {
       if (i != dim_sweep) {
         dim_list.push_back(i);
       }
@@ -89,7 +89,7 @@ class sweep {
 
     grid_iterator index(storage);
 
-    sweep_rec(source, result, index, dim_list, storage.dim() - 1, dim_sweep);
+    sweep_rec(source, result, index, dim_list, storage.getDimension() - 1, dim_sweep);
   }
 
   /**
@@ -131,7 +131,7 @@ class sweep {
     // dimension recursion unrolling
     std::vector<size_t> dim_list;
 
-    for (size_t i = 0; i < storage.dim(); i++) {
+    for (size_t i = 0; i < storage.getDimension(); i++) {
       if (i != dim_sweep) {
         dim_list.push_back(i);
       }
@@ -140,7 +140,7 @@ class sweep {
     grid_iterator index(storage);
     index.resetToLevelZero();
 
-    sweep_Boundary_rec(source, result, index, dim_list, storage.dim() - 1,
+    sweep_Boundary_rec(source, result, index, dim_list, storage.getDimension() - 1,
                        dim_sweep);
   }
 
@@ -159,7 +159,7 @@ class sweep {
     // dimension recursion unrolling
     std::vector<size_t> dim_list;
 
-    for (size_t i = 0; i < storage.dim(); i++) {
+    for (size_t i = 0; i < storage.getDimension(); i++) {
       if (i != dim_sweep) {
         dim_list.push_back(i);
       }
@@ -168,7 +168,7 @@ class sweep {
     grid_iterator index(storage);
     index.resetToLevelZero();
 
-    sweep_Boundary_rec(source, result, index, dim_list, storage.dim() - 1,
+    sweep_Boundary_rec(source, result, index, dim_list, storage.getDimension() - 1,
                        dim_sweep);
   }
 

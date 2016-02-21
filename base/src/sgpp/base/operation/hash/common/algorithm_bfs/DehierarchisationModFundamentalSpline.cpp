@@ -22,8 +22,8 @@ void DehierarchisationModFundamentalSpline::operator()(
   const DataVector& source,
   DataVector& result,
   const grid_iterator& iterator) {
-  const size_t n = storage.size();
-  const size_t d = storage.dim();
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
   SFundamentalSplineModifiedBase base(grid->getDegree());
@@ -80,8 +80,8 @@ void DehierarchisationModFundamentalSpline::operator()(
   const DataMatrix& source,
   DataMatrix& result,
   const grid_iterator& iterator) {
-  const size_t n = storage.size();
-  const size_t d = storage.dim();
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
   const size_t pointIndex = iterator.seq();
 
   SFundamentalSplineModifiedBase base(grid->getDegree());

@@ -34,15 +34,15 @@ int main() {
   size_t dim = 2;
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
   GridStorage& gridStorage = grid->getStorage();
-  std::cout << "dimensionality:                   " << gridStorage.dim() << std::endl;
+  std::cout << "dimensionality:                   " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   size_t level = 3;
   grid->getGenerator().regular(level);
-  std::cout << "number of initial grid points:    " << gridStorage.size() << std::endl;
+  std::cout << "number of initial grid points:    " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage.size());
+  DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
   std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
 
@@ -51,7 +51,7 @@ int main() {
   // refine adaptively 5 times
   for (int step = 0; step < 5; step++) {
     // set function values in alpha
-    for (size_t i = 0; i < gridStorage.size(); i++) {
+    for (size_t i = 0; i < gridStorage.getSize(); i++) {
       gp = gridStorage.get(i);
       alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
     }
@@ -67,6 +67,6 @@ int main() {
          << std::endl;
 
     // extend alpha vector (new entries uninitialized)
-    alpha.resize(gridStorage.size());
+    alpha.resize(gridStorage.getSize());
   }
 }

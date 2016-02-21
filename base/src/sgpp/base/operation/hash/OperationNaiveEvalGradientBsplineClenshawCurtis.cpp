@@ -11,11 +11,11 @@ namespace base {
 
 float_t OperationNaiveEvalGradientBsplineClenshawCurtis::evalGradient(
   const DataVector& alpha, const DataVector& point, DataVector& gradient) {
-  const size_t n = storage.size();
-  const size_t d = storage.dim();
+  const size_t n = storage.getSize();
+  const size_t d = storage.getDimension();
   float_t result = 0.0;
 
-  gradient.resize(storage.dim());
+  gradient.resize(storage.getDimension());
   gradient.setAll(0.0);
 
   DataVector curGradient(d);

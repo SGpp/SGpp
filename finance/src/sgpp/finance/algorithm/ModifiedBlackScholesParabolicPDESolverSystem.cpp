@@ -38,7 +38,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(
     SGPP::base::DataVector& updateVector) {
   float_t tmp;
 
-  for (size_t i = 0; i < this->BoundGrid->getStorage().size(); i++) {
+  for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
     // std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
     std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(
         this->BoundGrid->getBoundingBox());
@@ -107,7 +107,7 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage().size();
+    size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
     SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
@@ -122,12 +122,12 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
 
       if (this->refineMode == "maxLevel") {
         myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
 
       if (this->refineMode == "classic") {
         myGenerator.refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
     }
 

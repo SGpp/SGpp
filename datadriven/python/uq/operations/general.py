@@ -47,7 +47,7 @@ def insert_children(grid, gp, d):
 def extend_grid_1d(grid, *args, **kws):
     gs = grid.getStorage()
     accLevel = gs.getMaxLevel()
-    dim = gs.dim()
+    dim = gs.getDimension()
 
     # create dim+1 dimensional grid of level 0
     new_grid = createGrid(grid, dim + 1, *args, **kws)
@@ -63,7 +63,7 @@ def extend_grid_1d(grid, *args, **kws):
         new_gp = HashGridIndex(dim + 1)
 
         # copy level index vectors from old grid to the new one
-        for d in xrange(gs.dim()):
+        for d in xrange(gs.getDimension()):
             new_gp.set(d, gp.getLevel(d), gp.getIndex(d))
 
         # get the indices in the missing dimension
@@ -134,8 +134,8 @@ def join(grid1, grid2, *args, **kws):
     @return: Grid, joined sparse grid of dimensionality max(dim1, dim2) with
     basis of grid2
     """
-    dim1 = grid1.getStorage().dim()
-    dim2 = grid2.getStorage().dim()
+    dim1 = grid1.getDimension()
+    dim2 = grid2.getDimension()
 
     if dim1 < dim2:
         grid1 = extend_grid(grid1, dim2 - dim1, *args, **kws)
