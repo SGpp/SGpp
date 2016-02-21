@@ -104,7 +104,7 @@ public:
 	{
 	}
 
-	double prune_graph(std::vector<int> &points, std::vector<T> &alpha, std::vector<T> &data, std::vector<int> &graph)
+	double prune_graph(std::vector<int> &graph)
 	{
 		if (verbose)
 		{
@@ -118,7 +118,7 @@ public:
 			if(verbose)
 				std::cout<<"generating kernel source"<<std::endl;
 			std::string program_src = kernelSourceBuilder.generateSource();
-			if(verbose)
+			if(true)
 				std::cout<<"Source: "<<std::endl<<program_src<<std::endl;
 			if(verbose)
 				std::cout<<"building kernel"<<std::endl;
@@ -128,7 +128,6 @@ public:
 		deviceGraph.intializeTo(graph, 1, 0, graph.size());
 		clFinish(device->commandQueue);
 		this->deviceTimingMult = 0.0;
-		size_t datasize=data.size()*k;
 
 		//Set kernel arguments
 		err = clSetKernelArg(this->kernel, 0, sizeof(cl_mem), this->deviceGraph.getBuffer());
@@ -190,8 +189,8 @@ public:
 		// enqueue kernel
 		if(verbose)
 			std::cout<<"Starting the kernel"<<std::endl;
-		size_t *globalworkrange=new size_t[1];
-		globalworkrange[0]=data.size();
+		size_t globalworkrange[1];
+		globalworkrange[0]=graph.size()/k;
 		err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
 									 NULL, 0, nullptr, &clTiming);
 		if (err != CL_SUCCESS) {
