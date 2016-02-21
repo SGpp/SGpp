@@ -23,29 +23,31 @@ protected:
 	static int find_neighbors(int index, std::vector<int> &nodes, int cluster, int k, std::vector<int> &clusterList,
 							  bool overwrite=false) {
 		int currIndex;
-		clusterList[index]=cluster;
+		clusterList[index] = cluster;
 		bool overwrite_enabled = overwrite;
+		bool removed = true;
 		for (int i = index*k; i < (index+1) *k; i++) {
 			if(nodes[i]==-2)
 				continue;
+			removed = false;
 			currIndex = nodes[i];
-			if (nodes[currIndex*k]!=-1) {
-				if(clusterList[currIndex]==0 && !overwrite_enabled) {
+			if (nodes[currIndex*k] != -1) {
+				if(clusterList[currIndex] == 0 && !overwrite_enabled) {
 					clusterList[currIndex] = cluster;
 					int ret_cluster = OperationCreateGraphOCL::find_neighbors(currIndex, nodes, cluster, k, clusterList);
 					if(ret_cluster != cluster) {
 						cluster = ret_cluster;
-						clusterList[index]=cluster;
+						clusterList[index] = cluster;
 						overwrite_enabled = true;
-						i = index*k;
+						i = index * k;
 						continue;
 					}
 				}
 				else if(!overwrite_enabled && clusterList[currIndex]!=cluster) {
 					cluster = clusterList[currIndex];
-					clusterList[index]=cluster;
+					clusterList[index] = cluster;
 					overwrite_enabled = true;
-					i = index*k-1;
+					i = index * k - 1;
 					continue;
 				}
 				else{
@@ -55,6 +57,10 @@ protected:
 					}
 				}
 			}
+		}
+		if(removed) {
+			clusterList[index] = 0;
+			cluster = 0;
 		}
 		return cluster;
 	}
