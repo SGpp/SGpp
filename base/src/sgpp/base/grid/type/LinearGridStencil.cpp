@@ -39,7 +39,7 @@ SGPP::base::GridType LinearGridStencil::getType() {
 }
 
 const SBasis& LinearGridStencil::getBasis() {
-  throw new factory_exception("Not implemented");
+  throw factory_exception("Not implemented");
   // it should never get so far, code just for compilation reasons
   // If there will be a meaningful basis, this following lines should be changed
   static SLinearBase basis;

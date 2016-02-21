@@ -23,18 +23,18 @@ AlgorithmAdaBoostBase::AlgorithmAdaBoostBase(base::Grid& SparseGrid,
     bool refine, size_t refineMode, size_t refineNum, size_t numberOfAda,
     float_t percentOfAda, size_t mode) {
   if (refine && (gridType != 1 && gridType != 2 && gridType != 3)) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
+    throw base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
       "or 2 or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
       "Grid, 3 = ModLinear Grid)!");
   }
 
   if (refine && (percentOfAda >= 1.0 || percentOfAda <= 0.0)) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase : Only "
+    throw base::operation_exception("AlgorithmAdaBoostBase : Only "
       "number between 0 and 1 is the supported percent to Adaptive!");
   }
 
   if (refineMode != 1 && refineMode != 2) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
+    throw base::operation_exception("AlgorithmAdaBoostBase : Only 1 "
      "or 2 are supported refine mode(1 : use grid point number, 2: use grid "
      "point percentage)!");
   }
@@ -324,7 +324,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
@@ -458,7 +458,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
@@ -474,7 +474,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
     base::DataMatrix& algorithmValueTest, std::string lossFucType) {
   if (lossFucType != "linear" && lossFucType != "square"
       && lossFucType != "exponential") {
-    throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : "
+    throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 : "
       "An unknown loss function type was specified!");
   }
 
@@ -571,7 +571,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
       for (size_t i = 0; i < numData; i++)
         lossFuc.set(i, 1 - exp(loss.get(i)));
     } else {
-      throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 "
+      throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostR2 "
         ": An unknown loss function type was specified!");
     }
 
@@ -654,7 +654,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
@@ -670,12 +670,12 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     base::DataMatrix& algorithmValueTest, float_t Tvalue,
     std::string powerType) {
   if (Tvalue >= 1 || Tvalue <= 0) {
-    throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
+    throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
       "the Tvalue must lie between 0 and 1!");
   }
 
   if (powerType != "linear" && powerType != "square" && powerType != "cubic") {
-    throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
+    throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT : "
       "An unknown power type was specified!");
   }
 
@@ -765,7 +765,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
     else if (powerType == "cubic")
       beta.set(count, errorRate * errorRate * errorRate);
     else
-      throw new base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT "
+      throw base::operation_exception("AlgorithmAdaBoostBase::doAdaBoostRT "
         ": An unknown power type was specified!");
 
     base::DataVector TrValueHelper(this->numData);
@@ -838,7 +838,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
       } else {
         // should not happen because this exception should have been thrown some
         // lines upwards!
-        throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
+        throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 "
           "or 3 are supported gridType(1 = Linear Grid, 2 = LinearL0Boundary "
           "Grid, 3 = ModLinear Grid)!");
       }
@@ -868,7 +868,7 @@ void AlgorithmAdaBoostBase::eval(base::DataMatrix& testData,
   } else if (this->boostMode == 2) {
     doRealAdaBoost(weightsMatrix, testData, algorithmValueTrain, algorithmValueTest);
   } else {
-    throw new base::operation_exception("AlgorithmAdaboost : Only 1 or 2 for "
+    throw base::operation_exception("AlgorithmAdaboost : Only 1 or 2 for "
       "the boost mode(1 = Discrete Adaboost, 2 = Real Adaboost)!");
   }
 }
@@ -1017,7 +1017,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
         refineNumber = 1;
     } else {
       // should not happen because this exception should have been thrown some lines upwards!
-      throw new base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported "
+      throw base::operation_exception("AlgorithmAdaBoost : Only 1 or 2 are supported "
         "refine mode(1 : use grid point number, 2: use grid point percentage)!");
     }
 

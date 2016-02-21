@@ -62,7 +62,7 @@ void HeatEquationSolverMPI::solveExplicitEuler(size_t numTimesteps,
     double timestepsize, size_t maxCGIterations, double epsilonCG,
     SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation,
     size_t numEvalsAnimation) {
-  throw new SGPP::base::application_exception("HeatEquationSolver::solveExplicitEuler : Explicit Euler is not supported!");
+  throw SGPP::base::application_exception("HeatEquationSolver::solveExplicitEuler : Explicit Euler is not supported!");
 }
 
 void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps,
@@ -94,7 +94,7 @@ void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps,
         myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(
           *this->myGrid, alpha, this->a, timestepsize, "ImEul");
       } else {
-        throw new base::application_exception("HeatEquationSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+        throw base::application_exception("HeatEquationSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
       }
     } else {
       myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
@@ -120,7 +120,7 @@ void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps,
     delete myCG;
     delete myEuler;
   } else {
-    throw new SGPP::base::application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
   }
 }
 
@@ -148,7 +148,7 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps,
         myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(
           *this->myGrid, alpha, this->a, timestepsize, "CrNic");
       } else {
-        throw new base::application_exception("HeatEquationSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
+        throw base::application_exception("HeatEquationSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
       }
     } else {
       myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
@@ -198,7 +198,7 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps,
     delete myCN;
     delete myEuler;
   } else {
-    throw new SGPP::base::application_exception("HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception("HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
   }
 }
 
@@ -236,7 +236,7 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector&
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new SGPP::base::application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
 
 }

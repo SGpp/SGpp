@@ -42,7 +42,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
       output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim << ") + "
              << dataBlockingIndex << "]";
     } else {
-      throw new base::operation_exception(
+      throw base::operation_exception(
           "OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
     }
     return output.str();

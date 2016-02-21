@@ -28,7 +28,7 @@ Euler::Euler(std::string Mode, size_t imax, float_t timestepSize, bool generateA
   this->residuum = 0.0;
 
   if (Mode != "ExEul" && Mode != "ImEul") {
-    throw new SGPP::base::solver_exception("Euler::Euler : An unknown Euler-Mode was specified!");
+    throw SGPP::base::solver_exception("Euler::Euler : An unknown Euler-Mode was specified!");
   }
 }
 

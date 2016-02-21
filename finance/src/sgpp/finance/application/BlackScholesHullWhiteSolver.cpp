@@ -117,7 +117,7 @@ void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, float_
                                                      base::DataVector& alpha, bool verbose,
                                                      bool generateAnimation,
                                                      size_t numEvalsAnimation) {
-  throw new base::application_exception(
+  throw base::application_exception(
       "BlackScholesHullWhiteSolver::solveExplicitEuler : explicit Euler is not supported for "
       "BlackScholesHullWhiteSolver!");
 }
@@ -228,7 +228,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
     delete myStopwatch;
     delete myBoundaries;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesHullWhiteSolver::solveImplicitEuler : A grid wasn't constructed before or "
         "stochastic parameters weren't set!");
   }
@@ -237,7 +237,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
 void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
                                                      size_t maxCGIterations, float_t epsilonCG,
                                                      base::DataVector& alpha, size_t NumImEul) {
-  throw new base::application_exception(
+  throw base::application_exception(
       "BlackScholesHullWhiteSolver::solveCrankNicolson : Crank-Nicloson is not supported for "
       "BlackScholesHullWhiteSolver!");
 }
@@ -289,7 +289,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
             }
           }
         } else {
-          throw new base::application_exception(
+          throw base::application_exception(
               "BlackScholesHullWhiteSolver::getGridPointsAtMoney : An unknown payoff-type was "
               "specified!");
         }
@@ -299,7 +299,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
         }
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "BlackScholesHullWhiteSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
     }
   }
@@ -350,7 +350,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
         // std::cout << "r=" << dblFuncValues[this->dim_HW] << " PB=" <<PB <<std::endl;
         alpha[i] = std::max<float_t>(PB - dblFuncValues[this->dim_BS], 0.0);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "BlackScholesSolver::initGridWithPayoffBSHW : An unknown payoff-type was specified!");
       }
     }
@@ -359,7 +359,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
 
     SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::initGridWithPayoffBSHW : A grid wasn't constructed before!");
   }
 }

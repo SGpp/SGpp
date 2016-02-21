@@ -182,7 +182,7 @@ size_t DataVector::append(float_t value) {
 
 void DataVector::insert(size_t index, float_t value) {
   if (index > size) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataVector::insert : index out of bounds");
   }
 
@@ -240,7 +240,7 @@ DataVector& DataVector::operator=(const DataVector& vec) {
   }
 
   if (size != vec.size) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataVector::add : Dimensions do not match");
     //        delete[] data;
     //        size = vec.size;
@@ -253,7 +253,7 @@ DataVector& DataVector::operator=(const DataVector& vec) {
 
 void DataVector::add(const DataVector& vec) {
   if (size != vec.size) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataVector::add : Dimensions do not match");
   }
 
@@ -280,7 +280,7 @@ void DataVector::accumulate(const DataVector& vec) {
 
 void DataVector::sub(const DataVector& vec) {
   if (size != vec.size) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataVector::sub : Dimensions do not match");
   }
 
@@ -291,7 +291,7 @@ void DataVector::sub(const DataVector& vec) {
 
 void DataVector::componentwise_mult(const DataVector& vec) {
   if (size != vec.size) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataVector::componentwise_mult : Dimensions do not match");
   }
 
@@ -302,7 +302,7 @@ void DataVector::componentwise_mult(const DataVector& vec) {
 
 void DataVector::componentwise_div(const DataVector& vec) {
   if (size != vec.size) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataVector::componentwise_div : Dimensions do not match");
   }
 

@@ -88,7 +88,7 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
   this->dim = BoundingBox.getDimensions();
 
   if ((dim % 2) != 0)
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::constructGrid : The number of dimensions in the grid is not an even number! "
         "This doesn't correspond to an integer number of assets. The number of dimensions in the "
         "grid must be divisible by two.");
@@ -167,11 +167,11 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, float_t 
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::refineInitialGridWithPayoff : An unsupported payoffType was specified!");
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
     }
   }
@@ -240,12 +240,12 @@ void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::refineInitialGridWithPayoffToMaxLevel : An unsupported payoffType was "
             "specified!");
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::refineInitialGridWithPayoffToMaxLevel : The grid wasn't initialized "
           "before!");
     }
@@ -352,7 +352,7 @@ void HestonSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
 
     this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -387,14 +387,14 @@ void HestonSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
                                       size_t maxCGIterations, float_t epsilonCG,
                                       base::DataVector& alpha, bool verbose, bool generateAnimation,
                                       size_t numEvalsAnimation) {
-  throw new base::application_exception("This scheme is not implemented for the Heston solver!");
+  throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 
 void HestonSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
                                       size_t maxCGIterations, float_t epsilonCG,
                                       base::DataVector& alpha, bool verbose, bool generateAnimation,
                                       size_t numEvalsAnimation) {
-  throw new base::application_exception("This scheme is not implemented for the Heston solver!");
+  throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 
 std::vector<size_t> HestonSolver::getAlgorithmicDimensions() {
@@ -405,7 +405,7 @@ void HestonSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
   if (this->tBoundaryType == "freeBoundaries") {
     this->myGrid->setAlgorithmicDimensions(newAlgoDims);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only supported "
         "when choosing option type all!");
   }
@@ -458,7 +458,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, float_t strike
             isAtMoney = false;
           }
         } else {
-          throw new base::application_exception(
+          throw base::application_exception(
               "HestonSolver::getGridPointsAtMoney : An unknown payoff-type was specified!");
         }
 
@@ -467,7 +467,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, float_t strike
         }
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
     }
   }
@@ -606,7 +606,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
           alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(numAssets))), 0.0);
         }
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
       }
 
@@ -632,7 +632,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
 
     op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
   }
 }
@@ -772,7 +772,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, flo
           alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(numAssets))), 0.0);
         }
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was "
             "specified!");
       }
@@ -782,7 +782,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, flo
 
     op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
 }
@@ -892,11 +892,11 @@ float_t EvaluateHestonClosedFormIntegralFunction(float_t phi, float_t xi, float_
 
 void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, float_t maturity) {
   if (!this->bGridConstructed)
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
   if (this->numAssets != 1 || this->payoffType != "std_euro_call")
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European "
         "call option with one asset!");
 
@@ -927,11 +927,11 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, float_t m
 
 void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, float_t maturity) {
   if (!this->bGridConstructed)
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
   if (this->numAssets != 1 || this->payoffType != "std_euro_put")
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European put "
         "option with one asset!");
 
@@ -962,7 +962,7 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, float_
 
 void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
   if (this->numAssets != 1 || this->payoffType != "std_euro_call")
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European "
         "call option with one asset!");
 
@@ -1143,7 +1143,7 @@ float_t HestonSolver::GaussLobattoIntStep(float_t a, float_t b, float_t fa, floa
   const float_t beta = 1.0 / std::sqrt(5.0);
 
   if (neval >= maxeval) {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::Gauss-Lobatto : Maximum number of evaluations reached in GaussLobatto.");
   }
 
@@ -1188,7 +1188,7 @@ float_t HestonSolver::GaussLobattoIntStep(float_t a, float_t b, float_t fa, floa
 
   if (dist == acc || mll <= a || b <= mrr) {
     if (!(m > a && b > m)) {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::Gauss-Lobatto : Integration reached an interval with no more machine "
           "numbers!");
     }

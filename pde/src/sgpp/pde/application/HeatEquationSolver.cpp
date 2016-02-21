@@ -83,7 +83,7 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, float_t timeste
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::solveExplicitEuler : A grid wasn't constructed before!");
   }
 }
@@ -122,7 +122,7 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, float_t timeste
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
   }
 }
@@ -179,7 +179,7 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, float_t timeste
     delete myCN;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
   }
 }
@@ -215,7 +215,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, float_t
 
     SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
 }
@@ -252,7 +252,7 @@ void HeatEquationSolver::storeInnerRHS(base::DataVector& alpha, std::string tFil
 
     delete myHESolver;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::storeInnerMatrix : A grid wasn't constructed before!");
   }
 }
@@ -288,7 +288,7 @@ void HeatEquationSolver::storeInnerSolution(base::DataVector& alpha, size_t numT
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
   }
 }

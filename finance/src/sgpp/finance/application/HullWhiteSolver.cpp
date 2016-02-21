@@ -128,7 +128,7 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsi
     delete myEuler;
     delete myStopwatch;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HullWhiteSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -180,7 +180,7 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsi
     delete myEuler;
     delete myStopwatch;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HullWhiteSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -189,7 +189,7 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsi
 void HullWhiteSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
                                          size_t maxCGIterations, float_t epsilonCG,
                                          base::DataVector& alpha, size_t NumImEul) {
-  throw new base::application_exception(
+  throw base::application_exception(
       "HullWhiteSolver::solveCrankNicolson : Crank-Nicolson is not supported for "
       "HullWhiteSolver!!");
 }
@@ -232,7 +232,7 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
 
         alpha[i] = std::max<float_t>(strike - ((tmp)), 0.0);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HullWhiteSolver::initGridWithPayoff : An unknown payoff-type was specified!");
       }
 
@@ -243,7 +243,7 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
 
     op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HullWhiteSolver::initGridWithPayoff : A grid wasn't constructed before!");
   }
 }

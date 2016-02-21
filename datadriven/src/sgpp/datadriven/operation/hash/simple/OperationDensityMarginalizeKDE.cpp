@@ -79,7 +79,7 @@ void OperationDensityMarginalizeKDE::doMarginalize(std::vector<size_t>& mdims,
 
 void OperationDensityMarginalizeKDE::margToDimX(size_t mdim, GaussianKDE& marginalizedKDE) {
   if (mdim >= kde->getDim()) {
-    throw new base::data_exception("OperationDensityMarginalizeKDE::margToDimX; mdim out of range");
+    throw base::data_exception("OperationDensityMarginalizeKDE::margToDimX; mdim out of range");
   }
 
   // dimensionality of new set

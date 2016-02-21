@@ -144,7 +144,7 @@ void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, floa
 
     SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
 }
@@ -180,7 +180,7 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& a
 
     SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
   }
 }
@@ -234,7 +234,7 @@ void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, float_t
 
     SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }
@@ -275,7 +275,7 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alph
 
     SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }

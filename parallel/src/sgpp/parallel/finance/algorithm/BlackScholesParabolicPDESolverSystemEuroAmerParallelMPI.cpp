@@ -330,7 +330,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::mult(
 
     applyMassMatrixInner(alpha, result);
   } else {
-    throw new SGPP::base::algorithm_exception(" BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(" BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
   }
 
   // aggregate all results
@@ -448,7 +448,7 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
     temp.sub(temp_old);
     rhs_complete.axpy((0.5)*this->TimestepSize, temp);
   } else {
-    throw new SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
   }
 
   // aggregate all results
@@ -519,7 +519,7 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
   } else if (this->tOperationMode == "AdBas") {
     applyMassMatrixComplete(alpha_bound, result_complete);
   } else {
-    throw new SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
   }
 
   // aggregate all results

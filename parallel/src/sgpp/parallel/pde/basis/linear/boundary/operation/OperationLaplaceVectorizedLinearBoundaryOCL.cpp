@@ -96,7 +96,7 @@ void OperationLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVector&
   if (dirichlet) {
     mult_dirichlet(alpha, result);
   } else {
-    throw new SGPP::base::operation_exception("OperationLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+    throw SGPP::base::operation_exception("OperationLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
   }
 }
 }

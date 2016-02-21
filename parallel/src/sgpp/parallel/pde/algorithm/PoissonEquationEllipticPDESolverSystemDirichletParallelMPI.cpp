@@ -134,7 +134,7 @@ PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::generateRHS() {
     this->rhs_inner->mult(-1.0);
   } else {
     myGlobalMPIComm->Abort();
-    throw new SGPP::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
+    throw SGPP::base::algorithm_exception("OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
   }
 
   return this->rhs_inner;

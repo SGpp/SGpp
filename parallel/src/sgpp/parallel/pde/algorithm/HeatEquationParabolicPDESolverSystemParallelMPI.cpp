@@ -245,7 +245,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::mult(
     result.axpy((-0.5)*this->TimestepSize, temp2);
   } else {
     myGlobalMPIComm->Abort();
-    throw new base::algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelMPI::mult : An unknown operation mode was specified!");
+    throw base::algorithm_exception(" HeatEquationParabolicPDESolverSystemParallelMPI::mult : An unknown operation mode was specified!");
   }
 
   // aggregate all results
@@ -319,7 +319,7 @@ HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS() {
     rhs_complete.add(temp);
     rhs_complete.axpy((0.5)*this->TimestepSize, temp2);
   } else {
-    throw new base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
+    throw base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
   }
 
   // aggregate all results
@@ -387,7 +387,7 @@ HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS() {
     result_complete.add(temp);
     result_complete.axpy((-0.5)*this->TimestepSize, temp2);
   } else {
-    throw new base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
+    throw base::algorithm_exception("HeatEquationParabolicPDESolverSystemParallelMPI::generateRHS : An unknown operation mode was specified!");
   }
 
   // aggregate all results
