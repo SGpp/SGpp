@@ -103,7 +103,7 @@ public:
 		device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
 	}
 
-	std::string generateSource() {
+	std::string generateSource(size_t dimensions, size_t datapoints) {
 		if(kernelConfiguration.contains("REUSE_SOURCE")) {
 			if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
 				return this->reuseSource("DensityOCLMultiPlatform_mult.cl");
@@ -117,21 +117,19 @@ public:
 		}
 
 		sourceStream<<"void kernel cscheme(global const int* starting_points,"<<std::endl
-					<<"global const "<<this->floatType()<<"* data_points,global "<<this->floatType()<<"* C,"<<std::endl
-					<<"private int dimensionsize,private int inputsize)"<<std::endl
-					<<"{"<<std::endl
+					<<"global const "<<this->floatType()<<"* data_points,global "<<this->floatType()<<"* C) {"<<std::endl
 					<<"C[get_global_id(0)]=0.0;"<<std::endl
-					<<"for(unsigned int ds=0;ds<inputsize;ds++)"<<std::endl
+					<<"for(unsigned int ds=0;ds< " << datapoints << ";ds++)"<<std::endl
 					<<"{"<<std::endl
 					<<"private "<<this->floatType()<<" value=1;"<<std::endl
-					<<"for(private int d=0;d<dimensionsize;d++)"<<std::endl
+					<<"for(private int d=0;d< " << dimensions << ";d++)"<<std::endl
 					<<"{"<<std::endl
 					<<"private "<<this->floatType()<<" wert=1.0;"<<std::endl
 					<<"for(private int z=1;"<<std::endl
-					<<"	z<=starting_points[(get_global_id(0))*2*dimensionsize+2*d+1];z++)"<<std::endl
+					<<"	z<=starting_points[(get_global_id(0))*2* " << dimensions << "+2*d+1];z++)"<<std::endl
 					<<"		wert*=2;"<<std::endl
-					<<"wert*=data_points[ds*dimensionsize+d];"<<std::endl
-					<<"	wert-=starting_points[(get_global_id(0))*2*dimensionsize+2*d];"<<std::endl
+					<<"wert*=data_points[ds* " << dimensions << "+d];"<<std::endl
+					<<"	wert-=starting_points[(get_global_id(0))*2* " << dimensions << "+2*d];"<<std::endl
 					<<"	if(wert<0)"<<std::endl
 					<<"		wert*=-1;"<<std::endl
 					<<"	wert=1-wert;"<<std::endl
@@ -139,7 +137,7 @@ public:
 					<<"		wert=0;"<<std::endl
 					<<"	value*=wert;"<<std::endl
 					<<"}"<<std::endl
-					<<"C[get_global_id(0)]+=value/inputsize;"<<std::endl
+					<<"C[get_global_id(0)]+=value/ " << datapoints << ";"<<std::endl
 					<<"}"<<std::endl
 					<<"}"<<std::endl;
 		if(kernelConfiguration.contains("WRITE_SOURCE")) {

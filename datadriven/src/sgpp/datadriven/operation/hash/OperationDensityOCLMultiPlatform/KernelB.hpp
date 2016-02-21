@@ -107,7 +107,7 @@ public:
 		{
 			if(verbose)
 				std::cout<<"generating kernel source"<<std::endl;
-			std::string program_src = kernelSourceBuilder.generateSource();
+			std::string program_src = kernelSourceBuilder.generateSource(dims, dataSize);
 			if(verbose)
 				std::cout<<"Source: "<<std::endl<<program_src<<std::endl;
 			if(verbose)
@@ -141,18 +141,6 @@ public:
 			throw base::operation_exception(errorString.str());
 		}
 		err = clSetKernelArg(this->kernelB, 2, sizeof(cl_mem), this->deviceResultData.getBuffer());
-		if (err != CL_SUCCESS) {
-			std::stringstream errorString;
-			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-			throw base::operation_exception(errorString.str());
-		}
-		err = clSetKernelArg(this->kernelB, 3, sizeof(cl_uint), &dims);
-		if (err != CL_SUCCESS) {
-			std::stringstream errorString;
-			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-			throw base::operation_exception(errorString.str());
-		}
-		err = clSetKernelArg(this->kernelB, 4, sizeof(cl_uint), &dataSize);
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
