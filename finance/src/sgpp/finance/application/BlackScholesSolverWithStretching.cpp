@@ -174,12 +174,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(SGPP::base::D
 
         delete[] dblFuncValues;
 
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-            new SGPP::base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
-
+        SGPP::base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
         this->myGrid->createGridGenerator()->refine(myRefineFunc);
-
-        delete myRefineFunc;
 
         alpha.resize(this->myGridStorage->size());
 
@@ -252,12 +248,8 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
 
         delete[] dblFuncValues;
 
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-            new SGPP::base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
-
+        SGPP::base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
         this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
-
-        delete myRefineFunc;
 
         alpha.resize(this->myGridStorage->size());
 

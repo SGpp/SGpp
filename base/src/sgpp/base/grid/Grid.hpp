@@ -446,7 +446,7 @@ class Grid {
    * @param vector DataVector vector with errors for each basis function or alpha-vector
    * @param numOfPoints integer number of points to refine
    */
-  void refine(DataVector* vector, int numOfPoints);
+  void refine(DataVector& vector, int numOfPoints);
 
   /**
    * Insert one point to the grid

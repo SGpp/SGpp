@@ -110,8 +110,8 @@ void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP:
   std::uniform_real_distribution<double> dist(1, 100);
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
-        &alpha, adaptConfig.noPoints_, adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor myRefineFunc(
+        alpha, adaptConfig.noPoints_, adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -119,8 +119,6 @@ void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP:
     for (size_t j = oldSize; j < alpha.getSize(); j++) {
       alpha[j] = dist(mt);
     }
-
-    delete myRefineFunc;
   }
 }
 
@@ -137,8 +135,8 @@ void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP:
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
-        &alphaRefine, adaptConfig.noPoints_, adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor myRefineFunc(
+        alphaRefine, adaptConfig.noPoints_, adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -146,8 +144,6 @@ void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP:
     for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
       alphaRefine[j] = dist(mt);
     }
-
-    delete myRefineFunc;
   }
 }
 

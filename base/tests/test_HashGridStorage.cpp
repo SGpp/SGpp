@@ -382,10 +382,10 @@ BOOST_AUTO_TEST_CASE(testFreeRefine) {
   DataVector d(1);
   d[0] = 1.0;
 
-  SurplusRefinementFunctor f(&d);
+  SurplusRefinementFunctor f(d);
   HashRefinement r;
 
-  r.free_refine(s, &f);
+  r.free_refine(s, f);
 
   BOOST_CHECK_EQUAL(s.size(), 5U);
 }
@@ -407,10 +407,10 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
   d[7] = 0.0;
   d[8] = 1.0;
 
-  SurplusRefinementFunctor f(&d);
+  SurplusRefinementFunctor f(d);
   HashRefinementBoundaries r;
 
-  r.free_refine(s, &f);
+  r.free_refine(s, f);
 
   BOOST_CHECK_EQUAL(s.size(), 21U);
 }
@@ -429,10 +429,10 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
 
   d[12] = 1.0;
 
-  SurplusRefinementFunctor f(&d);
+  SurplusRefinementFunctor f(d);
   HashRefinementBoundaries r;
 
-  r.free_refine(s, &f);
+  r.free_refine(s, f);
 
   BOOST_CHECK_EQUAL(s.size(), 21U);
 }
@@ -440,7 +440,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
 BOOST_AUTO_TEST_CASE(testSurplusFunctor) {
   HashGridStorage s(2);
   DataVector d(1);
-  SurplusRefinementFunctor f(&d);
+  SurplusRefinementFunctor f(d);
 
   d[0] = -10.0;
   BOOST_CHECK_GT(f(s, 0), f.start());

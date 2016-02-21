@@ -30,7 +30,7 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    * @param functor a function used to determine if refinement is needed
    * @param maxLevel no points on higher levels than maxLevel will be created
    */
-  void refineToMaxLevel(GridStorage& storage, RefinementFunctor* functor,
+  void refineToMaxLevel(GridStorage& storage, RefinementFunctor& functor,
                         unsigned int maxLevel);
 
 

@@ -685,9 +685,9 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
 
   size_t refinements_num = 1;
   SGPP::float_t threshold = 0.0;
-  SurplusRefinementFunctor srf = SurplusRefinementFunctor(&alpha, refinements_num,
+  SurplusRefinementFunctor srf = SurplusRefinementFunctor(alpha, refinements_num,
                                  threshold);
-  generator->refine(&srf);
+  generator->refine(srf);
 
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplace(*grid));

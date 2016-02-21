@@ -470,9 +470,9 @@ void Grid::serialize(std::ostream& ostr) {
   storage.serialize(ostr);
 }
 
-void Grid::refine(DataVector* vector, int numOfPoints) {
-  this->createGridGenerator()->refine(new SurplusRefinementFunctor(vector,
-                                      numOfPoints));
+void Grid::refine(DataVector& vector, int numOfPoints) {
+  SurplusRefinementFunctor functor(vector, numOfPoints);
+  this->createGridGenerator()->refine(functor);
 }
 
 void Grid::insertPoint(size_t dim, unsigned int levels[],

@@ -299,9 +299,9 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      SurplusRefinementFunctor srf(&alphaWeight,
+      SurplusRefinementFunctor srf(alphaWeight,
                                    adaptivityConfig.noPoints_, adaptivityConfig.threshold_);
-      gridGen->refine(&srf);
+      gridGen->refine(srf);
 
       if (!learnerSGDEConfig.silent_) {
         cout << "# LearnerSGDE: ref " << ref << "/"

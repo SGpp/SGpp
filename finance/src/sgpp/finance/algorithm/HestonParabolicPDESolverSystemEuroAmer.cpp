@@ -548,8 +548,8 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
-          this->alpha_complete, numRefines, this->refineThreshold);
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+          *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
         myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
@@ -560,17 +560,13 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
         myGenerator->refine(myRefineFunc);
         this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
       }
-
-      delete myRefineFunc;
     }
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
-          new SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
-                                                   this->coarsenThreshold);
-      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
-      delete myCoarsenFunctor;
+      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+          *this->alpha_complete, numCoarsen, this->coarsenThreshold);
+      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
 
     ///////////////////////////////////////////////////

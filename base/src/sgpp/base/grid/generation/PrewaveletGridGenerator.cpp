@@ -47,7 +47,7 @@ void PrewaveletGridGenerator::full(size_t level) {
 /**
  * Refines the grid and updates the shadow storage.
  */
-void PrewaveletGridGenerator::refine(RefinementFunctor* func) {
+void PrewaveletGridGenerator::refine(RefinementFunctor& func) {
   HashRefinement refine;
   size_t start = this->storage.size();
   refine.free_refine(this->storage, func);
@@ -235,14 +235,14 @@ void PrewaveletGridGenerator::consolidateShadow() {
   }
 }
 
-void PrewaveletGridGenerator::coarsen(CoarseningFunctor* func,
-                                      DataVector* alpha) {
+void PrewaveletGridGenerator::coarsen(CoarseningFunctor& func,
+                                      DataVector& alpha) {
   HashCoarsening coarsen;
   coarsen.free_coarsen(this->storage, func, alpha);
 }
 
-void PrewaveletGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func,
-    DataVector* alpha, size_t numFirstOnly) {
+void PrewaveletGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
+    DataVector& alpha, size_t numFirstOnly) {
   HashCoarsening coarsen;
   coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
 }
@@ -252,7 +252,7 @@ size_t PrewaveletGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void PrewaveletGridGenerator::refineMaxLevel(RefinementFunctor* func,
+void PrewaveletGridGenerator::refineMaxLevel(RefinementFunctor& func,
     size_t maxLevel) {
   throw generation_exception(
     "PrewaveletGridGenerator::refineMaxLevel is not implemented");

@@ -147,7 +147,7 @@ class AbstractRefinement {
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
   virtual void free_refine(GridStorage& storage,
-                           RefinementFunctor* functor) = 0;
+                           RefinementFunctor& functor) = 0;
 
 
   /**
@@ -274,7 +274,7 @@ class AbstractRefinement {
    */
   virtual void collectRefinablePoints(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     refinement_container_type& collection) = 0;
 
 
@@ -288,7 +288,7 @@ class AbstractRefinement {
    */
   virtual void refineGridpointsCollection(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     refinement_container_type& collection) = 0;
 
 
@@ -307,7 +307,7 @@ class AbstractRefinement {
   virtual refinement_list_type getIndicator(
     GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
-    const RefinementFunctor* functor) const = 0;
+    const RefinementFunctor& functor) const = 0;
 
   friend class
   // need to be a friend since it delegates the calls to

@@ -1025,10 +1025,8 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
         "refine mode(1 : use grid point number, 2: use grid point percentage)!");
     }
 
-    base::SurplusRefinementFunctor* myRefineFunc = new
-    base::SurplusRefinementFunctor(&alpha_ada, refineNumber, 0.0);
+    base::SurplusRefinementFunctor myRefineFunc(alpha_ada, refineNumber, 0.0);
     myGenerator->refine(myRefineFunc);
-    delete myRefineFunc;
 
     base::GridStorage* gridStorage_ada = &this->grid->getStorage();
     size_t gridPts = gridStorage_ada->size();

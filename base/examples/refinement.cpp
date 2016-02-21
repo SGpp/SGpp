@@ -62,7 +62,8 @@ int main() {
       alpha);
 
     // refine a single grid point each time
-    gridGen->refine(new SurplusRefinementFunctor(&alpha, 1));
+    SurplusRefinementFunctor functor(alpha, 1);
+    gridGen->refine(functor);
     std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
          << std::endl;
 

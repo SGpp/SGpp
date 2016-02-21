@@ -29,7 +29,7 @@ class SurplusVolumeRefinementFunctor : public RefinementFunctor {
    * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points), default: 1
    * @param threshold The absolute value of the entries have to be greater or equal than the threshold, default: 0.0
    */
-  SurplusVolumeRefinementFunctor(DataVector* alpha, size_t refinements_num = 1,
+  SurplusVolumeRefinementFunctor(DataVector& alpha, size_t refinements_num = 1,
                                  float_t threshold = 0.0);
 
   /**
@@ -49,7 +49,7 @@ class SurplusVolumeRefinementFunctor : public RefinementFunctor {
 
  protected:
   /// pointer to the vector that stores the alpha values
-  DataVector* alpha;
+  DataVector& alpha;
 
   /// number of grid points to refine
   size_t refinements_num;

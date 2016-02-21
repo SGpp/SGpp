@@ -28,7 +28,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a function used to determine if refinement is needed
    */
-  void free_refine(GridStorage& storage, RefinementFunctor* functor);
+  void free_refine(GridStorage& storage, RefinementFunctor& functor);
 
 
   /**
@@ -106,7 +106,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
   */
   void collectRefinablePoints(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
   /**
@@ -118,7 +118,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
   */
   void refineGridpointsCollection(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
   /**
@@ -148,7 +148,7 @@ class HashRefinementBoundaries: public AbstractRefinement {
   AbstractRefinement::refinement_list_type getIndicator(
     GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
-    const RefinementFunctor* functor) const;
+    const RefinementFunctor& functor) const;
 };
 
 }  // namespace base

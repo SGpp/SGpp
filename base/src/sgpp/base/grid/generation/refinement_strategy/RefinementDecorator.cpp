@@ -14,7 +14,7 @@ namespace SGPP {
 namespace base {
 
 void RefinementDecorator::free_refine(GridStorage& storage,
-                                      RefinementFunctor* functor) {
+                                      RefinementFunctor& functor) {
   this->decorated_refinement_->free_refine(storage, functor);
 }
 
@@ -38,14 +38,14 @@ void RefinementDecorator::createGridpoint(GridStorage& storage,
 }
 
 void RefinementDecorator::collectRefinablePoints(GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
   this->decorated_refinement_->collectRefinablePoints(storage, functor,
       collection);
 }
 
 void RefinementDecorator::refineGridpointsCollection(GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
   this->decorated_refinement_->refineGridpointsCollection(storage, functor,
       collection);
@@ -86,7 +86,7 @@ bool RefinementDecorator::checkAdmissibility(GridStorage& storage,
 AbstractRefinement::refinement_list_type RefinementDecorator::getIndicator(
   GridStorage& storage,
   const GridStorage::grid_map_iterator& iter,
-  const RefinementFunctor* functor) const {
+  const RefinementFunctor& functor) const {
   return this->decorated_refinement_->getIndicator(storage, iter, functor);
 }
 

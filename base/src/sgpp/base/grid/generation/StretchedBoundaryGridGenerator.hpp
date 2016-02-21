@@ -35,15 +35,15 @@ class StretchedBoundaryGridGenerator : public GridGenerator {
   void regular(size_t level) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override;
-  void refine(RefinementFunctor* func) override;
+  void refine(RefinementFunctor& func) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor* func, DataVector* alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+  void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
                          size_t numFirstOnly) override;
   size_t getNumberOfRemovablePoints() override;
 
-  void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) override;
+  void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;
   size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override;
 
  protected:

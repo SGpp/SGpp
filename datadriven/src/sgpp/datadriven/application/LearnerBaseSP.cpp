@@ -211,11 +211,9 @@ LearnerTiming LearnerBaseSP::train(SGPP::base::DataMatrixSP& trainDataset,
       SGPP::base::DataVector alphaDP(alpha_->getSize());
       SGPP::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_,
           alphaDP);
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-      SGPP::base::SurplusRefinementFunctor(&alphaDP,
-                                           AdaptConfig.noPoints_, AdaptConfig.threshold_);
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+          alphaDP, AdaptConfig.noPoints_, AdaptConfig.threshold_);
       grid_->createGridGenerator()->refine(myRefineFunc);
-      delete myRefineFunc;
       DMSystem->rebuildLevelAndIndex();
 
       if (isVerbose_)

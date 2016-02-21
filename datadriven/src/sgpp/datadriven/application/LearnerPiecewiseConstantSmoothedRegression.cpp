@@ -108,9 +108,9 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      SurplusRefinementFunctor srf(&alphaWeight, adaptivityConfig.noPoints_,
+      SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
                                    adaptivityConfig.threshold_);
-      gridGen->refine(&srf);
+      gridGen->refine(srf);
 
       if (verbose) {
         cout << "# LearnerDensityRegression: ref " << ref << "/" <<

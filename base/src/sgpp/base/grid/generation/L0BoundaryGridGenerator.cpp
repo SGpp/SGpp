@@ -40,7 +40,7 @@ void L0BoundaryGridGenerator::full(size_t level) {
                        static_cast<HashGenerator::level_t>(level));
 }
 
-void L0BoundaryGridGenerator::refine(RefinementFunctor* func) {
+void L0BoundaryGridGenerator::refine(RefinementFunctor& func) {
   HashRefinementBoundaries refine;
   refine.free_refine(this->storage, func);
 }
@@ -50,14 +50,14 @@ size_t L0BoundaryGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void L0BoundaryGridGenerator::coarsen(CoarseningFunctor* func,
-                                      DataVector* alpha) {
+void L0BoundaryGridGenerator::coarsen(CoarseningFunctor& func,
+                                      DataVector& alpha) {
   HashCoarsening coarsen;
   coarsen.free_coarsen(this->storage, func, alpha);
 }
 
-void L0BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor* func,
-    DataVector* alpha, size_t numFirstOnly) {
+void L0BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
+    DataVector& alpha, size_t numFirstOnly) {
   HashCoarsening coarsen;
   coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
 }
@@ -67,7 +67,7 @@ size_t L0BoundaryGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor* func,
+void L0BoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func,
     size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
   refine.refineToMaxLevel(this->storage, func,
