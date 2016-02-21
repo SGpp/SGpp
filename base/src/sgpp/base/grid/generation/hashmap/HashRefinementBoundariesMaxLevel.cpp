@@ -16,20 +16,20 @@ namespace SGPP {
 namespace base {
 
 void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
-    RefinementFunctor* functor, unsigned int maxLevel) {
+    RefinementFunctor& functor, unsigned int maxLevel) {
   if (storage.size() == 0) {
     throw generation_exception("storage empty");
   }
 
   // Algorithm should be able to look for several points in grid to refine
   // So we store an array with refinements_num maximal points
-  size_t refinements_num = functor->getRefinementsNum();
+  size_t refinements_num = functor.getRefinementsNum();
   RefinementFunctor::value_type* max_values = new
   RefinementFunctor::value_type[refinements_num];
   size_t* max_indexes = new size_t[refinements_num];
 
   for (size_t i = 0; i < refinements_num; i++) {
-    max_values[i] = functor->start();
+    max_values[i] = functor.start();
     max_indexes[i] = 0;
   }
 
@@ -77,7 +77,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
             RefinementFunctor::value_type current_value =
-              (*functor)(storage, iter->second);
+              functor(storage, iter->second);
 
             // DEBUG
             // std::cout << "iter-second: " << iter->second <<
@@ -100,7 +100,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
           // if there no more grid points --> test if we should refine the grid
           if (child_iter == end_iter) {
             RefinementFunctor::value_type current_value =
-              (*functor)(storage, iter->second);
+              functor(storage, iter->second);
 
             // DEBUG
             // std::cout << "iter-second: " << iter->second <<
@@ -122,7 +122,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
 
           if (child_iter == end_iter) {
             RefinementFunctor::value_type current_value =
-              (*functor)(storage, iter->second);
+              functor(storage, iter->second);
 
             // DEBUG
             // std::cout << "iter-second: " << iter->second <<
@@ -148,7 +148,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
   // std::cout << "Num refinements: "  << refinements_num << std::endl;
 
   // can refine grid on several points
-  float_t threshold = functor->getRefinementThreshold();
+  float_t threshold = functor.getRefinementThreshold();
 
   for (size_t i = 0; i < refinements_num; i++) {
     max_value = max_values[i];
@@ -156,7 +156,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
 
     // DEBUG
     // std::cout << "Num: " << i << " Max-value: " << max_value << std::endl;
-    if (max_value != functor->start() && fabs(max_value) >= threshold) {
+    if (max_value != functor.start() && fabs(max_value) >= threshold) {
       // DEBUG
       // std::cout << "Start refining..." << std::endl;
       refineGridpoint(storage, max_index, maxLevel);

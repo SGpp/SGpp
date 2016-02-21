@@ -39,9 +39,9 @@ void HashRefinement::addElementToCollection(
 
 
 void HashRefinement::collectRefinablePoints(GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
-  size_t refinements_num = functor->getRefinementsNum();
+  size_t refinements_num = functor.getRefinementsNum();
 
   // max value equals min value
 
@@ -97,21 +97,21 @@ void HashRefinement::collectRefinablePoints(GridStorage& storage,
 AbstractRefinement::refinement_list_type HashRefinement::getIndicator(
   GridStorage& storage,
   const GridStorage::grid_map_iterator& iter,
-  const RefinementFunctor* functor) const {
+  const RefinementFunctor& functor) const {
   AbstractRefinement::refinement_list_type list;
   list.emplace_front(std::make_shared<AbstractRefinement::refinement_key_type>(*
                      (iter->first), iter->second),
-                     (*functor)(storage, iter->second));
+                     functor(storage, iter->second));
   return list;
 }
 
 
 
 void HashRefinement::refineGridpointsCollection(GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
 
-  float_t threshold = functor->getRefinementThreshold();
+  float_t threshold = functor.getRefinementThreshold();
 
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
     if (pair.second >= threshold) {
@@ -121,7 +121,7 @@ void HashRefinement::refineGridpointsCollection(GridStorage& storage,
 }
 
 void HashRefinement::free_refine(GridStorage& storage,
-                                 RefinementFunctor* functor) {
+                                 RefinementFunctor& functor) {
   if (storage.size() == 0) {
     throw generation_exception("storage empty");
   }

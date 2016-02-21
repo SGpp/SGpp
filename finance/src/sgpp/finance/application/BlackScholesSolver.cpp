@@ -213,12 +213,8 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
 
         delete[] dblFuncValues;
 
-        base::SurplusRefinementFunctor* myRefineFunc =
-            new base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
-
+        base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
         this->myGrid->createGridGenerator()->refine(myRefineFunc);
-
-        delete myRefineFunc;
 
         alpha.resize(this->myGridStorage->size());
 
@@ -290,12 +286,8 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
 
         delete[] dblFuncValues;
 
-        base::SurplusRefinementFunctor* myRefineFunc =
-            new base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
-
+        base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
         this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
-
-        delete myRefineFunc;
 
         alpha.resize(this->myGridStorage->size());
 

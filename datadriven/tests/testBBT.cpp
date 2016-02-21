@@ -475,8 +475,8 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
     alpha[i] = static_cast<double>(i + 1);
   }
 
-  SGPP::base::SurplusRefinementFunctor functor(&alpha, 1);
-  generator->refine(&functor);
+  SGPP::base::SurplusRefinementFunctor functor(alpha, 1);
+  generator->refine(functor);
 
   DataMatrix* m = generateBBTMatrix(*grid, trainingData);
 

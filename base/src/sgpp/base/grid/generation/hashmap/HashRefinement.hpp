@@ -30,7 +30,7 @@ class HashRefinement: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  virtual void free_refine(GridStorage& storage, RefinementFunctor* functor);
+  virtual void free_refine(GridStorage& storage, RefinementFunctor& functor);
 
   /**
    * Computes and returns the number of grid points, which can be refined.
@@ -82,7 +82,7 @@ class HashRefinement: public AbstractRefinement {
   */
   void collectRefinablePoints(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
   /**
@@ -94,7 +94,7 @@ class HashRefinement: public AbstractRefinement {
    */
   void refineGridpointsCollection(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
 
@@ -127,7 +127,7 @@ class HashRefinement: public AbstractRefinement {
   AbstractRefinement::refinement_list_type getIndicator(
     GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
-    const RefinementFunctor* functor) const;
+    const RefinementFunctor& functor) const;
 };
 
 }  // namespace base

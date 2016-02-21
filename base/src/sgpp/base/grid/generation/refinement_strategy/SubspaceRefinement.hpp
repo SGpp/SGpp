@@ -45,7 +45,7 @@ class SubspaceRefinement: public RefinementDecorator {
   * @param functor a RefinementFunctor specifying the refinement criteria
   */
   void free_refine(GridStorage& storage,
-                   RefinementFunctor* functor) override;
+                   RefinementFunctor& functor) override;
 
 
   /**
@@ -64,7 +64,7 @@ class SubspaceRefinement: public RefinementDecorator {
    */
   void collectRefinablePoints(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
 
@@ -77,7 +77,7 @@ class SubspaceRefinement: public RefinementDecorator {
    */
   void refineGridpointsCollection(
     GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
 

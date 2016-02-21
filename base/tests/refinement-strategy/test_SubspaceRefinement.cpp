@@ -33,11 +33,11 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTrivial) {
   DataVector datavector(1);
   datavector[0] = 1.0;
 
-  SurplusRefinementFunctor functor(&datavector);
+  SurplusRefinementFunctor functor(datavector);
   HashRefinement* hash_refinement = new HashRefinement();
   SubspaceRefinement subspace_refinement(hash_refinement);
 
-  subspace_refinement.free_refine(storage, &functor);
+  subspace_refinement.free_refine(storage, functor);
 
   BOOST_CHECK_EQUAL(storage.size(), 5);
 
@@ -54,12 +54,12 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
   data_vector.setAll(0.0);
   data_vector[9] = 2.0;
 
-  SurplusRefinementFunctor functor(&data_vector, 1);
+  SurplusRefinementFunctor functor(data_vector, 1);
   HashRefinement* hash_refinement = new HashRefinement();
 
   SubspaceRefinement subspace_refinement(hash_refinement);
 
-  subspace_refinement.free_refine(storage, &functor);
+  subspace_refinement.free_refine(storage, functor);
 
   BOOST_CHECK_EQUAL(storage.size(), 33);
 
@@ -81,12 +81,12 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
   data_vector.setAll(0.0);
   data_vector[13] = 2.0;
 
-  SurplusRefinementFunctor functor(&data_vector, 1);
+  SurplusRefinementFunctor functor(data_vector, 1);
   HashRefinement* hash_refinement = new HashRefinement();
 
   SubspaceRefinement subspace_refinement(hash_refinement);
 
-  subspace_refinement.free_refine(storage, &functor);
+  subspace_refinement.free_refine(storage, functor);
 
   BOOST_CHECK_EQUAL(storage.size(), 33);
 

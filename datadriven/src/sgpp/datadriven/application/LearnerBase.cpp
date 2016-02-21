@@ -206,11 +206,9 @@ LearnerTiming LearnerBase::train(
       myStopwatch2->start();
 
       // disable refinement here!
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-          new SGPP::base::SurplusRefinementFunctor(
-              alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+              *alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
       grid_->createGridGenerator()->refine(myRefineFunc);
-      delete myRefineFunc;
 
       // tell the SLE manager that the grid changed (for interal data
       // structures)

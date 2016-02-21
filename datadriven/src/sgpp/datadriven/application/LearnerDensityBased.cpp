@@ -233,10 +233,8 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     // Do Refinements
     if (i > 0) {
       for (size_t ii = 0; ii < alphaVec_.size(); ii++) {
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-          new SGPP::base::SurplusRefinementFunctor(&alphaVec_[ii], AdaptConfig.noPoints_);
+        SGPP::base::SurplusRefinementFunctor myRefineFunc(alphaVec_[ii], AdaptConfig.noPoints_);
         gridVec_[ii]->createGridGenerator()->refine(myRefineFunc);
-        delete myRefineFunc;
 
         // DMSystem->rebuildLevelAndIndex();   not implemented
 

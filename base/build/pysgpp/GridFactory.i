@@ -119,7 +119,7 @@ public:
   virtual SGPP::base::GridType getType() = 0;
   virtual const SBasis& getBasis() = 0;
   virtual void serialize(std::string& ostr);
-  void refine(SGPP::base::DataVector* vector, int num);
+  void refine(SGPP::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
 };

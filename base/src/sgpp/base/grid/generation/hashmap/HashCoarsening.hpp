@@ -50,8 +50,8 @@ class HashCoarsening {
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
    * @param numFirstPoints number of grid points that are regarded to be coarsened
    */
-  void free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor* functor,
-                               DataVector* alpha, size_t numFirstPoints) {
+  void free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor& functor,
+                               DataVector& alpha, size_t numFirstPoints) {
     // check if the grid has any points
     if (storage.size() == 0) {
       throw generation_exception("storage empty");
@@ -59,7 +59,7 @@ class HashCoarsening {
 
     // Perepare temp-data in order to determine the removable grid points
     // -> leafs with minimal surplus
-    size_t remove_num = functor->getRemovementsNum();
+    size_t remove_num = functor.getRemovementsNum();
 
     if (remove_num == 0) return;
 
@@ -71,7 +71,7 @@ class HashCoarsening {
     // init the removePoints array:
     // set initial surplus and set all indices to zero
     for (size_t i = 0; i < remove_num; i++) {
-      removePoints[i].second = functor->start();
+      removePoints[i].second = functor.start();
       removePoints[i].first = 0;
     }
 
@@ -84,7 +84,7 @@ class HashCoarsening {
       index_type* index = storage.get(z);
 
       if (index->isLeaf() && index->isInnerPoint()) {
-        CoarseningFunctor::value_type current_value = (*functor)(storage, z);
+        CoarseningFunctor::value_type current_value = functor(storage, z);
 
         if (current_value < removePoints[max_idx].second) {
           // Replace the maximum point array of removable candidates,
@@ -114,8 +114,8 @@ class HashCoarsening {
 
     // remove the marked grid point if their surplus
     // is below the given threshold
-    CoarseningFunctor::value_type threshold = functor->getCoarseningThreshold();
-    CoarseningFunctor::value_type initValue = functor->start();
+    CoarseningFunctor::value_type threshold = functor.getCoarseningThreshold();
+    CoarseningFunctor::value_type initValue = functor.start();
 
     // vector to save remaining points
     std::vector<size_t> remainingIndex;
@@ -148,7 +148,7 @@ class HashCoarsening {
     // std::cout << std::endl << std::endl;
 
     // Drop Elements from DataVector
-    alpha->restructure(remainingIndex);
+    alpha.restructure(remainingIndex);
 
     delete[] removePoints;
   }
@@ -167,8 +167,8 @@ class HashCoarsening {
    * @param functor a function used to determine if refinement is needed
    * @param alpha pointer to the gridpoints' coefficients removed points must also be considered in this vector
    */
-  void free_coarsen(GridStorage& storage, CoarseningFunctor* functor,
-                    DataVector* alpha) {
+  void free_coarsen(GridStorage& storage, CoarseningFunctor& functor,
+                    DataVector& alpha) {
     free_coarsen_NFirstOnly(storage, functor, alpha, storage.size());
   }
 

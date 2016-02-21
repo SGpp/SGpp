@@ -414,9 +414,9 @@ BOOST_AUTO_TEST_CASE(testRefinement) {
   BOOST_CHECK(storage.size() == 1);
   DataVector alpha(1);
   alpha[0] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
   BOOST_CHECK(storage.size() == 5);
 }
 
@@ -506,9 +506,9 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
   alpha[7] = 0.0;
   alpha[8] = 1.0;
 
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
   BOOST_CHECK(storage.size() == 21);
 }
 
@@ -524,9 +524,9 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   alpha.setAll(0.0);
 
   alpha[26] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
   BOOST_CHECK(storage.size() == 81);
 }
 
@@ -613,9 +613,9 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_one) {
   alpha.setAll(0.0);
 
   alpha[0] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
   BOOST_CHECK(storage.size() == 8);
 }
 
@@ -630,17 +630,17 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_two) {
   alpha.setAll(0.0);
 
   alpha[0] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
 
   DataVector alpha2(8);
   alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
-  SurplusRefinementFunctor func2(&alpha2);
+  SurplusRefinementFunctor func2(alpha2);
 
-  gen->refine(&func2);
+  gen->refine(func2);
   BOOST_CHECK(storage.size() == 13);
 }
 
@@ -655,25 +655,25 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
   alpha.setAll(0.0);
 
   alpha[0] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
 
   DataVector alpha2(8);
   alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
-  SurplusRefinementFunctor func2(&alpha2);
+  SurplusRefinementFunctor func2(alpha2);
 
-  gen->refine(&func2);
+  gen->refine(func2);
 
   DataVector alpha3(13);
   alpha3.setAll(0.0);
 
   alpha3[11] = 1.0;
-  SurplusRefinementFunctor func3(&alpha3);
+  SurplusRefinementFunctor func3(alpha3);
 
-  gen->refine(&func3);
+  gen->refine(func3);
   BOOST_CHECK(storage.size() == 18);
 }
 
@@ -688,33 +688,33 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
   alpha.setAll(0.0);
 
   alpha[0] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
 
   DataVector alpha2(8);
   alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
-  SurplusRefinementFunctor func2(&alpha2);
+  SurplusRefinementFunctor func2(alpha2);
 
-  gen->refine(&func2);
+  gen->refine(func2);
 
   DataVector alpha3(13);
   alpha3.setAll(0.0);
 
   alpha3[11] = 1.0;
-  SurplusRefinementFunctor func3(&alpha3);
+  SurplusRefinementFunctor func3(alpha3);
 
-  gen->refine(&func3);
+  gen->refine(func3);
 
   DataVector alpha4(18);
   alpha4.setAll(0.0);
 
   alpha4[12] = 1.0;
-  SurplusRefinementFunctor func4(&alpha4);
+  SurplusRefinementFunctor func4(alpha4);
 
-  gen->refine(&func4);
+  gen->refine(func4);
   BOOST_CHECK(storage.size() == 25);
 }
 
@@ -729,41 +729,41 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
   alpha.setAll(0.0);
 
   alpha[0] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
 
   DataVector alpha2(8);
   alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
-  SurplusRefinementFunctor func2(&alpha2);
+  SurplusRefinementFunctor func2(alpha2);
 
-  gen->refine(&func2);
+  gen->refine(func2);
 
   DataVector alpha3(13);
   alpha3.setAll(0.0);
 
   alpha3[11] = 1.0;
-  SurplusRefinementFunctor func3(&alpha3);
+  SurplusRefinementFunctor func3(alpha3);
 
-  gen->refine(&func3);
+  gen->refine(func3);
 
   DataVector alpha4(18);
   alpha4.setAll(0.0);
 
   alpha4[12] = 1.0;
-  SurplusRefinementFunctor func4(&alpha4);
+  SurplusRefinementFunctor func4(alpha4);
 
-  gen->refine(&func4);
+  gen->refine(func4);
 
   DataVector alpha5(25);
   alpha5.setAll(0.0);
 
   alpha5[23] = 1.0;
-  SurplusRefinementFunctor func5(&alpha5);
+  SurplusRefinementFunctor func5(alpha5);
 
-  gen->refine(&func5);
+  gen->refine(func5);
 
   BOOST_CHECK(storage.size() == 29);
 }
@@ -891,9 +891,9 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
   alpha[6] = 0.0;
   alpha[7] = 0.0;
   alpha[8] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
   BOOST_CHECK(storage.size() == 21);
 }
 
@@ -909,9 +909,9 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
   alpha.setAll(0.0);
 
   alpha[26] = 1.0;
-  SurplusRefinementFunctor func(&alpha);
+  SurplusRefinementFunctor func(alpha);
 
-  gen->refine(&func);
+  gen->refine(func);
   BOOST_CHECK(storage.size() == 81);
 }
 

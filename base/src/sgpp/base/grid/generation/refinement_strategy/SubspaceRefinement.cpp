@@ -55,7 +55,7 @@ void SubspaceRefinement::addElementToCollection(
 
 
 void SubspaceRefinement::free_refine(GridStorage& storage,
-                                     RefinementFunctor* functor) {
+                                     RefinementFunctor& functor) {
   if (storage.size() == 0) {
     throw generation_exception("storage empty");
   }
@@ -69,11 +69,11 @@ void SubspaceRefinement::free_refine(GridStorage& storage,
 
 
 void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
-  if (functor->getRefinementsNum() == 0) return;
+  if (functor.getRefinementsNum() == 0) return;
 
-  size_t refinements_num = functor->getRefinementsNum();
+  size_t refinements_num = functor.getRefinementsNum();
 
   index_type index;
   GridStorage::grid_map_iterator end_iter = storage.end();
@@ -153,7 +153,7 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
 
 
 void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
-    RefinementFunctor* functor,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
 
   HashGridIndex grid_index(storage.dim());

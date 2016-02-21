@@ -376,12 +376,11 @@ void BatchLearner::processBatch(string workData) {
       if (batchConf.verbose)
         cout << "refining ..." << endl;
 
-      base::SurplusRefinementFunctor* myRefineFunc = new base::SurplusRefinementFunctor(
-        alphaVectors.at(p.first), adaptConf.noPoints_, adaptConf.threshold_);
+      base::SurplusRefinementFunctor myRefineFunc(
+        *alphaVectors.at(p.first), adaptConf.noPoints_, adaptConf.threshold_);
       grids.at(p.first)->createGridGenerator()->refine(myRefineFunc);
       // change alpha, zeroes to new entries until they will be filled
       alphaVectors.at(p.first)->resizeZero(grids.at(p.first)->getSize());
-      delete myRefineFunc;
     }
 
     occurences.at(p.first) += p.second->getSize();
