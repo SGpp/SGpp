@@ -38,7 +38,7 @@ void LearnerSGD::train(
 
   alpha_->setAll(0.0);
 
-  size_t num_coeff = grid_->getStorage().size();
+  size_t num_coeff = grid_->getSize();
   size_t dim = trainDataset.getNcols();
 
   std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid_));

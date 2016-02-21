@@ -26,7 +26,7 @@ float_t OperationFirstMomentLinear::doQuadrature(const DataVector& alpha) {
     // std::endl;
     tmpres = 1.;
 
-    for (size_t dim = 0; dim < storage.dim(); dim++)
+    for (size_t dim = 0; dim < storage.getDimension(); dim++)
       tmpres *= iter->first->getIndex(dim) * pow(4.0,
                 -static_cast<float_t>(iter->first->getLevel(dim)));
 

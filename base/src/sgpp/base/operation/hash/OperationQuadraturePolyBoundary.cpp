@@ -18,7 +18,7 @@ float_t OperationQuadraturePolyBoundary::doQuadrature(DataVector& alpha) {
     gp = storage.get(i);
     tmpres = 1.;
 
-    for (size_t d = 0; d < storage.dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       tmpres *= base.getIntegral(gp->getLevel(d), gp->getIndex(d));
     }
 

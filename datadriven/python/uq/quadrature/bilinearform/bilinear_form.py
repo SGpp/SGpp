@@ -20,11 +20,11 @@ def computeBilinearFormQuad(grid, U):
     basis = getBasis(grid)
     A = DataMatrix(gs.size(), gs.size())
 
-    level = DataMatrix(gs.size(), gs.dim())
-    index = DataMatrix(gs.size(), gs.dim())
+    level = DataMatrix(gs.size(), gs.getDimension())
+    index = DataMatrix(gs.size(), gs.getDimension())
     gs.getLevelIndexArraysForEval(level, index)
 
-    s = np.ndarray(gs.dim(), dtype='float')
+    s = np.ndarray(gs.getDimension(), dtype='float')
     # run over all rows
     for i in xrange(gs.size()):
         gpi = gs.get(i)
@@ -32,7 +32,7 @@ def computeBilinearFormQuad(grid, U):
         for j in xrange(i, gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.get(j)
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = level.get(i, d), index.get(i, d)
                 ljd, ijd = level.get(j, d), index.get(j, d)
@@ -87,12 +87,12 @@ def computeBilinearForm(grid, U):
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())
 
-    level = DataMatrix(gs.size(), gs.dim())
-    index = DataMatrix(gs.size(), gs.dim())
+    level = DataMatrix(gs.size(), gs.getDimension())
+    index = DataMatrix(gs.size(), gs.getDimension())
     gs.getLevelIndexArraysForEval(level, index)
 
     A = DataMatrix(gs.size(), gs.size())
-    s = np.ndarray(gs.dim(), dtype='float')
+    s = np.ndarray(gs.getDimension(), dtype='float')
 
     # run over all rows
     for i in xrange(gs.size()):
@@ -102,7 +102,7 @@ def computeBilinearForm(grid, U):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.get(j)
             # run over all dimensions
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 # get level index
                 lid, iid = level.get(i, d), index.get(i, d)
                 ljd, ijd = level.get(j, d), index.get(j, d)
@@ -150,8 +150,8 @@ def computePiecewiseConstantBilinearForm(grid, U):
     A = DataMatrix(gs.size(), gs.size())
     createOperationLTwoDotExplicit(A, grid)
     # multiply the entries with the pdf at the center of the support
-    p = DataVector(gs.dim())
-    q = DataVector(gs.dim())
+    p = DataVector(gs.getDimension())
+    q = DataVector(gs.getDimension())
 
     for i in xrange(gs.size()):
         gs.get(i).getCoords(p)

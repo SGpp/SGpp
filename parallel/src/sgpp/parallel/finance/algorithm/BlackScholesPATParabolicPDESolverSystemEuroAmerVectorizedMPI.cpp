@@ -59,18 +59,18 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATPar
   this->nExecTimesteps = 0;
 
   // throw exception if grid dimensions not equal algorithmic dimensions
-  if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim()) {
+  if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->getDimension()) {
     throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Number of algorithmic dimensions higher than the number of grid's dimensions.");
   }
 
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
-  if (this->BoundGrid->getStorage()->dim() != this->lambda->getSize()) {
+  if (this->BoundGrid->getStorage()->getDimension() != this->lambda->getSize()) {
     throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Dimension of mu and sigma parameters don't match the grid's dimensions!");
   }
 
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
-    if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim()) {
+    if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->getDimension()) {
       throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Minimum one algorithmic dimension is not inside the grid's dimensions!");
     }
   }
@@ -276,7 +276,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
     SGPP::base::OperationHierarchisation* myHierarchisation =
       SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
-    size_t dim = this->BoundGrid->getStorage()->dim();
+    size_t dim = this->BoundGrid->getStorage()->getDimension();
     SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*
         (this->BoundGrid->getBoundingBox()));
 

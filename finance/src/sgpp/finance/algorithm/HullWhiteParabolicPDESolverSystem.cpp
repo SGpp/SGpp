@@ -147,7 +147,7 @@ void HullWhiteParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep) {
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage().size();
+    size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
     SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
@@ -162,12 +162,12 @@ void HullWhiteParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep) {
 
       if (this->refineMode == "maxLevel") {
         myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
 
       if (this->refineMode == "classic") {
         myGenerator.refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
     }
 

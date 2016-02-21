@@ -22,7 +22,7 @@ class PiecewiseConstantIntegralStrategy(EstimationStrategy):
 
         # add the density measure
         for i in xrange(gs.size()):
-            p = [gs.get(i).getCoord(j) for j in range(gs.dim())]
+            p = [gs.get(i).getCoord(j) for j in range(gs.getDimension())]
             q = U.pdf(tr.trans(p), marginal=True)
             n_alpha[i] *= prod(q)
 

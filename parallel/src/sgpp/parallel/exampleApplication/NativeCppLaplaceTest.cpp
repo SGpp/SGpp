@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
   myGrid->getGenerator().regular(level);
 
   SGPP::base::GridStorage* myGridStorage = myGrid->getStorage();
-  size_t gridsize = myGridStorage->size();
+  size_t gridsize = myGridStorage->getSize();
   SGPP::base::DataVector* alpha = new SGPP::base::DataVector(gridsize);
   SGPP::base::DataVector* result_updown = new SGPP::base::DataVector(gridsize);
   SGPP::base::DataVector* result_vector = new SGPP::base::DataVector(gridsize);

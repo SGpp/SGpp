@@ -41,7 +41,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
         ngs = ngrid.getStorage()
         nodalValues = DataVector(ngs.size())
 
-        for d in xrange(gpi.dim()):
+        for d in xrange(gpi.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)
             ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)

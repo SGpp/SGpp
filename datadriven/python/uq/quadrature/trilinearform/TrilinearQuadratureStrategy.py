@@ -75,7 +75,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         # run over all entries
         for k, gpk in enumerate(gpsk):
             # run over all dimensions
-            for d in xrange(gpi.dim()):
+            for d in xrange(gpi.getDimension()):
                 # compute trilinear form for one entry
                 value, erri = self.getTrilinearFormEntry(gpk, basisk,
                                                          gpi, basisi,

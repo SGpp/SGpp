@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(testSerialize) {
 
   HashGridStorage s2(str);
 
-  BOOST_CHECK_EQUAL(s.size(), s2.size());
+  BOOST_CHECK_EQUAL(s.getSize(), s2.getSize());
 }
 
 BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
@@ -67,9 +67,9 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
 
   g.regular(s, 2);
 
-  bool* srcLeaf = new bool[s.size()];
+  bool* srcLeaf = new bool[s.getSize()];
 
-  for (unsigned int i = 0; i < s.size(); ++i) {
+  for (unsigned int i = 0; i < s.getSize(); ++i) {
     srcLeaf[i] = s.get(i)->isLeaf();
   }
 
@@ -79,9 +79,9 @@ BOOST_AUTO_TEST_CASE(testSerializeWithLeaf) {
 
   HashGridStorage s2(str);
 
-  BOOST_CHECK_EQUAL(s.size(), s2.size());
+  BOOST_CHECK_EQUAL(s.getSize(), s2.getSize());
 
-  for (unsigned int i = 0; i < s.size(); ++i) {
+  for (unsigned int i = 0; i < s.getSize(); ++i) {
     BOOST_CHECK_EQUAL(s2.get(i)->isLeaf(), srcLeaf[i]);
   }
 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(testInsert) {
   size_t i2 = s.insert(i);
 
   BOOST_CHECK_EQUAL(i2, 0U);
-  BOOST_CHECK_EQUAL(s.size(), 1U);
+  BOOST_CHECK_EQUAL(s.getSize(), 1U);
 }
 
 BOOST_AUTO_TEST_CASE(testChilds) {
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(testPeriodic1D) {
 
   g.regularWithPeriodicBoundaries(s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 4U);
+  BOOST_CHECK_EQUAL(s.getSize(), 4U);
 }
 
 BOOST_AUTO_TEST_CASE(testPeriodic2D) {
@@ -212,11 +212,11 @@ BOOST_AUTO_TEST_CASE(testPeriodic2D) {
 
   g.regularWithPeriodicBoundaries(s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 12U);
+  BOOST_CHECK_EQUAL(s.getSize(), 12U);
 
   HashGridStorage s2(2);
   g.regularWithPeriodicBoundaries(s2, 3);
-  BOOST_CHECK_EQUAL(s2.size(), 32U);
+  BOOST_CHECK_EQUAL(s2.getSize(), 32U);
 
   HashGridIndex i(2);
   i.set(0, 0, 0);
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(testPeriodic3D) {
 
   g.regularWithPeriodicBoundaries(s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 32U);
+  BOOST_CHECK_EQUAL(s.getSize(), 32U);
 }
 
 BOOST_AUTO_TEST_CASE(testRegular1D) {
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(testRegular1D) {
 
   g.regular(s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 3U);
+  BOOST_CHECK_EQUAL(s.getSize(), 3U);
 }
 
 BOOST_AUTO_TEST_CASE(testRegular2D) {
@@ -279,12 +279,12 @@ BOOST_AUTO_TEST_CASE(testRegular2D) {
 
   g.regular(s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 5U);
+  BOOST_CHECK_EQUAL(s.getSize(), 5U);
 
   HashGridStorage s2(2);
   g.regular(s2, 3);
 
-  BOOST_CHECK_EQUAL(s2.size(), 17U);
+  BOOST_CHECK_EQUAL(s2.getSize(), 17U);
 
   HashGridIndex i(2);
   i.set(0, 1, 1);
@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(testRegular3D) {
 
   g.regular(s, 2);
 
-  BOOST_CHECK_EQUAL(s.size(), 7U);
+  BOOST_CHECK_EQUAL(s.getSize(), 7U);
 }
 
 BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries1D) {
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries1D) {
 
   g.regularWithBoundaries(s, 2, 1);
 
-  BOOST_CHECK_EQUAL(s.size(), 5U);
+  BOOST_CHECK_EQUAL(s.getSize(), 5U);
 }
 
 BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
@@ -329,12 +329,12 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries2D) {
 
   g.regularWithBoundaries(s, 2, 1);
 
-  BOOST_CHECK_EQUAL(s.size(), 21U);
+  BOOST_CHECK_EQUAL(s.getSize(), 21U);
 
   HashGridStorage s2(2);
   g.regularWithBoundaries(s2, 3, 1);
 
-  BOOST_CHECK_EQUAL(s2.size(), 49U);
+  BOOST_CHECK_EQUAL(s2.getSize(), 49U);
 
   HashGridIndex i(2);
   i.set(0, 1, 1);
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
   HashGenerator g;
 
   g.regularWithBoundaries(s, 2, 1);
-  BOOST_CHECK_EQUAL(s.size(), 81U);
+  BOOST_CHECK_EQUAL(s.getSize(), 81U);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine) {
 
   r.free_refine(s, f);
 
-  BOOST_CHECK_EQUAL(s.size(), 5U);
+  BOOST_CHECK_EQUAL(s.getSize(), 5U);
 }
 
 BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries) {
 
   r.free_refine(s, f);
 
-  BOOST_CHECK_EQUAL(s.size(), 21U);
+  BOOST_CHECK_EQUAL(s.getSize(), 21U);
 }
 
 BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefineTruncatedBoundaries2) {
 
   r.free_refine(s, f);
 
-  BOOST_CHECK_EQUAL(s.size(), 21U);
+  BOOST_CHECK_EQUAL(s.getSize(), 21U);
 }
 
 BOOST_AUTO_TEST_CASE(testSurplusFunctor) {

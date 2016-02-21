@@ -130,7 +130,7 @@ void OperationMultiEvalModMaskStreaming::multTranspose(SGPP::base::DataVector& s
     size_t start;
     size_t end;
 
-    getOpenMPPartitionSegment(0, this->storage->size(), &start, &end, 1);
+    getOpenMPPartitionSegment(0, this->storage->getSize(), &start, &end, 1);
 
     this->multTransposeImpl(this->level, this->index, this->mask, this->offset,
                             &this->preparedDataset, source, result, start, end, 0,
@@ -170,15 +170,15 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   //    uint32_t localWorkSize = 24;
   size_t localWorkSize = this->getChunkGridPoints();
 
-  size_t remainder = this->storage->size() % localWorkSize;
+  size_t remainder = this->storage->getSize() % localWorkSize;
   size_t padding = 0;
 
   if (remainder != 0) {
     padding = localWorkSize - remainder;
   }
 
-  size_t gridSize = this->storage->size() + padding;
-  size_t dims = this->storage->dim();
+  size_t gridSize = this->storage->getSize() + padding;
+  size_t dims = this->storage->getDimension();
 
   SGPP::base::HashGridIndex::level_type curLevel;
   SGPP::base::HashGridIndex::index_type curIndex;
@@ -190,7 +190,7 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   this->mask = std::vector<double>(gridSize * dims);
   this->offset = std::vector<double>(gridSize * dims);
 
-  for (size_t i = 0; i < this->storage->size(); i++) {
+  for (size_t i = 0; i < this->storage->getSize(); i++) {
     for (size_t dim = 0; dim < dims; dim++) {
       storage->get(i)->get(dim, curLevel, curIndex);
 
@@ -232,7 +232,7 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
     }
   }
 
-  for (size_t i = this->storage->size(); i < gridSize; i++) {
+  for (size_t i = this->storage->getSize(); i < gridSize; i++) {
     for (size_t dim = 0; dim < dims; dim++) {
       this->level[i * dims + dim] = 0;
       this->index[i * dims + dim] = 0;

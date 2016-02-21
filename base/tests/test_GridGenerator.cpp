@@ -38,12 +38,12 @@ BOOST_AUTO_TEST_CASE(testPeriodicGridGenerator) {
   PeriodicGridGenerator* gridgen = new PeriodicGridGenerator(storage);
 
   gridgen->regular(2);
-  BOOST_CHECK_EQUAL(storage.size(), 12);
+  BOOST_CHECK_EQUAL(storage.getSize(), 12);
 
   storage.emptyStorage();
 
   gridgen->cliques(3, 1);
-  BOOST_CHECK_EQUAL(storage.size(), 13);
+  BOOST_CHECK_EQUAL(storage.getSize(), 13);
 
   delete gridgen;
 }
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(testSquareRootGridGenerator) {
   SquareRootGridGenerator* gridgen = new SquareRootGridGenerator(storage);
 
   gridgen->regular(2);
-  BOOST_CHECK_EQUAL(storage.size(), 21);
+  BOOST_CHECK_EQUAL(storage.getSize(), 21);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 0);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 0);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 0);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(testGeneralizedBoundaryGridGenerator) {
   GeneralizedBoundaryGridGenerator* gridgen = new GeneralizedBoundaryGridGenerator(storage);
 
   gridgen->regular(2);
-  BOOST_CHECK_EQUAL(storage.size(), 21);
+  BOOST_CHECK_EQUAL(storage.getSize(), 21);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 0);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 0);
   // BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -74,12 +74,12 @@ BOOST_AUTO_TEST_CASE(testGeneralizedBoundaryGridGenerator) {
   storage.emptyStorage();
 
   gridgen->truncated(3, 2);
-  BOOST_CHECK_EQUAL(storage.size(), 65);
+  BOOST_CHECK_EQUAL(storage.getSize(), 65);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 0);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 0);
 
   // gridgen->full(2);
-  // BOOST_CHECK_EQUAL(storage.size(), 25);
+  // BOOST_CHECK_EQUAL(storage.getSize(), 25);
   // BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 0);
   // BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 0);
   // BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(testGeneralizedBoundaryGridGenerator) {
   // storage.emptyStorage();
 
   // gridgen->cliques(3, 1);
-  // BOOST_CHECK_EQUAL(storage.size(), 25);
+  // BOOST_CHECK_EQUAL(storage.getSize(), 25);
 
   delete gridgen;
 }
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(testL0BoundaryGridGenerator) {
   L0BoundaryGridGenerator* gridgen = new L0BoundaryGridGenerator(storage);
 
   gridgen->regular(2);
-  BOOST_CHECK_EQUAL(storage.size(), 17);
+  BOOST_CHECK_EQUAL(storage.getSize(), 17);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 9);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 9);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(testL0BoundaryGridGenerator) {
   storage.emptyStorage();
 
   gridgen->full(2);
-  BOOST_CHECK_EQUAL(storage.size(), 25);
+  BOOST_CHECK_EQUAL(storage.getSize(), 25);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 16);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 4);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -115,26 +115,26 @@ BOOST_AUTO_TEST_CASE(testL0BoundaryGridGenerator) {
   // storage.emptyStorage();
 
   // gridgen->cliques(3, 1);
-  // BOOST_CHECK_EQUAL(storage.size(), 25);
+  // BOOST_CHECK_EQUAL(storage.getSize(), 25);
 
   storage.emptyStorage();
   gridgen->regular(2);
-  DataVector* alpha = new DataVector(storage.size(), 1);
+  DataVector* alpha = new DataVector(storage.getSize(), 1);
   {
     SurplusRefinementFunctor rfunc(*alpha, 12);
     gridgen->refine(rfunc);
   }
-  BOOST_CHECK_EQUAL(storage.size(), 37);
+  BOOST_CHECK_EQUAL(storage.getSize(), 37);
 
   storage.emptyStorage();
   delete alpha;
   gridgen->full(2);
-  alpha = new DataVector(storage.size(), 1);
+  alpha = new DataVector(storage.getSize(), 1);
   {
     SurplusRefinementFunctor rfunc(*alpha, 25);
     gridgen->refineMaxLevel(rfunc, 3);
   }
-  BOOST_CHECK_EQUAL(storage.size(), 65);
+  BOOST_CHECK_EQUAL(storage.getSize(), 65);
 
   /* Coarsening does not remove boundary nodes
   alpha->resizeZero(49);
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(testL0BoundaryGridGenerator) {
   gridgen->coarsen(cfunc, alpha);
   std::cout << gridgen->getNumberOfRemovablePoints() << std::endl;
   gridgen->coarsen(cfunc, alpha);
-  BOOST_CHECK_EQUAL(storage.size(), 12);
+  BOOST_CHECK_EQUAL(storage.getSize(), 12);
   std::cout << storage.toString() << std::endl << alpha->toString() << std::endl;
   */
 
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(testBoundaryGridGenerator) {
   BoundaryGridGenerator* gridgen = new BoundaryGridGenerator(storage);
 
   gridgen->regular(2);
-  BOOST_CHECK_EQUAL(storage.size(), 21);
+  BOOST_CHECK_EQUAL(storage.getSize(), 21);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 12);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 4);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(testBoundaryGridGenerator) {
   storage.emptyStorage();
 
   gridgen->full(2);
-  BOOST_CHECK_EQUAL(storage.size(), 25);
+  BOOST_CHECK_EQUAL(storage.getSize(), 25);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 16);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 4);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -174,26 +174,26 @@ BOOST_AUTO_TEST_CASE(testBoundaryGridGenerator) {
   // storage.emptyStorage();
 
   // gridgen->cliques(3, 1);
-  // BOOST_CHECK_EQUAL(storage.size(), 25);
+  // BOOST_CHECK_EQUAL(storage.getSize(), 25);
 
   storage.emptyStorage();
   gridgen->regular(2);
-  DataVector* alpha = new DataVector(storage.size(), 1);
+  DataVector* alpha = new DataVector(storage.getSize(), 1);
   {
     SurplusRefinementFunctor rfunc(*alpha, 12);
     gridgen->refine(rfunc);
   }
-  BOOST_CHECK_EQUAL(storage.size(), 49);
+  BOOST_CHECK_EQUAL(storage.getSize(), 49);
 
   storage.emptyStorage();
   delete alpha;
   gridgen->full(2);
-  alpha = new DataVector(storage.size(), 1);
+  alpha = new DataVector(storage.getSize(), 1);
   {
     SurplusRefinementFunctor rfunc(*alpha, 25);
     gridgen->refineMaxLevel(rfunc, 3);
   }
-  BOOST_CHECK_EQUAL(storage.size(), 65);
+  BOOST_CHECK_EQUAL(storage.getSize(), 65);
 
   /* Coarsening does not remove boundary nodes
   alpha->resizeZero(49);
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(testBoundaryGridGenerator) {
   gridgen->coarsen(cfunc, alpha);
   std::cout << gridgen->getNumberOfRemovablePoints() << std::endl;
   gridgen->coarsen(cfunc, alpha);
-  BOOST_CHECK_EQUAL(storage.size(), 12);
+  BOOST_CHECK_EQUAL(storage.getSize(), 12);
   std::cout << storage.toString() << std::endl << alpha->toString() << std::endl;
   */
 
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(testStretchedBoundaryGridGenerator) {
   StretchedBoundaryGridGenerator* gridgen = new StretchedBoundaryGridGenerator(storage);
 
   gridgen->regular(2);
-  BOOST_CHECK_EQUAL(storage.size(), 21);
+  BOOST_CHECK_EQUAL(storage.getSize(), 21);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 12);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 4);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(testStretchedBoundaryGridGenerator) {
   storage.emptyStorage();
 
   gridgen->full(2);
-  BOOST_CHECK_EQUAL(storage.size(), 25);
+  BOOST_CHECK_EQUAL(storage.getSize(), 25);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 16);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 4);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePointsToMaxLevel(1), 8);
@@ -233,23 +233,23 @@ BOOST_AUTO_TEST_CASE(testStretchedBoundaryGridGenerator) {
   // storage.emptyStorage();
 
   // gridgen->cliques(3, 1);
-  // BOOST_CHECK_EQUAL(storage.size(), 25);
+  // BOOST_CHECK_EQUAL(storage.getSize(), 25);
 
   storage.emptyStorage();
   gridgen->regular(2);
-  DataVector* alpha = new DataVector(storage.size(), 1);
+  DataVector* alpha = new DataVector(storage.getSize(), 1);
   SurplusRefinementFunctor rfunc(*alpha, 12);
   gridgen->refine(rfunc);
-  BOOST_CHECK_EQUAL(storage.size(), 49);
+  BOOST_CHECK_EQUAL(storage.getSize(), 49);
 
   /*storage.emptyStorage();
   delete rfunc;
   delete alpha;
   gridgen->full(2);
-  alpha = new DataVector(storage.size(), 1);
+  alpha = new DataVector(storage.getSize(), 1);
   rfunc = new SurplusRefinementFunctor(alpha, 25);
   gridgen->refineMaxLevel(rfunc, 3);
-  BOOST_CHECK_EQUAL(storage.size(), 65);
+  BOOST_CHECK_EQUAL(storage.getSize(), 65);
   */
   /* Coarsening does not remove boundary nodes
   alpha->resizeZero(49);
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(testStretchedBoundaryGridGenerator) {
   gridgen->coarsen(cfunc, alpha);
   std::cout << gridgen->getNumberOfRemovablePoints() << std::endl;
   gridgen->coarsen(cfunc, alpha);
-  BOOST_CHECK_EQUAL(storage.size(), 12);
+  BOOST_CHECK_EQUAL(storage.getSize(), 12);
   std::cout << storage.toString() << std::endl << alpha->toString() << std::endl;
   */
 
@@ -272,33 +272,33 @@ BOOST_AUTO_TEST_CASE(testStandardGridGenerator) {
   StandardGridGenerator* gridgen = new StandardGridGenerator(storage);
 
   gridgen->regular(2);
-  BOOST_CHECK_EQUAL(storage.size(), 5);
+  BOOST_CHECK_EQUAL(storage.getSize(), 5);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 4);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 4);
 
   storage.emptyStorage();
 
   gridgen->full(2);
-  BOOST_CHECK_EQUAL(storage.size(), 9);
+  BOOST_CHECK_EQUAL(storage.getSize(), 9);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRefinablePoints(), 8);
   BOOST_CHECK_EQUAL(gridgen->getNumberOfRemovablePoints(), 4);
 
   storage.emptyStorage();
 
   gridgen->cliques(3, 1);
-  BOOST_CHECK_EQUAL(storage.size(), 13);
+  BOOST_CHECK_EQUAL(storage.getSize(), 13);
 
   storage.emptyStorage();
   gridgen->regular(2);
-  DataVector* alpha = new DataVector(storage.size(), 1);
+  DataVector* alpha = new DataVector(storage.getSize(), 1);
   SurplusRefinementFunctor rfunc(*alpha, 4);
   gridgen->refine(rfunc);
-  BOOST_CHECK_EQUAL(storage.size(), 17);
+  BOOST_CHECK_EQUAL(storage.getSize(), 17);
 
   alpha->resizeZero(17);
   SurplusCoarseningFunctor cfunc(*alpha, 12, 0.5);
   gridgen->coarsen(cfunc, *alpha);
-  BOOST_CHECK_EQUAL(storage.size(), 5);
+  BOOST_CHECK_EQUAL(storage.getSize(), 5);
 
   delete gridgen;
   delete alpha;

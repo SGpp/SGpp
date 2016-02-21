@@ -28,7 +28,7 @@ float_t OperationQuadratureLinearBoundary::doQuadrature(DataVector& alpha) {
     if (!iter->first->isInnerPoint()) {
       nr_boundaries = 0;
 
-      for (size_t d = 0; d < iter->first->dim(); d++) {
+      for (size_t d = 0; d < iter->first->getDimension(); d++) {
         cur_ind = iter->first->getIndex(d);
         cur_lev = iter->first->getLevel(d);
 

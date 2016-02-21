@@ -276,7 +276,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+      for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
         this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
@@ -318,7 +318,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
   if (this->bGridConstructed) {
     float_t* dblFuncValues = new float_t[dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 

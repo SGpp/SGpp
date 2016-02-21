@@ -311,7 +311,7 @@ void SetBuffersBound(REAL* ptrLevel,
 
   unsigned num = 0;
 
-  for (unsigned i = 0; i < storage->size(); i++) {
+  for (unsigned i = 0; i < storage->getSize(); i++) {
     SGPP::base::GridIndex* curPoint = (*storage)[i];
 
     if (curPoint->isInnerPoint()) {

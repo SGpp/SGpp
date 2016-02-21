@@ -569,7 +569,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
       SGPP::base::OperationHierarchisation* myHierarchisation =
         SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
-      size_t dim = this->BoundGrid->getStorage()->dim();
+      size_t dim = this->BoundGrid->getStorage()->getDimension();
       SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*
           (this->BoundGrid->getBoundingBox()));
 

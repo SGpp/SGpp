@@ -20,7 +20,7 @@ namespace datadriven {
 
 void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
                                                 size_t num_samples) {
-  size_t num_dims = this->grid->getStorage().dim();
+  size_t num_dims = this->grid->getDimension();
 
   // output matrix
   samples = new base::DataMatrix(num_samples, num_dims);
@@ -93,7 +93,7 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 
 void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
                                                 size_t num_samples, size_t dim_x) {
-  size_t num_dims = this->grid->getStorage().dim();
+  size_t num_dims = this->grid->getDimension();
 
   if ((dim_x >= num_dims))
     throw base::operation_exception("Error: starting dimension out of range. Operation aborted!");
@@ -190,7 +190,7 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
   /* Step 2: draw a sample in next dim */
   base::DataVector* sample = NULL;
 
-  if (g_out->getStorage().dim() > 1) {
+  if (g_out->getDimension() > 1) {
     // Marginalize to next dimension
     base::Grid* g1d = NULL;
     base::DataVector* a1d = NULL;
@@ -211,7 +211,7 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
   delete sample;
 
   /* Step 4: sample in next dimension */
-  if (g_out->getStorage().dim() > 1)
+  if (g_out->getDimension() > 1)
     doSampling_in_next_dim(g_out, a_out, dim_x, sampleVec, curr_dim, seedp);
 
   delete g_out;

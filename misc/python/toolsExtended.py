@@ -175,7 +175,7 @@ def printRefNDFunction(filename, filenameValue, function, resolution, dim):
 # @param foutvalue filehandle to resultfile, containing only the value
 def printPoint(p, grid, alpha, fout, foutvalue):
     pc = createOperationEval(grid).eval(alpha, p)
-    for y in xrange(grid.getStorage().dim()):
+    for y in xrange(grid.getDimension()):
         fout.write("%s " % p[y])
     
     fout.write("%s " % pc)
@@ -219,7 +219,7 @@ def recGenPrintVector(dim_rem, p, grid, alpha, resolution, fout, foutvalue):
 # @param alpha hierarchical surplus of the Sparse Grid's Ansatzfunctions 
 # @param resolution number of evaluating points
 def printNDFunction(filename, filenameValue, grid, alpha, resolution):
-    dim = grid.getStorage().dim()
+    dim = grid.getDimension()
     p = DataVector(1,dim)
     fout = file(filename, "w")
     foutvalue = file(filenameValue, "w")
@@ -264,7 +264,7 @@ def compareResultFiles(file1, file2):
 # @param node_values DataVector that holds the coefficients of the function's node base
 # @param grid the grid matching to the node_vector
 def doHierarchisation(node_values, grid):   
-    tmp =  DataVector(grid.getStorage().size(), 1)
+    tmp =  DataVector(grid.getSize(), 1)
     
     for i in xrange(len(node_values)):
         tmp[i] = node_values[i]
@@ -283,7 +283,7 @@ def doHierarchisation(node_values, grid):
 # @param alpha DataVector that holds the coefficients of the sparse grid's ansatzfunctions
 # @param grid thee grid matching to the alpha vector
 def doDehierarchisation(alpha, grid):
-    tmp =  DataVector(grid.getStorage().size(), 1)
+    tmp =  DataVector(grid.getSize(), 1)
     
     for i in xrange(len(alpha)):
         tmp[i] = alpha[i]
@@ -335,21 +335,21 @@ def generateCMatrix(factory, verbose=False):
     laplace = createOperationLaplace(factory)
     
     # create vector
-    alpha = DataVector(storage.size())
-    erg = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
+    erg = DataVector(storage.getSize())
     col = 0
 
     # create stiffness matrix
-    m = np.zeros( (storage.size(), storage.size()) )
+    m = np.zeros( (storage.getSize(), storage.getSize()) )
 
-    for i in xrange(storage.size()):
+    for i in xrange(storage.getSize()):
         # apply unit vectors
         alpha.setAll(0)
         alpha[i] = 1
         laplace.mult(alpha, erg)
         
         #Sets the column in m
-        for j in xrange(storage.size()):
+        for j in xrange(storage.getSize()):
             m[j,col] = erg[j]
             
         col = col + 1
@@ -367,7 +367,7 @@ def generateBBTMatrix(factory, training, verbose=False):
        
     b = factory.createOperationB()
     
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     temp = DataVector(training.getSize())
     
     erg = DataVector(alpha.getSize())
@@ -375,9 +375,9 @@ def generateBBTMatrix(factory, training, verbose=False):
     col = 0
     
     # create B matrix
-    m = np.zeros( (storage.size(), storage.size()) )
+    m = np.zeros( (storage.getSize(), storage.getSize()) )
     
-    for i in xrange(storage.size()):
+    for i in xrange(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         erg.setAll(0.0)
@@ -387,7 +387,7 @@ def generateBBTMatrix(factory, training, verbose=False):
         b.mult(temp, training, erg)
         
         #Sets the column in m
-        for j in xrange(storage.size()):
+        for j in xrange(storage.getSize()):
             m[j,col] = erg[j]
 
         col = col + 1
@@ -405,15 +405,15 @@ def generateBTMatrix(factory, training, verbose=False):
        
     b = factory.createOperationB()
     
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     temp = DataVector(training.getSize())
         
     col = 0
     
     # create BT matrix
-    m = np.zeros( (training.getSize(), storage.size()) )
+    m = np.zeros( (training.getSize(), storage.getSize()) )
     
-    for i in xrange(storage.size()):
+    for i in xrange(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         alpha.setAll(0.0)
@@ -439,13 +439,13 @@ def generateBTMatrixPython(factory, training, verbose=False):
        
     b = factory.createOperationB()
     
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     temp = DataVector(training.getSize())
     
     # create BT matrix
-    m = DataVector(training.getSize(), storage.size())
+    m = DataVector(training.getSize(), storage.getSize())
     
-    for i in xrange(storage.size()):
+    for i in xrange(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         alpha.setAll(0.0)
@@ -467,13 +467,13 @@ def generateBBTMatrixPython(factory, training, verbose=False):
        
     b = factory.createOperationB()
     
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     erg = DataVector(alpha.getSize())
     temp = DataVector(training.getSize())
     
     # create B matrix
-    m = DataVector(storage.size(), storage.size())
-    for i in xrange(storage.size()):
+    m = DataVector(storage.getSize(), storage.getSize())
+    for i in xrange(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         erg.setAll(0.0)

@@ -69,7 +69,7 @@ DataMatrix* readReferenceMatrix(SGPP::base::GridStorage& storage, std::string fi
   contentStream << content;
   std::string line;
 
-  DataMatrix* m = new DataMatrix(0, storage.size());
+  DataMatrix* m = new DataMatrix(0, storage.getSize());
 
   size_t currentRow = 0;
 
@@ -88,7 +88,7 @@ DataMatrix* readReferenceMatrix(SGPP::base::GridStorage& storage, std::string fi
     std::string curValue;
     float_t floatValue;
 
-    for (size_t i = 0; i < storage.size(); i++) {
+    for (size_t i = 0; i < storage.getSize(); i++) {
       curFind = line.find_first_of(" \t", curPos);
       curValue = line.substr(curPos, curFind - curPos);
 
@@ -213,7 +213,7 @@ double compareToReference(SGPP::base::GridType gridType, std::string fileName, s
   SGPP::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
 
-  SGPP::base::DataVector alpha(gridStorage.size());
+  SGPP::base::DataVector alpha(gridStorage.getSize());
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
     alpha[i] = static_cast<double>(i);
@@ -293,7 +293,7 @@ double compareToReferenceTranspose(
 
   doRandomRefinements(adaptConfig, *grid, gridGen);
 
-  SGPP::base::DataVector alphaResult(gridStorage.size());
+  SGPP::base::DataVector alphaResult(gridStorage.getSize());
 
   eval->prepare();
 
@@ -302,7 +302,7 @@ double compareToReferenceTranspose(
   auto evalCompare = std::shared_ptr<SGPP::base::OperationMultipleEval>(
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData));
 
-  SGPP::base::DataVector alphaResultCompare(gridStorage.size());
+  SGPP::base::DataVector alphaResultCompare(gridStorage.getSize());
   alphaResultCompare.setAll(0.0);
 
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);

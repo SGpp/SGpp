@@ -47,10 +47,10 @@ float_t OperationEvalPrewavelet::test(const DataVector& alpha,
 float_t OperationEvalPrewavelet::integrate(const DataVector& alpha) {
   float_t result = 0.0;
 
-  for (size_t i = 0; i < storage.size(); i++) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
     float_t temp_result = 1;
 
-    for (size_t d = 0; d < storage.dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       GridStorage::index_type::level_type level;
       GridStorage::index_type::index_type index;
       storage[i]->get(d, level, index);

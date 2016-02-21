@@ -491,11 +491,11 @@ void Grid::insertPoint(size_t dim, unsigned int levels[],
 }
 
 size_t Grid::getDimension() {
-  return storage.dim();
+  return storage.getDimension();
 }
 
 size_t Grid::getSize() {
-  return storage.size();
+  return storage.getSize();
 }
 
 std::vector<size_t> Grid::getAlgorithmicDimensions() {

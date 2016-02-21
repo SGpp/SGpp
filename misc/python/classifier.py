@@ -233,9 +233,9 @@ def doApply():
 
     # construct corresponding grid
     grid = constructGrid(dim)
-    if(len(alpha) != grid.getStorage().size()):
+    if(len(alpha) != grid.getSize()):
         print "Error: Inconsistent Grid and Alpha-Vector"
-        print "alpha size %d, grid size %d" % (len(alpha),grid.getStorage().size())
+        print "alpha size %d, grid size %d" % (len(alpha),grid.getSize())
         sys.exit(1)
 
     # copy data to DataVector
@@ -300,9 +300,9 @@ def doEval():
 
     # construct corresponding grid
     grid = constructGrid(dim)
-    if(len(alpha) != grid.getStorage().size()):
+    if(len(alpha) != grid.getSize()):
         print "Error: Inconsistent Grid and Alpha-Vector"
-        print "alpha size %d, grid size %d" % (len(alpha),grid.getStorage().size())
+        print "alpha size %d, grid size %d" % (len(alpha),grid.getSize())
         sys.exit(1)
 
     # copy data to DataVector
@@ -382,7 +382,7 @@ def doEvalStdin():
         dim = 0
     grid = constructGrid(dim)
     dim = grid.getDim()
-    if(len(alpha) != grid.getStorage().size()):
+    if(len(alpha) != grid.getSize()):
         print "Error: Inconsistent Grid and Alpha-Vector"
         sys.exit(1)
 
@@ -436,7 +436,7 @@ def doNormal():
 
     alpha = run(grid, training, y)
 
-#    for n in xrange(grid.getStorage().size()):
+#    for n in xrange(grid.getSize()):
 #        print grid.getStorage().get(n).getCoordinates()
 
     if options.outfile:
@@ -459,7 +459,7 @@ def run(grid, training, classes):
 
     for adaptStep in xrange(options.adaptive + 1):
         print "Adaptive Step:", (options.adapt_start + adaptStep)
-        alpha = DataVector(grid.getStorage().size())
+        alpha = DataVector(grid.getSize())
         alpha.setAll(0.0)
 
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
@@ -554,13 +554,13 @@ def doTest():
         m = Matrix(grid, training, options.regparam, options.CMode, options.Hk)
         b = m.generateb(y)
 
-        alpha = DataVector(grid.getStorage().size())
+        alpha = DataVector(grid.getSize())
         alpha.setAll(0.0)
         res = cg_new(b, alpha, options.imax, options.r, m.ApplyMatrix, False, options.verbose, max_threshold=options.max_r)
         print "Conjugate Gradient output:"
         print res
 
-        num_refine.append(grid.getStorage().size())
+        num_refine.append(grid.getSize())
 
         if options.regression:
             print "Training Data:"
@@ -590,21 +590,21 @@ def doTest():
 #        if(options.adaptive >= 0 and adaptStep <= options.adaptive) \
 #            or (options.epochs_limit > 0 and options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
 #            or (options.regression and options.mse_limit > 0 and options.mse_limit < te_refine[-1]) \
-#            or (options.grid_limit > 0 and options.grid_limit > grid.getStorage().size()) \
+#            or (options.grid_limit > 0 and options.grid_limit > grid.getSize()) \
 #            :
 #        print "-----------------------------------------------------------------"
 #        print options.adaptive < 0, adaptStep <= options.adaptive
 #        print options.epochs_limit <= 0, options.epochs_limit > getEpochsErrorIncreasing(te_refine)
 #        print options.mse_limit <= 0, options.regression, options.mse_limit < te_refine[-1]
-#        print options.grid_limit <= 0 , options.grid_limit >= grid.getStorage().size()
+#        print options.grid_limit <= 0 , options.grid_limit >= grid.getSize()
 #        print ((options.adaptive < 0 or adaptStep <= options.adaptive) \
 #            and (options.epochs_limit <= 0 or options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
 #            and (options.mse_limit <= 0 or (options.regression and options.mse_limit < te_refine[-1])) \
-#            and (options.grid_limit <= 0 or options.grid_limit >= grid.getStorage().size()))
+#            and (options.grid_limit <= 0 or options.grid_limit >= grid.getSize()))
         if((options.adaptive < 0 or adaptStep <= options.adaptive) \
             and (options.epochs_limit <= 0 or options.epochs_limit > getEpochsErrorIncreasing(te_refine)) \
             and (options.mse_limit <= 0 or (options.regression and options.mse_limit < te_refine[-1])) \
-            and (options.grid_limit <= 0 or options.grid_limit >= grid.getStorage().size())) \
+            and (options.grid_limit <= 0 or options.grid_limit >= grid.getSize())) \
             :
             print("refining grid")
             if options.regression:
@@ -612,7 +612,7 @@ def doTest():
             else:
                 grid.getGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid), options.adapt_threshold))
 
-            if(options.verbose): print("Number of points: %d" %(grid.getStorage().size(),))
+            if(options.verbose): print("Number of points: %d" %(grid.getSize(),))
 
         #Break condition for while-loop:
         #number of adaptive steps is achieved or MSE of test data increase last 20 epochs or last MSE less then given boundary
@@ -775,7 +775,7 @@ def performFold(dvec,cvec):
         trainingCorrect = []
         testingCorrect =[]
 
-        refinealpha = DataVector(grid.getStorage().size())
+        refinealpha = DataVector(grid.getSize())
         refinealpha.setAll(0.0)
 
         alpha = DataVector(refinealpha)
@@ -816,7 +816,7 @@ def performFold(dvec,cvec):
             print "training: ",tr
             print "testing:  ",te
 
-        num_points.append(grid.getStorage().size())
+        num_points.append(grid.getSize())
         tr_refine.append(tr)
         te_refine.append(te)
 
@@ -868,7 +868,7 @@ def performFoldNew(dvec,cvec,ifold):
         if options.verbose: print "Step %d" % (adaptStep)
 
         # construct and solve CG
-        alpha = DataVector(grid.getStorage().size())
+        alpha = DataVector(grid.getSize())
         alpha.setAll(0.0)
         m = Matrix(grid, data_tr, options.regparam, options.CMode, options.Hk)
         b = m.generateb(class_tr)
@@ -888,13 +888,13 @@ def performFoldNew(dvec,cvec,ifold):
                      True, options.verbose, max_threshold=options.max_r)
         te = testVectorFast(grid, alpha, dvec[ifold], cvec[ifold])
 
-        num_points.append(grid.getStorage().size())
+        num_points.append(grid.getSize())
         tr_refine.append(tr)
         val_refine.append(val)
         te_refine.append(te)
 
         if options.verbose:
-            print "num_points:", grid.getStorage().size()
+            print "num_points:", grid.getSize()
             print "training:  ", tr
             print "validating:", val
             print "testing:   ", te
@@ -935,10 +935,10 @@ def performFoldRegression(dvec,cvec):
         meanSqrErrorsTraining = []
         meanSqrErrorsTesting = []
 
-        refineerrors = DataVector(grid.getStorage().size())
+        refineerrors = DataVector(grid.getSize())
         refineerrors.setAll(0.0)
 
-        alpha = DataVector(grid.getStorage().size())
+        alpha = DataVector(grid.getSize())
 
         for foldSetNumber in xrange(options.f_level):
 #            alpha.setAll(0.0)
@@ -979,7 +979,7 @@ def performFoldRegression(dvec,cvec):
             print "testing:  ", teSqrError, teVar
             print "training: ", trSqrError, trVar
 
-        num_points.append(grid.getStorage().size())
+        num_points.append(grid.getSize())
         tr_meanSqrError.append(trSqrError)
         te_meanSqrError.append(teSqrError)
 

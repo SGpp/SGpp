@@ -26,14 +26,14 @@ int main(int argc, char** argv) {
   size_t dim = dataset.getDimension();
   std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
+  std::cout << "dimensionality:        " << gridStorage->getDimension() << std::endl;
   // create regular grid, level 3
   uint32_t level = 4;
   grid->getGenerator().regular(level);
-  std::cout << "number of grid points: " << gridStorage->size() << std::endl;
+  std::cout << "number of grid points: " << gridStorage->getSize() << std::endl;
 
   // create coefficient vector
-  SGPP::base::DataVector alpha(gridStorage->size());
+  SGPP::base::DataVector alpha(gridStorage->getSize());
   alpha.setAll(0.0);
 
   std::random_device rd;

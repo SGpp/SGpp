@@ -99,7 +99,7 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
     base::StdNormalDistribution myNormDistr;
     float_t* s_coords = new float_t[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
       std::stringstream coordsStream(coords);
 
@@ -177,7 +177,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
         float_t* dblFuncValues = new float_t[dim];
         float_t dDistance = 0.0;
 
-        for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
               this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
           std::stringstream coordsStream(coords);
@@ -215,7 +215,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
         base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
         this->myGrid->getGenerator().refine(myRefineFunc);
 
-        alpha.resize(this->myGridStorage->size());
+        alpha.resize(this->myGridStorage->getSize());
 
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
@@ -251,7 +251,7 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
 
         this->tBoundaryType = "Dirichlet";
 
-        for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
 
@@ -288,7 +288,7 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
         base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
         this->myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
-        alpha.resize(this->myGridStorage->size());
+        alpha.resize(this->myGridStorage->getSize());
 
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
@@ -1250,7 +1250,7 @@ void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, fl
   }
 
   // compute values of analytic solution on given grid
-  for (size_t i = 0; i < this->myGridStorage->size(); i++) {
+  for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
     std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     coordsStream >> coord;
@@ -1381,7 +1381,7 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, float_t 
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+      for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
         this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
@@ -1417,7 +1417,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -1465,7 +1465,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -1513,7 +1513,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -1634,7 +1634,7 @@ void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string
                                             bool bSurplus) const {
   base::DataVector temp(alpha);
   float_t tmp = 0.0;
-  size_t dim = myGrid->getStorage().dim();
+  size_t dim = myGrid->getDimension();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified
@@ -1645,7 +1645,7 @@ void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string
   // Open filehandle
   fileout.open(tfilename.c_str());
 
-  for (size_t i = 0; i < myGrid->getStorage().size(); i++) {
+  for (size_t i = 0; i < myGrid->getSize(); i++) {
     std::string coords = myGrid->getStorage().get(i)->getCoordsStringBB(myGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
 

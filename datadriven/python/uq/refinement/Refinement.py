@@ -301,7 +301,7 @@ class Refinement(object):
 
 #         if not simulate:
 #             gs = grid.getStorage()
-#             p = DataVector(gs.dim())
+#             p = DataVector(gs.getDimension())
 #
 #             for gp in refinedPoints:
 #                 gp.getCoords(p)

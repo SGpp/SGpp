@@ -29,7 +29,7 @@ void SubspaceRefinement::addElementToCollection(
     element) {
       bool result = true;
 
-      for (size_t d = 0; d < key_value.first->getIndex().dim(); d++) {
+      for (size_t d = 0; d < key_value.first->getIndex().getDimension(); d++) {
         result = result
                  && (key_value.first->getIndex().getLevel(d) ==
                      element.first->getIndex().getLevel(d));
@@ -56,7 +56,7 @@ void SubspaceRefinement::addElementToCollection(
 
 void SubspaceRefinement::free_refine(GridStorage& storage,
                                      RefinementFunctor& functor) {
-  if (storage.size() == 0) {
+  if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
 
@@ -91,7 +91,7 @@ void SubspaceRefinement::collectRefinablePoints(GridStorage& storage,
     // check for each grid point whether it can be refined
     // (i.e., whether not all kids exist yet)
     // if yes, check whether it belongs to the refinements_num largest ones
-    for (size_t d = 0; d < storage.dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
@@ -156,7 +156,7 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
 
-  HashGridIndex grid_index(storage.dim());
+  HashGridIndex grid_index(storage.getDimension());
 
   // refine all points of the subspace in all dimensions
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
@@ -165,7 +165,7 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
 
     for (IndexInSubspaceGenerator::iterator index_it = subspace.begin();
          index_it != subspace.end(); index_it++) {
-      for (size_t d = 0; d < storage.dim(); d++) {
+      for (size_t d = 0; d < storage.getDimension(); d++) {
         grid_index.set(d, level_vector[d], (*index_it)[d]);
       }
 

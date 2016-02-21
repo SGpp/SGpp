@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
 
   GridStorage& gS = grid->getStorage();
 
-  size_t N = gS.size();
+  size_t N = gS.getSize();
 
   DataVector alpha(N);
 

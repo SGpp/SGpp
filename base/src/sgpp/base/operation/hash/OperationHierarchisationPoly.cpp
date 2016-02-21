@@ -20,7 +20,7 @@ void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values) {
   sweep<HierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
@@ -30,7 +30,7 @@ void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha) {
   sweep<DehierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     DataVector source(alpha);
     s.sweep1D(source, alpha, i);
   }

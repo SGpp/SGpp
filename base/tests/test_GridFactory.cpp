@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinear) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationModLinear) {
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinear) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundary) {
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundary) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundary) {
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundary) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationPrewavelet) {
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(testSerializationPrewavelet) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 }
 
 BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundingBox) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearBoundingBox) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryBoundingBox) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryBoundingBox) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
   {
     BoundingBox& boundingBox = newfac->getBoundingBox();
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
 
   factory->getGenerator().regular(3);
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
   }
 
@@ -283,9 +283,9 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearWithLeaf) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
   }
 }
@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
 
   factory->getGenerator().regular(3);
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
   }
 
@@ -310,9 +310,9 @@ BOOST_AUTO_TEST_CASE(testSerializationModLinearWithLeaf) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
   }
 }
@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
 
   factory->getGenerator().regular(3);
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
   }
 
@@ -337,9 +337,9 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearTruncatedBoundaryWithLeaf) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
   }
 }
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
 
   factory->getGenerator().regular(3);
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     srcLeaf.push_back(factory->getStorage().get(i)->isLeaf());
   }
 
@@ -364,9 +364,9 @@ BOOST_AUTO_TEST_CASE(testSerializationLinearBoundaryWithLeaf) {
   std::unique_ptr<Grid> newfac = Grid::unserialize(str);
   BOOST_CHECK(newfac != nullptr);
 
-  BOOST_CHECK(factory->getStorage().size() == newfac->getStorage().size());
+  BOOST_CHECK(factory->getSize() == newfac->getSize());
 
-  for (size_t i = 0; i < factory->getStorage().size(); ++i) {
+  for (size_t i = 0; i < factory->getSize(); ++i) {
     BOOST_CHECK(newfac->getStorage().get(i)->isLeaf() == srcLeaf[i]);
   }
 }
@@ -382,9 +382,9 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 
   GridGenerator& gen = factory->getGenerator();
 
-  BOOST_CHECK(storage.size() == 0);
+  BOOST_CHECK(storage.getSize() == 0);
   gen.regular(3);
-  BOOST_CHECK(storage.size() == 17);
+  BOOST_CHECK(storage.getSize() == 17);
 
   // This should fail
   BOOST_CHECK_THROW(gen.regular(3), generation_exception);
@@ -397,13 +397,13 @@ BOOST_AUTO_TEST_CASE(testRefinement) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  BOOST_CHECK(storage.size() == 1);
+  BOOST_CHECK(storage.getSize() == 1);
   DataVector alpha(1);
   alpha[0] = 1.0;
   SurplusRefinementFunctor func(alpha);
 
   gen.refine(func);
-  BOOST_CHECK(storage.size() == 5);
+  BOOST_CHECK(storage.getSize() == 5);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
@@ -411,7 +411,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
   DataMatrix p(1, 1);
   DataVector beta(1);
 
@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
   alpha.setAll(1.0);
 
   DataVector p(1);
@@ -464,9 +464,9 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 
   GridGenerator& gen = factory->getGenerator();
 
-  BOOST_CHECK(storage.size() == 0);
+  BOOST_CHECK(storage.getSize() == 0);
   gen.regular(3);
-  BOOST_CHECK(storage.size() == 49);
+  BOOST_CHECK(storage.getSize() == 49);
 
   // This should fail
   BOOST_CHECK_THROW(gen.regular(3), generation_exception);
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  BOOST_CHECK(storage.size() == 9);
+  BOOST_CHECK(storage.getSize() == 9);
   DataVector alpha(9);
   alpha[0] = 0.0;
   alpha[1] = 0.0;
@@ -494,7 +494,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
   SurplusRefinementFunctor func(alpha);
 
   gen.refine(func);
-  BOOST_CHECK(storage.size() == 21);
+  BOOST_CHECK(storage.getSize() == 21);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  BOOST_CHECK(storage.size() == 27);
+  BOOST_CHECK(storage.getSize() == 27);
   DataVector alpha(27);
   alpha.setAll(0.0);
 
@@ -512,7 +512,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   SurplusRefinementFunctor func(alpha);
 
   gen.refine(func);
-  BOOST_CHECK(storage.size() == 81);
+  BOOST_CHECK(storage.getSize() == 81);
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement3d) {
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
   DataMatrix p(1, 1);
   DataVector beta(1);
 
@@ -554,7 +554,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
   alpha.setAll(1.0);
 
   DataVector p(1);
@@ -576,9 +576,9 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 
   GridGenerator& gen = factory->getGenerator();
 
-  BOOST_CHECK(storage.size() == 0);
+  BOOST_CHECK(storage.getSize() == 0);
   gen.regular(3);
-  BOOST_CHECK(storage.size() == 37);
+  BOOST_CHECK(storage.getSize() == 37);
 
   // This should fail
   BOOST_CHECK_THROW(gen.regular(3), generation_exception);
@@ -591,7 +591,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_one) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(0);
 
-  BOOST_CHECK(storage.size() == 4);
+  BOOST_CHECK(storage.getSize() == 4);
 
   DataVector alpha(4);
   alpha.setAll(0.0);
@@ -600,7 +600,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_one) {
   SurplusRefinementFunctor func(alpha);
 
   gen.refine(func);
-  BOOST_CHECK(storage.size() == 8);
+  BOOST_CHECK(storage.getSize() == 8);
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_two) {
@@ -625,7 +625,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_two) {
   SurplusRefinementFunctor func2(alpha2);
 
   gen.refine(func2);
-  BOOST_CHECK(storage.size() == 13);
+  BOOST_CHECK(storage.getSize() == 13);
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
@@ -658,7 +658,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
   SurplusRefinementFunctor func3(alpha3);
 
   gen.refine(func3);
-  BOOST_CHECK(storage.size() == 18);
+  BOOST_CHECK(storage.getSize() == 18);
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
@@ -699,7 +699,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
   SurplusRefinementFunctor func4(alpha4);
 
   gen.refine(func4);
-  BOOST_CHECK(storage.size() == 25);
+  BOOST_CHECK(storage.getSize() == 25);
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
@@ -749,7 +749,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
 
   gen.refine(func5);
 
-  BOOST_CHECK(storage.size() == 29);
+  BOOST_CHECK(storage.getSize() == 29);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
@@ -762,7 +762,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   // point 3: l = (2,0), i = (1,0)
   // point 4: l = (2,0), i = (3,0)
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
   DataMatrix p(1, 2);
   DataVector beta(1);
 
@@ -804,7 +804,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
   alpha.setAll(1.0);
 
   DataVector p(2);
@@ -848,9 +848,9 @@ BOOST_AUTO_TEST_CASE(testGeneration) {
 
   GridGenerator& gen = factory->getGenerator();
 
-  BOOST_CHECK(storage.size() == 0);
+  BOOST_CHECK(storage.getSize() == 0);
   gen.regular(3);
-  BOOST_CHECK(storage.size() == 49);
+  BOOST_CHECK(storage.getSize() == 49);
 
   // This should fail
   BOOST_CHECK_THROW(gen.regular(3), generation_exception);
@@ -863,7 +863,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  BOOST_CHECK(storage.size() == 9);
+  BOOST_CHECK(storage.getSize() == 9);
   DataVector alpha(9);
   alpha[0] = 0.0;
   alpha[1] = 0.0;
@@ -877,7 +877,7 @@ BOOST_AUTO_TEST_CASE(testRefinement2d) {
   SurplusRefinementFunctor func(alpha);
 
   gen.refine(func);
-  BOOST_CHECK(storage.size() == 21);
+  BOOST_CHECK(storage.getSize() == 21);
 }
 
 BOOST_AUTO_TEST_CASE(testRefinement3d) {
@@ -887,7 +887,7 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  BOOST_CHECK(storage.size() == 27);
+  BOOST_CHECK(storage.getSize() == 27);
   DataVector alpha(27);
   alpha.setAll(0.0);
 
@@ -895,7 +895,7 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
   SurplusRefinementFunctor func(alpha);
 
   gen.refine(func);
-  BOOST_CHECK(storage.size() == 81);
+  BOOST_CHECK(storage.getSize() == 81);
 }
 
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
@@ -913,7 +913,7 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
 
   DataMatrix p(1, 1);
   DataVector beta(1);
@@ -973,7 +973,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   gen = factory.getGenerator()
   gen.regular(1)
 
-  alpha = DataVector(factory.getStorage().size())
+  alpha = DataVector(factory.getSize())
   alpha.setAll(1.0)
 
   p = DataVector(1)
@@ -997,7 +997,7 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getStorage().size());
+  DataVector alpha(factory->getSize());
   alpha.setAll(1.0);
 
   DataVector p(1);

@@ -98,7 +98,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   // generate initial grid
   grid.getGenerator().regular(initialLevel);
 
-  size_t currentN = gridStorage.size();
+  size_t currentN = gridStorage.getSize();
 
   // abbreviation (functionValues is a member variable of
   // IterativeGridGenerator)
@@ -261,7 +261,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     refinement.free_refine(gridStorage, refineFunc);
 
     // new grid size
-    const size_t newN = gridStorage.size();
+    const size_t newN = gridStorage.getSize();
 
     if (newN == currentN) {
       // size unchanged ==> point not refined (should not happen)

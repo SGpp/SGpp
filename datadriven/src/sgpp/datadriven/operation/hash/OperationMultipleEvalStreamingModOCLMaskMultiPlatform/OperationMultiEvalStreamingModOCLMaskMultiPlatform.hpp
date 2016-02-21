@@ -85,7 +85,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->storage = &grid.getStorage();
 
     // padded grid size is set by prepare
-    this->gridSizeUnpadded = this->storage->size();
+    this->gridSizeUnpadded = this->storage->getSize();
     // initialized in prepare
     this->gridSizePadded = 0;
     this->gridSizeBuffers = 0;
@@ -313,7 +313,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   void recalculateLevelIndexMask() {
     size_t commonGridPadding = calculateCommonGridPadding();
 
-    size_t remainder = this->storage->size() % commonGridPadding;
+    size_t remainder = this->storage->getSize() % commonGridPadding;
     size_t padding = 0;
 
     if (remainder != 0) {
@@ -321,10 +321,10 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     }
 
     // size to distribute, not actual padded grid size
-    this->gridSizePadded = this->storage->size() + padding;
+    this->gridSizePadded = this->storage->getSize() + padding;
 
     // size for distributing schedules of different size
-    this->gridSizeBuffers = this->storage->size() + padding + commonGridPadding;
+    this->gridSizeBuffers = this->storage->getSize() + padding + commonGridPadding;
 
     SGPP::base::HashGridIndex::level_type curLevel;
     SGPP::base::HashGridIndex::index_type curIndex;
@@ -334,7 +334,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->mask = std::vector<T>(gridSizeBuffers * this->dims);
     this->offset = std::vector<T>(gridSizeBuffers * this->dims);
 
-    for (size_t i = 0; i < this->storage->size(); i++) {
+    for (size_t i = 0; i < this->storage->getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
         storage->get(i)->get(dim, curLevel, curIndex);
 
@@ -387,7 +387,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       }
     }
 
-    for (size_t i = this->storage->size(); i < gridSizeBuffers; i++) {
+    for (size_t i = this->storage->getSize(); i < gridSizeBuffers; i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
         this->level[i * this->dims + dim] = 0;
         this->index[i * this->dims + dim] = 0;

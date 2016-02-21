@@ -84,7 +84,7 @@ class GetAffectedBasisFunctions {
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
 
-    size_t dim = storage.dim();
+    size_t dim = storage.getDimension();
 
     index_type* source = new index_type[dim];
 
@@ -160,7 +160,7 @@ class GetAffectedBasisFunctions {
         float_t new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
 
-        if (current_dim == storage.dim() - 1) {
+        if (current_dim == storage.getDimension() - 1) {
           result.push_back(std::make_pair(seq, value * new_value));
         } else {
           rec(basis, point, current_dim + 1, value * new_value,
@@ -215,7 +215,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
 
-    size_t dim = storage.dim();
+    size_t dim = storage.getDimension();
 
     index_type* source = new index_type[dim];
 
@@ -278,8 +278,8 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
         float_t new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
 
-        if (current_dim == storage.dim() - 1) {
-          // for( int i=0;i < storage.dim();i++)
+        if (current_dim == storage.getDimension() - 1) {
+          // for( int i=0;i < storage.getDimension();i++)
           // {
           //   working.get(i, temp, work_index);
           //   std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<
@@ -294,7 +294,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
           tmpSeq = working.seq();
 
           if (!(storage.end(tmpSeq))) {
-            // for( int i=0;i < storage.dim();i++)
+            // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
             //   std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<
@@ -316,7 +316,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
           tmpSeq = working.seq();
 
           if (!(storage.end(tmpSeq))) {
-            // for( int i=0;i < storage.dim();i++)
+            // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
             //   std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<
@@ -404,7 +404,7 @@ class GetAffectedBasisFunctions <
     size_t bits = sizeof(index_type) *
                   8;  // who many levels can we store in a index_type?
 
-    size_t dim = storage.dim();
+    size_t dim = storage.getDimension();
 
     index_type* source = new index_type[dim];
 
@@ -467,8 +467,8 @@ class GetAffectedBasisFunctions <
         float_t new_value = base.eval(work_level, work_index,
                                       point[current_dim]);
 
-        if (current_dim == storage.dim() - 1) {
-          // for( int i=0;i < storage.dim();i++)
+        if (current_dim == storage.getDimension() - 1) {
+          // for( int i=0;i < storage.getDimension();i++)
           // {
           //   working.get(i, temp, work_index);
           //   std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<
@@ -483,7 +483,7 @@ class GetAffectedBasisFunctions <
           tmpSeq = working.seq();
 
           if ( !(storage.end(tmpSeq)) ) {
-            // for( int i=0;i < storage.dim();i++)
+            // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
             //   std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<
@@ -503,7 +503,7 @@ class GetAffectedBasisFunctions <
           tmpSeq = working.seq();
 
           if (!(storage.end(tmpSeq))) {
-            // for( int i=0;i < storage.dim();i++)
+            // for( int i=0;i < storage.getDimension();i++)
             // {
             //   working.get(i, temp, work_index);
             //   std::cout <<" dim "<<i <<" level "<<temp<<" Index "<<
@@ -628,7 +628,7 @@ class GetAffectedBasisFunctions <
           float_t new_value = basis.eval(work_level, work_index,
                                          point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
             rec(basis, point, current_dim + 1, value * new_value, working,
@@ -640,7 +640,7 @@ class GetAffectedBasisFunctions <
           size_t seq_lz_left = working.seq();
           float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
                                             value * new_value_l_zero_left));
           } else {
@@ -654,7 +654,7 @@ class GetAffectedBasisFunctions <
           float_t new_value_l_zero_right = basis.eval(0, 1,
                                            point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
                                             value * new_value_l_zero_right));
           } else {
@@ -733,7 +733,7 @@ class GetAffectedBasisFunctions <
                                          BB->getIntervalWidth(current_dim),
                                          BB->getIntervalOffset(current_dim));
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
             recBB(basis, point, current_dim + 1, value * new_value, working,
@@ -747,7 +747,7 @@ class GetAffectedBasisFunctions <
                                           BB->getIntervalWidth(current_dim),
                                           BB->getIntervalOffset(current_dim));
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
                                             value * new_value_l_zero_left));
           } else {
@@ -763,7 +763,7 @@ class GetAffectedBasisFunctions <
                                            BB->getIntervalWidth(current_dim),
                                            BB->getIntervalOffset(current_dim));
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
                                             value * new_value_l_zero_right));
           } else {
@@ -900,7 +900,7 @@ class GetAffectedBasisFunctions <
           }
 
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
             recBB(basis, point, current_dim + 1, value * new_value, working,
@@ -919,7 +919,7 @@ class GetAffectedBasisFunctions <
                                           point[current_dim],
                                           right, left);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
                                             value * new_value_l_zero_left));
           } else {
@@ -938,7 +938,7 @@ class GetAffectedBasisFunctions <
                                            point[current_dim],
                                            left, right);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
                                             value * new_value_l_zero_right));
           } else {
@@ -1059,7 +1059,7 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
     // First, save this point
     float_t value = 1.0;
 
-    for (size_t d = 0; d < storage.dim(); ++d) {
+    for (size_t d = 0; d < storage.getDimension(); ++d) {
       index_type current_index;
       level_type current_level;
       iter.get(d, current_level, current_index);
@@ -1068,7 +1068,7 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
 
     result.push_back(std::make_pair(iter.seq(), value));
 
-    for (size_t d = current_dim; d < storage.dim(); d++) {
+    for (size_t d = current_dim; d < storage.getDimension(); d++) {
       index_type save_index;
       level_type save_level;
       iter.get(d, save_level, save_index);  // Save current index
@@ -1169,7 +1169,7 @@ class GetAffectedBasisFunctions <
           float_t new_value = basis.eval(work_level, work_index,
                                          point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
             rec(basis, point, current_dim + 1, value * new_value, working,
@@ -1181,7 +1181,7 @@ class GetAffectedBasisFunctions <
           size_t seq_lz_left = working.seq();
           float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
                                             value * new_value_l_zero_left));
           } else {
@@ -1298,7 +1298,7 @@ class GetAffectedBasisFunctions <
           float_t new_value = basis.eval(work_level, work_index,
                                          point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
             rec(basis, point, current_dim + 1, value * new_value, working,
@@ -1310,7 +1310,7 @@ class GetAffectedBasisFunctions <
           size_t seq_lz_left = working.seq();
           float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
                                             value * new_value_l_zero_left));
           } else {
@@ -1324,7 +1324,7 @@ class GetAffectedBasisFunctions <
           size_t seq_lz_right = working.seq();
           float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
                                             value * new_value_l_zero_right));
           } else {
@@ -1404,7 +1404,7 @@ class GetAffectedBasisFunctions <
                                          BB->getIntervalWidth(current_dim),
                                          BB->getIntervalOffset(current_dim));
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq, value * new_value));
           } else {
             recBB(basis, point, current_dim + 1, value * new_value, working,
@@ -1418,7 +1418,7 @@ class GetAffectedBasisFunctions <
                                           BB->getIntervalWidth(current_dim),
                                           BB->getIntervalOffset(current_dim));
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
                                             value * new_value_l_zero_left));
           } else {
@@ -1434,7 +1434,7 @@ class GetAffectedBasisFunctions <
                                            BB->getIntervalWidth(current_dim),
                                            BB->getIntervalOffset(current_dim));
 
-          if (current_dim == storage.dim() - 1) {
+          if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
                                             value * new_value_l_zero_right));
           } else {

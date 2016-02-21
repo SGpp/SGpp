@@ -23,8 +23,8 @@ def computeCoefficients(jgrid, grid, alpha, f):
     jgs = jgrid.getStorage()
 
     # dehierarchization
-    p = DataVector(jgs.dim())
-    A = DataMatrix(jgs.size(), jgs.dim())
+    p = DataVector(jgs.getDimension())
+    A = DataMatrix(jgs.size(), jgs.getDimension())
     for i in xrange(jgs.size()):
         jgs.get(i).getCoords(p)
         A.setRow(i, p)
@@ -64,14 +64,14 @@ def computeErrors(jgrid, jalpha, grid, alpha, f, n=200):
     jgs = jgrid.getStorage()
 
     # create control samples
-    samples = DataMatrix(np.random.rand(n, jgs.dim()))
+    samples = DataMatrix(np.random.rand(n, jgs.getDimension()))
 
     # evaluate the sparse grid functions
     jnodalValues = evalSGFunctionMulti(jgrid, jalpha, samples)
     nodalValues = evalSGFunctionMulti(grid, alpha, samples)
 
     # compute errors
-    p = DataVector(jgs.dim())
+    p = DataVector(jgs.getDimension())
     err = DataVector(n)
     for i in xrange(n):
         samples.getRow(i, p)
@@ -103,7 +103,7 @@ def estimateL2error(grid1, grid2, alpha2):
     gs1 = grid1.getStorage()
     gs2 = grid2.getStorage()
     ans = 0
-    for i in xrange(gs2.size()):
+    for i in xrange(gs2.getSize()):
         gp = gs2.get(i)
         if not gs1.has_key(gp):
             ans += abs(alpha2[i])
@@ -114,7 +114,7 @@ def estimateL2error(grid1, grid2, alpha2):
 def estimateDiscreteL2Error(grid, alpha, f, n=1000):
     gs = grid.getStorage()
     # create control samples
-    samples = DataMatrix(np.random.rand(n, gs.dim()))
+    samples = DataMatrix(np.random.rand(n, gs.getDimension()))
 
     nodalValues = evalSGFunctionMulti(grid, alpha, samples)
     fvalues = DataVector(samples.getNrows())

@@ -59,9 +59,9 @@ inline std::ostream& operator<<(std::ostream& stream, const base::DataVector& x)
  * @return          stream
  */
 inline std::ostream& operator<<(std::ostream& stream, const SGPP::base::GridIndex& x) {
-  base::DataVector xCoord(x.dim());
+  base::DataVector xCoord(x.getDimension());
 
-  for (size_t t = 0; t < x.dim(); t++) {
+  for (size_t t = 0; t < x.getDimension(); t++) {
     xCoord[t] = x.getCoord(t);
   }
 

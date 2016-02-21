@@ -53,7 +53,7 @@ class HashCoarsening {
   void free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor& functor,
                                DataVector& alpha, size_t numFirstPoints) {
     // check if the grid has any points
-    if (storage.size() == 0) {
+    if (storage.getSize() == 0) {
       throw generation_exception("storage empty");
     }
 
@@ -169,7 +169,7 @@ class HashCoarsening {
    */
   void free_coarsen(GridStorage& storage, CoarseningFunctor& functor,
                     DataVector& alpha) {
-    free_coarsen_NFirstOnly(storage, functor, alpha, storage.size());
+    free_coarsen_NFirstOnly(storage, functor, alpha, storage.getSize());
   }
 
   /**
@@ -180,7 +180,7 @@ class HashCoarsening {
   size_t getNumberOfRemovablePoints(GridStorage& storage) {
     size_t counter = 0;
 
-    if (storage.size() == 0) {
+    if (storage.getSize() == 0) {
       throw generation_exception("storage empty");
     }
 

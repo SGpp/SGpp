@@ -240,7 +240,7 @@ class Learner(object):
                                            set.getPoints(),
                                            self.specification.getCOperator(),
                                            self.specification.getL())
-        size = self.grid.getStorage().size()
+        size = self.grid.getSize()
         # Reuse data from old alpha vector increasing its dimension
         if self.solver.getReuse() and self.alpha is not None:
             alpha = DataVector(self.alpha)

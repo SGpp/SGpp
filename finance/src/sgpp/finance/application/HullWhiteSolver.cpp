@@ -200,7 +200,7 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage().size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       coordsStream >> tmp;

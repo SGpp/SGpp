@@ -295,9 +295,9 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
   //
   //  predictive_refinement.free_refine(&storage, &functor);
   //
-  //  BOOST_CHECK_EQUAL(storage.size(), 9);
+  //  BOOST_CHECK_EQUAL(storage.getSize(), 9);
   //
-  //  for (size_t i = 0; i < storage.size(); i++) {
+  //  for (size_t i = 0; i < storage.getSize(); i++) {
   //    HashGridIndex* index = storage.get(i);
   //    BOOST_CHECK((index->getIndex(0) == 4) == false);
   //  }

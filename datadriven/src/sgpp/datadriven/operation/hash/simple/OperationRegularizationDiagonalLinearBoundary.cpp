@@ -19,7 +19,7 @@ OperationRegularizationDiagonalLinearBoundary::OperationRegularizationDiagonalLi
 }
 
 void OperationRegularizationDiagonalLinearBoundary::initHkmix(float_t k) {
-  size_t dim = storage->dim();
+  size_t dim = storage->getDimension();
   base::GridIndex* gi;
   float_t res;
 
@@ -36,7 +36,7 @@ void OperationRegularizationDiagonalLinearBoundary::initHkmix(float_t k) {
 }
 
 void OperationRegularizationDiagonalLinearBoundary::initH0HkLaplace(float_t k) {
-  size_t dim = storage->dim();
+  size_t dim = storage->getDimension();
   base::GridIndex* gi;
   float_t res, resd;
 

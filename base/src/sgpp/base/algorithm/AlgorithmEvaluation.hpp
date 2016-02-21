@@ -83,7 +83,7 @@ class AlgorithmEvaluation {
     size_t bits = sizeof(index_type) *
                   8;  // how many levels can we store in a index_type?
 
-    size_t dim = storage.dim();
+    size_t dim = storage.getDimension();
 
     // Check for bounding box
     BoundingBox* bb = storage.getBoundingBox();
@@ -183,7 +183,7 @@ class AlgorithmEvaluation {
                                        point[current_dim]);
         new_value *= value;
 
-        if (current_dim == storage.dim() - 1) {
+        if (current_dim == storage.getDimension() - 1) {
           result += (alpha[seq] * new_value);
         } else {
           rec(basis, point, current_dim + 1, new_value,

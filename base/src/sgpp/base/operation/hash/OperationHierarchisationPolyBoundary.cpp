@@ -20,7 +20,7 @@ void OperationHierarchisationPolyBoundary::doHierarchisation(
   sweep<HierarchisationPolyBoundary> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D_Boundary(node_values, node_values, i);
   }
 }
@@ -31,7 +31,7 @@ void OperationHierarchisationPolyBoundary::doDehierarchisation(
   sweep<DehierarchisationPolyBoundary> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     DataVector source(alpha);
     s.sweep1D_Boundary(source, alpha, i);
   }

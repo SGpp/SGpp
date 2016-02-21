@@ -45,19 +45,19 @@ def testFG(obj, grid, level, function):
     generator.regular(level)
 
     storage = grid.getStorage()
-    dim = storage.dim()
+    dim = storage.getDimension()
 
     # generate the node_values vector
-    node_values = DataVector(storage.size())
-    for n in xrange(storage.size()):
+    node_values = DataVector(storage.getSize())
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordsString().split()
         node_values[n] = evalFunction(function, points)        
     fgs = FullGridSet(dim,level, grid.getType())   
-    beta = DataVector(storage.size())
+    beta = DataVector(storage.getSize())
     #test deComposition and composition
     fgs.deCompose(storage,node_values)
     # test decomposition
-    p = DataVector(storage.dim())
+    p = DataVector(storage.getDimension())
     for i in xrange(fgs.getSize()):
         fg=fgs.at(i)  
         m=fg.getSize()   

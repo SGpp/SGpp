@@ -15,8 +15,8 @@ def computeNodalValues(jgrid, grid, alpha):
     jgs = jgrid.getStorage()
 
     # dehierarchization
-    p = DataVector(jgs.dim())
-    A = DataMatrix(jgs.size(), jgs.dim())
+    p = DataVector(jgs.getDimension())
+    A = DataMatrix(jgs.size(), jgs.getDimension())
     for i in xrange(jgs.size()):
         jgs.get(i).getCoords(p)
         A.setRow(i, p)
@@ -36,7 +36,7 @@ def makePositive(grid, alpha):
 
     # evaluate the sparse grid function at all full grid points
     level = grid.getStorage().getMaxLevel()
-    fg = Grid.createLinearGrid(grid.getStorage().dim())
+    fg = Grid.createLinearGrid(grid.getDimension())
     fg.getGenerator().full(level)
 
     # copy the old grid and use it as reference

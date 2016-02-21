@@ -46,7 +46,7 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
   this->mu_hat = new SGPP::base::DataVector(mu_hat);
 
   // throw exception if grid dimensions not equal algorithmic dimensions
-  if (this->BSalgoDims.size() > this->BoundGrid->getStorage().dim()) {
+  if (this->BSalgoDims.size() > this->BoundGrid->getDimension()) {
     throw SGPP::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystemn : "
         "Number of algorithmic dimensions higher than the number of grid's dimensions.");
@@ -54,7 +54,7 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and
   // sigma)
-  if (this->BoundGrid->getStorage().dim() != this->lambda->getSize()) {
+  if (this->BoundGrid->getDimension() != this->lambda->getSize()) {
     throw SGPP::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : "
         "Dimension of mu and sigma parameters don't match the grid's dimensions!");
@@ -62,7 +62,7 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
 
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
-    if (this->BSalgoDims[i] >= this->BoundGrid->getStorage().dim()) {
+    if (this->BSalgoDims[i] >= this->BoundGrid->getDimension()) {
       throw SGPP::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : "
           "Minimum one algorithmic dimension is not inside the grid's dimensions!");
@@ -160,7 +160,7 @@ void BlackScholesPATParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimest
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage().size();
+    size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
     SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
@@ -175,12 +175,12 @@ void BlackScholesPATParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimest
 
       if (this->refineMode == "maxLevel") {
         myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
 
       if (this->refineMode == "classic") {
         myGenerator.refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
     }
 

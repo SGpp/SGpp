@@ -51,7 +51,7 @@ class AbstractRefinement_refinement_key {
    */
   const std::vector<level_t> getLevelVector() {
     if (level_vector.empty()) {
-      for (size_t d = 0; d < index.dim(); d++) {
+      for (size_t d = 0; d < index.getDimension(); d++) {
         level_vector.push_back(index.getLevel(d));
       }
     }

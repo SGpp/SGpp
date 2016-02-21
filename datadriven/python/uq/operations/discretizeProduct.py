@@ -29,7 +29,7 @@ def computeErrors(jgrid, jalpha,
     jgs = jgrid.getStorage()
 
     # create control samples
-    samples = DataMatrix(np.random.rand(n, jgs.dim()))
+    samples = DataMatrix(np.random.rand(n, jgs.getDimension()))
 
     # evaluate the sparse grid functions
     jnodalValues = evalSGFunctionMulti(jgrid, jalpha, samples)
@@ -39,7 +39,7 @@ def computeErrors(jgrid, jalpha,
     nodalValues2 = evalSGFunctionMulti(grid2, alpha2, samples)
 
     # compute errors
-    p = DataVector(jgs.dim())
+    p = DataVector(jgs.getDimension())
     err = DataVector(n)
     for i in xrange(n):
         samples.getRow(i, p)
@@ -62,8 +62,8 @@ def computeErrors(jgrid, jalpha,
 def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     # dehierarchization
     gs = gridResult.getStorage()
-    ps = DataMatrix(gs.size(), gs.dim())
-    p = DataVector(gs.dim())
+    ps = DataMatrix(gs.size(), gs.getDimension())
+    p = DataVector(gs.getDimension())
     for i in xrange(gs.size()):
         gs.get(i).getCoords(p)
         ps.setRow(i, p)
@@ -131,9 +131,9 @@ def discretizeProduct(grid1, alpha1, grid2, alpha2):
     maxlevel = max(maxlevelGrid1 + deg2, maxlevelGrid2 + deg1)
 
     # check if maximum number of grid points is goint to be exceeded
-    n = 2 ** ((deg - 1) * grid1.getStorage().dim())
+    n = 2 ** ((deg - 1) * grid1.getDimension())
     if n > 1e6:
-        raise AttributeError("Can not create a full grid of level %i and dimensionality %i. The number of grid points %i would exceed 10^6" % (deg - 1, grid1.getStorage().dim(), n))
+        raise AttributeError("Can not create a full grid of level %i and dimensionality %i. The number of grid points %i would exceed 10^6" % (deg - 1, grid1.getDimension(), n))
 
     # join the two grids
     joinedGrid = Grid.createPolyGrid(2, deg)

@@ -43,7 +43,7 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
             alpha[i] = 2.
         #refinement  stuff
         refinement = HashRefinement()
-        decorator = SubspaceGSGRefinement(refinement, self.HashGridStorage.dim())
+        decorator = SubspaceGSGRefinement(refinement, self.HashGridStorage.getDimension())
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.freeRefineSubspace(self.HashGridStorage,functor)
@@ -67,7 +67,7 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
             alpha[i] = 2.
         #refinement  stuff
         refinement = HashRefinement()
-        decorator = SubspaceGSGRefinement(refinement, self.HashGridStorage.dim())
+        decorator = SubspaceGSGRefinement(refinement, self.HashGridStorage.getDimension())
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.freeRefineSubspace(self.HashGridStorage,functor)

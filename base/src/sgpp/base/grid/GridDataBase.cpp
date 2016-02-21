@@ -24,10 +24,10 @@ namespace base {
 GridDataBase::GridDataBase(size_t dim) : _map(), _dim(static_cast<int>(dim)) {}
 
 GridDataBase::GridDataBase(Grid* grid, DataVector& values) : _map(),
-  _dim(static_cast<int>(grid->getStorage().dim())) {
+  _dim(static_cast<int>(grid->getDimension())) {
   GridStorage& gs = grid->getStorage();
 
-  for (size_t i = 0; i < gs.size(); i++) {
+  for (size_t i = 0; i < gs.getSize(); i++) {
     set(gs.get(i), values[gs.seq(gs.get(i))]);
   }
 }

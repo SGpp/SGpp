@@ -17,19 +17,19 @@ print "dimensionality:                   {}".format(dim)
 level = 3
 gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of initial grid points:    {}".format(gridStorage.size())
+print "number of initial grid points:    {}".format(gridStorage.getSize())
 
 # definition of function to interpolate - nonsymmetric(!)
 f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1*x1
 # create coefficient vector
-alpha = DataVector(gridStorage.size())
+alpha = DataVector(gridStorage.getSize())
 print "length of alpha vector:           {}".format(alpha.getSize())
 
 
 # now refine adaptively 5 times
 for refnum in range(5):
     # set function values in alpha
-    for i in xrange(gridStorage.size()):
+    for i in xrange(gridStorage.getSize()):
         gp = gridStorage.get(i)
         alpha[i] = f(gp.getCoord(0), gp.getCoord(1))
 
@@ -38,7 +38,7 @@ for refnum in range(5):
 
     # refine a single grid point each time
     gridGen.refine(SurplusRefinementFunctor(alpha, 1))
-    print "refinement step {}, new grid size: {}".format(refnum+1, gridStorage.size())
+    print "refinement step {}, new grid size: {}".format(refnum+1, gridStorage.getSize())
 
     # extend alpha vector (new entries uninitialized)
-    alpha.resize(gridStorage.size())
+    alpha.resize(gridStorage.getSize())

@@ -132,7 +132,7 @@ bool IterativeGridGeneratorSOO::generate() {
         refinement.free_refine(gridStorage, refineFunc);
 
         // new grid size
-        const size_t newN = gridStorage.size();
+        const size_t newN = gridStorage.getSize();
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)

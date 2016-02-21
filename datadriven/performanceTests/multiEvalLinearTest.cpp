@@ -96,20 +96,20 @@ void getRuntime(SGPP::base::GridType gridType, const std::string& kernel, std::s
   }
 
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->dim());
+  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->getDimension());
 
   SGPP::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
-  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
+  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->getSize());
   BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
 
   doDirectedRefinements(adaptConfig, *grid, gridGen);
   //    doRandomRefinements(adaptConfig, *grid, gridGen);
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->size());
-  refinedGridSize = gridStorage->size();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
+  refinedGridSize = gridStorage->getSize();
 
-  SGPP::base::DataVector alpha(gridStorage->size());
+  SGPP::base::DataVector alpha(gridStorage->getSize());
 
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -279,10 +279,10 @@ void getRuntimeDataMining(SGPP::base::GridType gridType, const std::string& kern
 
   SGPP::base::GridStorage* gridStorage = grid.getStorage();
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->size());
-  refinedGridSize = gridStorage->size();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
+  refinedGridSize = gridStorage->getSize();
 
-  SGPP::base::DataVector alpha(gridStorage->size());
+  SGPP::base::DataVector alpha(gridStorage->getSize());
 
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -374,8 +374,8 @@ void getRuntimeDataMiningTransposed(
 
   SGPP::base::GridStorage* gridStorage = grid.getStorage();
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->size());
-  refinedGridSize = gridStorage->size();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
+  refinedGridSize = gridStorage->getSize();
 
   SGPP::base::DataVector source(dataset.getNumberInstances());
 
@@ -392,7 +392,7 @@ void getRuntimeDataMiningTransposed(
   SGPP::base::OperationMultipleEval* eval =
       SGPP::op_factory::createOperationMultipleEval(grid, trainingData, configuration);
 
-  SGPP::base::DataVector gridSizeVectorResult(gridStorage->size());
+  SGPP::base::DataVector gridSizeVectorResult(gridStorage->getSize());
   gridSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");
@@ -456,18 +456,18 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string& kern
   }
 
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->dim());
+  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->getDimension());
 
   SGPP::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
-  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->size());
+  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->getSize());
   BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
 
   doDirectedRefinements(adaptConfig, *grid, gridGen);
   //    doRandomRefinements(adaptConfig, *grid, gridGen);
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->size());
-  refinedGridSize = gridStorage->size();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
+  refinedGridSize = gridStorage->getSize();
 
   SGPP::base::DataVector source(dataset.getNumberInstances());
 
@@ -484,7 +484,7 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string& kern
   SGPP::base::OperationMultipleEval* eval =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  SGPP::base::DataVector gridSizeVectorResult(gridStorage->size());
+  SGPP::base::DataVector gridSizeVectorResult(gridStorage->getSize());
   gridSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");

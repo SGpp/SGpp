@@ -16,8 +16,8 @@ namespace SGPP {
 namespace base {
 
 HashGridIterator::HashGridIterator(HashGridStorage& storage) :
-  storage(storage), index(storage.dim()) {
-  for (size_t i = 0; i < storage.dim(); i++) {
+  storage(storage), index(storage.getDimension()) {
+  for (size_t i = 0; i < storage.getDimension(); i++) {
     index.push(i, 1, 1);
   }
 
@@ -27,11 +27,11 @@ HashGridIterator::HashGridIterator(HashGridStorage& storage) :
 
 
 HashGridIterator::HashGridIterator(HashGridIterator& copy) :
-  storage(copy.storage), index(copy.storage.dim()) {
+  storage(copy.storage), index(copy.storage.getDimension()) {
   index_type::level_type l;
   index_type::index_type i;
 
-  for (size_t dim = 0; dim < storage.dim(); dim++) {
+  for (size_t dim = 0; dim < storage.getDimension(); dim++) {
     copy.get(dim, l, i);
     index.push(dim, l, i);
   }
@@ -46,7 +46,7 @@ HashGridIterator::~HashGridIterator() {
 
 void
 HashGridIterator::resetToLevelZero() {
-  for (size_t i = 0; i < storage.dim(); i++) {
+  for (size_t i = 0; i < storage.getDimension(); i++) {
     index.push(i, 0, 0);
   }
 

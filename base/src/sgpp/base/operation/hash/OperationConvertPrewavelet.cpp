@@ -24,7 +24,7 @@ void OperationConvertPrewavelet::doConvertToLinear(
   sweep<ConvertPrewaveletToLinear> s(func, storage);
 
 
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }
@@ -33,7 +33,7 @@ void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha) {
   ConvertLinearToPrewavelet func(this->storage, this->shadowstorage);
   sweep<ConvertLinearToPrewavelet> s(func, storage);
 
-  for (size_t i = 0; i < this->storage.dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }

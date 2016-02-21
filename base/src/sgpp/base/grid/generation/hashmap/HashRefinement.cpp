@@ -58,7 +58,7 @@ void HashRefinement::collectRefinablePoints(GridStorage& storage,
     // check for each grid point whether it can be refined
     // (i.e., whether not all kids exist yet)
     // if yes, check whether it belongs to the refinements_num largest ones
-    for (size_t d = 0; d < storage.dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
@@ -122,7 +122,7 @@ void HashRefinement::refineGridpointsCollection(GridStorage& storage,
 
 void HashRefinement::free_refine(GridStorage& storage,
                                  RefinementFunctor& functor) {
-  if (storage.size() == 0) {
+  if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
 
@@ -135,7 +135,7 @@ void HashRefinement::free_refine(GridStorage& storage,
 size_t HashRefinement::getNumberOfRefinablePoints(GridStorage& storage) {
   size_t counter = 0;
 
-  if (storage.size() == 0) {
+  if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
   }
 
@@ -151,7 +151,7 @@ size_t HashRefinement::getNumberOfRefinablePoints(GridStorage& storage) {
 
     // check for each grid point whether it can be refined
     // (i.e., whether not all children exist yet)
-    for (size_t d = 0; d < storage.dim(); d++) {
+    for (size_t d = 0; d < storage.getDimension(); d++) {
       index_t source_index;
       level_t source_level;
       index.get(d, source_level, source_index);
@@ -218,7 +218,7 @@ void HashRefinement::refineGridpoint(GridStorage& storage,
   // Sets leaf property of index, which is refined to false
   storage[refine_index]->setLeaf(false);
 
-  for (size_t d = 0; d < storage.dim(); d++) {
+  for (size_t d = 0; d < storage.getDimension(); d++) {
     refineGridpoint1D(storage, index, d);
   }
 }
@@ -227,7 +227,7 @@ void HashRefinement::createGridpoint(GridStorage& storage, index_type& index) {
   index_t source_index;
   level_t source_level;
 
-  for (size_t d = 0; d < storage.dim(); d++) {
+  for (size_t d = 0; d < storage.getDimension(); d++) {
     createGridpoint1D(index, d, storage, source_index, source_level);
   }
 

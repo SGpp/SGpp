@@ -76,7 +76,7 @@ class GridDescriptor(object):
         @param grid:
         """
         self.__grid = grid
-        self.__dim = grid.getStorage().dim()
+        self.__dim = grid.getDimension()
         self.__deg = getDegree(grid)
         self.__border = hasBorder(grid)
         if self.__border:
@@ -101,7 +101,7 @@ class GridDescriptor(object):
             grid = gridFormatter.deserializeFromFile(self.__file)
         else:
             if self.__grid is not None:
-                self.__dim = self.__grid.getStorage().dim()
+                self.__dim = self.__grid.getDimension()
 
             if (self.__dim is None or self.level is None) and self.__grid is None:
                 raise AttributeError("Not all attributes assigned to create\

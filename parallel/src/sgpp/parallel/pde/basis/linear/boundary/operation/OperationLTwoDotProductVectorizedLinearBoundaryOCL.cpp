@@ -21,10 +21,10 @@ namespace parallel {
 OperationLTwoDotProductVectorizedLinearBoundaryOCL::OperationLTwoDotProductVectorizedLinearBoundaryOCL(
   SGPP::base::GridStorage* storage) : storage(storage) {
   this->OCLPDEKernelsHandle = OCLPDEKernels();
-  this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
-  this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
-  this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
-  lcl_q = new double[this->storage->dim()];
+  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  lcl_q = new double[this->storage->getDimension()];
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
 }
@@ -48,8 +48,8 @@ void OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult_dirichlet(
                            this->level_->getPointer(),
                            this->index_->getPointer(),
                            this->level_int_->getPointer(),
-                           storage->size(),
-                           storage->dim(),
+                           storage->getSize(),
+                           storage->getDimension(),
                            storage);
 }
 
@@ -59,7 +59,7 @@ void OperationLTwoDotProductVectorizedLinearBoundaryOCL::mult(
   bool dirichlet = true;
 
   // fill q array
-  for (size_t d = 0; d < this->storage->dim(); d++) {
+  for (size_t d = 0; d < this->storage->getDimension(); d++) {
     SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     lcl_q[d] = boundingBox->getIntervalWidth(d);
     dirichlet = dirichlet && boundingBox->hasDirichletBoundaryLeft(d);

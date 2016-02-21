@@ -18,7 +18,7 @@ namespace datadriven {
 void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha,
                                                          base::DataMatrix*& samples,
                                                          size_t num_samples, size_t trial_max) {
-  size_t num_dims = this->grid->getStorage().dim();
+  size_t num_dims = this->grid->getDimension();
   samples = new base::DataMatrix(num_samples, num_dims);  // output samples
 
   size_t SEARCH_MAX = 100000;  // find the approximated maximum of function with 100000 points

@@ -29,15 +29,15 @@ gridStorage = grid.getStorage();
 level = 3;
 gridGen = grid.getGenerator();
 gridGen.regular(level);
-fprintf('number of grid points:  %u\n', gridStorage.size());
+fprintf('number of grid points:  %u\n', gridStorage.getSize());
 
 % create coefficient vector
-alpha = DataVector(gridStorage.size());
+alpha = DataVector(gridStorage.getSize());
 alpha.setAll(0);
 fprintf('length of alpha vector: %u\n', alpha.getSize());
 
 % set function values in alpha
-for i = 0:gridStorage.size()-1
+for i = 0:gridStorage.getSize()-1
     gp = gridStorage.get(i);
     alpha.set(i,f(gp.getCoord(0), gp.getCoord(1)));
 end
