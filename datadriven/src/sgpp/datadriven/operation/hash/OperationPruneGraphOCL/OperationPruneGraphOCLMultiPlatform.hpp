@@ -77,14 +77,7 @@ public:
 			std::cout<<"Pruning graph for"<<graph.size()<<" nodes"<<std::endl;
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		start = std::chrono::system_clock::now();
-		try {
-			this->graph_kernel->prune_graph(pointsVector, alphaVector, dataVector, graph);
-		}
-		catch(base::operation_exception &e) {
-			std::cerr<<"Error! Could not create graph."<<std::endl
-					 <<"Error Message: "<<e.what()<<std::endl;
-			return;
-		}
+		this->graph_kernel->prune_graph(graph);
 		end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end - start;
 
