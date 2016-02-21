@@ -97,6 +97,7 @@ public:
 			std::cout << "k: " << k << " Dims:" << dims
 					  << std::endl;
 		}
+		size_t datasize=data.size() / dims;
 		if(data.size() * k / dims != result.size())
 		{
 			std::stringstream errorString;
@@ -109,7 +110,7 @@ public:
 		{
 			if(verbose)
 				std::cout<<"generating kernel source"<<std::endl;
-			std::string program_src = kernelSourceBuilder.generateSource();
+			std::string program_src = kernelSourceBuilder.generateSource(dims, k, datasize);
 			if(verbose)
 				std::cout<<"Source: "<<std::endl<<program_src<<std::endl;
 			if(verbose)
@@ -123,7 +124,6 @@ public:
 		deviceResultData.intializeTo(zeros, 1, 0, data.size()*k/dims);
 		clFinish(device->commandQueue);
 		this->deviceTimingMult = 0.0;
-		size_t datasize=data.size();
 
 		//Set kernel arguments
 		err = clSetKernelArg(this->kernel, 0, sizeof(cl_mem), this->deviceData.getBuffer());
@@ -132,25 +132,7 @@ public:
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
 			throw base::operation_exception(errorString.str());
 		}
-		err = clSetKernelArg(this->kernel, 1, sizeof(cl_uint), &dims);
-		if (err != CL_SUCCESS) {
-			std::stringstream errorString;
-			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-			throw base::operation_exception(errorString.str());
-		}
-		err = clSetKernelArg(this->kernel, 2, sizeof(cl_uint), &k);
-		if (err != CL_SUCCESS) {
-			std::stringstream errorString;
-			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-			throw base::operation_exception(errorString.str());
-		}
-		err = clSetKernelArg(this->kernel, 3, sizeof(cl_uint), &datasize);
-		if (err != CL_SUCCESS) {
-			std::stringstream errorString;
-			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-			throw base::operation_exception(errorString.str());
-		}
-		err = clSetKernelArg(this->kernel, 4, sizeof(cl_mem), this->deviceResultData.getBuffer());
+		err = clSetKernelArg(this->kernel, 1, sizeof(cl_mem), this->deviceResultData.getBuffer());
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
