@@ -58,7 +58,7 @@ void PDESolver::getGridNormalDistribution(SGPP::base::DataVector& alpha,
       alpha[i] = value;
     }
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::getGridNormalDistribution : The grid wasn't initialized before!");
   }
 }
@@ -70,7 +70,7 @@ void PDESolver::deleteGrid() {
     myBoundingBox = NULL;
     myGridStorage = NULL;
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::deleteGrid : The grid wasn't initialized before!");
   }
 }
@@ -101,7 +101,7 @@ std::string PDESolver::getGrid() const {
     // Serialize the grid
     myGrid->serialize(gridSer);
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::getGrid : The grid wasn't initialized before!");
   }
 
@@ -124,7 +124,7 @@ void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numR
 
     alpha.resize(myGridStorage->size());
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
   }
 }
@@ -155,7 +155,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
 
     alpha.resize(myGridStorage->size());
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::refineIntialGridSurplusSubDomain : The grid wasn't initialized before!");
   }
 }
@@ -172,7 +172,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(
 
     alpha.resize(myGridStorage->size());
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::refineInitialGridSurplusToMaxLevel : The grid wasn't initialized before!");
   }
 }
@@ -198,7 +198,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
 
     alpha.resize(myGridStorage->size());
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::refineInitialGridSurplusToMaxLevelSubDomain : The grid wasn't initialized "
         "before!");
   }
@@ -212,7 +212,7 @@ void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t
     SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(alpha, numCoarsen, dThreshold);
     myGenerator.coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize);
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");
   }
 }
@@ -252,7 +252,7 @@ float_t PDESolver::evaluatePoint(std::vector<float_t>& evalPoint, SGPP::base::Da
   if (bGridConstructed) {
     result = SGPP::op_factory::createOperationEval(*myGrid)->eval(alpha, evalPoint);
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::evaluatePoint : A grid wasn't constructed before!");
   }
 
@@ -263,7 +263,7 @@ void PDESolver::evaluateCuboid(SGPP::base::DataVector& alpha, SGPP::base::DataVe
                                SGPP::base::DataMatrix& EvaluationPoints) {
   if (bGridConstructed) {
     if (OptionPrices.getSize() != EvaluationPoints.getNrows()) {
-      throw new SGPP::base::application_exception(
+      throw SGPP::base::application_exception(
           "PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the "
           "evaluation points' vector!");
     }
@@ -271,7 +271,7 @@ void PDESolver::evaluateCuboid(SGPP::base::DataVector& alpha, SGPP::base::DataVe
     SGPP::op_factory::createOperationMultipleEval(*myGrid, EvaluationPoints)->
         mult(alpha, OptionPrices);
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::evaluateCuboid : A grid wasn't constructed before!");
   }
 }
@@ -280,7 +280,7 @@ size_t PDESolver::getNumberGridPoints() const {
   if (bGridConstructed) {
     return myGridStorage->size();
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
   }
 }
@@ -289,7 +289,7 @@ size_t PDESolver::getNumberInnerGridPoints() const {
   if (bGridConstructed) {
     return myGridStorage->getNumInnerPoints();
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
   }
 }
@@ -298,7 +298,7 @@ size_t PDESolver::getNumberDimensions() const {
   if (bGridConstructed) {
     return myGridStorage->dim();
   } else {
-    throw new SGPP::base::application_exception(
+    throw SGPP::base::application_exception(
         "PDESolver::getNumberDimensions : A grid wasn't constructed before!");
   }
 }

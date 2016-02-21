@@ -51,7 +51,7 @@ SGPP::base::DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS()
     this->GridConverter->calcInnerCoefs(rhs_tmp_complete, *(this->rhs_inner));
     this->rhs_inner->mult(-1.0);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "OperationEllipticPDESolverSystemDirichlet::generateRHS : No inner grid exists!");
   }
 
@@ -67,7 +67,7 @@ SGPP::base::DataVector* OperationEllipticPDESolverSystemDirichlet::getGridCoeffi
     this->alpha_inner = new SGPP::base::DataVector(this->InnerGrid->getSize());
     this->alpha_inner->setAll(0.0);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG : No inner grid "
         "exists!");
   }

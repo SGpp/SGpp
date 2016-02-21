@@ -46,7 +46,7 @@ void GridPrinter::printLevelIndexGrid(std::string tFilename) {
     fileout.close();
 
   } else {
-    throw new tool_exception(
+    throw tool_exception(
       "GridPrinter::printLevelIndexGrid : The grid has no dimensions. "
       "Thus it cannot be printed!");
   }
@@ -61,7 +61,7 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
 
   if (myGrid->getStorage().size() > 0) {
     if (myGrid->getStorage().dim() != 2) {
-      throw new tool_exception("GridPrinter::printGridDomain : "
+      throw tool_exception("GridPrinter::printGridDomain : "
                                "The grid has more not two dimensions. "
                                "Thus it cannot be printed!");
     } else {
@@ -94,7 +94,7 @@ void GridPrinter::printGridDomain(DataVector& alpha, std::string tFilename,
       fileout.close();
     }
   } else {
-    throw new tool_exception("GridPrinter::printGridDomain : "
+    throw tool_exception("GridPrinter::printGridDomain : "
                              "The grid has no dimensions. "
                              "Thus it cannot be printed!");
   }
@@ -108,7 +108,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
 
   if (myGrid->getStorage().size() > 0) {
     if (myGrid->getStorage().dim() > 2) {
-      throw new tool_exception("GridPrinter::printGrid : "
+      throw tool_exception("GridPrinter::printGrid : "
                                "The grid has more than two dimensions. "
                                "Thus it cannot be printed!");
     } else {
@@ -162,7 +162,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename,
       fileout.close();
     }
   } else {
-    throw new tool_exception("GridPrinter::printGrid : "
+    throw tool_exception("GridPrinter::printGrid : "
                              "The grid has no dimensions. "
                              "Thus it cannot be printed!");
   }

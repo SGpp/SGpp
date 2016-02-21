@@ -40,7 +40,7 @@ void OperationRegularizationDiagonal::init() {
   } else if (mode == ANISOTROPIC_PENALTY) {
     initAnisotropicPenalty();
   } else {
-    throw new base::generation_exception(
+    throw base::generation_exception(
         "OperationRegularizationDiagonal: Unknown mode specified!");
   }
 }

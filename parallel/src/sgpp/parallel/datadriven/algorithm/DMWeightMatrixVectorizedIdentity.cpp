@@ -29,7 +29,7 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
   }
   // should not happen because this exception should have been thrown some lines upwards!
   else {
-    throw new SGPP::base::operation_exception("DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
+    throw SGPP::base::operation_exception("DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
   }
 
   resetTimers();

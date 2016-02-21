@@ -101,8 +101,8 @@ BOOST_AUTO_TEST_CASE(test_DataException) {
 
   try {
     dataVectorOne.add(dataVectorTwo);
-  } catch (data_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (data_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
 }
 
@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE(test_FileException) {
   file_exception expectedException(expectedMessage.c_str());
   try {
     gridDataBase.save(filename);
-  } catch (file_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (file_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
   std::remove(filename.c_str());
 }
@@ -165,8 +165,8 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
 
   try {
     opEval->getDuration();
-  } catch (operation_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (operation_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
 }
 
@@ -183,8 +183,8 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
 //   try{
 //     faultyEuler = new SGPP::solver::Euler(faultyString, imax, timestepsize,
 //         generateAnimation, numEvalsAnimation, &screen);
-//   }catch(solver_exception* actualException){
-//     BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+//   }catch(solver_exception& actualException){
+//     BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
 //   }
 //   delete faultyEuler;
 // }
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_ToolException) {
   DataVector dummyVector(10);
   try {
     gridPrinter.printGrid(dummyVector, dummyFilename, pointsPerDim);
-  } catch (tool_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (tool_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
 }

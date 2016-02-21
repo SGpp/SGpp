@@ -390,7 +390,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
             (int) matrix_needed_size_gb);
 
     std::cerr << exception_string << std::endl;
-    throw new SGPP::base::operation_exception(exception_string);
+    throw SGPP::base::operation_exception(exception_string);
   }
 
   if (operation_result_matrix_)
@@ -1198,7 +1198,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult(
   if (dirichlet) {
     mult_dirichlet(alpha, result);
   } else {
-    throw new SGPP::base::operation_exception("OperationLaplaceVectorizedLinearBoundary::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+    throw SGPP::base::operation_exception("OperationLaplaceVectorizedLinearBoundary::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
   }
 }
 

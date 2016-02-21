@@ -45,7 +45,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
       output << "ptrLevel[dimLevelIndex]";
     } else {
-      throw new base::operation_exception(
+      throw base::operation_exception(
           "OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
     }
     return output.str();
@@ -60,7 +60,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
       output << "ptrIndex[dimLevelIndex]";
     } else {
-      throw new base::operation_exception(
+      throw base::operation_exception(
           "OCL error: Illegal value for parameter \"KERNEL_STORE_DATA\"\n");
     }
     return output.str();

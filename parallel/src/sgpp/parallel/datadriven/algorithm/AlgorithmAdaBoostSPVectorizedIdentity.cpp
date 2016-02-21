@@ -34,7 +34,7 @@ AlgorithmAdaBoostSPVectorizedIdentity::AlgorithmAdaBoostSPVectorizedIdentity(
         refineNum, numberOfAda, percentOfAda, mode) {
   if (vecMode != X86SIMD && vecMode != OpenCL && vecMode != ArBB
       && vecMode != Hybrid_X86SIMD_OpenCL) {
-    throw new SGPP::base::operation_exception("AlgorithmAdaBoostVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
+    throw SGPP::base::operation_exception("AlgorithmAdaBoostVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are supported vector extensions!");
   }
 
   this->vecMode = vecMode;

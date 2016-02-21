@@ -89,11 +89,11 @@ void GaussianKDE::initialize(base::DataMatrix& samples) {
       cond.setAll(1.0);
       sumCond = static_cast<float_t>(nsamples);
     } else {
-      throw new base::data_exception(
+      throw base::data_exception(
         "GaussianKDE::GaussianKDE: KDE needs at least two samples to estimate the bandwidth");
     }
   } else {
-    throw new base::data_exception(
+    throw base::data_exception(
       "GaussianKDE::GaussianKDE: KDE needs at least one dimensional data");
   }
 
@@ -130,7 +130,7 @@ void GaussianKDE::initialize(std::vector<base::DataVector*>& samples) {
       cond.setAll(1.0);
       sumCond = static_cast<float_t>(nsamples);
     } else {
-      throw new base::data_exception(
+      throw base::data_exception(
         "GaussianKDE::GaussianKDE : KDE needs at least two samples to estimate the bandwidth");
     }
   } else {
@@ -160,7 +160,7 @@ DataMatrix* GaussianKDE::getSamples() {
 
 DataVector* GaussianKDE::getSamples(size_t dim) {
   if (dim >= samplesVec.size()) {
-    throw new base::data_exception("GaussianKDE::getSamples : dim out of range");
+    throw base::data_exception("GaussianKDE::getSamples : dim out of range");
   }
 
   return samplesVec[dim];
@@ -219,7 +219,7 @@ float_t GaussianKDE::pdf(DataVector& x) {
 void GaussianKDE::cov(DataMatrix& cov) {
   if ((cov.getNrows() != ndim) || (cov.getNcols() != ndim)) {
     // throw error -> covariance matrix has wrong size
-    throw new base::data_exception(
+    throw base::data_exception(
       "GaussianKDE::cov : covariance matrix has the wrong size");
   }
 
@@ -311,7 +311,7 @@ float_t GaussianKDE::std_deviation() {
 
 void GaussianKDE::computeOptKDEbdwth() {
   if (ndim != bandwidths.getSize()) {
-    throw new base::data_exception(
+    throw base::data_exception(
       "GaussianKDE::computeOptKDEbdwth : KDEBdwth dimension error");
   }
 
@@ -427,7 +427,7 @@ void GaussianKDE::updateConditionalizationFactors(base::DataVector& x,
         pcond[isample] *= norm[idim] * std::exp(-(xi * xi) / 2.);
       }
     } else {
-      throw new base::data_exception(
+      throw base::data_exception(
         "GaussianKDE::updateConditionalizationFactors : can not conditionalize in non existing "
           "dimension");
     }

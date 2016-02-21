@@ -85,7 +85,7 @@ void HeatEquationSolverWithStretching::solveExplicitEuler(size_t numTimesteps, f
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::solveExplicitEuler : A grid wasn't constructed before!");
   }
 }
@@ -125,7 +125,7 @@ void HeatEquationSolverWithStretching::solveImplicitEuler(size_t numTimesteps, f
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::solveImplicitEuler : A grid wasn't constructed before!");
   }
 }
@@ -183,7 +183,7 @@ void HeatEquationSolverWithStretching::solveCrankNicolson(size_t numTimesteps, f
     delete myCN;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::solveCrankNicolson : A grid wasn't constructed before!");
   }
 }
@@ -220,7 +220,7 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(base::DataVector& 
 
     SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::initGridWithSmoothHeat : A grid wasn't constructed "
         "before!");
   }
@@ -243,7 +243,7 @@ void HeatEquationSolverWithStretching::printGridDomain(base::DataVector& alpha,
                                                        float_t PointesPerDimension,
                                                        base::BoundingBox& GridArea,
                                                        std::string tfilename) const {
-  throw new base::application_exception(
+  throw base::application_exception(
       "HeatEquationSolverWithStretching::printGridDomain : BoundingBox not supported with this "
       "solver, use printGridDomainStretching instead ");
 }

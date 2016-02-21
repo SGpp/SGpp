@@ -366,7 +366,7 @@ void OperationLTwoDotLaplaceVectorizedLinear::init_grid_storage() {
             (int) matrix_needed_size_gb);
 
     std::cerr << exception_string << std::endl;
-    throw new SGPP::base::operation_exception(exception_string);
+    throw SGPP::base::operation_exception(exception_string);
   }
 
   if (operation_result_matrix_)

@@ -238,14 +238,14 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
 BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
   int dim = 1;
   int level = 5;
-  Stretching1D* str1d = new Stretching1D();
-  str1d->type = "log";
-  str1d->x_0 = 0.;
-  str1d->xsi = 10;
-  DimensionBoundary* dimBound = new DimensionBoundary();
-  dimBound->leftBoundary = 0.00001;
-  dimBound->rightBoundary = 1.;
-  Stretching stretch(dim, dimBound, str1d);
+  Stretching1D str1d;
+  str1d.type = "log";
+  str1d.x_0 = 0.;
+  str1d.xsi = 10;
+  DimensionBoundary dimBound;
+  dimBound.leftBoundary = 0.00001;
+  dimBound.rightBoundary = 1.;
+  Stretching stretch(dim, &dimBound, &str1d);
   std::unique_ptr<Grid> grid = Grid::createLinearStretchedBoundaryGrid(dim);
   grid->getStorage().setStretching(stretch);
 #if USE_DOUBLE_PRECISION == 1
@@ -253,8 +253,6 @@ BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary1D) {
 #else
   testHierarchisationDehierarchisation(*grid, level, &parabolaBoundary, 1e-4, false, true);
 #endif
-  delete str1d;
-  delete dimBound;
 }
 
 BOOST_AUTO_TEST_CASE(testHierarchisationStretchedTruncatedBoundary3D) {

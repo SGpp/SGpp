@@ -241,7 +241,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::mult(SGPP::base::DataVecto
     result.add(temp);
     result.axpy((-0.5) * this->TimestepSize, temp2);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         " HeatEquationParabolicPDESolverSystemParallelOMP::mult : An unknown operation mode was "
         "specified!");
   }
@@ -301,7 +301,7 @@ SGPP::base::DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generat
     rhs_complete.add(temp);
     rhs_complete.axpy((0.5) * this->TimestepSize, temp2);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode "
         "was specified!");
   }
@@ -360,7 +360,7 @@ SGPP::base::DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generat
     result_complete.add(temp);
     result_complete.axpy((-0.5) * this->TimestepSize, temp2);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode "
         "was specified!");
   }

@@ -200,7 +200,7 @@ void DataMatrix::transpose() {
 
 size_t DataMatrix::appendRow(const DataVector& vec) {
   if (vec.getSize() != this->ncols) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::appendRow : Dimensions do not match");
   }
 
@@ -221,7 +221,7 @@ void DataMatrix::setAll(float_t value) {
 
 void DataMatrix::getRow(size_t row, DataVector& vec) const {
   if (vec.getSize() != this->ncols) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::getRow : Dimensions do not match");
   }
 
@@ -240,7 +240,7 @@ void DataMatrix::getRow(size_t row, std::vector<float_t>& vec) const {
 
 void DataMatrix::setRow(size_t row, const DataVector& vec) {
   if (vec.getSize() != this->ncols) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::setRow : Dimensions do not match");
   }
 
@@ -251,7 +251,7 @@ void DataMatrix::setRow(size_t row, const DataVector& vec) {
 
 void DataMatrix::getColumn(size_t col, DataVector& vec) const {
   if (vec.getSize() != this->nrows) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::getColumn : Dimensions do not match");
   }
 
@@ -262,7 +262,7 @@ void DataMatrix::getColumn(size_t col, DataVector& vec) const {
 
 void DataMatrix::setColumn(size_t col, const DataVector& vec) {
   if (vec.getSize() != this->nrows) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::setColumn : Dimensions do not match");
   }
 
@@ -323,7 +323,7 @@ DataMatrix& DataMatrix::operator=(const DataMatrix& matr) {
   }
 
   if (nrows * ncols != matr.ncols * matr.nrows) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::= : Dimensions do not match");
   }
 
@@ -334,7 +334,7 @@ DataMatrix& DataMatrix::operator=(const DataMatrix& matr) {
 
 void DataMatrix::add(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::add : Dimensions do not match");
   }
 
@@ -347,7 +347,7 @@ void DataMatrix::add(const DataMatrix& matr) {
 
 void DataMatrix::sub(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::sub : Dimensions do not match");
   }
 
@@ -360,7 +360,7 @@ void DataMatrix::sub(const DataMatrix& matr) {
 
 void DataMatrix::addReduce(DataVector& reduction) {
   if (this->nrows != reduction.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::addReduce : Dimensions do not match");
   }
 
@@ -378,12 +378,12 @@ void DataMatrix::addReduce(DataVector& reduction) {
 void DataMatrix::addReduce(DataVector& reduction, DataVector& beta,
                            size_t start_beta) {
   if (this->nrows != reduction.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::addReduce : Dimensions do not match (reduction)");
   }
 
   if (this->ncols + start_beta > beta.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::addReduce : Dimensions do not match (beta)");
   }
 
@@ -400,7 +400,7 @@ void DataMatrix::addReduce(DataVector& reduction, DataVector& beta,
 
 void DataMatrix::expand(const DataVector& expand) {
   if (this->nrows != expand.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::expand : Dimensions do not match");
   }
 
@@ -413,7 +413,7 @@ void DataMatrix::expand(const DataVector& expand) {
 
 void DataMatrix::componentwise_mult(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::componentwise_mult : Dimensions do not match");
   }
 
@@ -426,7 +426,7 @@ void DataMatrix::componentwise_mult(const DataMatrix& matr) {
 
 void DataMatrix::componentwise_div(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::componentwise_div : Dimensions do not match");
   }
 
@@ -474,12 +474,12 @@ void DataMatrix::mult(float_t scalar) {
 
 void DataMatrix::mult(const DataVector& x, DataVector& y) {
   if (ncols != x.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::mult : Dimensions do not match (x)");
   }
 
   if (nrows != y.getSize()) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::mult : Dimensions do not match (y)");
   }
 
@@ -570,7 +570,7 @@ void DataMatrix::normalizeDimension(size_t d, float_t border) {
   size_t n = nrows * ncols;
 
   if (ncols <= d) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::normalizeDimension : Not enough columns in DataMatrix");
   }
 
@@ -679,7 +679,7 @@ void DataMatrix::minmax(size_t col, float_t* min, float_t* max) const {
   size_t n = nrows * ncols;
 
   if (ncols <= col) {
-    throw new SGPP::base::data_exception(
+    throw SGPP::base::data_exception(
       "DataMatrix::minmax : Not enough entries in DataMatrix");
   }
 

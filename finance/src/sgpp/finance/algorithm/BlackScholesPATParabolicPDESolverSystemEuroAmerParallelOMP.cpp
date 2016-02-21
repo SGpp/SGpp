@@ -214,7 +214,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::mult(
 
     applyMassMatrixInner(alpha, result);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         " BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation "
         "mode was specified!");
   }
@@ -326,7 +326,7 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     temp.sub(temp_old);
     rhs_complete.axpy((0.5) * this->TimestepSize, temp);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
         "operation mode was specified!");
   }
@@ -389,7 +389,7 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     } else if (this->tOperationMode == "AdBas") {
       applyMassMatrixComplete(alpha_bound, result_complete);
     } else {
-      throw new SGPP::base::algorithm_exception(
+      throw SGPP::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
           "operation mode was specified!");
     }
