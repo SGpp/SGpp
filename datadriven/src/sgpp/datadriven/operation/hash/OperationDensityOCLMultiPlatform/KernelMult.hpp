@@ -65,7 +65,7 @@ public:
 		kernelSourceBuilder(device, kernelConfiguration, dims), manager(manager), deviceTimingMult(0.0),
 		kernelConfiguration(kernelConfiguration)
 		{
-			this->verbose = kernelConfiguration["VERBOSE"].getBool();
+			this->verbose = true;
 			gridSize = points.size()/(2*dims);
 			if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0
 				&& kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt() < dims) {
@@ -111,7 +111,7 @@ public:
 		{
 			if(verbose)
 				std::cout<<"generating kernel source"<<std::endl;
-			std::string program_src = kernelSourceBuilder.generateSource();
+			std::string program_src = kernelSourceBuilder.generateSource(dims, gridSize);
 			if(verbose)
 				std::cout<<"Source: "<<std::endl<<program_src<<std::endl;
 			if(verbose)
@@ -147,23 +147,11 @@ public:
 			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
 			throw base::operation_exception(errorString.str());
 		}
-		err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_uint), &dims);
-		if (err != CL_SUCCESS) {
-			std::stringstream errorString;
-			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-			throw base::operation_exception(errorString.str());
-		}
-		err = clSetKernelArg(this->kernelMult, 4, sizeof(cl_uint), &gridSize);
-		if (err != CL_SUCCESS) {
-			std::stringstream errorString;
-			errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-			throw base::operation_exception(errorString.str());
-		}
 		if(std::is_same<T, float>::value) {
-			err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_float), &lambda);
+			err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_float), &lambda);
 		}
 		else {
-			err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_double), &lambda);
+			err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_double), &lambda);
 		}
 		if (err != CL_SUCCESS) {
 			std::stringstream errorString;
