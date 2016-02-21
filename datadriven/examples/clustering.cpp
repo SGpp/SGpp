@@ -22,16 +22,17 @@ using namespace SGPP::base;
 int main()
 {
 
-  std::string filename = "simple_test.arff";
-
-  std::cout << "Loading file: " << filename << std::endl;
-  SGPP::datadriven::Dataset data =
-      SGPP::datadriven::ARFFTools::readARFF(filename);
-  SGPP::base::DataMatrix& dataset = data.getData();
-  std::cout<<"Loaded "<<dataset.getNcols()<<" dimensional dataset with "<<dataset.getNrows()<<" datapoints."<<std::endl;
-
-  unsigned int dimension=dataset.getNcols(),tiefe,k;
+	unsigned int dimension,tiefe,k;
 	double lambda,treshold;
+	std::string filename = "simple_test.arff";
+
+	std::cout << "Loading file: " << filename << std::endl;
+	SGPP::datadriven::Dataset data =
+		SGPP::datadriven::ARFFTools::readARFF(filename);
+	SGPP::base::DataMatrix& dataset = data.getData();
+	dimension=dataset.getNcols();
+	std::cout<<"Loaded "<<dataset.getNcols()<<" dimensional dataset with "<<dataset.getNrows()<<" datapoints."<<std::endl;
+
 	std::cout<<"Size of Grid (3-18): ";
 	std::cin>>tiefe;
 	std::cout<<"Lambda (controlls smoothness of the density function. 0.01 - 0.0001 recommended.): ";
@@ -49,11 +50,6 @@ int main()
 
 	SGPP::base::DataVector alpha(gridsize);
 	SGPP::base::DataVector result(gridsize);
-	for(size_t i = 0; i < gridsize; i++)
-	{
-		alpha[i] = 1.0;
-		result[i] = 0.0;
-	}
 
 	sg::solver::ConjugateGradients *solver=new sg::solver::ConjugateGradients(17,0.0001);
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* operation_mult=
@@ -61,18 +57,12 @@ int main()
 
 	std::cout<<"Creating rhs"<<std::endl;
 	SGPP::base::DataVector b(gridsize);
-	b.setAll(0.0);
 	operation_mult->generateb(dataset,b);
 	for(size_t i=0;i<300;i++)
 		std::cout<<b[i]<<" ";
 	std::cout<<std::endl;
 
 	std::cout<<"Creating alpha"<<std::endl;
-	alpha.setAll(1.0);
-	for(unsigned int i=0;i<gridsize;i++)
-		alpha[i]=(rand()%1000)/1000.0;
-	double norm=alpha.l2Norm();
-	alpha.mult(1.0/norm);
 	solver->solve(*operation_mult,alpha,b,false,true);
 
 	std::cout<<"Starting graph creation..."<<std::endl;
@@ -89,6 +79,8 @@ int main()
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
 
 	//cleanup
+	delete gridGen;
+	delete grid;
 	delete operation_mult;
 	delete solver;
 
