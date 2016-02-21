@@ -19,10 +19,7 @@
  *            ("Normal" with x = i*2^(-l) and "ClenshawCurtis")
  * Version 7: PointDistribution changed from enum to enum class
  * Version 8: Add custom boundaryLevel (>= 1) for LinearBoundaryGrid etc.
- * Version 9: Remove hasStorage, which indicated if the grid had a GridStorage (1) or not (0).
- *            Previous version: "{$gridType}\n{$hasStorage}\n{$version} {$dimension} {$gridSize}\n..."
- *            New version: "{$gridType}\n{$version} {$dimension} {$gridSize}\n..."
  */
-#define SERIALIZATION_VERSION 10
+#define SERIALIZATION_VERSION 8
 
 #endif /* SERIALIZATIONVERSION_HPP */
