@@ -188,7 +188,6 @@ std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensi
  * @param configuration configuration to be used (evalType and evalSubType)
  * @return Pointer to new OperationMultipleEval for the Grid grid
  */
-
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
     SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);

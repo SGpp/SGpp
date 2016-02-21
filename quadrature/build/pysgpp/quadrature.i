@@ -11,6 +11,8 @@
 %include "quadrature/src/sgpp/quadrature/sampling/StratifiedSampleGenerator.hpp"
 %include "quadrature/src/sgpp/quadrature/sampling/HaltonSampleGenerator.hpp"
 
+%include "OpFactory.i"
+
 //%apply (int DIM1, long long int* IN_ARRAY1) {(size_t dimensions, long long int* strataPerDimension)};
 
 %apply std::string *INPUT { std::string& istr };
