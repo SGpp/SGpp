@@ -52,7 +52,7 @@ class ModPolyGrid : public Grid {
   StandardGridGenerator generator;
   /// max. polynom's degree
   size_t degree;
-  const SPolyModifiedBase* basis_;
+  std::unique_ptr<SPolyModifiedBase> basis_;
 };
 
 }  // namespace base

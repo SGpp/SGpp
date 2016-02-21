@@ -50,7 +50,7 @@ class PolyGrid : public Grid {
   StandardGridGenerator generator;
   /// max. polynom's degree
   size_t degree;
-  const SPolyBase* basis_;
+  std::unique_ptr<SPolyBase> basis_;
 };
 
 }  // namespace base

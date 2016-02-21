@@ -19,9 +19,9 @@ namespace base {
 FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) :
   Grid(istr),
   generator(storage),
-  degree(1 << 16),
-  basis_(NULL) {
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SFundamentalSplineBase(degree));
 }
 
 
@@ -29,13 +29,10 @@ FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree) :
   Grid(dim),
   generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SFundamentalSplineBase(degree)) {
 }
 
 FundamentalSplineGrid::~FundamentalSplineGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType FundamentalSplineGrid::getType() {
@@ -43,10 +40,6 @@ SGPP::base::GridType FundamentalSplineGrid::getType() {
 }
 
 const SBasis& FundamentalSplineGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SFundamentalSplineBase(degree);
-  }
-
   return *basis_;
 }
 

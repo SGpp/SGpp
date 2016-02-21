@@ -20,10 +20,10 @@ BsplineBoundaryGrid::BsplineBoundaryGrid(std::istream& istr) :
   Grid(istr),
   generator(storage, boundaryLevel),
   degree(1 << 16),
-  basis_(NULL),
   boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
+  basis_.reset(new SBsplineBoundaryBase(degree));
 }
 
 
@@ -33,14 +33,11 @@ BsplineBoundaryGrid::BsplineBoundaryGrid(size_t dim,
   Grid(dim),
   generator(storage, boundaryLevel),
   degree(degree),
-  basis_(NULL),
+  basis_(new SBsplineBoundaryBase(degree)),
   boundaryLevel(boundaryLevel) {
 }
 
 BsplineBoundaryGrid::~BsplineBoundaryGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType BsplineBoundaryGrid::getType() {
@@ -48,10 +45,6 @@ SGPP::base::GridType BsplineBoundaryGrid::getType() {
 }
 
 const SBasis& BsplineBoundaryGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineBoundaryBase(degree);
-  }
-
   return *basis_;
 }
 

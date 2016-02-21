@@ -16,16 +16,16 @@ namespace base {
 PolyGrid::PolyGrid(std::istream& istr) :
   Grid(istr),
   generator(storage),
-  degree(1 << 16),
-  basis_(NULL) {
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SPolyBase(degree));
 }
 
 PolyGrid::PolyGrid(size_t dim, size_t degree) :
   Grid(dim),
   generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SPolyBase(degree)) {
 }
 
 PolyGrid::~PolyGrid() {
@@ -36,10 +36,6 @@ SGPP::base::GridType PolyGrid::getType() {
 }
 
 const SBasis& PolyGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SPolyBase(degree);
-  }
-
   return *basis_;
 }
 

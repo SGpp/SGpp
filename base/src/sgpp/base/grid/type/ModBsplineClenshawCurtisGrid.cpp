@@ -17,9 +17,9 @@ namespace base {
 ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) :
   Grid(istr),
   generator(storage),
-  degree(1 << 16),
-  basis_(NULL) {
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SBsplineModifiedClenshawCurtisBase(degree));
 }
 
 
@@ -28,13 +28,10 @@ ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim,
   Grid(dim),
   generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SBsplineModifiedClenshawCurtisBase(degree)) {
 }
 
 ModBsplineClenshawCurtisGrid::~ModBsplineClenshawCurtisGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType ModBsplineClenshawCurtisGrid::getType() {
@@ -42,10 +39,6 @@ SGPP::base::GridType ModBsplineClenshawCurtisGrid::getType() {
 }
 
 const SBasis& ModBsplineClenshawCurtisGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineModifiedClenshawCurtisBase(degree);
-  }
-
   return *basis_;
 }
 

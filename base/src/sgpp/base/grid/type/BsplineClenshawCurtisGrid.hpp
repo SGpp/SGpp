@@ -89,7 +89,7 @@ class BsplineClenshawCurtisGrid : public Grid {
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  const SBsplineClenshawCurtisBase* basis_;
+  std::unique_ptr<SBsplineClenshawCurtisBase> basis_;
   /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };

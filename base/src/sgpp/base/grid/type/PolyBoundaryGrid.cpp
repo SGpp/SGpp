@@ -15,10 +15,10 @@ PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr) :
   Grid(istr),
   generator(storage, boundaryLevel),
   degree(1 << 16),
-  basis_(NULL),
   boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
+  basis_.reset(new SPolyBoundaryBase(degree));
 }
 
 PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
@@ -27,21 +27,14 @@ PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
   Grid(dim),
   generator(storage, boundaryLevel),
   degree(degree),
-  basis_(NULL),
+  basis_(new SPolyBoundaryBase(degree)),
   boundaryLevel(boundaryLevel) {
 }
 
 PolyBoundaryGrid::~PolyBoundaryGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 const SBasis& PolyBoundaryGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SPolyBoundaryBase(degree);
-  }
-
   return *basis_;
 }
 
