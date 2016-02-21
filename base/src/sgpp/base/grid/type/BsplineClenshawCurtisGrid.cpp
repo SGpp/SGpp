@@ -20,10 +20,10 @@ BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(std::istream& istr) :
   Grid(istr),
   generator(storage, boundaryLevel),
   degree(1 << 16),
-  basis_(NULL),
   boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
+  basis_.reset(new SBsplineClenshawCurtisBase(degree));
 }
 
 BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(size_t dim,
@@ -32,14 +32,11 @@ BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(size_t dim,
   Grid(dim),
   generator(storage, boundaryLevel),
   degree(degree),
-  basis_(NULL),
+  basis_(new SBsplineClenshawCurtisBase(degree)),
   boundaryLevel(boundaryLevel) {
 }
 
 BsplineClenshawCurtisGrid::~BsplineClenshawCurtisGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType BsplineClenshawCurtisGrid::getType() {
@@ -47,10 +44,6 @@ SGPP::base::GridType BsplineClenshawCurtisGrid::getType() {
 }
 
 const SBasis& BsplineClenshawCurtisGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineClenshawCurtisBase(degree);
-  }
-
   return *basis_;
 }
 

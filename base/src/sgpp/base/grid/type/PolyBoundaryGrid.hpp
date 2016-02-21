@@ -56,7 +56,7 @@ class PolyBoundaryGrid : public Grid {
   /// max. polynom's degree
   size_t degree;
   /// polynomial basis
-  const SPolyBoundaryBase* basis_;
+  std::unique_ptr<SPolyBoundaryBase> basis_;
   /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };

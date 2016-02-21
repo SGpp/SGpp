@@ -83,7 +83,7 @@ class FundamentalSplineGrid : public Grid {
   /// fundamental spline degree
   size_t degree;
   /// fundamental spline basis
-  const SFundamentalSplineBase* basis_;
+  std::unique_ptr<SFundamentalSplineBase> basis_;
 };
 
 }  // namespace base

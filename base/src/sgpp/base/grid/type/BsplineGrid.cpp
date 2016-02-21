@@ -19,9 +19,9 @@ namespace base {
 BsplineGrid::BsplineGrid(std::istream& istr) :
   Grid(istr),
   generator(storage),
-  degree(1 << 16),
-  basis_(NULL) {
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SBsplineBase(degree));
 }
 
 
@@ -29,13 +29,10 @@ BsplineGrid::BsplineGrid(size_t dim, size_t degree) :
   Grid(dim),
   generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SBsplineBase(degree)) {
 }
 
 BsplineGrid::~BsplineGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType BsplineGrid::getType() {
@@ -43,10 +40,6 @@ SGPP::base::GridType BsplineGrid::getType() {
 }
 
 const SBasis& BsplineGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineBase(degree);
-  }
-
   return *basis_;
 }
 

@@ -83,7 +83,7 @@ class BsplineGrid : public Grid {
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  const SBsplineBase* basis_;
+  std::unique_ptr<SBsplineBase> basis_;
 };
 
 }  // namespace base

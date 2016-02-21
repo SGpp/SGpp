@@ -83,7 +83,7 @@ class ModBsplineClenshawCurtisGrid : public Grid {
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  const SBsplineModifiedClenshawCurtisBase* basis_;
+  std::unique_ptr<SBsplineModifiedClenshawCurtisBase> basis_;
 };
 
 }  // namespace base

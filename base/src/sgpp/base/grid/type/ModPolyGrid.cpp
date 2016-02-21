@@ -19,9 +19,9 @@ namespace base {
 ModPolyGrid::ModPolyGrid(std::istream& istr) :
   Grid(istr),
   generator(storage),
-  degree(1 << 16),
-  basis_(NULL) {
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SPolyModifiedBase(degree));
 }
 
 
@@ -29,13 +29,10 @@ ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) :
   Grid(dim),
   generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SPolyModifiedBase(degree)) {
 }
 
 ModPolyGrid::~ModPolyGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType ModPolyGrid::getType() {
@@ -43,10 +40,6 @@ SGPP::base::GridType ModPolyGrid::getType() {
 }
 
 const SBasis& ModPolyGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SPolyModifiedBase(degree);
-  }
-
   return *basis_;
 }
 
