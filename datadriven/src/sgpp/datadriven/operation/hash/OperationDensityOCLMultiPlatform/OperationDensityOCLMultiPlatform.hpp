@@ -88,14 +88,7 @@ public:
 			std::cout<<"starting multiplication with "<<gridSize<<" entries"<<std::endl;
 		std::chrono::time_point<std::chrono::system_clock> start, end;
 		start = std::chrono::system_clock::now();
-		try {
 			this->multKernel->mult(alphaVector, resultVector);
-		}
-		catch(base::operation_exception &e) {
-			std::cerr<<"Error! Could not execute opencl density matrix-vector multiplication!"<<std::endl
-					 <<"Error Message: "<<e.what()<<std::endl;
-			return;
-		}
 		end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end - start;
 
@@ -109,7 +102,6 @@ public:
 
 	void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b) {
 		std::chrono::time_point<std::chrono::system_clock> start, end;
-		start = std::chrono::system_clock::now();
 		if (verbose) {
 			std::cout << "starting rhs kernel methode! datasize: " <<b.getSize()<< std::endl;
 		}
@@ -118,14 +110,8 @@ public:
 		double *data_raw = dataset.getPointer();
 		for(size_t i = 0; i < dataset.getSize(); i++)
 			datasetVector[i]=data_raw[i];
-		try {
-			bKernel->rhs(datasetVector, bVector);
-		}
-		catch(base::operation_exception &e) {
-			std::cerr<<"Error! Could not calculate right hand side vector!"<<std::endl
-					 <<"Error Message: "<<e.what()<<std::endl;
-			return;
-		}
+		start = std::chrono::system_clock::now();
+		bKernel->rhs(datasetVector, bVector);
 		end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end - start;
 

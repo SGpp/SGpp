@@ -47,7 +47,7 @@ SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* createDensityO
 																								  dimension, manager, firstKernelConfig, secondKernelConfig, (float)lambda);
 	} else if ((*parameters)["INTERNAL_PRECISION"].get().compare("double") == 0) {
 		return new datadriven::StreamingOCLMultiPlatform::OperationDensityOCLMultiPlatform<double>(grid,
-																								   2, manager, firstKernelConfig, secondKernelConfig, lambda);
+																								   dimension, manager, firstKernelConfig, secondKernelConfig, lambda);
 	} else {
 		throw base::factory_exception(
 			"Error creating operation\"OperationMultiEvalStreamingOCLMultiPlatform\": invalid value for parameter \"INTERNAL_PRECISION\"");
