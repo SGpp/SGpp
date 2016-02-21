@@ -42,61 +42,6 @@ private:
 		return output.str();
 	}
 
-	std::string getData(size_t dim, size_t dataBlockingIndex) {
-		std::stringstream dimStringStream;
-		dimStringStream << dim;
-		std::string dimString = dimStringStream.str();
-		return this->getData(dimString, dataBlockingIndex);
-	}
-
-	std::string unrolledBasisFunctionEvalulation(size_t dims, size_t startDim, size_t endDim,
-												 std::string unrollVariable) {
-		std::stringstream output;
-
-		for (size_t d = startDim; d < endDim; d++) {
-
-			std::stringstream dimElement;
-			dimElement << "(";
-			if (!unrollVariable.compare("") == 0) {
-				dimElement << unrollVariable << " + ";
-			}
-			dimElement << d;
-			dimElement << ")";
-			std::string pointerAccess = dimElement.str();
-
-			std::string dString;
-			if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
-				std::stringstream stream;
-				stream << (d);
-				dString = stream.str();
-			} else {
-				dString = pointerAccess;
-			}
-
-			std::stringstream levelAccessStream;
-			std::stringstream indexAccessStream;
-			if (useLocalMemory) {
-				levelAccessStream << "locLevel[dimLevelIndex]";
-				indexAccessStream << "locIndex[dimLevelIndex]";
-			} else {
-				levelAccessStream << "ptrLevel[dimLevelIndex]";
-				indexAccessStream << "ptrIndex[dimLevelIndex]";
-			}
-			std::string levelAccess = levelAccessStream.str();
-			std::string indexAccess = indexAccessStream.str();
-
-			output << this->indent3 << "dimLevelIndex = " << "(k * " << dims << ") + " << pointerAccess << ";"
-				   << std::endl;
-
-			for (size_t i = 0; i < dataBlockSize; i++) {
-				output << this->indent3 << "curSupport_" << i << " *= fmax(1.0" << this->constSuffix() << " - fabs((";
-				output << levelAccess << " * " << getData(dString, i) << ") - " << indexAccess << "), 0.0"
-					   << this->constSuffix() << ");" << std::endl;
-			}
-		}
-		return output.str();
-	}
-
 public:
 
 	SourceBuilderPruneGraph(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration, size_t dims) :
