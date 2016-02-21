@@ -7,8 +7,6 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
@@ -20,6 +18,7 @@ namespace base {
 
 BsplineBoundaryGrid::BsplineBoundaryGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   degree(1 << 16),
   basis_(NULL),
   boundaryLevel(0) {
@@ -32,6 +31,7 @@ BsplineBoundaryGrid::BsplineBoundaryGrid(size_t dim,
     size_t degree,
     level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   degree(degree),
   basis_(NULL),
   boundaryLevel(boundaryLevel) {
@@ -73,8 +73,8 @@ void BsplineBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> BsplineBoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(storage, boundaryLevel));
+GridGenerator& BsplineBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

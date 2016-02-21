@@ -41,7 +41,7 @@ def testFG(obj, grid, level, function):
     p = None
     l_user=2;
     # generate a regular test grid
-    generator = grid.createGridGenerator()
+    generator = grid.getGenerator()
     generator.truncated(level,l_user)
 
     storage = grid.getStorage()

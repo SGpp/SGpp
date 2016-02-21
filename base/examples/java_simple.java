@@ -49,7 +49,7 @@ public class java_simple {
 
     // create regular grid, level 3
     int level = 3;
-    GridGenerator gridGen = grid.createGridGenerator();
+    GridGenerator gridGen = grid.getGenerator();
     gridGen.regular(level);
 
     System.out.println("number of grid points:  " + gridStorage.size());

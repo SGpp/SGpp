@@ -329,8 +329,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      std::unique_ptr<base::GridGenerator> gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
     }
   }
@@ -464,8 +463,7 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      std::unique_ptr<base::GridGenerator> gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
     }
   }
@@ -661,8 +659,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      std::unique_ptr<base::GridGenerator> gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
     }
   }
@@ -846,8 +843,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
           "Grid, 3 = ModLinear Grid)!");
       }
 
-      std::unique_ptr<base::GridGenerator> gridGen = this->grid->createGridGenerator();
-      gridGen->regular(this->level);
+      this->grid->getGenerator().regular(this->level);
       std::cout << std::endl;
     }
   }
@@ -1005,7 +1001,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
   bool final_ada = false;
 
   for (size_t adaptiveStep = 1; adaptiveStep <= this->refineTimes; adaptiveStep++) {
-    std::unique_ptr<base::GridGenerator> myGenerator = this->grid->createGridGenerator();
+    base::GridGenerator& myGenerator = this->grid->getGenerator();
     size_t refineNumber;
 
     if (this->refineMode == 1) {
@@ -1026,7 +1022,7 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
     }
 
     base::SurplusRefinementFunctor myRefineFunc(alpha_ada, refineNumber, 0.0);
-    myGenerator->refine(myRefineFunc);
+    myGenerator.refine(myRefineFunc);
 
     base::GridStorage* gridStorage_ada = &this->grid->getStorage();
     size_t gridPts = gridStorage_ada->size();

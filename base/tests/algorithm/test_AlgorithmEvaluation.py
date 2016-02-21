@@ -24,7 +24,7 @@ class TestAlgorithmEvaluation(unittest.TestCase):
         print test_desc
 
         self.grid = Grid.createLinearGrid(d)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(l)
 
         alpha = DataVector([1] * self.grid.getSize())

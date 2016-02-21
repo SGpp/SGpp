@@ -336,9 +336,7 @@ void BatchLearner::processBatch(string workData) {
       grids.insert(std::pair<int, base::LinearGrid*>(p.first, new base::LinearGrid(dimensions)));
       occurences.insert(std::pair<int, int>(p.first, 0));
       // Generate regular Grid with LEVELS Levels
-      std::unique_ptr<base::GridGenerator> myGenerator = grids.at(
-            p.first)->createGridGenerator();
-      myGenerator->regular(gridConf.level_);
+      grids.at(p.first)->getGenerator().regular(gridConf.level_);
 
       if (batchConf.verbose)
         cout << "found new class " << p.first << ", points in grid " << p.first << ": "
@@ -378,7 +376,7 @@ void BatchLearner::processBatch(string workData) {
 
       base::SurplusRefinementFunctor myRefineFunc(
         *alphaVectors.at(p.first), adaptConf.noPoints_, adaptConf.threshold_);
-      grids.at(p.first)->createGridGenerator()->refine(myRefineFunc);
+      grids.at(p.first)->getGenerator().refine(myRefineFunc);
       // change alpha, zeroes to new entries until they will be filled
       alphaVectors.at(p.first)->resizeZero(grids.at(p.first)->getSize());
     }

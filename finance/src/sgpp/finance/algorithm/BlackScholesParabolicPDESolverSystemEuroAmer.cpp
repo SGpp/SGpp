@@ -388,32 +388,32 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastT
     size_t originalGridSize = this->BoundGrid->getStorage().size();
 
     // Coarsen the grid
-    std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->BoundGrid->createGridGenerator();
+    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numRefines = myGenerator->getNumberOfRefinablePoints();
+      size_t numRefines = myGenerator.getNumberOfRefinablePoints();
       SGPP::base::SurplusRefinementFunctor myRefineFunc(
           *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
-        myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+        myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
         this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
       }
 
       if (this->refineMode == "classic") {
-        myGenerator->refine(myRefineFunc);
+        myGenerator.refine(myRefineFunc);
         this->alpha_complete->resizeZero(this->BoundGrid->getStorage().size());
       }
     }
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
+      size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
       SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
           *this->alpha_complete, numCoarsen, this->coarsenThreshold);
-      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
+      myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
 
     ///////////////////////////////////////////////////

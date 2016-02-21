@@ -7,6 +7,7 @@
 #define LINEARSTRETCHEDTRUNCATEDBOUNDARYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,6 +20,8 @@ namespace base {
  */
 class LinearStretchedBoundaryGrid : public Grid {
  protected:
+  /// grid generator
+  StretchedBoundaryGridGenerator generator;
   explicit LinearStretchedBoundaryGrid(std::istream& istr);
 
  public:
@@ -45,7 +48,7 @@ class LinearStretchedBoundaryGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };

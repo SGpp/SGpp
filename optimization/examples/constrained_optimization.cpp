@@ -87,8 +87,7 @@ int main() {
     SGPP::base::Grid::createModBsplineGrid(d, p));
 
   const size_t l = 5;
-  std::unique_ptr<SGPP::base::GridGenerator>(
-    grid->createGridGenerator())->regular(l);
+  grid->getGenerator().regular(l);
 
   SGPP::base::GridStorage& gridStorage = grid->getStorage();
 

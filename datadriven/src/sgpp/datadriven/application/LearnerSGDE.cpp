@@ -155,8 +155,7 @@ void LearnerSGDE::createRegularGrid(Grid*& grid, size_t ndim) {
     throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
   }
 
-  std::unique_ptr<GridGenerator> gridGen = grid->createGridGenerator();
-  gridGen->regular(gridConfig.level_);
+  grid->getGenerator().regular(gridConfig.level_);
 }
 
 float_t LearnerSGDE::optimizeLambdaCV() {
@@ -259,7 +258,7 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
   size_t dim = train.getNcols();
 
   GridStorage* gridStorage = &grid.getStorage();
-  std::unique_ptr<GridGenerator> gridGen = grid.createGridGenerator();
+  GridGenerator& gridGen = grid.getGenerator();
   DataVector rhs(grid.getStorage().size());
   alpha.resize(grid.getStorage().size());
   alpha.setAll(0.0);
@@ -301,7 +300,7 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
 
       SurplusRefinementFunctor srf(alphaWeight,
                                    adaptivityConfig.noPoints_, adaptivityConfig.threshold_);
-      gridGen->refine(srf);
+      gridGen.refine(srf);
 
       if (!learnerSGDEConfig.silent_) {
         cout << "# LearnerSGDE: ref " << ref << "/"

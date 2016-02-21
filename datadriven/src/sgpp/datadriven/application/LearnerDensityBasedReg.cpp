@@ -143,7 +143,7 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
     // Do Refinements
     if (i > 0) {
       SGPP::base::SurplusRefinementFunctor myRefineFunc(*alpha_, AdaptConfig.noPoints_);
-      grid_->createGridGenerator()->refine(myRefineFunc);
+      grid_->getGenerator().refine(myRefineFunc);
 
       alpha_->resize(grid_->getSize());
 

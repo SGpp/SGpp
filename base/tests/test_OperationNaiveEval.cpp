@@ -126,8 +126,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
                               (grid.getType() == GridType::ModWavelet);
 
     // create regular sparse grid
-    std::unique_ptr<GridGenerator> gridGen(grid.createGridGenerator());
-    gridGen->regular(l);
+    grid.getGenerator().regular(l);
     const size_t n = grid.getSize();
     DataVector alpha(n);
 

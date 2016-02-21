@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -54,7 +55,7 @@ class ModFundamentalSplineGrid : public Grid {
   /**
    * @return pointer to a GridGenerator object
    */
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   /**
    * reads a grid out of a string
@@ -77,6 +78,8 @@ class ModFundamentalSplineGrid : public Grid {
   virtual size_t getDegree();
 
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   /// fundamental spline degree
   size_t degree;
   /// fundamental spline basis

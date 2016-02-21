@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_SUITE(TestOperationMultipleEval)
 BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   size_t dim = 2;
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
-  grid->createGridGenerator()->regular(2);
+  grid->getGenerator().regular(2);
 
   GridStorage& gS = grid->getStorage();
 

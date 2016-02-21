@@ -29,7 +29,7 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
         print test_desc
 
         self.grid = Grid.createLinearGrid(d)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(l)
 
         alpha = DataVector([self.get_random_alpha() for i in xrange(self.grid.getSize())])

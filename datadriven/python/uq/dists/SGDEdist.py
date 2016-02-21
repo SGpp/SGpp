@@ -161,7 +161,7 @@ class SGDEdist(Dist):
 #         # hierarchize using a mod linear grid
 #         gs = self.grid.getStorage()
 #         self.loggrid = Grid.createLinearGrid(gs.dim())
-#         self.loggrid.createGridGenerator().regular(gs.getMaxLevel())
+#         self.loggrid.getGenerator().regular(gs.getMaxLevel())
 #         if len(invalid) > 0:
 #             self.logalpha = hierarchizeBruteForce(self.loggrid, nodalValues,
 #                                                   ignore=invalid)
@@ -184,7 +184,7 @@ class SGDEdist(Dist):
         dim = self.getDim()
 
         # fg = Grid.createLinearBoundaryGrid(dim)
-        # fg.createGridGenerator().full(level)
+        # fg.getGenerator().full(level)
         # opEval = createOperationEval(self.grid)
         # p = DataVector(dim)
         self.fmin = 0.

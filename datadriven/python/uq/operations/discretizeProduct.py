@@ -80,7 +80,7 @@ def interpolateProduct(grid1, alpha1, grid2, alpha2, grid_result):
 refinable = []
 
 def refine(jgrid, jalpha):
-#     jgn = jgrid.createGridGenerator()
+#     jgn = jgrid.getGenerator()
 #     rp = jgn.getNumberOfRefinablePoints()
 #     jgn.refine(SurplusRefinementFunctor(jalpha, rp, 0.))
     from pysgpp.extensions.datadriven.uq.refinement.LocalRefinementStrategy import CreateAllChildrenRefinement
@@ -137,7 +137,7 @@ def discretizeProduct(grid1, alpha1, grid2, alpha2):
 
     # join the two grids
     joinedGrid = Grid.createPolyGrid(2, deg)
-    joinedGrid.createGridGenerator().full(maxlevel)
+    joinedGrid.getGenerator().full(maxlevel)
     # interpolate the product on the new grid
     joinedAlpha = interpolateProduct(grid1, alpha1, grid2, alpha2, joinedGrid)
 

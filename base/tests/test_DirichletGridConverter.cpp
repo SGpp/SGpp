@@ -40,8 +40,7 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   int dimension = 2;
   std::unique_ptr<Grid> linearBoundaryGrid = Grid::createLinearBoundaryGrid(dimension);
   GridStorage& linearBoundaryGridStorageExact = linearBoundaryGrid->getStorage();
-  std::unique_ptr<GridGenerator> gridGen = linearBoundaryGrid->createGridGenerator();
-  gridGen->regular(level);
+  linearBoundaryGrid->getGenerator().regular(level);
 
   // determine the number of grid points for both grids
   numTotalGridPoints = linearBoundaryGridStorageExact.size();

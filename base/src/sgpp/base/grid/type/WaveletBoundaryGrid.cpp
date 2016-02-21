@@ -6,13 +6,9 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
-
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -22,6 +18,7 @@ namespace base {
 
 WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   boundaryLevel(0) {
   istr >> boundaryLevel;
 }
@@ -29,6 +26,7 @@ WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) :
 WaveletBoundaryGrid::WaveletBoundaryGrid(size_t dim,
     level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   boundaryLevel(boundaryLevel) {
 }
 
@@ -52,8 +50,8 @@ std::unique_ptr<Grid> WaveletBoundaryGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> WaveletBoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(storage, boundaryLevel));
+GridGenerator& WaveletBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 

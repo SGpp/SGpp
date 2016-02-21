@@ -40,7 +40,7 @@ def testFG(obj, grid, level, function):
     points = None
     p = None
     # generate a regular test grid
-    generator = grid.createGridGenerator()
+    generator = grid.getGenerator()
     generator.regular(level)
 
     storage = grid.getStorage()

@@ -61,7 +61,7 @@ def copyGrid(grid, level=0, deg=1):
     dim = gs.dim()
     newGrid = createGrid(grid, dim, deg)
     if level > 0:
-        newGrid.createGridGenerator().regular(level)
+        newGrid.getGenerator().regular(level)
     newGs = newGrid.getStorage()
     # insert grid points
     for i in xrange(gs.size()):
@@ -760,7 +760,7 @@ def checkPositivity(grid, alpha):
     # define a full grid of maxlevel of the grid
     gs = grid.getStorage()
     fullGrid = Grid.createLinearGrid(gs.dim())
-    fullGrid.createGridGenerator().full(gs.getMaxLevel())
+    fullGrid.getGenerator().full(gs.getMaxLevel())
     fullHashGridStorage = fullGrid.getStorage()
     A = DataMatrix(fullHashGridStorage.size(), fullHashGridStorage.dim())
     p = DataVector(gs.dim())

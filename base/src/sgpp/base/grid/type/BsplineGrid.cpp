@@ -7,8 +7,6 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
@@ -20,6 +18,7 @@ namespace base {
 
 BsplineGrid::BsplineGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage),
   degree(1 << 16),
   basis_(NULL) {
   istr >> degree;
@@ -28,6 +27,7 @@ BsplineGrid::BsplineGrid(std::istream& istr) :
 
 BsplineGrid::BsplineGrid(size_t dim, size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
   basis_(NULL) {
 }
@@ -67,8 +67,8 @@ void BsplineGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> BsplineGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& BsplineGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

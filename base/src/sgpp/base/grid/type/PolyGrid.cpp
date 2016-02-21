@@ -6,8 +6,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -17,6 +15,7 @@ namespace base {
 
 PolyGrid::PolyGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage),
   degree(1 << 16),
   basis_(NULL) {
   istr >> degree;
@@ -24,6 +23,7 @@ PolyGrid::PolyGrid(std::istream& istr) :
 
 PolyGrid::PolyGrid(size_t dim, size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
   basis_(NULL) {
 }
@@ -60,8 +60,8 @@ void PolyGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> PolyGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& PolyGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

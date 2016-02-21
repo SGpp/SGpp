@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
 
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
-  grid->createGridGenerator()->regular(level);
+  grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.size();
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
-  grid->createGridGenerator()->regular(level);
+  grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
   size_t N = gS.size();
   std::vector<int> v(N);
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   size_t deg = 4;
 
   std::unique_ptr<Grid> grid = Grid::createPolyGrid(dim, deg);
-  grid->createGridGenerator()->regular(level);
+  grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
   size_t N = gS.size();
   std::vector<int> v(N);
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   size_t deg = 4;
 
   std::unique_ptr<Grid> grid = Grid::createPolyBoundaryGrid(dim, deg);
-  grid->createGridGenerator()->regular(level);
+  grid->getGenerator().regular(level);
   GridStorage& gS = grid->getStorage();
   size_t N = gS.size();
   std::vector<int> v(N);

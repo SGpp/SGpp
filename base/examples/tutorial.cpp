@@ -37,8 +37,7 @@ int main() {
 
   // create regular grid, level 3
   size_t level = 3;
-  std::unique_ptr<GridGenerator> gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
+  grid->getGenerator().regular(level);
   std::cout << "number of grid points:  " << gridStorage.size() << std::endl;
 
   // create coefficient vector
@@ -57,8 +56,7 @@ int main() {
   std::cout << "alpha before hierarchization: " << alpha.toString() << std::endl;
 
   // hierarchize
-  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-    alpha);
+  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
   std::cout << "alpha after hierarchization:  " << alpha.toString() << std::endl;
 
   // evaluate

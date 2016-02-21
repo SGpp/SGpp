@@ -278,8 +278,7 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
 
   std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
-  std::unique_ptr<GridGenerator> gen = grid->createGridGenerator();
-  gen->regular(level);
+  grid->getGenerator().regular(level);
   //  GridStorage& storage = grid->getStorage();
 
   DataVector surplusses(5);

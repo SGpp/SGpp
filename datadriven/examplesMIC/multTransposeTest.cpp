@@ -70,8 +70,8 @@ int main(int argc, char** argv) {
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
 
-  std::unique_ptr<SGPP::base::GridGenerator> gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
+  SGPP::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << std::endl;
   std::cout << "number of data points: " << dataset.getNumberInstances()
             << std::endl;
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
                                                     configuration);
 
-  doAllRefinements(adaptConfig, *grid, *gridGen, mt, dist);
+  doAllRefinements(adaptConfig, *grid, gridGen, mt, dist);
 
   std::cout << "number of grid points after refinement: " << gridStorage->size()
             << std::endl;

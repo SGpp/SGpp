@@ -7,6 +7,7 @@
 #define PREWAVELETGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,8 +20,10 @@ namespace base {
  */
 class PrewaveletGrid : public Grid {
  protected:
+  GridStorage shadowStorage;
+  /// grid generator
+  PrewaveletGridGenerator generator;
   explicit PrewaveletGrid(std::istream& istr);
-  std::unique_ptr<GridStorage> shadowStorage;
 
  public:
   explicit PrewaveletGrid(size_t dim);
@@ -30,7 +33,7 @@ class PrewaveletGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 

@@ -114,8 +114,7 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
 
   // interpolate f on a sparse grid
   std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createPolyGrid(dim, 2);
-  std::unique_ptr<SGPP::base::GridGenerator> gridGen = grid->createGridGenerator();
-  gridGen->regular(1);
+  grid->getGenerator().regular(1);
 
   DataVector alpha(1);
   alpha[0] = 1.0f;

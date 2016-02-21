@@ -6,10 +6,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,6 +16,7 @@ namespace base {
 
 ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage),
   degree(1 << 16),
   basis_(NULL) {
   istr >> degree;
@@ -28,6 +26,7 @@ ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) :
 ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim,
     size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
   basis_(NULL) {
 }
@@ -67,8 +66,8 @@ void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> ModBsplineClenshawCurtisGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& ModBsplineClenshawCurtisGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

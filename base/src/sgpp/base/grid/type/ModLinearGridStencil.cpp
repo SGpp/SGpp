@@ -4,14 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
-
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,14 +13,19 @@
 namespace SGPP {
 namespace base {
 
-ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(
-    istr) {
+ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) :
+    GridStencil(istr),
+    generator(storage) {
 }
 
-ModLinearGridStencil::ModLinearGridStencil(size_t dim) : GridStencil(dim) {
+ModLinearGridStencil::ModLinearGridStencil(size_t dim) :
+    GridStencil(dim),
+    generator(storage) {
 }
 
-ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
+ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) :
+    GridStencil(BB),
+    generator(storage) {
 }
 
 ModLinearGridStencil::~ModLinearGridStencil() {
@@ -52,8 +51,8 @@ std::unique_ptr<Grid> ModLinearGridStencil::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> ModLinearGridStencil::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& ModLinearGridStencil::getGenerator() {
+  return generator;
 }
 
 

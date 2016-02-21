@@ -98,8 +98,7 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
+  this->myGrid->getGenerator().regular(this->levels);
 
   this->myBoundingBox = &this->myGrid->getBoundingBox();
   this->myGridStorage = &this->myGrid->getStorage();
@@ -161,7 +160,7 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, float_t 
         delete[] dblFuncValues;
 
         base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
-        this->myGrid->createGridGenerator()->refine(myRefineFunc);
+        this->myGrid->getGenerator().refine(myRefineFunc);
 
         alpha.resize(this->myGridStorage->size());
 
@@ -234,7 +233,7 @@ void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha
         delete[] dblFuncValues;
 
         base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
-        this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+        this->myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
         alpha.resize(this->myGridStorage->size());
 
@@ -982,8 +981,7 @@ void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
 
   base::Grid* grid1d = new base::LinearBoundaryGrid(*boundingBox1d);
 
-  std::unique_ptr<base::GridGenerator> myGenerator = grid1d->createGridGenerator();
-  myGenerator->regular(levels1d);
+  grid1d->getGenerator().regular(levels1d);
 
   base::DataVector* alphaHeston = new base::DataVector(grid1d->getSize());
   base::DataVector* alphaBS = new base::DataVector(grid1d->getSize());

@@ -83,7 +83,7 @@ def computeBilinearForm(grid, U):
     # polynomial one of degree 2.
     ngrid = Grid.createPolyBoundaryGrid(1, 2)
     # ngrid = Grid.createLinearBoundaryGrid(1)
-    ngrid.createGridGenerator().regular(gs.getMaxLevel() + 1)
+    ngrid.getGenerator().regular(gs.getMaxLevel() + 1)
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())
 

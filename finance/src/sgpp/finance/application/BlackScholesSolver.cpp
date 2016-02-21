@@ -146,8 +146,7 @@ void BlackScholesSolver::constructGrid(base::BoundingBox& BoundingBox, int level
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
+  this->myGrid->getGenerator().regular(this->levels);
 
   this->myBoundingBox = &this->myGrid->getBoundingBox();
   this->myGridStorage = &this->myGrid->getStorage();
@@ -214,7 +213,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
         delete[] dblFuncValues;
 
         base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
-        this->myGrid->createGridGenerator()->refine(myRefineFunc);
+        this->myGrid->getGenerator().refine(myRefineFunc);
 
         alpha.resize(this->myGridStorage->size());
 
@@ -287,7 +286,7 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
         delete[] dblFuncValues;
 
         base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
-        this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+        this->myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
         alpha.resize(this->myGridStorage->size());
 

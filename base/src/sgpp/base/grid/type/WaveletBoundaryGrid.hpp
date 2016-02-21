@@ -7,6 +7,7 @@
 #define WAVELETTRUNCATEDBOUNDARYGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -42,11 +43,13 @@ class WaveletBoundaryGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
  protected:
+  /// grid generator
+  BoundaryGridGenerator generator;
   /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };

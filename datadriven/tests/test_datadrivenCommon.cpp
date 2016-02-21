@@ -210,8 +210,8 @@ double compareToReference(SGPP::base::GridType gridType, std::string fileName, s
 
   SGPP::base::GridStorage& gridStorage = grid->getStorage();
 
-  auto gridGen = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
-  gridGen->regular(level);
+  SGPP::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
 
   SGPP::base::DataVector alpha(gridStorage.size());
 
@@ -224,7 +224,7 @@ double compareToReference(SGPP::base::GridType gridType, std::string fileName, s
 
   eval->prepare();
 
-  doRandomRefinements(adaptConfig, *grid, *gridGen, alpha);
+  doRandomRefinements(adaptConfig, *grid, gridGen, alpha);
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
   dataSizeVectorResult.setAll(0);
@@ -276,8 +276,8 @@ double compareToReferenceTranspose(
 
   SGPP::base::GridStorage& gridStorage = grid->getStorage();
 
-  auto gridGen = std::shared_ptr<SGPP::base::GridGenerator>(grid->createGridGenerator());
-  gridGen->regular(level);
+  SGPP::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
 
   SGPP::base::DataVector dataSizeVector(dataset.getNumberInstances());
 
@@ -291,7 +291,7 @@ double compareToReferenceTranspose(
 
   eval->prepare();
 
-  doRandomRefinements(adaptConfig, *grid, *gridGen);
+  doRandomRefinements(adaptConfig, *grid, gridGen);
 
   SGPP::base::DataVector alphaResult(gridStorage.size());
 

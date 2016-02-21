@@ -37,7 +37,7 @@ def makePositive(grid, alpha):
     # evaluate the sparse grid function at all full grid points
     level = grid.getStorage().getMaxLevel()
     fg = Grid.createLinearGrid(grid.getStorage().dim())
-    fg.createGridGenerator().full(level)
+    fg.getGenerator().full(level)
 
     # copy the old grid and use it as reference
     jgs = jgrid.getStorage()

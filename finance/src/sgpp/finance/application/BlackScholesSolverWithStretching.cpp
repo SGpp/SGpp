@@ -99,8 +99,7 @@ void BlackScholesSolverWithStretching::constructGridStretching(SGPP::base::Stret
 
   this->myGrid = new SGPP::base::LinearStretchedBoundaryGrid(stretching);
 
-  std::unique_ptr<SGPP::base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
+  this->myGrid->getGenerator().regular(this->levels);
 
   this->myStretching = &this->myGrid->getStretching();
   this->myGridStorage = &this->myGrid->getStorage();
@@ -175,7 +174,7 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoff(SGPP::base::D
         delete[] dblFuncValues;
 
         SGPP::base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
-        this->myGrid->createGridGenerator()->refine(myRefineFunc);
+        this->myGrid->getGenerator().refine(myRefineFunc);
 
         alpha.resize(this->myGridStorage->size());
 
@@ -249,7 +248,7 @@ void BlackScholesSolverWithStretching::refineInitialGridWithPayoffToMaxLevel(
         delete[] dblFuncValues;
 
         SGPP::base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
-        this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+        this->myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
         alpha.resize(this->myGridStorage->size());
 

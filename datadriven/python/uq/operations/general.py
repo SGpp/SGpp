@@ -54,7 +54,7 @@ def extend_grid_1d(grid, *args, **kws):
 
     # create 1 dimensional reference grid of level accLevel
     ref_grid = createGrid(grid, 1)
-    ref_grid.createGridGenerator().regular(accLevel)  # == full grid in dim = 1
+    ref_grid.getGenerator().regular(accLevel)  # == full grid in dim = 1
     ref_gs = ref_grid.getStorage()
 
     # create cross product between the 1d and the dimd-grid

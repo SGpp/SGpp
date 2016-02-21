@@ -16,14 +16,14 @@ class Test_SubspaceGSGANOVA(unittest.TestCase):
 
     def setUp(self):
         self.grid = Grid.createLinearGrid(2)  # a simple 2D grid
-        self.grid.createGridGenerator().regular(3)  # max level 3 => 17 points
+        self.grid.getGenerator().regular(3)  # max level 3 => 17 points
         self.HashGridStorage = self.grid.getStorage()
         alpha = DataVector(self.grid.getSize())
         alpha.setAll(1.0)
         for i in [9, 10, 11, 12]:
             alpha[i] = 0.0
         coarseningFunctor = SurplusCoarseningFunctor(alpha, 4, 0.5)
-        self.grid.createGridGenerator().coarsen(coarseningFunctor, alpha)
+        self.grid.getGenerator().coarsen(coarseningFunctor, alpha)
         
 
 

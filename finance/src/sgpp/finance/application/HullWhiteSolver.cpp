@@ -62,8 +62,7 @@ void HullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
+  this->myGrid->getGenerator().regular(this->levels);
 
   this->myBoundingBox = &this->myGrid->getBoundingBox();
   this->myGridStorage = &this->myGrid->getStorage();
