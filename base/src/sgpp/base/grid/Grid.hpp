@@ -460,6 +460,12 @@ class Grid {
                    bool isLeaf);
 
   /**
+   * Returns the number of dimensions
+   * @return the number of dimensions
+   */
+  size_t getDimension();
+
+  /**
    * Returns the number of points on the grid
    * @return the number of points on the grid
    */

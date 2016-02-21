@@ -490,6 +490,10 @@ void Grid::insertPoint(size_t dim, unsigned int levels[],
   storage.insert(pointIndex);
 }
 
+size_t Grid::getDimension() {
+  return storage.dim();
+}
+
 size_t Grid::getSize() {
   return storage.size();
 }
