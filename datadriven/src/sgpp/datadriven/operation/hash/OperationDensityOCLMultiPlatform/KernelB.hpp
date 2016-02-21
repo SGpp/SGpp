@@ -101,6 +101,7 @@ public:
 			std::cout << "entering mult, device: " << device->deviceName << " (" << device->deviceId << ")"
 					  << std::endl;
 		}
+		this->dataSize = data.size()/dims;
 
 		//Build kernel if not already done
 		if (this->kernelB == nullptr)
@@ -125,7 +126,6 @@ public:
 		deviceResultData.intializeTo(zeros, 1, 0, gridSize);
 		clFinish(device->commandQueue);
 		this->deviceTimingMult = 0.0;
-		this->dataSize = data.size()/dims;
 
 		//Set kernel arguments
 		err = clSetKernelArg(this->kernelB, 0, sizeof(cl_mem), this->devicePoints.getBuffer());
