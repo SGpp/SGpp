@@ -24,11 +24,9 @@ ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) : GridStencil(
 }
 
 ModLinearGridStencil::ModLinearGridStencil(size_t dim) : GridStencil(dim) {
-  this->storage.reset(new GridStorage(dim));
 }
 
 ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
-  this->storage.reset(new GridStorage(BB));
 }
 
 ModLinearGridStencil::~ModLinearGridStencil() {
@@ -55,7 +53,7 @@ std::unique_ptr<Grid> ModLinearGridStencil::unserialize(std::istream& istr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> ModLinearGridStencil::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(*this->storage));
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
 }
 
 

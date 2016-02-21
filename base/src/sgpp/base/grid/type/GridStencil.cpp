@@ -17,12 +17,12 @@ GridStencil::GridStencil(std::istream& istr)
 
 
 GridStencil::GridStencil(size_t dim)
-  : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+  : Grid(dim), surplusStencil(64), neighborStencil(64), weightStencil(64) {
 }
 
 
 GridStencil::GridStencil(BoundingBox& BB)
-  : surplusStencil(64), neighborStencil(64), weightStencil(64) {
+  : Grid(BB), surplusStencil(64), neighborStencil(64), weightStencil(64) {
 }
 
 

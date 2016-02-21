@@ -51,7 +51,7 @@ std::unique_ptr<Grid> PrewaveletGrid::unserialize(std::istream& istr) {
  */
 std::unique_ptr<GridGenerator> PrewaveletGrid::createGridGenerator() {
   return std::unique_ptr<GridGenerator>(
-      new PrewaveletGridGenerator(*this->storage, *this->shadowStorage));
+      new PrewaveletGridGenerator(storage, *this->shadowStorage));
 }
 
 

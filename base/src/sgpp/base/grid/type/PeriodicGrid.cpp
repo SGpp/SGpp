@@ -47,7 +47,7 @@ const SBasis& PeriodicGrid::getBasis() {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> PeriodicGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new PeriodicGridGenerator(*this->storage));
+  return std::unique_ptr<GridGenerator>(new PeriodicGridGenerator(storage));
 }
 
 

@@ -49,7 +49,7 @@ std::unique_ptr<Grid> WaveletGrid::unserialize(std::istream& istr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> WaveletGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(*this->storage));
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
 }
 
 

@@ -69,7 +69,7 @@ void ModFundamentalSplineGrid::serialize(std::ostream& ostr) {
  * This must be changed if we add other storage types
  */
 std::unique_ptr<GridGenerator> ModFundamentalSplineGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(*this->storage));
+  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
 }
 
 }  // namespace base
