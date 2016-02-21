@@ -7,18 +7,19 @@
 
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include <sgpp/base/grid/generation/L0BoundaryGridGenerator.hpp>
 
 
 namespace SGPP {
 namespace base {
 
 LinearL0BoundaryGrid::LinearL0BoundaryGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 LinearL0BoundaryGrid::LinearL0BoundaryGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 LinearL0BoundaryGrid::~LinearL0BoundaryGrid() {
@@ -41,8 +42,8 @@ std::unique_ptr<Grid> LinearL0BoundaryGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> LinearL0BoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new L0BoundaryGridGenerator(storage));
+GridGenerator& LinearL0BoundaryGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

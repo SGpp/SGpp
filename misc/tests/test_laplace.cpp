@@ -34,7 +34,7 @@ using SGPP::base::SurplusRefinementFunctor;
 DataMatrix* generateLaplaceMatrix(Grid& grid,  size_t level) {
   GridStorage& storage = grid.getStorage();
 
-  grid.createGridGenerator()->regular(level);
+  grid.getGenerator().regular(level);
 
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplace(grid));
@@ -60,7 +60,7 @@ DataMatrix* generateLaplaceMatrix(Grid& grid,  size_t level) {
 DataMatrix* generateLaplaceEnhancedMatrix(Grid& grid,  size_t level) {
   GridStorage& storage = grid.getStorage();
 
-  grid.createGridGenerator()->regular(level);
+  grid.getGenerator().regular(level);
 
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplaceEnhanced(grid));
@@ -253,8 +253,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridStorage& storage = grid->getStorage();
 
-  std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
-  generator->regular(level);
+  grid->getGenerator().regular(level);
 
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplace(*grid));
@@ -300,8 +299,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
   GridStorage& storage = grid->getStorage();
 
-  std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
-  generator->regular(level);
+  grid->getGenerator().regular(level);
 
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplaceEnhanced(*grid));
@@ -673,8 +671,8 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
   size_t dim = 4;
   size_t level = 2;
   std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
-  std::unique_ptr<GridGenerator> generator = grid->createGridGenerator();
-  generator->regular(level);
+  GridGenerator& generator = grid->getGenerator();
+  generator.regular(level);
 
   GridStorage& gridStorage = grid->getStorage();
   DataVector alpha(gridStorage.size());
@@ -687,7 +685,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
   SGPP::float_t threshold = 0.0;
   SurplusRefinementFunctor srf = SurplusRefinementFunctor(alpha, refinements_num,
                                  threshold);
-  generator->refine(srf);
+  generator.refine(srf);
 
   std::unique_ptr<OperationMatrix> laplace(
       SGPP::op_factory::createOperationLaplace(*grid));

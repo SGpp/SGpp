@@ -216,7 +216,7 @@ class TestOperationBBTSSELinear(unittest.TestCase):
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTSSEMatrix(factory, training)
@@ -234,7 +234,7 @@ class TestOperationBBTSSELinear(unittest.TestCase):
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTSSEMatrix(factory, training)
@@ -252,7 +252,7 @@ class TestOperationBBTSSELinear(unittest.TestCase):
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTSSEMatrix(factory, training)
@@ -270,7 +270,7 @@ class TestOperationBBTSSELinear(unittest.TestCase):
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTSSEMatrix(factory, training)

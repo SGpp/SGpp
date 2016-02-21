@@ -7,12 +7,7 @@
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
-
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,15 +16,18 @@ namespace SGPP {
 namespace base {
 
 LinearGrid::LinearGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 LinearGrid::LinearGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 LinearGrid::LinearGrid(BoundingBox& BB) :
-  Grid(BB) {
+  Grid(BB),
+  generator(storage) {
 }
 
 LinearGrid::~LinearGrid() {
@@ -52,8 +50,8 @@ std::unique_ptr<Grid> LinearGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> LinearGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& LinearGrid::getGenerator() {
+  return generator;
 }
 
 

@@ -101,8 +101,7 @@ void LearnerBase::InitializeGrid(
   }
 
   // Generate regular Grid with LEVELS Levels
-  std::unique_ptr<SGPP::base::GridGenerator> myGenerator = grid_->createGridGenerator();
-  myGenerator->regular(GridConfig.level_);
+  grid_->getGenerator().regular(GridConfig.level_);
 
   // Create alpha
   alpha_ = new SGPP::base::DataVector(grid_->getSize());
@@ -208,7 +207,7 @@ LearnerTiming LearnerBase::train(
       // disable refinement here!
       SGPP::base::SurplusRefinementFunctor myRefineFunc(
               *alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
-      grid_->createGridGenerator()->refine(myRefineFunc);
+      grid_->getGenerator().refine(myRefineFunc);
 
       // tell the SLE manager that the grid changed (for interal data
       // structures)

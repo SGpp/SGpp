@@ -4,8 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
-
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
@@ -18,13 +16,19 @@
 namespace SGPP {
 namespace base {
 
-LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {
+LinearGridStencil::LinearGridStencil(std::istream& istr) :
+    GridStencil(istr),
+    generator(storage) {
 }
 
-LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim) {
+LinearGridStencil::LinearGridStencil(size_t dim) :
+    GridStencil(dim),
+    generator(storage) {
 }
 
-LinearGridStencil::LinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
+LinearGridStencil::LinearGridStencil(BoundingBox& BB) :
+    GridStencil(BB),
+    generator(storage) {
 }
 
 LinearGridStencil::~LinearGridStencil() {
@@ -50,8 +54,8 @@ std::unique_ptr<Grid> LinearGridStencil::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> LinearGridStencil::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& LinearGridStencil::getGenerator() {
+  return generator;
 }
 
 

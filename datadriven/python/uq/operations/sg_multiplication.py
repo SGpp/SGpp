@@ -4,7 +4,7 @@
 #     # copy grid
 #     n_grid = copyGrid(grid, level=8, deg=1)
 #     n_gs = n_grid.getStorage()
-#     n_gridGen = n_grid.createGridGenerator()
+#     n_gridGen = n_grid.getGenerator()
 #
 #     basis_alpha = DataVector(alpha)
 #

@@ -37,8 +37,6 @@
 
 %newobject SGPP::base::Grid::unserialize(std::string& istr);
 
-%newobject SGPP::base::Grid::createGridGenerator();
-
 %include "stl.i"
 %include "typemaps.i"
 
@@ -116,6 +114,7 @@ public:
   virtual SGPP::base::BoundingBox& getBoundingBox();
   virtual SGPP::base::Stretching& getStretching();
 
+  virtual SGPP::base::GridGenerator& getGenerator() = 0;
   virtual SGPP::base::GridType getType() = 0;
   virtual const SBasis& getBasis() = 0;
   virtual void serialize(std::string& ostr);
@@ -231,10 +230,6 @@ public:
 
   static SGPP::base::Grid* unserialize(std::string& istr) {
     return SGPP::base::Grid::unserialize(istr).release();
-  }
-
-  SGPP::base::GridGenerator* createGridGenerator() {
-    return $self->createGridGenerator().release();
   }
 };
   

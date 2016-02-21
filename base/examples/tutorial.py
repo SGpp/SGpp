@@ -15,7 +15,7 @@ print "dimensionality:         {}".format(gridStorage.dim())
 
 # create regular grid, level 3
 level = 3
-gridGen = grid.createGridGenerator()
+gridGen = grid.getGenerator()
 gridGen.regular(level)
 print "number of grid points:  {}".format(gridStorage.size())
 

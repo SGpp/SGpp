@@ -113,14 +113,14 @@ void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numR
   size_t nRefinements;
 
   if (numRefinePoints < 0) {
-    nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePoints();
+    nRefinements = myGrid->getGenerator().getNumberOfRefinablePoints();
   } else {
     nRefinements = numRefinePoints;
   }
 
   if (bGridConstructed) {
     SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
-    myGrid->createGridGenerator()->refine(myRefineFunc);
+    myGrid->getGenerator().refine(myRefineFunc);
 
     alpha.resize(myGridStorage->size());
   } else {
@@ -136,7 +136,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
   size_t nRefinements;
 
   if (numRefinePoints < 0) {
-    nRefinements = myGrid->createGridGenerator()->getNumberOfRefinablePoints();
+    nRefinements = myGrid->getGenerator().getNumberOfRefinablePoints();
   } else {
     nRefinements = numRefinePoints;
   }
@@ -151,7 +151,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
     // printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
     SGPP::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
-    myGrid->createGridGenerator()->refine(myRefineFunc);
+    myGrid->getGenerator().refine(myRefineFunc);
 
     alpha.resize(myGridStorage->size());
   } else {
@@ -165,10 +165,10 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(
     SGPP::base::GridStorage::index_type::level_type maxLevel) {
   if (bGridConstructed) {
     size_t nRefinements =
-        myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
+        myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
     SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
-    myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+    myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
     alpha.resize(myGridStorage->size());
   } else {
@@ -183,7 +183,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
     std::vector<float_t>& norm_sigma) {
   if (bGridConstructed) {
     size_t nRefinements =
-        myGrid->createGridGenerator()->getNumberOfRefinablePointsToMaxLevel(maxLevel);
+        myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
     SGPP::base::DataVector stdNormDist(alpha.getSize());
 
@@ -194,7 +194,7 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
     // printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
     SGPP::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
-    myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
+    myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
     alpha.resize(myGridStorage->size());
   } else {
@@ -206,11 +206,11 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
 
 void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t dThreshold) {
   if (bGridConstructed) {
-    std::unique_ptr<SGPP::base::GridGenerator> myGenerator = myGrid->createGridGenerator();
-    size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
+    SGPP::base::GridGenerator& myGenerator = myGrid->getGenerator();
+    size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
     size_t originalGridSize = myGrid->getStorage().size();
     SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(alpha, numCoarsen, dThreshold);
-    myGenerator->coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize);
+    myGenerator.coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize);
   } else {
     throw new SGPP::base::application_exception(
         "PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");

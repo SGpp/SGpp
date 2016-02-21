@@ -6,13 +6,9 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
-
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,11 +17,13 @@ namespace SGPP {
 namespace base {
 
 ModLinearGrid::ModLinearGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 ModLinearGrid::ModLinearGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 ModLinearGrid::~ModLinearGrid() {
@@ -48,8 +46,8 @@ std::unique_ptr<Grid> ModLinearGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> ModLinearGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& ModLinearGrid::getGenerator() {
+  return generator;
 }
 
 

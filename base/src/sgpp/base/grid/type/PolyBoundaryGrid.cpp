@@ -6,8 +6,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 namespace SGPP {
@@ -15,6 +13,7 @@ namespace base {
 
 PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   degree(1 << 16),
   basis_(NULL),
   boundaryLevel(0) {
@@ -26,6 +25,7 @@ PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
                                    size_t degree,
                                    level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   degree(degree),
   basis_(NULL),
   boundaryLevel(boundaryLevel) {
@@ -67,8 +67,8 @@ void PolyBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> PolyBoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(storage, boundaryLevel));
+GridGenerator& PolyBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

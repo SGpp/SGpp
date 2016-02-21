@@ -7,8 +7,6 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
@@ -20,6 +18,7 @@ namespace base {
 
 FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage),
   degree(1 << 16),
   basis_(NULL) {
   istr >> degree;
@@ -28,6 +27,7 @@ FundamentalSplineGrid::FundamentalSplineGrid(std::istream& istr) :
 
 FundamentalSplineGrid::FundamentalSplineGrid(size_t dim, size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
   basis_(NULL) {
 }
@@ -67,8 +67,8 @@ void FundamentalSplineGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> FundamentalSplineGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new StandardGridGenerator(storage));
+GridGenerator& FundamentalSplineGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

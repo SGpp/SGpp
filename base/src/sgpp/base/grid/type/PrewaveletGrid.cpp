@@ -6,12 +6,9 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
-#include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,12 +18,14 @@ namespace base {
 
 PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
   Grid(istr),
-  shadowStorage(nullptr) {
+  shadowStorage(storage.dim()),
+  generator(storage, shadowStorage) {
 }
 
 PrewaveletGrid::PrewaveletGrid(size_t dim) :
   Grid(dim),
-  shadowStorage(new GridStorage(dim)) {
+  shadowStorage(dim),
+  generator(storage, shadowStorage) {
 }
 
 PrewaveletGrid::~PrewaveletGrid() {
@@ -49,14 +48,13 @@ std::unique_ptr<Grid> PrewaveletGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> PrewaveletGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(
-      new PrewaveletGridGenerator(storage, *this->shadowStorage));
+GridGenerator& PrewaveletGrid::getGenerator() {
+  return generator;
 }
 
 
 GridStorage& PrewaveletGrid::getShadowStorage() {
-  return *shadowStorage;
+  return shadowStorage;
 }
 
 }  // namespace base

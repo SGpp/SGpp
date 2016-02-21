@@ -7,10 +7,7 @@
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 
-#include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,11 +16,13 @@ namespace SGPP {
 namespace base {
 
 PeriodicGrid::PeriodicGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 PeriodicGrid::PeriodicGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 PeriodicGrid::~PeriodicGrid() {
@@ -46,8 +45,8 @@ const SBasis& PeriodicGrid::getBasis() {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> PeriodicGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new PeriodicGridGenerator(storage));
+GridGenerator& PeriodicGrid::getGenerator() {
+  return generator;
 }
 
 

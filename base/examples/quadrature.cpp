@@ -36,8 +36,7 @@ int main() {
 
   // create regular grid, level 3
   int level = 3;
-  std::unique_ptr<GridGenerator> gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
+  grid->getGenerator().regular(level);
   std::cout << "number of grid points: " << gridStorage.size() << std::endl;
 
   // create coefficient vector

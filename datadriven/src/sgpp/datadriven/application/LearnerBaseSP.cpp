@@ -103,8 +103,7 @@ void LearnerBaseSP::InitializeGrid(const SGPP::base::RegularGridConfiguration&
   }
 
   // Generate regular Grid with LEVELS Levels
-  std::unique_ptr<SGPP::base::GridGenerator> myGenerator = grid_->createGridGenerator();
-  myGenerator->regular(GridConfig.level_);
+  grid_->getGenerator().regular(GridConfig.level_);
 
   // Create alpha
   alpha_ = new SGPP::base::DataVectorSP(grid_->getSize());
@@ -213,7 +212,7 @@ LearnerTiming LearnerBaseSP::train(SGPP::base::DataMatrixSP& trainDataset,
           alphaDP);
       SGPP::base::SurplusRefinementFunctor myRefineFunc(
           alphaDP, AdaptConfig.noPoints_, AdaptConfig.threshold_);
-      grid_->createGridGenerator()->refine(myRefineFunc);
+      grid_->getGenerator().refine(myRefineFunc);
       DMSystem->rebuildLevelAndIndex();
 
       if (isVerbose_)

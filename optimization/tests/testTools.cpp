@@ -200,8 +200,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
   for (size_t d = 1; d < 6; d++) {
     std::unique_ptr<SGPP::base::Grid> grid1(SGPP::base::Grid::createLinearGrid(d)),
         grid2(SGPP::base::Grid::createLinearGrid(d));
-    std::unique_ptr<SGPP::base::GridGenerator> gridGen(grid1->createGridGenerator());
-    gridGen->regular(3);
+    grid1->getGenerator().regular(3);
 
     {
       const std::string fileName = "testTools_grid.tmp";

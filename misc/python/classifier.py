@@ -195,7 +195,7 @@ def constructGrid(dim):
                         print "LinearGrid, l=%s" % (options.level)
                     grid = Grid.createLinearGrid(dim)
 
-        generator = grid.createGridGenerator()
+        generator = grid.getGenerator()
         generator.regular(options.level)
     else: #read grid from file
         if options.verbose:
@@ -211,7 +211,7 @@ def constructGrid(dim):
 def getNumOfPoints(options, grid):
     numOfPoints = 0
     if options.adapt_rate:
-        numOfPoints = int(ceil( options.adapt_rate * grid.createGridGenerator().getNumberOfRefinablePoints()))
+        numOfPoints = int(ceil( options.adapt_rate * grid.getGenerator().getNumberOfRefinablePoints()))
     else: numOfPoints = options.adapt_points
     return numOfPoints
 
@@ -480,9 +480,9 @@ def run(grid, training, classes):
             #if(options.verbose):
             print("refining grid")
             if options.regression:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, getNumOfPoints(options, grid)))
+                grid.getGenerator().refine(SurplusRefinementFunctor(errors, getNumOfPoints(options, grid)))
             else:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid)))
+                grid.getGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid)))
     return alpha
 
 ##
@@ -608,9 +608,9 @@ def doTest():
             :
             print("refining grid")
             if options.regression:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(errors, getNumOfPoints(options, grid), options.adapt_threshold))
+                grid.getGenerator().refine(SurplusRefinementFunctor(errors, getNumOfPoints(options, grid), options.adapt_threshold))
             else:
-                grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid), options.adapt_threshold))
+                grid.getGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid), options.adapt_threshold))
 
             if(options.verbose): print("Number of points: %d" %(grid.getStorage().size(),))
 
@@ -833,7 +833,7 @@ def performFold(dvec,cvec):
             print grid
         if(adaptStep < options.adaptive):
             print "refine"
-            grid.createGridGenerator().refine(SurplusRefinementFunctor(getNumOfPoints(options, grid)))
+            grid.getGenerator().refine(SurplusRefinementFunctor(getNumOfPoints(options, grid)))
 
     if options.stats != None:
         txt = formTxt(te_refine, tr_refine, num_points)
@@ -906,7 +906,7 @@ def performFoldNew(dvec,cvec,ifold):
         # refine
         if(adaptStep < options.adaptive):
             if options.verbose: print "refining"
-            grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid)))
+            grid.getGenerator().refine(SurplusRefinementFunctor(alpha, getNumOfPoints(options, grid)))
 
     # statistics
     txt = formTxtVal(te_refine, tr_refine, val_refine, num_points)
@@ -988,7 +988,7 @@ def performFoldRegression(dvec,cvec):
 
         if(adaptStep < options.adaptive):
             print "refine"
-            grid.createGridGenerator().refine(SurplusRefinementFunctor(refineerrors, getNumOfPoints(options, grid)))
+            grid.getGenerator().refine(SurplusRefinementFunctor(refineerrors, getNumOfPoints(options, grid)))
 
     if options.stats != None:
         txt = formTxt(te_meanSqrError, tr_meanSqrError, num_points)

@@ -131,7 +131,7 @@ class GridDescriptor(object):
 
             # generate the grid
             if self.level is not None:
-                generator = grid.createGridGenerator()
+                generator = grid.getGenerator()
                 if not self.__full:
                     generator.regular(self.level)
                 else:

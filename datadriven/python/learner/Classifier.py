@@ -49,8 +49,8 @@ class Classifier(Learner):
     ##Refines grid with the number of points as specified in corresponding TrainingSpecification object
     def refineGrid(self):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
-        pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
+        pointsNum = self.specification.getNumOfPointsToRefine( self.grid.getGenerator().getNumberOfRefinablePoints() )
         
-        self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.alpha, pointsNum, self.specification.getAdaptThreshold()) )
+        self.grid.getGenerator().refine( SurplusRefinementFunctor(self.alpha, pointsNum, self.specification.getAdaptThreshold()) )
         
 

@@ -37,8 +37,7 @@ void HeatEquationSolverWithStretching::constructGrid(base::Stretching& stretchin
 
   this->myGrid = new base::LinearStretchedBoundaryGrid(stretching);
 
-  std::unique_ptr<base::GridGenerator> myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
+  this->myGrid->getGenerator().regular(this->levels);
 
   this->myStretching = &this->myGrid->getStretching();
   this->myGridStorage = &this->myGrid->getStorage();

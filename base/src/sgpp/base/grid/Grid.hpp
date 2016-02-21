@@ -396,9 +396,9 @@ class Grid {
   virtual void setStretching(Stretching& bb);
 
   /**
-   * @return pointer to a GridGenerator object
+   * @return reference to a GridGenerator object
    */
-  virtual std::unique_ptr<GridGenerator> createGridGenerator() = 0;
+  virtual GridGenerator& getGenerator() = 0;
 
   /**
    * Returns a string that identifies the grid type uniquely

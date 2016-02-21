@@ -87,9 +87,7 @@ int main(int argc, char* argv[]) {
     exit(-1);
   }
 
-  std::unique_ptr<SGPP::base::GridGenerator> myGenerator = myGrid->createGridGenerator();
-  myGenerator->regular(level);
-  delete myGenerator;
+  myGrid->getGenerator().regular(level);
 
   SGPP::base::GridStorage* myGridStorage = myGrid->getStorage();
   size_t gridsize = myGridStorage->size();

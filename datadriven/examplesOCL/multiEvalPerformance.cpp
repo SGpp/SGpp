@@ -29,8 +29,7 @@ int main(int argc, char** argv) {
   std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
   // create regular grid, level 3
   uint32_t level = 4;
-  std::unique_ptr<SGPP::base::GridGenerator> gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
+  grid->getGenerator().regular(level);
   std::cout << "number of grid points: " << gridStorage->size() << std::endl;
 
   // create coefficient vector

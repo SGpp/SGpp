@@ -5,7 +5,9 @@
 
 #ifndef SQUAREROOTGRID_HPP_
 #define SQUAREROOTGRID_HPP_
+
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -18,6 +20,8 @@ namespace base {
  */
 class SquareRootGrid : public Grid {
  protected:
+  /// grid generator
+  SquareRootGridGenerator generator;
   explicit SquareRootGrid(std::istream& istr);
 
  public:
@@ -44,7 +48,7 @@ class SquareRootGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };

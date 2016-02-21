@@ -6,25 +6,26 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
-#include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
 
 
 namespace SGPP {
 namespace base {
 
 LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(BoundingBox& BB) :
-  Grid(BB) {
+  Grid(BB),
+  generator(storage) {
 }
 
 LinearTruncatedBoundaryGrid::~LinearTruncatedBoundaryGrid() {
@@ -47,8 +48,8 @@ std::unique_ptr<Grid> LinearTruncatedBoundaryGrid::unserialize(std::istream& ist
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> LinearTruncatedBoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new GeneralizedBoundaryGridGenerator(storage));
+GridGenerator& LinearTruncatedBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

@@ -38,8 +38,7 @@ int main() {
 
   // create regular grid, level 3
   size_t level = 3;
-  std::unique_ptr<GridGenerator> gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
+  grid->getGenerator().regular(level);
   std::cout << "number of initial grid points:    " << gridStorage.size() << std::endl;
 
   // create coefficient vector
@@ -63,7 +62,7 @@ int main() {
 
     // refine a single grid point each time
     SurplusRefinementFunctor functor(alpha, 1);
-    gridGen->refine(functor);
+    grid->getGenerator().refine(functor);
     std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
          << std::endl;
 

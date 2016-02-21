@@ -7,6 +7,7 @@
 #define WAVELETGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,6 +20,8 @@ namespace base {
  */
 class WaveletGrid : public Grid {
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   explicit WaveletGrid(std::istream& istr);
 
  public:
@@ -38,7 +41,7 @@ class WaveletGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };

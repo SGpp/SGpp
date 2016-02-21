@@ -41,7 +41,7 @@ class TestGridFormatter(unittest.TestCase):
         self.__gridFormatter = GridFormatter()
         dim = 3
         self.grid = Grid.createLinearGrid(dim)
-        self.grid.createGridGenerator().regular(3)
+        self.grid.getGenerator().regular(3)
         self.correct_str = self.grid.serialize()
 
 

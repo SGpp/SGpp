@@ -134,7 +134,7 @@ def computeBF(grid, U, admissibleSet):
     # the product of two piecewise linear functions is a piecewise
     # polynomial one of degree 2.
     ngrid = Grid.createPolyBoundaryGrid(1, 2)
-    ngrid.createGridGenerator().regular(2)
+    ngrid.getGenerator().regular(2)
     ngs = ngrid.getStorage()
     nodalValues = DataVector(ngs.size())
 

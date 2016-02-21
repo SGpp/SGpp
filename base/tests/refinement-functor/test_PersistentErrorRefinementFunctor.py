@@ -21,7 +21,7 @@ class TestPersistentRefinementOperator(unittest.TestCase):
         #
 
         self.grid = Grid.createLinearGrid(DIM)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(LEVEL)
 
         #

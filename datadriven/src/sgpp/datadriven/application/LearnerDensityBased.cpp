@@ -87,8 +87,7 @@ void LearnerDensityBased::InitializeGrid(const
     }
 
     // Generate regular Grid with LEVELS Levels
-    std::unique_ptr<SGPP::base::GridGenerator> myGenerator = gridVec_[i]->createGridGenerator();
-    myGenerator->regular(GridConfig.level_);
+    gridVec_[i]->getGenerator().regular(GridConfig.level_);
 
     // Create alpha
     alphaVec_.push_back(SGPP::base::DataVector(gridVec_[i]->getSize()));
@@ -234,7 +233,7 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     if (i > 0) {
       for (size_t ii = 0; ii < alphaVec_.size(); ii++) {
         SGPP::base::SurplusRefinementFunctor myRefineFunc(alphaVec_[ii], AdaptConfig.noPoints_);
-        gridVec_[ii]->createGridGenerator()->refine(myRefineFunc);
+        gridVec_[ii]->getGenerator().refine(myRefineFunc);
 
         // DMSystem->rebuildLevelAndIndex();   not implemented
 

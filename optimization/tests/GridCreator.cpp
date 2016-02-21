@@ -46,7 +46,7 @@ void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::Scal
 
   // generate regular sparse grid
   gridStorage.emptyStorage();
-  std::unique_ptr<SGPP::base::GridGenerator>(grid.createGridGenerator())->regular(l);
+  grid.getGenerator().regular(l);
   const size_t n = gridStorage.size();
   SGPP::base::DataVector x(d);
 
@@ -80,7 +80,7 @@ void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::Vect
 
   // generate regular sparse grid
   gridStorage.emptyStorage();
-  std::unique_ptr<SGPP::base::GridGenerator>(grid.createGridGenerator())->regular(l);
+  grid.getGenerator().regular(l);
   const size_t n = gridStorage.size();
   SGPP::base::DataVector x(d);
   SGPP::base::DataVector fx(m);

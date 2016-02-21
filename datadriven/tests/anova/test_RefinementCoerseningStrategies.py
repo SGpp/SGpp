@@ -150,7 +150,7 @@ class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
 
             #compress grid
             if learner.iteration == 0:
-                generator = learner.grid.createGridGenerator()
+                generator = learner.grid.getGenerator()
                 functor = self.coarsening_functor(
                           learner.alpha,
                           generator.getNumberOfRemovablePoints(),
@@ -187,9 +187,9 @@ class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
             #refine grid
             learner.notifyEventControllers(LearnerEvents.REFINING_GRID)
             learner.grid.getStorage().recalcLeafProperty()
-            refinable_poits = learner.grid.createGridGenerator().getNumberOfRefinablePoints()
+            refinable_poits = learner.grid.getGenerator().getNumberOfRefinablePoints()
             pointsNum = learner.specification.getNumOfPointsToRefine(refinable_poits)
-#            learner.grid.createGridGenerator().refine( SurplusRefinementFunctor(learner.errors, int(pointsNum), learner.specification.getAdaptThreshold()) )
+#            learner.grid.getGenerator().refine( SurplusRefinementFunctor(learner.errors, int(pointsNum), learner.specification.getAdaptThreshold()) )
 
             
             refiner = HashRefinement()
@@ -252,8 +252,8 @@ class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
             #refine grid
             learner.notifyEventControllers(LearnerEvents.REFINING_GRID)
         
-            pointsNum = learner.specification.getNumOfPointsToRefine( learner.grid.createGridGenerator().getNumberOfRefinablePoints() )
-            learner.grid.createGridGenerator().refine( self.refinement_functor(learner.alpha, int(pointsNum), learner.specification.getAdaptThreshold()) )
+            pointsNum = learner.specification.getNumOfPointsToRefine( learner.grid.getGenerator().getNumberOfRefinablePoints() )
+            learner.grid.getGenerator().refine( self.refinement_functor(learner.alpha, int(pointsNum), learner.specification.getAdaptThreshold()) )
         #formatter = GridFormatter()
         #formatter.serializeToFile(learner.grid, "grid_anova_%s.txt"%suffix)
 

@@ -89,7 +89,7 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim, 0)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
@@ -147,7 +147,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
@@ -205,7 +205,7 @@ def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, reso
     
     # generate a regular test grid
     grid = Grid.createLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
@@ -263,7 +263,7 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
     
     # generate a regular test grid
     grid = Grid.createModLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
@@ -320,7 +320,7 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, l
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
@@ -370,7 +370,7 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
     
     # generate a regular test grid
     grid = Grid.createLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
@@ -420,7 +420,7 @@ def runHierarchisationDehierarchisationModLinearRegularTest(dim, level):
     
     # generate a regular test grid
     grid = Grid.createModLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector

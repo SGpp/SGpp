@@ -96,10 +96,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   }
 
   // generate initial grid
-  {
-    std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
-    gridGen->regular(initialLevel);
-  }
+  grid.getGenerator().regular(initialLevel);
 
   size_t currentN = gridStorage.size();
 

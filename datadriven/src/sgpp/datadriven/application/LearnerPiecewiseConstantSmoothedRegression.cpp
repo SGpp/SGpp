@@ -62,7 +62,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
   size_t dim = grid.getStorage().dim();
 
   GridStorage* gridStorage = &grid.getStorage();
-  std::unique_ptr<GridGenerator> gridGen = grid.createGridGenerator();
+  GridGenerator& gridGen = grid.getGenerator();
   DataVector rhs(grid.getStorage().size());
   alpha.resize(grid.getStorage().size());
   alpha.setAll(0.0);
@@ -110,7 +110,7 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
 
       SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
                                    adaptivityConfig.threshold_);
-      gridGen->refine(srf);
+      gridGen.refine(srf);
 
       if (verbose) {
         cout << "# LearnerDensityRegression: ref " << ref << "/" <<

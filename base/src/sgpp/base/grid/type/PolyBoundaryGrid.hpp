@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -44,12 +45,14 @@ class PolyBoundaryGrid : public Grid {
   SGPP::base::GridType getType() override;
   void serialize(std::ostream& ostr) override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
   size_t getDegree() const;
 
  protected:
+  /// grid generator
+  BoundaryGridGenerator generator;
   /// max. polynom's degree
   size_t degree;
   /// polynomial basis

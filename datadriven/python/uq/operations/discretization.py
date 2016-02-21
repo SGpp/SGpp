@@ -142,7 +142,7 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
         grid = Grid.createLinearGrid(dim)
 
     # init storage
-    grid.createGridGenerator().regular(level)
+    grid.getGenerator().regular(level)
     gs = grid.getStorage()
 
     # discretize on given level
@@ -184,7 +184,7 @@ def discretize(grid, alpha, f, epsilon=0.,
     # copy grid
     jgrid = copyGrid(grid, level=level, deg=deg)
     jgs = jgrid.getStorage()
-    jgn = jgrid.createGridGenerator()
+    jgn = jgrid.getGenerator()
     basis_alpha = DataVector(alpha)
 
     # compute joined sg function

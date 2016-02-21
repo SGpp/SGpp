@@ -8,7 +8,7 @@
 
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
-
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,6 +21,8 @@ namespace base {
  */
 class LinearGridStencil : public GridStencil {
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   explicit LinearGridStencil(std::istream& istr);
 
  public:
@@ -47,7 +49,7 @@ class LinearGridStencil : public GridStencil {
 
   const SBasis& getBasis() override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };

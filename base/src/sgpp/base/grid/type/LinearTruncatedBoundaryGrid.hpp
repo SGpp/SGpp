@@ -5,7 +5,9 @@
 
 #ifndef LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_
 #define LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_
+
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,6 +23,8 @@ namespace base {
  */
 class LinearTruncatedBoundaryGrid : public Grid {
  protected:
+  /// grid generator
+  GeneralizedBoundaryGridGenerator generator;
   explicit LinearTruncatedBoundaryGrid(std::istream& istr);
 
  public:
@@ -47,7 +51,7 @@ class LinearTruncatedBoundaryGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  std::unique_ptr<GridGenerator> createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };

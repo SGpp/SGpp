@@ -113,10 +113,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   HierarchisationSLE hierSLE(*linearGrid, gridStorage);
 
   // generate initial grid
-  {
-    std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
-    gridGen->regular(initialLevel);
-  }
+  grid.getGenerator().regular(initialLevel);
 
   size_t currentN = gridStorage.size();
   // coeffs always has as much elements as there are grid points in

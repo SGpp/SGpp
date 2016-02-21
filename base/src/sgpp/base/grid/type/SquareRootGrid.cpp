@@ -6,11 +6,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 
-#include <sgpp/base/grid/generation/SquareRootGridGenerator.hpp>
-// #include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
-
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,15 +15,18 @@ namespace SGPP {
 namespace base {
 
 SquareRootGrid::SquareRootGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 SquareRootGrid::SquareRootGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 SquareRootGrid::SquareRootGrid(BoundingBox& BB) :
-  Grid(BB) {
+  Grid(BB),
+  generator(storage) {
 }
 
 SquareRootGrid::~SquareRootGrid() {
@@ -49,8 +48,8 @@ std::unique_ptr<Grid> SquareRootGrid::unserialize(std::istream& istr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> SquareRootGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new SquareRootGridGenerator(storage));
+GridGenerator& SquareRootGrid::getGenerator() {
+  return generator;
 }
 // OperationHierarchisation* SquareRootGrid::createOperationHierarchisation()
 // {

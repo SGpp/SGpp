@@ -7,7 +7,6 @@
 
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
 namespace SGPP {
@@ -15,18 +14,21 @@ namespace base {
 
 LinearBoundaryGrid::LinearBoundaryGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   boundaryLevel(0) {
   istr >> boundaryLevel;
 }
 
 LinearBoundaryGrid::LinearBoundaryGrid(size_t dim, level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   boundaryLevel(boundaryLevel) {
 }
 
 LinearBoundaryGrid::LinearBoundaryGrid(BoundingBox& BB,
                                        level_t boundaryLevel) :
   Grid(BB),
+  generator(storage, boundaryLevel),
   boundaryLevel(boundaryLevel) {
 }
 
@@ -55,8 +57,8 @@ void LinearBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-std::unique_ptr<GridGenerator> LinearBoundaryGrid::createGridGenerator() {
-  return std::unique_ptr<GridGenerator>(new BoundaryGridGenerator(storage, boundaryLevel));
+GridGenerator& LinearBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 
