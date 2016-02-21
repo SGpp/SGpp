@@ -17,8 +17,9 @@
 %include "pde/src/sgpp/pde/application/EllipticPDESolver.hpp"
 %include "pde/src/sgpp/pde/application/PoissonEquationSolver.hpp"
 
+%include "OpFactory.i"
+
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemFreeBoundaries.hpp"
-%include "pde/src/sgpp/pde/operation/PdeOpFactory.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPeriodic.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp"
 
