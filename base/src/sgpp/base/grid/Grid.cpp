@@ -170,7 +170,7 @@ std::unique_ptr<Grid> Grid::unserialize(std::istream& istr) {
     return typeMap()[gridtype](istr);
   } else {
     // compose error message and throw factory_exception
-    std::string errMsg = "factory_exeception unserialize: unkown gridtype.\n";
+    std::string errMsg = "factory_exception unserialize: unknown gridtype.\n";
     errMsg += "Got: '" + gridtype + "'; possible choices: ";
     factoryMap::iterator it;
 
@@ -416,50 +416,39 @@ std::unique_ptr<Grid> Grid::nullFactory(std::istream&) {
   return std::unique_ptr<Grid>(nullptr);
 }
 
-Grid::Grid(std::istream& istr) {
-  int hasStorage;
-  istr >> hasStorage;
-
-  if (hasStorage == 1) {
-    storage.reset(new GridStorage(istr));
-  } else {
-    storage.reset(new GridStorage(0));
-  }
+Grid::Grid(std::istream& istr) : storage(istr) {
 }
 
-Grid::Grid() : storage(new GridStorage(0)) {
+Grid::Grid(size_t dim) : storage(dim) {
 }
 
-Grid::Grid(size_t dim) : storage(new GridStorage(dim)) {
+Grid::Grid(BoundingBox& BB) : storage(BB) {
 }
 
-Grid::Grid(BoundingBox& BB) : storage(new GridStorage(BB)) {
-}
-
-Grid::Grid(Stretching& BB) : storage(new GridStorage(BB)) {
+Grid::Grid(Stretching& BB) : storage(BB) {
 }
 
 Grid::~Grid() {
 }
 
 GridStorage& Grid::getStorage() {
-  return *this->storage;
+  return storage;
 }
 
 BoundingBox& Grid::getBoundingBox() {
-  return *this->storage->getBoundingBox();
+  return *storage.getBoundingBox();
 }
 
 Stretching& Grid::getStretching() {
-  return *this->storage->getStretching();
+  return *storage.getStretching();
 }
 
 void Grid::setBoundingBox(BoundingBox& bb) {
-  this->storage->setBoundingBox(bb);
+  storage.setBoundingBox(bb);
 }
 
 void Grid::setStretching(Stretching& bb) {
-  this->storage->setStretching(bb);
+  storage.setStretching(bb);
 }
 
 void Grid::serialize(std::string& ostr) {
@@ -478,13 +467,7 @@ std::string Grid::serialize() {
 
 void Grid::serialize(std::ostream& ostr) {
   ostr << typeVerboseMap()[this->getType()] << std::endl;
-
-  if ((storage != nullptr) && (storage->dim() > 0)) {
-    ostr << "1" << std::endl;
-    storage->serialize(ostr);
-  } else {
-    ostr << "0" << std::endl;
-  }
+  storage.serialize(ostr);
 }
 
 void Grid::refine(DataVector* vector, int numOfPoints) {
@@ -504,19 +487,19 @@ void Grid::insertPoint(size_t dim, unsigned int levels[],
   // insert last level/index and hash
   pointIndex.set(dim - 1, levels[dim - 1], indices[dim - 1], isLeaf);
   // insert point to the GridStorage
-  storage->insert(pointIndex);
+  storage.insert(pointIndex);
 }
 
 size_t Grid::getSize() {
-  return this->storage->size();
+  return storage.size();
 }
 
 std::vector<size_t> Grid::getAlgorithmicDimensions() {
-  return this->storage->getAlgorithmicDimensions();
+  return storage.getAlgorithmicDimensions();
 }
 
 void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
-  this->storage->setAlgorithmicDimensions(newAlgoDims);
+  this->storage.setAlgorithmicDimensions(newAlgoDims);
 }
 
 }  // namespace base

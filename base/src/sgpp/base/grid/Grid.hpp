@@ -331,11 +331,6 @@ class Grid {
   explicit Grid(std::istream& istr);
 
   /**
-   * Standard Constructor
-   */
-  Grid();
-
-  /**
    * Constructor initializing the grid storage with the given
    * dimensionality.
    *
@@ -487,8 +482,8 @@ class Grid {
   void setAlgorithmicDimensions(std::vector<size_t> newAlgoDims);
 
  protected:
-  /// pointer to the GridStorage object of the grid
-  std::unique_ptr<GridStorage> storage;
+  /// GridStorage object of the grid
+  GridStorage storage;
 
   typedef std::unique_ptr<Grid> (*Factory)(std::istream&);
   typedef std::map<std::string, Grid::Factory> factoryMap;
