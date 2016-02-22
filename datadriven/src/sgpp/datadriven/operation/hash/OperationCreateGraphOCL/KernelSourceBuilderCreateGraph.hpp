@@ -41,6 +41,64 @@ private:
 		}
 		return output.str();
 	}
+
+	std::string init_k_registers(size_t k, size_t dimensions) {
+		std::stringstream output;
+		for(size_t i = 0; i < k; i++) {
+			output << this->indent[0] << "int k_register" << i << " = " << i << "; " << std::endl;
+		}
+		for(size_t i = 0; i < k; i++) {
+			output << this->indent[0] << this->floatType() << " dist_k" << i << " = 4.0;"<<std::endl;
+			/*output << "for (unsigned int j = 0; j <  " << dimensions << " ; j++) {"<<std::endl;
+			  output << "dist_k" << i <<" += (data[global_index* " << dimensions
+			  << "	+ j] - data[j + k_register" << i << " * " << dimensions << " ])"<<std::endl
+			  <<"* (data[j + global_index* " << dimensions << " ] - data[j + k_register" << i << " * " << dimensions << " ]);"<<std::endl;
+			  output << "}"<<std::endl;*/
+		}
+		return output.str();
+	}
+	std::string replace_max_k_register(size_t k) {
+		std::stringstream output;
+		output << this->indent[2] << this->floatType() << " tmp = dist;" <<std::endl;
+		output << this->indent[2] << "int token = i;" <<std::endl;
+		output << this->indent[2] << "int tmpi = i;" <<std::endl;
+		for(size_t i = 0; i < k; i++) {
+			output << this->indent[2] << "if(dist_k" << i <<" > dist) {"<<std::endl;
+			output << this->indent[3] << "tmp = dist_k" << i <<";"<<std::endl;
+			output << this->indent[3] << "dist_k" << i << " = dist;"<<std::endl;
+			output << this->indent[3] << "dist = tmp;"<<std::endl;
+			output << this->indent[3] << "tmpi = k_register" << i << ";"<<std::endl;
+			output << this->indent[3] << "k_register" << i << " = token;"<<std::endl;
+			output << this->indent[3] << "token = tmpi;"<<std::endl;
+			output << this->indent[2] << "}"<<std::endl;
+		}
+
+		/*output << this->floatType() << " maxdist = 0.0;" <<std::endl;
+		  for(size_t i = 0; i < k; i++) {
+		  output << "if(dist_k" << i <<" > maxdist)"<<std::endl;
+		  output << "maxdist = dist_k" << i << ";"<<std::endl;
+		  }
+		  output << "if(dist < maxdist) {"<<std::endl;
+		  output << "if(dist_k0 == maxdist) {"<<std::endl;
+		  output << "dist_k0 = dist;"<<std::endl;
+		  output << "k_register0 = i;"<<std::endl;
+		  output << "}"<<std::endl;
+		  for(size_t i = 1; i < k; i++) {
+		  output << "else if(dist_k" << i <<" == maxdist) {"<<std::endl;
+		  output << "dist_k" << i <<" = dist;"<<std::endl;
+		  output << "k_register" << i <<" = i;"<<std::endl;
+		  output << "}"<<std::endl;
+		  }*/
+		//output << "}"<<std::endl;
+		return output.str();
+	}
+	std::string copy_k_registers_into_global(size_t k) {
+		std::stringstream output;
+		for(size_t i = 0; i < k; i++) {
+			output << this->indent[0] << "neighbors[global_index * "<< k <<" + " << i << "] = k_register" << i << ";" << std::endl;
+		}
+		return output.str();
+	}
 public:
 
 	SourceBuilderCreateGraph(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration, size_t dims) :
@@ -50,7 +108,7 @@ public:
 	std::string generateSource(int dimensions, int k, int dataSize) {
 		if(kernelConfiguration.contains("REUSE_SOURCE")) {
 			if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
-				return this->reuseSource("DensityOCLMultiPlatform_mult.cl");
+				return this->reuseSource("DensityOCLMultiPlatform_create_graph.cl");
 			}
 		}
 
@@ -61,48 +119,27 @@ public:
 		}
 
 		sourceStream<<""<<std::endl
-					<<"void kernel connectNeighbors(global "<<this->floatType()<<" *data,"<<std::endl
-					<<"							    global int *neighbors)"<<std::endl
+					<<"void kernel connectNeighbors(global "<<this->floatType()<<" *data, global int *neighbors)" << std::endl
 					<<"{"<<std::endl
-					<<"	  size_t global_index = get_global_id(0);"<<std::endl
-					<<"	  size_t index = get_global_id(0);"<<std::endl
-					<<"	  for(int t=0;t< " << k << " ;t++)"<<std::endl
-					<<"		  neighbors[( " << k << " *index)+t] = t;"<<std::endl
-					<<"	  int size = 0;"<<std::endl
-					<<"	  for (unsigned int i = 0; i <  " << dataSize << "; i++) {"<<std::endl
-					<<"		 if (i != global_index) {"<<std::endl
-					<<"			 //get distance to current point"<<std::endl
-					<<"			"<<this->floatType()<<" dist = 0.0;"<<std::endl
-					<<"			 for (unsigned int j = 0; j <  " << dimensions << " ; j++) {"<<std::endl
-					<<"			 dist += (data[global_index* " << dimensions << "  + j] - data[j + i* " << dimensions << " ])"<<std::endl
-					<<"				   * (data[j + global_index* " << dimensions << " ] - data[j + i* " << dimensions << " ]);"<<std::endl
-					<<"		 }"<<std::endl
-					<<"			"<<this->floatType()<<" max=0.0;"<<std::endl
-					<<"			int maxindex=-1;"<<std::endl
-					<<"			for(int t=0;t< " << k << " ;t++)"<<std::endl
-					<<"			{"<<std::endl
-					<<"				int currentneighbor=neighbors[ " << k << " *index+t];"<<std::endl
-					<<"				"<<this->floatType()<<" currentdist=0.0;"<<std::endl
-					<<"				for (unsigned int j = 0; j <  " << dimensions << " ; j++) {"<<std::endl
-					<<"				   currentdist += (data[global_index* " << dimensions << "  + j] - data[j + currentneighbor* " << dimensions << " ])"<<std::endl
-					<<"								* (data[j + global_index* " << dimensions << " ] - data[j + currentneighbor* " << dimensions << " ]);"<<std::endl
-					<<"				}"<<std::endl
-					<<"				if(max<currentdist)"<<std::endl
-					<<"				{"<<std::endl
-					<<"				   max=currentdist;"<<std::endl
-					<<"				   maxindex=t;"<<std::endl
-					<<"				}"<<std::endl
-					<<"			 }"<<std::endl
-					<<"			 if(dist<max)"<<std::endl
-					<<"			 {"<<std::endl
-					<<"				neighbors[( " << k << " *index)+maxindex] = i;"<<std::endl
-					<<"			 }"<<std::endl
-					<<"		  }"<<std::endl
-					<<"	   }"<<std::endl
-					<<"	}"<<std::endl;
+					<< this->indent[0]	<< "size_t global_index = get_global_id(0);" << std::endl
+					<< this->indent[0]	<< "size_t index = get_global_id(0);" << std::endl
+					<< init_k_registers(k, dimensions)
+					<< this->indent[0] << "for (unsigned int i = 0; i <	" << dataSize << "; i++) {" << std::endl
+					<< this->indent[1] << "if (i != global_index) {"<<std::endl
+					<<"//get distance to current point"<<std::endl
+					<< this->indent[2] <<""<<this->floatType()<<" dist = 0.0;"<<std::endl
+					<< this->indent[2] <<"for (unsigned int j = 0; j <	 " << dimensions << " ; j++) {"<<std::endl
+					<< this->indent[3] <<"dist += (data[global_index* " << dimensions << "	 + j] - data[j + i* " << dimensions << " ])"<<std::endl
+					<< this->indent[3] <<"* (data[j + global_index* " << dimensions << " ] - data[j + i* " << dimensions << " ]);"<<std::endl
+					<< this->indent[2] <<"}" << std::endl
+					<< replace_max_k_register(k)
+					<< this->indent[1] <<"}" << std::endl
+					<< this->indent[0] <<"}" << std::endl
+					<< copy_k_registers_into_global(k)
+					<< "}" << std::endl;
 		if(kernelConfiguration.contains("WRITE_SOURCE")) {
 			if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-				this->writeSource("DensityOCLMultiPlatform_graph.cl", sourceStream.str());
+				this->writeSource("DensityOCLMultiPlatform_create_graph.cl", sourceStream.str());
 			}
 		}
 
