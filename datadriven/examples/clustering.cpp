@@ -21,10 +21,9 @@
 using namespace SGPP::base;
 int main()
 {
-
-	unsigned int dimension,tiefe,k;
+	size_t dimension,tiefe,k;
 	double lambda,treshold;
-	std::string filename = "simple_test.arff";
+	std::string filename = "dataset2_dim2.arff";
 
 	std::cout << "Loading file: " << filename << std::endl;
 	SGPP::datadriven::Dataset data =
@@ -51,7 +50,7 @@ int main()
 	SGPP::base::DataVector alpha(gridsize);
 	SGPP::base::DataVector result(gridsize);
 
-	sg::solver::ConjugateGradients *solver=new sg::solver::ConjugateGradients(17,0.0001);
+	sg::solver::ConjugateGradients *solver=new sg::solver::ConjugateGradients(1000,0.001);
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationDensityOCL* operation_mult=
 		SGPP::datadriven::createDensityOCLMultiPlatformConfigured(*grid, dimension, lambda, "MyOCLConf.cfg");
 
@@ -64,17 +63,36 @@ int main()
 
 	std::cout<<"Creating alpha"<<std::endl;
 	solver->solve(*operation_mult,alpha,b,false,true);
+	double max=alpha.max();
+	double min=alpha.min();
+	for(size_t i=0;i<gridsize;i++)
+		alpha[i]=alpha[i]*1.0/(max-min);
 
 	std::cout<<"Starting graph creation..."<<std::endl;
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL* operation_graph=
 		SGPP::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension, "MyOCLConf.cfg");
 	std::vector<int> graph(dataset.getNrows()*k);
 	operation_graph->create_graph(graph);
+	std::ofstream out1("graph1.txt");
+	for(size_t i=0; i < dataset.getNrows(); i++) {
+		for(size_t node = 0; node < k; node++)
+			out1 << graph[i * k + node] << " ";
+		out1 << std::endl;
+	}
+	out1.close();
 
 	std::cout<<"Starting graph pruning"<<std::endl;
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCL* operation_prune=
 		SGPP::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset, treshold, k, "MyOCLConf.cfg");
 	operation_prune->prune_graph(graph);
+
+	std::ofstream out2("graph2.txt");
+	for(size_t i=0; i < dataset.getNrows(); i++) {
+		for(size_t node = 0; node < k; node++)
+			out2 << graph[i * k + node] << " ";
+		out2 << std::endl;
+	}
+	out2.close();
 
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
 
