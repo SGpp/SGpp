@@ -127,14 +127,14 @@ public:
 					<< this->indent[0] << "for (unsigned int i = 0; i <	" << dataSize << "; i++) {" << std::endl
 					<< this->indent[1] << "if (i != global_index) {"<<std::endl
 					<<"//get distance to current point"<<std::endl
-					<< this->indent[2] <<""<<this->floatType()<<" dist = 0.0;"<<std::endl
-					<< this->indent[2] <<"for (unsigned int j = 0; j <	 " << dimensions << " ; j++) {"<<std::endl
-					<< this->indent[3] <<"dist += (data[global_index* " << dimensions << "	 + j] - data[j + i* " << dimensions << " ])"<<std::endl
-					<< this->indent[3] <<"* (data[j + global_index* " << dimensions << " ] - data[j + i* " << dimensions << " ]);"<<std::endl
-					<< this->indent[2] <<"}" << std::endl
+					<< this->indent[2] << this->floatType()<<" dist = 0.0;"<<std::endl
+					<< this->indent[2] << "for (unsigned int j = 0; j <	 " << dimensions << " ; j++) {"<<std::endl
+					<< this->indent[3] << "dist += (data[global_index* " << dimensions << "	 + j] - data[j + i* " << dimensions << " ])"<<std::endl
+					<< this->indent[3] << "* (data[j + global_index* " << dimensions << " ] - data[j + i* " << dimensions << " ]);"<<std::endl
+					<< this->indent[2] << "}" << std::endl
 					<< replace_max_k_register(k)
-					<< this->indent[1] <<"}" << std::endl
-					<< this->indent[0] <<"}" << std::endl
+					<< this->indent[1] << "}" << std::endl
+					<< this->indent[0] << "}" << std::endl
 					<< copy_k_registers_into_global(k)
 					<< "}" << std::endl;
 		if(kernelConfiguration.contains("WRITE_SOURCE")) {

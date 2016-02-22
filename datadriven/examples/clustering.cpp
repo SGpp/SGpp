@@ -73,29 +73,13 @@ int main()
 		SGPP::datadriven::createNearestNeighborGraphConfigured(dataset, k, dimension, "MyOCLConf.cfg");
 	std::vector<int> graph(dataset.getNrows()*k);
 	operation_graph->create_graph(graph);
-	std::ofstream out1("graph1.txt");
-	for(size_t i=0; i < dataset.getNrows(); i++) {
-		for(size_t node = 0; node < k; node++)
-			out1 << graph[i * k + node] << " ";
-		out1 << std::endl;
-	}
-	out1.close();
 
 	std::cout<<"Starting graph pruning"<<std::endl;
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCL* operation_prune=
 		SGPP::datadriven::pruneNearestNeighborGraphConfigured(*grid, dimension, alpha, dataset, treshold, k, "MyOCLConf.cfg");
 	operation_prune->prune_graph(graph);
 
-	std::ofstream out2("graph2.txt");
-	for(size_t i=0; i < dataset.getNrows(); i++) {
-		for(size_t node = 0; node < k; node++)
-			out2 << graph[i * k + node] << " ";
-		out2 << std::endl;
-	}
-	out2.close();
-
 	SGPP::datadriven::StreamingOCLMultiPlatform::OperationCreateGraphOCL::find_clusters(graph, k);
-
 	//cleanup
 	delete gridGen;
 	delete grid;

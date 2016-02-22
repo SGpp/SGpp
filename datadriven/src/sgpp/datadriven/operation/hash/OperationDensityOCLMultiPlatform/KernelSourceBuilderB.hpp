@@ -62,27 +62,27 @@ public:
 
 		sourceStream<<"void kernel cscheme(global const int* starting_points,"<<std::endl
 					<<"global const "<<this->floatType()<<"* data_points,global "<<this->floatType()<<"* C) {"<<std::endl
-					<<"C[get_global_id(0)]=0.0;"<<std::endl
-					<<"for(unsigned int ds=0;ds< " << datapoints << ";ds++)"<<std::endl
-					<<"{"<<std::endl
-					<<"private "<<this->floatType()<<" value=1;"<<std::endl
-					<<"for(private int d=0;d< " << dimensions << ";d++)"<<std::endl
-					<<"{"<<std::endl
-					<<"private "<<this->floatType()<<" wert=1.0;"<<std::endl
-					<<"for(private int z=1;"<<std::endl
-					<<"	z<=starting_points[(get_global_id(0))*2* " << dimensions << "+2*d+1];z++)"<<std::endl
-					<<"		wert*=2;"<<std::endl
-					<<"wert*=data_points[ds* " << dimensions << "+d];"<<std::endl
-					<<"	wert-=starting_points[(get_global_id(0))*2* " << dimensions << "+2*d];"<<std::endl
-					<<"	if(wert<0)"<<std::endl
-					<<"		wert*=-1;"<<std::endl
-					<<"	wert=1-wert;"<<std::endl
-					<<"	if(wert<0)"<<std::endl
-					<<"		wert=0;"<<std::endl
-					<<"	value*=wert;"<<std::endl
-					<<"}"<<std::endl
-					<<"C[get_global_id(0)]+=value/ " << datapoints << ";"<<std::endl
-					<<"}"<<std::endl
+					<< this->indent[0] << "C[get_global_id(0)]=0.0;"<<std::endl
+					<< this->indent[0] << "for(unsigned int ds=0;ds< " << datapoints << ";ds++)"<<std::endl
+					<< this->indent[0] << "{"<<std::endl
+					<< this->indent[1] << "private "<<this->floatType()<<" value=1;"<<std::endl
+					<< this->indent[1] << "for(private int d=0;d< " << dimensions << ";d++)"<<std::endl
+					<< this->indent[1] << "{"<<std::endl
+					<< this->indent[2] << "private "<<this->floatType()<<" wert=1.0;"<<std::endl
+					<< this->indent[2] << "for(private int z=1;"<<std::endl
+					<< this->indent[2] << "z<=starting_points[(get_global_id(0))*2* " << dimensions << "+2*d+1];z++)"<<std::endl
+					<< this->indent[3] << "wert*=2;"<<std::endl
+					<< this->indent[2] << "wert*=data_points[ds* " << dimensions << "+d];"<<std::endl
+					<< this->indent[2] << "wert-=starting_points[(get_global_id(0))*2* " << dimensions << "+2*d];"<<std::endl
+					<< this->indent[2] << "if(wert<0)"<<std::endl
+					<< this->indent[3] << "wert*=-1;"<<std::endl
+					<< this->indent[2] << "wert=1-wert;"<<std::endl
+					<< this->indent[2] << "if(wert<0)"<<std::endl
+					<< this->indent[3] << "wert=0;"<<std::endl
+					<< this->indent[2] << "value*=wert;"<<std::endl
+					<< this->indent[1] << "}"<<std::endl
+					<< this->indent[1] << "C[get_global_id(0)]+=value/ " << datapoints << ";"<<std::endl
+					<< this->indent[0] << "}"<<std::endl
 					<<"}"<<std::endl;
 		if(kernelConfiguration.contains("WRITE_SOURCE")) {
 			if (kernelConfiguration["WRITE_SOURCE"].getBool()) {

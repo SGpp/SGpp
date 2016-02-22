@@ -63,75 +63,75 @@ public:
 
 		sourceStream<<""<<std::endl
 					<<""<<this->floatType()<<" get_u(private const "<<this->floatType()<<" grenze,private const int index,"<<std::endl
-					<<"		 private const int level)"<<std::endl
+					<<"private const int level)"<<std::endl
 					<<"{"<<std::endl
-					<<"private "<<this->floatType()<<" ret = (1 << level);"<<std::endl
-					<<"ret*=grenze;"<<std::endl
-					<<"ret-=index;"<<std::endl
-					<<"if(ret<0.0)"<<std::endl
-					<<"	ret*=-1.0;"<<std::endl
-					<<"ret=1-ret;"<<std::endl
-					<<"if(ret<0.0)"<<std::endl
-					<<"	ret=0.0;"<<std::endl
-					<<"return ret;"<<std::endl
+					<< this->indent[0] << "private "<<this->floatType()<<" ret = (1 << level);"<<std::endl
+					<< this->indent[0] << "ret*=grenze;"<<std::endl
+					<< this->indent[0] << "ret-=index;"<<std::endl
+					<< this->indent[0] << "if(ret<0.0)"<<std::endl
+					<< this->indent[0] << "ret*=-1.0;"<<std::endl
+					<< this->indent[0] << "ret=1-ret;"<<std::endl
+					<< this->indent[0] << "if(ret<0.0)"<<std::endl
+					<< this->indent[1] << "ret=0.0;"<<std::endl
+					<< this->indent[0] << "return ret;"<<std::endl
 					<<"}"<<std::endl
 					<<""<<std::endl
-					<<" void kernel removeEdges(global int *nodes,global const int *starting_points,global const "<<this->floatType()<<" *data,"<<std::endl
-					<<"					global const "<<this->floatType()<<" *alphas) {"<<std::endl
-					<<"size_t index = get_global_id(0);"<<std::endl
-					<<"size_t global_index=get_global_id(0);"<<std::endl
-					<<""<<this->floatType()<<" endwert=0;"<<std::endl
-					<<"for(int gridpoint=0;gridpoint< " << gridSize << " ;gridpoint++)"<<std::endl
-					<<"{"<<std::endl
-					<<"	"<<this->floatType()<<" wert=1;"<<std::endl
-					<<"	for(int dimension=0;dimension< " << dimensions << ";dimension++)"<<std::endl
-					<<"	{"<<std::endl
-					<<"		wert*=get_u(data[global_index* " << dimensions << "+dimension],starting_points[gridpoint*2* " << dimensions << "+2*dimension],"<<std::endl
-					<<"					starting_points[gridpoint*2* " << dimensions << "+2*dimension+1]);"<<std::endl
-					<<"	}"<<std::endl
-					<<"	endwert+=wert*alphas[gridpoint];"<<std::endl
-					<<"}"<<std::endl
-					<<"if(endwert<0.0)"<<std::endl
-					<<"	endwert=0.0;"<<std::endl
-					<<"if (endwert< " << treshold << " )"<<std::endl
-					<<"{"<<std::endl
-					<<"	for (int i = 0; i <  " << k << " ; i++)"<<std::endl
-					<<"	{"<<std::endl
-					<<"		nodes[ " << k << " *index + i] = -1;"<<std::endl
-					<<"	}"<<std::endl
-					<<"}"<<std::endl
-					<<"else //Remove Edges"<<std::endl
-					<<"{"<<std::endl
-					<<"	for (int i = 0; i <  " << k << " ; i++)"<<std::endl
-					<<"	{"<<std::endl
-					<<"		//Calculate density"<<std::endl
-					<<"		"<<this->floatType()<<" endwert=0;"<<std::endl
-					<<"	int nachbar=nodes[index* " << k << " +i];"<<std::endl
-					<<"		for(int gridpoint=0;gridpoint< " << gridSize << " ;gridpoint++)"<<std::endl
-					<<"		{"<<std::endl
-					<<"			"<<this->floatType()<<" wert=1;"<<std::endl
-					<<"			for(int dimension=0;dimension< " << dimensions << ";dimension++)"<<std::endl
-					<<"			{"<<std::endl
-					<<"				"<<this->floatType()<<" dimension_point=0;"<<std::endl
-					<<"				if(data[global_index* " << dimensions << "+dimension]>data[dimension+nachbar* " << dimensions << "])"<<std::endl
-					<<"					dimension_point=data[dimension+nachbar* " << dimensions << "]+"<<std::endl
-					<<"						(data[global_index* " << dimensions << "+dimension]-data[dimension+nachbar* " << dimensions << "])*0.5;"<<std::endl
-					<<"				else"<<std::endl
-					<<"					dimension_point=data[global_index* " << dimensions << "+dimension]+"<<std::endl
-					<<"						(data[dimension+nachbar* " << dimensions << "]-data[global_index* " << dimensions << "+dimension])*0.5;"<<std::endl
-					<<"				wert*=get_u(dimension_point,starting_points[gridpoint*2* " << dimensions << "+2*dimension],"<<std::endl
-					<<"							starting_points[gridpoint*2* " << dimensions << "+2*dimension+1]);"<<std::endl
-					<<"			}"<<std::endl
-					<<"			endwert+=wert*alphas[gridpoint];"<<std::endl
-					<<"		}"<<std::endl
-					<<"		if(endwert<0.0)"<<std::endl
-					<<"			endwert=0.0;"<<std::endl
-					<<"		if (endwert< " << treshold << " )"<<std::endl
-					<<"		{"<<std::endl
-					<<"			nodes[ " << k << " *index + i] = -2;"<<std::endl
-					<<"		}"<<std::endl
-					<<"	}"<<std::endl
-					<<"}"<<std::endl
+					<<"void kernel removeEdges(global int *nodes,global const int *starting_points,global const "<<this->floatType()<<" *data,"<<std::endl
+					<< this->indent[0] << "global const "<<this->floatType()<<" *alphas) {"<<std::endl
+					<< this->indent[0] << "size_t index = get_global_id(0);"<<std::endl
+					<< this->indent[0] << "size_t global_index=get_global_id(0);"<<std::endl
+					<< this->indent[0] << ""<<this->floatType()<<" endwert=0;"<<std::endl
+					<< this->indent[0] << "for(int gridpoint=0;gridpoint< " << gridSize << " ;gridpoint++)"<<std::endl
+					<< this->indent[0] << "{"<<std::endl
+					<< this->indent[1] << ""<<this->floatType()<<" wert=1;"<<std::endl
+					<< this->indent[1] << "for(int dimension=0;dimension< " << dimensions << ";dimension++)"<<std::endl
+					<< this->indent[1] << "{"<<std::endl
+					<< this->indent[2] << "wert*=get_u(data[global_index* " << dimensions << "+dimension],starting_points[gridpoint*2* " << dimensions << "+2*dimension],"<<std::endl
+					<< this->indent[3] << "starting_points[gridpoint*2* " << dimensions << "+2*dimension+1]);"<<std::endl
+					<< this->indent[1] << "}"<<std::endl
+					<< this->indent[1] << "endwert+=wert*alphas[gridpoint];"<<std::endl
+					<< this->indent[0] << "}"<<std::endl
+					<< this->indent[0] << "if(endwert<0.0)"<<std::endl
+					<< this->indent[1] << "endwert=0.0;"<<std::endl
+					<< this->indent[0] << "if (endwert< " << treshold << " )"<<std::endl
+					<< this->indent[0] << "{"<<std::endl
+					<< this->indent[1] << "for (int i = 0; i <  " << k << " ; i++)"<<std::endl
+					<< this->indent[1] << "{"<<std::endl
+					<< this->indent[2] << "nodes[ " << k << " *index + i] = -1;"<<std::endl
+					<< this->indent[1] << "}"<<std::endl
+					<< this->indent[0] << "}"<<std::endl
+					<< this->indent[0] << "else //Remove Edges"<<std::endl
+					<< this->indent[0] << "{"<<std::endl
+					<< this->indent[1] << "for (int i = 0; i <  " << k << " ; i++)"<<std::endl
+					<< this->indent[1] << "{"<<std::endl
+					<< this->indent[2] << "//Calculate density"<<std::endl
+					<< this->indent[2] << ""<<this->floatType()<<" endwert=0;"<<std::endl
+					<< this->indent[2] << "int nachbar=nodes[index* " << k << " +i];"<<std::endl
+					<< this->indent[2] << "for(int gridpoint=0;gridpoint< " << gridSize << " ;gridpoint++)"<<std::endl
+					<< this->indent[2] << "{"<<std::endl
+					<< this->indent[3] << ""<<this->floatType()<<" wert=1;"<<std::endl
+					<< this->indent[3] << "for(int dimension=0;dimension< " << dimensions << ";dimension++)"<<std::endl
+					<< this->indent[3] << "{"<<std::endl
+					<< this->indent[4] << ""<<this->floatType()<<" dimension_point=0;"<<std::endl
+					<< this->indent[4] << "if(data[global_index* " << dimensions << "+dimension]>data[dimension+nachbar* " << dimensions << "])"<<std::endl
+					<< this->indent[5] << "dimension_point=data[dimension+nachbar* " << dimensions << "]+"<<std::endl
+					<< this->indent[5] << "(data[global_index* " << dimensions << "+dimension]-data[dimension+nachbar* " << dimensions << "])*0.5;"<<std::endl
+					<< this->indent[4] << "else"<<std::endl
+					<< this->indent[5] << "dimension_point=data[global_index* " << dimensions << "+dimension]+"<<std::endl
+					<< this->indent[5] << "(data[dimension+nachbar* " << dimensions << "]-data[global_index* " << dimensions << "+dimension])*0.5;"<<std::endl
+					<< this->indent[4] << "wert*=get_u(dimension_point,starting_points[gridpoint*2* " << dimensions << "+2*dimension],"<<std::endl
+					<< this->indent[4] << "starting_points[gridpoint*2* " << dimensions << "+2*dimension+1]);"<<std::endl
+					<< this->indent[3] << "}"<<std::endl
+					<< this->indent[3] << "endwert+=wert*alphas[gridpoint];"<<std::endl
+					<< this->indent[2] << "}"<<std::endl
+					<< this->indent[2] << "if(endwert<0.0)"<<std::endl
+					<< this->indent[3] << "endwert=0.0;"<<std::endl
+					<< this->indent[2] << "if (endwert< " << treshold << " )"<<std::endl
+					<< this->indent[2] << "{"<<std::endl
+					<< this->indent[3] << "nodes[ " << k << " *index + i] = -2;"<<std::endl
+					<< this->indent[2] << "}"<<std::endl
+					<< this->indent[1] << "}"<<std::endl
+					<< this->indent[0] << "}"<<std::endl
 					<<"}"<<std::endl;
 		if(kernelConfiguration.contains("WRITE_SOURCE")) {
 			if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
