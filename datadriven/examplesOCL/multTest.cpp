@@ -43,13 +43,13 @@ int main(int argc, char** argv) {
    << std::endl;*/
 
   //  std::string fileName = "friedman2_90000.arff";
-  std::string fileName = "debugging.arff";
-  //  std::string fileName = "friedman_4d.arff";
+  //  std::string fileName = "debugging.arff";
+  std::string fileName = "friedman_4d.arff";
   //  std::string fileName = "friedman_10d.arff";
   //  std::string fileName = "DR5_train.arff";
   //  std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 2;
+  uint32_t level = 6;
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -148,8 +148,8 @@ int main(int argc, char** argv) {
       largestDifferenceReference = dataSizeVectorResultCompare[i];
     }
 
-    std::cout << "difference: " << difference << " mine: " << dataSizeVectorResult[i]
-              << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+    //    std::cout << "difference: " << difference << " mine: " << dataSizeVectorResult[i]
+    //              << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
 
     mse += difference * difference;
   }
