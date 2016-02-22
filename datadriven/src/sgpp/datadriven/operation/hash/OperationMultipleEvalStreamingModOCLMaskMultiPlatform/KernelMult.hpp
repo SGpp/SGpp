@@ -248,7 +248,7 @@ class KernelMult {
         //                deviceName << "\"" << std::endl;
 
         err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0,
-                                     &rangeSizeUnblocked, &localSize, 0, nullptr, &clTiming);
+                                     &rangeSizeBlocked, &localSize, 0, nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
