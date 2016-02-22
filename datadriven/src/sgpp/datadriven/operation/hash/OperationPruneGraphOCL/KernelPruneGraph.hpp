@@ -118,7 +118,7 @@ public:
 			if(verbose)
 				std::cout<<"generating kernel source"<<std::endl;
 			std::string program_src = kernelSourceBuilder.generateSource();
-			if(true)
+			if(verbose)
 				std::cout<<"Source: "<<std::endl<<program_src<<std::endl;
 			if(verbose)
 				std::cout<<"building kernel"<<std::endl;

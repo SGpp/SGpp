@@ -74,7 +74,7 @@ public:
 		int clustercount = 0;
 		for (size_t node = 0; node < clusters.size(); node++)
 			clusters[node]=0;
-		for (int i = 0; i < clusters.size(); i++) {
+		for (size_t i = 0; i < clusters.size(); i++) {
 			if(clusters[i] == 0 && graph[i*k]!=-1) {
 				clustercount++;
 				if(OperationCreateGraphOCL::find_neighbors(i, graph, clustercount, k, clusters) != clustercount)

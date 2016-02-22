@@ -41,8 +41,8 @@ public:
 	OperationPruneGraphOCLMultiPlatform( base::Grid& grid, base::DataVector& alpha, base::DataMatrix &data, size_t dims,
 										 std::shared_ptr<base::OCLManagerMultiPlatform> manager,
 										 json::Node &configuration, T treshold, size_t k) :
-		OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage()->size()), dataSize(data.getSize()), configuration(configuration), dataVector(data.getSize()),
-		devices(manager->getDevices()), manager(manager)
+		OperationPruneGraphOCL(), dims(dims), gridSize(grid.getStorage()->size()), dataSize(data.getSize()), configuration(configuration), devices(manager->getDevices()), manager(manager), alphaVector(gridSize), dataVector(data.getSize())
+
 	{
 		verbose=true;
 		//Store Grid in a opencl compatible buffer
@@ -61,7 +61,7 @@ public:
 		if(verbose)
 			std::cout<<"Grid stored into integer array! Number of gridpoints: "<<pointscount<<std::endl;
 		for(size_t i=0;i<gridSize;i++)
-			alphaVector.push_back(alpha[i]);
+			alphaVector[i]=alpha[i];
 		double *data_raw = data.getPointer();
 		for(size_t i = 0; i < data.getSize(); i++)
 			dataVector[i]=data_raw[i];
