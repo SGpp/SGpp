@@ -225,7 +225,7 @@ void prepareGrid(std::string fileName, SGPP::base::GridType gridType, size_t lev
   } else if (gridType == SGPP::base::GridType::ModLinear) {
     configuration = SGPP::datadriven::OperationMultipleEvalConfiguration(
         SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-        SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK);
+        SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP);
   }
 
   std::string content = uncompressFile(fileName);
@@ -733,7 +733,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMULTIPLATFORM, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     //        adaptConfig.numRefinements_ = refinementStepsModLinear[i];
@@ -762,7 +762,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMASK, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
     //        adaptConfig.numRefinements_ = refinementStepsModLinear[i];

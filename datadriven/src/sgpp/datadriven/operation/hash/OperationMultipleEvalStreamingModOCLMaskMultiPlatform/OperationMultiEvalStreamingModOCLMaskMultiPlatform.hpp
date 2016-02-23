@@ -51,7 +51,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   /// Timer object to handle time measurements
   SGPP::base::SGppStopwatch myTimer;
 
-  base::GridStorage *storage;
+  base::GridStorage &storage;
 
   float_t duration;
 
@@ -76,16 +76,16 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
         preparedDataset(dataset),
         parameters(parameters),
         myTimer(SGPP::base::SGppStopwatch()),
+        storage(grid.getStorage()),
         duration(-1.0),
         manager(manager),
         devices(manager->getDevices()) {
     this->verbose = (*parameters)["VERBOSE"].getBool();
 
     this->dims = dataset.getNcols();  // be aware of transpose!
-    this->storage = &grid.getStorage();
 
     // padded grid size is set by prepare
-    this->gridSizeUnpadded = this->storage->getSize();
+    this->gridSizeUnpadded = storage.getSize();
     // initialized in prepare
     this->gridSizePadded = 0;
     this->gridSizeBuffers = 0;
@@ -305,7 +305,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   void recalculateLevelIndexMask() {
     size_t commonGridPadding = calculateCommonGridPadding();
 
-    size_t remainder = this->storage->getSize() % commonGridPadding;
+    size_t remainder = storage.getSize() % commonGridPadding;
     size_t padding = 0;
 
     if (remainder != 0) {
@@ -313,10 +313,10 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     }
 
     // size to distribute, not actual padded grid size
-    this->gridSizePadded = this->storage->getSize() + padding;
+    this->gridSizePadded = storage.getSize() + padding;
 
     // size for distributing schedules of different size
-    this->gridSizeBuffers = this->storage->getSize() + padding + commonGridPadding;
+    this->gridSizeBuffers = storage.getSize() + padding + commonGridPadding;
 
     SGPP::base::HashGridIndex::level_type curLevel;
     SGPP::base::HashGridIndex::index_type curIndex;
@@ -326,9 +326,9 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->mask = std::vector<T>(gridSizeBuffers * this->dims);
     this->offset = std::vector<T>(gridSizeBuffers * this->dims);
 
-    for (size_t i = 0; i < this->storage->getSize(); i++) {
+    for (size_t i = 0; i < storage.getSize(); i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
-        storage->get(i)->get(dim, curLevel, curIndex);
+        storage.get(i)->get(dim, curLevel, curIndex);
 
         if (curLevel == 1) {
           this->level[i * this->dims + dim] = 0.0;
@@ -379,7 +379,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       }
     }
 
-    for (size_t i = this->storage->getSize(); i < gridSizeBuffers; i++) {
+    for (size_t i = storage.getSize(); i < gridSizeBuffers; i++) {
       for (size_t dim = 0; dim < this->dims; dim++) {
         this->level[i * this->dims + dim] = 0;
         this->index[i * this->dims + dim] = 0;

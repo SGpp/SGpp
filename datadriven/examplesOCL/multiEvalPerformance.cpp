@@ -25,15 +25,15 @@ int main(int argc, char** argv) {
   // create a two-dimensional piecewise bi-linear grid
   size_t dim = dataset.getDimension();
   std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->getDimension() << std::endl;
+  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
   // create regular grid, level 3
   uint32_t level = 4;
   grid->getGenerator().regular(level);
-  std::cout << "number of grid points: " << gridStorage->getSize() << std::endl;
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  SGPP::base::DataVector alpha(gridStorage->getSize());
+  SGPP::base::DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
 
   std::random_device rd;
@@ -49,9 +49,8 @@ int main(int argc, char** argv) {
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
       SGPP::datadriven::OperationMultipleEvalSubType::OCL);
 
-  SGPP::base::OperationMultipleEval* eval =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                    configuration);
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
+      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
   SGPP::base::DataVector result(dataset.getNumberInstances());
 
@@ -67,7 +66,7 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval* evalCompare =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> evalCompare =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
   SGPP::base::DataVector resultCompare(dataset.getNumberInstances());
   evalCompare->eval(alpha, resultCompare);
