@@ -21,7 +21,7 @@ class TestPersistentRefinementOperator(unittest.TestCase):
         #
 
         self.grid = Grid.createLinearGrid(DIM)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(LEVEL)
 
         #
@@ -48,10 +48,11 @@ class TestPersistentRefinementOperator(unittest.TestCase):
 
         self.errors = DataVector(DELTA_RECI**2)
         coord = DataVector(DIM)
+        opEval = createOperationEval(self.grid)
 
         for i in xrange(self.trainData.getNrows()):
             self.trainData.getRow(i, coord)
-            self.errors.__setitem__ (i, self.classes[i] - self.grid.eval(self.alpha, coord))
+            self.errors.__setitem__ (i, self.classes[i] - opEval.eval(self.alpha, coord))
 
         #
         # Functor
@@ -67,15 +68,16 @@ class TestPersistentRefinementOperator(unittest.TestCase):
 
     def test_1(self):
         storage = self.grid.getStorage()
-        coord = DataVector(storage.dim())
+        coord = DataVector(storage.getDimension())
         num_coeff = self.alpha.__len__()
 
         #
         # First part
         # 
 
-        values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
+        values = [self.functor.__call__(storage,i) for i in xrange(storage.getSize())]
         expect = []
+        opEval = createOperationEval(self.grid)
 
         for j in xrange(num_coeff):
 
@@ -88,7 +90,7 @@ class TestPersistentRefinementOperator(unittest.TestCase):
             current = 0
             for i in xrange(self.trainData.getNrows()):
                 self.trainData.getRow(i, row)
-                current += (self.errors.__getitem__(i) * self.grid.eval(tmp_alpha, row)) ** 2
+                current += (self.errors.__getitem__(i) * opEval.eval(tmp_alpha, row)) ** 2
             
             self.accum.__setitem__(j, self.accum.__getitem__(j) * (1-BETA) + BETA * current * abs(self.alpha.__getitem__(j)))
             expect.append(self.accum.__getitem__(j))
@@ -99,8 +101,9 @@ class TestPersistentRefinementOperator(unittest.TestCase):
         # Second part
         #
 
-        values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
+        values = [self.functor.__call__(storage,i) for i in xrange(storage.getSize())]
         expect = []
+        opEval = createOperationEval(self.grid)
 
         for j in xrange(num_coeff):
 
@@ -113,7 +116,7 @@ class TestPersistentRefinementOperator(unittest.TestCase):
             current = 0
             for i in xrange(self.trainData.getNrows()):
                 self.trainData.getRow(i, row)
-                current += (self.errors.__getitem__(i) * self.grid.eval(tmp_alpha, row)) ** 2
+                current += (self.errors.__getitem__(i) * opEval.eval(tmp_alpha, row)) ** 2
             
             self.accum.__setitem__(j, self.accum.__getitem__(j) * (1-BETA) + BETA * current * abs(self.alpha.__getitem__(j)))
             expect.append(self.accum.__getitem__(j))

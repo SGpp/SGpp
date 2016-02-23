@@ -19,7 +19,7 @@ class InterpolateParents(InterpolationAlgorithm):
 
         newGs = grid.getStorage()
         newNodalValues = dehierarchize(grid, alpha)
-        p = DataVector(gs.dim())
+        p = DataVector(gs.getDimension())
 
         for newGp in newGridPoints:
             # run over all grid points of current level
@@ -27,7 +27,7 @@ class InterpolateParents(InterpolationAlgorithm):
             pp = DataVector(p)
             i = newGs.seq(newGp)
             newNodalValues[i] = 0.
-            for d in xrange(gs.dim()):
+            for d in xrange(gs.getDimension()):
                 # get current index
                 index = newGp.getIndex(d)
                 level = newGp.getLevel(d)
@@ -43,7 +43,7 @@ class InterpolateParents(InterpolationAlgorithm):
                 newNodalValues[i] += a * (p[d] - xlow) + fxhigh
                 # reset pp and set sumWeights
                 pp[d] = p[d]
-            newNodalValues[i] /= gs.dim()
+            newNodalValues[i] /= gs.getDimension()
 
         return newNodalValues
 
@@ -52,8 +52,8 @@ class InterpolateParents(InterpolationAlgorithm):
         # makes sure that all function values of the hierarchical ancestors
         # exist for the current value we are interpolating
         gs = grid.getStorage()
-        levelsum = gs.getMaxLevel() + gs.dim()
-        maxlevelsum = gs.getMaxLevel() * gs.dim()
+        levelsum = gs.getMaxLevel() + gs.getDimension()
+        maxlevelsum = gs.getMaxLevel() * gs.getDimension()
 
         # interpolate all missing values
         while levelsum <= maxlevelsum:

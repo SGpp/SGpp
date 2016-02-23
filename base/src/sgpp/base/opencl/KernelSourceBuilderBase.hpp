@@ -54,7 +54,7 @@ class KernelSourceBuilderBase {
 
       file.close();
     } else {
-      throw new base::operation_exception(
+      throw base::operation_exception(
           "OCL error: file to reuse not found\n");
     }
 

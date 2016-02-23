@@ -17,21 +17,21 @@ namespace base {
 
 void OperationHierarchisationModPoly::doHierarchisation(
   DataVector& node_values) {
-  HierarchisationModPoly func(this->storage, &this->base);
-  sweep<HierarchisationModPoly> s(func, this->storage);
+  HierarchisationModPoly func(storage, &base);
+  sweep<HierarchisationModPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
 
 void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha) {
-  DehierarchisationModPoly func(this->storage, &this->base);
-  sweep<DehierarchisationModPoly> s(func, this->storage);
+  DehierarchisationModPoly func(storage, &base);
+  sweep<DehierarchisationModPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(alpha, alpha, i);
   }
 }

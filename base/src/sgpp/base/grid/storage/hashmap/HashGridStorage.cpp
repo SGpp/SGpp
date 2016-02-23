@@ -104,7 +104,7 @@ HashGridStorage::HashGridStorage(HashGridStorage& copyFrom) :
                nullptr)
   , bUseStretching(copyFrom.bUseStretching) {
   // copy gridpoints
-  for (size_t i = 0; i < copyFrom.size(); i++) {
+  for (size_t i = 0; i < copyFrom.getSize(); i++) {
     this->insert(*(copyFrom[i]));
   }
 }
@@ -324,7 +324,7 @@ HashGridStorage::toString(std::ostream& stream) {
 }
 
 size_t
-HashGridStorage::size() const {
+HashGridStorage::getSize() const {
   return map.size();
 }
 
@@ -341,7 +341,7 @@ HashGridStorage::getNumInnerPoints() const {
 }
 
 size_t
-HashGridStorage::dim() const {
+HashGridStorage::getDimension() const {
   return DIM;
 }
 

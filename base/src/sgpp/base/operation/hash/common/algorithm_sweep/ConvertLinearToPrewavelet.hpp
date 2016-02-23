@@ -44,8 +44,8 @@ class ConvertLinearToPrewavelet {
   typedef GridStorage::index_type::index_type index_type;
 
   /// the grid object
-  GridStorage* storage;
-  GridStorage* shadowstorage;
+  GridStorage& storage;
+  GridStorage& shadowstorage;
 
  public:
   /**
@@ -59,7 +59,7 @@ class ConvertLinearToPrewavelet {
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    * @param shadowstorage shadow points (see detailed description)
    */
-  ConvertLinearToPrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
+  ConvertLinearToPrewavelet(GridStorage& storage, GridStorage& shadowstorage) :
     storage(storage), shadowstorage(shadowstorage) {
   }
 

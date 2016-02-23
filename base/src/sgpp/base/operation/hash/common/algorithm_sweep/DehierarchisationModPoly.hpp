@@ -30,7 +30,7 @@ class DehierarchisationModPoly {
   typedef GridStorage::index_type::index_type index_type;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
   /// the base
   SPolyModifiedBase* base;
@@ -42,7 +42,7 @@ class DehierarchisationModPoly {
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    * @param base the base for the polynomials
    */
-  DehierarchisationModPoly(GridStorage* storage, SPolyModifiedBase* base);
+  DehierarchisationModPoly(GridStorage& storage, SPolyModifiedBase* base);
   /**
    * Destructor
    */

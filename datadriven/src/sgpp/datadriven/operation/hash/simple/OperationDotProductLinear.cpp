@@ -22,12 +22,12 @@ float_t OperationDotProductLinear::eval(base::DataVector& x1, base::DataVector& 
   // GridStorage::grid_iterator working;
   // for (GridStorage::grid_iterator working = storage->begin(); working != storage->end();
   // working++){
-  for (size_t i = 0; i < storage->size(); i++) {
+  for (size_t i = 0; i < storage->getSize(); i++) {
     base::GridStorage::index_type working = *storage->get(i);
     float_t value1 = 1.0;
     float_t value2 = 1.0;
 
-    for (size_t d = 0; d < storage->dim(); d++) {
+    for (size_t d = 0; d < storage->getDimension(); d++) {
       working.get(d, temp, work_index);
 
       value1 *= base.eval(work_level, work_index, x1[d]);

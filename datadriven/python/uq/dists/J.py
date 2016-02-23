@@ -175,7 +175,7 @@ class J(Dist):
 #
 #         # hierarchize the result
 #         gs = grid.getStorage()
-#         p = DataVector(gs.dim())
+#         p = DataVector(gs.getDimension())
 #         nodalValues = DataVector(gs.size())
 #         for i in xrange(gs.size()):
 #             gs.get(i).getCoords(p)

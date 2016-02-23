@@ -28,7 +28,7 @@ void OperationDeltaLogLinearBoundary::up(SGPP::base::DataVector& alpha,
                                          SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -37,7 +37,7 @@ void OperationDeltaLogLinearBoundary::down(SGPP::base::DataVector& alpha,
                                            SGPP::base::DataVector& result, size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -46,7 +46,7 @@ void OperationDeltaLogLinearBoundary::upOpDim(SGPP::base::DataVector& alpha,
                                               SGPP::base::DataVector& result, size_t dim) {
   // dphi * phi
   DPhiPhiUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<DPhiPhiUpBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<DPhiPhiUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -55,7 +55,7 @@ void OperationDeltaLogLinearBoundary::downOpDim(SGPP::base::DataVector& alpha,
                                                 SGPP::base::DataVector& result, size_t dim) {
   // dphi * phi
   DPhiPhiDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<DPhiPhiDownBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<DPhiPhiDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }

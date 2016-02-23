@@ -18,7 +18,7 @@ namespace datadriven {
 void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha,
                                                          base::DataMatrix*& samples,
                                                          size_t num_samples, size_t trial_max) {
-  size_t num_dims = this->grid->getStorage()->dim();
+  size_t num_dims = this->grid->getDimension();
   samples = new base::DataMatrix(num_samples, num_dims);  // output samples
 
   size_t SEARCH_MAX = 100000;  // find the approximated maximum of function with 100000 points
@@ -52,8 +52,7 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
     }
   }
 
-  base::OperationMultipleEval* opMultEval = op_factory::createOperationMultipleEval(*grid, *(tmp));
-  opMultEval->mult(*alpha, *tmpEval);
+  op_factory::createOperationMultipleEval(*grid, *(tmp))->mult(*alpha, *tmpEval);
   maxValue = tmpEval->max();
   delete tmp;
   tmp = NULL;
@@ -71,7 +70,7 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
 #endif
     base::DataVector p(num_dims);
     float_t fhat = 0.0;
-    base::OperationEval* opEval = op_factory::createOperationEval(*grid);
+    std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
 
 #pragma omp for schedule(dynamic)
 
@@ -109,8 +108,6 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
       if (j == trial_max)
         throw base::operation_exception("Error: maximum # of trials reached. Operation aborted!");
     }
-
-    delete opEval;
   }
 
   return;

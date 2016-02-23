@@ -26,7 +26,7 @@ class OperationEvalPeriodic : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationEvalPeriodic(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalPeriodic(GridStorage& storage) : storage(storage) {}
 
   /**
    * Destructor
@@ -38,7 +38,7 @@ class OperationEvalPeriodic : public OperationEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

@@ -166,9 +166,10 @@ class Learner(object):
         dim = points.getNcols()
         values = DataVector(size)
         row = DataVector(dim)
+        opEval = createOperationEval(self.grid)
         for i in xrange(size):
             points.getRow(i, row)
-            values[i] = self.grid.eval(self.knowledge.getAlphas(), row)
+            values[i] = opEval.eval(self.knowledge.getAlphas(), row)
         self.notifyEventControllers(LearnerEvents.APPLICATION_COMPLETE)
         return values
 
@@ -233,7 +234,7 @@ class Learner(object):
                                            set.getPoints(),
                                            self.specification.getCOperator(),
                                            self.specification.getL())
-        size =  self.grid.getStorage().size()
+        size =  self.grid.getSize()
         # Reuse data from old alpha vector increasing its dimension
         self.solver.getReuse()
         if self.solver.getReuse() and self.alpha != None:

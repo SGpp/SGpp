@@ -30,7 +30,7 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    * @param functor a function used to determine if refinement is needed
    * @param maxLevel no points on higher levels than maxLevel will be created
    */
-  void refineToMaxLevel(GridStorage* storage, RefinementFunctor* functor,
+  void refineToMaxLevel(GridStorage& storage, RefinementFunctor& functor,
                         unsigned int maxLevel);
 
 
@@ -40,7 +40,7 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    * @param storage hashmap that stores the grid points
    * @param maxLevel no points on higher levels than maxLevel will be created
    */
-  size_t getNumberOfRefinablePointsToMaxLevel(GridStorage* storage,
+  size_t getNumberOfRefinablePointsToMaxLevel(GridStorage& storage,
       unsigned int maxLevel);
 
 
@@ -51,7 +51,7 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    * @param d direction
    * @param maxLevel no points on higher levels than maxLevel will be created
          */
-  void refineGridpoint1D(GridStorage* storage,
+  void refineGridpoint1D(GridStorage& storage,
                          AbstractRefinement::index_type& index,
                          size_t d, unsigned int maxLevel);
 
@@ -65,7 +65,7 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
    * @param refine_index the index in the hashmap of the point that should be refined
    * @param maxLevel no points on higher levels than maxLevel will be created
    */
-  void refineGridpoint(GridStorage* storage, size_t refine_index,
+  void refineGridpoint(GridStorage& storage, size_t refine_index,
                        unsigned int maxLevel);
 };
 

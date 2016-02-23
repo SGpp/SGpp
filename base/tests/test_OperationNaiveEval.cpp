@@ -58,22 +58,22 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
   // Test All The Grids!
   std::vector<std::unique_ptr<Grid>> grids;
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createBsplineBoundaryGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createBsplineClenshawCurtisGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createModBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createModBsplineClenshawCurtisGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createModFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createLinearBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createModLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createWaveletGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createWaveletBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createModWaveletGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createPolyGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<Grid>(Grid::createPolyBoundaryGrid(d, p))));
+  grids.push_back(std::move(Grid::createBsplineGrid(d, p)));
+  grids.push_back(std::move(Grid::createBsplineBoundaryGrid(d, p)));
+  grids.push_back(std::move(Grid::createBsplineClenshawCurtisGrid(d, p)));
+  grids.push_back(std::move(Grid::createModBsplineGrid(d, p)));
+  grids.push_back(std::move(Grid::createModBsplineClenshawCurtisGrid(d, p)));
+  grids.push_back(std::move(Grid::createFundamentalSplineGrid(d, p)));
+  grids.push_back(std::move(Grid::createModFundamentalSplineGrid(d, p)));
+  grids.push_back(std::move(Grid::createLinearGrid(d)));
+  grids.push_back(std::move(Grid::createLinearBoundaryGrid(d)));
+  grids.push_back(std::move(Grid::createLinearClenshawCurtisGrid(d)));
+  grids.push_back(std::move(Grid::createModLinearGrid(d)));
+  grids.push_back(std::move(Grid::createWaveletGrid(d)));
+  grids.push_back(std::move(Grid::createWaveletBoundaryGrid(d)));
+  grids.push_back(std::move(Grid::createModWaveletGrid(d)));
+  grids.push_back(std::move(Grid::createPolyGrid(d, p)));
+  grids.push_back(std::move(Grid::createPolyBoundaryGrid(d, p)));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::move(std::unique_ptr<SBasis>(
@@ -126,13 +126,12 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
                               (grid.getType() == GridType::ModWavelet);
 
     // create regular sparse grid
-    std::unique_ptr<GridGenerator> gridGen(grid.createGridGenerator());
-    gridGen->regular(l);
+    grid.getGenerator().regular(l);
     const size_t n = grid.getSize();
     DataVector alpha(n);
 
     for (size_t i = 0; i < n; i++) {
-      GridIndex& gp = *grid.getStorage()->get(i);
+      GridIndex& gp = *grid.getStorage().get(i);
 
       // don't forget to set the point distribution to Clenshaw-Curtis
       // if necessary (currently not done automatically)
@@ -152,10 +151,10 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     std::unique_ptr<OperationNaiveEvalPartialDerivative> opEvalPartialDerivative(nullptr);
 
     if (hasGradients) {
-      opEvalGradient.reset(SGPP::op_factory::createOperationNaiveEvalGradient(grid));
-      opEvalHessian.reset(SGPP::op_factory::createOperationNaiveEvalHessian(grid));
-      opEvalPartialDerivative.reset(
-          SGPP::op_factory::createOperationNaiveEvalPartialDerivative(grid));
+      opEvalGradient = SGPP::op_factory::createOperationNaiveEvalGradient(grid);
+      opEvalHessian = SGPP::op_factory::createOperationNaiveEvalHessian(grid);
+      opEvalPartialDerivative =
+          SGPP::op_factory::createOperationNaiveEvalPartialDerivative(grid);
     }
 
     DataVector x(d);
@@ -174,7 +173,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
       for (size_t i = 0; i < n; i++) {
         // evaluate function by hand
-        GridIndex& gp = *grid.getStorage()->get(i);
+        GridIndex& gp = *grid.getStorage().get(i);
         SGPP::float_t val = alpha[i];
 
         for (size_t t = 0; t < d; t++) {

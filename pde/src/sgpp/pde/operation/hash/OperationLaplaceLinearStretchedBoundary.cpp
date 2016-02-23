@@ -29,14 +29,14 @@ OperationLaplaceLinearStretchedBoundary::~OperationLaplaceLinearStretchedBoundar
 void OperationLaplaceLinearStretchedBoundary::up(SGPP::base::DataVector& alpha,
                                                  SGPP::base::DataVector& result, size_t dim) {
   PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
 void OperationLaplaceLinearStretchedBoundary::down(SGPP::base::DataVector& alpha,
                                                    SGPP::base::DataVector& result, size_t dim) {
   PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
   s.sweep1D_Boundary(alpha, result, dim);
 }
 

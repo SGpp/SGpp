@@ -28,7 +28,7 @@ class OperationNaiveEvalPartialDerivativeFundamentalSpline :
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalPartialDerivativeFundamentalSpline(GridStorage* storage,
+  OperationNaiveEvalPartialDerivativeFundamentalSpline(GridStorage& storage,
       size_t degree) :
     storage(storage), base(degree) {
   }
@@ -51,7 +51,7 @@ class OperationNaiveEvalPartialDerivativeFundamentalSpline :
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SFundamentalSplineBase base;
 };

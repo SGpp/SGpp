@@ -88,7 +88,7 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
   this->dim = BoundingBox.getDimensions();
 
   if ((dim % 2) != 0)
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::constructGrid : The number of dimensions in the grid is not an even number! "
         "This doesn't correspond to an integer number of assets. The number of dimensions in the "
         "grid must be divisible by two.");
@@ -98,12 +98,10 @@ void HestonSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   this->bGridConstructed = true;
 }
@@ -126,7 +124,7 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, float_t 
         float_t* dblFuncValues = new float_t[dim];
         float_t dDistance = 0.0;
 
-        for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
               this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
           std::stringstream coordsStream(coords);
@@ -161,23 +159,19 @@ void HestonSolver::refineInitialGridWithPayoff(base::DataVector& alpha, float_t 
 
         delete[] dblFuncValues;
 
-        base::SurplusRefinementFunctor* myRefineFunc =
-            new base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+        base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
+        this->myGrid->getGenerator().refine(myRefineFunc);
 
-        this->myGrid->createGridGenerator()->refine(myRefineFunc);
-
-        delete myRefineFunc;
-
-        alpha.resize(this->myGridStorage->size());
+        alpha.resize(this->myGridStorage->getSize());
 
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::refineInitialGridWithPayoff : An unsupported payoffType was specified!");
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
     }
   }
@@ -204,7 +198,7 @@ void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha
 
         this->tBoundaryType = "Dirichlet";
 
-        for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
 
@@ -238,24 +232,20 @@ void HestonSolver::refineInitialGridWithPayoffToMaxLevel(base::DataVector& alpha
 
         delete[] dblFuncValues;
 
-        base::SurplusRefinementFunctor* myRefineFunc =
-            new base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+        base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
+        this->myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
-        this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
-
-        delete myRefineFunc;
-
-        alpha.resize(this->myGridStorage->size());
+        alpha.resize(this->myGridStorage->getSize());
 
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::refineInitialGridWithPayoffToMaxLevel : An unsupported payoffType was "
             "specified!");
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::refineInitialGridWithPayoffToMaxLevel : The grid wasn't initialized "
           "before!");
     }
@@ -362,7 +352,7 @@ void HestonSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
 
     this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -397,14 +387,14 @@ void HestonSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
                                       size_t maxCGIterations, float_t epsilonCG,
                                       base::DataVector& alpha, bool verbose, bool generateAnimation,
                                       size_t numEvalsAnimation) {
-  throw new base::application_exception("This scheme is not implemented for the Heston solver!");
+  throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 
 void HestonSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
                                       size_t maxCGIterations, float_t epsilonCG,
                                       base::DataVector& alpha, bool verbose, bool generateAnimation,
                                       size_t numEvalsAnimation) {
-  throw new base::application_exception("This scheme is not implemented for the Heston solver!");
+  throw base::application_exception("This scheme is not implemented for the Heston solver!");
 }
 
 std::vector<size_t> HestonSolver::getAlgorithmicDimensions() {
@@ -415,7 +405,7 @@ void HestonSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
   if (this->tBoundaryType == "freeBoundaries") {
     this->myGrid->setAlgorithmicDimensions(newAlgoDims);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only supported "
         "when choosing option type all!");
   }
@@ -446,7 +436,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, float_t strike
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+      for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
         this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
@@ -468,7 +458,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, float_t strike
             isAtMoney = false;
           }
         } else {
-          throw new base::application_exception(
+          throw base::application_exception(
               "HestonSolver::getGridPointsAtMoney : An unknown payoff-type was specified!");
         }
 
@@ -477,7 +467,7 @@ size_t HestonSolver::getGridPointsAtMoney(std::string payoffType, float_t strike
         }
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
     }
   }
@@ -494,7 +484,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
   if (this->bGridConstructed) {
     std::ofstream fileout;
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
 
       base::GridIndex* curPoint = (*myGridStorage)[i];
@@ -616,7 +606,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
           alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(numAssets))), 0.0);
         }
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
       }
 
@@ -626,7 +616,7 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
     //    fileout.close();
 
     // determine the number of grid points for both grids
-    size_t numTotalGridPoints = myGridStorage->size();
+    size_t numTotalGridPoints = myGridStorage->getSize();
     // size_t numInnerGridPoints = myGridStorage->getNumInnerPoints();
 
     size_t numNonZeroInner = 0;
@@ -640,12 +630,9 @@ void HestonSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t 
     int k = 0;
     k++;
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
   }
 }
@@ -657,7 +644,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, flo
   // BlackScholesSolver* bsSolver = new BlackScholesSolver();
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -785,7 +772,7 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, flo
           alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(numAssets))), 0.0);
         }
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HestonSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was "
             "specified!");
       }
@@ -793,12 +780,9 @@ void HestonSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, flo
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
 }
@@ -815,9 +799,7 @@ float_t HestonSolver::evalOption(std::vector<float_t>& eval_point, base::DataVec
     }
   }
 
-  base::OperationEval* myEval = op_factory::createOperationEval(*this->myGrid);
-  float_t result = myEval->eval(alpha, trans_eval);
-  delete myEval;
+  float_t result = op_factory::createOperationEval(*this->myGrid)->eval(alpha, trans_eval);
 
   return result;
 }
@@ -910,17 +892,17 @@ float_t EvaluateHestonClosedFormIntegralFunction(float_t phi, float_t xi, float_
 
 void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, float_t maturity) {
   if (!this->bGridConstructed)
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
   if (this->numAssets != 1 || this->payoffType != "std_euro_call")
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European "
         "call option with one asset!");
 
   float_t tmp;
 
-  for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+  for (size_t i = 0; i < this->myGrid->getSize(); i++) {
     std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[dim];
@@ -940,25 +922,22 @@ void HestonSolver::EvaluateHestonExactSurface(base::DataVector& alpha, float_t m
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*this->myGrid);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
 }
 
 void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, float_t maturity) {
   if (!this->bGridConstructed)
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : The grid wasn't initialized before!");
 
   if (this->numAssets != 1 || this->payoffType != "std_euro_put")
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European put "
         "option with one asset!");
 
   float_t tmp;
 
-  for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+  for (size_t i = 0; i < this->myGrid->getSize(); i++) {
     std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[dim];
@@ -978,15 +957,12 @@ void HestonSolver::EvaluateHestonExactSurfacePut(base::DataVector& alpha, float_
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*this->myGrid);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
 }
 
 void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
   if (this->numAssets != 1 || this->payoffType != "std_euro_call")
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::EvaluateHestonPriceExact : Can only solve in closed form for a European "
         "call option with one asset!");
 
@@ -1005,8 +981,7 @@ void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
 
   base::Grid* grid1d = new base::LinearBoundaryGrid(*boundingBox1d);
 
-  base::GridGenerator* myGenerator = grid1d->createGridGenerator();
-  myGenerator->regular(levels1d);
+  grid1d->getGenerator().regular(levels1d);
 
   base::DataVector* alphaHeston = new base::DataVector(grid1d->getSize());
   base::DataVector* alphaBS = new base::DataVector(grid1d->getSize());
@@ -1029,7 +1004,6 @@ void HestonSolver::CompareHestonBs1d(float_t maturity, float_t v) {
 
   delete boundaries1d;
   delete grid1d;
-  delete myGenerator;
   delete alphaHeston;
   delete alphaBS;
 }
@@ -1039,8 +1013,8 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
                                          float_t v) {
   float_t tmp;
 
-  for (size_t i = 0; i < grid1d->getStorage()->size(); i++) {
-    std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
+  for (size_t i = 0; i < grid1d->getSize(); i++) {
+    std::string coords = grid1d->getStorage().get(i)->getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[1];
     coordsStream >> tmp;
@@ -1052,10 +1026,7 @@ void HestonSolver::EvaluateHestonExact1d(base::DataVector& alpha, base::Grid* gr
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*grid1d);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);
 }
 
 void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d,
@@ -1065,8 +1036,8 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
 
   finance::BlackScholesSolver* myBSSolver = new finance::BlackScholesSolver(false);
 
-  for (size_t i = 0; i < grid1d->getStorage()->size(); i++) {
-    std::string coords = grid1d->getStorage()->get(i)->getCoordsStringBB(*boundingBox1d);
+  for (size_t i = 0; i < grid1d->getSize(); i++) {
+    std::string coords = grid1d->getStorage().get(i)->getCoordsStringBB(*boundingBox1d);
     std::stringstream coordsStream(coords);
     float_t* dblFuncValues = new float_t[1];
     coordsStream >> tmp;
@@ -1077,10 +1048,7 @@ void HestonSolver::EvaluateBsExact1d(base::DataVector& alpha, base::Grid* grid1d
     delete dblFuncValues;
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*grid1d);
-  myHierarchisation->doHierarchisation(alpha);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*grid1d)->doHierarchisation(alpha);
   delete myBSSolver;
 }
 
@@ -1125,7 +1093,7 @@ void HestonSolver::GetBsExactSolution(base::DataVector& alphaBS, float_t maturit
 
   float_t S, v;
 
-  for (size_t i = 0; i < this->myGridStorage->size(); i++) {
+  for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
     std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     coordsStream >> S;
@@ -1139,10 +1107,7 @@ void HestonSolver::GetBsExactSolution(base::DataVector& alphaBS, float_t maturit
           myBSSolver->getAnalyticSolution1D(S, true, maturity, sqrt(v), this->r, this->dStrike);
   }
 
-  base::OperationHierarchisation* myHierarchisation =
-      op_factory::createOperationHierarchisation(*this->myGrid);
-  myHierarchisation->doHierarchisation(alphaBS);
-  delete myHierarchisation;
+  op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alphaBS);
 }
 
 void HestonSolver::CompareHestonBsExact(base::DataVector& alpha, float_t maturity) {
@@ -1153,7 +1118,7 @@ void HestonSolver::CompareHestonBsExact(base::DataVector& alpha, float_t maturit
   GetBsExactSolution(*alphaBS, maturity);
 
   // Find the difference (heston - BS)
-  for (size_t i = 0; i < this->myGridStorage->size(); i++) {
+  for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
     alpha[i] = (*alphaHeston)[i] - (*alphaBS)[i];
   }
 }
@@ -1164,7 +1129,7 @@ void HestonSolver::CompareHestonNumericToBsExact(base::DataVector& alphaHestonNu
   GetBsExactSolution(alphaBS, maturity);
 
   // Find the difference (heston - BS)
-  for (size_t i = 0; i < this->myGridStorage->size(); i++) {
+  for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
     error[i] = alphaHestonNumeric[i] - alphaBS[i];
   }
 }
@@ -1178,7 +1143,7 @@ float_t HestonSolver::GaussLobattoIntStep(float_t a, float_t b, float_t fa, floa
   const float_t beta = 1.0 / std::sqrt(5.0);
 
   if (neval >= maxeval) {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HestonSolver::Gauss-Lobatto : Maximum number of evaluations reached in GaussLobatto.");
   }
 
@@ -1223,7 +1188,7 @@ float_t HestonSolver::GaussLobattoIntStep(float_t a, float_t b, float_t fa, floa
 
   if (dist == acc || mll <= a || b <= mrr) {
     if (!(m > a && b > m)) {
-      throw new base::application_exception(
+      throw base::application_exception(
           "HestonSolver::Gauss-Lobatto : Integration reached an interval with no more machine "
           "numbers!");
     }
@@ -1264,11 +1229,11 @@ void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base
   std::ofstream fileout;
 
   fileout.open(filename.c_str());
-  base::OperationEval* myEval = op_factory::createOperationEval(*myGrid);
+  std::unique_ptr<base::OperationEval> myEval(op_factory::createOperationEval(*myGrid));
 
-  if (myGrid->getStorage()->dim() == 2) {
-    dimOne = myGrid->getBoundingBox()->getBoundary(0);
-    dimTwo = myGrid->getBoundingBox()->getBoundary(1);
+  if (myGrid->getDimension() == 2) {
+    dimOne = myGrid->getBoundingBox().getBoundary(0);
+    dimTwo = myGrid->getBoundingBox().getBoundary(1);
 
     float_t offset_x = dimOne.leftBoundary;
     float_t offset_y = dimTwo.leftBoundary;
@@ -1293,17 +1258,15 @@ void HestonSolver::CompareHestonSolutionToExact(base::DataVector* solution, base
     }
   }
 
-  delete myEval;
   // close filehandle
   fileout.close();
 }
 
 float_t HestonSolver::EvalSinglePoint1Asset(float_t s, float_t v, base::DataVector& alphaVec) {
-  base::OperationEval* myEval = op_factory::createOperationEval(*myGrid);
   std::vector<float_t> point;
   point.push_back(s);
   point.push_back(v);
-  return myEval->eval(alphaVec, point);
+  return op_factory::createOperationEval(*myGrid)->eval(alphaVec, point);
 }
 }  // namespace finance
 }  // namespace SGPP

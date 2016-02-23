@@ -28,7 +28,7 @@ class DehierarchisationPoly {
   typedef GridStorage::index_type::index_type index_type;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
   /// the base
   SPolyBase* base;
@@ -40,7 +40,7 @@ class DehierarchisationPoly {
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    * @param base Polynomial basis
    */
-  explicit DehierarchisationPoly(GridStorage* storage, SPolyBase* base);
+  explicit DehierarchisationPoly(GridStorage& storage, SPolyBase* base);
   /**
    * Destructor
    */

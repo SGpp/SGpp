@@ -10,12 +10,12 @@ namespace base {
 
 float_t OperationNaiveEvalPolyBoundary::eval(const DataVector& alpha,
     const DataVector& point) {
-  const size_t n = storage->size();
-  const size_t dim = storage->dim();
+  const size_t n = storage.getSize();
+  const size_t dim = storage.getDimension();
   float_t result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
-    const GridIndex& gp = *(*storage)[i];
+    const GridIndex& gp = *storage[i];
     float_t curValue = 1.0;
 
     for (size_t idim = 0; idim < dim; idim++) {

@@ -27,7 +27,7 @@ class HierarchisationLinearStretched {
   typedef GridStorage::grid_iterator grid_iterator;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
   /// the stretching object
   Stretching* stretch;
 
@@ -37,7 +37,7 @@ class HierarchisationLinearStretched {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  explicit HierarchisationLinearStretched(GridStorage* storage);
+  explicit HierarchisationLinearStretched(GridStorage& storage);
 
   /**
    * Destructor

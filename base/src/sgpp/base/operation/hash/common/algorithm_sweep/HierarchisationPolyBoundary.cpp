@@ -13,7 +13,7 @@ namespace SGPP {
 
 namespace base {
 
-HierarchisationPolyBoundary::HierarchisationPolyBoundary(GridStorage* storage,
+HierarchisationPolyBoundary::HierarchisationPolyBoundary(GridStorage& storage,
     SPolyBoundaryBase* base) :
   storage(storage), base(base) {
 }
@@ -71,14 +71,14 @@ void HierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 

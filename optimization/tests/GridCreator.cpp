@@ -41,13 +41,13 @@ void createSupportedGrids(size_t d, size_t p,
 
 void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::ScalarFunction& f,
                       SGPP::base::DataVector& functionValues) {
-  SGPP::base::GridStorage& gridStorage = *grid.getStorage();
+  SGPP::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   // generate regular sparse grid
   gridStorage.emptyStorage();
-  std::unique_ptr<SGPP::base::GridGenerator>(grid.createGridGenerator())->regular(l);
-  const size_t n = gridStorage.size();
+  grid.getGenerator().regular(l);
+  const size_t n = gridStorage.getSize();
   SGPP::base::DataVector x(d);
 
   functionValues.resize(n);
@@ -74,14 +74,14 @@ void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::Scal
 
 void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::VectorFunction& f,
                       SGPP::base::DataMatrix& functionValues) {
-  SGPP::base::GridStorage& gridStorage = *grid.getStorage();
+  SGPP::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
   const size_t m = f.getNumberOfComponents();
 
   // generate regular sparse grid
   gridStorage.emptyStorage();
-  std::unique_ptr<SGPP::base::GridGenerator>(grid.createGridGenerator())->regular(l);
-  const size_t n = gridStorage.size();
+  grid.getGenerator().regular(l);
+  const size_t n = gridStorage.getSize();
   SGPP::base::DataVector x(d);
   SGPP::base::DataVector fx(m);
 

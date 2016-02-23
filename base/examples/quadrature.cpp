@@ -30,23 +30,22 @@ SGPP::float_t f(int dim, SGPP::float_t* x, void* clientdata) {
 int main() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
-  GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   int level = 3;
-  GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  std::cout << "number of grid points: " << gridStorage->size() << std::endl;
+  grid->getGenerator().regular(level);
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage->size());
+  DataVector alpha(gridStorage.getSize());
   GridIndex* gp;
   SGPP::float_t p[2];
 
-  for (size_t i = 0; i < gridStorage->size(); i++) {
-    gp = gridStorage->get(i);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    gp = gridStorage.get(i);
     p[0] = gp->getCoord(0);
     p[1] = gp->getCoord(1);
     alpha[i] = f(2, p, NULL);
@@ -56,10 +55,9 @@ int main() {
     alpha);
 
   // direct quadrature
-  OperationQuadrature* opQ = SGPP::op_factory::createOperationQuadrature(*grid);
+  std::unique_ptr<OperationQuadrature> opQ(SGPP::op_factory::createOperationQuadrature(*grid));
   SGPP::float_t res = opQ->doQuadrature(alpha);
   std::cout << "exact integral value:  " << res << std::endl;
-  delete opQ;
 
   // Monte Carlo quadrature using 100000 paths
   OperationQuadratureMC opMC(*grid, 100000);
@@ -75,6 +73,4 @@ int main() {
   // Monte Carlo quadrature of error
   res = opMC.doQuadratureL2Error(f, NULL, alpha);
   std::cout << "MC L2-error:           " << res << std::endl;
-
-  delete grid;
 }

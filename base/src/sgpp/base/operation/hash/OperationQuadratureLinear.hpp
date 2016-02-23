@@ -25,7 +25,7 @@ class OperationQuadratureLinear : public OperationQuadrature {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationQuadratureLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationQuadratureLinear(GridStorage& storage) : storage(storage) {}
 
   ~OperationQuadratureLinear() override {}
 
@@ -39,7 +39,7 @@ class OperationQuadratureLinear : public OperationQuadrature {
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

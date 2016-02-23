@@ -29,7 +29,7 @@ class OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis :
    * @param degree    B-spline degree
    */
   OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis(
-    GridStorage* storage, size_t degree)
+    GridStorage& storage, size_t degree)
     : storage(storage),
       base(degree) {
   }
@@ -52,7 +52,7 @@ class OperationNaiveEvalPartialDerivativeBsplineClenshawCurtis :
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineClenshawCurtisBase base;
 };

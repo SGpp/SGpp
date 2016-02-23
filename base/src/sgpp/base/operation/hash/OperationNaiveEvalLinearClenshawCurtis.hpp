@@ -23,7 +23,7 @@ class OperationNaiveEvalLinearClenshawCurtis : public OperationNaiveEval {
    * @param storage       storage of the sparse grid
    */
   OperationNaiveEvalLinearClenshawCurtis(
-    GridStorage* storage)
+    GridStorage& storage)
     : storage(storage) {
   }
 
@@ -42,7 +42,7 @@ class OperationNaiveEvalLinearClenshawCurtis : public OperationNaiveEval {
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D linear basis
   SLinearClenshawCurtisBase base;
 };

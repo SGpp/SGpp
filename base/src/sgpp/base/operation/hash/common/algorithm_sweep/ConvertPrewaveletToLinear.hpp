@@ -44,7 +44,7 @@ class ConvertPrewaveletToLinear {
   typedef GridStorage::index_type::index_type index_type;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
 
 
@@ -54,7 +54,7 @@ class ConvertPrewaveletToLinear {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  explicit ConvertPrewaveletToLinear(GridStorage* storage);
+  explicit ConvertPrewaveletToLinear(GridStorage& storage);
 
   /**
    * Destructor

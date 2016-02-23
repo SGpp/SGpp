@@ -31,42 +31,38 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
 int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
-  GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:         " << gridStorage->dim() << std::endl;
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:         " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   size_t level = 3;
-  GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  std::cout << "number of grid points:  " << gridStorage->size() << std::endl;
+  grid->getGenerator().regular(level);
+  std::cout << "number of grid points:  " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage->size());
+  DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
   std::cout << "length of alpha vector: " << alpha.getSize() << std::endl;
 
   // set function values in alpha
   GridIndex* gp;
 
-  for (size_t i = 0; i < gridStorage->size(); i++) {
-    gp = gridStorage->get(i);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    gp = gridStorage.get(i);
     alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
   }
 
   std::cout << "alpha before hierarchization: " << alpha.toString() << std::endl;
 
   // hierarchize
-  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
-    alpha);
+  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(alpha);
   std::cout << "alpha after hierarchization:  " << alpha.toString() << std::endl;
 
   // evaluate
   DataVector p(dim);
   p[0] = 0.52;
   p[1] = 0.73;
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
+  std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(*grid));
   std::cout << "u(0.52, 0.73) = " << opEval->eval(alpha, p) << std::endl;
-
-  delete grid;
 }

@@ -30,12 +30,12 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   size_t dim = 3;
   size_t level = 4;
 
-  Grid* grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
-  grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
 
-  size_t N = gS->size();
+  size_t N = gS.getSize();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v.push_back(static_cast<int>(i));
@@ -46,17 +46,15 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
   SGPP::float_t lSum;
 
   for (size_t i = 0; i < N; i++) {
-    lSum = static_cast<SGPP::float_t>(gS->get(i)->getLevelSum());
+    lSum = static_cast<SGPP::float_t>(gS.get(i)->getLevelSum());
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
+  SGPP::float_t quadOperation =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
-  delete grid;
   delete alpha;
-  delete quadOp;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -67,19 +65,19 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
   size_t dim = 3;
   size_t level = 3;
 
-  Grid* grid = Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
 
-  grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
-  size_t N = gS->size();
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+  size_t N = gS.getSize();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
 
   DataVector* alpha = new DataVector(v);
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t resDirect = quadOp->doQuadrature(*alpha);
+  SGPP::float_t resDirect =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
 
   // Monte Carlo quadrature
   OperationQuadratureMC* opMC = new OperationQuadratureMC(*grid, 100000);
@@ -87,10 +85,8 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   BOOST_CHECK_CLOSE(resDirect, resMC, 1.0);
 
-  delete grid;
   delete alpha;
   delete opMC;
-  delete quadOp;
 }
 
 BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
@@ -98,10 +94,10 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   size_t level = 3;
   size_t deg = 4;
 
-  Grid* grid = Grid::createPolyGrid(dim, deg);
-  grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
-  size_t N = gS->size();
+  std::unique_ptr<Grid> grid = Grid::createPolyGrid(dim, deg);
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+  size_t N = gS.getSize();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
@@ -114,7 +110,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   SGPP::float_t quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridIndex* gp = gS->get(i);
+    HashGridIndex* gp = gS.get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
     SGPP::float_t quadSGPP =
@@ -123,24 +119,23 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
     quadManual += alpha->get(i) * quad[i];
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
+  SGPP::float_t quadOperation =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
-  delete grid;
   delete alpha;
   delete basis;
-  delete quadOp;
 }
+
 BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   size_t dim = 1;
   size_t level = 3;
   size_t deg = 4;
 
-  Grid* grid = Grid::createPolyBoundaryGrid(dim, deg);
-  grid->createGridGenerator()->regular(level);
-  GridStorage* gS = grid->getStorage();
-  size_t N = gS->size();
+  std::unique_ptr<Grid> grid = Grid::createPolyBoundaryGrid(dim, deg);
+  grid->getGenerator().regular(level);
+  GridStorage& gS = grid->getStorage();
+  size_t N = gS.getSize();
   std::vector<int> v(N);
 
   for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
@@ -154,7 +149,7 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   SGPP::float_t quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
-    HashGridIndex* gp = gS->get(i);
+    HashGridIndex* gp = gS.get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
     SGPP::float_t quadSGPP =
@@ -163,13 +158,11 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
     quadManual += alpha->get(i) * quad[i];
   }
 
-  OperationQuadrature* quadOp = SGPP::op_factory::createOperationQuadrature(*grid);
-  SGPP::float_t quadOperation = quadOp->doQuadrature(*alpha);
+  SGPP::float_t quadOperation =
+      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 
-  delete grid;
   delete alpha;
   delete basis;
-  delete quadOp;
 }
 BOOST_AUTO_TEST_SUITE_END()

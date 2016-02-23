@@ -29,7 +29,7 @@ class OperationEvalModBspline : public OperationEval {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationEvalModBspline(GridStorage* storage, size_t degree) :
+  OperationEvalModBspline(GridStorage& storage, size_t degree) :
     storage(storage),
     base(degree) {}
 
@@ -43,7 +43,7 @@ class OperationEvalModBspline : public OperationEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Mod Bspline Basis object
   SBsplineModifiedBase base;
 };

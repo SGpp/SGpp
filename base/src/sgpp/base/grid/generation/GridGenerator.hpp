@@ -65,7 +65,7 @@ class GridGenerator {
    *
    * @param func pointer to refinement functor
    */
-  virtual void refine(RefinementFunctor* func) = 0;
+  virtual void refine(RefinementFunctor& func) = 0;
 
   /**
    * Coarsens a  grid according to the settings of the CoarseningFunctor func.
@@ -73,7 +73,7 @@ class GridGenerator {
    * @param func pointer to coarsening functor
    * @param alpha Pointer to DataVector containing the grid's coefficients
    */
-  virtual void coarsen(CoarseningFunctor* func, DataVector* alpha) = 0;
+  virtual void coarsen(CoarseningFunctor& func, DataVector& alpha) = 0;
 
   /**
    * Coarsens a  grid according to the settings of the CoarseningFunctor func.
@@ -83,7 +83,7 @@ class GridGenerator {
    * @param alpha Pointer to DataVector containing the grid's coefficients
    * @param numFirstOnly max. number grid points to be coarsened
    */
-  virtual void coarsenNFirstOnly(CoarseningFunctor* func, DataVector* alpha,
+  virtual void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
                                  size_t numFirstOnly) = 0;
 
   /**
@@ -107,7 +107,7 @@ class GridGenerator {
    * @param func pointer to refinement functor
    * @param maxLevel no points on higher levels than maxLevel will be created
    */
-  virtual void refineMaxLevel(RefinementFunctor* func, size_t maxLevel) = 0;
+  virtual void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) = 0;
 
   /**
    * Returns the number of points on the grid that can be refined in the next iteration

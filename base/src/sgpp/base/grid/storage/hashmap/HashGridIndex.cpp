@@ -130,7 +130,7 @@ HashGridIndex::serialize(std::ostream& ostream) {
 }
 
 size_t
-HashGridIndex::dim() const {
+HashGridIndex::getDimension() const {
   return DIM;
 }
 

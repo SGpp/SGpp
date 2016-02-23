@@ -70,7 +70,7 @@ class DehierarchisationModFundamentalSpline {
   /// grid
   ModFundamentalSplineGrid* grid;
   /// grid storage
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -54,7 +55,7 @@ class ModBsplineClenshawCurtisGrid : public Grid {
   /**
    * @return pointer to a GridGenerator object
    */
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   /**
    * reads a grid out of a string
@@ -62,7 +63,7 @@ class ModBsplineClenshawCurtisGrid : public Grid {
    * @param istr string that contains the grid information
    * @return grid
    */
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
   /**
    * Serializes the grid.
@@ -77,10 +78,12 @@ class ModBsplineClenshawCurtisGrid : public Grid {
   virtual size_t getDegree();
 
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  const SBsplineModifiedClenshawCurtisBase* basis_;
+  std::unique_ptr<SBsplineModifiedClenshawCurtisBase> basis_;
 };
 
 }  // namespace base

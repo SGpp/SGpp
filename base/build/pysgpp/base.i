@@ -41,6 +41,7 @@ namespace std {
 %include "DataVector.i"
 %include "DataMatrix.i"
 %include "GridFactory.i"
+%include "OpFactory.i"
 
 
 %ignore SGPP::base::DataVectorSP::DataVectorSP(std::vector<float> input);
@@ -107,8 +108,6 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
-%include "base/src/sgpp/base/grid/type/PeriodicGrid.hpp"
-
 %include "base/src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
 %include "base/src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"
 %include "base/src/sgpp/base/algorithm/GetAffectedBasisFunctions.hpp"
@@ -146,9 +145,6 @@ namespace std {
 %include "base/src/sgpp/base/tools/QuadRule1D.hpp"
 %include "base/src/sgpp/base/tools/GaussLegendreQuadRule1D.hpp"
 %include "base/src/sgpp/base/tools/GaussHermiteQuadRule1D.hpp"
-
-// static factory methods
-%include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
 
 
 // and the rest

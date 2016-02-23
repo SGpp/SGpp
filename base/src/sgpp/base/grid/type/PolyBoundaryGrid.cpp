@@ -6,8 +6,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 namespace SGPP {
@@ -15,33 +13,28 @@ namespace base {
 
 PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   degree(1 << 16),
-  basis_(NULL),
   boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
+  basis_.reset(new SPolyBoundaryBase(degree));
 }
 
 PolyBoundaryGrid::PolyBoundaryGrid(size_t dim,
                                    size_t degree,
                                    level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   degree(degree),
-  basis_(NULL),
+  basis_(new SPolyBoundaryBase(degree)),
   boundaryLevel(boundaryLevel) {
 }
 
 PolyBoundaryGrid::~PolyBoundaryGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 const SBasis& PolyBoundaryGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SPolyBoundaryBase(degree);
-  }
-
   return *basis_;
 }
 
@@ -53,8 +46,8 @@ size_t PolyBoundaryGrid::getDegree() const {
   return this->degree;
 }
 
-Grid* PolyBoundaryGrid::unserialize(std::istream& istr) {
-  return new PolyBoundaryGrid(istr);
+std::unique_ptr<Grid> PolyBoundaryGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new PolyBoundaryGrid(istr));
 }
 
 void PolyBoundaryGrid::serialize(std::ostream& ostr) {
@@ -67,8 +60,8 @@ void PolyBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* PolyBoundaryGrid::createGridGenerator() {
-  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+GridGenerator& PolyBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

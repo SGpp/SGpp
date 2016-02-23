@@ -101,8 +101,8 @@ BOOST_AUTO_TEST_CASE(test_DataException) {
 
   try {
     dataVectorOne.add(dataVectorTwo);
-  } catch (data_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (data_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
 }
 
@@ -130,16 +130,16 @@ BOOST_AUTO_TEST_CASE(test_FileException) {
   file_exception expectedException(expectedMessage.c_str());
   try {
     gridDataBase.save(filename);
-  } catch (file_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (file_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
   std::remove(filename.c_str());
 }
 
 BOOST_AUTO_TEST_CASE(test_GenerationException) {
   size_t dimension = 2;
-  Grid* linearGrid = Grid::createLinearGrid(dimension);
-  GridStorage* linearGridStorage = linearGrid->getStorage();
+  std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
+  GridStorage& linearGridStorage = linearGrid->getStorage();
 
   PeriodicGridGenerator gridGen(linearGridStorage);
   size_t level = 3;
@@ -154,10 +154,10 @@ BOOST_AUTO_TEST_CASE(test_GenerationException) {
 
 BOOST_AUTO_TEST_CASE(test_OperationException) {
   size_t dimension = 7;
-  Grid* linearGrid = Grid::createLinearGrid(dimension);
+  std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
   DataMatrix dummyMatrix(10, 7);
-  OperationMultipleEval* opEval =
-      SGPP::op_factory::createOperationMultipleEval(*linearGrid, dummyMatrix);
+  std::unique_ptr<OperationMultipleEval> opEval(
+      SGPP::op_factory::createOperationMultipleEval(*linearGrid, dummyMatrix));
 
   operation_exception expectedException(
       "error: OperationMultipleEval::getDuration(): "
@@ -165,8 +165,8 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
 
   try {
     opEval->getDuration();
-  } catch (operation_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (operation_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
 }
 
@@ -183,15 +183,15 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
 //   try{
 //     faultyEuler = new SGPP::solver::Euler(faultyString, imax, timestepsize,
 //         generateAnimation, numEvalsAnimation, &screen);
-//   }catch(solver_exception* actualException){
-//     BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+//   }catch(solver_exception& actualException){
+//     BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
 //   }
 //   delete faultyEuler;
 // }
 
 BOOST_AUTO_TEST_CASE(test_ToolException) {
   size_t dimension = 4;
-  Grid* linearGrid = Grid::createLinearGrid(dimension);
+  std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
   GridPrinter gridPrinter(*linearGrid);
 
   tool_exception expectedException(
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_ToolException) {
   DataVector dummyVector(10);
   try {
     gridPrinter.printGrid(dummyVector, dummyFilename, pointsPerDim);
-  } catch (tool_exception* actualException) {
-    BOOST_CHECK_EQUAL(actualException->what(), expectedException.what());
+  } catch (tool_exception& actualException) {
+    BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());
   }
 }

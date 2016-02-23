@@ -45,9 +45,9 @@ SGPP::datadriven::DMSystemMatrixBase* Learner::createDMSystem(
     delete C_;
 
   if (this->CMode_ == datadriven::RegularizationType::Laplace) {
-    C_ = SGPP::op_factory::createOperationLaplace(*this->grid_);
+    C_ = SGPP::op_factory::createOperationLaplace(*this->grid_).release();
   } else if (this->CMode_ == datadriven::RegularizationType::Identity) {
-    C_ = SGPP::op_factory::createOperationIdentity(*this->grid_);
+    C_ = SGPP::op_factory::createOperationIdentity(*this->grid_).release();
   } else {
     // should not happen
   }

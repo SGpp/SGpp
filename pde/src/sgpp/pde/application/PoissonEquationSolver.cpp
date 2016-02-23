@@ -38,12 +38,10 @@ void PoissonEquationSolver::constructGrid(base::BoundingBox& BoundingBox, int le
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   this->bGridConstructed = true;
 }
@@ -108,7 +106,7 @@ void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, floa
     float_t tmp;
     float_t* dblFuncValues = new float_t[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       bool isInner = true;
@@ -144,12 +142,9 @@ void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, floa
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
 }
@@ -160,7 +155,7 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& a
     float_t tmp;
     float_t* dblFuncValues = new float_t[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 
@@ -183,12 +178,9 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& a
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
   }
 }
@@ -199,13 +191,13 @@ void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, float_t
     float_t* dblFuncValues = new float_t[this->dim];
     float_t* rightBound = new float_t[this->dim];
 
-    base::BoundingBox* tmpBB = this->myGrid->getBoundingBox();
+    base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
 
     for (size_t j = 0; j < this->dim; j++) {
       rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
     }
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       bool isInner = true;
@@ -240,12 +232,9 @@ void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, float_t
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }
@@ -256,13 +245,13 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alph
     float_t* dblFuncValues = new float_t[this->dim];
     float_t* rightBound = new float_t[this->dim];
 
-    base::BoundingBox* tmpBB = this->myGrid->getBoundingBox();
+    base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
 
     for (size_t j = 0; j < this->dim; j++) {
       rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
     }
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       tmp = 0.0;
@@ -284,12 +273,9 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alph
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }

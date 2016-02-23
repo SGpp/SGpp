@@ -59,12 +59,12 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
   SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
   Grid& grid,
   DataVector& alpha, float_t lambda) {
-  size_t dim = grid.getStorage()->dim();
+  size_t dim = grid.getDimension();
 
-  GridStorage* gridStorage = grid.getStorage();
-  GridGenerator* gridGen = grid.createGridGenerator();
-  DataVector rhs(grid.getStorage()->size());
-  alpha.resize(grid.getStorage()->size());
+  GridStorage* gridStorage = &grid.getStorage();
+  GridGenerator& gridGen = grid.getGenerator();
+  DataVector rhs(grid.getSize());
+  alpha.resize(grid.getSize());
   alpha.setAll(0.0);
 
   if (verbose) {
@@ -97,32 +97,29 @@ void LearnerPiecewiseConstantSmoothedRegression::train(
       }
 
       // Weight surplus with function evaluation at grid points
-      OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+      std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
       GridIndex* gp;
       DataVector p(dim);
       DataVector alphaWeight(alpha.getSize());
 
-      for (size_t i = 0; i < gridStorage->size(); i++) {
+      for (size_t i = 0; i < gridStorage->getSize(); i++) {
         gp = gridStorage->get(i);
         gp->getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      delete opEval;
-      opEval = NULL;
-
-      SurplusRefinementFunctor srf(&alphaWeight, adaptivityConfig.noPoints_,
+      SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
                                    adaptivityConfig.threshold_);
-      gridGen->refine(&srf);
+      gridGen.refine(srf);
 
       if (verbose) {
         cout << "# LearnerDensityRegression: ref " << ref << "/" <<
              adaptivityConfig.numRefinements_ - 1 << ": "
-             << grid.getStorage()->size() << endl;
+             << grid.getSize() << endl;
       }
 
-      alpha.resize(grid.getStorage()->size());
-      rhs.resize(grid.getStorage()->size());
+      alpha.resize(grid.getSize());
+      rhs.resize(grid.getSize());
       alpha.setAll(0.0);
       rhs.setAll(0.0);
     }
@@ -140,10 +137,10 @@ LearnerPiecewiseConstantSmoothedRegression::computeRegularizationMatrix(
 
   if (regularizationConfig.regType_ ==
       SGPP::datadriven::RegularizationType::Identity) {
-    C = SGPP::op_factory::createOperationIdentity(grid);
+    C = SGPP::op_factory::createOperationIdentity(grid).release();
   } else if (regularizationConfig.regType_ ==
              SGPP::datadriven::RegularizationType::Laplace) {
-    C = SGPP::op_factory::createOperationLaplace(grid);
+    C = SGPP::op_factory::createOperationLaplace(grid).release();
   } else {
     throw application_exception("LearnerDensityRegression::train : unknown regularization type");
   }

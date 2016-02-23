@@ -14,7 +14,7 @@ namespace SGPP {
 namespace datadriven {
 void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid*& grid_x,
                                                 base::DataVector*& alpha_x, size_t dim_x) {
-  size_t dims = this->grid->getStorage()->dim();
+  size_t dims = this->grid->getDimension();
   size_t count = 0;
 
   if ((dims > 1) && (dim_x <= dims - 1))
@@ -35,13 +35,11 @@ void OperationDensityMargTo1DLinear::marg_next_dim(base::Grid* g_in, base::DataV
 
   base::Grid* g_tmp = NULL;
   base::DataVector* a_tmp = new base::DataVector(1);
-  OperationDensityMarginalize* marg = op_factory::createOperationDensityMarginalize(*g_in);
-  marg->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
-  delete marg;
+  op_factory::createOperationDensityMarginalize(*g_in)->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
 
   count++;
 
-  if (g_tmp->getStorage()->dim() > 1) {
+  if (g_tmp->getDimension() > 1) {
     marg_next_dim(g_tmp, a_tmp, g_out, a_out, dims, dim_x, count);
     delete g_tmp;
     delete a_tmp;

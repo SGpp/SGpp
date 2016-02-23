@@ -92,31 +92,19 @@ void LearnerSGDE::initialize(SGPP::base::DataMatrix& psamples) {
 // ---------------------------------------------------------------------------
 
 float_t LearnerSGDE::pdf(DataVector& x) {
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
-  float_t ret = opEval->eval(alpha, x);
-  delete opEval;
-  return ret;
+  return SGPP::op_factory::createOperationEval(*grid)->eval(alpha, x);
 }
 
 void LearnerSGDE::pdf(DataMatrix& points, DataVector& res) {
-  OperationMultipleEval* opEvalMulti =
-    SGPP::op_factory::createOperationMultipleEval(*grid, points);
-  opEvalMulti->eval(alpha, res);
+  SGPP::op_factory::createOperationMultipleEval(*grid, points)->eval(alpha, res);
 }
 
 float_t LearnerSGDE::mean() {
-  OperationFirstMoment* opMoment = op_factory::createOperationFirstMoment(
-                                     *grid);
-  float_t res = opMoment->doQuadrature(alpha);
-  delete opMoment;
-  return res;
+  return op_factory::createOperationFirstMoment(*grid)->doQuadrature(alpha);
 }
 
 float_t LearnerSGDE::variance() {
-  OperationSecondMoment* opMoment = op_factory::createOperationSecondMoment(
-                                      *grid);
-  float_t secondMoment = opMoment->doQuadrature(alpha);
-  delete opMoment;
+  float_t secondMoment = op_factory::createOperationSecondMoment(*grid)->doQuadrature(alpha);
 
   // use Steiners translation theorem to compute the variance
   float_t firstMoment = mean();
@@ -151,24 +139,23 @@ DataVector LearnerSGDE::getSurpluses() {
 }
 
 GridStorage* LearnerSGDE::getGridStorage() {
-  return grid->getStorage();
+  return &grid->getStorage();
 }
 // ---------------------------------------------------------------------------
 
 void LearnerSGDE::createRegularGrid(Grid*& grid, size_t ndim) {
   // load grid
   if (gridConfig.type_ == GridType::Linear) {
-    grid = Grid::createLinearGrid(ndim);
+    grid = Grid::createLinearGrid(ndim).release();
   } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
-    grid = Grid::createLinearBoundaryGrid(ndim, 0);
+    grid = Grid::createLinearBoundaryGrid(ndim, 0).release();
   } else if (gridConfig.type_ == GridType::LinearBoundary) {
-    grid = Grid::createLinearBoundaryGrid(ndim);
+    grid = Grid::createLinearBoundaryGrid(ndim).release();
   } else {
     throw base::application_exception("LeanerSGDE::initialize : grid type is not supported");
   }
 
-  GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(gridConfig.level_);
+  grid->getGenerator().regular(gridConfig.level_);
 }
 
 float_t LearnerSGDE::optimizeLambdaCV() {
@@ -270,10 +257,10 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
                         float_t lambdaReg) {
   size_t dim = train.getNcols();
 
-  GridStorage* gridStorage = grid.getStorage();
-  GridGenerator* gridGen = grid.createGridGenerator();
-  DataVector rhs(grid.getStorage()->size());
-  alpha.resize(grid.getStorage()->size());
+  GridStorage* gridStorage = &grid.getStorage();
+  GridGenerator& gridGen = grid.getGenerator();
+  DataVector rhs(grid.getSize());
+  alpha.resize(grid.getSize());
   alpha.setAll(0.0);
 
   if (!learnerSGDEConfig.silent_) {
@@ -300,32 +287,29 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
       }
 
       // Weight surplus with function evaluation at grid points
-      OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+      std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
       GridIndex* gp;
       DataVector p(dim);
       DataVector alphaWeight(alpha.getSize());
 
-      for (size_t i = 0; i < gridStorage->size(); i++) {
+      for (size_t i = 0; i < gridStorage->getSize(); i++) {
         gp = gridStorage->get(i);
         gp->getCoords(p);
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      delete opEval;
-      opEval = NULL;
-
-      SurplusRefinementFunctor srf(&alphaWeight,
+      SurplusRefinementFunctor srf(alphaWeight,
                                    adaptivityConfig.noPoints_, adaptivityConfig.threshold_);
-      gridGen->refine(&srf);
+      gridGen.refine(srf);
 
       if (!learnerSGDEConfig.silent_) {
         cout << "# LearnerSGDE: ref " << ref << "/"
              << adaptivityConfig.numRefinements_ - 1 << ": "
-             << grid.getStorage()->size() << endl;
+             << grid.getSize() << endl;
       }
 
-      alpha.resize(grid.getStorage()->size());
-      rhs.resize(grid.getStorage()->size());
+      alpha.resize(grid.getSize());
+      rhs.resize(grid.getSize());
       alpha.setAll(0.0);
       rhs.setAll(0.0);
     }
@@ -360,10 +344,10 @@ OperationMatrix* LearnerSGDE::computeRegularizationMatrix(
 
   if (regularizationConfig.regType_
       == SGPP::datadriven::RegularizationType::Identity) {
-    C = SGPP::op_factory::createOperationIdentity(grid);
+    C = SGPP::op_factory::createOperationIdentity(grid).release();
   } else if (regularizationConfig.regType_
              == SGPP::datadriven::RegularizationType::Laplace) {
-    C = SGPP::op_factory::createOperationLaplace(grid);
+    C = SGPP::op_factory::createOperationLaplace(grid).release();
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }

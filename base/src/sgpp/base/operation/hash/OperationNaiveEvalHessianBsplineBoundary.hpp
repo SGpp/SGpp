@@ -29,7 +29,7 @@ class OperationNaiveEvalHessianBsplineBoundary : public
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalHessianBsplineBoundary(GridStorage* storage, size_t degree) :
+  OperationNaiveEvalHessianBsplineBoundary(GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -53,7 +53,7 @@ class OperationNaiveEvalHessianBsplineBoundary : public
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineBoundaryBase base;
 };

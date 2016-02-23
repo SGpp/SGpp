@@ -37,16 +37,16 @@ HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverS
   this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->GridConverter = new SGPP::base::DirichletGridConverter();
 
-  this->OpLaplaceBound = op_factory::createOperationLaplace(SparseGrid);
-  this->OpMassBound = SGPP::op_factory::createOperationLTwoDotProduct(SparseGrid);
+  this->OpLaplaceBound = op_factory::createOperationLaplace(SparseGrid).release();
+  this->OpMassBound = SGPP::op_factory::createOperationLTwoDotProduct(SparseGrid).release();
 
   // create the inner grid
   this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete,
                                                &this->InnerGrid, &this->alpha_inner);
 
   // Create needed operations, on inner grid
-  this->OpLaplaceInner = op_factory::createOperationLaplace(*this->InnerGrid);
-  this->OpMassInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
+  this->OpLaplaceInner = op_factory::createOperationLaplace(*this->InnerGrid).release();
+  this->OpMassInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
 
   // right hand side if System
   this->rhs = NULL;
@@ -93,7 +93,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(
   SGPP::base::DataVector temp(alpha.getSize());
   temp.setAll(0.0);
 
-  std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t Mutex;
@@ -148,7 +148,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(
   SGPP::base::DataVector temp(alpha.getSize());
   temp.setAll(0.0);
 
-  std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t Mutex;
@@ -241,7 +241,7 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::mult(SGPP::base::DataVecto
     result.add(temp);
     result.axpy((-0.5) * this->TimestepSize, temp2);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         " HeatEquationParabolicPDESolverSystemParallelOMP::mult : An unknown operation mode was "
         "specified!");
   }
@@ -301,7 +301,7 @@ SGPP::base::DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generat
     rhs_complete.add(temp);
     rhs_complete.axpy((0.5) * this->TimestepSize, temp2);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode "
         "was specified!");
   }
@@ -360,7 +360,7 @@ SGPP::base::DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generat
     result_complete.add(temp);
     result_complete.axpy((-0.5) * this->TimestepSize, temp2);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "HeatEquationParabolicPDESolverSystemParallelOMP::generateRHS : An unknown operation mode "
         "was specified!");
   }

@@ -60,7 +60,7 @@ if __name__ == '__main__':
     grid = tools.readGrid(options.grid)
     
     gridStorage = grid.getStorage()
-    dim = gridStorage.dim()
+    dim = gridStorage.getDimension()
     p = DataVector(dim)
     
     # prepare dotwidth
@@ -131,7 +131,7 @@ if __name__ == '__main__':
                 
                 # project grid
                 gridpoints = {} # count, how often projected grid point at same place
-                for k in xrange(gridStorage.size()):
+                for k in xrange(gridStorage.getSize()):
                     gridStorage.get(k).getCoords(p)
                     if not gridpoints.has_key((p[i], p[j])):
                         gridpoints[(p[i], p[j])] = 1

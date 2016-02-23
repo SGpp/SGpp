@@ -28,7 +28,7 @@ class OperationStencilHierarchisationModLinear : public
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationStencilHierarchisationModLinear(GridStorage* storage) :
+  explicit OperationStencilHierarchisationModLinear(GridStorage& storage) :
     storage(
       storage),
     surplusStencil(0), neighborStencil(0), weightStencil(0) {}
@@ -59,8 +59,8 @@ class OperationStencilHierarchisationModLinear : public
   };
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
 
   /// Index array with surplus indices
   IndexStencil surplusStencil;

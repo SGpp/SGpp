@@ -81,12 +81,10 @@ void BlackScholesHullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, 
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   // std::string serGrid;
   // myGrid->serialize(serGrid);
@@ -119,7 +117,7 @@ void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, float_
                                                      base::DataVector& alpha, bool verbose,
                                                      bool generateAnimation,
                                                      size_t numEvalsAnimation) {
-  throw new base::application_exception(
+  throw base::application_exception(
       "BlackScholesHullWhiteSolver::solveExplicitEuler : explicit Euler is not supported for "
       "BlackScholesHullWhiteSolver!");
 }
@@ -141,7 +139,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
     myStopwatch->start();
 
     // DimensionBoundary* myBoundaries = new DimensionBoundary[2];
-    base::BoundingBox* t = this->myGrid->getBoundingBox();
+    base::BoundingBox* t = &this->myGrid->getBoundingBox();
 
     base::DimensionBoundary* myBoundaries = new base::DimensionBoundary[dim];
 
@@ -230,7 +228,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
     delete myStopwatch;
     delete myBoundaries;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesHullWhiteSolver::solveImplicitEuler : A grid wasn't constructed before or "
         "stochastic parameters weren't set!");
   }
@@ -239,7 +237,7 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
 void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
                                                      size_t maxCGIterations, float_t epsilonCG,
                                                      base::DataVector& alpha, size_t NumImEul) {
-  throw new base::application_exception(
+  throw base::application_exception(
       "BlackScholesHullWhiteSolver::solveCrankNicolson : Crank-Nicloson is not supported for "
       "BlackScholesHullWhiteSolver!");
 }
@@ -278,7 +276,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+      for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
         this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
@@ -291,7 +289,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
             }
           }
         } else {
-          throw new base::application_exception(
+          throw base::application_exception(
               "BlackScholesHullWhiteSolver::getGridPointsAtMoney : An unknown payoff-type was "
               "specified!");
         }
@@ -301,7 +299,7 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
         }
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "BlackScholesHullWhiteSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
     }
   }
@@ -320,7 +318,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
   if (this->bGridConstructed) {
     float_t* dblFuncValues = new float_t[dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 
@@ -352,19 +350,16 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
         // std::cout << "r=" << dblFuncValues[this->dim_HW] << " PB=" <<PB <<std::endl;
         alpha[i] = std::max<float_t>(PB - dblFuncValues[this->dim_BS], 0.0);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "BlackScholesSolver::initGridWithPayoffBSHW : An unknown payoff-type was specified!");
       }
     }
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::initGridWithPayoffBSHW : A grid wasn't constructed before!");
   }
 }
