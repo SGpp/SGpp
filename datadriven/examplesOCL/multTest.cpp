@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
   SGPP::base::DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
-  //    SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  //    std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
 
   bool modLinear = true;
   SGPP::base::Grid* grid = nullptr;
@@ -81,14 +81,14 @@ int main(int argc, char** argv) {
   }
 
   SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
+  std::cout << "dimensionality:        " << gridStorage->getDimension() << std::endl;
 
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  std::cout << "number of grid points: " << gridStorage->size() << std::endl;
+  SGPP::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
+  std::cout << "number of grid points: " << gridStorage->getSize() << std::endl;
   std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
 
-  SGPP::base::DataVector alpha(gridStorage->size());
+  SGPP::base::DataVector alpha(gridStorage->getSize());
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
     //    alpha[i] = dist(mt);
@@ -99,9 +99,9 @@ int main(int argc, char** argv) {
   SGPP::base::OperationMultipleEval* eval =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  doAllRefinements(adaptConfig, *grid, *gridGen, alpha);
+  doAllRefinements(adaptConfig, *grid, gridGen, alpha);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->size() << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage->getSize() << std::endl;
   std::cout << "grid set up" << std::endl;
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
 
   std::cout << "duration: " << eval->getDuration() << std::endl;
 
-  //    SGPP::base::DataVector alpha2(gridStorage->size());
+  //    SGPP::base::DataVector alpha2(gridStorage->getSize());
   //    alpha2.setAll(0.0);
   //
   //    eval->multTranspose(dataSizeVectorResult, alpha2);

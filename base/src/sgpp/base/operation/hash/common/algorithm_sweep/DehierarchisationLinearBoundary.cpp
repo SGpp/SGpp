@@ -14,7 +14,7 @@ namespace base {
 
 
 DehierarchisationLinearBoundary::DehierarchisationLinearBoundary(
-  GridStorage* storage) : DehierarchisationLinear(storage) {
+  GridStorage& storage) : DehierarchisationLinear(storage) {
 }
 
 DehierarchisationLinearBoundary::~DehierarchisationLinearBoundary() {
@@ -39,7 +39,7 @@ void DehierarchisationLinearBoundary::operator()(DataVector& source,
   if (!index.hint()) {
     index.resetToLevelOne(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, left_boundary, right_boundary);
     }
 

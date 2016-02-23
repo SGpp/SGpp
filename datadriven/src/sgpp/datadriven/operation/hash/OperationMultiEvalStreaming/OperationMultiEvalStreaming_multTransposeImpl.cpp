@@ -8,11 +8,11 @@
 #include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
 #include "sgpp/globaldef.hpp"
 
-#if defined(__SSE3__) && !defined(__AVX__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__) && !defined(__AVX__)
 #include <pmmintrin.h>
 #endif
 
-#if defined(__SSE3__) && defined(__AVX__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__) && defined(__AVX__)
 #include <immintrin.h>
 #endif
 
@@ -227,7 +227,7 @@ void OperationMultiEvalStreaming::multTransposeImpl(
         __m256d tmp = _mm256_permute2f128_pd(support_0, support_0, 0x81);
         support_0 = _mm256_add_pd(support_0, tmp);
 
-  // Workaround: bug with maskload in GCC (4.6.1)
+// Workaround: bug with maskload in GCC (4.6.1)
 #ifdef __ICC
         __m256d res_0 = _mm256_maskload_pd(&(ptrResult[j]), ldStMaskAVX);
         res_0 = _mm256_add_pd(res_0, support_0);

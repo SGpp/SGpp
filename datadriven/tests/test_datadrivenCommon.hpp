@@ -19,7 +19,7 @@ using SGPP::base::OCLOperationConfiguration;
 
 std::string uncompressFile(std::string fileName);
 
-SGPP::base::DataMatrix* readReferenceMatrix(SGPP::base::GridStorage* storage, std::string fileName);
+SGPP::base::DataMatrix* readReferenceMatrix(SGPP::base::GridStorage& storage, std::string fileName);
 
 void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::base::Grid& grid,
                          SGPP::base::GridGenerator& gridGen, SGPP::base::DataVector& alpha);

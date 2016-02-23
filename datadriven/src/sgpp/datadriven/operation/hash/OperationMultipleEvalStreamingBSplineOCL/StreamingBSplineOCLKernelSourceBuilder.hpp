@@ -58,7 +58,7 @@ class StreamingBSplineOCLKernelSourceBuilder {
 
         file.close();
       } else {
-        throw new base::operation_exception("OCL error: file to reuse not found\n");
+        throw base::operation_exception("OCL error: file to reuse not found\n");
       }
 
       return streamProgramSrc.str();
@@ -448,7 +448,7 @@ uint end_grid) {
 
         file.close();
       } else {
-        throw new base::operation_exception("OCL error: file to reuse not found\n");
+        throw base::operation_exception("OCL error: file to reuse not found\n");
       }
 
       return streamProgramSrc.str();
@@ -849,7 +849,7 @@ uint end_data) {
          )";*/
         break;
       default:
-        throw new base::operation_exception("degree not supported.");
+        throw base::operation_exception("degree not supported.");
     }
   }
 

@@ -46,9 +46,7 @@ void PoissonEquationSolverMPI::constructGrid(SGPP::base::BoundingBox&
 
   this->myGrid = new SGPP::base::LinearBoundaryGrid(BoundingBox);
 
-  SGPP::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
   this->myBoundingBox = this->myGrid->getBoundingBox();
   this->myGridStorage = this->myGrid->getStorage();
@@ -80,7 +78,7 @@ void PoissonEquationSolverMPI::solvePDE(SGPP::base::DataVector& alpha,
       mySystem = new PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(*
           (this->myGrid), rhs);
     } else {
-      throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+      throw base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
     }
   } else {
     myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
@@ -200,7 +198,7 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector&
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new SGPP::base::application_exception("PoissonEquationSolverMPI::initGridWithSmoothHeat : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception("PoissonEquationSolverMPI::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
 }
 
@@ -238,7 +236,7 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new SGPP::base::application_exception("HeatEquationSolverMPI::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception("HeatEquationSolverMPI::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
   }
 }
 
@@ -296,7 +294,7 @@ void PoissonEquationSolverMPI::initGridWithExpHeat(SGPP::base::DataVector&
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new SGPP::base::application_exception("PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception("PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }
 
@@ -341,7 +339,7 @@ void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new SGPP::base::application_exception("PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception("PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }
 

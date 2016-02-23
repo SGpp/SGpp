@@ -29,9 +29,8 @@ class OperationMultipleEvalLinearStretchedBoundary : public
    * @param grid grid
    * @param dataset the dataset the should be evaluated
    */
-  OperationMultipleEvalLinearStretchedBoundary(Grid& grid,
-      DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
-    this->storage = grid.getStorage();
+  OperationMultipleEvalLinearStretchedBoundary(Grid& grid, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
   }
 
   /**
@@ -44,7 +43,7 @@ class OperationMultipleEvalLinearStretchedBoundary : public
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

@@ -44,7 +44,7 @@ class AlgorithmMultipleEvaluation {
    * @param x the d-dimensional vector with data points (row-wise)
    * @param result the result vector of the matrix vector multiplication
    */
-  void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source,
+  void mult_transpose(GridStorage& storage, BASIS& basis, DataVector& source,
                       DataMatrix& x, DataVector& result) {
     result.setAll(0.0);
     size_t source_size = source.getSize();
@@ -75,7 +75,7 @@ class AlgorithmMultipleEvaluation {
     }
   }
   // implementation requires OpenMP 4.0 support
-  //        void mult_transpose(GridStorage* storage, BASIS& basis, DataVector& source,
+  //        void mult_transpose(GridStorage& storage, BASIS& basis, DataVector& source,
   //                            DataMatrix& x, DataVector& result) {
   //          result.setAll(0.0);
   //          size_t source_size = source.getSize();
@@ -109,7 +109,7 @@ class AlgorithmMultipleEvaluation {
    * @param x the d-dimensional vector with data points (row-wise)
    * @param result the result vector of the matrix vector multiplication
    */
-  void mult(GridStorage* storage, BASIS& basis, DataVector& source, DataMatrix& x,
+  void mult(GridStorage& storage, BASIS& basis, DataVector& source, DataMatrix& x,
             DataVector& result) {
     result.setAll(0.0);
     size_t result_size = result.getSize();

@@ -26,7 +26,7 @@ void OperationLTwoDotProductLinearStretchedBoundary::up(SGPP::base::DataVector& 
                                                         size_t dim) {
   // phi * phi
   PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -36,7 +36,7 @@ void OperationLTwoDotProductLinearStretchedBoundary::down(SGPP::base::DataVector
                                                           size_t dim) {
   // phi * phi
   PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }

@@ -449,7 +449,7 @@ class LearnerBuilder(object):
                         else:
                             grid = Grid.createLinearGrid(self.__dim)
 
-                generator = grid.createGridGenerator()
+                generator = grid.getGenerator()
                 if self.__cliqueSize == None:
                     generator.regular(self.__level)
                 else:

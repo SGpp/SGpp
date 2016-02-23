@@ -62,12 +62,10 @@ void HullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, int level) {
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   // std::string serGrid;
   // myGrid->serialize(serGrid);
@@ -130,7 +128,7 @@ void HullWhiteSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsi
     delete myEuler;
     delete myStopwatch;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HullWhiteSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -182,7 +180,7 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsi
     delete myEuler;
     delete myStopwatch;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HullWhiteSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -191,7 +189,7 @@ void HullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsi
 void HullWhiteSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
                                          size_t maxCGIterations, float_t epsilonCG,
                                          base::DataVector& alpha, size_t NumImEul) {
-  throw new base::application_exception(
+  throw base::application_exception(
       "HullWhiteSolver::solveCrankNicolson : Crank-Nicolson is not supported for "
       "HullWhiteSolver!!");
 }
@@ -202,7 +200,7 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       coordsStream >> tmp;
@@ -234,7 +232,7 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
 
         alpha[i] = std::max<float_t>(strike - ((tmp)), 0.0);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "HullWhiteSolver::initGridWithPayoff : An unknown payoff-type was specified!");
       }
 
@@ -243,12 +241,9 @@ void HullWhiteSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike
       // delete dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HullWhiteSolver::initGridWithPayoff : A grid wasn't constructed before!");
   }
 }

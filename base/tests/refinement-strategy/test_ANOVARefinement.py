@@ -21,7 +21,7 @@ class Test_ANOVARefinement(unittest.TestCase):
 
     def setUp(self):
         self.grid = Grid.createModLinearGrid(2)  # a simple 2D grid
-        self.grid.createGridGenerator().regular(3)  # max level 3 => 17 points
+        self.grid.getGenerator().regular(3)  # max level 3 => 17 points
         self.grid_storage = self.grid.getStorage()
 
     def tearDown(self):
@@ -102,7 +102,7 @@ class Test_ANOVARefinement(unittest.TestCase):
             else:
                 alpha[i] = 1.0
         # refine one point
-        self.grid.createGridGenerator().refine(SurplusRefinementFunctor(alpha,
+        self.grid.getGenerator().refine(SurplusRefinementFunctor(alpha,
                 1, 0))
         # check that all children were inserted
         self.assertEqual(self.grid.getSize(), 21,
@@ -142,7 +142,7 @@ class Test_ANOVARefinement(unittest.TestCase):
                 alpha[i] = 1.0
         # refine one point
         functor = SurplusVolumeRefinementFunctor(alpha, 1, 0)
-        self.grid.createGridGenerator().refine(functor)
+        self.grid.getGenerator().refine(functor)
         # check that all children were inserted
         self.assertEqual(self.grid.getSize(), 21,
                          'Number of grid points doesn\'t match')

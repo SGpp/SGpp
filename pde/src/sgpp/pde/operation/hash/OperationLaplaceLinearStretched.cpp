@@ -40,14 +40,14 @@ void OperationLaplaceLinearStretched::specialOP(SGPP::base::DataVector& alpha,
 void OperationLaplaceLinearStretched::up(SGPP::base::DataVector& alpha,
                                          SGPP::base::DataVector& result, size_t dim) {
   PhiPhiUpBBLinearStretched func(this->storage);
-  SGPP::base::sweep<PhiPhiUpBBLinearStretched> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiUpBBLinearStretched> s(func, *this->storage);
   s.sweep1D(alpha, result, dim);
 }
 
 void OperationLaplaceLinearStretched::down(SGPP::base::DataVector& alpha,
                                            SGPP::base::DataVector& result, size_t dim) {
   PhiPhiDownBBLinearStretched func(this->storage);
-  SGPP::base::sweep<PhiPhiDownBBLinearStretched> s(func, this->storage);
+  SGPP::base::sweep<PhiPhiDownBBLinearStretched> s(func, *this->storage);
   s.sweep1D(alpha, result, dim);
 }
 

@@ -28,7 +28,7 @@ OperationLaplaceEnhancedLinearBoundary::~OperationLaplaceEnhancedLinearBoundary(
 void OperationLaplaceEnhancedLinearBoundary::up(SGPP::base::DataMatrix& alpha,
                                                 SGPP::base::DataMatrix& result, size_t dim) {
   LaplaceEnhancedUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<LaplaceEnhancedUpBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<LaplaceEnhancedUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -36,7 +36,7 @@ void OperationLaplaceEnhancedLinearBoundary::up(SGPP::base::DataMatrix& alpha,
 void OperationLaplaceEnhancedLinearBoundary::down(SGPP::base::DataMatrix& alpha,
                                                   SGPP::base::DataMatrix& result, size_t dim) {
   LaplaceEnhancedDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<LaplaceEnhancedDownBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<LaplaceEnhancedDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }

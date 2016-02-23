@@ -21,10 +21,10 @@ class LearnerScenario {
   // variables for the scenario
   double lambda;
   std::string datasetFileName;
-  sg::base::RegularGridConfiguration gridConfig;
-  sg::solver::SLESolverConfiguration solverConfigRefine;
-  sg::solver::SLESolverConfiguration solverConfigFinal;
-  sg::base::AdpativityConfiguration adaptConfig;
+  SGPP::base::RegularGridConfiguration gridConfig;
+  SGPP::solver::SLESolverConfiguration solverConfigRefine;
+  SGPP::solver::SLESolverConfiguration solverConfigFinal;
+  SGPP::base::AdpativityConfiguration adaptConfig;
 
  public:
   LearnerScenario();
@@ -41,12 +41,12 @@ class LearnerScenario {
 
   double getLambda();
 
-  sg::base::RegularGridConfiguration getGridConfig();
+  SGPP::base::RegularGridConfiguration getGridConfig();
 
-  sg::solver::SLESolverConfiguration getSolverConfigurationRefine();
-  sg::solver::SLESolverConfiguration getSolverConfigurationFinal();
+  SGPP::solver::SLESolverConfiguration getSolverConfigurationRefine();
+  SGPP::solver::SLESolverConfiguration getSolverConfigurationFinal();
 
-  sg::base::AdpativityConfiguration getAdaptivityConfiguration();
+  SGPP::base::AdpativityConfiguration getAdaptivityConfiguration();
 
   void writeToFile(std::string fileName);
 

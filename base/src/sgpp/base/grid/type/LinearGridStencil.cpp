@@ -4,8 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
-
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
@@ -18,15 +16,19 @@
 namespace SGPP {
 namespace base {
 
-LinearGridStencil::LinearGridStencil(std::istream& istr) : GridStencil(istr) {
+LinearGridStencil::LinearGridStencil(std::istream& istr) :
+    GridStencil(istr),
+    generator(storage) {
 }
 
-LinearGridStencil::LinearGridStencil(size_t dim) : GridStencil(dim) {
-  this->storage = new GridStorage(dim);
+LinearGridStencil::LinearGridStencil(size_t dim) :
+    GridStencil(dim),
+    generator(storage) {
 }
 
-LinearGridStencil::LinearGridStencil(BoundingBox& BB) : GridStencil(BB) {
-  this->storage = new GridStorage(BB);
+LinearGridStencil::LinearGridStencil(BoundingBox& BB) :
+    GridStencil(BB),
+    generator(storage) {
 }
 
 LinearGridStencil::~LinearGridStencil() {
@@ -37,23 +39,23 @@ SGPP::base::GridType LinearGridStencil::getType() {
 }
 
 const SBasis& LinearGridStencil::getBasis() {
-  throw new factory_exception("Not implemented");
+  throw factory_exception("Not implemented");
   // it should never get so far, code just for compilation reasons
   // If there will be a meaningful basis, this following lines should be changed
   static SLinearBase basis;
   return basis;
 }
 
-Grid* LinearGridStencil::unserialize(std::istream& istr) {
-  return new LinearGridStencil(istr);
+std::unique_ptr<Grid> LinearGridStencil::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearGridStencil(istr));
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearGridStencil::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& LinearGridStencil::getGenerator() {
+  return generator;
 }
 
 

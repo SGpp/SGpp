@@ -6,11 +6,11 @@
 #include <algorithm>
 #include <cmath>
 
-#if defined(__SSE3__) && !defined(__AVX__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__) && !defined(__AVX__)
 #include <pmmintrin.h>
 #endif
 
-#if defined(__SSE3__) && defined(__AVX__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__) && defined(__AVX__)
 #include <immintrin.h>
 #endif
 
@@ -565,8 +565,8 @@ void OperationMultiEvalStreaming::multImpl(
 #endif
     }
   }
-//}
-//}
+  //}
+  //}
 }
 #endif
 

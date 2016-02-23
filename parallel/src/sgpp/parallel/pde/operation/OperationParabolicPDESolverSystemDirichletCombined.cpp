@@ -47,7 +47,7 @@ void OperationParabolicPDESolverSystemDirichletCombined::mult(
 
     result.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
   }
 }
 
@@ -73,7 +73,7 @@ OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
 
     rhs_complete.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
   }
 
   // Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -109,7 +109,7 @@ OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
 
     result_complete.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
   }
 
   rhs_complete.sub(result_complete);

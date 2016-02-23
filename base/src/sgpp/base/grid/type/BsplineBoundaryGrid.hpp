@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -60,7 +61,7 @@ class BsplineBoundaryGrid : public Grid {
   /**
    * @return pointer to a GridGenerator object
    */
-  GridGenerator* createGridGenerator() override;
+  GridGenerator& getGenerator() override;
 
   /**
    * reads a grid out of a string
@@ -68,7 +69,7 @@ class BsplineBoundaryGrid : public Grid {
    * @param istr string that contains the grid information
    * @return grid
    */
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 
   /**
    * Serializes the grid.
@@ -83,10 +84,12 @@ class BsplineBoundaryGrid : public Grid {
   virtual size_t getDegree();
 
  protected:
+  /// grid generator
+  BoundaryGridGenerator generator;
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  const SBsplineBoundaryBase* basis_;
+  std::unique_ptr<SBsplineBoundaryBase> basis_;
   /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };

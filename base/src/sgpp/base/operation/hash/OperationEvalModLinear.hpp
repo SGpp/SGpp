@@ -26,7 +26,7 @@ class OperationEvalModLinear : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationEvalModLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalModLinear(GridStorage& storage) : storage(storage) {}
 
   /**
    * Destructor
@@ -38,7 +38,7 @@ class OperationEvalModLinear : public OperationEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

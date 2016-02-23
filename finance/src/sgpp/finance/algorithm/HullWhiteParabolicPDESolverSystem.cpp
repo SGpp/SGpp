@@ -30,27 +30,27 @@ HullWhiteParabolicPDESolverSystem::HullWhiteParabolicPDESolverSystem(
 
   this->alpha_complete_old = new SGPP::base::DataVector(this->alpha_complete->getSize());
   this->alpha_complete_tmp = new SGPP::base::DataVector(this->alpha_complete->getSize());
-  this->oldGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
+  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
+  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
 
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
   this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
-  this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
+  this->variableDiscountFactor = new VariableDiscountFactor(&SparseGrid.getStorage(), dim_HW);
   this->a = a;
   this->theta = theta;
   this->sigma = sigma;
   this->HWalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
   // Create needed operations, on boundary grid
-  this->OpBBound = SGPP::op_factory::createOperationLB(*this->BoundGrid);
-  this->OpDBound = SGPP::op_factory::createOperationLD(*this->BoundGrid);
-  this->OpEBound = SGPP::op_factory::createOperationLE(*this->BoundGrid);
-  this->OpFBound = SGPP::op_factory::createOperationLF(*this->BoundGrid);
+  this->OpBBound = SGPP::op_factory::createOperationLB(*this->BoundGrid).release();
+  this->OpDBound = SGPP::op_factory::createOperationLD(*this->BoundGrid).release();
+  this->OpEBound = SGPP::op_factory::createOperationLE(*this->BoundGrid).release();
+  this->OpFBound = SGPP::op_factory::createOperationLF(*this->BoundGrid).release();
 
   // Create operations, independent bLogTransform
-  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
+  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
 
   // right hand side if System
   this->rhs = NULL;
@@ -147,42 +147,36 @@ void HullWhiteParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep) {
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage()->size();
+    size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
-          this->alpha_complete, numRefines, this->refineThreshold);
+      size_t numRefines = myGenerator.getNumberOfRefinablePoints();
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+          *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
-        myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
 
       if (this->refineMode == "classic") {
-        myGenerator->refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        myGenerator.refine(myRefineFunc);
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
-
-      delete myRefineFunc;
     }
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
-          new SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
-                                                   this->coarsenThreshold);
-      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
-      delete myCoarsenFunctor;
+      size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
+      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+          *this->alpha_complete, numCoarsen, this->coarsenThreshold);
+      myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
-
-    delete myGenerator;
 
     ///////////////////////////////////////////////////
     // End integrated refinement & coarsening

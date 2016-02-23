@@ -31,12 +31,12 @@ using SGPP::optimization::Printer;
 using SGPP::optimization::RandomNumberGenerator;
 
 void gridEqualityTest(SGPP::base::Grid& grid1, SGPP::base::Grid& grid2) {
-  SGPP::base::GridStorage& storage1 = *grid1.getStorage();
-  SGPP::base::GridStorage& storage2 = *grid2.getStorage();
-  const size_t d = storage1.dim();
-  BOOST_CHECK_EQUAL(d, storage2.dim());
-  const size_t n = storage1.size();
-  BOOST_CHECK_EQUAL(n, storage2.size());
+  SGPP::base::GridStorage& storage1 = grid1.getStorage();
+  SGPP::base::GridStorage& storage2 = grid2.getStorage();
+  const size_t d = storage1.getDimension();
+  BOOST_CHECK_EQUAL(d, storage2.getDimension());
+  const size_t n = storage1.getSize();
+  BOOST_CHECK_EQUAL(n, storage2.getSize());
 
   for (size_t k = 0; k < n; k++) {
     for (size_t t = 0; t < d; t++) {
@@ -200,19 +200,18 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
   for (size_t d = 1; d < 6; d++) {
     std::unique_ptr<SGPP::base::Grid> grid1(SGPP::base::Grid::createLinearGrid(d)),
         grid2(SGPP::base::Grid::createLinearGrid(d));
-    std::unique_ptr<SGPP::base::GridGenerator> gridGen(grid1->createGridGenerator());
-    gridGen->regular(3);
+    grid1->getGenerator().regular(3);
 
     {
       const std::string fileName = "testTools_grid.tmp";
-      SGPP::optimization::file_io::writeGrid(fileName, *grid1->getStorage());
-      SGPP::optimization::file_io::readGrid(fileName, *grid2->getStorage());
+      SGPP::optimization::file_io::writeGrid(fileName, grid1->getStorage());
+      SGPP::optimization::file_io::readGrid(fileName, grid2->getStorage());
       std::remove(fileName.c_str());
     }
 
     gridEqualityTest(*grid1, *grid2);
 
-    SGPP::base::DataVector functionValues1(grid1->getStorage()->size());
+    SGPP::base::DataVector functionValues1(grid1->getSize());
     SGPP::base::DataVector functionValues2(0);
 
     for (size_t k = 0; k < functionValues1.getSize(); k++) {
@@ -221,9 +220,9 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
 
     {
       const std::string fileName = "testTools_grid.tmp";
-      SGPP::optimization::file_io::writeGrid(fileName, *grid1->getStorage(), functionValues1);
+      SGPP::optimization::file_io::writeGrid(fileName, grid1->getStorage(), functionValues1);
       std::unique_ptr<SGPP::base::Grid> grid2(SGPP::base::Grid::createLinearGrid(d));
-      SGPP::optimization::file_io::readGrid(fileName, *grid2->getStorage(), functionValues2);
+      SGPP::optimization::file_io::readGrid(fileName, grid2->getStorage(), functionValues2);
       std::remove(fileName.c_str());
     }
 

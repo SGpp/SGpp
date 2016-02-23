@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 }
 
 BOOST_AUTO_TEST_CASE(testOps) {
-  float tol = 0.00001f;
+  float tol = 0.00002f;
 
   DataMatrixSP d = d_rand;
   DataMatrixSP d2(nrows, ncols);

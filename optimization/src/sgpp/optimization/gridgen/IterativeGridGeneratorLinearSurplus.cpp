@@ -100,7 +100,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     abstractRefinement = std::unique_ptr<base::AbstractRefinement>(new base::HashRefinement());
   }
 
-  base::GridStorage& gridStorage = *grid.getStorage();
+  base::GridStorage& gridStorage = grid.getStorage();
   // Set up linear system for hierarchization with the linear grid as
   // underlying grid, but set the internal grid storage to the one of the
   // B-spline/wavelet grid.
@@ -113,12 +113,9 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   HierarchisationSLE hierSLE(*linearGrid, gridStorage);
 
   // generate initial grid
-  {
-    std::unique_ptr<base::GridGenerator> gridGen(grid.createGridGenerator());
-    gridGen->regular(initialLevel);
-  }
+  grid.getGenerator().regular(initialLevel);
 
-  size_t currentN = gridStorage.size();
+  size_t currentN = gridStorage.getSize();
   // coeffs always has as much elements as there are grid points in
   // the grid, but fX has N elements (no resizing during the main loop)
   base::DataVector coeffs(currentN);
@@ -178,16 +175,16 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     }
 
     // calculate number of points to be refined
-    refinablePtsCount = abstractRefinement->getNumberOfRefinablePoints(&gridStorage);
+    refinablePtsCount = abstractRefinement->getNumberOfRefinablePoints(gridStorage);
     ptsToBeRefinedCount =
         static_cast<int>(1.0 + refineFactor * gamma * static_cast<float_t>(refinablePtsCount));
 
     // refine
-    base::SurplusRefinementFunctor refineFunc(&coeffs, ptsToBeRefinedCount);
-    abstractRefinement->free_refine(&gridStorage, &refineFunc);
+    base::SurplusRefinementFunctor refineFunc(coeffs, ptsToBeRefinedCount);
+    abstractRefinement->free_refine(gridStorage, refineFunc);
 
     // new grid size
-    size_t newN = gridStorage.size();
+    size_t newN = gridStorage.getSize();
 
     if (newN == currentN) {
       // size unchanged ==> nothing refined (should not happen)

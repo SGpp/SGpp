@@ -21,7 +21,7 @@ class TestWeightedRefinementOperator(unittest.TestCase):
         LEVEL = 2
 
         self.grid = Grid.createLinearGrid(DIM)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(LEVEL)
 
         #
@@ -48,10 +48,11 @@ class TestWeightedRefinementOperator(unittest.TestCase):
 
         self.errors = DataVector(DELTA_RECI**2)
         coord = DataVector(DIM)
+        opEval = createOperationEval(self.grid)
 
         for i in xrange(self.trainData.getNrows()):
             self.trainData.getRow(i, coord)
-            self.errors.__setitem__ (i, self.classes[i] - self.grid.eval(self.alpha, coord))
+            self.errors.__setitem__ (i, self.classes[i] - opEval.eval(self.alpha, coord))
 
         #print "Errors:"
         #print self.errors
@@ -67,11 +68,12 @@ class TestWeightedRefinementOperator(unittest.TestCase):
 
     def test_1(self):
         storage = self.grid.getStorage()
-        coord = DataVector(storage.dim())
+        coord = DataVector(storage.getDimension())
         num_coeff = self.alpha.__len__()
 
-        values = [self.functor.__call__(storage,i) for i in xrange(storage.size())]
+        values = [self.functor.__call__(storage,i) for i in xrange(storage.getSize())]
         expect = []
+        opEval = createOperationEval(self.grid)
         for i in xrange(num_coeff):
             # print i
             val = 0
@@ -79,7 +81,7 @@ class TestWeightedRefinementOperator(unittest.TestCase):
             single.__setitem__(i, self.alpha.__getitem__(i))
             for j in xrange(self.trainData.getNrows()):
                 self.trainData.getRow(j, coord)
-                val += abs( self.grid.eval(single, coord) * (self.errors.__getitem__(j)**2) )
+                val += abs( opEval.eval(single, coord) * (self.errors.__getitem__(j)**2) )
             expect.append(val)
 
         # print values

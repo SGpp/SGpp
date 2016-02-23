@@ -29,19 +29,19 @@ ModifiedBlackScholesParabolicPDESolverSystem::ModifiedBlackScholesParabolicPDESo
                                            OperationMode, 0.0, "nothing", bLogTransform, useCoarsen,
                                            coarsenThreshold, adaptSolveMode, numCoarsenPoints,
                                            refineThreshold, refineMode, refineMaxLevel) {
-  this->OpFBound = SGPP::op_factory::createOperationLF(*this->BoundGrid);
+  this->OpFBound = SGPP::op_factory::createOperationLF(*this->BoundGrid).release();
   this->dim_r = dim_HW;
-  this->variableDiscountFactor = new VariableDiscountFactor(SparseGrid.getStorage(), dim_HW);
+  this->variableDiscountFactor = new VariableDiscountFactor(&SparseGrid.getStorage(), dim_HW);
 }
 
 void ModifiedBlackScholesParabolicPDESolverSystem::multiplyrBSHW(
     SGPP::base::DataVector& updateVector) {
   float_t tmp;
 
-  for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
+  for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
     // std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
-    std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(
-        *this->BoundGrid->getBoundingBox());
+    std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(
+        this->BoundGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
     float_t dblFuncValues[2];
 
@@ -107,42 +107,36 @@ void ModifiedBlackScholesParabolicPDESolverSystem::coarsenAndRefine(bool isLastT
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage()->size();
+    size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
-          this->alpha_complete, numRefines, this->refineThreshold);
+      size_t numRefines = myGenerator.getNumberOfRefinablePoints();
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+          *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
-        myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
 
       if (this->refineMode == "classic") {
-        myGenerator->refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        myGenerator.refine(myRefineFunc);
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
-
-      delete myRefineFunc;
     }
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
-          new SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
-                                                   this->coarsenThreshold);
-      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
-      delete myCoarsenFunctor;
+      size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
+      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+          *this->alpha_complete, numCoarsen, this->coarsenThreshold);
+      myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
-
-    delete myGenerator;
 
     ///////////////////////////////////////////////////
     // End integrated refinement & coarsening

@@ -436,7 +436,7 @@ void Stretching::generateLookupTable() {
     } else {
       // std::cout << "Stretching::generateLookupTable :
       // analytic stretching type not supported!" << std::endl;
-      // throw new application_exception("Stretching::generateLookupTable :
+      // throw application_exception("Stretching::generateLookupTable :
       // analytic stretching type not supported!");
       noXform(stretching1Ds[i], i);  // in case of discrete stretching
     }

@@ -116,7 +116,7 @@ void BlackScholesSolverMPI::getGridNormalDistribution(SGPP::base::DataVector&
 
     delete[] s_coords;
   } else {
-    throw new base::application_exception("BlackScholesSolverMPI::getGridNormalDistribution : The grid wasn't initialized before!");
+    throw base::application_exception("BlackScholesSolverMPI::getGridNormalDistribution : The grid wasn't initialized before!");
   }
 }
 
@@ -127,9 +127,7 @@ void BlackScholesSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox,
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  SGPP::base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
   this->myBoundingBox = this->myGrid->getBoundingBox();
   this->myGridStorage = this->myGrid->getStorage();
@@ -463,7 +461,7 @@ void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps,
     double timestepsize, size_t maxCGIterations, double epsilonCG,
     SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation,
     size_t numEvalsAnimation) {
-  throw new base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this setting!");
+  throw base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this setting!");
 }
 
 void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
@@ -507,7 +505,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
             this->numCoarsenPoints, this->refineThreshold, this->refineMode,
             this->refineMaxLevel);
         } else {
-          throw new base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+          throw base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
         }
       } else {
         myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
@@ -568,7 +566,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
 
     this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception("BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
+    throw base::application_exception("BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
   }
 }
 
@@ -610,7 +608,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
             this->numCoarsenPoints, this->refineThreshold, this->refineMode,
             this->refineMaxLevel);
         } else {
-          throw new base::application_exception("BlackScholesSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
+          throw base::application_exception("BlackScholesSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
         }
       } else {
         myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
@@ -699,7 +697,7 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
 
     this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
+    throw base::application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
   }
 }
 
@@ -707,37 +705,37 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
 void BlackScholesSolverMPI::solveAdamsBashforth(size_t numTimesteps,
     double timestepsize, size_t maxCGIterations, double epsilonCG,
     SGPP::base::DataVector& alpha, bool verbose) {
-  throw new base::application_exception("BlackScholesSolverMPI::solveAdamsBashforth : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception("BlackScholesSolverMPI::solveAdamsBashforth : An unsupported ODE Solver type has been chosen!");
 }
 
 void BlackScholesSolverMPI::solveSCAC(size_t numTimesteps, double timestepsize,
                                       double epsilon, size_t maxCGIterations, double epsilonCG,
                                       SGPP::base::DataVector& alpha, bool verbose) {
-  throw new base::application_exception("BlackScholesSolverMPI::solveSCAC : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception("BlackScholesSolverMPI::solveSCAC : An unsupported ODE Solver type has been chosen!");
 }
 
 void BlackScholesSolverMPI::solveSCH(size_t numTimesteps, double timestepsize,
                                      double epsilon, size_t maxCGIterations, double epsilonCG,
                                      SGPP::base::DataVector& alpha, bool verbose) {
-  throw new base::application_exception("BlackScholesSolverMPI::solveSCH : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception("BlackScholesSolverMPI::solveSCH : An unsupported ODE Solver type has been chosen!");
 }
 
 void BlackScholesSolverMPI::solveSCBDF(size_t numTimesteps, double timestepsize,
                                        double epsilon, size_t maxCGIterations, double epsilonCG,
                                        SGPP::base::DataVector& alpha, bool verbose) {
-  throw new base::application_exception("BlackScholesSolverMPI::solveSCBDF : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception("BlackScholesSolverMPI::solveSCBDF : An unsupported ODE Solver type has been chosen!");
 }
 
 void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize,
                                       double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG,
                                       SGPP::base::DataVector& alpha, bool verbose) {
-  throw new base::application_exception("BlackScholesSolverMPI::solveSCEJ : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception("BlackScholesSolverMPI::solveSCEJ : An unsupported ODE Solver type has been chosen!");
 }
 
 void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize,
                                    size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha,
                                    bool verbose, void* myODESolverV, std::string Solver) {
-  throw new base::application_exception("BlackScholesSolverMPI::solveX : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception("BlackScholesSolverMPI::solveX : An unsupported ODE Solver type has been chosen!");
 }
 
 void BlackScholesSolverMPI::setPayoffType(std::string payoffType) {
@@ -783,7 +781,7 @@ void BlackScholesSolverMPI::setAlgorithmicDimensions(std::vector<size_t>
   if (this->tBoundaryType == "freeBoundaries") {
     this->myGrid->setAlgorithmicDimensions(newAlgoDims);
   } else {
-    throw new base::application_exception("BlackScholesSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only supported when choosing option type all!");
+    throw base::application_exception("BlackScholesSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only supported when choosing option type all!");
   }
 }
 
@@ -840,7 +838,7 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(
 
         alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
-        throw new base::application_exception("BlackScholesSolver::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
+        throw base::application_exception("BlackScholesSolver::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
       }
 
       delete[] dblFuncValues;
@@ -851,7 +849,7 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new base::application_exception("BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
+    throw base::application_exception("BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
   }
 }
 
@@ -889,7 +887,7 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(
 
         alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
-        throw new base::application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was specified!");
+        throw base::application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was specified!");
       }
 
       delete[] dblFuncValues;
@@ -900,7 +898,7 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new base::application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
+    throw base::application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
 }
 
@@ -950,7 +948,7 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(
 
         alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
-        throw new base::application_exception("BlackScholesSolverMPI::initPATTransformedGridWithPayoff : An unknown payoff-type was specified!");
+        throw base::application_exception("BlackScholesSolverMPI::initPATTransformedGridWithPayoff : An unknown payoff-type was specified!");
       }
 
       delete[] dblFuncValues;
@@ -961,7 +959,7 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(
     myHierarchisation->doHierarchisation(alpha);
     delete myHierarchisation;
   } else {
-    throw new base::application_exception("BlackScholesSolverMPI::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
+    throw base::application_exception("BlackScholesSolverMPI::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
 }
 
@@ -1035,7 +1033,7 @@ void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
     std::string tfilename, bool bSurplus) const {
   base::DataVector temp(alpha);
   double tmp = 0.0;
-  size_t dim = myGrid->getStorage()->dim();
+  size_t dim = myGrid->getStorage()->getDimension();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified

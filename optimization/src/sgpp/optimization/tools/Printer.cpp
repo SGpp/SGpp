@@ -203,10 +203,10 @@ void Printer::setLineLengthLimit(size_t lineLengthLimit) {
 }
 
 void Printer::printIterativeGridGenerator(const IterativeGridGenerator& grid_gen) const {
-  base::GridStorage& gridStorage = *grid_gen.getGrid().getStorage();
+  base::GridStorage& gridStorage = grid_gen.getGrid().getStorage();
   const base::DataVector& functionValues = grid_gen.getFunctionValues();
 
-  for (size_t i = 0; i < gridStorage.size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     if (i > 0) {
       (*stream) << "\n";
     }

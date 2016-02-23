@@ -66,7 +66,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         errs = [self.get_random_err() for i in xrange(num)]
 
         self.grid = Grid.createLinearGrid(d)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(l)
 
         self.trainData = DataMatrix(xs)

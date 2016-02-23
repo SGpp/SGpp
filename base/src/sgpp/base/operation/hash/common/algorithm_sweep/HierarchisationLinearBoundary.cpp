@@ -14,7 +14,7 @@ namespace base {
 
 
 HierarchisationLinearBoundary::HierarchisationLinearBoundary(
-  GridStorage* storage) : HierarchisationLinear(storage) {
+  GridStorage& storage) : HierarchisationLinear(storage) {
 }
 
 HierarchisationLinearBoundary::~HierarchisationLinearBoundary() {
@@ -39,7 +39,7 @@ void HierarchisationLinearBoundary::operator()(DataVector& source,
   if (!index.hint()) {
     index.resetToLevelOne(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, left_boundary, right_boundary);
     }
 

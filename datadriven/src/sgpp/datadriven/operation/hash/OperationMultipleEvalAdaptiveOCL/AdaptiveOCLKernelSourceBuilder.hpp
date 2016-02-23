@@ -54,7 +54,7 @@ class AdaptiveOCLKernelSourceBuilder {
         }
         file.close();
       } else {
-        throw new base::operation_exception("OCL error: file to reuse not found\n");
+        throw base::operation_exception("OCL error: file to reuse not found\n");
       }
       return stream_program_src.str();
     }
@@ -245,7 +245,7 @@ class AdaptiveOCLKernelSourceBuilder {
         }
         file.close();
       } else {
-        throw new base::operation_exception("OCL error: file to reuse not found\n");
+        throw base::operation_exception("OCL error: file to reuse not found\n");
       }
       return stream_program_src.str();
     }

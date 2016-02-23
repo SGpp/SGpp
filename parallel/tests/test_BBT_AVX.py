@@ -42,7 +42,7 @@ def generateBBTAVXMatrix(factory, training, verbose=False):
        
     b = createOperationMultipleEvalVectorized(factory,"AVX", training)
 
-    alpha = DataVector(storage.size())
+    alpha = DataVector(storage.getSize())
     erg = DataVector(len(alpha))
     
     #padding
@@ -59,8 +59,8 @@ def generateBBTAVXMatrix(factory, training, verbose=False):
     
     temp = DataVector(training.getNcols())
     # create B matrix
-    m = DataMatrix(storage.size(), storage.size())
-    for i in xrange(storage.size()):
+    m = DataMatrix(storage.getSize(), storage.getSize())
+    for i in xrange(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         erg.setAll(0.0)
@@ -91,8 +91,8 @@ def readReferenceMatrix(self, storage, filename):
     dat = map(lambda l: l.strip().split(None), dat)
 
     # right number of entries?
-    self.assertEqual(storage.size(), len(dat))
-    self.assertEqual(storage.size(), len(dat[0]))
+    self.assertEqual(storage.getSize(), len(dat))
+    self.assertEqual(storage.getSize(), len(dat[0]))
 
     m_ref = DataMatrix(len(dat), len(dat[0]))
     for i in xrange(len(dat)):
@@ -216,7 +216,7 @@ class TestOperationBBTAVXLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTAVXMatrix(factory, training)
@@ -234,7 +234,7 @@ class TestOperationBBTAVXLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(1)
         training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
         level = 5
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTAVXMatrix(factory, training)
@@ -252,7 +252,7 @@ class TestOperationBBTAVXLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 3
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTAVXMatrix(factory, training)
@@ -270,7 +270,7 @@ class TestOperationBBTAVXLinear(unittest.TestCase):
         factory = Grid.createLinearGrid(3)
         training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
         level = 4
-        gen = factory.createGridGenerator()
+        gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBBTAVXMatrix(factory, training)

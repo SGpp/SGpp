@@ -224,7 +224,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::mult(
 
     applyMassMatrixInner(alpha, result);
   } else {
-    throw new SGPP::base::algorithm_exception(" BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(" BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
   }
 
   // aggregate all results
@@ -362,7 +362,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
     temp.sub(temp_old);
     rhs_complete.axpy((0.5)*this->TimestepSize, temp);
   } else {
-    throw new SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
   }
 
   // aggregate all results
@@ -434,7 +434,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
     } else if (this->tOperationMode == "AdBas") {
       applyMassMatrixComplete(alpha_bound, result_complete);
     } else {
-      throw new SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+      throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
     }
 
     // aggregate all results
@@ -487,7 +487,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
       SGPP::base::OperationHierarchisation* myHierarchisation =
         SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
-      size_t dim = this->BoundGrid->getStorage()->dim();
+      size_t dim = this->BoundGrid->getStorage()->getDimension();
       SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*
           (this->BoundGrid->getBoundingBox()));
 
@@ -548,43 +548,36 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
       size_t originalGridSize = this->BoundGrid->getStorage()->size();
 
       // Coarsen the grid
-      base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+      base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
       //std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
       //std::cout << "Grid Size: " << originalGridSize << std::endl;
 
       if (this->adaptSolveMode == "refine"
           || this->adaptSolveMode == "coarsenNrefine") {
-        size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-        base::SurplusRefinementFunctor* myRefineFunc = new
-        base::SurplusRefinementFunctor(this->alpha_complete, numRefines,
-                                       this->refineThreshold);
+        size_t numRefines = myGenerator.getNumberOfRefinablePoints();
+        base::SurplusRefinementFunctor myRefineFunc(
+            *this->alpha_complete, numRefines, this->refineThreshold);
 
         if (this->refineMode == "maxLevel") {
-          myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+          myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
           this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
         }
 
         if (this->refineMode == "classic") {
-          myGenerator->refine(myRefineFunc);
+          myGenerator.refine(myRefineFunc);
           this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
         }
-
-        delete myRefineFunc;
       }
 
       if (this->adaptSolveMode == "coarsen"
           || this->adaptSolveMode == "coarsenNrefine") {
-        size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-        base::SurplusCoarseningFunctor* myCoarsenFunctor = new
-        base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
-                                       this->coarsenThreshold);
-        myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete,
-                                       originalGridSize);
-        delete myCoarsenFunctor;
+        size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
+        base::SurplusCoarseningFunctor myCoarsenFunctor(
+            *this->alpha_complete, numCoarsen, this->coarsenThreshold);
+        myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete,
+                                      originalGridSize);
       }
-
-      delete myGenerator;
 
       ///////////////////////////////////////////////////
       // End integrated refinement & coarsening

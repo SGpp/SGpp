@@ -22,15 +22,15 @@ OperationMatrixLTwoDotPeriodic::~OperationMatrixLTwoDotPeriodic() {}
 
 void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
                                           SGPP::base::DataVector& result) {
-  size_t nrows = gridStorage->size();
-  size_t ncols = gridStorage->size();
+  size_t nrows = gridStorage->getSize();
+  size_t ncols = gridStorage->getSize();
 
   if (alpha.getSize() != ncols || result.getSize() != nrows) {
     throw SGPP::base::data_exception("Dimensions do not match!");
   }
 
-  size_t gridSize = gridStorage->size();
-  size_t gridDim = gridStorage->dim();
+  size_t gridSize = gridStorage->getSize();
+  size_t gridDim = gridStorage->getDimension();
 
   SGPP::base::DataMatrix level(gridSize, gridDim);
   SGPP::base::DataMatrix index(gridSize, gridDim);

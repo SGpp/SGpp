@@ -52,7 +52,7 @@ class HashRefinementMultiple : public base::HashRefinement {
    * @param storage   grid storage
    * @return          number of refinable points
    */
-  size_t getNumberOfRefinablePoints(base::GridStorage* storage) { return storage->size(); }
+  size_t getNumberOfRefinablePoints(base::GridStorage& storage) { return storage.getSize(); }
 
   /**
    * Refines a grid point in one dimension.
@@ -62,7 +62,7 @@ class HashRefinementMultiple : public base::HashRefinement {
    * @param index     index of the grid point
    * @param t         dimension in which the refinement should take place
    */
-  void refineGridpoint1D(base::GridStorage* storage, index_type& index, size_t t) {
+  void refineGridpoint1D(base::GridStorage& storage, index_type& index, size_t t) {
     index_t sourceIndex, childIndex;
     level_t sourceLevel, childLevel;
 
@@ -75,7 +75,7 @@ class HashRefinementMultiple : public base::HashRefinement {
       childIndex = sourceIndex;
       childLevel = sourceLevel;
 
-      while (storage->has_key(&index)) {
+      while (storage.has_key(&index)) {
         childIndex *= 2;
         childLevel++;
         index.set(t, childLevel, childIndex - 1);
@@ -83,7 +83,7 @@ class HashRefinementMultiple : public base::HashRefinement {
 
       index.setLeaf(true);
       // instead of "createGridpoint(storage, index);"
-      storage->insert(index);
+      storage.insert(index);
       index.set(t, sourceLevel, sourceIndex);
     }
 
@@ -94,7 +94,7 @@ class HashRefinementMultiple : public base::HashRefinement {
       childIndex = sourceIndex;
       childLevel = sourceLevel;
 
-      while (storage->has_key(&index)) {
+      while (storage.has_key(&index)) {
         childIndex *= 2;
         childLevel++;
         index.set(t, childLevel, childIndex + 1);
@@ -102,7 +102,7 @@ class HashRefinementMultiple : public base::HashRefinement {
 
       index.setLeaf(true);
       // instead of "createGridpoint(storage, index);"
-      storage->insert(index);
+      storage.insert(index);
       index.set(t, sourceLevel, sourceIndex);
     }
   }
@@ -123,7 +123,7 @@ class HashRefinementMultiple : public base::HashRefinement {
    * @param maxValues       the array where the corresponding indicator
    *                        values should be stored
    */
-  void collectRefinablePoints(base::GridStorage* storage, base::RefinementFunctor* functor,
+  void collectRefinablePoints(base::GridStorage& storage, base::RefinementFunctor* functor,
                               size_t refinementsNum, size_t* maxIndices,
                               base::RefinementFunctor::value_type* maxValues) {
     size_t min_idx = 0;
@@ -132,10 +132,10 @@ class HashRefinementMultiple : public base::HashRefinement {
     base::RefinementFunctor::value_type max_value = maxValues[min_idx];
 
     index_type index;
-    base::GridStorage::grid_map_iterator end_iter = storage->end();
+    base::GridStorage::grid_map_iterator end_iter = storage.end();
 
     // start iterating over whole grid
-    for (base::GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter; iter++) {
+    for (base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
       base::RefinementFunctor::value_type current_value = (*functor)(storage, iter->second);
 
       if (current_value > max_value) {

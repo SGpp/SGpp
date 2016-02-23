@@ -16,21 +16,21 @@ namespace SGPP {
 namespace base {
 
 void OperationHierarchisationPoly::doHierarchisation(DataVector& node_values) {
-  HierarchisationPoly func(this->storage, &this->base);
-  sweep<HierarchisationPoly> s(func, this->storage);
+  HierarchisationPoly func(storage, &base);
+  sweep<HierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D(node_values, node_values, i);
   }
 }
 
 void OperationHierarchisationPoly::doDehierarchisation(DataVector& alpha) {
-  DehierarchisationPoly func(this->storage, &this->base);
-  sweep<DehierarchisationPoly> s(func, this->storage);
+  DehierarchisationPoly func(storage, &base);
+  sweep<DehierarchisationPoly> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     DataVector source(alpha);
     s.sweep1D(source, alpha, i);
   }

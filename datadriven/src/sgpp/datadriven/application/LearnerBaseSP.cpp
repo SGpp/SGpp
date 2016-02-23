@@ -75,7 +75,7 @@ LearnerBaseSP::LearnerBaseSP(const LearnerBaseSP& copyMe) :
     delete grid_;
 
   // can be solved better with a grid copy constructor
-  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize());
+  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize()).release();
   alpha_ = new SGPP::base::DataVectorSP(*(copyMe.alpha_));
 }
 
@@ -103,9 +103,7 @@ void LearnerBaseSP::InitializeGrid(const SGPP::base::RegularGridConfiguration&
   }
 
   // Generate regular Grid with LEVELS Levels
-  SGPP::base::GridGenerator* myGenerator = grid_->createGridGenerator();
-  myGenerator->regular(GridConfig.level_);
-  delete myGenerator;
+  grid_->getGenerator().regular(GridConfig.level_);
 
   // Create alpha
   alpha_ = new SGPP::base::DataVectorSP(grid_->getSize());
@@ -212,11 +210,9 @@ LearnerTiming LearnerBaseSP::train(SGPP::base::DataMatrixSP& trainDataset,
       SGPP::base::DataVector alphaDP(alpha_->getSize());
       SGPP::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_,
           alphaDP);
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new
-      SGPP::base::SurplusRefinementFunctor(&alphaDP,
-                                           AdaptConfig.noPoints_, AdaptConfig.threshold_);
-      grid_->createGridGenerator()->refine(myRefineFunc);
-      delete myRefineFunc;
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+          alphaDP, AdaptConfig.noPoints_, AdaptConfig.threshold_);
+      grid_->getGenerator().refine(myRefineFunc);
       DMSystem->rebuildLevelAndIndex();
 
       if (isVerbose_)
@@ -345,7 +341,7 @@ SGPP::base::DataVectorSP LearnerBaseSP::predict(SGPP::base::DataMatrixSP&
       alphaDP);
 
   SGPP::base::OperationMultipleEval* MultEval =
-    SGPP::op_factory::createOperationMultipleEval(*grid_, testDatasetDP);
+    SGPP::op_factory::createOperationMultipleEval(*grid_, testDatasetDP).release();
   MultEval->mult(alphaDP, classesComputedDP);
   delete MultEval;
 
@@ -460,7 +456,7 @@ void LearnerBaseSP::dumpGrid(std::string tFilename) {
 }
 
 void LearnerBaseSP::dumpFunction(std::string tFilename, size_t resolution) {
-  if (isTrained_ && grid_->getStorage()->dim() <= 2) {
+  if (isTrained_ && grid_->getDimension() <= 2) {
     SGPP::base::GridPrinter myPlotter(*grid_);
     SGPP::base::DataVector tmp_alpha(alpha_->getSize());
     SGPP::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_,

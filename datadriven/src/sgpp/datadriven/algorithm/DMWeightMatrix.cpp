@@ -22,7 +22,7 @@ DMWeightMatrix::DMWeightMatrix(SGPP::base::Grid& SparseGrid,
   this->data = &trainData;
   // this->B = SparseGrid.createOperationMultipleEval(this->data);
   this->B = SGPP::op_factory::createOperationMultipleEval(SparseGrid,
-            *(this->data));
+            *(this->data)).release();
   this->weight = &w;
 }
 

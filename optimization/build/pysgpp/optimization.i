@@ -351,7 +351,6 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
-%include "optimization/src/sgpp/optimization/operation/OptimizationOpFactory.hpp"
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"
 
 %include "optimization/src/sgpp/optimization/sle/system/SLE.hpp"
@@ -436,6 +435,8 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/tools/Math.hpp"
 %include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
 %include "optimization/src/sgpp/optimization/tools/Printer.hpp"
+
+%include "OpFactory.i"
 
 // templates
 %apply size_t *OUTPUT { size_t& m, size_t& n };

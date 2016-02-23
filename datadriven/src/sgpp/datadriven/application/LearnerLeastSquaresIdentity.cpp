@@ -61,10 +61,9 @@ void LearnerLeastSquaresIdentity::postProcessing(const SGPP::base::DataMatrix& t
 SGPP::base::DataVector LearnerLeastSquaresIdentity::predict(SGPP::base::DataMatrix& testDataset) {
   SGPP::base::DataVector classesComputed(testDataset.getNrows());
 
-  SGPP::base::OperationMultipleEval* MultEval = SGPP::op_factory::createOperationMultipleEval(
-      *(this->grid_), testDataset, this->implementationConfiguration);
-  MultEval->mult(*alpha_, classesComputed);
-  delete MultEval;
+  SGPP::op_factory::createOperationMultipleEval(
+        *(this->grid_), testDataset, this->implementationConfiguration)->
+            mult(*alpha_, classesComputed);
 
   return classesComputed;
 }
@@ -73,8 +72,9 @@ float_t LearnerLeastSquaresIdentity::testRegular(
     const SGPP::base::RegularGridConfiguration& GridConfig, SGPP::base::DataMatrix& testDataset) {
   InitializeGrid(GridConfig);
 
-  SGPP::base::OperationMultipleEval* MultEval = SGPP::op_factory::createOperationMultipleEval(
-      *(this->grid_), testDataset, this->implementationConfiguration);
+  std::unique_ptr<SGPP::base::OperationMultipleEval> MultEval(
+      SGPP::op_factory::createOperationMultipleEval(
+      *(this->grid_), testDataset, this->implementationConfiguration));
 
   SGPP::base::DataVector classesComputed(testDataset.getNrows());
 
@@ -89,7 +89,6 @@ float_t LearnerLeastSquaresIdentity::testRegular(
   float_t stopTime = myStopwatch->stop();
   this->execTime_ += stopTime;
   std::cout << "execution duration: " << this->execTime_ << std::endl;
-  delete MultEval;
 
   return stopTime;
 }

@@ -270,8 +270,8 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
           pt[d] = 0.1 + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (0.9)));
 
         // add norm factor
-        base::OperationEval* opEval = op_factory::createOperationEval(*grids.at(
-                                  p.first));
+        std::unique_ptr<base::OperationEval> opEval(
+            op_factory::createOperationEval(*grids.at(p.first)));
         float_t temp = opEval->eval(*alphaVectors.at(p.first), pt);
 
         if (batchConf.verbose && fabs(temp) > 100)
@@ -302,11 +302,9 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
     float_t max = -1.0f * numeric_limits<float_t>::max();
 
     for (auto const& g : grids) {
-      base::OperationEval* Eval = op_factory::createOperationEval(
-                                          *g.second);
+      std::unique_ptr<base::OperationEval> Eval(op_factory::createOperationEval(*g.second));
       // posterior = likelihood*prior
       float_t res = Eval->eval(*alphaVectors.at(g.first), pt);
-      delete Eval;
 
       if (batchConf.samples != 0)
         res /= normFactors.at(g.first);
@@ -338,9 +336,7 @@ void BatchLearner::processBatch(string workData) {
       grids.insert(std::pair<int, base::LinearGrid*>(p.first, new base::LinearGrid(dimensions)));
       occurences.insert(std::pair<int, int>(p.first, 0));
       // Generate regular Grid with LEVELS Levels
-      base::GridGenerator* myGenerator = grids.at(
-            p.first)->createGridGenerator();
-      myGenerator->regular(gridConf.level_);
+      grids.at(p.first)->getGenerator().regular(gridConf.level_);
 
       if (batchConf.verbose)
         cout << "found new class " << p.first << ", points in grid " << p.first << ": "
@@ -358,17 +354,16 @@ void BatchLearner::processBatch(string workData) {
     // set up everything to be able to solve
     base::DataVector newAlpha(grids.at(p.first)->getSize());
     newAlpha.setAll(0.0);
-    base::OperationMatrix* id = op_factory::createOperationIdentity(*grids.at(
-                            p.first));
+    std::unique_ptr<base::OperationMatrix> id(
+        op_factory::createOperationIdentity(*grids.at(p.first)));
     datadriven::DensitySystemMatrix DMatrix(*grids.at(p.first),
         *dataInBatch.at(p.first), *id, batchConf.lambda);
-    base::DataVector rhs(grids.at(p.first)->getStorage()->size());
+    base::DataVector rhs(grids.at(p.first)->getSize());
     DMatrix.generateb(rhs);
     myCG->setMaxIterations(solverConf.maxIterations_);
     myCG->setEpsilon(solverConf.eps_);
     // solve euqation to get new alpha
     myCG->solve(DMatrix, newAlpha, rhs, false, false, -1.0);
-    free(id);
 
     // apply weighting
     alphaVectors.at(p.first)->copyFrom(applyWeight(newAlpha, p.first));
@@ -379,12 +374,11 @@ void BatchLearner::processBatch(string workData) {
       if (batchConf.verbose)
         cout << "refining ..." << endl;
 
-      base::SurplusRefinementFunctor* myRefineFunc = new base::SurplusRefinementFunctor(
-        alphaVectors.at(p.first), adaptConf.noPoints_, adaptConf.threshold_);
-      grids.at(p.first)->createGridGenerator()->refine(myRefineFunc);
+      base::SurplusRefinementFunctor myRefineFunc(
+        *alphaVectors.at(p.first), adaptConf.noPoints_, adaptConf.threshold_);
+      grids.at(p.first)->getGenerator().refine(myRefineFunc);
       // change alpha, zeroes to new entries until they will be filled
       alphaVectors.at(p.first)->resizeZero(grids.at(p.first)->getSize());
-      delete myRefineFunc;
     }
 
     occurences.at(p.first) += p.second->getSize();

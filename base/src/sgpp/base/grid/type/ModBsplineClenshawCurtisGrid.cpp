@@ -6,10 +6,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,23 +16,22 @@ namespace base {
 
 ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) :
   Grid(istr),
-  degree(1 << 16),
-  basis_(NULL) {
+  generator(storage),
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SBsplineModifiedClenshawCurtisBase(degree));
 }
 
 
 ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim,
     size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SBsplineModifiedClenshawCurtisBase(degree)) {
 }
 
 ModBsplineClenshawCurtisGrid::~ModBsplineClenshawCurtisGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType ModBsplineClenshawCurtisGrid::getType() {
@@ -43,10 +39,6 @@ SGPP::base::GridType ModBsplineClenshawCurtisGrid::getType() {
 }
 
 const SBasis& ModBsplineClenshawCurtisGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineModifiedClenshawCurtisBase(degree);
-  }
-
   return *basis_;
 }
 
@@ -54,8 +46,8 @@ size_t ModBsplineClenshawCurtisGrid::getDegree() {
   return this->degree;
 }
 
-Grid* ModBsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
-  return new ModBsplineClenshawCurtisGrid(istr);
+std::unique_ptr<Grid> ModBsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new ModBsplineClenshawCurtisGrid(istr));
 }
 
 void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
@@ -67,8 +59,8 @@ void ModBsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* ModBsplineClenshawCurtisGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& ModBsplineClenshawCurtisGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

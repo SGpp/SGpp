@@ -13,7 +13,7 @@
 
 %include "finance/src/sgpp/finance/tools/VariableDiscountFactor.hpp"
 
-%include "finance/src/sgpp/finance/operation/FinanceOpFactory.hpp"
+%include "OpFactory.i"
 
 %apply std::string *INPUT { std::string& istr };
 

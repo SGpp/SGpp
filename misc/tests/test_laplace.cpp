@@ -31,22 +31,23 @@ using SGPP::base::HashGridIndex;
 using SGPP::base::OperationMatrix;
 using SGPP::base::SurplusRefinementFunctor;
 
-DataMatrix* generateLaplaceMatrix(Grid* grid,  size_t level) {
-  GridStorage* storage = grid->getStorage();
+DataMatrix* generateLaplaceMatrix(Grid& grid,  size_t level) {
+  GridStorage& storage = grid.getStorage();
 
-  grid->createGridGenerator()->regular(level);
+  grid.getGenerator().regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplace(*grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplace(grid));
 
   // create vector
-  DataVector alpha(storage->size());
-  DataVector erg(storage->size());
+  DataVector alpha(storage.getSize());
+  DataVector erg(storage.getSize());
 
   // create stiffness matrix
-  DataMatrix* m = new DataMatrix( storage->size(), storage->size());
+  DataMatrix* m = new DataMatrix( storage.getSize(), storage.getSize());
   m->setAll(0);
 
-  for (size_t i = 0; i < storage->size(); i++) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
     alpha.setAll(0.0);
     alpha[i] = 1.0;
     laplace->mult(alpha, erg);
@@ -56,23 +57,23 @@ DataMatrix* generateLaplaceMatrix(Grid* grid,  size_t level) {
   return m;
 }
 
-DataMatrix* generateLaplaceEnhancedMatrix(Grid* grid,  size_t level) {
-  GridStorage* storage = grid->getStorage();
+DataMatrix* generateLaplaceEnhancedMatrix(Grid& grid,  size_t level) {
+  GridStorage& storage = grid.getStorage();
 
-  grid->createGridGenerator()->regular(level);
+  grid.getGenerator().regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplaceEnhanced(
-                               *grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplaceEnhanced(grid));
 
   // create vector
-  DataVector alpha(storage->size());
-  DataVector erg(storage->size());
+  DataVector alpha(storage.getSize());
+  DataVector erg(storage.getSize());
 
   // create stiffness matrix
-  DataMatrix* m = new DataMatrix( storage->size(), storage->size());
+  DataMatrix* m = new DataMatrix( storage.getSize(), storage.getSize());
   m->setAll(0);
 
-  for (size_t i = 0; i < storage->size(); i++) {
+  for (size_t i = 0; i < storage.getSize(); i++) {
     alpha.setAll(0.0);
     alpha[i] = 1.0;
     laplace->mult(alpha, erg);
@@ -117,14 +118,14 @@ std::string uncompressFile(std::string fileName) {
   return convert.str();
 }
 
-DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
+DataMatrix* readReferenceMatrix(GridStorage& storage, std::string fileName) {
   std::string content = uncompressFile(fileName);
 
   std::stringstream contentStream;
   contentStream << content;
   std::string line;
 
-  DataMatrix* m = new DataMatrix(0, storage->size());
+  DataMatrix* m = new DataMatrix(0, storage.getSize());
 
   size_t currentRow = 0;
 
@@ -143,7 +144,7 @@ DataMatrix* readReferenceMatrix(GridStorage* storage, std::string fileName) {
     std::string curValue;
     float_t floatValue;
 
-    for (size_t i = 0; i < storage->size(); i++) {
+    for (size_t i = 0; i < storage.getSize(); i++) {
       curFind = std::min(line.find(" ", curPos), line.find("\t", curPos));
       curValue = line.substr(curPos, curFind - curPos);
       floatValue = boost::lexical_cast<float_t>(curValue);
@@ -249,16 +250,16 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   size_t dim = 1;
   size_t level = 7;
 
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
-  GridStorage* storage = grid->getStorage();
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  GridStorage& storage = grid->getStorage();
 
-  GridGenerator* generator = grid->createGridGenerator();
-  generator->regular(level);
+  grid->getGenerator().regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplace(*grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplace(*grid));
 
-  DataVector alpha(storage->size());
-  DataVector result(storage->size());
+  DataVector alpha(storage.getSize());
+  DataVector result(storage.getSize());
 
   alpha.setAll(1.0);
 
@@ -266,8 +267,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   HashGridIndex::index_type idx;
   HashGridIndex::level_type lvl;
 
-  for (size_t seq = 0; seq < storage->size(); seq++) {
-    storage->get(seq)->get(0, lvl, idx);
+  for (size_t seq = 0; seq < storage.getSize(); seq++) {
+    storage.get(seq)->get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<SGPP::float_t>(lvl + 1)),
                       0.0);
   }
@@ -276,9 +277,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz");
@@ -295,17 +296,16 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   size_t dim = 1;
   size_t level = 7;
 
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
-  GridStorage* storage = grid->getStorage();
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  GridStorage& storage = grid->getStorage();
 
-  GridGenerator* generator = grid->createGridGenerator();
-  generator->regular(level);
+  grid->getGenerator().regular(level);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplaceEnhanced(
-                               *grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplaceEnhanced(*grid));
 
-  DataVector alpha(storage->size());
-  DataVector result(storage->size());
+  DataVector alpha(storage.getSize());
+  DataVector result(storage.getSize());
 
   alpha.setAll(1.0);
 
@@ -313,8 +313,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   HashGridIndex::index_type idx;
   HashGridIndex::level_type lvl;
 
-  for (size_t seq = 0; seq < storage->size(); seq++) {
-    storage->get(seq)->get(0, lvl, idx);
+  for (size_t seq = 0; seq < storage.getSize(); seq++) {
+    storage.get(seq)->get(0, lvl, idx);
     BOOST_CHECK_CLOSE(result[seq], pow(2.0, static_cast<SGPP::float_t>(lvl + 1)),
                       0.0);
   }
@@ -323,9 +323,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz");
@@ -342,9 +342,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
   size_t dim = 1;
   size_t level = 5;
 
-  Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz");
@@ -356,9 +356,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz");
@@ -374,9 +374,9 @@ BOOST_AUTO_TEST_SUITE(TestOperationLaplaceLinearTruncatedBoundary)
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz");
@@ -388,9 +388,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz");
@@ -402,9 +402,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz");
@@ -416,9 +416,9 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   size_t dim = 3;
   size_t level = 2;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz");
@@ -434,9 +434,9 @@ BOOST_AUTO_TEST_SUITE(TestOperationLaplaceEnhancedLinearTruncatedBoundary)
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz");
@@ -448,9 +448,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz");
@@ -462,9 +462,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz");
@@ -476,9 +476,9 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   size_t dim = 3;
   size_t level = 2;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz");
@@ -494,9 +494,9 @@ BOOST_AUTO_TEST_SUITE(TestOperationLaplaceLinearBoundary)
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz");
@@ -508,9 +508,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz");
@@ -522,9 +522,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz");
@@ -536,9 +536,9 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   size_t dim = 3;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz");
@@ -554,9 +554,9 @@ BOOST_AUTO_TEST_SUITE(TestOperationLaplaceEnhancedLinearBoundary)
 BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz");
@@ -568,9 +568,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz");
@@ -582,9 +582,9 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz");
@@ -596,9 +596,9 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
 BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   size_t dim = 3;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
 
-  DataMatrix* m = generateLaplaceEnhancedMatrix(grid, level);
+  DataMatrix* m = generateLaplaceEnhancedMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz");
@@ -614,9 +614,9 @@ BOOST_AUTO_TEST_SUITE(TestOperationLaplacePrewavelet)
 BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
   size_t dim = 1;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_prewavelet_dim_1_nopsgrid_15_float.dat.gz");
@@ -628,9 +628,9 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
 BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
   size_t dim = 1;
   size_t level = 5;
-  Grid* grid  = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_prewavelet_dim_1_nopsgrid_31_float.dat.gz");
@@ -642,9 +642,9 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
 BOOST_AUTO_TEST_CASE(testPrewaveletD_one) {
   size_t dim = 3;
   size_t level = 3;
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_prewavelet_dim_3_nopsgrid_31_float.dat.gz");
@@ -656,9 +656,9 @@ BOOST_AUTO_TEST_CASE(testPrewaveletD_one) {
 BOOST_AUTO_TEST_CASE(testPrewaveletD_two) {
   size_t dim = 3;
   size_t level = 4;
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
 
-  DataMatrix* m = generateLaplaceMatrix(grid, level);
+  DataMatrix* m = generateLaplaceMatrix(*grid, level);
 
   std::string
   fileName("misc/tests/data/C_laplace_prewavelet_dim_3_nopsgrid_111_float.dat.gz");
@@ -670,32 +670,33 @@ BOOST_AUTO_TEST_CASE(testPrewaveletD_two) {
 BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
   size_t dim = 4;
   size_t level = 2;
-  Grid* grid = SGPP::base::Grid::createPrewaveletGrid(dim);
-  GridGenerator* generator = grid->createGridGenerator();
-  generator->regular(level);
+  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  GridGenerator& generator = grid->getGenerator();
+  generator.regular(level);
 
-  GridStorage* gridStorage = grid->getStorage();
-  DataVector alpha(gridStorage->size());
+  GridStorage& gridStorage = grid->getStorage();
+  DataVector alpha(gridStorage.getSize());
 
-  for (size_t i = 0; i < gridStorage->size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     alpha[i] = static_cast<SGPP::float_t>(i + 1);
   }
 
   size_t refinements_num = 1;
   SGPP::float_t threshold = 0.0;
-  SurplusRefinementFunctor srf = SurplusRefinementFunctor(&alpha, refinements_num,
+  SurplusRefinementFunctor srf = SurplusRefinementFunctor(alpha, refinements_num,
                                  threshold);
-  generator->refine(&srf);
+  generator.refine(srf);
 
-  OperationMatrix* laplace = SGPP::op_factory::createOperationLaplace(*grid);
+  std::unique_ptr<OperationMatrix> laplace(
+      SGPP::op_factory::createOperationLaplace(*grid));
 
-  DataVector alpha2(gridStorage->size());
-  DataVector erg(gridStorage->size());
-  DataMatrix m(gridStorage->size(), gridStorage->size());
+  DataVector alpha2(gridStorage.getSize());
+  DataVector erg(gridStorage.getSize());
+  DataMatrix m(gridStorage.getSize(), gridStorage.getSize());
 
   m.setAll(0.0);
 
-  for (size_t i = 0; i < gridStorage->size(); i++) {
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     alpha2.setAll(0.0);
     alpha2[i] = 1.0;
     laplace->mult(alpha2, erg);

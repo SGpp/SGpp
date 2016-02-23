@@ -7,8 +7,6 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
@@ -20,11 +18,12 @@ namespace base {
 
 BsplineBoundaryGrid::BsplineBoundaryGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   degree(1 << 16),
-  basis_(NULL),
   boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
+  basis_.reset(new SBsplineBoundaryBase(degree));
 }
 
 
@@ -32,15 +31,13 @@ BsplineBoundaryGrid::BsplineBoundaryGrid(size_t dim,
     size_t degree,
     level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   degree(degree),
-  basis_(NULL),
+  basis_(new SBsplineBoundaryBase(degree)),
   boundaryLevel(boundaryLevel) {
 }
 
 BsplineBoundaryGrid::~BsplineBoundaryGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType BsplineBoundaryGrid::getType() {
@@ -48,10 +45,6 @@ SGPP::base::GridType BsplineBoundaryGrid::getType() {
 }
 
 const SBasis& BsplineBoundaryGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineBoundaryBase(degree);
-  }
-
   return *basis_;
 }
 
@@ -59,8 +52,8 @@ size_t BsplineBoundaryGrid::getDegree() {
   return this->degree;
 }
 
-Grid* BsplineBoundaryGrid::unserialize(std::istream& istr) {
-  return new BsplineBoundaryGrid(istr);
+std::unique_ptr<Grid> BsplineBoundaryGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new BsplineBoundaryGrid(istr));
 }
 
 void BsplineBoundaryGrid::serialize(std::ostream& ostr) {
@@ -73,8 +66,8 @@ void BsplineBoundaryGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* BsplineBoundaryGrid::createGridGenerator() {
-  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+GridGenerator& BsplineBoundaryGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

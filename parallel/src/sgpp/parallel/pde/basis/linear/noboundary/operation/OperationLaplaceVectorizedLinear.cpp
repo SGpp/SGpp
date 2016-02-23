@@ -84,7 +84,7 @@ OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(
   init_constants();
   init_grid_storage();
 
-  this->lambda_ = new SGPP::base::DataVector(storage->dim());
+  this->lambda_ = new SGPP::base::DataVector(storage->getDimension());
   this->lambda_->setAll(1.0);
 }
 
@@ -117,15 +117,15 @@ OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(
 
 OperationLaplaceVectorizedLinear::~OperationLaplaceVectorizedLinear() {
 
-  double flop = (double) (26 * storage->dim() + storage->dim() * storage->dim())
-                * (double) (storage->size() * storage->size());
+  double flop = (double) (26 * storage->getDimension() + storage->getDimension() * storage->getDimension())
+                * (double) (storage->getSize() * storage->getSize());
   double gflops = (all_iterations * flop / all_time) / 1000000000;
-  double bandwidth = all_iterations * (double) (sizeof(double) * storage->size() *
-                     storage->size()) / all_time ;
+  double bandwidth = all_iterations * (double) (sizeof(double) * storage->getSize() *
+                     storage->getSize()) / all_time ;
   std::cout << "IN OPERATOR : LAPLACE, GFLOPS :" << gflops << " BANDWIDTH :" <<
             bandwidth / (1000000000.0) << " GB/s" << " ITERATIONS :" << all_iterations <<
             " TIME :" << all_time << std::endl;
-  //std::cout << gflops <<" " << bandwidth << " " << all_time << " " << all_iterations <<" "<< storage->size() << '\n';
+  //std::cout << gflops <<" " << bandwidth << " " << all_time << " " << all_iterations <<" "<< storage->getSize() << '\n';
   delete this->level_;
   delete this->level_int_;
   delete this->index_;
@@ -184,28 +184,28 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
   if (this->level_)
     delete this->level_;
 
-  this->level_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->level_int_)
     delete this->level_int_;
 
-  this->level_int_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->index_)
     delete this->index_;
 
-  this->index_ = new SGPP::base::DataMatrix(storage->size(), storage->dim());
+  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->lcl_q_)
     delete this->lcl_q_;
 
-  lcl_q_ = new SGPP::base::DataVector(this->storage->dim());
+  lcl_q_ = new SGPP::base::DataVector(this->storage->getDimension());
   double* lcl_q_ptr_ = lcl_q_->getPointer();
 
   if (this->lcl_q_inv_)
     delete this->lcl_q_inv_;
 
-  lcl_q_inv_ = new SGPP::base::DataVector(this->storage->dim());
+  lcl_q_inv_ = new SGPP::base::DataVector(this->storage->getDimension());
   double* lcl_q_inv_ptr_ = lcl_q_inv_->getPointer();
 
 #if defined(__MIC__)
@@ -240,7 +240,7 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
   this->alpha_padded_->setAll(0.0);
 
 
-  size_t single_process_portion = (this->storage->size() / process_count) + 1;
+  size_t single_process_portion = (this->storage->getSize() / process_count) + 1;
 
   all_i_start.clear();
   all_i_size.clear();
@@ -253,11 +253,11 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
     int process_start = (int) (i * single_process_portion);
     all_i_start.push_back(process_start);
     int process_portion = (i == process_count - 1) ? (int) (
-                            this->storage->size() - i * single_process_portion)
+                            this->storage->getSize() - i * single_process_portion)
                           : (int) (single_process_portion);
 
     process_portion = std::min<int>(process_portion,
-                                    (int) (this->storage->size() - i * single_process_portion));
+                                    (int) (this->storage->getSize() - i * single_process_portion));
     process_portion = std::max<int>(process_portion, 0);
 
     all_i_size.push_back(process_portion);
@@ -266,11 +266,11 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
   for (int i = 0; i < process_count; ++i) {
     send_start.push_back((int) (single_process_portion * process_index));
     int process_send_size = (process_index == process_count - 1) ?  (int) (
-                              this->storage->size() - single_process_portion * process_index)
+                              this->storage->getSize() - single_process_portion * process_index)
                             : (int) (single_process_portion);
 
     process_send_size = std::min<int>(process_send_size,
-                                      (int) (this->storage->size() - single_process_portion * process_index));
+                                      (int) (this->storage->getSize() - single_process_portion * process_index));
     process_send_size = std::max<int>(process_send_size, 0);
     //process_send_size = (i == process_index)? 0: process_send_size;
 
@@ -278,11 +278,11 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
 
     recv_start.push_back((int) (single_process_portion * i));
     int process_recv_size = (i == process_count - 1) ?  (int) (
-                              this->storage->size() - single_process_portion * i)
+                              this->storage->getSize() - single_process_portion * i)
                             : (int) (single_process_portion);
 
     process_recv_size = std::min<int>(process_recv_size,
-                                      (int) (this->storage->size() - single_process_portion * i));
+                                      (int) (this->storage->getSize() - single_process_portion * i));
     process_recv_size = std::max<int>(process_recv_size, 0);
     //process_recv_size = (i == process_index)? 0 : process_recv_size;
 
@@ -315,13 +315,13 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
     //std::cout << "OMP THREAD :" << omp_get_thread_num() << std::endl;
 
     gradient_temp[omp_get_thread_num()] = new SGPP::base::DataVector(
-      VECTOR_SIZE * this->storage->dim() * REG_BCOUNT);
+      VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
     l2dot_temp[omp_get_thread_num()] = new SGPP::base::DataVector(
-      VECTOR_SIZE * this->storage->dim() * REG_BCOUNT);
+      VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
   }
 
   // fill q array
-  for (size_t d = 0; d < this->storage->dim(); d++) {
+  for (size_t d = 0; d < this->storage->getDimension(); d++) {
     SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     lcl_q_ptr_[d] = boundingBox->getIntervalWidth(d);
     lcl_q_inv_ptr_[d] = 1.0 / boundingBox->getIntervalWidth(d);
@@ -357,7 +357,7 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
             (int) matrix_needed_size_gb);
 
     std::cerr << exception_string << std::endl;
-    throw new SGPP::base::operation_exception(exception_string);
+    throw SGPP::base::operation_exception(exception_string);
   }
 
   if (operation_result_matrix_)
@@ -514,13 +514,13 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
       double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
       double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
       double* lambda_ptr_ = this->lambda_->getPointer();
-      size_t temp_cols = this->storage->dim() * VECTOR_SIZE;
+      size_t temp_cols = this->storage->getDimension() * VECTOR_SIZE;
 
       double* lcl_q_temp_ptr_ = lcl_q_->getPointer();
       double* lcl_q_inv_temp_ptr_ = lcl_q_inv_->getPointer();
       double* alpha_padded_temp_ptr_ = alpha_padded_->getPointer();
 
-      size_t max_dims = this->storage->dim();
+      size_t max_dims = this->storage->getDimension();
       size_t page_cap_rounded = max_dims * BLOCK_LENGTH;
 
       __m512d mm_zero = _mm512_extload_pd(constants + 0, _MM_UPCONV_PD_NONE,
@@ -757,13 +757,13 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
       double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
       double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
       double* lambda_ptr_ = this->lambda_->getPointer();
-      size_t temp_cols = this->storage->dim() * VECTOR_SIZE;
+      size_t temp_cols = this->storage->getDimension() * VECTOR_SIZE;
 
       double* lcl_q_temp_ptr_ = lcl_q_->getPointer();
       double* lcl_q_inv_temp_ptr_ = lcl_q_inv_->getPointer();
       double* alpha_padded_temp_ptr_ = alpha_padded_->getPointer();
 
-      size_t max_dims = this->storage->dim();
+      size_t max_dims = this->storage->getDimension();
       size_t page_cap_rounded = max_dims * BLOCK_LENGTH;
 
       __m256d mm_half = _mm256_broadcast_sd(constants + 1);
@@ -1007,13 +1007,13 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
       double* gradient_temp_ptr = gradient_temp[omp_get_thread_num()]->getPointer();
       double* l2dot_temp_ptr = l2dot_temp[omp_get_thread_num()]->getPointer();
       double* lambda_ptr_ = this->lambda_->getPointer();
-      size_t temp_cols = this->storage->dim() * VECTOR_SIZE;
+      size_t temp_cols = this->storage->getDimension() * VECTOR_SIZE;
 
       double* lcl_q_temp_ptr_ = lcl_q_->getPointer();
       double* lcl_q_inv_temp_ptr_ = lcl_q_inv_->getPointer();
       double* alpha_padded_temp_ptr_ = alpha_padded_->getPointer();
 
-      size_t max_dims = this->storage->dim();
+      size_t max_dims = this->storage->getDimension();
       size_t page_cap_rounded = max_dims * BLOCK_LENGTH;
 
       __m128d mm_half = _mm_loaddup_pd(constants + 1);
@@ -1247,19 +1247,19 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
           process_i_end, &thr_start, &thr_end);
 
       for (size_t i = thr_start; i < thr_end; i++) {
-        for (size_t j = 0; j < this->storage->size(); j++) {
+        for (size_t j = 0; j < this->storage->getSize(); j++) {
           double temp = 0.0;
 
-          for (size_t d = 0; d < this->storage->dim(); d++) {
+          for (size_t d = 0; d < this->storage->getDimension(); d++) {
 
             l2dot_temp_ptr[d] = l2dot(i, j, d);
             gradient_temp_ptr[d] = gradient(i, j, d);
           }
 
-          for (size_t d_outer = 0; d_outer < this->storage->dim(); d_outer++) {
+          for (size_t d_outer = 0; d_outer < this->storage->getDimension(); d_outer++) {
             double element = alpha[j];
 
-            for (size_t d_inner = 0; d_inner < this->storage->dim(); d_inner++) {
+            for (size_t d_inner = 0; d_inner < this->storage->getDimension(); d_inner++) {
               element *= ((l2dot_temp_ptr[d_inner] * (d_outer != d_inner)) +
                           (gradient_temp_ptr[d_inner] * (d_outer == d_inner)));
             }
@@ -1306,7 +1306,7 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
 #pragma prefetch
 #endif
 
-      for (size_t j = 0 ; j < storage->size() ; ++j) {
+      for (size_t j = 0 ; j < storage->getSize() ; ++j) {
         element += alpha[j]** (operation_result_dest_ptr + j);
       }
 

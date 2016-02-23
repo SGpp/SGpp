@@ -75,7 +75,7 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
 
   if (grid_ != NULL) delete grid_;
 
-  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize());
+  grid_ = SGPP::base::Grid::unserialize(copyMe.grid_->serialize()).release();
   alpha_ = new SGPP::base::DataVector(*(copyMe.alpha_));
 }
 
@@ -101,9 +101,7 @@ void LearnerBase::InitializeGrid(
   }
 
   // Generate regular Grid with LEVELS Levels
-  SGPP::base::GridGenerator* myGenerator = grid_->createGridGenerator();
-  myGenerator->regular(GridConfig.level_);
-  delete myGenerator;
+  grid_->getGenerator().regular(GridConfig.level_);
 
   // Create alpha
   alpha_ = new SGPP::base::DataVector(grid_->getSize());
@@ -207,11 +205,9 @@ LearnerTiming LearnerBase::train(
       myStopwatch2->start();
 
       // disable refinement here!
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-          new SGPP::base::SurplusRefinementFunctor(
-              alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
-      grid_->createGridGenerator()->refine(myRefineFunc);
-      delete myRefineFunc;
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+              *alpha_, AdaptConfig.noPoints_, AdaptConfig.threshold_);
+      grid_->getGenerator().refine(myRefineFunc);
 
       // tell the SLE manager that the grid changed (for interal data
       // structures)
@@ -341,7 +337,7 @@ void LearnerBase::predict(SGPP::base::DataMatrix& testDataset,
   classesComputed.resize(testDataset.getNrows());
 
   SGPP::base::OperationMultipleEval* MultEval =
-      SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset);
+      SGPP::op_factory::createOperationMultipleEval(*grid_, testDataset).release();
   MultEval->mult(*alpha_, classesComputed);
   delete MultEval;
 }
@@ -456,7 +452,7 @@ void LearnerBase::dumpGrid(std::string tFilename) {
 }
 
 void LearnerBase::dumpFunction(std::string tFilename, size_t resolution) {
-  if (isTrained_ && grid_->getStorage()->dim() <= 2) {
+  if (isTrained_ && grid_->getDimension() <= 2) {
     SGPP::base::GridPrinter myPlotter(*grid_);
     myPlotter.printGrid(*alpha_, tFilename, resolution);
   }

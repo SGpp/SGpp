@@ -34,8 +34,6 @@
 
 %newobject SGPP::base::Grid::unserialize(std::string& istr);
 
-%newobject SGPP::base::Grid::createGridGenerator();
-
 %include "stl.i"
 %include "typemaps.i"
 
@@ -102,36 +100,6 @@ enum class GridType {
     
 class Grid
 {
-public:
-  static Grid* createLinearGrid(size_t dim);
-  static Grid* createLinearStretchedGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
-  static Grid* createLinearClenshawCurtisGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim);
-  static Grid* createLinearStretchedBoundaryGrid(size_t dim);
-  static Grid* createModLinearGrid(size_t dim);
-  static Grid* createPolyGrid(size_t dim, size_t degree);
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createModPolyGrid(size_t dim, size_t degree);
-  static Grid* createWaveletGrid(size_t dim);
-  static Grid* createWaveletBoundaryGrid(size_t dim);
-  static Grid* createModWaveletGrid(size_t dim);
-  static Grid* createBsplineGrid(size_t dim, size_t degree);
-  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
-  static Grid* createModBsplineGrid(size_t dim, size_t degree);
-  static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
-  static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
-  static Grid* createModFundamentalSplineGrid(size_t dim, size_t degree);
-  static Grid* createSquareRootGrid(size_t dim);
-  static Grid* createLinearTruncatedBoundaryGrid(size_t dim);
-  static Grid* createPrewaveletGrid(size_t dim);
-  static Grid* createLinearGridStencil(size_t dim);
-  static Grid* createModLinearGridStencil(size_t dim);
-  static Grid* createPeriodicGrid(size_t dim);
-	
-  static Grid* unserialize(std::string& istr);
-	
 protected:
   Grid();
   Grid(Grid& o);
@@ -140,31 +108,137 @@ public:
   virtual ~Grid();
 
 public:	
-  virtual SGPP::base::GridGenerator* createGridGenerator() = 0;
-  virtual SGPP::base::GridStorage* getStorage();
-  virtual SGPP::base::BoundingBox* getBoundingBox();
-  virtual SGPP::base::Stretching* getStretching();
+  virtual SGPP::base::GridStorage& getStorage();
+  virtual SGPP::base::BoundingBox& getBoundingBox();
+  virtual SGPP::base::Stretching& getStretching();
 
+  virtual SGPP::base::GridGenerator& getGenerator() = 0;
   virtual SGPP::base::GridType getType() = 0;
   virtual const SBasis& getBasis() = 0;
   virtual void serialize(std::string& ostr);
-  void refine(SGPP::base::DataVector* vector, int num);
-  float_t eval(SGPP::base::DataVector& alpha, SGPP::base::DataVector& point);
+  void refine(SGPP::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
 };
 }
 }
 
-//these are just two new interfaces for consistency with Memento design pattern
-%extend SGPP::base::Grid{
-	SGPP::base::Grid* createMemento(){
-		return $self;
-	}
-	
-	static SGPP::base::Grid* setMemento(std::string& istr){
-		return SGPP::base::Grid::unserialize(istr);
-	}
+// SWIG doesn't support std::unique_ptr yet
+// ==> use plain pointers instead (with %newobject)
+%extend SGPP::base::Grid {
+  static SGPP::base::Grid* createLinearGridStencil(size_t dim) {
+    return SGPP::base::Grid::createLinearGridStencil(dim).release();
+  }
+
+  static SGPP::base::Grid* createModLinearGridStencil(size_t dim) {
+    return SGPP::base::Grid::createModLinearGridStencil(dim).release();
+  }
+
+  static SGPP::base::Grid* createLinearGrid(size_t dim) {
+    return SGPP::base::Grid::createLinearGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createLinearStretchedGrid(size_t dim) {
+    return SGPP::base::Grid::createLinearStretchedGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createLinearBoundaryGrid(size_t dim, SGPP::base::level_t boundaryLevel) {
+    return SGPP::base::Grid::createLinearBoundaryGrid(dim, boundaryLevel).release();
+  }
+
+  static SGPP::base::Grid* createLinearStretchedBoundaryGrid(size_t dim) {
+    return SGPP::base::Grid::createLinearStretchedBoundaryGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createLinearClenshawCurtisGrid(size_t dim) {
+    return SGPP::base::Grid::createLinearClenshawCurtisGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createModLinearGrid(size_t dim) {
+    return SGPP::base::Grid::createModLinearGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createPolyGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createPolyGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createPolyBoundaryGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createPolyBoundaryGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createWaveletGrid(size_t dim) {
+    return SGPP::base::Grid::createWaveletGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createWaveletBoundaryGrid(size_t dim) {
+    return SGPP::base::Grid::createWaveletBoundaryGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createModWaveletGrid(size_t dim) {
+    return SGPP::base::Grid::createModWaveletGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createBsplineGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createBsplineGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createBsplineBoundaryGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createBsplineBoundaryGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createBsplineClenshawCurtisGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createModBsplineGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createModBsplineGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createModBsplineClenshawCurtisGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createFundamentalSplineGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createFundamentalSplineGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createModFundamentalSplineGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createModFundamentalSplineGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createSquareRootGrid(size_t dim) {
+    return SGPP::base::Grid::createSquareRootGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createPrewaveletGrid(size_t dim) {
+    return SGPP::base::Grid::createPrewaveletGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createLinearTruncatedBoundaryGrid(size_t dim) {
+    return SGPP::base::Grid::createLinearTruncatedBoundaryGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* createModPolyGrid(size_t dim, size_t degree) {
+    return SGPP::base::Grid::createModPolyGrid(dim, degree).release();
+  }
+
+  static SGPP::base::Grid* createPeriodicGrid(size_t dim) {
+    return SGPP::base::Grid::createPeriodicGrid(dim).release();
+  }
+
+  static SGPP::base::Grid* unserialize(std::string& istr) {
+    return SGPP::base::Grid::unserialize(istr).release();
+  }
+};
+  
+// these are just two new interfaces for consistency with Memento design pattern
+%extend SGPP::base::Grid {
+  SGPP::base::Grid* createMemento() {
+    return $self;
+  }
+
+  static SGPP::base::Grid* setMemento(std::string& istr) {
+    return SGPP::base::Grid::unserialize(istr).release();
+  }
 };
 
-	

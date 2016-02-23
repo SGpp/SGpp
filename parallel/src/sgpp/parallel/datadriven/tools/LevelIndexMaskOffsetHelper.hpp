@@ -57,9 +57,9 @@ inline rebuild<Standard, C>::rebuild(C* op) {
     delete op->index_;
 
   op->level_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
+                                          op->storage_->getDimension());
   op->index_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
+                                          op->storage_->getDimension());
 
   op->storage_->getLevelIndexArraysForEval(*(op->level_), *(op->index_));
 }
@@ -78,13 +78,13 @@ inline rebuild<Mask, C>::rebuild(C* op) {
     delete op->offset_;
 
   op->level_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
+                                          op->storage_->getDimension());
   op->index_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                          op->storage_->dim());
+                                          op->storage_->getDimension());
   op->mask_ = new SGPP::base::DataMatrix(op->storage_->size(),
-                                         op->storage_->dim());
+                                         op->storage_->getDimension());
   op->offset_ = new SGPP::base::DataMatrix(op->storage_->size(),
-      op->storage_->dim());
+      op->storage_->getDimension());
 
   op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_),
       *(op->mask_), *(op->offset_));
@@ -117,9 +117,9 @@ inline rebuild<Standard, C>::rebuild(C* op) {
     delete op->index_;
 
   op->level_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+      op->storage_->getDimension());
   op->index_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+      op->storage_->getDimension());
 
   op->storage_->getLevelIndexArraysForEval(*(op->level_), *(op->index_));
 }
@@ -138,13 +138,13 @@ inline rebuild<Mask, C>::rebuild(C* op) {
     delete op->offset_;
 
   op->level_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+      op->storage_->getDimension());
   op->index_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+      op->storage_->getDimension());
   op->mask_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+      op->storage_->getDimension());
   op->offset_ = new SGPP::base::DataMatrixSP(op->storage_->size(),
-      op->storage_->dim());
+      op->storage_->getDimension());
 
   op->storage_->getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_),
       *(op->mask_), *(op->offset_));

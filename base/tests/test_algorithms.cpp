@@ -461,7 +461,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctions) {
   i.set(0, 1, 1);
   s.insert(i);
 
-  SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBase> ga(&s);
+  SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBase> ga(s);
   std::vector<std::pair<size_t, SGPP::float_t>> x;
   DataVector y(1, 0.25);
 
@@ -483,7 +483,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsBoundary) {
   i.set(0, 1, 1);
   s.insert(i);
 
-  SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBoundaryBase> ga(&s);
+  SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearBoundaryBase> ga(s);
   std::vector<std::pair<size_t, SGPP::float_t>> x;
   DataVector y(1, 0.5);
 
@@ -523,7 +523,7 @@ BOOST_AUTO_TEST_CASE(TestGetAffectedBasisFunctionsStretched) {
   i.set(0, 1, 1);
   s.insert(i);
 
-  SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearStretchedBoundaryBase> ga(&s);
+  SGPP::base::GetAffectedBasisFunctions<SGPP::base::SLinearStretchedBoundaryBase> ga(s);
   std::vector<std::pair<size_t, SGPP::float_t>> x;
   DataVector y(1, 0.25);
 

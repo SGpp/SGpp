@@ -65,9 +65,9 @@ def plotSGDE2d(U, n=100):
     # plot negative areas
     if len(neg_z) > 0:
         plt.plot(neg_x, neg_y, linestyle=' ', marker='o', color='red')
-        plt.title("N=%i, [%g, %g]" % (U.grid.getStorage().size(), min(neg_z), max(neg_z)))
+        plt.title("N=%i, [%g, %g]" % (U.grid.getSize(), min(neg_z), max(neg_z)))
     else:
-        plt.title("N=%i" % U.grid.getStorage().size())
+        plt.title("N=%i" % U.grid.getSize())
     plt.xlim(0, 1)
     plt.ylim(0, 1)
 

@@ -97,7 +97,7 @@ void OperationParabolicPDESolverSystemDirichlet::mult(SGPP::base::DataVector& al
     result.mult(alpha0);
 
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
   }
 }
@@ -344,7 +344,7 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
 
     rhs_complete.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was "
         "specified!");
   }
@@ -426,7 +426,7 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
     result_complete.mult(alpha0);
 
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was "
         "specified!");
   }

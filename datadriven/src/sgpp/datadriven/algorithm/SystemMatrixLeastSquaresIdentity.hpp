@@ -78,7 +78,7 @@ class SystemMatrixLeastSquaresIdentity: public datadriven::DMSystemMatrixBase {
                          operationConfiguration) {
     this->implementationConfiguration = operationConfiguration;
     this->B = op_factory::createOperationMultipleEval(this->grid,
-              *(this->dataset_), this->implementationConfiguration);
+              *(this->dataset_), this->implementationConfiguration).release();
   }
 };
 

@@ -30,7 +30,7 @@ class OperationNaiveEvalHessianBsplineClenshawCurtis :
    * @param degree        B-spline degree
    */
   OperationNaiveEvalHessianBsplineClenshawCurtis(
-    GridStorage* storage, size_t degree)
+    GridStorage& storage, size_t degree)
     : storage(storage),
       base(degree) {
   }
@@ -55,7 +55,7 @@ class OperationNaiveEvalHessianBsplineClenshawCurtis :
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineClenshawCurtisBase base;
 };

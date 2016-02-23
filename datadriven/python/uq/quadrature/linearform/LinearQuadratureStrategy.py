@@ -50,7 +50,7 @@ class LinearQuadratureStrategy(HashQuadrature):
         # run over all items
         for i, gpi in enumerate(gps):
             # run over all dimensions
-            for d in xrange(gpi.dim()):
+            for d in xrange(gpi.getDimension()):
                 # compute linear form for one entry
                 value, erri = self.getLinearFormEntry(gpi, basis, d)
                 # collect results

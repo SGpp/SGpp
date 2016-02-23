@@ -35,12 +35,12 @@ class CoarseningFunctor {
    * This should be returning a coarsening value for every grid point.
    * The point with the lowest value will be removed first.
    *
-   * @param storage pointer to the grids storage object
+   * @param storage reference to the grids storage object
    * @param seq sequence number in the coefficients array
    *
    * @return refinement value
    */
-  virtual float_t operator()(GridStorage* storage, size_t seq) = 0;
+  virtual float_t operator()(GridStorage& storage, size_t seq) = 0;
 
   /**
    * This should return the initial value of coarsening criterion (e.g. alpha or error).

@@ -6,13 +6,9 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
-
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -21,11 +17,13 @@ namespace SGPP {
 namespace base {
 
 ModWaveletGrid::ModWaveletGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 ModWaveletGrid::ModWaveletGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 ModWaveletGrid::~ModWaveletGrid() {
@@ -40,16 +38,16 @@ const SBasis& ModWaveletGrid::getBasis() {
   return basis;
 }
 
-Grid* ModWaveletGrid::unserialize(std::istream& istr) {
-  return new ModWaveletGrid(istr);
+std::unique_ptr<Grid> ModWaveletGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new ModWaveletGrid(istr));
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* ModWaveletGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& ModWaveletGrid::getGenerator() {
+  return generator;
 }
 
 

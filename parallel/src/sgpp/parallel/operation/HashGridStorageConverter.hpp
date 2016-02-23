@@ -72,10 +72,10 @@ public:
 	  double* level_ptr = level.getPointer();
 	  double* index_ptr = index.getPointer();
 
-	  for (size_t i = 0; i < storage->size(); i += blocking_length) {
-		for (size_t current_dim = 0; current_dim < storage->dim(); current_dim++) {
+	  for (size_t i = 0; i < storage->getSize(); i += blocking_length) {
+		for (size_t current_dim = 0; current_dim < storage->getDimension(); current_dim++) {
 		  for (size_t t = i; t < i + blocking_length; ++t) {
-			if (t < storage->size()) {
+			if (t < storage->getSize()) {
 			  (*storage)[t]->get(current_dim, curLevel, curIndex);
 			  *level_ptr = static_cast<double>(1 << curLevel);
 			  *index_ptr = static_cast<double>(curIndex);
@@ -118,10 +118,10 @@ public:
 
       double* level_ptr = level.getPointer();
 
-      for (size_t i = 0; i < storage->size(); i += blocking_length) {
-        for (size_t current_dim = 0; current_dim < storage->dim(); current_dim++) {
+      for (size_t i = 0; i < storage->getSize(); i += blocking_length) {
+        for (size_t current_dim = 0; current_dim < storage->getDimension(); current_dim++) {
           for (size_t t = i; t < i + blocking_length; ++t) {
-            if (t < storage->size()) {
+            if (t < storage->getSize()) {
               (*storage)[t]->get(current_dim, curLevel, curIndex);
               *level_ptr = pow(2.0, static_cast<int>(-curLevel));
             }

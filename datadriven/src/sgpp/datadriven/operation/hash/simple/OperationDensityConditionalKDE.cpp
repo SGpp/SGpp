@@ -63,12 +63,9 @@ void OperationDensityConditionalKDE::doConditional(std::vector<size_t>& mdims,
   kde->updateConditionalizationFactors(xbar, condDims, pcond);
 
   // marginalize the kde to the desired dimensions
-  OperationDensityMarginalizeKDE* opMarg = op_factory::createOperationDensityMarginalizeKDE(*kde);
-  opMarg->margToDimXs(mdims, conditionalizedKDE);
+  op_factory::createOperationDensityMarginalizeKDE(*kde)->margToDimXs(mdims, conditionalizedKDE);
   // set the conditionalization coefficients
   conditionalizedKDE.setConditionalizationFactor(pcond);
-
-  delete opMarg;
 }
 
 void OperationDensityConditionalKDE::condToDimX(size_t mdim, base::DataVector& xbar,
@@ -92,12 +89,9 @@ void OperationDensityConditionalKDE::condToDimX(size_t mdim, base::DataVector& x
   kde->updateConditionalizationFactors(xbar, condDims, pcond);
 
   // marginalize the kde to the desired dimensions
-  OperationDensityMarginalizeKDE* opMarg = op_factory::createOperationDensityMarginalizeKDE(*kde);
-  opMarg->margToDimX(mdim, conditionalizedKDE);
+  op_factory::createOperationDensityMarginalizeKDE(*kde)->margToDimX(mdim, conditionalizedKDE);
   // set the conditionalization coefficients
   conditionalizedKDE.setConditionalizationFactor(pcond);
-
-  delete opMarg;
 }
 
 void OperationDensityConditionalKDE::condToDimXs(std::vector<size_t>& mdims, base::DataVector& xbar,

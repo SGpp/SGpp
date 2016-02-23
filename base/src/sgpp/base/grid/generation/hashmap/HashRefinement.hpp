@@ -30,7 +30,7 @@ class HashRefinement: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  virtual void free_refine(GridStorage* storage, RefinementFunctor* functor);
+  virtual void free_refine(GridStorage& storage, RefinementFunctor& functor);
 
   /**
    * Computes and returns the number of grid points, which can be refined.
@@ -39,7 +39,7 @@ class HashRefinement: public AbstractRefinement {
    * @param storage hashmap that stores the grid points
    * @return The number of grid points that can be refined
    */
-  size_t getNumberOfRefinablePoints(GridStorage* storage);
+  size_t getNumberOfRefinablePoints(GridStorage& storage);
 
   /**
    * Refine one grid point along a single direction
@@ -47,8 +47,8 @@ class HashRefinement: public AbstractRefinement {
    * @param index point to refine
    * @param d direction
    */
-  void refineGridpoint1D(GridStorage* storage, index_type& index, size_t d);
-  void refineGridpoint1D(GridStorage* storage, size_t seq, size_t d);
+  void refineGridpoint1D(GridStorage& storage, index_type& index, size_t d);
+  void refineGridpoint1D(GridStorage& storage, size_t seq, size_t d);
 
   virtual ~HashRefinement() {}
 
@@ -61,7 +61,7 @@ class HashRefinement: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param refine_index The index in the hashmap of the point that should be refined
    */
-  void refineGridpoint(GridStorage* storage, size_t refine_index);
+  void refineGridpoint(GridStorage& storage, size_t refine_index);
 
   /**
    * This method creates a new point on the grid. It checks if some parents or
@@ -70,7 +70,7 @@ class HashRefinement: public AbstractRefinement {
    * @param storage hashmap that stores the gridpoints
    * @param index The point that should be inserted
    */
-  void createGridpoint(GridStorage* storage, index_type& index);
+  void createGridpoint(GridStorage& storage, index_type& index);
 
   /**
   * Examines the grid points and stores the indices those that can be refined
@@ -81,8 +81,8 @@ class HashRefinement: public AbstractRefinement {
   * @param collection container that contains elements to refine (empty initially)
   */
   void collectRefinablePoints(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
   /**
@@ -93,8 +93,8 @@ class HashRefinement: public AbstractRefinement {
    * @param collection container that contains elements to refine (empty initially)
    */
   void refineGridpointsCollection(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) override;
 
 
@@ -125,9 +125,9 @@ class HashRefinement: public AbstractRefinement {
   * @return list with indicator elements
   */
   AbstractRefinement::refinement_list_type getIndicator(
-    GridStorage* storage,
+    GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
-    const RefinementFunctor* functor) const;
+    const RefinementFunctor& functor) const;
 };
 
 }  // namespace base

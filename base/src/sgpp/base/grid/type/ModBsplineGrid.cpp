@@ -6,10 +6,8 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -19,22 +17,21 @@ namespace base {
 
 ModBsplineGrid::ModBsplineGrid(std::istream& istr) :
   Grid(istr),
-  degree(1 << 16),
-  basis_(NULL) {
+  generator(storage),
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SBsplineModifiedBase(degree));
 }
 
 
 ModBsplineGrid::ModBsplineGrid(size_t dim, size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SBsplineModifiedBase(degree)) {
 }
 
 ModBsplineGrid::~ModBsplineGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType ModBsplineGrid::getType() {
@@ -42,10 +39,6 @@ SGPP::base::GridType ModBsplineGrid::getType() {
 }
 
 const SBasis& ModBsplineGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineModifiedBase(degree);
-  }
-
   return *basis_;
 }
 
@@ -53,8 +46,8 @@ size_t ModBsplineGrid::getDegree() {
   return this->degree;
 }
 
-Grid* ModBsplineGrid::unserialize(std::istream& istr) {
-  return new ModBsplineGrid(istr);
+std::unique_ptr<Grid> ModBsplineGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new ModBsplineGrid(istr));
 }
 
 void ModBsplineGrid::serialize(std::ostream& ostr) {
@@ -66,8 +59,8 @@ void ModBsplineGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* ModBsplineGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& ModBsplineGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

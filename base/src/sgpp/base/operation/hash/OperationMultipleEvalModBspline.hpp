@@ -29,10 +29,8 @@ class OperationMultipleEvalModBspline: public OperationMultipleEval {
    * @param degree the Bspline's degree
    * @param dataset the dataset that should be evaluated
    */
-  OperationMultipleEvalModBspline(Grid& grid, size_t degree,
-                                  DataMatrix& dataset) :
-    OperationMultipleEval(grid, dataset), base(degree) {
-    this->storage = grid.getStorage();
+  OperationMultipleEvalModBspline(Grid& grid, size_t degree, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()), base(degree) {
   }
 
   /**
@@ -46,7 +44,7 @@ class OperationMultipleEvalModBspline: public OperationMultipleEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Mod Bspline Basis object
   SBsplineModifiedBase base;
 };

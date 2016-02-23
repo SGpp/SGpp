@@ -42,7 +42,7 @@ void OperationParabolicPDESolverSystem::setTimestepSize(float_t newTimestepSize)
 
 void OperationParabolicPDESolverSystem::abortTimestep() {
   delete this->secondGridStorage;
-  this->secondGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
+  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
 
   if ((this->alpha_complete)->getSize() != (this->alpha_complete_tmp)->getSize()) {
     (this->alpha_complete)->resize((this->alpha_complete_tmp)->getSize());
@@ -53,7 +53,7 @@ void OperationParabolicPDESolverSystem::abortTimestep() {
 
 void OperationParabolicPDESolverSystem::saveAlpha() {
   delete this->oldGridStorage;
-  this->oldGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
+  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
 
   if ((this->alpha_complete_old)->getSize() != (this->alpha_complete_tmp)->getSize())
     (this->alpha_complete_old)->resize((this->alpha_complete_tmp)->getSize());
@@ -76,14 +76,11 @@ size_t OperationParabolicPDESolverSystem::getSumGridPointsInner() {
 
 void OperationParabolicPDESolverSystem::getGridCoefficientsForSC(SGPP::base::DataVector& Values) {
   Values = *(this->alpha_complete);
-  SGPP::base::OperationHierarchisation* myHierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(*BoundGrid);
-  myHierarchisation->doDehierarchisation(Values);
-  delete myHierarchisation;
+  SGPP::op_factory::createOperationHierarchisation(*BoundGrid)->doDehierarchisation(Values);
 }
 
 SGPP::base::GridStorage* OperationParabolicPDESolverSystem::getGridStorage() {
-  return (this->BoundGrid)->getStorage();
+  return &this->BoundGrid->getStorage();
 }
 
 SGPP::base::GridStorage* OperationParabolicPDESolverSystem::getOldGridStorage() {
