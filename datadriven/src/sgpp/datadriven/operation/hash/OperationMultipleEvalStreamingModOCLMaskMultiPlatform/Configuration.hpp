@@ -68,18 +68,10 @@ class Configuration {
           kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 12800ul);
         }
 
-        // TODO(pfandedd): assumed on top level, make consistent
-        //                if (kernelNode.contains("INTERNAL_PRECISION") ==
-        //                false) {
-        //                    kernelNode.addTextAttr("INTERNAL_PRECISION",
-        //                    "double");
-        //                }
-
         if (kernelNode.contains("KERNEL_USE_LOCAL_MEMORY") == false) {
           kernelNode.addIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
         }
 
-        // TODO(pfandedd): implement these parameters in the kernel
         if (kernelNode.contains("KERNEL_STORE_DATA") == false) {
           kernelNode.addTextAttr("KERNEL_STORE_DATA", "array");
         }

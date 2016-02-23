@@ -360,7 +360,6 @@ class KernelMult {
   void initDatasetResultBuffers(size_t kernelStartData, size_t kernelEndData) {
     size_t range = kernelEndData - kernelStartData;
 
-    // TODO(pfandedd): use result parameter in mult
     std::vector<T> zeros(range);
     for (size_t i = 0; i < range; i++) {
       zeros[i] = 0.0;

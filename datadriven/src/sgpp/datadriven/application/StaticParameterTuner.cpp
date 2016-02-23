@@ -17,6 +17,7 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 #include "sgpp/datadriven/application/MetaLearner.hpp"
+#include "sgpp/base/exception/application_exception.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -267,15 +268,18 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
   SGPP::datadriven::OperationMultipleEvalType operationType;
   SGPP::datadriven::OperationMultipleEvalSubType operationSubType;
 
-  // TODO(pfandedd): add better approach for auto-selecting the right kernel
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
     operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
     operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP;
+  } else if (kernelName.compare("StreamingModOCLMaskMultiPlatform") == 0) {
+    operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP;
   } else {
-    throw;
+    throw SGPP::base::application_exception(
+        "error: configured kernel is not known to static parameter tuner");
   }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(

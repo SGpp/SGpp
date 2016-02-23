@@ -168,8 +168,6 @@ class StreamingBSplineOCLKernelImpl {
     size_t* gpu_start_index_data = new size_t[num_devices];
     size_t* gpu_end_index_data = new size_t[num_devices];
 
-    // TODO(pfandedd): don't forget to set padding to DATA_BLOCKING * THREAD_BLOCK_SIZE
-
     multLoadBalancer.update(this->deviceTimingsMult);
 
     size_t dataBlockingSize = (*parameters)["KERNEL_DATA_BLOCK_SIZE"].getUInt();
@@ -373,7 +371,6 @@ class StreamingBSplineOCLKernelImpl {
       if (rangeSize > 0) {
         //      std::cout << "enqueuing device: " << i << std::endl;
         size_t totalWorkItems = rangeSize * local;
-        // TODO(pfandedd): don't forget the "reqd_work_group_size" kernel attribute
         err = clEnqueueNDRangeKernel(manager->command_queue[i], kernel_multTrans[i], 1,
                                      &gpu_start_index_grid[i], &totalWorkItems, &local, 0, nullptr,
                                      &(clTimings[i]));

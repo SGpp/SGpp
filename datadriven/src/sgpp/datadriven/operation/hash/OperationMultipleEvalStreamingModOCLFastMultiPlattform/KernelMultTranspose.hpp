@@ -252,24 +252,6 @@ class KernelMultTranspose {
 
         cl_event clTiming;
 
-        // //////////////////////////////////////////////////////////////////////////////////////
-        //        size_t gpuEndGrid = gpu_end_index_grid[platform.platformId][i];
-        //        size_t gpuStartGrid = gpu_start_index_grid[platform.platformId][i];
-        //        size_t rangeSize = (gpuEndGrid / gridBlockingSize) - (gpuStartGrid /
-        //        gridBlockingSize);
-        //
-        //        if (rangeSize > 0) {
-        //          size_t totalWorkItems =
-        //              rangeSize * local;  // TODO(pfandedd): possible bug -> variable might be
-        //                                  // reallocated, the kernel uses a reference...
-        //          // TODO(pfandedd): don't forget the "reqd_work_group_size" kernel attribute
-        //          err = clEnqueueNDRangeKernel(
-        //              platform.commandQueues[i], kernelsMultTrans[platform.platformId][i], 1,
-        //              &gpu_start_index_grid[platform.platformId][i], &totalWorkItems, &local, 0,
-        //              nullptr,
-        //              &(clTimings[platform.platformId][i]));
-        // ///////////////////////////////////////////////////////////////////////////////////////
-
         size_t threads = rangeSizeAfterBlocking * localSize;
         err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, &kernelStartGrid,
                                      &threads, &localSize, 0, nullptr, &clTiming);

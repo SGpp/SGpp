@@ -14,10 +14,6 @@
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 
 int main(int argc, char** argv) {
-  // TODO(pfandedd): export parameter names and value ranges
-  // TODO(pfandedd): export constraints (or constraint checkers -> function
-  // pointers)
-
   // Specify scenario for performance optimization
 
   int maxLevel = 10;
@@ -56,10 +52,6 @@ int main(int argc, char** argv) {
 
   SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
                                              SLESolverConfigFinal, adaptConfig);
-
-  // TODO(pfandedd): kernel is set inside "StreamingOCLMultiPlatform", currently
-  // no
-  // parameter to set it from here
 
   std::string kernelName("StreamingOCLMultiPlatform");
 
