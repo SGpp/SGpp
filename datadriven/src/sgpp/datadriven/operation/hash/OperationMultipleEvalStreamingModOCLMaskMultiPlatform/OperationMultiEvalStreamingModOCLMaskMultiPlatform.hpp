@@ -148,14 +148,6 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     size_t datasetFrom = 0;
     size_t datasetTo = this->datasetSizePadded;
 
-    //        if (omp_get_thread_num() == 0) {
-    //            queueLoadBalancerMult->initialize(scheduleSize, datasetFrom,
-    //            datasetTo, overallDataBlockingSize);
-    //        }
-
-    // TODO(pfandedd): not in a parallel region here?
-    // #pragma omp barrier
-
     queueLoadBalancerMult->initialize(datasetFrom, datasetTo);
 
     std::vector<T> alphaArray(this->gridSizePadded);
@@ -274,9 +266,6 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
  private:
   void padDataset(SGPP::base::DataMatrix &dataset) {
     size_t oldSize = dataset.getNrows();
-
-    // TODO(pfandedd): verify that the padding does not add unnecesarry components, especially check
-    // "commonDatasetPadding - remainder"
 
     size_t commonDatasetPadding = calculateCommonDatasetPadding();
 

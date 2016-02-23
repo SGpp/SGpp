@@ -14,6 +14,8 @@
 namespace SGPP {
 namespace datadriven {
 
+// TODO(pfandedd): should be changed to json
+
 LearnerScenario::LearnerScenario() : isInitialized(false), lambda(0.0), datasetFileName("") {}
 
 LearnerScenario::LearnerScenario(std::string scenarioFileName) : isInitialized(true) {
@@ -154,7 +156,7 @@ void LearnerScenario::readFromFile(std::string fileName) {
         this->datasetFileName = value;
         check |= 0x00000002;
       } else if (name.compare("grid.dim") == 0) {
-        if (value.compare("0") != 0) {  // TODO(pfandedd): compare startswith
+        if (value.compare("0") != 0) {
           throw;
         }
         gridConfig.dim_ = 0;

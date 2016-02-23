@@ -45,9 +45,9 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
-    // TODO(pfandedd): add setup of blocking for all tests
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -76,6 +76,7 @@ BOOST_AUTO_TEST_CASE(Local) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -105,6 +106,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -134,6 +136,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -163,6 +166,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -191,6 +195,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -219,6 +224,7 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -248,6 +254,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -277,6 +284,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -306,6 +314,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
     deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(

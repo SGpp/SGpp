@@ -22,8 +22,6 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(bool verbose) {
   parameters->replaceIDAttr("SHOW_BUILD_LOG", false);
   parameters->replaceDictAttr("PLATFORMS");
   parameters->replaceIDAttr("LOAD_BALANCING_VERBOSE", false);
-
-  // TODO(pfandedd): is it a good idea to set default precision here?
   parameters->replaceTextAttr("INTERNAL_PRECISION", "double");
 
   this->verbose = verbose;
@@ -50,8 +48,6 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(
   if (!parameters->contains("LOAD_BALANCING_VERBOSE")) {
     parameters->replaceIDAttr("LOAD_BALANCING_VERBOSE", false);
   }
-
-  // TODO(pfandedd): is it a good idea to set default precision here?
   if (!parameters->contains("INTERNAL_PRECISION")) {
     parameters->replaceTextAttr("INTERNAL_PRECISION", "double");
   }
@@ -103,7 +99,6 @@ void OCLManagerMultiPlatform::buildKernel(
 
     if (!(*parameters).contains("ENABLE_OPTIMIZATIONS") ||
         (*parameters)["ENABLE_OPTIMIZATIONS"].getBool()) {
-      // TODO(pfandedd): user should be able to change
       std::string optimizationFlags = "";
       if ((*parameters).contains("OPTIMIZATION_FLAGS")) {
         optimizationFlags = (*parameters)["OPTIMIZATION_FLAGS"].get();
@@ -175,7 +170,6 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   std::string build_opts;
   if (!kernelConfiguration.contains("ENABLE_OPTIMIZATIONS") ||
       kernelConfiguration["ENABLE_OPTIMIZATIONS"].getBool()) {
-    // TODO(pfandedd): user should be able to change
     std::string optimizationFlags = "";
     if (kernelConfiguration.contains("OPTIMIZATION_FLAGS")) {
       optimizationFlags = kernelConfiguration["OPTIMIZATION_FLAGS"].get();
@@ -190,11 +184,7 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   // compiling the program
   err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
 
-  if (err != CL_SUCCESS) {
-    std::stringstream errorString;
-    errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
-  }
+  // collect the build log before throwing an exception if necessary
 
   // get the build log
   size_t len;
@@ -206,6 +196,13 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   if (verbose) {
     std::cout << "--- Build Log ---" << std::endl
               << buffer << std::endl;
+  }
+
+  // report the error if the build failed
+  if (err != CL_SUCCESS) {
+    std::stringstream errorString;
+    errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
+    throw SGPP::base::operation_exception(errorString.str());
   }
 
   cl_kernel kernel = clCreateKernel(program, kernelName.c_str(), &err);

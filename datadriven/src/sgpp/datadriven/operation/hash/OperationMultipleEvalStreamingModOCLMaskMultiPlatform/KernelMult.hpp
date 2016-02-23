@@ -261,8 +261,6 @@ class KernelMult {
         //                std::cout << "executed kernel: " << device->deviceId
         //                << "" << std::endl;
 
-        // TODO(pfandedd): implement treatment of start_index_data in
-        // queueLoadBalancer!
         deviceResultData.readFromBuffer();
 
         //                std::cout << "read from device: " << device->deviceId

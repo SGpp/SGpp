@@ -70,14 +70,12 @@ class OCLBufferWrapperSD {
     cl_int err;
 
     err = clEnqueueWriteBuffer(device->commandQueue, this->buffer, CL_TRUE, 0,
-                               sizeof(T) * this->elements, hostData.data(), 0,
-                               nullptr, nullptr);
+                               sizeof(T) * this->elements, hostData.data(), 0, nullptr, nullptr);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: Failed to enqueue write buffer command! Error code: "
-          << err << std::endl;
+      errorString << "OCL Error: Failed to enqueue write buffer command! Error code: " << err
+                  << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
@@ -92,20 +90,17 @@ class OCLBufferWrapperSD {
     cl_int err;
 
     err = clEnqueueReadBuffer(device->commandQueue, this->buffer, CL_TRUE, 0,
-                              sizeof(T) * this->elements,
-                              static_cast<void *>(hostData.data()), 0, nullptr,
-                              nullptr);
+                              sizeof(T) * this->elements, static_cast<void *>(hostData.data()), 0,
+                              nullptr, nullptr);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString
-          << "OCL Error: Failed to enqueue read buffer command! Error code: "
-          << err << std::endl;
+      errorString << "OCL Error: Failed to enqueue read buffer command! Error code: " << err
+                  << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
   }
 
-  // TODO(pfandedd): might need to set the correct flags
   void initializeBuffer(size_t elements) {
     cl_int err;
 
@@ -123,14 +118,13 @@ class OCLBufferWrapperSD {
     //            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) *
     //            elements, initialValues.data(), &err);
     //        } else {
-    this->buffer = clCreateBuffer(device->context, CL_MEM_READ_WRITE,
-                                  sizeof(T) * elements, nullptr, &err);
+    this->buffer =
+        clCreateBuffer(device->context, CL_MEM_READ_WRITE, sizeof(T) * elements, nullptr, &err);
     //        }
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
-      errorString << "OCL Error: Could not allocate buffer! Error code: " << err
-                  << std::endl;
+      errorString << "OCL Error: Could not allocate buffer! Error code: " << err << std::endl;
       throw SGPP::base::operation_exception(errorString.str());
     }
 
@@ -156,8 +150,8 @@ class OCLBufferWrapperSD {
     this->elements = 0;
   }
 
-  void intializeTo(std::vector<T> hostBuffer, size_t dim, size_t offsetStart,
-                   size_t offsetEnd, bool storeStructOfArrays = false) {
+  void intializeTo(std::vector<T> hostBuffer, size_t dim, size_t offsetStart, size_t offsetEnd,
+                   bool storeStructOfArrays = false) {
     size_t range = offsetEnd - offsetStart;
     size_t totalElements = range * dim;
 
@@ -176,8 +170,7 @@ class OCLBufferWrapperSD {
       for (size_t d = 0; d < dim; d++) {
         size_t deviceDataIndex = 0;
         for (size_t i = offsetStart; i < offsetEnd; i++) {
-          deviceDataHost[d * range + deviceDataIndex] =
-              hostBuffer[d * dataPoints + i];
+          deviceDataHost[d * range + deviceDataIndex] = hostBuffer[d * dataPoints + i];
           deviceDataIndex += 1;
         }
       }
