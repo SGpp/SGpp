@@ -28,17 +28,17 @@ class HeatEquationParabolicPDESolverSystemVectorizedMPI : public
   /// the heat coefficient
   double a;
   /// the Laplace Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpLaplaceBound;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceBound;
   /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-  SGPP::base::OperationMatrix* OpLTwoBound;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLTwoBound;
   /// the Laplace Operation, on Inner grid
-  SGPP::base::OperationMatrix* OpLaplaceInner;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceInner;
   /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-  SGPP::base::OperationMatrix* OpLTwoInner;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLTwoInner;
   /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Inner grid
-  SGPP::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceInner;
+  std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceInner;
   /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Bound grid
-  SGPP::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceBound;
+  std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceBound;
 
   virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
                                        SGPP::base::DataVector& result);

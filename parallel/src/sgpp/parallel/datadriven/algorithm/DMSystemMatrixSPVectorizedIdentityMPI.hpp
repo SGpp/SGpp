@@ -14,12 +14,11 @@
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorizedSP.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION==0
+#include <string>
 
+#if USE_DOUBLE_PRECISION == 0
 
 namespace SGPP {
 namespace parallel {
@@ -33,8 +32,7 @@ namespace parallel {
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-class DMSystemMatrixSPVectorizedIdentityMPI : public
-  SGPP::datadriven::DMSystemMatrixBaseSP {
+class DMSystemMatrixSPVectorizedIdentityMPI : public SGPP::datadriven::DMSystemMatrixBaseSP {
  private:
   /// vectorization mode
   VectorizationType vecMode_;
@@ -46,6 +44,7 @@ class DMSystemMatrixSPVectorizedIdentityMPI : public
   SGPP::parallel::OperationMultipleEvalVectorizedSP* B_;
 
   double waitting_time;
+
  public:
   /**
    * Std-Constructor
@@ -56,18 +55,17 @@ class DMSystemMatrixSPVectorizedIdentityMPI : public
    * @param vecMode vectorization mode
    */
   DMSystemMatrixSPVectorizedIdentityMPI(SGPP::base::Grid& SparseGrid,
-                                        SGPP::base::DataMatrixSP& trainData, float lambda, VectorizationType vecMode);
+                                        SGPP::base::DataMatrixSP& trainData, float lambda,
+                                        VectorizationType vecMode);
 
   /**
    * Std-Destructor
    */
   virtual ~DMSystemMatrixSPVectorizedIdentityMPI();
 
-  virtual void mult(SGPP::base::DataVectorSP& alpha,
-                    SGPP::base::DataVectorSP& result);
+  virtual void mult(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result);
 
-  virtual void generateb(SGPP::base::DataVectorSP& classes,
-                         SGPP::base::DataVectorSP& b);
+  virtual void generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b);
 
   virtual void rebuildLevelAndIndex();
 
@@ -94,8 +92,8 @@ class DMSystemMatrixSPVectorizedIdentityMPI : public
   void multTransposeVec(base::DataVectorSP& source, base::DataVectorSP& result);
 };
 
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif
 #endif /* DMSYSTEMMATRIXSPVECTORIZEDIDENTITYMPI_HPP */

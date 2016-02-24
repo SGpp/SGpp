@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-
+#include <string>
 namespace SGPP {
 
 namespace parallel {
@@ -31,8 +31,8 @@ class LearnerVectorizedIdentity : public SGPP::datadriven::LearnerBase {
 
   MPIType mpiType_;
 
-  virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(
-    SGPP::base::DataMatrix& trainDataset, double lambda);
+  virtual SGPP::datadriven::DMSystemMatrixBase* createDMSystem(SGPP::base::DataMatrix& trainDataset,
+                                                               double lambda);
 
   virtual void postProcessing(const SGPP::base::DataMatrix& trainDataset,
                               const SGPP::solver::SLESolverType& solver,
@@ -46,10 +46,10 @@ class LearnerVectorizedIdentity : public SGPP::datadriven::LearnerBase {
    * @param isRegression set to true if a regression task should be executed
    * @param isVerbose set to true in order to allow console output
    */
-  LearnerVectorizedIdentity(const VectorizationType vecType,
+  LearnerVectorizedIdentity(const VectorizationType vecType, const bool isRegression,
+                            const bool isVerbose = true);
+  LearnerVectorizedIdentity(const VectorizationType vecType, const MPIType mpiType,
                             const bool isRegression, const bool isVerbose = true);
-  LearnerVectorizedIdentity(const VectorizationType vecType,
-                            const MPIType mpiType, const bool isRegression, const bool isVerbose = true);
 
   /**
    * Constructor
@@ -60,9 +60,9 @@ class LearnerVectorizedIdentity : public SGPP::datadriven::LearnerBase {
    * @param isRegression set to true if a regression task should be executed
    * @param isVerbose set to true in order to allow console output
    */
-  LearnerVectorizedIdentity(const std::string tGridFilename,
-                            const std::string tAlphaFilename, const VectorizationType vecType,
-                            const bool isRegression, const bool isVerbose = true);
+  LearnerVectorizedIdentity(const std::string tGridFilename, const std::string tAlphaFilename,
+                            const VectorizationType vecType, const bool isRegression,
+                            const bool isVerbose = true);
 
   /**
    * Destructor
@@ -72,8 +72,7 @@ class LearnerVectorizedIdentity : public SGPP::datadriven::LearnerBase {
   virtual SGPP::base::DataVector predict(SGPP::base::DataMatrix& testDataset);
 };
 
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* LEARNERVECTORIZEDIDENTITY_HPP */
