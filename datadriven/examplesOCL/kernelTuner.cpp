@@ -35,8 +35,7 @@ int main(int argc, char **argv) {
       "outputFileName", boost::program_options::value<std::string>(&outputFileName),
       "output file for optimized parameters")(
       "collectStatistics", boost::program_options::value<bool>(&collectStatistics),
-      "collect statistics for each device and kernel optimized and write them "
-      "to csv files");
+      "collect statistics for each device and kernel optimized and write them to csv files");
 
   boost::program_options::variables_map variables_map;
 
@@ -71,22 +70,33 @@ int main(int argc, char **argv) {
 
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"true", "false"});
-    staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
+    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
     staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
-    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"4"});  // "1", "8", "16"
-    staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});    // "1", "8", "16"
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"});
+    staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
-    staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_TRANS_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
-    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "4", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
+    staticParameterTuner.addParameter("KERNEL_TRANS_DATA_BLOCK_SIZE", {"1", "2", "4"});
+    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
     staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
-    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"4", "1"});  // "8", "16"
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"});
+    staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  } else if (kernelName.compare("StreamingModOCLMaskMultiPlatform") == 0) {
+    staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
+    staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
+    staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
+    staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"});
+    staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   } else {
     std::cout << "error: kernel name \"" << kernelName << "\" not recognized" << std::endl;
     return 1;
   }
+
+  //  staticParameterTuner.setupReferenceValues(referenceDataset, referenceValues, expectedMSE,
+  //                                            expectedLargestDifference);
 
   SGPP::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);

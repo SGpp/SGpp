@@ -128,6 +128,8 @@ class MetaLearner {
 
   SGPP::base::Grid& getLearnedGrid();
 
+  base::DataVector& getLearnedAlpha();
+
   LearnerTiming getLearnerTiming();
 
   LearnerTiming getLearnerReferenceTiming();

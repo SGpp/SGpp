@@ -15,32 +15,109 @@
 #include <string>
 #include <vector>
 #include <iostream>
-
+#include <fstream>
 
 namespace SGPP {
 namespace base {
 
-DataMatrix::DataMatrix(size_t nrows, size_t ncols) :
-  nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {
+DataMatrix::DataMatrix() : nrows(0), ncols(0), unused(0), inc_rows(100) {
+  // create new vector
+  this->data = new float_t[0];
+}
+
+DataMatrix::DataMatrix(size_t nrows, size_t ncols)
+    : nrows(nrows), ncols(ncols), unused(0), inc_rows(100) {
   // create new vector
   this->data = new float_t[nrows * ncols];
 }
 
-DataMatrix::DataMatrix(size_t nrows, size_t ncols, float_t value) :
-  DataMatrix(nrows, ncols) {
+DataMatrix::DataMatrix(size_t nrows, size_t ncols, float_t value) : DataMatrix(nrows, ncols) {
   setAll(value);
 }
 
-DataMatrix::DataMatrix(const DataMatrix& matr) :
-  DataMatrix(matr.nrows, matr.ncols) {
+DataMatrix::DataMatrix(const DataMatrix& matr) : DataMatrix(matr.nrows, matr.ncols) {
   // copy data
   std::memcpy(this->data, matr.data, nrows * ncols * sizeof(float_t));
 }
 
-DataMatrix::DataMatrix(float_t* input, size_t nrows, size_t ncols) :
-  DataMatrix(nrows, ncols) {
+DataMatrix::DataMatrix(float_t* input, size_t nrows, size_t ncols) : DataMatrix(nrows, ncols) {
   // copy data
   std::memcpy(this->data, input, nrows * ncols * sizeof(float_t));
+}
+
+DataMatrix DataMatrix::fromFile(const std::string& fileName) {
+  std::ifstream f(fileName, std::ifstream::in);
+  f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  std::string content;
+  content.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
+  return DataMatrix::fromString(content);
+}
+
+DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
+  DataMatrix m;
+
+  enum class PARSER_STATE { INIT, ROW, ROWVALUE, ROWCOMMAEND, COMMAEND, END };
+
+  PARSER_STATE state = PARSER_STATE::INIT;
+
+  DataVector row;
+
+  size_t i = 0;
+  while (i < serializedVector.size()) {
+    char c = serializedVector[i];
+
+    if (std::isspace(c)) {
+      i += 1;
+      continue;
+    }
+
+    if (state == PARSER_STATE::INIT) {
+      if (c != '[') {
+        throw;
+      }
+      state = PARSER_STATE::ROW;
+      i += 1;
+    } else if (state == PARSER_STATE::ROW) {
+      row.resize(0);
+      state = PARSER_STATE::ROWVALUE;
+      i++;
+    } else if (state == PARSER_STATE::ROWVALUE) {
+      size_t next;
+#if USE_DOUBLE_PRECISION == 1
+      double value = std::stod(&(serializedVector[i]), &next);
+#else
+      float value = std::stof(&(serializedVector[i]), &next);
+#endif
+      row.append(value);
+      state = PARSER_STATE::ROWCOMMAEND;
+      i += next;
+    } else if (state == PARSER_STATE::ROWCOMMAEND) {
+      if (c == ',') {
+        state = PARSER_STATE::ROWVALUE;
+        i++;
+      } else if (c == ']') {
+        if (m.getNrows() == 0) {
+          // set up the dimension after having read the first row
+          m.resize(0, row.getSize());
+        }
+        m.appendRow(row);
+        state = PARSER_STATE::COMMAEND;
+        i++;
+      }
+    } else if (state == PARSER_STATE::COMMAEND) {
+      if (c == ',') {
+        state = PARSER_STATE::ROW;
+        i++;
+      } else if (c == ']') {
+        state = PARSER_STATE::END;
+        i++;
+      }
+    } else if (state == PARSER_STATE::END) {
+      // only reached if a non-whitespace character was encountered after closing brace
+      throw;
+    }
+  }
+  return m;
 }
 
 /**
@@ -68,8 +145,7 @@ void DataMatrix::resize(size_t nrows) {
   // create new matrix
   float_t* newdata = new float_t[nrows * this->ncols];
   // copy entries of old matrix
-  std::memcpy(newdata, this->data, std::min(this->nrows, nrows)
-              * this->ncols * sizeof(float_t));
+  std::memcpy(newdata, this->data, std::min(this->nrows, nrows) * this->ncols * sizeof(float_t));
   delete[] this->data;
 
   this->data = newdata;
@@ -89,8 +165,7 @@ void DataMatrix::resize(size_t nrows, size_t ncols) {
     float_t* newdata = new float_t[nrows * ncols];
     // copy entries of old matrix
     std::memcpy(newdata, this->data,
-                std::min(this->nrows * this->ncols, nrows * ncols)
-                * sizeof(float_t));
+                std::min(this->nrows * this->ncols, nrows * ncols) * sizeof(float_t));
     delete[] this->data;
     this->data = newdata;
   }
@@ -109,12 +184,10 @@ void DataMatrix::resizeZero(size_t nrows) {
   // create new matrix
   float_t* newdata = new float_t[nrows * this->ncols];
   // copy entries of old matrix
-  std::memcpy(newdata, this->data, std::min(this->nrows, nrows)
-              * this->ncols * sizeof(float_t));
+  std::memcpy(newdata, this->data, std::min(this->nrows, nrows) * this->ncols * sizeof(float_t));
 
   // set new elements to zero
-  for (size_t i = std::min(this->nrows, nrows) * this->ncols; i < nrows
-       * this->ncols; i++) {
+  for (size_t i = std::min(this->nrows, nrows) * this->ncols; i < nrows * this->ncols; i++) {
     newdata[i] = 0.0;
   }
 
@@ -137,12 +210,10 @@ void DataMatrix::resizeZero(size_t nrows, size_t ncols) {
     float_t* newdata = new float_t[nrows * ncols];
     // copy entries of old matrix
     std::memcpy(newdata, this->data,
-                std::min(this->nrows * this->ncols, nrows * ncols)
-                * sizeof(float_t));
+                std::min(this->nrows * this->ncols, nrows * ncols) * sizeof(float_t));
 
     // set new elements to zero
-    for (size_t i = std::min(this->nrows * this->ncols, nrows * ncols);
-         i < nrows * ncols; i++) {
+    for (size_t i = std::min(this->nrows * this->ncols, nrows * ncols); i < nrows * ncols; i++) {
       newdata[i] = 0.0;
     }
 
@@ -159,8 +230,7 @@ void DataMatrix::addSize(size_t inc_nrows) {
   // create new vector
   float_t* newdata = new float_t[(this->nrows + inc_nrows) * this->ncols];
   // copy entries of old vector
-  std::memcpy(newdata, this->data, this->nrows * this->ncols
-              * sizeof(float_t));
+  std::memcpy(newdata, this->data, this->nrows * this->ncols * sizeof(float_t));
 
   delete[] this->data;
 
@@ -200,14 +270,12 @@ void DataMatrix::transpose() {
 
 size_t DataMatrix::appendRow(const DataVector& vec) {
   if (vec.getSize() != this->ncols) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::appendRow : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::appendRow : Dimensions do not match");
   }
 
   size_t x = appendRow();
   // copy data
-  std::memcpy(&this->data[x * this->ncols], vec.getPointer(), this->ncols
-              * sizeof(float_t));
+  std::memcpy(&this->data[x * this->ncols], vec.getPointer(), this->ncols * sizeof(float_t));
   return x;
 }
 
@@ -221,8 +289,7 @@ void DataMatrix::setAll(float_t value) {
 
 void DataMatrix::getRow(size_t row, DataVector& vec) const {
   if (vec.getSize() != this->ncols) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::getRow : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::getRow : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->ncols; i++) {
@@ -240,8 +307,7 @@ void DataMatrix::getRow(size_t row, std::vector<float_t>& vec) const {
 
 void DataMatrix::setRow(size_t row, const DataVector& vec) {
   if (vec.getSize() != this->ncols) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::setRow : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::setRow : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->ncols; i++) {
@@ -251,8 +317,7 @@ void DataMatrix::setRow(size_t row, const DataVector& vec) {
 
 void DataMatrix::getColumn(size_t col, DataVector& vec) const {
   if (vec.getSize() != this->nrows) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::getColumn : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::getColumn : Dimensions do not match");
   }
 
   for (size_t j = 0; j < this->nrows; j++) {
@@ -262,8 +327,7 @@ void DataMatrix::getColumn(size_t col, DataVector& vec) const {
 
 void DataMatrix::setColumn(size_t col, const DataVector& vec) {
   if (vec.getSize() != this->nrows) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::setColumn : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::setColumn : Dimensions do not match");
   }
 
   for (size_t j = 0; j < this->nrows; j++) {
@@ -286,8 +350,7 @@ void DataMatrix::copyFrom(const DataMatrix& matr) {
    }
    */
   std::memcpy(this->data, matr.data,
-              std::min(this->nrows * this->ncols, matr.nrows * matr.ncols)
-              * sizeof(float_t));
+              std::min(this->nrows * this->ncols, matr.nrows * matr.ncols) * sizeof(float_t));
 }
 
 /*
@@ -323,19 +386,16 @@ DataMatrix& DataMatrix::operator=(const DataMatrix& matr) {
   }
 
   if (nrows * ncols != matr.ncols * matr.nrows) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::= : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::= : Dimensions do not match");
   }
 
   std::memcpy(this->data, matr.data, nrows * ncols * sizeof(float_t));
   return *this;
 }
 
-
 void DataMatrix::add(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::add : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::add : Dimensions do not match");
   }
 
   size_t n = nrows * ncols;
@@ -347,8 +407,7 @@ void DataMatrix::add(const DataMatrix& matr) {
 
 void DataMatrix::sub(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::sub : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::sub : Dimensions do not match");
   }
 
   size_t n = nrows * ncols;
@@ -360,8 +419,7 @@ void DataMatrix::sub(const DataMatrix& matr) {
 
 void DataMatrix::addReduce(DataVector& reduction) {
   if (this->nrows != reduction.getSize()) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::addReduce : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::addReduce : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->nrows; i++) {
@@ -375,16 +433,13 @@ void DataMatrix::addReduce(DataVector& reduction) {
   }
 }
 
-void DataMatrix::addReduce(DataVector& reduction, DataVector& beta,
-                           size_t start_beta) {
+void DataMatrix::addReduce(DataVector& reduction, DataVector& beta, size_t start_beta) {
   if (this->nrows != reduction.getSize()) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::addReduce : Dimensions do not match (reduction)");
+    throw SGPP::base::data_exception("DataMatrix::addReduce : Dimensions do not match (reduction)");
   }
 
   if (this->ncols + start_beta > beta.getSize()) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::addReduce : Dimensions do not match (beta)");
+    throw SGPP::base::data_exception("DataMatrix::addReduce : Dimensions do not match (beta)");
   }
 
   for (size_t i = 0; i < this->nrows; i++) {
@@ -400,8 +455,7 @@ void DataMatrix::addReduce(DataVector& reduction, DataVector& beta,
 
 void DataMatrix::expand(const DataVector& expand) {
   if (this->nrows != expand.getSize()) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::expand : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::expand : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->nrows; i++) {
@@ -413,8 +467,7 @@ void DataMatrix::expand(const DataVector& expand) {
 
 void DataMatrix::componentwise_mult(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::componentwise_mult : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::componentwise_mult : Dimensions do not match");
   }
 
   size_t n = nrows * ncols;
@@ -426,8 +479,7 @@ void DataMatrix::componentwise_mult(const DataMatrix& matr) {
 
 void DataMatrix::componentwise_div(const DataMatrix& matr) {
   if (this->nrows != matr.nrows || this->ncols != matr.ncols) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::componentwise_div : Dimensions do not match");
+    throw SGPP::base::data_exception("DataMatrix::componentwise_div : Dimensions do not match");
   }
 
   size_t n = nrows * ncols;
@@ -474,13 +526,11 @@ void DataMatrix::mult(float_t scalar) {
 
 void DataMatrix::mult(const DataVector& x, DataVector& y) {
   if (ncols != x.getSize()) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::mult : Dimensions do not match (x)");
+    throw SGPP::base::data_exception("DataMatrix::mult : Dimensions do not match (x)");
   }
 
   if (nrows != y.getSize()) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::mult : Dimensions do not match (y)");
+    throw SGPP::base::data_exception("DataMatrix::mult : Dimensions do not match (y)");
   }
 
   for (size_t i = 0; i < nrows; i++) {
@@ -562,16 +612,14 @@ float_t DataMatrix::sum() const {
  }
  */
 
-void DataMatrix::normalizeDimension(size_t d) {
-  normalizeDimension(d, 0.0);
-}
+void DataMatrix::normalizeDimension(size_t d) { normalizeDimension(d, 0.0); }
 
 void DataMatrix::normalizeDimension(size_t d, float_t border) {
   size_t n = nrows * ncols;
 
   if (ncols <= d) {
     throw SGPP::base::data_exception(
-      "DataMatrix::normalizeDimension : Not enough columns in DataMatrix");
+        "DataMatrix::normalizeDimension : Not enough columns in DataMatrix");
   }
 
   // determine min and max
@@ -600,10 +648,10 @@ void DataMatrix::toString(std::string& text) const {
 
     for (size_t j = 0; j < ncols; j++) {
       if (j != 0) {
-        str << ",";
+        str << ", ";
       }
 
-      str << " " << data[i * ncols + j];
+      str << data[i * ncols + j];
     }
 
     if (i == nrows - 1) {
@@ -621,6 +669,12 @@ std::string DataMatrix::toString() const {
   std::string str;
   toString(str);
   return str;
+}
+
+void DataMatrix::toFile(const std::string& fileName) const {
+  std::ofstream f(fileName, std::ofstream::out);
+  f << this->toString();
+  f.close();
 }
 
 float_t DataMatrix::min(size_t d) const {
@@ -679,8 +733,7 @@ void DataMatrix::minmax(size_t col, float_t* min, float_t* max) const {
   size_t n = nrows * ncols;
 
   if (ncols <= col) {
-    throw SGPP::base::data_exception(
-      "DataMatrix::minmax : Not enough entries in DataMatrix");
+    throw SGPP::base::data_exception("DataMatrix::minmax : Not enough entries in DataMatrix");
   }
 
   // find min and max of column col
@@ -721,17 +774,11 @@ void DataMatrix::minmax(float_t* min, float_t* max) const {
   (*max) = max_t;
 }
 
-float_t* DataMatrix::getPointer() {
-  return data;
-}
+float_t* DataMatrix::getPointer() { return data; }
 
-const float_t* DataMatrix::getPointer() const {
-  return data;
-}
+const float_t* DataMatrix::getPointer() const { return data; }
 
-DataMatrix::~DataMatrix() {
-  delete[] data;
-}
+DataMatrix::~DataMatrix() { delete[] data; }
 
 size_t DataMatrix::getNumberNonZero() const {
   size_t n = nrows * ncols;

@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-
 namespace SGPP {
 namespace base {
 
@@ -26,6 +25,11 @@ namespace base {
  */
 class DataVector {
  public:
+  /**
+   * Create a empty DataVector.
+   */
+  DataVector();
+
   /**
    * Create a DataVector with @em size elements (uninitialized values).
    *
@@ -77,6 +81,10 @@ class DataVector {
    * @param DataVectorDef reference to a DataVectorDefinition structure
    */
   explicit DataVector(DataVectorDefinition& DataVectorDef);
+
+  static DataVector fromFile(const std::string& fileName);
+
+  static DataVector fromString(const std::string& serializedVector);
 
   /**
    * Fill DataVectorDefintion with data from the current DataVector
@@ -202,9 +210,7 @@ class DataVector {
    * @param i position of the element
    * @return data[i]
    */
-  inline float_t& operator[](size_t i) {
-    return data[i];
-  }
+  inline float_t& operator[](size_t i) { return data[i]; }
 
   /**
    * Returns a constant reference to the i-th element.
@@ -212,9 +218,7 @@ class DataVector {
    * @param i position of the element
    * @return data[i]
    */
-  inline const float_t& operator[](size_t i) const {
-    return data[i];
-  }
+  inline const float_t& operator[](size_t i) const { return data[i]; }
 
   /**
    * Returns the i-th element.
@@ -222,9 +226,7 @@ class DataVector {
    * @param i position of the element
    * @return data[i]
    */
-  inline float_t get(size_t i) const {
-    return data[i];
-  }
+  inline float_t get(size_t i) const { return data[i]; }
 
   /**
    * Sets the element at index i to value.
@@ -402,18 +404,14 @@ class DataVector {
    *
    * @return elements stored in the vector
    */
-  inline size_t getSize() const {
-    return size;
-  }
+  inline size_t getSize() const { return size; }
 
   /**
    * Returns the number of unused elements.
    *
    * @return number of unused elements
    */
-  inline size_t getUnused() const {
-    return unused;
-  }
+  inline size_t getUnused() const { return unused; }
 
   /**
    * Determines the number of non-zero elements in the vector.
@@ -428,9 +426,7 @@ class DataVector {
    *
    * @return Increment
    */
-  inline size_t getInc() const {
-    return inc_elems;
-  }
+  inline size_t getInc() const { return inc_elems; }
 
   /**
    * Sets the current number of elements by which the DataVector is extended,
@@ -439,9 +435,7 @@ class DataVector {
    *
    * @param inc_elems Increment
    */
-  void setInc(size_t inc_elems) {
-    this->inc_elems = inc_elems;
-  }
+  void setInc(size_t inc_elems) { this->inc_elems = inc_elems; }
 
   /**
    * Partitions vector into two classes using a choosen border.
@@ -470,13 +464,14 @@ class DataVector {
    */
   void toString(std::string& text) const;
 
+  void toFile(const std::string& fileName) const;
+
   /**
    * Returns a description of the DataVector as a string.
    *
    * @returns string of the DataVector
    */
   std::string toString() const;
-
 
   /**
    * Destructor
