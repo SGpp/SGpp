@@ -15,12 +15,11 @@
 #include <sgpp/base/operation/hash/OperationMatrixSP.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
-#if USE_DOUBLE_PRECISION==0
+#if USE_DOUBLE_PRECISION == 0
 
 namespace SGPP {
 namespace parallel {
@@ -37,8 +36,7 @@ namespace parallel {
  *
  * Sinple precision variant!
  */
-class DMWeightMatrixSPVectorizedIdentity : public
-  SGPP::base::OperationMatrixSP {
+class DMWeightMatrixSPVectorizedIdentity : public SGPP::base::OperationMatrixSP {
  private:
   /// the lambda, the regularisation parameter
   float lamb;
@@ -79,22 +77,22 @@ class DMWeightMatrixSPVectorizedIdentity : public
    * @param vecMode vectorization mode, possible values are X86SIMD, OCL, ArBB, HYBRID_X86SIMD_OCL
    */
   DMWeightMatrixSPVectorizedIdentity(SGPP::base::Grid& SparseGrid,
-                                     SGPP::base::DataMatrixSP& trainData, float lambda, SGPP::base::DataVectorSP& w,
-                                     VectorizationType vecMode);
+                                     SGPP::base::DataMatrixSP& trainData, float lambda,
+                                     SGPP::base::DataVectorSP& w, VectorizationType vecMode);
 
   /**
    * Std-Destructor
    */
   virtual ~DMWeightMatrixSPVectorizedIdentity();
 
-  virtual void mult(SGPP::base::DataVectorSP& alpha,
-                    SGPP::base::DataVectorSP& result);
+  virtual void mult(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result);
 
   /**
    * Generates the right hand side of the classification equation
    *
    * @param classes the class information of the training data
-   * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
+   * @param b reference to the vector that will contain the result of the matrix vector
+   * multiplication on the rhs
    */
   void generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b);
 
@@ -120,8 +118,8 @@ class DMWeightMatrixSPVectorizedIdentity : public
                  double& computeMultTrans);
 };
 
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif
 #endif /* DMWEIGHTMATRIXSPVECTORIZEDIDENTITY_HPP */

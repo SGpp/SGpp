@@ -26,13 +26,13 @@ class HeatEquationParabolicPDESolverSystemParallelMPI : public
   /// the heat coefficient
   double a;
   /// the Laplace Operation (Stiffness Matrix), on boundary grid
-  SGPP::base::OperationMatrix* OpLaplaceBound;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceBound;
   /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-  SGPP::base::OperationMatrix* OpMassBound;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpMassBound;
   /// the Laplace Operation (Stiffness Matrix), on inner grid
-  SGPP::base::OperationMatrix* OpLaplaceInner;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceInner;
   /// the LTwoDotProduct Operation (Mass Matrix), on inner grid
-  SGPP::base::OperationMatrix* OpMassInner;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpMassInner;
 
   void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
                                SGPP::base::DataVector& result);

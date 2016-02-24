@@ -5,8 +5,8 @@
 
 #include <sgpp/parallel/finance/algorithm/BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-//#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
-//#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+// #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+// #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/misc/operation/MiscOpFactory.hpp>
@@ -36,10 +36,10 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATPar
 
   this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
   this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(*
-      (this->BoundGrid)->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(*
-      (this->BoundGrid)->getStorage());
+  this->oldGridStorage = new SGPP::base::GridStorage(
+      this->BoundGrid->getStorage());
+  this->secondGridStorage = new SGPP::base::GridStorage(
+      this->BoundGrid->getStorage());
 
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
@@ -59,18 +59,18 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATPar
   this->nExecTimesteps = 0;
 
   // throw exception if grid dimensions not equal algorithmic dimensions
-  if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->getDimension()) {
+  if (this->BSalgoDims.size() > this->BoundGrid->getStorage().getDimension()) {
     throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Number of algorithmic dimensions higher than the number of grid's dimensions.");
   }
 
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and sigma)
-  if (this->BoundGrid->getStorage()->getDimension() != this->lambda->getSize()) {
+  if (this->BoundGrid->getStorage().getDimension() != this->lambda->getSize()) {
     throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Dimension of mu and sigma parameters don't match the grid's dimensions!");
   }
 
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
-    if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->getDimension()) {
+    if (this->BSalgoDims[i] >= this->BoundGrid->getStorage().getDimension()) {
       throw SGPP::base::algorithm_exception("BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Minimum one algorithmic dimension is not inside the grid's dimensions!");
     }
   }
@@ -158,12 +158,6 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::BlackScholesPATPar
 }
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::~BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI() {
-  delete this->OpLaplaceBound;
-  delete this->OpLTwoBound;
-  delete this->OpLaplaceInner;
-  delete this->OpLTwoInner;
-  delete this->OpLTwoDotLaplaceInner;
-  delete this->OpLTwoDotLaplaceBound;
 
   delete this->BoundaryUpdate;
   delete this->GridConverter;
@@ -273,18 +267,18 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
     double current_time = static_cast<double>(this->nExecTimesteps) *
                           this->TimestepSize;
 
-    SGPP::base::OperationHierarchisation* myHierarchisation =
+    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
       SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
-    size_t dim = this->BoundGrid->getStorage()->getDimension();
-    SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*
-        (this->BoundGrid->getBoundingBox()));
+    size_t dim = this->BoundGrid->getStorage().getDimension();
+    SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(
+    		this->BoundGrid->getBoundingBox());
 
     double* coords_val = new double[dim];
 
-    for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
       std::vector<double> eval_point_coord;
-      std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(
+      std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(
                              *myBB);
       std::stringstream coordsStream(coords);
 
@@ -321,7 +315,6 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
     delete[] coords_val;
 
     myHierarchisation->doHierarchisation(*this->alpha_complete);
-    delete myHierarchisation;
     delete myBB;
   }
 
@@ -341,7 +334,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRef
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage()->size();
+    size_t originalGridSize = this->BoundGrid->getStorage().getSize();
 
     // Coarsen the grid
     SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
@@ -357,12 +350,12 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRef
 
       if (this->refineMode == "maxLevel") {
         myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().getSize());
       }
 
       if (this->refineMode == "classic") {
         myGenerator.refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        this->alpha_complete->resizeZero(this->BoundGrid->getStorage().getSize());
       }
     }
 

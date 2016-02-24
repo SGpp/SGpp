@@ -79,12 +79,6 @@ HeatEquationParabolicPDESolverSystemVectorizedMPI::HeatEquationParabolicPDESolve
 }
 
 HeatEquationParabolicPDESolverSystemVectorizedMPI::~HeatEquationParabolicPDESolverSystemVectorizedMPI() {
-  delete this->OpLaplaceInner;
-  delete this->OpLaplaceBound;
-  delete this->OpLTwoInner;
-  delete this->OpLTwoBound;
-  delete this->OpLTwoDotLaplaceInner;
-  delete this->OpLTwoDotLaplaceBound;
 
   delete this->BoundaryUpdate;
   delete this->GridConverter;
