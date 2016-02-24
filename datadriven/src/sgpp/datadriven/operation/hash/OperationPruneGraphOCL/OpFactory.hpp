@@ -1,12 +1,19 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #pragma once
 
 #include <sgpp/globaldef.hpp>
-
+#include <string>
 #include "OperationPruneGraphOCLMultiPlatform.hpp"
 namespace SGPP {
 namespace datadriven {
 
-SGPP::datadriven::StreamingOCLMultiPlatform::OperationPruneGraphOCL* pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
-																										 base::DataMatrix &data, double treshold, size_t k, std::string opencl_conf);
-}
-}
+SGPP::datadriven::DensityOCLMultiPlatform::OperationPruneGraphOCL*
+pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
+                                    base::DataMatrix &data, double treshold, size_t k,
+                                    std::string opencl_conf);
+}  // namespace datadriven
+}  // namespace SGPP
