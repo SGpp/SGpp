@@ -69,7 +69,7 @@ void IDNode::setupInternalType() {
       this->isUnsigned = true;
       this->unsignedValue = asUnsigned;
       //            this->internalType = InternalIDType::UINT;
-      return;
+      //      return;
     }
   } catch (std::invalid_argument& e) {
   }
@@ -83,7 +83,7 @@ void IDNode::setupInternalType() {
       this->isSigned = true;
       this->signedValue = asSigned;
       //            this->internalType = InternalIDType::INT;
-      return;
+      //      return;
     }
   } catch (std::invalid_argument& e) {
   }
@@ -97,7 +97,7 @@ void IDNode::setupInternalType() {
       this->isDouble = true;
       this->doubleValue = asDouble;
       //            this->internalType = InternalIDType::DOUBLE;
-      return;
+      //      return;
     }
   } catch (std::invalid_argument& e) {
   }

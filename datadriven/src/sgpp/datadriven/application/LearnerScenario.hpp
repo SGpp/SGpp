@@ -10,21 +10,39 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/grid/Grid.hpp"
 #include "sgpp/solver/TypesSolver.hpp"
+#include "sgpp/base/tools/json/JSON.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
-class LearnerScenario {
+class TestsetConfiguration {
+ public:
+  bool hasTestDataset;
+  std::string datasetFileName;
+  //  std::string valuesFileName;
+  double expectedMSE;
+  double expectedLargestDifference;
+
+  TestsetConfiguration()
+      : hasTestDataset(false),
+        datasetFileName(""),
+        //        valuesFileName(""),
+        expectedMSE(0.0),
+        expectedLargestDifference(0.0) {}
+};
+
+class LearnerScenario : public json::JSON {
  private:
   bool isInitialized;
-
-  // variables for the scenario
-  double lambda;
-  std::string datasetFileName;
-  SGPP::base::RegularGridConfiguration gridConfig;
-  SGPP::solver::SLESolverConfiguration solverConfigRefine;
-  SGPP::solver::SLESolverConfiguration solverConfigFinal;
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  //
+  //  // variables for the scenario
+  //  double lambda;
+  //  std::string datasetFileName;
+  //  base::RegularGridConfiguration gridConfig;
+  //  solver::SLESolverConfiguration solverConfigRefine;
+  //  solver::SLESolverConfiguration solverConfigFinal;
+  //  base::AdpativityConfiguration adaptConfig;
+  //  datadriven::TestsetConfiguration testsetConfig;
 
  public:
   LearnerScenario();
@@ -32,25 +50,51 @@ class LearnerScenario {
   explicit LearnerScenario(std::string scenarioFileName);
 
   LearnerScenario(std::string datasetFileName, double lambda,
-                  SGPP::base::RegularGridConfiguration gridConfig,
-                  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine,
-                  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal,
-                  SGPP::base::AdpativityConfiguration adaptConfig);
+                  base::RegularGridConfiguration gridConfig,
+                  solver::SLESolverConfiguration SLESolverConfigRefine,
+                  solver::SLESolverConfiguration SLESolverConfigFinal,
+                  base::AdpativityConfiguration adaptConfig);
+
+  LearnerScenario(std::string datasetFileName, double lambda,
+                  base::RegularGridConfiguration gridConfig,
+                  solver::SLESolverConfiguration SLESolverConfigRefine,
+                  solver::SLESolverConfiguration SLESolverConfigFinal,
+                  base::AdpativityConfiguration adaptConfig,
+                  datadriven::TestsetConfiguration testsetConfiguration);
+
+  void setDatasetFileName(std::string datasetFileName);
 
   std::string getDatasetFileName();
 
+  void setLambda(double lambda);
+
   double getLambda();
 
-  SGPP::base::RegularGridConfiguration getGridConfig();
+  void setGridConfig(base::RegularGridConfiguration& gridConfig);
 
-  SGPP::solver::SLESolverConfiguration getSolverConfigurationRefine();
-  SGPP::solver::SLESolverConfiguration getSolverConfigurationFinal();
+  base::RegularGridConfiguration getGridConfig();
 
-  SGPP::base::AdpativityConfiguration getAdaptivityConfiguration();
+  void setSolverConfigurationRefine(solver::SLESolverConfiguration& solverConfigRefine);
 
-  void writeToFile(std::string fileName);
+  solver::SLESolverConfiguration getSolverConfigurationRefine();
 
-  void readFromFile(std::string fileName);
+  void setSolverConfigurationFinal(solver::SLESolverConfiguration& solverConfigFinal);
+
+  solver::SLESolverConfiguration getSolverConfigurationFinal();
+
+  void setAdaptivityConfiguration(base::AdpativityConfiguration& adaptConfig);
+
+  base::AdpativityConfiguration getAdaptivityConfiguration();
+
+  bool hasTestsetConfiguration();
+
+  void setTestsetConfiguration(datadriven::TestsetConfiguration& testsetConfig);
+
+  datadriven::TestsetConfiguration getTestsetConfiguration();
+
+  //  void writeToFile(std::string fileName);
+  //
+  //  void readFromFile(std::string fileName);
 
  private:
   template <class T>

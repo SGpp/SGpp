@@ -14,7 +14,6 @@
 #include <vector>
 #include <algorithm>
 
-
 namespace SGPP {
 namespace base {
 
@@ -28,6 +27,11 @@ namespace base {
  */
 class DataMatrix {
  public:
+  /**
+   * Creates a empty two-dimensional DataMatrix.
+   */
+  DataMatrix();
+
   /**
    * Create a two-dimensional DataMatrix with @em nrows rows and
    * @em ncols columns (uninitialized values).
@@ -68,6 +72,9 @@ class DataMatrix {
    */
   DataMatrix(float_t* input, size_t nrows, size_t ncols);
 
+  static DataMatrix fromFile(const std::string& fileName);
+
+  static DataMatrix fromString(const std::string& serializedVector);
 
   /**
    * Resizes the DataMatrix to nrows rows.
@@ -141,7 +148,6 @@ class DataMatrix {
    */
   size_t appendRow(const DataVector& vec);
 
-
   /**
    * Sets all entries of DataMatrix to value.
    *
@@ -182,9 +188,7 @@ class DataMatrix {
    * @param col Column
    * @return reference to the element
    */
-  inline float_t& operator()(size_t row, size_t col) {
-    return data[row * ncols + col];
-  }
+  inline float_t& operator()(size_t row, size_t col) { return data[row * ncols + col]; }
 
   /**
    * Returns the i-th element.
@@ -193,9 +197,7 @@ class DataMatrix {
    * @param i position of the element
    * @return data[i]
    */
-  inline float_t& operator[](size_t i) {
-    return data[i];
-  }
+  inline float_t& operator[](size_t i) { return data[i]; }
 
   /**
    * Returns the value of the element at position [row,col]
@@ -204,9 +206,7 @@ class DataMatrix {
    * @param col Column
    * @return constant reference to the element
    */
-  inline const float_t& operator()(size_t row, size_t col) const {
-    return data[row * ncols + col];
-  }
+  inline const float_t& operator()(size_t row, size_t col) const { return data[row * ncols + col]; }
 
   /**
    * Returns the value of the element at position [row,col]
@@ -215,9 +215,7 @@ class DataMatrix {
    * @param col Column
    * @return Value of the element
    */
-  inline float_t get(size_t row, size_t col) const {
-    return data[row * ncols + col];
-  }
+  inline float_t get(size_t row, size_t col) const { return data[row * ncols + col]; }
 
   /**
    * Sets the element at position [row,col] to value.
@@ -226,9 +224,7 @@ class DataMatrix {
    * @param col Column
    * @param value New value for element
    */
-  inline void set(size_t row, size_t col, float_t value) {
-    data[row * ncols + col] = value;
-  }
+  inline void set(size_t row, size_t col, float_t value) { data[row * ncols + col] = value; }
 
   /**
    * Copies the values of a row to the DataVector vec.
@@ -270,7 +266,6 @@ class DataMatrix {
    */
   void setColumn(size_t col, const DataVector& vec);
 
-
   /**
    * Adds the values from another DataMatrix to the current values.
    * Modifies the current values.
@@ -300,7 +295,8 @@ class DataMatrix {
    * columns by adding all entries in one row.
    *
    * @param reduction DataVector to which the reduce columns are added
-   * @param beta vector with length of number of columns beta[i] is multiplied to each element row[j][i]
+   * @param beta vector with length of number of columns beta[i] is multiplied to each element
+   *row[j][i]
    * @param start_beta where to start using the beta coefficients
    */
   void addReduce(DataVector& reduction, DataVector& beta, size_t start_beta);
@@ -447,18 +443,14 @@ class DataMatrix {
    *
    * @return Number of elements stored in the matrix
    */
-  inline size_t getSize() const {
-    return ncols * nrows;
-  }
+  inline size_t getSize() const { return ncols * nrows; }
 
   /**
    * Returns the number of unused rows.
    *
    * @return number of unused rows
    */
-  inline size_t getUnused() const {
-    return unused;
-  }
+  inline size_t getUnused() const { return unused; }
 
   /**
    * Determines the number of non-zero elements in the vector.
@@ -472,18 +464,14 @@ class DataMatrix {
    *
    * @return Number of rows
    */
-  inline size_t getNrows() const {
-    return nrows;
-  }
+  inline size_t getNrows() const { return nrows; }
 
   /**
    * Returns the number of columns of the DataMatrix.
    *
    * @return Number of columns
    */
-  inline size_t getNcols() const {
-    return ncols;
-  }
+  inline size_t getNcols() const { return ncols; }
 
   /**
    * Get the current number of rows by which the DataMatrix is extended,
@@ -491,9 +479,7 @@ class DataMatrix {
    *
    * @return Row increment
    */
-  inline size_t getInc() const {
-    return inc_rows;
-  }
+  inline size_t getInc() const { return inc_rows; }
 
   /**
    * Sets the current number of rows by which the DataMatrix is extended,
@@ -502,9 +488,7 @@ class DataMatrix {
    *
    * @param inc_rows Row increment
    */
-  void setInc(size_t inc_rows) {
-    this->inc_rows = inc_rows;
-  }
+  void setInc(size_t inc_rows) { this->inc_rows = inc_rows; }
 
   /**
    * Normalizes the d-th dimension (entries in the d-th column) to @f$[0,1]@f$.
@@ -531,6 +515,8 @@ class DataMatrix {
    * @param text String to which the data is written
    */
   void toString(std::string& text) const;
+
+  void toFile(const std::string& fileName) const;
 
   /**
    * Returns a description of the DataMatrix as a string.

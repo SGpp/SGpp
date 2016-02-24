@@ -10,49 +10,167 @@
 #include <vector>
 
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
+#include "sgpp/base/exception/not_implemented_exception.hpp"
 
 namespace SGPP {
 namespace datadriven {
 
-// TODO(pfandedd): should be changed to json
+LearnerScenario::LearnerScenario() : isInitialized(false) {}
 
-LearnerScenario::LearnerScenario() : isInitialized(false), lambda(0.0), datasetFileName("") {}
-
-LearnerScenario::LearnerScenario(std::string scenarioFileName) : isInitialized(true) {
-  this->readFromFile(scenarioFileName);
+LearnerScenario::LearnerScenario(std::string scenarioFileName)
+    : json::JSON(scenarioFileName), isInitialized(true) {
+  //  this->readFromFile(scenarioFileName);
 }
 
 LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
-                                 SGPP::base::RegularGridConfiguration gridConfig,
-                                 SGPP::solver::SLESolverConfiguration SLESolverConfigRefine,
-                                 SGPP::solver::SLESolverConfiguration SLESolverConfigFinal,
-                                 SGPP::base::AdpativityConfiguration adaptConfig)
-    : isInitialized(true),
-      lambda(lambda),
-      datasetFileName(datasetFileName),
-      gridConfig(gridConfig),
-      solverConfigRefine(SLESolverConfigRefine),
-      solverConfigFinal(SLESolverConfigFinal),
-      adaptConfig(adaptConfig) {}
-
-std::string LearnerScenario::getDatasetFileName() { return this->datasetFileName; }
-
-double LearnerScenario::getLambda() { return this->lambda; }
-
-SGPP::base::RegularGridConfiguration LearnerScenario::getGridConfig() { return gridConfig; }
-
-SGPP::solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationRefine() {
-  return solverConfigRefine;
+                                 base::RegularGridConfiguration gridConfig,
+                                 solver::SLESolverConfiguration SLESolverConfigRefine,
+                                 solver::SLESolverConfiguration SLESolverConfigFinal,
+                                 base::AdpativityConfiguration adaptConfig)
+    : isInitialized(true) {
+  this->setDatasetFileName(datasetFileName);
+  this->setLambda(lambda);
+  this->setGridConfig(gridConfig);
+  this->setSolverConfigurationRefine(SLESolverConfigRefine);
+  this->setSolverConfigurationFinal(SLESolverConfigFinal);
+  this->setAdaptivityConfiguration(adaptConfig);
+  (*this).addDictAttr("testset").addIDAttr("hasTestDataset", false);
 }
 
-SGPP::solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
+LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
+                                 base::RegularGridConfiguration gridConfig,
+                                 solver::SLESolverConfiguration SLESolverConfigRefine,
+                                 solver::SLESolverConfiguration SLESolverConfigFinal,
+                                 base::AdpativityConfiguration adaptConfig,
+                                 datadriven::TestsetConfiguration testsetConfig)
+    : isInitialized(true) {
+  this->setDatasetFileName(datasetFileName);
+  this->setLambda(lambda);
+  this->setGridConfig(gridConfig);
+  this->setSolverConfigurationRefine(SLESolverConfigRefine);
+  this->setSolverConfigurationFinal(SLESolverConfigFinal);
+  this->setAdaptivityConfiguration(adaptConfig);
+  this->setTestsetConfiguration(testsetConfig);
+}
+
+void LearnerScenario::setDatasetFileName(std::string datasetFileName) {
+  (*this).replaceTextAttr("datasetFileName", datasetFileName);
+}
+
+std::string LearnerScenario::getDatasetFileName() { return (*this)["datasetFileName"].get(); }
+
+void LearnerScenario::setLambda(double lambda) { (*this).replaceIDAttr("lambda", lambda); }
+
+double LearnerScenario::getLambda() { return (*this)["lambda"].getDouble(); }
+
+void LearnerScenario::setGridConfig(base::RegularGridConfiguration& gridConfig) {
+  (*this).replaceDictAttr("grid");
+  (*this)["grid"].replaceIDAttr("boundaryLevel", gridConfig.boundaryLevel_);
+  (*this)["grid"].replaceIDAttr("dim", gridConfig.dim_);
+  (*this)["grid"].replaceIDAttr("level", static_cast<uint64_t>(gridConfig.level_));
+  (*this)["grid"].replaceIDAttr("maxDegree", gridConfig.maxDegree_);
+
+  if (gridConfig.type_ == base::GridType::Linear) {
+    (*this)["grid"].replaceTextAttr("type", "Linear");
+  } else if (gridConfig.type_ == base::GridType::Linear) {
+    (*this)["grid"].replaceTextAttr("type", "ModLinear");
+  } else {
+    throw base::not_implemented_exception(
+        "error: learner does not support the specified grid type");
+  }
+}
+
+base::RegularGridConfiguration LearnerScenario::getGridConfig() {
+  base::RegularGridConfiguration gridConfig;
+  gridConfig.boundaryLevel_ = (*this)["grid"]["boundaryLevel"].getUInt();
+  gridConfig.dim_ = (*this)["grid"]["dim"].getUInt();
+  gridConfig.level_ = static_cast<int>((*this)["grid"]["level"].getInt());
+  gridConfig.maxDegree_ = (*this)["grid"]["maxDegree"].getUInt();
+
+  std::string typeString = (*this)["grid"]["type"].get();
+  if (typeString.compare("Linear") == 0) {
+    gridConfig.type_ = base::GridType::Linear;
+  } else if (typeString.compare("ModLinear") == 0) {
+    gridConfig.type_ = base::GridType::ModLinear;
+  } else {
+    throw base::not_implemented_exception(
+        "error: learner does not support the specified grid type");
+  }
+  return gridConfig;
+}
+
+void LearnerScenario::setSolverConfigurationRefine(
+    solver::SLESolverConfiguration& solverConfigRefine) {
+  (*this).replaceDictAttr("solverRefine");
+  (*this)["solverRefine"].replaceIDAttr("eps", static_cast<double>(solverConfigRefine.eps_));
+  (*this)["solverRefine"].replaceIDAttr("maxIterations", solverConfigRefine.maxIterations_);
+  (*this)["solverRefine"].replaceIDAttr("threshold", solverConfigRefine.threshold_);
+  if (solverConfigRefine.type_ == solver::SLESolverType::CG) {
+    (*this)["solverRefine"].replaceIDAttr("type", "CG");
+  } else if (solverConfigRefine.type_ == solver::SLESolverType::BiCGSTAB) {
+    (*this)["solverRefine"].replaceIDAttr("type", "BiCGSTAB");
+  }
+}
+
+solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationRefine() {
+  solver::SLESolverConfiguration solverConfigFinal;
+  solverConfigFinal.eps_ = (*this)["solverRefine"]["eps"].getDouble();
+  solverConfigFinal.maxIterations_ = (*this)["solverRefine"]["maxIterations"].getUInt();
+  solverConfigFinal.threshold_ = (*this)["solverRefine"]["threshold"].getDouble();
+  if ((*this)["solverRefine"]["type"].get().compare("CG")) {
+    solverConfigFinal.type_ = solver::SLESolverType::CG;
+  } else if ((*this)["solverRefine"]["type"].get().compare("BiCGSTAB")) {
+    solverConfigFinal.type_ = solver::SLESolverType::BiCGSTAB;
+  }
   return solverConfigFinal;
 }
 
-SGPP::base::AdpativityConfiguration LearnerScenario::getAdaptivityConfiguration() {
+void LearnerScenario::setSolverConfigurationFinal(
+    solver::SLESolverConfiguration& solverConfigFinal) {
+  (*this).replaceDictAttr("solverFinal");
+  (*this)["solverFinal"].replaceIDAttr("eps", static_cast<double>(solverConfigFinal.eps_));
+  (*this)["solverFinal"].replaceIDAttr("maxIterations", solverConfigFinal.maxIterations_);
+  (*this)["solverFinal"].replaceIDAttr("threshold", solverConfigFinal.threshold_);
+  if (solverConfigFinal.type_ == solver::SLESolverType::CG) {
+    (*this)["solverFinal"].replaceIDAttr("type", "CG");
+  } else if (solverConfigFinal.type_ == solver::SLESolverType::BiCGSTAB) {
+    (*this)["solverFinal"].replaceIDAttr("type", "BiCGSTAB");
+  }
+}
+
+solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
+  solver::SLESolverConfiguration solverConfigFinal;
+  solverConfigFinal.eps_ = (*this)["solverFinal"]["eps"].getDouble();
+  solverConfigFinal.maxIterations_ = (*this)["solverFinal"]["maxIterations"].getUInt();
+  solverConfigFinal.threshold_ = (*this)["solverFinal"]["threshold"].getDouble();
+  if ((*this)["solverFinal"]["type"].get().compare("CG")) {
+    solverConfigFinal.type_ = solver::SLESolverType::CG;
+  } else if ((*this)["solverFinal"]["type"].get().compare("BiCGSTAB")) {
+    solverConfigFinal.type_ = solver::SLESolverType::BiCGSTAB;
+  }
+  return solverConfigFinal;
+}
+
+void LearnerScenario::setAdaptivityConfiguration(base::AdpativityConfiguration& adaptConfig) {
+  (*this).replaceDictAttr("adaptivity");
+  (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
+  (*this)["adaptivity"].replaceIDAttr("noPoints", adaptConfig.noPoints_);
+  (*this)["adaptivity"].replaceIDAttr("numRefinements", adaptConfig.numRefinements_);
+  (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);
+  (*this)["adaptivity"].replaceIDAttr("threshold", adaptConfig.threshold_);
+}
+
+base::AdpativityConfiguration LearnerScenario::getAdaptivityConfiguration() {
+  base::AdpativityConfiguration adaptConfig;
+  adaptConfig.maxLevelType_ = (*this)["adaptivity"]["maxLevelType"].getBool();
+  adaptConfig.noPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
+  adaptConfig.numRefinements_ = (*this)["adaptivity"]["numRefinements"].getUInt();
+  adaptConfig.percent_ = (*this)["adaptivity"]["percent"].getDouble();
+  adaptConfig.threshold_ = (*this)["adaptivity"]["threshold"].getDouble();
   return adaptConfig;
 }
 
+/*
 void LearnerScenario::writeToFile(std::string fileName) {
   std::ofstream file(fileName);
 
@@ -64,9 +182,9 @@ void LearnerScenario::writeToFile(std::string fileName) {
          << "0 # inferred from dataset" << std::endl;
     file << "grid.level=" << gridConfig.level_ << std::endl;
 
-    if (gridConfig.type_ == SGPP::base::GridType::Linear) {
+    if (gridConfig.type_ == base::GridType::Linear) {
       file << "grid.type=Linear" << std::endl;
-    } else if (gridConfig.type_ == SGPP::base::GridType::ModLinear) {
+    } else if (gridConfig.type_ == base::GridType::ModLinear) {
       file << "grid.type=ModLinear" << std::endl;
     } else {
       throw;
@@ -76,9 +194,9 @@ void LearnerScenario::writeToFile(std::string fileName) {
     file << "solverRefine.maxIterations=" << solverConfigRefine.maxIterations_ << std::endl;
     file << "solverRefine.threshold=" << solverConfigRefine.threshold_ << std::endl;
 
-    if (solverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
+    if (solverConfigRefine.type_ == solver::SLESolverType::CG) {
       file << "solverRefine.type=CG" << std::endl;
-    } else if (solverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
+    } else if (solverConfigRefine.type_ == solver::SLESolverType::BiCGSTAB) {
       file << "solverRefine.type=BiCGSTAB" << std::endl;
     } else {
       throw;
@@ -88,9 +206,9 @@ void LearnerScenario::writeToFile(std::string fileName) {
     file << "solverFinal.maxIterations=" << solverConfigFinal.maxIterations_ << std::endl;
     file << "solverFinal.threshold=" << solverConfigFinal.threshold_ << std::endl;
 
-    if (solverConfigFinal.type_ == SGPP::solver::SLESolverType::CG) {
+    if (solverConfigFinal.type_ == solver::SLESolverType::CG) {
       file << "solverFinal.type=CG" << std::endl;
-    } else if (solverConfigFinal.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
+    } else if (solverConfigFinal.type_ == solver::SLESolverType::BiCGSTAB) {
       file << "solverFinal.type=BiCGSTAB" << std::endl;
     } else {
       throw;
@@ -108,6 +226,7 @@ void LearnerScenario::writeToFile(std::string fileName) {
 
   file.close();
 }
+*/
 
 template <class T>
 T LearnerScenario::fromString(const std::string& s) {
@@ -117,6 +236,7 @@ T LearnerScenario::fromString(const std::string& s) {
   return t;
 }
 
+/*
 void LearnerScenario::readFromFile(std::string fileName) {
   std::ifstream file(fileName);
 
@@ -166,9 +286,9 @@ void LearnerScenario::readFromFile(std::string fileName) {
         check |= 0x00000008;
       } else if (name.compare("grid.type") == 0) {
         if (value.compare("Linear") == 0) {
-          gridConfig.type_ = SGPP::base::GridType::Linear;
+          gridConfig.type_ = base::GridType::Linear;
         } else if (value.compare("ModLinear") == 0) {
-          gridConfig.type_ = SGPP::base::GridType::ModLinear;
+          gridConfig.type_ = base::GridType::ModLinear;
         } else {
           throw;
         }
@@ -184,9 +304,9 @@ void LearnerScenario::readFromFile(std::string fileName) {
         check |= 0x00000080;
       } else if (name.compare("solverRefine.type") == 0) {
         if (value.compare("CG") == 0) {
-          solverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
+          solverConfigRefine.type_ = solver::SLESolverType::CG;
         } else if (name.compare("BiCGSTAB") == 0) {
-          solverConfigRefine.type_ = SGPP::solver::SLESolverType::BiCGSTAB;
+          solverConfigRefine.type_ = solver::SLESolverType::BiCGSTAB;
         } else {
           throw;
         }
@@ -202,9 +322,9 @@ void LearnerScenario::readFromFile(std::string fileName) {
         check |= 0x00000800;
       } else if (name.compare("solverFinal.type") == 0) {
         if (value.compare("CG") == 0) {
-          solverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
+          solverConfigFinal.type_ = solver::SLESolverType::CG;
         } else if (name.compare("BiCGSTAB") == 0) {
-          solverConfigRefine.type_ = SGPP::solver::SLESolverType::BiCGSTAB;
+          solverConfigRefine.type_ = solver::SLESolverType::BiCGSTAB;
         } else {
           throw;
         }
@@ -239,5 +359,30 @@ void LearnerScenario::readFromFile(std::string fileName) {
 
   this->isInitialized = true;
 }
+*/
+
+bool LearnerScenario::hasTestsetConfiguration() {
+  return (*this)["testset"]["hasTestDataset"].getBool();
+}
+
+void LearnerScenario::setTestsetConfiguration(datadriven::TestsetConfiguration& testsetConfig) {
+  (*this).replaceDictAttr("testset");
+  (*this)["testset"].replaceIDAttr("hasTestDataset", testsetConfig.hasTestDataset);
+  (*this)["testset"].replaceTextAttr("testFileName", testsetConfig.datasetFileName);
+  (*this)["testset"].replaceIDAttr("expectedMSE", testsetConfig.expectedMSE);
+  (*this)["testset"].replaceIDAttr("expectedLargestDifference",
+                                   testsetConfig.expectedLargestDifference);
+}
+
+datadriven::TestsetConfiguration LearnerScenario::getTestsetConfiguration() {
+  TestsetConfiguration testsetConfig;
+  testsetConfig.hasTestDataset = (*this)["testset"]["hasTestDataset"].getBool();
+  testsetConfig.datasetFileName = (*this)["testset"]["testFileName"].get();
+  testsetConfig.expectedMSE = (*this)["testset"]["expectedMSE"].getDouble();
+  testsetConfig.expectedLargestDifference =
+      (*this)["testset"]["expectedLargestDifference"].getDouble();
+  return testsetConfig;
+}
+
 }  // namespace datadriven
 }  // namespace SGPP
