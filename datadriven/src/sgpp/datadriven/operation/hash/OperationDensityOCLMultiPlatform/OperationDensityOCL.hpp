@@ -1,5 +1,3 @@
-
-
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
@@ -16,19 +14,16 @@
 
 namespace SGPP {
 namespace datadriven {
-namespace StreamingOCLMultiPlatform {
+namespace DensityOCLMultiPlatform {
 
-class OperationDensityOCL: public SGPP::base::OperationMatrix
-{
-protected:
-public:
-	OperationDensityOCL()  {
-	}
-
-	virtual void mult(base::DataVector& alpha, base::DataVector& result)=0;
-	virtual void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b)=0;
+class OperationDensityOCL: public base::OperationMatrix {
+ public:
+    OperationDensityOCL()  {
+    }
+    virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
+    virtual void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b) = 0;
 };
 
-}
-}
-}
+}  // namespace DensityOCLMultiPlatform
+}  // namespace datadriven
+}  // namespace SGPP
