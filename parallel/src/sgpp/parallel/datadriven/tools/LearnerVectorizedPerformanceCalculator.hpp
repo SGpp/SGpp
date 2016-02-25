@@ -12,7 +12,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 
 namespace parallel {
@@ -47,13 +46,11 @@ class LearnerVectorizedPerformanceCalculator {
    *
    * @return a LearnerVectorizedPerformance struct containing the results
    */
-  static LearnerVectorizedPerformance getGFlopAndGByte(SGPP::base::Grid& Grid,
-      size_t numInstances,
-      SGPP::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype);
+  static LearnerVectorizedPerformance getGFlopAndGByte(SGPP::base::Grid& Grid, size_t numInstances,
+                                                       SGPP::solver::SLESolverType solver,
+                                                       size_t numIterations, size_t sizeDatatype);
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* LEARNERVECTORIZEDPERFORMANCECALCULATOR_HPP */
