@@ -87,7 +87,7 @@ DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
       //      double value = std::stod(&(serializedVector[i]), &next);
       double value = std::atof(&(serializedVector[i]));
 #else
-      float value = std::stof(&(serializedVector[i]));
+      float value = std::atof(&(serializedVector[i]));
 #endif
       row.append(value);
       state = PARSER_STATE::ROWCOMMAEND;
