@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -21,7 +20,7 @@ namespace parallel {
  * Implementation for linear functions of Laplace Operation, linear grids without boundaries
  *
  */
-class OperationLaplaceVectorizedLinearOCL: public SGPP::base::OperationMatrix {
+class OperationLaplaceVectorizedLinearOCL : public SGPP::base::OperationMatrix {
  private:
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
@@ -47,19 +46,16 @@ class OperationLaplaceVectorizedLinearOCL: public SGPP::base::OperationMatrix {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~OperationLaplaceVectorizedLinearOCL();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEVECTORIZEDLINEAROCL_HPP */

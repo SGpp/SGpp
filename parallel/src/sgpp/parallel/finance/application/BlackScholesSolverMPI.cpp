@@ -19,22 +19,23 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
-
-#include <sgpp/globaldef.hpp>
-
+#include <algorithm>
+#include <vector>
+#include <string>
 
 namespace SGPP {
 namespace parallel {
 
-BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform,
-    bool usePAT) : SGPP::pde::ParabolicPDESolver() {
-
+BlackScholesSolverMPI::BlackScholesSolverMPI(bool useLogTransform, bool usePAT)
+    : SGPP::pde::ParabolicPDESolver() {
   this->bStochasticDataAlloc = false;
   this->bGridConstructed = false;
   this->myScreen = NULL;
@@ -72,16 +73,16 @@ BlackScholesSolverMPI::~BlackScholesSolverMPI() {
   }
 }
 
-void BlackScholesSolverMPI::getGridNormalDistribution(SGPP::base::DataVector&
-    alpha, std::vector<double>& norm_mu, std::vector<double>& norm_sigma) {
+void BlackScholesSolverMPI::getGridNormalDistribution(SGPP::base::DataVector& alpha,
+                                                      std::vector<double>& norm_mu,
+                                                      std::vector<double>& norm_sigma) {
   if (this->bGridConstructed) {
     double value;
     base::StdNormalDistribution myNormDistr;
     double* s_coords = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*
-                           (this->myBoundingBox));
+      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {
@@ -100,8 +101,8 @@ void BlackScholesSolverMPI::getGridNormalDistribution(SGPP::base::DataVector&
             double inner_tmp = 0.0;
 
             for (size_t l = 0; l < dim; l++) {
-              inner_tmp += this->eigvec_covar->get(j,
-                                                   l) * (s_coords[l] - (this->current_time * this->mu_hat->get(l)));
+              inner_tmp += this->eigvec_covar->get(j, l) *
+                           (s_coords[l] - (this->current_time * this->mu_hat->get(l)));
             }
 
             value *= myNormDistr.getDensity(exp(inner_tmp), norm_mu[j], norm_sigma[j]);
@@ -116,12 +117,12 @@ void BlackScholesSolverMPI::getGridNormalDistribution(SGPP::base::DataVector&
 
     delete[] s_coords;
   } else {
-    throw base::application_exception("BlackScholesSolverMPI::getGridNormalDistribution : The grid wasn't initialized before!");
+    throw base::application_exception(
+        "BlackScholesSolverMPI::getGridNormalDistribution : The grid wasn't initialized before!");
   }
 }
 
-void BlackScholesSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox,
-    int level) {
+void BlackScholesSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox, int level) {
   this->dim = BoundingBox.getDimensions();
   this->levels = level;
 
@@ -132,15 +133,16 @@ void BlackScholesSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox,
   this->myBoundingBox = &this->myGrid->getBoundingBox();
   this->myGridStorage = &this->myGrid->getStorage();
 
-  //std::string serGrid;
-  //myGrid->serialize(serGrid);
-  //std::cout << serGrid << std::endl;
+  // std::string serGrid;
+  // myGrid->serialize(serGrid);
+  // std::cout << serGrid << std::endl;
 
   this->bGridConstructed = true;
 }
 
 void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
-    SGPP::base::DataVector& sigmas, SGPP::base::DataMatrix& rhos, double r) {
+                                              SGPP::base::DataVector& sigmas,
+                                              SGPP::base::DataMatrix& rhos, double r) {
   this->mus = new SGPP::base::DataVector(mus);
   this->sigmas = new SGPP::base::DataVector(sigmas);
   this->rhos = new SGPP::base::DataMatrix(rhos);
@@ -154,7 +156,7 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
 
   // 1d test case
   if (mydim == 1) {
-    this->eigval_covar->set(0, this->sigmas->get(0)*this->sigmas->get(0));
+    this->eigval_covar->set(0, this->sigmas->get(0) * this->sigmas->get(0));
     this->eigvec_covar->set(0, 0, 1.0);
   }
 
@@ -221,7 +223,6 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
     this->eigval_covar->set(1, 0.109759129882028184);
     this->eigval_covar->set(2, 0.164125663850937770);
 
-
     this->eigvec_covar->set(0, 0, -0.869836297894464927);
     this->eigvec_covar->set(0, 1, -0.472520156399458380);
     this->eigvec_covar->set(0, 2, -0.141808027493095845);
@@ -260,7 +261,6 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
     this->eigval_covar->set(2, 0.0369289052706551282);
     this->eigval_covar->set(3, 0.884454475165345477e-1);
 
-
     this->eigvec_covar->set(0, 0, -0.758784156527507303);
     this->eigvec_covar->set(0, 1, -0.441609644035335480);
     this->eigvec_covar->set(0, 2, -0.329723883556484409);
@@ -289,7 +289,6 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
     this->eigval_covar->set(2, 0.0132179416451147155);
     this->eigval_covar->set(3, 0.0939549786605669707);
     this->eigval_covar->set(4, 0.0587331447155870698);
-
 
     this->eigvec_covar->set(0, 0, 0.263790550378285305);
     this->eigvec_covar->set(0, 1, 0.859923642135395405);
@@ -330,7 +329,6 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
     this->eigval_covar->set(3, 0.0498094136802732304);
     this->eigval_covar->set(4, 0.0774284377364329035);
     this->eigval_covar->set(5, 0.110834499602274789);
-
 
     this->eigvec_covar->set(0, 0, 0.0901970509435878476);
     this->eigvec_covar->set(0, 1, 0.825424523396568799);
@@ -384,7 +382,6 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
     this->eigval_covar->set(4, 0.0306260409692614491);
     this->eigval_covar->set(5, 0.0811043629942213989);
     this->eigval_covar->set(6, 0.0590670833426543418);
-
 
     this->eigvec_covar->set(0, 0, 0.0843288248079574199);
     this->eigvec_covar->set(0, 1, 0.825397719934479079);
@@ -447,8 +444,8 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
     double tmp = 0.0;
 
     for (size_t j = 0; j < mydim; j++) {
-      tmp += ((this->mus->get(j) - (0.5 * this->sigmas->get(j) * this->sigmas->get(
-                                      j))) * this->eigvec_covar->get(j, i));
+      tmp += ((this->mus->get(j) - (0.5 * this->sigmas->get(j) * this->sigmas->get(j))) *
+              this->eigvec_covar->get(j, i));
     }
 
     this->mu_hat->set(i, tmp);
@@ -457,29 +454,30 @@ void BlackScholesSolverMPI::setStochasticData(SGPP::base::DataVector& mus,
   bStochasticDataAlloc = true;
 }
 
-void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps,
-    double timestepsize, size_t maxCGIterations, double epsilonCG,
-    SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation,
-    size_t numEvalsAnimation) {
-  throw base::application_exception("BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this setting!");
+void BlackScholesSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize,
+                                               size_t maxCGIterations, double epsilonCG,
+                                               SGPP::base::DataVector& alpha, bool verbose,
+                                               bool generateAnimation, size_t numEvalsAnimation) {
+  throw base::application_exception(
+      "BlackScholesSolverMPI::solveExplicitEuler : Explicit Euler is not supported in this "
+      "setting!");
 }
 
-void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
-    double timestepsize, size_t maxCGIterations, double epsilonCG,
-    SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation,
-    size_t numEvalsAnimation) {
+void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize,
+                                               size_t maxCGIterations, double epsilonCG,
+                                               SGPP::base::DataVector& alpha, bool verbose,
+                                               bool generateAnimation, size_t numEvalsAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::Euler* myEuler = new solver::Euler("ImEul", numTimesteps, timestepsize,
-        generateAnimation, numEvalsAnimation, myScreen);
+                                               generateAnimation, numEvalsAnimation, myScreen);
     solver::SLESolver* myCG;
     solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
     if (this->usePAT == false) {
       myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-      myBSSystem = new
-      parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid,
-          alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul",
-          this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen,
+      myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(
+          *this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize,
+          "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen,
           this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
           this->refineThreshold, this->refineMode,
           static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
@@ -488,34 +486,33 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
       if (alg_selector != NULL) {
-        if (! strcmp(alg_selector, "X86SIMD")) {
+        if (!strcmp(alg_selector, "X86SIMD")) {
           myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
           myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(
-            *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
-            timestepsize, "ImEul", this->dStrike, this->payoffType, this->r,
-            this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode,
-            this->numCoarsenPoints, this->refineThreshold, this->refineMode,
-            this->refineMaxLevel);
-        } else if (! strcmp(alg_selector, "OCL")) {
+              *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
+              timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
+              this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
+              this->refineThreshold, this->refineMode, this->refineMaxLevel);
+        } else if (!strcmp(alg_selector, "OCL")) {
           myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
           myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(
-            *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
-            timestepsize, "ImEul", this->dStrike, this->payoffType, this->r,
-            this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode,
-            this->numCoarsenPoints, this->refineThreshold, this->refineMode,
-            this->refineMaxLevel);
+              *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
+              timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
+              this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
+              this->refineThreshold, this->refineMode, this->refineMaxLevel);
         } else {
-          throw base::application_exception("BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+          throw base::application_exception(
+              "BlackScholesSolverMPI::solveImplicitEuler : You have selected an unsupport "
+              "vectorization method!");
         }
       } else {
         myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-        myBSSystem = new
-        parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(
-          *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
-          timestepsize, "ImEul", this->dStrike, this->payoffType, this->r,
-          this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode,
-          this->numCoarsenPoints, this->refineThreshold, this->refineMode,
-          static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
+        myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(
+            *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
+            timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
+            this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
+            this->refineThreshold, this->refineMode,
+            static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
       }
     }
 
@@ -523,8 +520,7 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
     this->staInnerGridSize = getNumberInnerGridPoints();
 
     if (myGlobalMPIComm->getMyRank() == 0) {
-      std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:"
-                << std::endl;
+      std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
@@ -534,18 +530,21 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
     this->dNeededTime = myStopwatch->stop();
 
     if (myGlobalMPIComm->getMyRank() == 0) {
-      std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:"
+      std::cout << "Using Implicit Euler to solve " << numTimesteps << " timesteps:" << std::endl;
+      std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+      std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl
+                << std::endl
                 << std::endl;
-      std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() <<
-                std::endl;
-      std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() <<
-                std::endl << std::endl << std::endl;
-      std::cout << "Average Grid size: " << static_cast<double>
-                (myBSSystem->getSumGridPointsComplete()) / static_cast<double>
-                (numTimesteps) << std::endl;
-      std::cout << "Average Grid size (Inner): " << static_cast<double>
-                (myBSSystem->getSumGridPointsInner()) / static_cast<double>
-                (numTimesteps) << std::endl << std::endl << std::endl;
+      std::cout << "Average Grid size: "
+                << static_cast<double>(myBSSystem->getSumGridPointsComplete()) /
+                       static_cast<double>(numTimesteps)
+                << std::endl;
+      std::cout << "Average Grid size (Inner): "
+                << static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                       static_cast<double>(numTimesteps)
+                << std::endl
+                << std::endl
+                << std::endl;
 
       if (this->myScreen != NULL) {
         std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
@@ -554,9 +553,10 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
     }
 
     this->finInnerGridSize = getNumberInnerGridPoints();
-    this->avgInnerGridSize = static_cast<size_t>((static_cast<double>
-                             (myBSSystem->getSumGridPointsInner()) / static_cast<double>
-                             (numTimesteps)) + 0.5);
+    this->avgInnerGridSize =
+        static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                             static_cast<double>(numTimesteps)) +
+                            0.5);
     this->nNeededIterations = myEuler->getNumberIterations();
 
     delete myBSSystem;
@@ -566,23 +566,24 @@ void BlackScholesSolverMPI::solveImplicitEuler(size_t numTimesteps,
 
     this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
-    throw base::application_exception("BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic parameters weren't set!");
+    throw base::application_exception(
+        "BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic "
+        "parameters weren't set!");
   }
 }
 
-void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
-    double timestepsize, size_t maxCGIterations, double epsilonCG,
-    SGPP::base::DataVector& alpha, size_t NumImEul) {
+void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps, double timestepsize,
+                                               size_t maxCGIterations, double epsilonCG,
+                                               SGPP::base::DataVector& alpha, size_t NumImEul) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::SLESolver* myCG;
     solver::OperationParabolicPDESolverSystem* myBSSystem = NULL;
 
     if (this->usePAT == false) {
       myCG = new parallel::BiCGStabMPI(maxCGIterations, epsilonCG);
-      myBSSystem = new
-      parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(*this->myGrid,
-          alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize, "ImEul",
-          this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen,
+      myBSSystem = new parallel::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(
+          *this->myGrid, alpha, *this->mus, *this->sigmas, *this->rhos, this->r, timestepsize,
+          "ImEul", this->dStrike, this->payoffType, this->useLogTransform, this->useCoarsen,
           this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
           this->refineThreshold, this->refineMode,
           static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
@@ -591,34 +592,33 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
       char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
       if (alg_selector != NULL) {
-        if (! strcmp(alg_selector, "X86SIMD")) {
+        if (!strcmp(alg_selector, "X86SIMD")) {
           myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
           myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(
-            *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
-            timestepsize, "ImEul", this->dStrike, this->payoffType, this->r,
-            this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode,
-            this->numCoarsenPoints, this->refineThreshold, this->refineMode,
-            this->refineMaxLevel);
-        } else if (! strcmp(alg_selector, "OCL")) {
+              *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
+              timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
+              this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
+              this->refineThreshold, this->refineMode, this->refineMaxLevel);
+        } else if (!strcmp(alg_selector, "OCL")) {
           myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
           myBSSystem = new BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(
-            *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
-            timestepsize, "ImEul", this->dStrike, this->payoffType, this->r,
-            this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode,
-            this->numCoarsenPoints, this->refineThreshold, this->refineMode,
-            this->refineMaxLevel);
+              *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
+              timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
+              this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
+              this->refineThreshold, this->refineMode, this->refineMaxLevel);
         } else {
-          throw base::application_exception("BlackScholesSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
+          throw base::application_exception(
+              "BlackScholesSolverMPI::solveCrankNicolson : You have selected an unsupport "
+              "vectorization method!");
         }
       } else {
         myCG = new parallel::ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-        myBSSystem = new
-        parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(
-          *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
-          timestepsize, "ImEul", this->dStrike, this->payoffType, this->r,
-          this->useCoarsen, this->coarsenThreshold, this->adaptSolveMode,
-          this->numCoarsenPoints, this->refineThreshold, this->refineMode,
-          static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
+        myBSSystem = new parallel::BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI(
+            *this->myGrid, alpha, *this->eigval_covar, *this->eigvec_covar, *this->mu_hat,
+            timestepsize, "ImEul", this->dStrike, this->payoffType, this->r, this->useCoarsen,
+            this->coarsenThreshold, this->adaptSolveMode, this->numCoarsenPoints,
+            this->refineThreshold, this->refineMode,
+            static_cast<SGPP::base::GridIndex::level_type>(this->refineMaxLevel));
       }
     }
 
@@ -636,18 +636,17 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
 
     numIESteps = NumImEul;
 
-    solver::Euler* myEuler = new solver::Euler("ImEul", numIESteps, timestepsize,
-        false, 0, this->myScreen);
-    solver::CrankNicolson* myCN = new solver::CrankNicolson(numCNSteps,
-        timestepsize, this->myScreen);
+    solver::Euler* myEuler =
+        new solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+    solver::CrankNicolson* myCN =
+        new solver::CrankNicolson(numCNSteps, timestepsize, this->myScreen);
 
     MPI_Barrier(MPI_COMM_WORLD);
     myStopwatch->start();
 
     if (numIESteps > 0) {
       if (myGlobalMPIComm->getMyRank() == 0) {
-        std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" <<
-                  std::endl;
+        std::cout << "Using Implicit Euler to solve " << numIESteps << " timesteps:" << std::endl;
       }
 
       myBSSystem->setODESolver("ImEul");
@@ -655,8 +654,10 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
     }
 
     if (myGlobalMPIComm->getMyRank() == 0) {
-      std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" <<
-                std::endl << std::endl << std::endl << std::endl;
+      std::cout << "Using Crank Nicolson to solve " << numCNSteps << " timesteps:" << std::endl
+                << std::endl
+                << std::endl
+                << std::endl;
     }
 
     myBSSystem->setODESolver("CrNic");
@@ -665,16 +666,20 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
     this->dNeededTime = myStopwatch->stop();
 
     if (myGlobalMPIComm->getMyRank() == 0) {
-      std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() <<
-                std::endl;
-      std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() <<
-                std::endl << std::endl << std::endl;
-      std::cout << "Average Grid size: " << static_cast<double>
-                (myBSSystem->getSumGridPointsComplete()) / static_cast<double>
-                (numTimesteps) << std::endl;
-      std::cout << "Average Grid size (Inner): " << static_cast<double>
-                (myBSSystem->getSumGridPointsInner()) / static_cast<double>
-                (numTimesteps) << std::endl << std::endl << std::endl;
+      std::cout << std::endl << "Final Grid size: " << getNumberGridPoints() << std::endl;
+      std::cout << "Final Grid size (inner): " << getNumberInnerGridPoints() << std::endl
+                << std::endl
+                << std::endl;
+      std::cout << "Average Grid size: "
+                << static_cast<double>(myBSSystem->getSumGridPointsComplete()) /
+                       static_cast<double>(numTimesteps)
+                << std::endl;
+      std::cout << "Average Grid size (Inner): "
+                << static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                       static_cast<double>(numTimesteps)
+                << std::endl
+                << std::endl
+                << std::endl;
 
       if (this->myScreen != NULL) {
         std::cout << "Time to solve: " << this->dNeededTime << " seconds" << std::endl;
@@ -683,11 +688,11 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
     }
 
     this->finInnerGridSize = getNumberInnerGridPoints();
-    this->avgInnerGridSize = static_cast<size_t>((static_cast<double>
-                             (myBSSystem->getSumGridPointsInner()) / static_cast<double>
-                             (numTimesteps)) + 0.5);
-    this->nNeededIterations = myEuler->getNumberIterations() +
-                              myCN->getNumberIterations();
+    this->avgInnerGridSize =
+        static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                             static_cast<double>(numTimesteps)) +
+                            0.5);
+    this->nNeededIterations = myEuler->getNumberIterations() + myCN->getNumberIterations();
 
     delete myBSSystem;
     delete myCG;
@@ -697,58 +702,64 @@ void BlackScholesSolverMPI::solveCrankNicolson(size_t numTimesteps,
 
     this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
-    throw base::application_exception("BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic parameters weren't set!");
+    throw base::application_exception(
+        "BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic "
+        "parameters weren't set!");
   }
 }
 
-
-void BlackScholesSolverMPI::solveAdamsBashforth(size_t numTimesteps,
-    double timestepsize, size_t maxCGIterations, double epsilonCG,
-    SGPP::base::DataVector& alpha, bool verbose) {
-  throw base::application_exception("BlackScholesSolverMPI::solveAdamsBashforth : An unsupported ODE Solver type has been chosen!");
+void BlackScholesSolverMPI::solveAdamsBashforth(size_t numTimesteps, double timestepsize,
+                                                size_t maxCGIterations, double epsilonCG,
+                                                SGPP::base::DataVector& alpha, bool verbose) {
+  throw base::application_exception(
+      "BlackScholesSolverMPI::solveAdamsBashforth : An unsupported ODE Solver type has been "
+      "chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCAC(size_t numTimesteps, double timestepsize,
-                                      double epsilon, size_t maxCGIterations, double epsilonCG,
+void BlackScholesSolverMPI::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon,
+                                      size_t maxCGIterations, double epsilonCG,
                                       SGPP::base::DataVector& alpha, bool verbose) {
-  throw base::application_exception("BlackScholesSolverMPI::solveSCAC : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception(
+      "BlackScholesSolverMPI::solveSCAC : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCH(size_t numTimesteps, double timestepsize,
-                                     double epsilon, size_t maxCGIterations, double epsilonCG,
+void BlackScholesSolverMPI::solveSCH(size_t numTimesteps, double timestepsize, double epsilon,
+                                     size_t maxCGIterations, double epsilonCG,
                                      SGPP::base::DataVector& alpha, bool verbose) {
-  throw base::application_exception("BlackScholesSolverMPI::solveSCH : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception(
+      "BlackScholesSolverMPI::solveSCH : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCBDF(size_t numTimesteps, double timestepsize,
-                                       double epsilon, size_t maxCGIterations, double epsilonCG,
+void BlackScholesSolverMPI::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon,
+                                       size_t maxCGIterations, double epsilonCG,
                                        SGPP::base::DataVector& alpha, bool verbose) {
-  throw base::application_exception("BlackScholesSolverMPI::solveSCBDF : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception(
+      "BlackScholesSolverMPI::solveSCBDF : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize,
-                                      double epsilon, double myAlpha, size_t maxCGIterations, double epsilonCG,
+void BlackScholesSolverMPI::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon,
+                                      double myAlpha, size_t maxCGIterations, double epsilonCG,
                                       SGPP::base::DataVector& alpha, bool verbose) {
-  throw base::application_exception("BlackScholesSolverMPI::solveSCEJ : An unsupported ODE Solver type has been chosen!");
+  throw base::application_exception(
+      "BlackScholesSolverMPI::solveSCEJ : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize,
-                                   size_t maxCGIterations, double epsilonCG, SGPP::base::DataVector& alpha,
-                                   bool verbose, void* myODESolverV, std::string Solver) {
-  throw base::application_exception("BlackScholesSolverMPI::solveX : An unsupported ODE Solver type has been chosen!");
+void BlackScholesSolverMPI::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                                   double epsilonCG, SGPP::base::DataVector& alpha, bool verbose,
+                                   void* myODESolverV, std::string Solver) {
+  throw base::application_exception(
+      "BlackScholesSolverMPI::solveX : An unsupported ODE Solver type has been chosen!");
 }
 
-void BlackScholesSolverMPI::setPayoffType(std::string payoffType) {
-  this->payoffType = payoffType;
-}
+void BlackScholesSolverMPI::setPayoffType(std::string payoffType) { this->payoffType = payoffType; }
 
-void BlackScholesSolverMPI::initGridWithPayoff(SGPP::base::DataVector& alpha,
-    double strike, std::string payoffType) {
+void BlackScholesSolverMPI::initGridWithPayoff(SGPP::base::DataVector& alpha, double strike,
+                                               std::string payoffType) {
   this->dStrike = strike;
   this->payoffType = payoffType;
 
-  if (payoffType == "std_euro_call" || payoffType == "std_euro_put"
-      || payoffType == "std_amer_put") {
+  if (payoffType == "std_euro_call" || payoffType == "std_euro_put" ||
+      payoffType == "std_amer_put") {
     this->tBoundaryType = "Dirichlet";
   }
 
@@ -763,8 +774,7 @@ void BlackScholesSolverMPI::initGridWithPayoff(SGPP::base::DataVector& alpha,
   }
 }
 
-double BlackScholesSolverMPI::get1DEuroCallPayoffValue(double assetValue,
-    double strike) {
+double BlackScholesSolverMPI::get1DEuroCallPayoffValue(double assetValue, double strike) {
   if (assetValue <= strike) {
     return 0.0;
   } else {
@@ -776,12 +786,13 @@ std::vector<size_t> BlackScholesSolverMPI::getAlgorithmicDimensions() {
   return this->myGrid->getAlgorithmicDimensions();
 }
 
-void BlackScholesSolverMPI::setAlgorithmicDimensions(std::vector<size_t>
-    newAlgoDims) {
+void BlackScholesSolverMPI::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
   if (this->tBoundaryType == "freeBoundaries") {
     this->myGrid->setAlgorithmicDimensions(newAlgoDims);
   } else {
-    throw base::application_exception("BlackScholesSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only supported when choosing option type all!");
+    throw base::application_exception(
+        "BlackScholesSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only "
+        "supported when choosing option type all!");
   }
 }
 
@@ -793,8 +804,9 @@ void BlackScholesSolverMPI::initScreen() {
 }
 
 void BlackScholesSolverMPI::setEnableCoarseningData(std::string adaptSolveMode,
-    std::string refineMode, int refineMaxLevel, int numCoarsenPoints,
-    double coarsenThreshold, double refineThreshold) {
+                                                    std::string refineMode, int refineMaxLevel,
+                                                    int numCoarsenPoints, double coarsenThreshold,
+                                                    double refineThreshold) {
   this->useCoarsen = true;
   this->coarsenThreshold = coarsenThreshold;
   this->refineThreshold = refineThreshold;
@@ -804,14 +816,13 @@ void BlackScholesSolverMPI::setEnableCoarseningData(std::string adaptSolveMode,
   this->numCoarsenPoints = numCoarsenPoints;
 }
 
-void BlackScholesSolverMPI::initCartesianGridWithPayoff(
-  SGPP::base::DataVector& alpha, double strike, std::string payoffType) {
+void BlackScholesSolverMPI::initCartesianGridWithPayoff(SGPP::base::DataVector& alpha,
+                                                        double strike, std::string payoffType) {
   double tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(
-                             *this->myBoundingBox);
+      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -838,28 +849,30 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(
 
         alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
-        throw base::application_exception("BlackScholesSolver::initCartesianGridWithPayoff : An unknown payoff-type was specified!");
+        throw base::application_exception(
+            "BlackScholesSolver::initCartesianGridWithPayoff : An unknown payoff-type was "
+            "specified!");
       }
 
       delete[] dblFuncValues;
     }
 
     std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
   } else {
-    throw base::application_exception("BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
+    throw base::application_exception(
+        "BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
   }
 }
 
-void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(
-  base::DataVector& alpha, double strike, std::string payoffType) {
+void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(base::DataVector& alpha, double strike,
+                                                             std::string payoffType) {
   double tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(
-                             *this->myBoundingBox);
+      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -886,28 +899,30 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(
 
         alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
-        throw base::application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was specified!");
+        throw base::application_exception(
+            "BlackScholesSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was "
+            "specified!");
       }
 
       delete[] dblFuncValues;
     }
 
     std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
   } else {
-    throw base::application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
+    throw base::application_exception(
+        "BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
 }
 
-void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(
-  base::DataVector& alpha, double strike, std::string payoffType) {
+void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(base::DataVector& alpha, double strike,
+                                                             std::string payoffType) {
   double tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(
-                             *this->myBoundingBox);
+      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       double* dblFuncValues = new double[dim];
 
@@ -946,22 +961,26 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(
 
         alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
-        throw base::application_exception("BlackScholesSolverMPI::initPATTransformedGridWithPayoff : An unknown payoff-type was specified!");
+        throw base::application_exception(
+            "BlackScholesSolverMPI::initPATTransformedGridWithPayoff : An unknown payoff-type was "
+            "specified!");
       }
 
       delete[] dblFuncValues;
     }
 
     std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
   } else {
-    throw base::application_exception("BlackScholesSolverMPI::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
+    throw base::application_exception(
+        "BlackScholesSolverMPI::initPATTransformedGridWithPayoff : A grid wasn't constructed "
+        "before!");
   }
 }
 
 double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point,
-    SGPP::base::DataVector& alpha) {
+                                         SGPP::base::DataVector& alpha) {
   std::vector<double> trans_eval = eval_point;
 
   // apply needed coordinate transformations
@@ -985,8 +1004,8 @@ double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point,
     }
   }
 
-  std::unique_ptr<SGPP::base::OperationEval> myEval = SGPP::op_factory::createOperationEval(
-                                        *this->myGrid);
+  std::unique_ptr<SGPP::base::OperationEval> myEval =
+      SGPP::op_factory::createOperationEval(*this->myGrid);
   double result = myEval->eval(alpha, trans_eval);
 
   // discounting, if PAT is used
@@ -1025,8 +1044,8 @@ void BlackScholesSolverMPI::transformPoint(SGPP::base::DataVector& point) {
   point = tmp_point;
 }
 
-void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
-    std::string tfilename, bool bSurplus) const {
+void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha, std::string tfilename,
+                                               bool bSurplus) const {
   base::DataVector temp(alpha);
   double tmp = 0.0;
   size_t dim = myGrid->getStorage().getDimension();
@@ -1035,7 +1054,7 @@ void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
     std::unique_ptr<base::OperationHierarchisation> myHier =
-      SGPP::op_factory::createOperationHierarchisation(*myGrid);
+        SGPP::op_factory::createOperationHierarchisation(*myGrid);
     myHier->doDehierarchisation(temp);
   }
 
@@ -1043,8 +1062,7 @@ void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
   fileout.open(tfilename.c_str());
 
   for (size_t i = 0; i < myGrid->getStorage().getSize(); i++) {
-    std::string coords =  myGrid->getStorage().get(i)->getCoordsStringBB(
-                            myGrid->getBoundingBox());
+    std::string coords = myGrid->getStorage().get(i)->getCoordsStringBB(myGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
 
     double* dblFuncValues = new double[dim];
@@ -1058,8 +1076,8 @@ void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
       double trans_point = 0.0;
 
       for (size_t j = 0; j < dim; j++) {
-        trans_point += this->eigvec_covar->get(l,
-                                               j) * (dblFuncValues[j] - (this->current_time * this->mu_hat->get(j)));
+        trans_point += this->eigvec_covar->get(l, j) *
+                       (dblFuncValues[j] - (this->current_time * this->mu_hat->get(j)));
       }
 
       fileout << exp(trans_point) << " ";
@@ -1073,31 +1091,16 @@ void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
   fileout.close();
 }
 
-void BlackScholesSolverMPI::resetSolveTime() {
-  this->current_time = 0.0;
-}
+void BlackScholesSolverMPI::resetSolveTime() { this->current_time = 0.0; }
 
+size_t BlackScholesSolverMPI::getNeededIterationsToSolve() { return this->nNeededIterations; }
 
-size_t BlackScholesSolverMPI::getNeededIterationsToSolve() {
-  return this->nNeededIterations;
-}
+double BlackScholesSolverMPI::getNeededTimeToSolve() { return this->dNeededTime; }
 
-double BlackScholesSolverMPI::getNeededTimeToSolve() {
-  return this->dNeededTime;
-}
+size_t BlackScholesSolverMPI::getStartInnerGridSize() { return this->staInnerGridSize; }
 
-size_t BlackScholesSolverMPI::getStartInnerGridSize() {
-  return this->staInnerGridSize;
-}
+size_t BlackScholesSolverMPI::getFinalInnerGridSize() { return this->finInnerGridSize; }
 
-size_t BlackScholesSolverMPI::getFinalInnerGridSize() {
-  return this->finInnerGridSize;
-}
-
-size_t BlackScholesSolverMPI::getAverageInnerGridSize() {
-  return this->avgInnerGridSize;
-}
-
-}
-
-}
+size_t BlackScholesSolverMPI::getAverageInnerGridSize() { return this->avgInnerGridSize; }
+}  // namespace parallel
+}  // namespace SGPP

@@ -8,25 +8,20 @@
 #endif
 
 #include <sgpp/parallel/solver/sle/BiCGStabMPI.hpp>
-#include <cmath>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cmath>
 
 namespace SGPP {
 
 namespace parallel {
 
-BiCGStabMPI::BiCGStabMPI(size_t imax,
-                         double epsilon) : SGPP::solver::SLESolver(imax, epsilon) {
-}
+BiCGStabMPI::BiCGStabMPI(size_t imax, double epsilon) : SGPP::solver::SLESolver(imax, epsilon) {}
 
-BiCGStabMPI::~BiCGStabMPI() {
-}
+BiCGStabMPI::~BiCGStabMPI() {}
 
-void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
-                        SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse,
-                        bool verbose, double max_threshold) {
+void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
+                        SGPP::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
   if (myGlobalMPIComm->getMyRank() != 0) {
     this->waitForTask(SystemMatrix, alpha);
   } else {
@@ -39,7 +34,7 @@ void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
       alpha.setAll(0.0);
     }
 
-    //Calculate r0
+    // Calculate r0
     SGPP::base::DataVector r(alpha.getSize());
     ctrl = 'M';
     myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
@@ -50,10 +45,10 @@ void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
     double delta = 0.0;
 
     if (verbose == true) {
-      std::cout <<  "delta_0 " << delta_0 << std::endl;
+      std::cout << "delta_0 " << delta_0 << std::endl;
     }
 
-    //Choose r0 as r
+    // Choose r0 as r
     SGPP::base::DataVector rZero(r);
     // Set p as r0
     SGPP::base::DataVector p(rZero);
@@ -80,7 +75,7 @@ void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
       myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
       SystemMatrix.mult(p, s);
 
-      //std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
+      // std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
 
       sigma = s.dotProduct(rZero);
 
@@ -92,7 +87,7 @@ void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
       // w = r - a*s
       w = r;
-      w.axpy((-1.0)*a, s);
+      w.axpy((-1.0) * a, s);
 
       // v = Aw
       v.setAll(0.0);
@@ -100,17 +95,17 @@ void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
       myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
       SystemMatrix.mult(w, v);
 
-      //std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
+      // std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;
 
       omega = (v.dotProduct(w)) / (v.dotProduct(v));
 
       // x = x - a*p - omega*w
-      alpha.axpy((-1.0)*a, p);
-      alpha.axpy((-1.0)*omega, w);
+      alpha.axpy((-1.0) * a, p);
+      alpha.axpy((-1.0) * omega, w);
 
       // r = r - a*s - omega*v
-      r.axpy((-1.0)*a, s);
-      r.axpy((-1.0)*omega, v);
+      r.axpy((-1.0) * a, s);
+      r.axpy((-1.0) * omega, v);
 
       rho_new = r.dotProduct(rZero);
 
@@ -131,7 +126,7 @@ void BiCGStabMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
       rho = rho_new;
 
       // p = r + beta*(p - omega*s)
-      p.axpy((-1.0)*omega, s);
+      p.axpy((-1.0) * omega, s);
       p.mult(beta);
       p.add(r);
 
@@ -157,7 +152,5 @@ void BiCGStabMPI::waitForTask(SGPP::base::OperationMatrix& SystemMatrix,
     }
   } while (ctrl != 'T');
 }
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP

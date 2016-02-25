@@ -15,14 +15,13 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
-OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataVector& lambda) : storage(storage) {
-
+OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::
+    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage,
+                                                       SGPP::base::DataVector& lambda)
+    : storage(storage) {
   this->TimestepCoeff = 0.0;
   this->lambda = new SGPP::base::DataVector(lambda);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -33,13 +32,11 @@ OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::OperationLTwoDotLaplaceVecto
   lcl_q_inv = new double[this->storage->getDimension()];
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
-
 }
 
-OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-
-
+OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::
+    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage)
+    : storage(storage) {
   this->TimestepCoeff = 0.0;
   this->lambda = new base::DataVector(storage->getDimension());
   this->lambda->setAll(1.0);
@@ -51,11 +48,10 @@ OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::OperationLTwoDotLaplaceVecto
   lcl_q_inv = new double[this->storage->getDimension()];
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
-
 }
 
-
-OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL() {
+OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::
+    ~OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL() {
   delete this->level_;
   delete this->level_int_;
   delete this->index_;
@@ -65,25 +61,17 @@ OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::~OperationLTwoDotLaplaceVect
 }
 
 void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
-  this->OCLPDEKernelsHandle.
-  RunOCLKernelLTwoDotLaplaceBound(alpha, result, lcl_q, lcl_q_inv,
-                                  this->level_->getPointer(),
-                                  this->index_->getPointer(),
-                                  this->level_int_->getPointer(),
-                                  lambda->getPointer(),
-                                  (unsigned) storage->getSize(),
-                                  (unsigned) storage->getDimension(),
-                                  storage,
-                                  this->TimestepCoeff);
-
+  this->OCLPDEKernelsHandle.RunOCLKernelLTwoDotLaplaceBound(
+      alpha, result, lcl_q, lcl_q_inv, this->level_->getPointer(), this->index_->getPointer(),
+      this->level_int_->getPointer(), lambda->getPointer(), (unsigned)storage->getSize(),
+      (unsigned)storage->getDimension(), storage, this->TimestepCoeff);
 }
 
-void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-
+void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVector& alpha,
+                                                              SGPP::base::DataVector& result) {
   result.setAll(0.0);
   bool dirichlet = true;
 
@@ -99,7 +87,9 @@ void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult(
   if (dirichlet) {
     mult_dirichlet(alpha, result);
   } else {
-    throw SGPP::base::operation_exception("OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+    throw SGPP::base::operation_exception(
+        "OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available "
+        "on grids with Dirichlet boundaries in all dimensions!");
   }
 }
 }

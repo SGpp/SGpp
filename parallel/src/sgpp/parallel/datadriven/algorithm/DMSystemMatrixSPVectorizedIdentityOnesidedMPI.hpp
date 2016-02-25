@@ -17,7 +17,7 @@
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 #include <sgpp/globaldef.hpp>
 
-#include <strstream>
+#include <sstream>
 #include <algorithm>
 
 #ifdef _OPENMP

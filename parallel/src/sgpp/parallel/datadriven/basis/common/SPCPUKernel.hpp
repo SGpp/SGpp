@@ -33,7 +33,7 @@ class SPCPUKernel {
   }
   static inline void multTranspose(
       SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
-      SGPP::base::DataMatrixSP* mask,  // unused for this specialization
+      SGPP::base::DataMatrixSP* mask,    // unused for this specialization
       SGPP::base::DataMatrixSP* offset,  // unused for this specialization
       SGPP::base::DataMatrixSP* dataset, SGPP::base::DataVectorSP& source,
       SGPP::base::DataVectorSP& result, const size_t start_index_grid, const size_t end_index_grid,

@@ -7,51 +7,51 @@
 #include <sgpp/parallel/pde/algorithm/PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
-
-#include <cstring>
-
 #include <sgpp/globaldef.hpp>
 
+#include <cstring>
 
 namespace SGPP {
 namespace parallel {
 
-PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(
-  SGPP::base::Grid& SparseGrid,
-  SGPP::base::DataVector& rhs) : OperationEllipticPDESolverSystemDirichlet(
-      SparseGrid, rhs) {
+PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::
+    PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(SGPP::base::Grid& SparseGrid,
+                                                                 SGPP::base::DataVector& rhs)
+    : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
   // Create operations
   char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
-  if (! strcmp(alg_selector, "X86SIMD")) {
+  if (!strcmp(alg_selector, "X86SIMD")) {
     this->Laplace_Inner = SGPP::op_factory::createOperationLaplaceVectorized(
-                            *this->InnerGrid, SGPP::parallel::X86SIMD);
+        *this->InnerGrid, SGPP::parallel::X86SIMD);
     this->Laplace_Complete = SGPP::op_factory::createOperationLaplaceVectorized(
-                               *this->BoundGrid, SGPP::parallel::X86SIMD);
+        *this->BoundGrid, SGPP::parallel::X86SIMD);
 #ifdef USEOCL
-  } else if (! strcmp(alg_selector, "OCL")) {
+  } else if (!strcmp(alg_selector, "OCL")) {
     this->Laplace_Inner = SGPP::op_factory::createOperationLaplaceVectorized(
-                            *this->InnerGrid, SGPP::parallel::OpenCL);
+        *this->InnerGrid, SGPP::parallel::OpenCL);
     this->Laplace_Complete = SGPP::op_factory::createOperationLaplaceVectorized(
-                               *this->BoundGrid, SGPP::parallel::OpenCL);
+        *this->BoundGrid, SGPP::parallel::OpenCL);
 #endif
   } else {
-    throw SGPP::base::algorithm_exception("PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization was selected!");
+    throw SGPP::base::algorithm_exception(
+        "PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::"
+        "PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization "
+        "was selected!");
   }
 }
 
-PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::~PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI() {
-}
+PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::
+    ~PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI() {}
 
 void PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::applyLOperatorInner(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   Laplace_Inner->mult(alpha, result);
 }
 
 void PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::applyLOperatorComplete(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   Laplace_Complete->mult(alpha, result);
 }
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP

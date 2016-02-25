@@ -182,10 +182,10 @@ Please install the corresponding package, e.g. using command on Ubuntu
            env.Append(CPPFLAGS=['-g', '-O0'])
 
     if not env['USE_DOUBLE_PRECISION']:
-       print "using single precision"
+       print "Using single precision"
        env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
     else:
-       print "using double precision"
+       print "Using double precision"
 
     # make settings case-insensitive
     env['COMPILER'] = env['COMPILER'].lower()

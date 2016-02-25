@@ -16,13 +16,13 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-#include <strstream>
+#include <sgpp/globaldef.hpp>
+
+#include <sstream>
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-#include <sgpp/globaldef.hpp>
 
 namespace SGPP {
 namespace parallel {

@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -42,9 +41,7 @@ class OperationParabolicPDEMatrixCombined : public SGPP::base::OperationMatrix {
    * @param newTimestepCoeff The new timestep coefficient for the chosen
    * numerical approximation scheme.
    */
-  void setTimestepCoeff(double newTimestepCoeff) {
-    this->TimestepCoeff = newTimestepCoeff;
-  }
+  void setTimestepCoeff(double newTimestepCoeff) { this->TimestepCoeff = newTimestepCoeff; }
 
   /**
    * Gets the timestep coefficient
@@ -52,13 +49,9 @@ class OperationParabolicPDEMatrixCombined : public SGPP::base::OperationMatrix {
    * @return newTimestepCoeff The new timestep coefficient for the chosen
    * numerical approximation scheme.
    */
-  double getTimestepCoeff() {
-    return this->TimestepCoeff;
-  }
-
+  double getTimestepCoeff() { return this->TimestepCoeff; }
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONPARABOLICPDEMATRIXCOMBINED_HPP */

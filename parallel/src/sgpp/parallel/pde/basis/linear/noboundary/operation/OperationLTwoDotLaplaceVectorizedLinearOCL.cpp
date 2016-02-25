@@ -12,13 +12,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataVector& lambda) : storage(storage) {
+    SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda)
+    : storage(storage) {
   this->TimestepCoeff = 0.0;
   this->lambda = new SGPP::base::DataVector(lambda);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -33,7 +32,8 @@ OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLin
 }
 
 OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLinearOCL(
-  SGPP::base::GridStorage* storage) : storage(storage) {
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {
   this->TimestepCoeff = 0.0;
   this->lambda = new base::DataVector(storage->getDimension());
   this->lambda->setAll(1.0);
@@ -48,7 +48,6 @@ OperationLTwoDotLaplaceVectorizedLinearOCL::OperationLTwoDotLaplaceVectorizedLin
   storage->getLevelForIntegral(*(this->level_int_));
 }
 
-
 OperationLTwoDotLaplaceVectorizedLinearOCL::~OperationLTwoDotLaplaceVectorizedLinearOCL() {
   delete this->level_;
   delete this->level_int_;
@@ -58,8 +57,8 @@ OperationLTwoDotLaplaceVectorizedLinearOCL::~OperationLTwoDotLaplaceVectorizedLi
   this->OCLPDEKernelsHandle.CleanUpGPU();
 }
 
-void OperationLTwoDotLaplaceVectorizedLinearOCL::mult(SGPP::base::DataVector&
-    alpha, SGPP::base::DataVector& result) {
+void OperationLTwoDotLaplaceVectorizedLinearOCL::mult(SGPP::base::DataVector& alpha,
+                                                      SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
   // fill q array
@@ -69,17 +68,10 @@ void OperationLTwoDotLaplaceVectorizedLinearOCL::mult(SGPP::base::DataVector&
     lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
   }
 
-  this->OCLPDEKernelsHandle.RunOCLKernelLTwoDotLaplaceInner(alpha, result,
-      this->lcl_q, this->lcl_q_inv,
-      this->level_->getPointer(),
-      this->index_->getPointer(),
-      this->level_int_->getPointer(),
-      this->lambda->getPointer(),
-      this->storage->getSize(),
-      this->storage->getDimension(),
-      this->storage,
-      this->TimestepCoeff);
+  this->OCLPDEKernelsHandle.RunOCLKernelLTwoDotLaplaceInner(
+      alpha, result, this->lcl_q, this->lcl_q_inv, this->level_->getPointer(),
+      this->index_->getPointer(), this->level_int_->getPointer(), this->lambda->getPointer(),
+      this->storage->getSize(), this->storage->getDimension(), this->storage, this->TimestepCoeff);
 }
 }
-
 }
