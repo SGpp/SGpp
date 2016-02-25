@@ -265,16 +265,16 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   }
 
   void recalculateLevelAndIndex(size_t &gridSize) {
-    base::GridStorage *storage = grid.getStorage();
+    base::GridStorage &storage = grid.getStorage();
 
-    size_t remainder = storage->getSize() % commonGridPadding;
+    size_t remainder = storage.getSize() % commonGridPadding;
     size_t padding = 0;
 
     if (remainder != 0) {
       padding = commonGridPadding - remainder;
     }
 
-    gridSize = storage->getSize() + padding;
+    gridSize = storage.getSize() + padding;
 
     level = std::vector<T>(gridSize * dims);
     index = std::vector<T>(gridSize * dims);
@@ -285,8 +285,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     /// pointer to index_type
     base::HashGridStorage::index_pointer gridPoint;
 
-    for (size_t i = 0; i < storage->getSize(); i++) {
-      gridPoint = storage->get(i);
+    for (size_t i = 0; i < storage.getSize(); i++) {
+      gridPoint = storage.get(i);
       for (size_t dim = 0; dim < dims; dim++) {
         gridPoint->get(dim, curLevel, curIndex);
         level[i * dims + dim] = static_cast<T>(1 << curLevel);
@@ -294,8 +294,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
       }
     }
 
-    for (size_t i = storage->getSize(); i < this->gridSize; i++) {
-      for (size_t dim = 0; dim < storage->getDimension(); dim++) {
+    for (size_t i = storage.getSize(); i < this->gridSize; i++) {
+      for (size_t dim = 0; dim < storage.getDimension(); dim++) {
         level[i * dims + dim] = 1.0;
         index[i * dims + dim] = 1.0;
       }

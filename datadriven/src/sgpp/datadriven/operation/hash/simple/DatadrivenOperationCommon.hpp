@@ -26,6 +26,8 @@ enum class OperationMultipleEvalSubType {
   OCLMASKMP
 };
 
+
+
 class OperationMultipleEvalConfiguration {
  private:
   OperationMultipleEvalType type = OperationMultipleEvalType::DEFAULT;

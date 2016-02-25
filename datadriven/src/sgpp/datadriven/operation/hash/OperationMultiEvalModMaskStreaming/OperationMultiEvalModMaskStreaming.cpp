@@ -166,8 +166,6 @@ float_t OperationMultiEvalModMaskStreaming::getDuration() { return this->duratio
 void OperationMultiEvalModMaskStreaming::prepare() { this->recalculateLevelIndexMask(); }
 
 void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
-  // TODO(pfandedd): does the padding work? test
-  //    uint32_t localWorkSize = 24;
   size_t localWorkSize = this->getChunkGridPoints();
 
   size_t remainder = this->storage->getSize() % localWorkSize;
@@ -182,8 +180,6 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
 
   SGPP::base::HashGridIndex::level_type curLevel;
   SGPP::base::HashGridIndex::index_type curIndex;
-
-  // TODO(pfandedd): update the other kernels with this style
 
   this->level = std::vector<double>(gridSize * dims);
   this->index = std::vector<double>(gridSize * dims);

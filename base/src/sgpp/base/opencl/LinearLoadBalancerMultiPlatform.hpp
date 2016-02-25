@@ -24,15 +24,12 @@ class LinearLoadBalancerMultiPlatform {
   std::map<cl_platform_id, std::vector<double>> lastMeaningfulPartition;
 
  public:
-  LinearLoadBalancerMultiPlatform(
-      std::shared_ptr<OCLManagerMultiPlatform> manager,
-      std::shared_ptr<base::OCLOperationConfiguration> parameters)
+  LinearLoadBalancerMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform> manager,
+                                  std::shared_ptr<base::OCLOperationConfiguration> parameters)
       : manager(manager), parameters(parameters) {
     for (OCLPlatformWrapper platform : manager->platforms) {
-      this->weights[platform.platformId] =
-          std::vector<double>(platform.getDeviceCount());
-      this->partition[platform.platformId] =
-          std::vector<double>(platform.getDeviceCount());
+      this->weights[platform.platformId] = std::vector<double>(platform.getDeviceCount());
+      this->partition[platform.platformId] = std::vector<double>(platform.getDeviceCount());
       this->lastMeaningfulPartition[platform.platformId] =
           std::vector<double>(platform.getDeviceCount());
     }
@@ -52,8 +49,7 @@ class LinearLoadBalancerMultiPlatform {
   void getPartitionSegments(size_t start, size_t end, size_t blockSize,
                             std::map<cl_platform_id, size_t*> segmentStart,
                             std::map<cl_platform_id, size_t*> segmentEnd) {
-    bool setVerboseLoadBalancing =
-        (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
+    bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
     size_t totalSize = end - start;
 
     // check for valid input
@@ -71,8 +67,8 @@ class LinearLoadBalancerMultiPlatform {
 
     for (OCLPlatformWrapper& platform : manager->platforms) {
       for (size_t i = 0; i < platform.getDeviceCount(); i++) {
-        size_t partitionElements = static_cast<size_t>(
-            static_cast<double>(totalSize) * partition[platform.platformId][i]);
+        size_t partitionElements =
+            static_cast<size_t>(static_cast<double>(totalSize) * partition[platform.platformId][i]);
 
         if (currentStartIndex != end && partitionElements == 0) {
           partitionElements = 1;
@@ -80,8 +76,7 @@ class LinearLoadBalancerMultiPlatform {
 
         // last device has to ensure that all data is in one partition
         if (currentStartIndex + partitionElements > end ||
-            ((&platform ==
-              &(manager->platforms[manager->platforms.size() - 1])) &&
+            ((&platform == &(manager->platforms[manager->platforms.size() - 1])) &&
              (i == platform.getDeviceCount() - 1))) {
           partitionElements = end - currentStartIndex;
         }
@@ -97,14 +92,11 @@ class LinearLoadBalancerMultiPlatform {
         partitionElements += padding;
 
         segmentStart[platform.platformId][i] = currentStartIndex;
-        segmentEnd[platform.platformId][i] =
-            currentStartIndex + partitionElements;
+        segmentEnd[platform.platformId][i] = currentStartIndex + partitionElements;
 
         if (setVerboseLoadBalancing) {
-          std::cout << "device: " << i
-                    << " from: " << segmentStart[platform.platformId][i]
-                    << " to: " << segmentEnd[platform.platformId][i]
-                    << std::endl;
+          std::cout << "device: " << i << " from: " << segmentStart[platform.platformId][i]
+                    << " to: " << segmentEnd[platform.platformId][i] << std::endl;
         }
 
         currentStartIndex += partitionElements;
@@ -112,10 +104,8 @@ class LinearLoadBalancerMultiPlatform {
     }
   }
 
-  // TODO(pfandedd): consider inactive device due to nothing to do?
   void update(std::map<cl_platform_id, double*> timings) {
-    bool setVerboseLoadBalancing =
-        (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
+    bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
 
     // recalculate weights
     for (OCLPlatformWrapper platform : manager->platforms) {
@@ -124,8 +114,7 @@ class LinearLoadBalancerMultiPlatform {
             timings[platform.platformId][i] / partition[platform.platformId][i];
 
         if (setVerboseLoadBalancing) {
-          std::cout << "platform: \"" << platform.platformName
-                    << "\" device: " << i << " took "
+          std::cout << "platform: \"" << platform.platformName << "\" device: " << i << " took "
                     << timings[platform.platformId][i] << "s" << std::endl;
         }
       }
@@ -152,18 +141,14 @@ class LinearLoadBalancerMultiPlatform {
         if (t == 0.0) {
           // partition[platform.platformId][i] =
           // 1.0 / static_cast<double>(manager->overallDeviceCount);
-          partition[platform.platformId][i] =
-              lastMeaningfulPartition[platform.platformId][i];
+          partition[platform.platformId][i] = lastMeaningfulPartition[platform.platformId][i];
         } else {
-          partition[platform.platformId][i] =
-              t / weights[platform.platformId][i];
-          lastMeaningfulPartition[platform.platformId][i] =
-              partition[platform.platformId][i];
+          partition[platform.platformId][i] = t / weights[platform.platformId][i];
+          lastMeaningfulPartition[platform.platformId][i] = partition[platform.platformId][i];
         }
 
         if (setVerboseLoadBalancing) {
-          std::cout << "device: " << i
-                    << " partition size: " << partition[platform.platformId][i]
+          std::cout << "device: " << i << " partition size: " << partition[platform.platformId][i]
                     << std::endl;
         }
       }
