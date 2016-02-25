@@ -12,13 +12,11 @@
 #include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 
 namespace parallel {
 
-size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType&
-    vecType) {
+size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType& vecType) {
   if (vecType == X86SIMD) {
 #ifdef X86_MIC_SYMMETRIC
     VectorizationType t = MIC;
@@ -26,37 +24,33 @@ size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType&
 #else
     return X86SimdKernelBase::getChunkDataPoints();
 #endif
-  }
 
 #ifdef USEOCL
-  else if (vecType == OpenCL) {
+  } else if (vecType == OpenCL) {
     return OCLKernelImplBase::getChunkDataPoints();
   } else if (vecType == Hybrid_X86SIMD_OpenCL) {
     return OCLKernelImplBase::getChunkDataPoints();
-  }
 
 #endif
-  else if (vecType == ArBB) {
+  } else if (vecType == ArBB) {
     return 16;
-  }
 
 #ifdef USEMIC
-  else if (vecType == MIC) {
+  } else if (vecType == MIC) {
     return MICKernelBase::getChunkDataPoints();
   } else if (vecType == Hybrid_X86SIMD_MIC) {
     return MICKernelBase::getChunkDataPoints();
-  }
 
 #endif
-  else {
-    throw SGPP::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
+  } else {
+    throw SGPP::base::operation_exception(
+        "DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
   }
 
   return 0;
 }
 
-size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType&
-    vecType) {
+size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType& vecType) {
   if (vecType == X86SIMD) {
 #ifdef X86_MIC_SYMMETRIC
     VectorizationType t = MIC;
@@ -64,44 +58,40 @@ size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType&
 #else
     return SPX86SimdKernelBase::getChunkDataPoints();
 #endif
-  }
 
 #ifdef USEOCL
-  else if (vecType == OpenCL) {
+  } else if (vecType == OpenCL) {
     return OCLKernelImplBase::getChunkDataPoints();
   } else if (vecType == Hybrid_X86SIMD_OpenCL) {
     return OCLKernelImplBase::getChunkDataPoints();
-  }
 
 #endif
-  else if (vecType == ArBB) {
+  } else if (vecType == ArBB) {
     return 16;
-  }
 
 #ifdef USECUDA
-  else if (vecType == CUDA) {
+  } else if (vecType == CUDA) {
     return 64;
-  }
 
 #endif
 
 #ifdef USEMIC
-  else if (vecType == MIC) {
+  } else if (vecType == MIC) {
     return SPMICKernelBase::getChunkDataPoints();
   } else if (vecType == Hybrid_X86SIMD_MIC) {
     return SPMICKernelBase::getChunkDataPoints();
-  }
 
 #endif
-  else {
-    throw SGPP::base::operation_exception("DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");
+  } else {
+    throw SGPP::base::operation_exception(
+        "DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");
   }
 
   return 0;
 }
 
-size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix&
-    dataset, VectorizationType& vecType) {
+size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix& dataset,
+                                                   VectorizationType& vecType) {
   size_t vecWidth = getVecWidth(vecType);
 
   // Assure that data has a even number of instances -> padding might be needed
@@ -122,8 +112,8 @@ size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix&
   return dataset.getNrows();
 }
 
-size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP&
-    dataset, VectorizationType vecType) {
+size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP& dataset,
+                                                   VectorizationType vecType) {
   size_t vecWidth = getVecWidthSP(vecType);
 
   // Assure that data has a even number of instances -> padding might be needed
@@ -143,6 +133,5 @@ size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP&
 
   return dataset.getNrows();
 }
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP

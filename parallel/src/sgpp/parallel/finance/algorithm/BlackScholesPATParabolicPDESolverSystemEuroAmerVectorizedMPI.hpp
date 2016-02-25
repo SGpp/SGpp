@@ -32,17 +32,17 @@ class BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : public
   SGPP::parallel::OperationParabolicPDESolverSystemDirichletCombined {
  protected:
   /// the Laplace Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpLaplaceBound;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceBound;
   /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-  SGPP::base::OperationMatrix* OpLTwoBound;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLTwoBound;
   /// the Laplace Operation, on Inner grid
-  SGPP::base::OperationMatrix* OpLaplaceInner;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceInner;
   /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-  SGPP::base::OperationMatrix* OpLTwoInner;
+  std::unique_ptr<SGPP::base::OperationMatrix> OpLTwoInner;
   /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Inner grid
-  SGPP::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceInner;
+  std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceInner;
   /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on Bound grid
-  SGPP::parallel::OperationParabolicPDEMatrixCombined* OpLTwoDotLaplaceBound;
+  std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceBound;
   /// Pointer to the lambda (coefficients of the needed Laplace operator)
   SGPP::base::DataVector* lambda;
   /// Eigenvectors of the covariance matrix

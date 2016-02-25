@@ -6,8 +6,6 @@
 #ifndef OPERATIONMULTIPLEEVALVECTORIZED_HPP
 #define OPERATIONMULTIPLEEVALVECTORIZED_HPP
 
-#include <limits>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
@@ -15,6 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <limits>
 
 namespace SGPP {
 namespace parallel {
@@ -22,16 +21,18 @@ namespace parallel {
 /**
  * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
  *
- * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data points
+ * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data
+ * points
  *
- * This class defines an interface similar to OperationMultipleEval in order to support SIMD architectures
+ * This class defines an interface similar to OperationMultipleEval in order to support SIMD
+ * architectures
  * for datadriven task (multiple function evaluations, classification, regression). Target
  * architectures may be Intel SSE, Intel AVX, nVidia CUDA, OpenCL.
  */
 class OperationMultipleEvalVectorized {
  protected:
   /// Pointer to the grid's gridstorage object
-  SGPP::base::GridStorage* storage_;
+  SGPP::base::GridStorage& storage_;
   /// Pointer to the dataset that should be evaluated on the grid
   SGPP::base::DataMatrix* dataset_;
   /// Member to store the sparse grid's levels for better vectorization
@@ -71,21 +72,22 @@ class OperationMultipleEvalVectorized {
    * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
    *
    * IMPORTANT REMARK:
-   * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
+   * In order to use this routine you have to keep following points in mind (for multVectorized and
+   * multTransposeVectorized):
    * @li data MUST a have even number of points AND it must be transposed
    * @li result MUST have the same size as data points that should be evaluated
    *
    * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
    * @param result the result vector of the matrix vector multiplication
    */
-  virtual double multVectorized(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result) = 0;
+  virtual double multVectorized(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) = 0;
 
   /**
    * Multiplication of @f$B@f$ with vector @f$\alpha@f$
    *
    * IMPORTANT REMARK:
-   * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
+   * In order to use this routine you have to keep following points in mind (for multVectorized and
+   * multTransposeVectorized):
    * @li data MUST a have even number of points AND it must be transposed
    * @li result MUST have the same size as data points that should be evaluated
    *
@@ -110,14 +112,10 @@ class OperationMultipleEvalVectorized {
   // we have to make sure that all implemented Kernel Types can see the fields they require.
   // this has to be done here and only here because friends are checked at compile time and we use
   // a pointer of this class to access the respective objects
-  friend struct
-    LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalVectorized>;
-  friend struct
-    LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalVectorized>;
-
+  friend struct LevelIndexMaskOffsetHelper::rebuild<Standard, OperationMultipleEvalVectorized>;
+  friend struct LevelIndexMaskOffsetHelper::rebuild<Mask, OperationMultipleEvalVectorized>;
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALVECTORIZED_HPP */
