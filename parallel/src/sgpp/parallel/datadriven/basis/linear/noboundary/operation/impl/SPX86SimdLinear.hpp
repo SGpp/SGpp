@@ -9,8 +9,7 @@
 #include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
 
 #include <sgpp/globaldef.hpp>
-
-
+#include <algorithm>
 namespace SGPP {
 namespace parallel {
 
@@ -18,17 +17,12 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
  public:
   static const KernelType kernelType = Standard;
   static inline void multImpl(
-    SGPP::base::DataMatrixSP* level,
-    SGPP::base::DataMatrixSP* index,
-    SGPP::base::DataMatrixSP* /*mask*/, //unused for this specialization
-    SGPP::base::DataMatrixSP* /*offset*/, //unused for this specialization
-    SGPP::base::DataMatrixSP* dataset,
-    SGPP::base::DataVectorSP& alpha,
-    SGPP::base::DataVectorSP& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+      SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
+      SGPP::base::DataMatrixSP* /*mask*/,    // unused for this specialization
+      SGPP::base::DataMatrixSP* /*offset*/,  // unused for this specialization
+      SGPP::base::DataMatrixSP* dataset, SGPP::base::DataVectorSP& alpha,
+      SGPP::base::DataVectorSP& result, const size_t start_index_grid, const size_t end_index_grid,
+      const size_t start_index_data, const size_t end_index_data) {
     float* ptrLevel = level->getPointer();
     float* ptrIndex = index->getPointer();
     float* ptrAlpha = alpha.getPointer();
@@ -37,13 +31,12 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
     size_t result_size = result.getSize();
     size_t dims = dataset->getNrows();
 
-    CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid,
-                    start_index_data, end_index_data);
+    CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid, start_index_data,
+                    end_index_data);
 
     for (size_t c = start_index_data; c < end_index_data;
          c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
-      size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c,
-                                         end_index_data);
+      size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c, end_index_data);
 
 #ifdef __ICC
 #pragma ivdep
@@ -57,11 +50,10 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
       for (size_t m = start_index_grid; m < end_index_grid;
            m += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m))) {
 #if defined(__SSE3__) && !defined(__AVX__)
-        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(),
-                                           (end_index_grid - m));
+        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
         int imask = 0x7FFFFFFF;
-        float* fmask = (float*)&imask;
+        float* fmask = reinterpret_cast<float*>(&imask);
 
         for (size_t i = c; i < c + getChunkDataPoints(); i += 24) {
           for (size_t j = m; j < m + grid_inc; j++) {
@@ -155,11 +147,10 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
 
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(),
-                                           (end_index_grid - m));
+        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
         int imask = 0x7FFFFFFF;
-        float* fmask = (float*)&imask;
+        float* fmask = reinterpret_cast<float*>(&imask);
 
         for (size_t i = c; i < c + getChunkDataPoints(); i += 48) {
           for (size_t j = m; j < m + grid_inc; j++) {
@@ -253,8 +244,7 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
 
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
-        size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints() + m,
-                                           end_index_grid);
+        size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints() + m, end_index_grid);
 
         for (size_t i = c; i < data_end; i++) {
           for (size_t j = m; j < grid_end; j++) {
@@ -279,17 +269,12 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
   }
 
   static inline void multTransposeImpl(
-    SGPP::base::DataMatrixSP* level,
-    SGPP::base::DataMatrixSP* index,
-    SGPP::base::DataMatrixSP* /*mask*/, //unused for this specialization
-    SGPP::base::DataMatrixSP* /*offset*/, //unused for this specialization
-    SGPP::base::DataMatrixSP* dataset,
-    SGPP::base::DataVectorSP& source,
-    SGPP::base::DataVectorSP& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+      SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
+      SGPP::base::DataMatrixSP* /*mask*/,    // unused for this specialization
+      SGPP::base::DataMatrixSP* /*offset*/,  // unused for this specialization
+      SGPP::base::DataMatrixSP* dataset, SGPP::base::DataVectorSP& source,
+      SGPP::base::DataVectorSP& result, const size_t start_index_grid, const size_t end_index_grid,
+      const size_t start_index_data, const size_t end_index_data) {
     float* ptrLevel = level->getPointer();
     float* ptrIndex = index->getPointer();
     float* ptrSource = source.getPointer();
@@ -298,16 +283,15 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
     size_t source_size = source.getSize();
     size_t dims = dataset->getNrows();
 
-    CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid,
-                             end_index_grid, start_index_data, end_index_data);
+    CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid, end_index_grid,
+                             start_index_data, end_index_data);
 
     for (size_t k = start_index_grid; k < end_index_grid;
          k += std::min<size_t>(getChunkGridPoints(), (end_index_grid - k))) {
-      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(),
-                                         (end_index_grid - k));
+      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k));
 #if defined(__SSE3__) && !defined(__AVX__)
       int imask = 0x7FFFFFFF;
-      float* fmask = (float*)&imask;
+      float* fmask = reinterpret_cast<float*>(&imask);
 
       for (size_t i = start_index_data; i < end_index_data; i += 24) {
         for (size_t j = k; j < k + grid_inc; j++) {
@@ -396,7 +380,7 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
       int imask = 0x7FFFFFFF;
-      float* fmask = (float*)&imask;
+      float* fmask = reinterpret_cast<float*>(&imask);
 
       for (size_t i = start_index_data; i < end_index_data; i += 48) {
         for (size_t j = k; j < k + grid_inc; j++) {
@@ -465,8 +449,9 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
             support_5 = _mm256_mul_ps(support_5, eval_5);
           }
 
-          const __m256i ldStMaskSPAVX = _mm256_set_epi32(0x00000000, 0x00000000,
-                                        0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF);
+          const __m256i ldStMaskSPAVX =
+              _mm256_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+                               0x00000000, 0x00000000, 0xFFFFFFFF);
 
           support_0 = _mm256_add_ps(support_0, support_1);
           support_2 = _mm256_add_ps(support_2, support_3);
@@ -479,7 +464,7 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
           support_0 = _mm256_add_ps(support_0, tmp);
           support_0 = _mm256_hadd_ps(support_0, support_0);
 
-          // Workaround: bug with maskload in GCC (4.6.1)
+// Workaround: bug with maskload in GCC (4.6.1)
 #ifdef __ICC
           __m256 res_0 = _mm256_maskload_ps(&(ptrResult[j]), ldStMaskSPAVX);
           res_0 = _mm256_add_ps(res_0, support_0);
@@ -517,6 +502,6 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
   }
 };
 
-}
-}
-#endif // SPX86SIMDLINEAR_HPP
+}  // namespace parallel
+}  // namespace SGPP
+#endif  // SPX86SIMDLINEAR_HPP

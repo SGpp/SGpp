@@ -35,15 +35,15 @@ namespace LevelIndexMaskOffsetHelper {
 
 template <KernelType T, typename C>
 struct rebuild {
-  rebuild(C* op);
+  explicit rebuild(C* op);
 };
 template <typename C>
 struct rebuild<Standard, C> {
-  rebuild(C* op);
+  explicit rebuild(C* op);
 };
 template <typename C>
 struct rebuild<Mask, C> {
-  rebuild(C* op);
+  explicit rebuild(C* op);
 };
 
 template <KernelType T, typename C>
@@ -87,15 +87,15 @@ inline rebuild<Mask, C>::rebuild(C* op) {
 namespace LevelIndexMaskOffsetHelperSP {
 template <KernelType T, typename C>
 struct rebuild {
-  rebuild(C* op);
+  explicit rebuild(C* op);
 };
 template <typename C>
 struct rebuild<Standard, C> {
-  rebuild(C* op);
+  explicit rebuild(C* op);
 };
 template <typename C>
 struct rebuild<Mask, C> {
-  rebuild(C* op);
+  explicit rebuild(C* op);
 };
 
 template <KernelType T, typename C>
