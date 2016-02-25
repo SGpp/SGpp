@@ -29,8 +29,6 @@ PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::PoissonEquationEllip
 }
 
 PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::~PoissonEquationEllipticPDESolverSystemDirichletParallelMPI() {
-  delete this->Laplace_Complete;
-  delete this->Laplace_Inner;
 }
 
 void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorInner(
@@ -41,7 +39,7 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorI
   {
     #pragma omp single nowait
     {
-      std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+      std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
       size_t nDims = algoDims.size();
 
       // Apply Laplace, parallel in Dimensions
@@ -52,7 +50,7 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorI
             SGPP::base::DataVector myResult(result.getSize());
 
             /// discuss methods in order to avoid this cast
-            ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Inner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+            ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Inner.get()))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
             #pragma omp critical
             {
@@ -76,7 +74,7 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
   {
     #pragma omp single nowait
     {
-      std::vector<size_t> algoDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+      std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
       size_t nDims = algoDims.size();
 
       // Apply Laplace, parallel in Dimensions
@@ -88,7 +86,7 @@ void PoissonEquationEllipticPDESolverSystemDirichletParallelMPI::applyLOperatorC
             SGPP::base::DataVector myResult(result.getSize());
 
             /// discuss methods in order to avoid this cast
-            ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Complete))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+            ((SGPP::pde::UpDownOneOpDim*)(this->Laplace_Complete.get()))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
             #pragma omp critical
             {

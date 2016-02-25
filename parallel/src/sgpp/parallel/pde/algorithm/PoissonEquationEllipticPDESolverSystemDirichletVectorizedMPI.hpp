@@ -23,8 +23,8 @@ namespace parallel {
 class PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : public
   SGPP::pde::OperationEllipticPDESolverSystemDirichlet {
  protected:
-  SGPP::base::OperationMatrix* Laplace_Inner;
-  SGPP::base::OperationMatrix* Laplace_Complete;
+  std::unique_ptr<SGPP::base::OperationMatrix> Laplace_Inner;
+  std::unique_ptr<SGPP::base::OperationMatrix> Laplace_Complete;
 
   void applyLOperatorComplete(SGPP::base::DataVector& alpha,
                               SGPP::base::DataVector& result);

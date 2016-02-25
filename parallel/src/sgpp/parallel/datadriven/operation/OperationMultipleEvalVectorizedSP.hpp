@@ -3,11 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #ifndef OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP
 #define OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP
-
-#include <limits>
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
@@ -16,7 +13,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION==0
+#include <limits>
+
+#if USE_DOUBLE_PRECISION == 0
 
 namespace SGPP {
 namespace parallel {
@@ -24,9 +23,11 @@ namespace parallel {
 /**
  * @brief Interface for multiplication with Matrices @f$B@f$ and @f$B^T@f$.
  *
- * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data points
+ * If there are @f$N@f$ basis functions, @f$\{\varphi(\vec{x})\}_{i=1,\ldots,N}@f$ and @f$m@f$ data
+ * points
  *
- * This class defines an interface similar to OperationMultipleEval in order to support SIMD architectures
+ * This class defines an interface similar to OperationMultipleEval in order to support SIMD
+ * architectures
  * for datadriven task (multiple function evaluations, classification, regression). Target
  * architectures may be Intel SSE, Intel AVX, nVidia CUDA, OpenCL.
  */
@@ -73,7 +74,8 @@ class OperationMultipleEvalVectorizedSP {
    * Multiplication of @f$B^T@f$ with vector @f$\alpha@f$
    *
    * IMPORTANT REMARK:
-   * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
+   * In order to use this routine you have to keep following points in mind (for multVectorized and
+   * multTransposeVectorized):
    * @li data MUST a have even number of points AND it must be transposed
    * @li result MUST have the same size as data points that should be evaluated
    *
@@ -87,7 +89,8 @@ class OperationMultipleEvalVectorizedSP {
    * Multiplication of @f$B@f$ with vector @f$\alpha@f$
    *
    * IMPORTANT REMARK:
-   * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
+   * In order to use this routine you have to keep following points in mind (for multVectorized and
+   * multTransposeVectorized):
    * @li data MUST a have even number of points AND it must be transposed
    * @li result MUST have the same size as data points that should be evaluated
    *
@@ -112,15 +115,12 @@ class OperationMultipleEvalVectorizedSP {
   // we have to make sure that all implemented Kernel Types can see the fields they require.
   // this has to be done here and only here because friends are checked at compile time and we use
   // a pointer of this class to access the respective objects
-  friend struct
-    LevelIndexMaskOffsetHelperSP::rebuild<Standard, OperationMultipleEvalVectorizedSP>;
-  friend struct
-    LevelIndexMaskOffsetHelperSP::rebuild<Mask, OperationMultipleEvalVectorizedSP>;
+  friend struct LevelIndexMaskOffsetHelperSP::rebuild<Standard, OperationMultipleEvalVectorizedSP>;
+  friend struct LevelIndexMaskOffsetHelperSP::rebuild<Mask, OperationMultipleEvalVectorizedSP>;
 };
+}  // namespace parallel
+}  // namespace SGPP
 
-}
-}
-
-#endif // USE_DOUBLE_PRECISION==0
+#endif  // USE_DOUBLE_PRECISION==0
 
 #endif /* OPERATIONMULTIPLEEVALVECTORIZEDSP_HPP */

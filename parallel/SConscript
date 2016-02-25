@@ -96,7 +96,7 @@ MICOnlyFiles = [
     "SPMICKernelImpl.cpp"
 ]
 
-moduleDependencies = ['sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase']
+moduleDependencies = ['sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase', 'sgppfinance']
 Export('moduleDependencies')
 
 if env['COMPILER'] == 'vcc':
@@ -165,14 +165,14 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
 
 # build examples
 Import('exampleTargetList')
+example_env = env.Clone()
+example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*.cpp"):
         cpp = os.path.join("examples", fileName)
         cpps.append(cpp)
-        example = env.Program(source=cpp,
-                              LIBPATH=BUILD_DIR,
-                              LIBS=[libname] + moduleDependencies)
-        env.Requires(example, libInstall)
+        example = example_env.Program(source=cpp)
+        example_env.Requires(example, libInstall)
         exampleTargetList.append(example)
     elif fnmatch.fnmatch(fileName, "*.hpp"):
         hpp = os.path.join("examples", fileName)
