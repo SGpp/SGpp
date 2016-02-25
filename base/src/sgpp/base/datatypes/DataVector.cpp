@@ -7,7 +7,6 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
@@ -74,6 +73,7 @@ DataVector DataVector::fromFile(const std::string& fileName) {
 
 DataVector DataVector::fromString(const std::string& serializedVector) {
   DataVector v;
+
   enum class PARSER_STATE { INIT, VALUE, COMMAEND, END };
 
   PARSER_STATE state = PARSER_STATE::INIT;
@@ -94,15 +94,18 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       state = PARSER_STATE::VALUE;
       i += 1;
     } else if (state == PARSER_STATE::VALUE) {
-      size_t next;
+//      size_t next;
 #if USE_DOUBLE_PRECISION == 1
-      double value = std::stod(&(serializedVector[i]), &next);
+      //      double value = std::stod(&(serializedVector[i]), &next);
+      double value = std::atof(&(serializedVector[i]));
 #else
       float value = std::stof(&(serializedVector[i]), &next);
 #endif
       v.append(value);
       state = PARSER_STATE::COMMAEND;
-      i += next;
+      //      i += next;
+      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
+
     } else if (state == PARSER_STATE::COMMAEND) {
       if (c == ',') {
         state = PARSER_STATE::VALUE;
@@ -113,7 +116,7 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       }
     } else if (state == PARSER_STATE::END) {
       // only reached if a non-whitespace character was encountered after closing brace
-      throw;
+      throw data_exception("error: could not parse DataVector file");
     }
   }
   return v;

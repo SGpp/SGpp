@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
@@ -285,8 +286,7 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
     TestsetConfiguration testsetConfiguration = scenario.getTestsetConfiguration();
 
     if (testsetConfiguration.hasTestDataset) {
-      this->verifyLearned(testsetConfiguration, learner.getLearnedGrid(), learner.getLearnedAlpha(),
-                          configuration);
+      this->verifyLearned(testsetConfiguration, learner.getLearnedAlpha());
     }
   } catch (SGPP::base::operation_exception &exception) {
     if (verbose) {
@@ -346,23 +346,19 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
   }
 }
 
-void StaticParameterTuner::verifyLearned(
-    TestsetConfiguration &testsetConfiguration, base::Grid &grid, base::DataVector &alpha,
-    datadriven::OperationMultipleEvalConfiguration &configuration) {
-  SGPP::datadriven::Dataset testDataset =
-      datadriven::ARFFTools::readARFF(testsetConfiguration.datasetFileName);
+void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfiguration,
+                                         base::DataVector &alpha) {
+  base::DataVector alphaReference =
+      base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
 
-  std::unique_ptr<base::OperationMultipleEval> eval =
-      SGPP::op_factory::createOperationMultipleEval(grid, testDataset.getData(), configuration);
-
-  base::DataVector result(testDataset.getNumberInstances());
-
-  eval->mult(alpha, result);
+  if (alphaReference.getSize() != alpha.getSize()) {
+    throw base::application_exception("error: size of reference vector doesn't match");
+  }
 
   double mse = 0.0;
   double largestDifference = 0.0;
-  for (size_t i = 0; i < testDataset.getNumberInstances(); i++) {
-    double difference = fabs(testDataset.getTargets()[i] - result[i]);
+  for (size_t i = 0; i < alpha.getSize(); i++) {
+    double difference = fabs(alphaReference[i] - alpha[i]);
 
     if (difference > largestDifference) {
       largestDifference = difference;
@@ -370,11 +366,16 @@ void StaticParameterTuner::verifyLearned(
 
     mse += difference * difference;
   }
-  mse /= static_cast<double>(testDataset.getNumberInstances());
+  mse /= static_cast<double>(alpha.getSize());
 
   if (mse > testsetConfiguration.expectedMSE ||
       largestDifference > testsetConfiguration.expectedLargestDifference) {
-    throw base::application_exception("error: violated the expected error");
+    std::string message("error: violated the expected error, mse: " + std::to_string(mse) +
+                        " (excepted: " + std::to_string(testsetConfiguration.expectedMSE) +
+                        ") largestDifference: " + std::to_string(largestDifference) +
+                        " (excepted: " +
+                        std::to_string(testsetConfiguration.expectedLargestDifference) + ")");
+    throw base::application_exception(message.c_str());
   }
 }
 

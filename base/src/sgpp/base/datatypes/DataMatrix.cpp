@@ -82,15 +82,17 @@ DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
       state = PARSER_STATE::ROWVALUE;
       i++;
     } else if (state == PARSER_STATE::ROWVALUE) {
-      size_t next;
+//      size_t next;
 #if USE_DOUBLE_PRECISION == 1
-      double value = std::stod(&(serializedVector[i]), &next);
+      //      double value = std::stod(&(serializedVector[i]), &next);
+      double value = std::atof(&(serializedVector[i]));
 #else
       float value = std::stof(&(serializedVector[i]), &next);
 #endif
       row.append(value);
       state = PARSER_STATE::ROWCOMMAEND;
-      i += next;
+      //      i += next;
+      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
     } else if (state == PARSER_STATE::ROWCOMMAEND) {
       if (c == ',') {
         state = PARSER_STATE::ROWVALUE;
@@ -114,7 +116,7 @@ DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
       }
     } else if (state == PARSER_STATE::END) {
       // only reached if a non-whitespace character was encountered after closing brace
-      throw;
+      throw data_exception("error: could not parse DataMatrix file");
     }
   }
   return m;

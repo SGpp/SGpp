@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4"});
     staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
     staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
-    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"});
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
     staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
@@ -81,14 +81,14 @@ int main(int argc, char **argv) {
     staticParameterTuner.addParameter("KERNEL_TRANS_DATA_BLOCK_SIZE", {"1", "2", "4"});
     staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
     staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
-    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"});
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
     staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   } else if (kernelName.compare("StreamingModOCLMaskMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false", "true"});
     staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "2", "4", "8"});
     staticParameterTuner.addParameter("KERNEL_TRANS_GRID_BLOCK_SIZE", {"1", "2", "4"});
     staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
-    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"1", "4"});
+    staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
     staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
   } else {
     std::cout << "error: kernel name \"" << kernelName << "\" not recognized" << std::endl;

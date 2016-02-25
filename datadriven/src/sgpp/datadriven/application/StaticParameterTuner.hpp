@@ -37,9 +37,7 @@ class StaticParameterTuner {
   void writeStatisticsToFile(const std::string &statisticsFileName, const std::string &platformName,
                              const std::string &deviceName, const std::string &kernelName);
 
-  void verifyLearned(TestsetConfiguration &testsetConfiguration, base::Grid &grid,
-                     base::DataVector &alpha,
-                     datadriven::OperationMultipleEvalConfiguration &configuration);
+  void verifyLearned(TestsetConfiguration &testsetConfiguration, base::DataVector &alpha);
 
  public:
   StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
