@@ -222,7 +222,7 @@ int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 
-double calculatetheta(double a, double sigma, double T, int t) {
+double calculatetheta(double a, double sigma, double T, double t) {
   double theta = 0;
   return theta = 0.04 * a + pow(sigma, 2.0) * (1 - exp(-2 * a * (T - t))) / (2 * a);
 }
@@ -248,11 +248,11 @@ double calculatetheta(double a, double sigma, double T, int t) {
  * @param dStrike
  * @param isLogSolve
  */
-void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
-              std::string fileBound, std::string payoffType, size_t timeSt, double dt, size_t CGIt,
-              double CGeps, std::string Solver, double T, double dStrike, bool isLogSolve) {
+void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, std::string fileBound,
+              std::string payoffType, size_t timeSt, double dt, size_t CGIt, double CGeps,
+              std::string Solver, double T, double dStrike, bool isLogSolve) {
   size_t dim = d;
-  size_t level = l;
+  int level = l;
   size_t timesteps_innerCall = timeSt;
   double stepsize_general = dt;
   size_t CGiterations = CGIt;
@@ -424,7 +424,7 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   // for evaluation at strike
   double PB = 0;
   double PT = 0;
-  double tmp;
+
   int timeT = 12;
   int endtime = 32;
   double c = 0.06;
@@ -496,15 +496,15 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
  * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
  * @param useNormalDist enable local initial refinement based on a normal distribution
  */
-void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string fileStoch,
+void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string fileStoch,
                        std::string fileBound, std::string payoffType, size_t timeSt, double dt,
                        size_t CGIt, double CGeps, std::string Solver, double T, double dStrike,
                        bool isLogSolve, std::string refinementMode, int numRefinePoints,
-                       size_t maxRefineLevel, size_t nIterAdaptSteps, double dRefineThreshold,
-                       bool useCoarsen, std::string adaptSolvingMode, double coarsenThreshold,
-                       bool useNormalDist) {
+                       SGPP::base::GridIndex::level_type maxRefineLevel, size_t nIterAdaptSteps,
+                       double dRefineThreshold, bool useCoarsen, std::string adaptSolvingMode,
+                       double coarsenThreshold, bool useNormalDist) {
   size_t dim = d;
-  size_t level = l;
+  int level = l;
   size_t timesteps_innerCall = timeSt;
   double stepsize_general = dt;
   size_t CGiterations = CGIt;
@@ -755,7 +755,7 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a, std::string f
   // for evaluation at strike
   double PB = 0;
   double PT = 0;
-  double tmp;
+
   int timeT = 12;
   int endtime = 32;
   double c = 0.06;
@@ -944,8 +944,8 @@ int main(int argc, char* argv[]) {
         writeHelp();
       }
 
-      testBSHW(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff, atof(argv[9]),
-               atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver, atof(argv[14]), dStrike,
+      testBSHW(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff, atoi(argv[9]),
+               atoi(argv[10]), atoi(argv[11]), atof(argv[12]), solver, atof(argv[14]), dStrike,
                coords);
     }
 
@@ -1016,7 +1016,7 @@ int main(int argc, char* argv[]) {
       }
 
       testBSHW_adaptive(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff,
-                        atof(argv[9]), atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver,
+                        atoi(argv[9]), atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver,
                         atof(argv[14]), dStrike, coords, refinementMode, -1, atoi(argv[18]),
                         atoi(argv[19]), atof(argv[20]), useAdaptSolve, adaptSolveMode,
                         atof(argv[22]), isNormalDist);

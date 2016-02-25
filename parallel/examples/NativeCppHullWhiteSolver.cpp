@@ -68,10 +68,10 @@ double calculatetheta(double a, double sigma, double T, int count, double stepsi
  * @param T time to maturity
  * @param dStrike strike
  */
-void testHullWhite(size_t l, double sigma, double a, std::string fileBound, std::string payoffType,
+void testHullWhite(int l, double sigma, double a, std::string fileBound, std::string payoffType,
                    size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver,
                    double t, double T, double dStrike) {
-  size_t level = l;
+  int level = l;
   size_t timesteps = timeSt;
   double stepsize = dt;
   size_t CGiterations = CGIt;
@@ -263,7 +263,7 @@ int main(int argc, char* argv[]) {
       solver.assign(argv[11]);
       dStrike = atof(argv[14]);
 
-      testHullWhite(atoi(argv[2]), sigma, a, fileBound, payoff, atof(argv[7]), atof(argv[8]),
+      testHullWhite(atoi(argv[2]), sigma, a, fileBound, payoff, atoi(argv[7]), atof(argv[8]),
                     atoi(argv[9]), atof(argv[10]), solver, atof(argv[12]), atof(argv[13]), dStrike);
     }
   } else {

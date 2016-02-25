@@ -663,12 +663,12 @@ int writeDataVector(SGPP::base::DataVector& data, std::string tFile) {
  * possibilities
  * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  */
-void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fileBound,
+void testNUnderlyings(size_t d, int l, std::string fileStoch, std::string fileBound,
                       std::string fileStretch, std::string stretchingMode, double dStrike,
                       std::string payoffType, double riskfree, size_t timeSt, double dt,
                       size_t CGIt, double CGeps, std::string Solver, bool isLogSolve) {
   size_t dim = d;
-  size_t level = l;
+  int level = l;
   size_t timesteps = timeSt;
   double stepsize = dt;
   size_t CGiterations = CGIt;
@@ -890,7 +890,7 @@ void testNUnderlyings(size_t d, size_t l, std::string fileStoch, std::string fil
  * @param fileAnalyze filename of the file that contains the analyze data
  * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  */
-void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch,
+void testNUnderlyingsAnalyze(size_t d, int start_l, int end_l, std::string fileStoch,
                              std::string fileBound, std::string fileStretch,
                              std::string stretchingMode, double dStrike, std::string payoffType,
                              double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps,
@@ -953,7 +953,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
       return;
     }
 
-    for (int i = 0; i < dim; i++) {
+    for (size_t i = 0; i < dim; i++) {
       if (stretching1dArray[i].type == "log" && myEvalBoundaries[i].leftBoundary <= 0.0) {
         std::cout << "choose lower boundary > 0.0 when log-stretching is applied!\n" << std::endl;
         return;
@@ -998,8 +998,8 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
   // init Screen Object
   myBSSolver->initScreen();
 
-  for (size_t i = start_l; i <= end_l; i++) {
-    size_t level = i;
+  for (int i = start_l; i <= end_l; i++) {
+    int level = i;
 
     // Construct a grid
     myBSSolver->constructGridStretching(*myStretching, level);
@@ -1150,7 +1150,7 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
                 << std::endl;
 
       // Calculate relative errors and some norms
-      for (size_t j = 0; j < i - start_l; j++) {
+      for (int j = 0; j < i - start_l; j++) {
         SGPP::base::DataVector maxLevel(results[i - start_l]);
         SGPP::base::DataVector relError(results[j]);
         double maxNorm = 0.0;
@@ -1216,12 +1216,12 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string
  * @param fileAnalyze filename of the file that contains the analyze data
  * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  */
-void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
-                            std::string fileBound, std::string fileStretch,
-                            std::string stretchingMode, double dStrike, std::string payoffType,
-                            double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps,
-                            std::string Solver, std::string fileAnalyze, bool isLogSolve) {
-  size_t dim = 1;
+void test1UnderlyingAnalyze(int start_l, int end_l, std::string fileStoch, std::string fileBound,
+                            std::string fileStretch, std::string stretchingMode, double dStrike,
+                            std::string payoffType, double riskfree, size_t timeSt, double dt,
+                            size_t CGIt, double CGeps, std::string Solver, std::string fileAnalyze,
+                            bool isLogSolve) {
+  int dim = 1;
   size_t timesteps = timeSt;
   double stepsize = dt;
   size_t CGiterations = CGIt;
@@ -1309,7 +1309,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
 
     SGPP::base::Stretching1D* stretching1dArray = new SGPP::base::Stretching1D[dim];
 
-    for (size_t i = 0; i < dim; i++) {
+    for (int i = 0; i < dim; i++) {
       stretching1dArray[i].type.assign("id");
       stretching1dArray[i].xsi = 0;
       stretching1dArray[i].x_0 = 1;
@@ -1333,8 +1333,8 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
   // init Screen Object
   myBSSolver->initScreen();
 
-  for (size_t i = start_l; i <= end_l; i++) {
-    size_t level = i;
+  for (int i = start_l; i <= end_l; i++) {
+    int level = i;
 
     // Construct a grid
     myBSSolver->constructGridStretching(*myStretching, level);
@@ -1469,7 +1469,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
     // Test call @ the money
     std::vector<double> point;
 
-    for (size_t j = 0; j < dim; j++) {
+    for (int j = 0; j < dim; j++) {
       if (isLogSolve == true) {
         point.push_back(log(dStrike));
       } else {
@@ -1502,7 +1502,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
       std::cout << "with " << i << " levels and testing-coboid" << std::endl;
       std::cout << "with the bounding box:" << std::endl;
 
-      for (size_t j = 0; j < dim; j++) {
+      for (int j = 0; j < dim; j++) {
         std::cout << myEvalStretching->getBoundary(j).leftBoundary << " "
                   << myEvalStretching->getBoundary(j).rightBoundary << std::endl;
       }
@@ -1518,7 +1518,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
                 << std::endl;
 
       // Calculate relative errors and some norms
-      for (size_t j = 0; j < i - start_l; j++) {
+      for (int j = 0; j < i - start_l; j++) {
         SGPP::base::DataVector maxLevel(results[i - start_l]);
         SGPP::base::DataVector relError(results[j]);
         double maxNorm = 0.0;
@@ -1560,7 +1560,7 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
                 << std::endl;
 
       // Calculate relative errors and some norms
-      for (size_t j = 0; j < i + 1 - start_l; j++) {
+      for (int j = 0; j < i + 1 - start_l; j++) {
         SGPP::base::DataVector relErrorAna(results[j]);
         double maxNorm = 0.0;
         double l2Norm = 0.0;
@@ -1669,17 +1669,18 @@ void test1UnderlyingAnalyze(size_t start_l, size_t end_l, std::string fileStoch,
  * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  * @param useNormalDist enable local initial refinement based on a normal distribution
  */
-void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound,
+void testNUnderlyingsAdaptSurplus(size_t d, int l, std::string fileStoch, std::string fileBound,
                                   std::string fileStretch, std::string stretchingMode,
                                   double dStrike, std::string payoffType, double riskfree,
                                   size_t timeSt, double dt, size_t CGIt, double CGeps,
                                   std::string Solver, std::string refinementMode,
-                                  int numRefinePoints, size_t maxRefineLevel,
+                                  int numRefinePoints,
+                                  sg::base::HashGridIndex::level_type maxRefineLevel,
                                   size_t nIterAdaptSteps, double dRefineThreshold, bool useCoarsen,
                                   std::string adaptSolvingMode, double coarsenThreshold,
                                   bool isLogSolve, bool useNormalDist) {
   size_t dim = d;
-  size_t level = l;
+  int level = l;
   size_t timesteps = timeSt;
   double stepsize = dt;
   size_t CGiterations = CGIt;
