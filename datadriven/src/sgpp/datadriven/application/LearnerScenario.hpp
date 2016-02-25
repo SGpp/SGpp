@@ -18,14 +18,13 @@ namespace datadriven {
 class TestsetConfiguration {
  public:
   bool hasTestDataset;
-  std::string datasetFileName;
-  //  std::string valuesFileName;
+  std::string alphaReferenceFileName;
   double expectedMSE;
   double expectedLargestDifference;
 
   TestsetConfiguration()
       : hasTestDataset(false),
-        datasetFileName(""),
+        alphaReferenceFileName(""),
         //        valuesFileName(""),
         expectedMSE(0.0),
         expectedLargestDifference(0.0) {}
