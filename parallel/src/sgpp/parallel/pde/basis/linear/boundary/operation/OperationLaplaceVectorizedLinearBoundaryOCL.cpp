@@ -14,14 +14,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBoundaryOCL(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataVector& lambda) : storage(storage) {
-
+    SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda)
+    : storage(storage) {
   this->lambda = new SGPP::base::DataVector(lambda);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
   this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
@@ -31,13 +29,11 @@ OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBou
   lcl_q_inv = new double[this->storage->getDimension()];
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
-
 }
 
 OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBoundaryOCL(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-
-
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {
   this->lambda = new base::DataVector(storage->getDimension());
   this->lambda->setAll(1.0);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -48,9 +44,7 @@ OperationLaplaceVectorizedLinearBoundaryOCL::OperationLaplaceVectorizedLinearBou
   lcl_q_inv = new double[this->storage->getDimension()];
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
-
 }
-
 
 OperationLaplaceVectorizedLinearBoundaryOCL::~OperationLaplaceVectorizedLinearBoundaryOCL() {
   delete this->level_;
@@ -62,25 +56,18 @@ OperationLaplaceVectorizedLinearBoundaryOCL::~OperationLaplaceVectorizedLinearBo
   this->OCLPDEKernelsHandle.CleanUpGPU();
 }
 
-void OperationLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void OperationLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(SGPP::base::DataVector& alpha,
+                                                                 SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
-  this->OCLPDEKernelsHandle.RunOCLKernelLaplaceBound(alpha, result, lcl_q,
-      lcl_q_inv,
-      this->level_->getPointer(),
-      this->index_->getPointer(),
-      this->level_int_->getPointer(),
-      lambda->getPointer(),
-      storage->getSize(),
-      storage->getDimension(),
-      storage);
-
-
+  this->OCLPDEKernelsHandle.RunOCLKernelLaplaceBound(
+      alpha, result, lcl_q, lcl_q_inv, this->level_->getPointer(), this->index_->getPointer(),
+      this->level_int_->getPointer(), lambda->getPointer(), storage->getSize(),
+      storage->getDimension(), storage);
 }
 
-void OperationLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVector&
-    alpha, SGPP::base::DataVector& result) {
+void OperationLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVector& alpha,
+                                                       SGPP::base::DataVector& result) {
   result.setAll(0.0);
   bool dirichlet = true;
 
@@ -96,7 +83,9 @@ void OperationLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVector&
   if (dirichlet) {
     mult_dirichlet(alpha, result);
   } else {
-    throw SGPP::base::operation_exception("OperationLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on grids with Dirichlet boundaries in all dimensions!");
+    throw SGPP::base::operation_exception(
+        "OperationLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available on "
+        "grids with Dirichlet boundaries in all dimensions!");
   }
 }
 }

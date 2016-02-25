@@ -10,7 +10,6 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #if defined(__SSE4_2__) || defined(__AVX__)
@@ -25,7 +24,7 @@
 #endif
 
 #include <sgpp/globaldef.hpp>
-
+#include <vector>
 
 namespace SGPP {
 namespace parallel {
@@ -34,10 +33,8 @@ namespace parallel {
  * Implementation for linear functions of Laplace Operation, linear grids without boundaries
  *
  */
-class OperationLTwoDotLaplaceVectorizedLinear: public
-  OperationParabolicPDEMatrixCombined {
+class OperationLTwoDotLaplaceVectorizedLinear : public OperationParabolicPDEMatrixCombined {
  private:
-
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
   SGPP::base::DataMatrix* level_int_;
@@ -73,16 +70,19 @@ class OperationLTwoDotLaplaceVectorizedLinear: public
 
   double gradient(size_t i, size_t j, size_t dim);
   double l2dot(size_t i, size_t j, size_t dim);
+  void mult_mic(size_t process_i_start, size_t process_i_end, SGPP::base::DataVector& result);
+
   double all_time;
   double all_iterations;
   SGPP::base::SGppStopwatch stopWatch;
+
  public:
   /**
    * Construtor of OperationLaplaceLinear
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLTwoDotLaplaceVectorizedLinear(SGPP::base::GridStorage* storage);
+  explicit OperationLTwoDotLaplaceVectorizedLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Construtor of OperationLaplaceLinear
@@ -98,14 +98,11 @@ class OperationLTwoDotLaplaceVectorizedLinear: public
    */
   virtual ~OperationLTwoDotLaplaceVectorizedLinear();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual void reset();
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAR_HPP */

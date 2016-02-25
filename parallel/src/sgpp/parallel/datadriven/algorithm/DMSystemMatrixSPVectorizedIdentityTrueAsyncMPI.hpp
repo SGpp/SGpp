@@ -15,14 +15,13 @@
 #include <sgpp/parallel/datadriven/tools/DMVectorizationPaddingAssistant.hpp>
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include <strstream>
+#include <sstream>
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-#include <sgpp/globaldef.hpp>
 
 #if USE_DOUBLE_PRECISION == 0
 namespace SGPP {

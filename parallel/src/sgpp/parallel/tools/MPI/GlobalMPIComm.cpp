@@ -7,7 +7,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 MPICommunicator* myGlobalMPIComm;

@@ -10,15 +10,14 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION==0
+#if USE_DOUBLE_PRECISION == 0
 
 namespace SGPP {
 namespace parallel {
 
 OperationMultipleEvalIterativeSPArBBLinear::OperationMultipleEvalIterativeSPArBBLinear(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataMatrixSP* dataset) :
-  SGPP::parallel::OperationMultipleEvalVectorizedSP(dataset) {
+    SGPP::base::GridStorage* storage, SGPP::base::DataMatrixSP* dataset)
+    : SGPP::parallel::OperationMultipleEvalVectorizedSP(dataset) {
   this->storage = storage;
 
   this->level_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
@@ -60,7 +59,7 @@ void OperationMultipleEvalIterativeSPArBBLinear::rebuildLevelAndIndex() {
 }
 
 double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(
-  SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
+    SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
   size_t result_size = result.getSize();
   size_t dims = storage->getDimension();
   size_t storageSize = storage->getSize();
@@ -73,55 +72,56 @@ double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(
   float* ptrLevel = this->level_->getPointer();
   float* ptrIndex = this->index_->getPointer();
 
-  if (this->dataset_->getNrows() % 16 != 0
-      || result_size != this->dataset_->getNrows()) {
-    throw SGPP::base::operation_exception("For iterative mult transpose an even number of instances is required and result vector length must fit to data!");
+  if (this->dataset_->getNrows() % 16 != 0 || result_size != this->dataset_->getNrows()) {
+    throw SGPP::base::operation_exception(
+        "For iterative mult transpose an even number of instances is required and result vector "
+        "length must fit to data!");
   }
 
   double time = 0.0;
 
   if (this->dataset_->getNcols() == 2) {
 #ifdef ARBB_ARRAY
-    time = myArBBKernels2D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                       ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels2D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult,
+                                       result_size, storageSize, dims);
 #else
-    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                     ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size,
+                                     storageSize, dims);
 #endif
   } else if (this->dataset_->getNcols() == 4) {
 #ifdef ARBB_ARRAY
-    time = myArBBKernels4D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                       ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels4D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult,
+                                       result_size, storageSize, dims);
 #else
-    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                     ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size,
+                                     storageSize, dims);
 #endif
   } else if (this->dataset_->getNcols() == 5) {
 #ifdef ARBB_ARRAY
-    time = myArBBKernels5D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                       ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels5D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult,
+                                       result_size, storageSize, dims);
 #else
-    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                     ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size,
+                                     storageSize, dims);
 #endif
   } else if (this->dataset_->getNcols() == 10) {
 #ifdef ARBB_ARRAY
-    time = myArBBKernels10D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                        ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels10D->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult,
+                                        result_size, storageSize, dims);
 #else
-    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                     ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size,
+                                     storageSize, dims);
 #endif
   } else {
-    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex,
-                                     ptrResult, result_size, storageSize, dims);
+    time = myArBBKernels->multSPArBB(ptrAlpha, ptrData, ptrLevel, ptrIndex, ptrResult, result_size,
+                                     storageSize, dims);
   }
 
   return time;
 }
 
 double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(
-  SGPP::base::DataVectorSP& source, SGPP::base::DataVectorSP& result) {
+    SGPP::base::DataVectorSP& source, SGPP::base::DataVectorSP& result) {
   size_t source_size = source.getSize();
   size_t dims = storage->getDimension();
   size_t storageSize = storage->getSize();
@@ -134,55 +134,54 @@ double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(
   float* ptrIndex = this->index_->getPointer();
   float* ptrGlobalResult = result.getPointer();
 
-  if (this->dataset_->getNrows() % 16 != 0
-      || source_size != this->dataset_->getNrows()) {
-    throw SGPP::base::operation_exception("For iterative mult an even number of instances is required and result vector length must fit to data!");
+  if (this->dataset_->getNrows() % 16 != 0 || source_size != this->dataset_->getNrows()) {
+    throw SGPP::base::operation_exception(
+        "For iterative mult an even number of instances is required and result vector length must "
+        "fit to data!");
   }
 
   double time = 0.0;
 
   if (this->dataset_->getNcols() == 2) {
 #ifdef ARBB_ARRAY
-    time = myArBBKernels2D->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                            ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels2D->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                            source_size, storageSize, dims);
 #else
-    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                          ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                          source_size, storageSize, dims);
 #endif
   } else if (this->dataset_->getNcols() == 4) {
 #ifdef ARBB_ARRAY
-    time = myArBBKernels4D->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                            ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels4D->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                            source_size, storageSize, dims);
 #else
-    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                          ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                          source_size, storageSize, dims);
 #endif
   } else if (this->dataset_->getNcols() == 5) {
 #ifdef ARBB_ARRAY
-    time = myArBBKernels5D->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                            ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels5D->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                            source_size, storageSize, dims);
 #else
-    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                          ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                          source_size, storageSize, dims);
 #endif
   } else if (this->dataset_->getNcols() == 10) {
 #ifdef ARBB_ARRAY
     time = myArBBKernels10D->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-           ptrGlobalResult, source_size, storageSize, dims);
+                                             ptrGlobalResult, source_size, storageSize, dims);
 #else
-    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                          ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                          source_size, storageSize, dims);
 #endif
   } else {
-    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex,
-                                          ptrGlobalResult, source_size, storageSize, dims);
+    time = myArBBKernels->multTransSPArBB(ptrSource, ptrData, ptrLevel, ptrIndex, ptrGlobalResult,
+                                          source_size, storageSize, dims);
   }
 
   return time;
 }
-
 }
-
 }
 
 #endif

@@ -14,7 +14,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -22,9 +21,7 @@ namespace parallel {
  * Implements the standard L 2 scalar product on linear boundary grids
  *
  */
-class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public
-  SGPP::base::OperationMatrix {
-
+class OperationLTwoDotProductVectorizedLinearBoundaryOCL : public SGPP::base::OperationMatrix {
  private:
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
@@ -33,8 +30,7 @@ class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public
   double* lcl_q;
   OCLPDEKernels OCLPDEKernelsHandle;
 
-  void mult_dirichlet(SGPP::base::DataVector& alpha,
-                      SGPP::base::DataVector& result);
+  void mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
  public:
   /**
@@ -42,8 +38,7 @@ class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  OperationLTwoDotProductVectorizedLinearBoundaryOCL(SGPP::base::GridStorage*
-      storage);
+  explicit OperationLTwoDotProductVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -51,11 +46,9 @@ class OperationLTwoDotProductVectorizedLinearBoundaryOCL: public
   virtual ~OperationLTwoDotProductVectorizedLinearBoundaryOCL();
 
  protected:
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLTWODOTPRODUCTVECTORIZEDLINEARBOUNDARYOCL_HPP */
