@@ -161,7 +161,7 @@ int readStretchingData(std::string tFile, size_t numAssests,
   return 0;
 }
 
-void testHeatEquation(size_t dim, size_t level, double bound_left, double bound_right, double a,
+void testHeatEquation(size_t dim, int level, double bound_left, double bound_right, double a,
                       std::string initFunc, double T, double dt, std::string ODESolver,
                       double cg_eps, size_t cg_its, std::string fileStretch,
                       std::string stretchingMode) {
@@ -281,7 +281,7 @@ int main(int argc, char* argv[]) {
     }
 
     size_t dim;
-    size_t level;
+    int level;
     double bound_left;
     double bound_right;
     double a;

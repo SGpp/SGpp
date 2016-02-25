@@ -321,13 +321,13 @@ int readBoudingBoxData(std::string tFile, size_t numDims,
  * possibilities
  * @param coordsType set the type of coordinates that should be used: cart, log, PAT
  */
-void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::string fileBound,
+void testNUnderlyings(size_t numAssets, int l, std::string fileStoch, std::string fileBound,
                       double dStrike, std::string payoffType, double riskfree, size_t timeSt,
                       double dt, size_t CGIt, double CGeps, std::string Solver,
                       std::string coordsType) {
   size_t numberOfAssets = numAssets;
   size_t pdeDim = numberOfAssets * 2;
-  size_t level = l;
+  int level = l;
   size_t timesteps = timeSt;
   double stepsize = dt;
   size_t CGiterations = CGIt;
@@ -508,14 +508,14 @@ void testNUnderlyings(size_t numAssets, size_t l, std::string fileStoch, std::st
   if (numAssets == 1) {
     if (payoffType == "std_euro_call") {
       std::cout << "Analytical solution: (" << point[0] << ", " << point[1] << ") "
-                << myHestonSolver->EvaluateHestonPriceExact(point[0], point[1],
-                                                            timesteps * stepsize)
+                << myHestonSolver->EvaluateHestonPriceExact(
+                       point[0], point[1], static_cast<double>(timesteps) * stepsize)
                 << std::endl
                 << std::endl;
     } else {
       std::cout << "Analytical solution: (" << point[0] << ", " << point[1] << ") "
-                << myHestonSolver->EvaluateHestonPriceExactPut(point[0], point[1],
-                                                               timesteps * stepsize)
+                << myHestonSolver->EvaluateHestonPriceExactPut(
+                       point[0], point[1], static_cast<double>(timesteps) * stepsize)
                 << std::endl
                 << std::endl;
     }
