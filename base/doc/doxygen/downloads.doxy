@@ -14,8 +14,8 @@ http://sgpp.sparsegrids.org.
 
 @subsection downloads_history_110 Version 1.1.0, 2016/02/24 
 - Download:
-  <a href="http://sgpp.sparsegrids.org/downloads/release_1.1.0.tar.gz">
-  release_1.1.0.tar.gz</a>
+  <a href="http://sgpp.sparsegrids.org/downloads/sgpp_1.1.0.tar.gz">
+  sgpp_1.1.0.tar.gz</a>
 
 - Improved code quality
 - New combigrid package
