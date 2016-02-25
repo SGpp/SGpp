@@ -15,7 +15,7 @@
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLClonedBufferSD.hpp"
+#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
 #include "SourceBuilderMultTranspose.hpp"
@@ -33,15 +33,15 @@ class KernelMultTranspose {
 
   cl_int err;
 
-  base::OCLClonedBufferSD<real_type> deviceLevelTranspose;
-  base::OCLClonedBufferSD<real_type> deviceIndexTranspose;
-  base::OCLClonedBufferSD<real_type> deviceMaskTranspose;
-  base::OCLClonedBufferSD<real_type> deviceOffsetTranspose;
+  base::OCLBufferWrapperSD<real_type> deviceLevelTranspose;
+  base::OCLBufferWrapperSD<real_type> deviceIndexTranspose;
+  base::OCLBufferWrapperSD<real_type> deviceMaskTranspose;
+  base::OCLBufferWrapperSD<real_type> deviceOffsetTranspose;
 
-  base::OCLClonedBufferSD<real_type> deviceDataTranspose;
-  base::OCLClonedBufferSD<real_type> deviceSourceTranspose;
+  base::OCLBufferWrapperSD<real_type> deviceDataTranspose;
+  base::OCLBufferWrapperSD<real_type> deviceSourceTranspose;
 
-  base::OCLClonedBufferSD<real_type> deviceResultGridTranspose;
+  base::OCLBufferWrapperSD<real_type> deviceResultGridTranspose;
 
   cl_kernel kernelMultTranspose;
 

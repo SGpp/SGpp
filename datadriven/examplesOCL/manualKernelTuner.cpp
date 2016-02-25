@@ -14,19 +14,15 @@
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 
 int main(int argc, char** argv) {
-  // TODO(pfandedd): export parameter names and value ranges
-  // TODO(pfandedd): export constraints (or constraint checkers -> function
-  // pointers)
-
   // Specify scenario for performance optimization
 
   int maxLevel = 10;
   //    std::string fileName = "friedman_4d_small.arff";
   std::string fileName = "friedman_4d.arff";
-  sg::base::RegularGridConfiguration gridConfig;
-  sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-  sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sg::base::AdpativityConfiguration adaptConfig;
+  SGPP::base::RegularGridConfiguration gridConfig;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
+  SGPP::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
@@ -56,10 +52,6 @@ int main(int argc, char** argv) {
 
   SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
                                              SLESolverConfigFinal, adaptConfig);
-
-  // TODO(pfandedd): kernel is set inside "StreamingOCLMultiPlatform", currently
-  // no
-  // parameter to set it from here
 
   std::string kernelName("StreamingOCLMultiPlatform");
 

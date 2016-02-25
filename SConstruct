@@ -453,8 +453,8 @@ for exampleTarget in exampleTargetList:
 #     dependencies.append(env.Command('printFinished', [], printFinished))
 
 # necessary to enforce an order on the final steps of the building of the wrapper
-for i in range(len(dependencies) - 1):
-  env.Depends(dependencies[i + 1], dependencies[i])
+# for i in range(len(dependencies) - 1):
+#   env.Depends(dependencies[i + 1], dependencies[i])
  
 # Stuff needed for system install
 env.Clean("distclean",

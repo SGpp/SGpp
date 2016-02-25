@@ -13,8 +13,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
-void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-                      SGPP::base::Grid& grid,
+void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::base::Grid& grid,
                       SGPP::base::GridGenerator& gridGen, std::mt19937 mt,
                       std::uniform_real_distribution<double>& dist) {
   SGPP::base::DataVector alphaRefine(grid.getSize());
@@ -24,9 +23,8 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-        new SGPP::base::SurplusRefinementFunctor(
-            &alphaRefine, adaptConfig.noPoints_, adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -34,8 +32,6 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
     for (size_t j = oldSize; j < alphaRefine.getSize(); j++) {
       alphaRefine[j] = dist(mt);
     }
-
-    delete myRefineFunc;
   }
 }
 
@@ -67,14 +63,13 @@ int main(int argc, char** argv) {
 
   size_t dim = dataset.getDimension();
   std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->getDimension() << std::endl;
+  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
   SGPP::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
-  std::cout << "number of grid points: " << gridStorage->getSize() << std::endl;
-  std::cout << "number of data points: " << dataset.getNumberInstances()
-            << std::endl;
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
+  std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
 
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -87,17 +82,15 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "creating operation with unrefined grid" << std::endl;
-  SGPP::base::OperationMultipleEval* eval =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                    configuration);
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
+      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
   doAllRefinements(adaptConfig, *grid, gridGen, mt, dist);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->getSize()
-            << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;
 
-  SGPP::base::DataVector alphaResult(gridStorage->getSize());
+  SGPP::base::DataVector alphaResult(gridStorage.getSize());
 
   std::cout << "preparing operation for refined grid" << std::endl;
   eval->prepare();
@@ -109,10 +102,10 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval* evalCompare =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> evalCompare =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
 
-  SGPP::base::DataVector alphaResultCompare(gridStorage->getSize());
+  SGPP::base::DataVector alphaResultCompare(gridStorage.getSize());
 
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 
@@ -120,8 +113,7 @@ int main(int argc, char** argv) {
   for (size_t i = 0; i < alphaResultCompare.getSize(); i++) {
     // std::cout << "mine: " << alphaResult[i] << " ref: " <<
     //    alphaResultCompare[i] << std::endl;
-    mse += (alphaResult[i] - alphaResultCompare[i]) *
-           (alphaResult[i] - alphaResultCompare[i]);
+    mse += (alphaResult[i] - alphaResultCompare[i]) * (alphaResult[i] - alphaResultCompare[i]);
   }
 
   mse = mse / static_cast<double>(alphaResult.getSize());
