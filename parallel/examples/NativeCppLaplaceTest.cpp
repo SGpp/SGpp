@@ -27,9 +27,11 @@ int main(int argc, char* argv[]) {
   std::string grid_selection;
 
   if (argc != 9) {
-    std::cout << std::endl << "Usage " << argv[0] <<
-              " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]"
-              << std::endl << std::endl;
+    std::cout << std::endl
+              << "Usage " << argv[0]
+              << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]"
+              << std::endl
+              << std::endl;
     exit(-1);
   }
 
@@ -42,8 +44,7 @@ int main(int argc, char* argv[]) {
   grid_selection.assign(argv[7]);
   lmb = atoi(argv[8]);
 
-  SGPP::base::DimensionBoundary* myBoundaries = new
-  SGPP::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -59,8 +60,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim,
-      myBoundaries);
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
   delete[] myBoundaries;
 
   // Generate lambda for test if needed
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
   if (lmb == 1) {
     for (size_t d = 0; d < dim; d++)
-      lambda.set(d, ((double)(d + 1) / (double)dim));
+      lambda.set(d, (static_cast<double>(d + 1) / static_cast<double>(dim)));
   } else {
     lambda.setAll(1.0);
   }
@@ -81,37 +81,42 @@ int main(int argc, char* argv[]) {
   } else if (grid_selection == "B") {
     myGrid = new SGPP::base::LinearBoundaryGrid(*myBoundingBox);
   } else {
-    std::cout << std::endl << "Usage " << argv[0] <<
-              " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]"
-              << std::endl << std::endl;
+    std::cout << std::endl
+              << "Usage " << argv[0]
+              << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B] [Lambda(0/1)]"
+              << std::endl
+              << std::endl;
     exit(-1);
   }
 
   myGrid->getGenerator().regular(level);
 
-  SGPP::base::GridStorage* myGridStorage = myGrid->getStorage();
+  SGPP::base::GridStorage* myGridStorage = &myGrid->getStorage();
   size_t gridsize = myGridStorage->getSize();
   SGPP::base::DataVector* alpha = new SGPP::base::DataVector(gridsize);
   SGPP::base::DataVector* result_updown = new SGPP::base::DataVector(gridsize);
   SGPP::base::DataVector* result_vector = new SGPP::base::DataVector(gridsize);
 
-  SGPP::base::OperationMatrix* updown;
-  SGPP::base::OperationMatrix* vect;
+  std::unique_ptr<SGPP::base::OperationMatrix> updown;
+  std::unique_ptr<SGPP::base::OperationMatrix> vect;
 
   if (lmb == 1) {
     updown = SGPP::op_factory::createOperationLaplace(*myGrid, lambda);
-    vect = SGPP::op_factory::createOperationLaplaceVectorized(*myGrid, lambda,
-    		SGPP::parallel::X86SIMD);/// @todo: check for parallelization type
+    vect = SGPP::op_factory::createOperationLaplaceVectorized(
+        *myGrid, lambda,
+        SGPP::parallel::X86SIMD);  /// @todo: check for parallelization type
   } else {
     updown = SGPP::op_factory::createOperationLaplace(*myGrid);
-    vect = SGPP::op_factory::createOperationLaplaceVectorized(*myGrid,
-    		SGPP::parallel::X86SIMD);/// @todo: check for parallelization type
+    vect = SGPP::op_factory::createOperationLaplaceVectorized(
+        *myGrid,
+        SGPP::parallel::X86SIMD);  /// @todo: check for parallelization type
   }
 
   std::cout << std::endl;
   std::cout << "Laplace Test Application" << std::endl;
   std::cout << "========================" << std::endl << std::endl;
-  std::cout << "Gridtype:     " << (int)myGrid->getType() << std::endl;/// @todo:output for gridtype
+  std::cout << "Gridtype:     " << static_cast<int>(myGrid->getType())
+            << std::endl;  /// @todo:output for gridtype
   std::cout << "Dimensions:   " << dim << std::endl;
   std::cout << "Levels:       " << level << std::endl;
   std::cout << "Left Bound.:  " << bound_left << std::endl;
@@ -120,8 +125,7 @@ int main(int argc, char* argv[]) {
   std::cout << "chosen Test:  " << test << std::endl;
   std::cout << "Lambda:       ";
 
-  for (size_t d = 0; d < dim; d++)
-    std::cout << lambda.get(d) << " ";
+  for (size_t d = 0; d < dim; d++) std::cout << lambda.get(d) << " ";
 
   std::cout << std::endl << std::endl;
 
@@ -129,10 +133,8 @@ int main(int argc, char* argv[]) {
 
   if (test == "M") {
     alpha->setAll(0.0);
-    SGPP::base::DataMatrix* matrix_updown = new SGPP::base::DataMatrix(gridsize,
-        gridsize);
-    SGPP::base::DataMatrix* matrix_vector = new SGPP::base::DataMatrix(gridsize,
-        gridsize);
+    SGPP::base::DataMatrix* matrix_updown = new SGPP::base::DataMatrix(gridsize, gridsize);
+    SGPP::base::DataMatrix* matrix_vector = new SGPP::base::DataMatrix(gridsize, gridsize);
 
     for (size_t i = 0; i < gridsize; i++) {
       alpha->set(i, 1.0);
@@ -144,7 +146,7 @@ int main(int argc, char* argv[]) {
       vect->mult(*alpha, *result_vector);
       matrix_vector->setColumn(i, *result_vector);
 
-      //if ((i % (gridsize/20)) == 0) std::cout << "." ;
+      // if ((i % (gridsize/20)) == 0) std::cout << "." ;
 
       alpha->set(i, 0.0);
     }
@@ -199,20 +201,17 @@ int main(int argc, char* argv[]) {
       if (fabs(result_updown->get(i) - result_vector->get(i)) > max_error) {
         max_error = fabs(result_updown->get(i) - result_vector->get(i));
       }
-
     }
   } else {
-    std::cout << std::endl << "Usage " << argv[0] <<
-              " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B]" << std::endl
+    std::cout << std::endl
+              << "Usage " << argv[0]
+              << " [dim] [level] [bound_left] [bound_right] [dirichlet] [M/V] [I/B]" << std::endl
               << std::endl;
     exit(-1);
   }
 
-  std::cout << "Max error for vectorized version is " << max_error << std::endl <<
-            std::endl;
+  std::cout << "Max error for vectorized version is " << max_error << std::endl << std::endl;
 
-  delete vect;
-  delete updown;
   delete result_vector;
   delete result_updown;
   delete alpha;

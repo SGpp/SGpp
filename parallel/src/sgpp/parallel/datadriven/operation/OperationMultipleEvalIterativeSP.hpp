@@ -10,21 +10,20 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 
 #include <sgpp/globaldef.hpp>
-
-
-#if USE_DOUBLE_PRECISION==0
+#include <limits>
+#if USE_DOUBLE_PRECISION == 0
 
 namespace SGPP {
 namespace parallel {
 
-template<typename KernelImplementation>
-class OperationMultipleEvalIterativeSP : public
-  OperationMultipleEvalVectorizedSP {
+template <typename KernelImplementation>
+class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedSP {
  public:
   /**
    * Constructor of OperationMultipleEvalIterativeSPX86Simd
    *
-   * Within the constructor SGPP::base::DataMatrixSP Level and SGPP::base::DataMatrixSP Index are set up.
+   * Within the constructor SGPP::base::DataMatrixSP Level and SGPP::base::DataMatrixSP Index are
+   * set up.
    * If the grid changes during your calculations and you don't want to create
    * a new instance of this class, you have to call rebuildLevelAndIndex before
    * doing any further mult or multTranspose calls.
@@ -36,10 +35,10 @@ class OperationMultipleEvalIterativeSP : public
    * @param datasetFrom local part of dataset (start)
    * @param datasetTo local part of dataset (end)
    */
-  OperationMultipleEvalIterativeSP(base::GridStorage* storage,
-                                   base::DataMatrixSP* dataset,
-                                   size_t gridFrom, size_t gridTo, size_t datasetFrom, size_t datasetTo):
-    OperationMultipleEvalVectorizedSP(storage, dataset) {
+  OperationMultipleEvalIterativeSP(base::GridStorage* storage, base::DataMatrixSP* dataset,
+                                   size_t gridFrom, size_t gridTo, size_t datasetFrom,
+                                   size_t datasetTo)
+      : OperationMultipleEvalVectorizedSP(storage, dataset) {
     m_gridFrom = gridFrom;
     m_gridTo = gridTo;
     m_datasetFrom = datasetFrom;
@@ -48,25 +47,14 @@ class OperationMultipleEvalIterativeSP : public
     rebuildLevelAndIndex(m_gridFrom, m_gridTo);
   }
 
-  virtual double multVectorized(SGPP::base::DataVectorSP& alpha,
-                                SGPP::base::DataVectorSP& result) {
+  virtual double multVectorized(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
     myTimer_->start();
     result.setAll(0.0f);
 
-    #pragma omp parallel
+#pragma omp parallel
     {
-      m_kernel.mult(
-        level_,
-        index_,
-        mask_,
-        offset_,
-        dataset_,
-        alpha,
-        result,
-        0,
-        alpha.getSize(),
-        m_datasetFrom,
-        m_datasetTo);
+      m_kernel.mult(level_, index_, mask_, offset_, dataset_, alpha, result, 0, alpha.getSize(),
+                    m_datasetFrom, m_datasetTo);
     }
     return myTimer_->stop();
   }
@@ -76,20 +64,10 @@ class OperationMultipleEvalIterativeSP : public
     myTimer_->start();
     result.setAll(0.0);
 
-    #pragma omp parallel
+#pragma omp parallel
     {
-      m_kernel.multTranspose(
-        level_,
-        index_,
-        mask_,
-        offset_,
-        dataset_,
-        source,
-        result,
-        m_gridFrom,
-        m_gridTo,
-        0,
-        dataset_->getNcols());
+      m_kernel.multTranspose(level_, index_, mask_, offset_, dataset_, source, result, m_gridFrom,
+                             m_gridTo, 0, dataset_->getNcols());
     }
 
     return myTimer_->stop();
@@ -97,8 +75,8 @@ class OperationMultipleEvalIterativeSP : public
 
   virtual void rebuildLevelAndIndex(size_t gridFrom = 0,
                                     size_t gridTo = std::numeric_limits<size_t>::max()) {
-    LevelIndexMaskOffsetHelperSP::rebuild<KernelImplementation::kernelType, OperationMultipleEvalVectorizedSP >
-    (this);
+    LevelIndexMaskOffsetHelperSP::rebuild<KernelImplementation::kernelType,
+                                          OperationMultipleEvalVectorizedSP>(this);
 
     if (gridTo == std::numeric_limits<size_t>::max()) {
       gridTo = this->storage_->size();
@@ -108,13 +86,13 @@ class OperationMultipleEvalIterativeSP : public
     m_gridTo = gridTo;
     m_kernel.resetKernel();
   }
+
  private:
   KernelImplementation m_kernel;
 };
+}  // namespace parallel
+}  // namespace SGPP
 
-}
-}
+#endif  // USE_DOUBLE_PRECISION==0
 
-#endif // USE_DOUBLE_PRECISION==0
-
-#endif // OPERATIONMULTIPLEEVALITERATIVESP_H
+#endif  // OPERATIONMULTIPLEEVALITERATIVESP_H

@@ -14,10 +14,9 @@
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace parallel {
@@ -31,8 +30,7 @@ namespace parallel {
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-class DMSystemMatrixVectorizedIdentityMPI : public
-  SGPP::datadriven::DMSystemMatrixBase {
+class DMSystemMatrixVectorizedIdentityMPI : public SGPP::datadriven::DMSystemMatrixBase {
  private:
   /// vectorization mode
   VectorizationType vecMode_;
@@ -41,9 +39,10 @@ class DMSystemMatrixVectorizedIdentityMPI : public
   /// Number of patched and used training instances
   size_t numPatchedTrainingInstances_;
   /// OperationB for calculating the data matrix
-  SGPP::parallel::OperationMultipleEvalVectorized* B_;
+  std::unique_ptr<SGPP::parallel::OperationMultipleEvalVectorized> B_;
 
   double waitting_time;
+
  public:
   /**
    * Std-Constructor
@@ -54,18 +53,17 @@ class DMSystemMatrixVectorizedIdentityMPI : public
    * @param vecMode vectorization mode
    */
   DMSystemMatrixVectorizedIdentityMPI(SGPP::base::Grid& SparseGrid,
-                                      SGPP::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
+                                      SGPP::base::DataMatrix& trainData, double lambda,
+                                      VectorizationType vecMode);
 
   /**
    * Std-Destructor
    */
   virtual ~DMSystemMatrixVectorizedIdentityMPI();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-  virtual void generateb(SGPP::base::DataVector& classes,
-                         SGPP::base::DataVector& b);
+  virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
 
   virtual void rebuildLevelAndIndex();
 
@@ -92,7 +90,7 @@ class DMSystemMatrixVectorizedIdentityMPI : public
   void multTransposeVec(base::DataVector& source, base::DataVector& result);
 };
 
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* DMSYSTEMMATRIXVECTORIZEDIDENTITYMPI_HPP */

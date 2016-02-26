@@ -11,43 +11,41 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 DMSystemMatrixVectorizedIdentity::DMSystemMatrixVectorizedIdentity(
-  SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda,
-  VectorizationType vecMode)
-  : DMSystemMatrixBase(trainData, lambda), vecMode_(vecMode),
-    numTrainingInstances_(0), numPatchedTrainingInstances_(0) {
+    SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda,
+    VectorizationType vecMode)
+    : DMSystemMatrixBase(trainData, lambda),
+      vecMode_(vecMode),
+      numTrainingInstances_(0),
+      numPatchedTrainingInstances_(0) {
   // handle unsupported vector extensions
-  if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC
-      && this->vecMode_ != Hybrid_X86SIMD_MIC && this->vecMode_ != OpenCL
-      && this->vecMode_ != ArBB && this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
-    throw SGPP::base::operation_exception("DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
+  if (this->vecMode_ != X86SIMD && this->vecMode_ != MIC && this->vecMode_ != Hybrid_X86SIMD_MIC &&
+      this->vecMode_ != OpenCL && this->vecMode_ != ArBB &&
+      this->vecMode_ != Hybrid_X86SIMD_OpenCL) {
+    throw SGPP::base::operation_exception(
+        "DMSystemMatrixSPVectorizedIdentity : un-supported vector extension!");
   }
 
   this->dataset_ = new SGPP::base::DataMatrix(trainData);
   this->numTrainingInstances_ = this->dataset_->getNrows();
   this->numPatchedTrainingInstances_ =
-    SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_),
-        vecMode_);
+      SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->dataset_), vecMode_);
 
   if (this->vecMode_ != ArBB) {
     this->dataset_->transpose();
   }
 
-  this->B_ = SGPP::op_factory::createOperationMultipleEvalVectorized(SparseGrid,
-             this->vecMode_, this->dataset_);
+  this->B_ = SGPP::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode_,
+                                                                     this->dataset_);
 }
 
-DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity() {
-  delete this->B_;
-  delete this->dataset_;
-}
+DMSystemMatrixVectorizedIdentity::~DMSystemMatrixVectorizedIdentity() { delete this->dataset_; }
 
 void DMSystemMatrixVectorizedIdentity::mult(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result) {
+                                            SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(this->numPatchedTrainingInstances_);
 
   // Operation B
@@ -66,12 +64,11 @@ void DMSystemMatrixVectorizedIdentity::mult(SGPP::base::DataVector& alpha,
   this->computeTimeMultTrans_ += this->B_->multTransposeVectorized(temp, result);
   this->completeTimeMultTrans_ += this->myTimer_->stop();
 
-  result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_,
-              alpha);
+  result.axpy(static_cast<double>(this->numTrainingInstances_) * this->lambda_, alpha);
 }
 
-void DMSystemMatrixVectorizedIdentity::generateb(SGPP::base::DataVector&
-    classes, SGPP::base::DataVector& b) {
+void DMSystemMatrixVectorizedIdentity::generateb(SGPP::base::DataVector& classes,
+                                                 SGPP::base::DataVector& b) {
   SGPP::base::DataVector myClasses(classes);
 
   // Apply padding
@@ -84,9 +81,7 @@ void DMSystemMatrixVectorizedIdentity::generateb(SGPP::base::DataVector&
   this->completeTimeMultTrans_ += this->myTimer_->stop();
 }
 
-void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex() {
-  this->B_->rebuildLevelAndIndex();
-}
+void DMSystemMatrixVectorizedIdentity::rebuildLevelAndIndex() { this->B_->rebuildLevelAndIndex(); }
 
-}
-}
+}  // namespace parallel
+}  // namespace SGPP

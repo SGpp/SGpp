@@ -16,14 +16,14 @@
 #include <sgpp/parallel/tools/PartitioningTool.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <strstream>
+#include <algorithm>
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-#include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace parallel {
@@ -37,9 +37,9 @@ namespace parallel {
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-template<typename KernelImplementation>
-class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
-  SGPP::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
+template <typename KernelImplementation>
+class DMSystemMatrixVectorizedIdentityOnesidedMPI
+    : public SGPP::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
  public:
   /**
    * Constructor
@@ -49,31 +49,32 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
    * @param lambda the lambda, the regression parameter
    * @param vecMode vectorization mode
    */
-  DMSystemMatrixVectorizedIdentityOnesidedMPI(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda,
-    VectorizationType vecMode)
-    : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid,
-        trainData, lambda, vecMode),
-      _mpi_grid_window_buffer(NULL),
-      _mpi_data_window_buffer(NULL),
-      _mpi_grid_window(),
-      _mpi_data_window() {
+  DMSystemMatrixVectorizedIdentityOnesidedMPI(SGPP::base::Grid& SparseGrid,
+                                              SGPP::base::DataMatrix& trainData, double lambda,
+                                              VectorizationType vecMode)
+      : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda,
+                                                                      vecMode),
+        _mpi_grid_window_buffer(NULL),
+        _mpi_data_window_buffer(NULL),
+        _mpi_grid_window(),
+        _mpi_data_window() {
     size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
 
     /* calculate distribution of data */
     _chunkCountPerProcData = 2;
     _mpi_data_sizes = new int[_chunkCountPerProcData * mpi_size];
     _mpi_data_offsets = new int[_chunkCountPerProcData * mpi_size];
-    PartitioningTool::calcMPIChunkedDistribution(this->numPatchedTrainingInstances_,
-        _chunkCountPerProcData, _mpi_data_sizes, _mpi_data_offsets,
+    PartitioningTool::calcMPIChunkedDistribution(
+        this->numPatchedTrainingInstances_, _chunkCountPerProcData, _mpi_data_sizes,
+        _mpi_data_offsets,
         SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
     if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
       std::cout << "Max size per chunk Data: " << _mpi_data_sizes[0] << std::endl;
     }
 
-    _mpi_grid_sizes = NULL; // allocation in rebuildLevelAndIndex();
-    _mpi_grid_offsets = NULL; // allocation in rebuildLevelAndIndex();
+    _mpi_grid_sizes = NULL;    // allocation in rebuildLevelAndIndex();
+    _mpi_grid_offsets = NULL;  // allocation in rebuildLevelAndIndex();
     rebuildLevelAndIndex();
 
     createAndInitDataBuffers();
@@ -87,10 +88,9 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
       MPI_Win_free(&_mpi_grid_window);
     }
 
-    _mpi_grid_window_buffer = new SGPP::base::DataVector(this->storage_->size());
+    _mpi_grid_window_buffer = new SGPP::base::DataVector(this->storage_.getSize());
 
-    MPI_Win_create(_mpi_grid_window_buffer->getPointer(),
-                   this->storage_->size()*sizeof(double),
+    MPI_Win_create(_mpi_grid_window_buffer->getPointer(), this->storage_.getSize() * sizeof(double),
                    static_cast<int>(sizeof(double)), MPI_INFO_NULL, MPI_COMM_WORLD,
                    &_mpi_grid_window);
     MPI_Win_fence(MPI_MODE_NOSUCCEED, _mpi_grid_window);
@@ -103,12 +103,10 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
       MPI_Win_free(&_mpi_data_window);
     }
 
-    _mpi_data_window_buffer = new SGPP::base::DataVector(
-      this->numPatchedTrainingInstances_);
-    MPI_Win_create(_mpi_data_window_buffer->getPointer(),
-                   this->numPatchedTrainingInstances_ * sizeof(double),
-                   static_cast<int>(sizeof(double)), MPI_INFO_NULL, MPI_COMM_WORLD,
-                   &_mpi_data_window);
+    _mpi_data_window_buffer = new SGPP::base::DataVector(this->numPatchedTrainingInstances_);
+    MPI_Win_create(
+        _mpi_data_window_buffer->getPointer(), this->numPatchedTrainingInstances_ * sizeof(double),
+        static_cast<int>(sizeof(double)), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_data_window);
     MPI_Win_fence(MPI_MODE_NOSUCCEED, _mpi_data_window);
   }
 
@@ -124,8 +122,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
     MPI_Win_free(&_mpi_grid_window);
   }
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result) {
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
 #ifdef X86_MIC_SYMMETRIC
     myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 #endif
@@ -145,85 +142,60 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
     MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_data_window);
 
     this->myTimer_->start();
-    #pragma omp parallel
+#pragma omp parallel
     {
       size_t myDataChunkStart = mpi_myrank * _chunkCountPerProcData;
       size_t myDataChunkEnd = (mpi_myrank + 1) * _chunkCountPerProcData;
 
-      for (size_t chunkIndex = myDataChunkStart; chunkIndex < myDataChunkEnd;
-           chunkIndex++) {
+      for (size_t chunkIndex = myDataChunkStart; chunkIndex < myDataChunkEnd; chunkIndex++) {
         size_t start = _mpi_data_offsets[chunkIndex];
-        size_t end =  start + _mpi_data_sizes[chunkIndex];
-        this->kernel_.mult(
-          this->level_,
-          this->index_,
-          this->mask_,
-          this->offset_,
-          this->dataset_,
-          alpha,
-          temp,
-          0,
-          alpha.getSize(),
-          start,
-          end);
-        #pragma omp barrier
-        #pragma omp master // the non-sending processes can already continue with execution
+        size_t end = start + _mpi_data_sizes[chunkIndex];
+        this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
+                           alpha, temp, 0, alpha.getSize(), start, end);
+#pragma omp barrier
+#pragma omp master  // the non-sending processes can already continue with execution
         {
           myGlobalMPIComm->putToAll(&ptrTemp[start], start, _mpi_data_sizes[chunkIndex],
                                     _mpi_data_window);
         }
       }
 
-      // this barrier is absolutely necessary, as it guarantees that the last
-      // put-call has been made. This is required as a MPI_Win_fence
-      // follows. If that fence would be called before the master thread has finished,
-      // the last put won't be taken into account for the synchronization.
-      #pragma omp barrier
+// this barrier is absolutely necessary, as it guarantees that the last
+// put-call has been made. This is required as a MPI_Win_fence
+// follows. If that fence would be called before the master thread has finished,
+// the last put won't be taken into account for the synchronization.
+#pragma omp barrier
 
-      #pragma omp master
+#pragma omp master
       {
         this->computeTimeMult_ += this->myTimer_->stop();
 
         // we expect that there is not put to the buffer after this line
         // and we did no store to the buffer locally (only via put to the same proc)
         // and there won't be RMA calls until the next fence
-        MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED,
-                      _mpi_data_window);
+        MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED, _mpi_data_window);
 
         // patch result -> set additional entries zero
-        for (size_t i = this->numTrainingInstances_;
-             i < this->numPatchedTrainingInstances_; i++) {
+        for (size_t i = this->numTrainingInstances_; i < this->numPatchedTrainingInstances_; i++) {
           _mpi_data_window_buffer->set(i, 0.0f);
         }
 
         this->completeTimeMult_ += this->myTimer_->stop();
         this->myTimer_->start();
-
       }
-      #pragma omp barrier
+#pragma omp barrier
 
       size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
       size_t myGridChunkEnd = (mpi_myrank + 1) * _chunkCountPerProcGrid;
 
-      for (size_t chunkIndex = myGridChunkStart; chunkIndex < myGridChunkEnd;
-           chunkIndex++) {
+      for (size_t chunkIndex = myGridChunkStart; chunkIndex < myGridChunkEnd; chunkIndex++) {
         size_t start = _mpi_grid_offsets[chunkIndex];
-        size_t end =  start + _mpi_grid_sizes[chunkIndex];
-        this->kernel_.multTranspose(
-          this->level_,
-          this->index_,
-          this->mask_,
-          this->offset_,
-          this->dataset_,
-          *_mpi_data_window_buffer,
-          result,
-          start,
-          end,
-          0,
-          this->numPatchedTrainingInstances_
-        );
-        #pragma omp barrier
-        #pragma omp master // the non-sending processes can already continue with execution
+        size_t end = start + _mpi_grid_sizes[chunkIndex];
+        this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
+                                    this->dataset_, *_mpi_data_window_buffer, result, start, end, 0,
+                                    this->numPatchedTrainingInstances_);
+#pragma omp barrier
+#pragma omp master  // the non-sending processes can already continue with execution
         {
           myGlobalMPIComm->putToAll(&ptrResult[start], start, _mpi_grid_sizes[chunkIndex],
                                     _mpi_grid_window);
@@ -232,16 +204,13 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();
 
-    MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED,
-                  _mpi_grid_window);
+    MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED, _mpi_grid_window);
     this->completeTimeMultTrans_ += this->myTimer_->stop();
     result.copyFrom(*_mpi_grid_window_buffer);
-    result.axpy(static_cast<double>(this->numTrainingInstances_)*this->lambda_,
-                alpha);
-  } //end mult
+    result.axpy(static_cast<double>(this->numTrainingInstances_) * this->lambda_, alpha);
+  }  // end mult
 
-  virtual void generateb(SGPP::base::DataVector& classes,
-                         SGPP::base::DataVector& b) {
+  virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b) {
     size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
 
     _mpi_grid_window_buffer->setAll(0.0);
@@ -258,30 +227,19 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
     }
 
     this->myTimer_->start();
-    #pragma omp parallel
+#pragma omp parallel
     {
       size_t myGridChunkStart = mpi_myrank * _chunkCountPerProcGrid;
       size_t myGridChunkEnd = (mpi_myrank + 1) * _chunkCountPerProcGrid;
 
-      for (size_t chunkIndex = myGridChunkStart; chunkIndex < myGridChunkEnd;
-           chunkIndex++) {
+      for (size_t chunkIndex = myGridChunkStart; chunkIndex < myGridChunkEnd; chunkIndex++) {
         size_t start = _mpi_grid_offsets[chunkIndex];
-        size_t end =  start + _mpi_grid_sizes[chunkIndex];
-        this->kernel_.multTranspose(
-          this->level_,
-          this->index_,
-          this->mask_,
-          this->offset_,
-          this->dataset_,
-          myClasses,
-          b,
-          start,
-          end,
-          0,
-          this->numPatchedTrainingInstances_
-        );
-        #pragma omp barrier
-        #pragma omp master // the non-sending processes can already continue with execution
+        size_t end = start + _mpi_grid_sizes[chunkIndex];
+        this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
+                                    this->dataset_, myClasses, b, start, end, 0,
+                                    this->numPatchedTrainingInstances_);
+#pragma omp barrier
+#pragma omp master  // the non-sending processes can already continue with execution
         {
           myGlobalMPIComm->putToAll(&ptrB[start], start, _mpi_grid_sizes[chunkIndex],
                                     _mpi_grid_window);
@@ -290,8 +248,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
     }
 
     this->computeTimeMultTrans_ += this->myTimer_->stop();
-    MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED,
-                  _mpi_grid_window);
+    MPI_Win_fence(MPI_MODE_NOPUT | MPI_MODE_NOSTORE | MPI_MODE_NOSUCCEED, _mpi_grid_window);
     this->completeTimeMultTrans_ += this->myTimer_->stop();
     b.copyFrom(*_mpi_grid_window_buffer);
   }
@@ -310,20 +267,20 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
     size_t mpi_size = myGlobalMPIComm->getNumRanks();
 
     size_t sendChunkSize = 2;
-    size_t sizePerProc = this->storage_->size() / mpi_size;
+    size_t sizePerProc = this->storage_.getSize() / mpi_size;
     std::max<size_t>(sizePerProc / sendChunkSize, 1);
 
     _chunkCountPerProcGrid = 1;
 
     if (myGlobalMPIComm->getMyRank() == 0) {
-      std::cout << "chunksperproc grid: " << _chunkCountPerProcGrid <<
-                "; total # chunks: " << _chunkCountPerProcGrid* mpi_size << std::endl;
+      std::cout << "chunksperproc grid: " << _chunkCountPerProcGrid
+                << "; total # chunks: " << _chunkCountPerProcGrid * mpi_size << std::endl;
     }
 
     _mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];
     _mpi_grid_offsets = new int[_chunkCountPerProcGrid * mpi_size];
-    PartitioningTool::calcMPIChunkedDistribution(this->storage_->size(),
-        _chunkCountPerProcGrid, _mpi_grid_sizes, _mpi_grid_offsets, 1);
+    PartitioningTool::calcMPIChunkedDistribution(this->storage_.getSize(), _chunkCountPerProcGrid,
+                                                 _mpi_grid_sizes, _mpi_grid_offsets, 1);
     createAndInitGridBuffers();
   }
 
@@ -346,7 +303,6 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI : public
   MPI_Win _mpi_grid_window;
   MPI_Win _mpi_data_window;
 };
-
-}
-}
-#endif // DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDMPI_HPP
+}  // namespace parallel
+}  // namespace SGPP
+#endif  // DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDMPI_HPP

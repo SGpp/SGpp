@@ -41,8 +41,6 @@ PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::PoissonEquationEll
 }
 
 PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::~PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI() {
-  delete this->Laplace_Complete;
-  delete this->Laplace_Inner;
 }
 
 void PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::applyLOperatorInner(
