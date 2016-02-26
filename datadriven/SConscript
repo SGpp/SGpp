@@ -126,7 +126,7 @@ if env["ARCH"] != "mic":
 # build examples for OpenCL
 if env["USE_OCL"]:
     example_env = env.Clone()
-    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["libboost_program_options"])
+    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_program_options", "boost_filesystem", "boost_system"])
     for fileName in os.listdir("examplesOCL"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
             example = example_env.Program(source=os.path.join("examplesOCL", fileName))
