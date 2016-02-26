@@ -13,8 +13,8 @@
 #include <fstream>
 
 // print grid in gnuplot readable format (1D and 2D only)
-//#define GNUPLOT
-//#define GRDIRESOLUTION 100
+// #define GNUPLOT
+// #define GRDIRESOLUTION 100
 
 bool bUseFloat;
 bool bUseRecursion;
@@ -33,7 +33,7 @@ SGPP::base::AdpativityConfiguration gAdapConfig;
 int gstart_level;
 double glambda;
 
-//void storeROCcurve(SGPP::base::DataMatrix& ROC_curve, std::string tFilename)
+// void storeROCcurve(SGPP::base::DataMatrix& ROC_curve, std::string tFilename)
 //{
 //  std::ofstream fileout;
 //
@@ -50,13 +50,12 @@ double glambda;
 //  fileout.close();
 //}
 
-void printSettings(std::string dataFile, std::string testFile,
-                   bool isRegression,
+void printSettings(std::string dataFile, std::string testFile, bool isRegression,
                    const SGPP::base::RegularGridConfiguration& GridConfig,
                    const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                   const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                   const double lambda, const SGPP::parallel::VectorizationType vecType) {
+                   const SGPP::base::AdpativityConfiguration& AdaptConfig, const double lambda,
+                   const SGPP::parallel::VectorizationType vecType) {
   std::cout << std::endl;
 
   std::cout << "Train dataset: " << dataFile << std::endl;
@@ -65,16 +64,12 @@ void printSettings(std::string dataFile, std::string testFile,
 
   std::cout << "Num. Refinements: " << AdaptConfig.numRefinements_ << std::endl;
   std::cout << "Refine Threshold: " << AdaptConfig.threshold_ << std::endl;
-  std::cout << "Refine number points: " << AdaptConfig.noPoints_ << std::endl <<
-            std::endl;
+  std::cout << "Refine number points: " << AdaptConfig.noPoints_ << std::endl << std::endl;
 
-  std::cout << "Max. CG Iterations (refine): " <<
-            SolverConfigRefine.maxIterations_ << std::endl;
+  std::cout << "Max. CG Iterations (refine): " << SolverConfigRefine.maxIterations_ << std::endl;
   std::cout << "CG epsilon (refine): " << SolverConfigRefine.eps_ << std::endl;
-  std::cout << "Max. CG Iterations (final): " << SolverConfigFinal.maxIterations_
-            << std::endl;
-  std::cout << "CG epsilon (final): " << SolverConfigFinal.eps_ << std::endl <<
-            std::endl;
+  std::cout << "Max. CG Iterations (final): " << SolverConfigFinal.maxIterations_ << std::endl;
+  std::cout << "CG epsilon (final): " << SolverConfigFinal.eps_ << std::endl << std::endl;
 
   std::cout << "Lambda: " << lambda << std::endl << std::endl;
 
@@ -92,32 +87,28 @@ void printSettings(std::string dataFile, std::string testFile,
     std::cout << "Vectorized: X86SIMD (AVX)" << std::endl << std::endl;
 #endif
   } else if (vecType == SGPP::parallel::OpenCL) {
-    std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl <<
-              std::endl;
+    std::cout << "Vectorized: OpenCL (NVIDIA Fermi optimized)" << std::endl << std::endl;
   } else if (vecType == SGPP::parallel::Hybrid_X86SIMD_OpenCL) {
 #if defined(__SSE3__) && !defined(__AVX__)
-    std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" <<
-              std::endl << std::endl;
+    std::cout << "Vectorized: Hybrid, SSE3 and OpenCL (NVIDIA Fermi optimized)" << std::endl
+              << std::endl;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-    std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" <<
-              std::endl << std::endl;
+    std::cout << "Vectorized: Hybrid, AVX and OpenCL (NVIDIA Fermi optimized)" << std::endl
+              << std::endl;
 #endif
   } else if (vecType == SGPP::parallel::ArBB) {
-    std::cout << "Vectorized: Intel Array Building Blocks" << std::endl <<
-              std::endl;
+    std::cout << "Vectorized: Intel Array Building Blocks" << std::endl << std::endl;
   } else if (vecType == SGPP::parallel::CUDA) {
     std::cout << "Vectorized: NVIDIA CUDA" << std::endl << std::endl;
   } else if (vecType == SGPP::parallel::MIC) {
     std::cout << "Vectorized: Intel MIC Architecture" << std::endl << std::endl;
   } else if (vecType == SGPP::parallel::Hybrid_X86SIMD_MIC) {
 #if defined(__SSE3__) && !defined(__AVX__)
-    std::cout << "Vectorized: Hybrid, SSE3 and Intel MIC Architecture" << std::endl
-              << std::endl;
+    std::cout << "Vectorized: Hybrid, SSE3 and Intel MIC Architecture" << std::endl << std::endl;
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-    std::cout << "Vectorized: Hybrid, AVX and Intel MIC Architecture" << std::endl
-              << std::endl;
+    std::cout << "Vectorized: Hybrid, AVX and Intel MIC Architecture" << std::endl << std::endl;
 #endif
   } else {
     std::cout << "Scalar Version" << std::endl << std::endl;
@@ -140,11 +131,8 @@ void printSettings(std::string dataFile, std::string testFile,
       modlinear_mode = "mask";
     }
 
-    std::cout << "chosen gridtype: ModLinear (" << modlinear_mode << ")" <<
-              std::endl << std::endl;
+    std::cout << "chosen gridtype: ModLinear (" << modlinear_mode << ")" << std::endl << std::endl;
   }
-
-
 }
 
 void printResults() {
@@ -170,14 +158,11 @@ void printResults() {
     std::cout << "training sensitivity: " << trainSens << std::endl;
     std::cout << "training specificity: " << trainSpec << std::endl;
     std::cout << "training precision: " << trainPrec << std::endl << std::endl;
-    std::cout << "training true positives: " << gTrainQual.truePositive_ <<
-              std::endl;
-    std::cout << "training true negatives: " << gTrainQual.trueNegative_ <<
-              std::endl;
-    std::cout << "training false positives: " << gTrainQual.falsePositive_ <<
-              std::endl;
-    std::cout << "training false negatives: " << gTrainQual.falseNegative_ <<
-              std::endl << std::endl;
+    std::cout << "training true positives: " << gTrainQual.truePositive_ << std::endl;
+    std::cout << "training true negatives: " << gTrainQual.trueNegative_ << std::endl;
+    std::cout << "training false positives: " << gTrainQual.falsePositive_ << std::endl;
+    std::cout << "training false negatives: " << gTrainQual.falseNegative_ << std::endl
+              << std::endl;
 
     std::cout << "testing accuracy: " << gtestAcc << std::endl;
     std::cout << "testing sensitivity: " << testSens << std::endl;
@@ -185,85 +170,77 @@ void printResults() {
     std::cout << "testing precision: " << testPrec << std::endl << std::endl;
     std::cout << "testing true positives: " << gTestQual.truePositive_ << std::endl;
     std::cout << "testing true negatives: " << gTestQual.trueNegative_ << std::endl;
-    std::cout << "testing false positives: " << gTestQual.falsePositive_ <<
-              std::endl;
-    std::cout << "testing false negatives: " << gTestQual.falseNegative_ <<
-              std::endl << std::endl;
-
+    std::cout << "testing false positives: " << gTestQual.falsePositive_ << std::endl;
+    std::cout << "testing false negatives: " << gTestQual.falseNegative_ << std::endl << std::endl;
   }
 
   std::cout << std::endl;
-  std::cout << "==============================================================="
-            << std::endl;
+  std::cout << "===============================================================" << std::endl;
   std::cout << std::endl;
 
   if (bUseRecursion == false) {
     if (bUseFloat) {
-      std::cout << "Needed time: " << gtimings.timeComplete_ <<
-                " seconds (Single Precision)" << std::endl;
+      std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Single Precision)"
+                << std::endl;
     } else {
-      std::cout << "Needed time: " << gtimings.timeComplete_ <<
-                " seconds (Double Precision)" << std::endl;
+      std::cout << "Needed time: " << gtimings.timeComplete_ << " seconds (Double Precision)"
+                << std::endl;
     }
 
     std::cout << std::endl << "Timing Details:" << std::endl;
-    std::cout << "         mult (complete): " << gtimings.timeMultComplete_ <<
-              " seconds" << std::endl;
-    std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ <<
-              " seconds" << std::endl;
-    std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ <<
-              " seconds" << std::endl;
-    std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ <<
-              " seconds" << std::endl;
+    std::cout << "         mult (complete): " << gtimings.timeMultComplete_ << " seconds"
+              << std::endl;
+    std::cout << "         mult (compute) : " << gtimings.timeMultCompute_ << " seconds"
+              << std::endl;
+    std::cout << "  mult trans. (complete): " << gtimings.timeMultTransComplete_ << " seconds"
+              << std::endl;
+    std::cout << "  mult trans. (compute) : " << gtimings.timeMultTransCompute_ << " seconds"
+              << std::endl;
     std::cout << std::endl;
-    std::cout << "GFlop/s (complete): " << gtimings.GFlop_ / gtimings.timeComplete_
+    std::cout << "GFlop/s (complete): " << gtimings.GFlop_ / gtimings.timeComplete_ << std::endl;
+    std::cout << "GByte/s (complete): " << gtimings.GByte_ / gtimings.timeComplete_ << std::endl;
+    std::cout << "GFlop/s (compute): "
+              << gtimings.GFlop_ / (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_)
               << std::endl;
-    std::cout << "GByte/s (complete): " << gtimings.GByte_ / gtimings.timeComplete_
+    std::cout << "GByte/s (compute): "
+              << gtimings.GByte_ / (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_)
+              << std::endl
               << std::endl;
-    std::cout << "GFlop/s (compute): " << gtimings.GFlop_ /
-              (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_) << std::endl;
-    std::cout << "GByte/s (compute): " << gtimings.GByte_ /
-              (gtimings.timeMultCompute_ + gtimings.timeMultTransCompute_) << std::endl <<
-              std::endl;
   } else {
-    std::cout << "Needed time: " << gtimings.timeComplete_ <<
-              " seconds (Double Precision, recursive)" << std::endl << std::endl;
+    std::cout << "Needed time: " << gtimings.timeComplete_
+              << " seconds (Double Precision, recursive)" << std::endl
+              << std::endl;
   }
 
-  std::cout << "==============================================================="
-            << std::endl;
+  std::cout << "===============================================================" << std::endl;
   std::cout << std::endl;
 
-  std::cout << "$" << gdataFile << ";" << gtestFile << ";" << gisRegression << ";"
-            << bUseFloat << ";"
-            << ggridtype << ";" << gstart_level << ";" << glambda << ";" <<
-            gSLEfinal.maxIterations_ << ";" << gSLEfinal.eps_ << ";"
-            << gAdapConfig.numRefinements_ << ";"  << gAdapConfig.threshold_ << ";" <<
-            gAdapConfig.noPoints_ << ";"
-            << gtrainAcc << ";" << gtestAcc << ";" << gtimings.timeComplete_ << ";" <<
-            gtimings.timeMultComplete_
-            << ";" << gtimings.timeMultCompute_ << ";" << gtimings.timeMultTransComplete_ <<
-            ";" << gtimings.timeMultTransCompute_
-            << ";" << gtimings.GFlop_ / gtimings.timeComplete_ << ";"
-            << gtimings.GByte_ / gtimings.timeComplete_ <<  std::endl << std::endl;
+  std::cout << "$" << gdataFile << ";" << gtestFile << ";" << gisRegression << ";" << bUseFloat
+            << ";" << ggridtype << ";" << gstart_level << ";" << glambda << ";"
+            << gSLEfinal.maxIterations_ << ";" << gSLEfinal.eps_ << ";"
+            << gAdapConfig.numRefinements_ << ";" << gAdapConfig.threshold_ << ";"
+            << gAdapConfig.noPoints_ << ";" << gtrainAcc << ";" << gtestAcc << ";"
+            << gtimings.timeComplete_ << ";" << gtimings.timeMultComplete_ << ";"
+            << gtimings.timeMultCompute_ << ";" << gtimings.timeMultTransComplete_ << ";"
+            << gtimings.timeMultTransCompute_ << ";" << gtimings.GFlop_ / gtimings.timeComplete_
+            << ";" << gtimings.GByte_ / gtimings.timeComplete_ << std::endl
+            << std::endl;
 }
 
-void adaptClassificationTest(SGPP::base::DataMatrix& data,
-                             SGPP::base::DataVector& classes, SGPP::base::DataMatrix& testdata,
-                             SGPP::base::DataVector& testclasses, bool isRegression,
-                             SGPP::base::RegularGridConfiguration& GridConfig,
+void adaptClassificationTest(SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes,
+                             SGPP::base::DataMatrix& testdata, SGPP::base::DataVector& testclasses,
+                             bool isRegression, SGPP::base::RegularGridConfiguration& GridConfig,
                              const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
                              const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
                              const SGPP::base::AdpativityConfiguration& AdaptConfig,
                              const double lambda, const SGPP::parallel::VectorizationType vecType) {
   SGPP::datadriven::LearnerBase* myLearner;
 
-  myLearner = new SGPP::parallel::LearnerVectorizedIdentity(vecType, isRegression,
-      true);
+  myLearner = new SGPP::parallel::LearnerVectorizedIdentity(vecType, isRegression, true);
 
   // training
-  gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,
-                              SolverConfigFinal, AdaptConfig, false, lambda);
+  gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine, SolverConfigFinal,
+                              AdaptConfig, false, lambda);
 
   // testing
   gtrainAcc = myLearner->getAccuracy(data, classes);
@@ -282,14 +259,14 @@ void adaptClassificationTest(SGPP::base::DataMatrix& data,
   printResults();
 }
 
-void adaptClassificationTestRecursive(SGPP::base::DataMatrix& data,
-                                      SGPP::base::DataVector& classes, SGPP::base::DataMatrix& testdata,
-                                      SGPP::base::DataVector& testclasses, bool isRegression,
-                                      SGPP::base::RegularGridConfiguration& GridConfig,
-                                      const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
-                                      const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-                                      const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                                      const double lambda, const SGPP::parallel::VectorizationType vecType) {
+void adaptClassificationTestRecursive(
+    SGPP::base::DataMatrix& data, SGPP::base::DataVector& classes, SGPP::base::DataMatrix& testdata,
+    SGPP::base::DataVector& testclasses, bool isRegression,
+    SGPP::base::RegularGridConfiguration& GridConfig,
+    const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
+    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
+    const SGPP::base::AdpativityConfiguration& AdaptConfig, const double lambda,
+    const SGPP::parallel::VectorizationType vecType) {
   SGPP::datadriven::LearnerBase* myLearner;
   SGPP::datadriven::RegularizationType C_type;
 
@@ -301,8 +278,8 @@ void adaptClassificationTestRecursive(SGPP::base::DataMatrix& data,
   myLearner = new SGPP::datadriven::Learner(C_type, isRegression, true);
 
   // training
-  gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine,
-                              SolverConfigFinal, AdaptConfig, false, lambda);
+  gtimings = myLearner->train(data, classes, GridConfig, SolverConfigRefine, SolverConfigFinal,
+                              AdaptConfig, false, lambda);
 
   // testing
   gtrainAcc = myLearner->getAccuracy(data, classes);
@@ -320,23 +297,24 @@ void adaptClassificationTestRecursive(SGPP::base::DataMatrix& data,
 
   printResults();
 }
-
+#if USE_DOUBLE_PRECISION == 0
 void adaptClassificationTestSP(SGPP::base::DataMatrixSP& dataSP,
-                               SGPP::base::DataVectorSP& classesSP, SGPP::base::DataMatrixSP& testdataSP,
+                               SGPP::base::DataVectorSP& classesSP,
+                               SGPP::base::DataMatrixSP& testdataSP,
                                SGPP::base::DataVectorSP& testclassesSP, bool isRegression,
                                SGPP::base::RegularGridConfiguration& GridConfig,
                                const SGPP::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                const SGPP::solver::SLESolverSPConfiguration& SolverConfigFinal,
                                const SGPP::base::AdpativityConfiguration& AdaptConfig,
-                               const float lambda, const SGPP::parallel::VectorizationType vecType) {
+                               const float lambda,
+                               const SGPP::parallel::VectorizationType vecType) {
   SGPP::datadriven::LearnerBaseSP* myLearner;
 
-  myLearner = new SGPP::parallel::LearnerVectorizedIdentitySP(vecType,
-      isRegression, true);
+  myLearner = new SGPP::parallel::LearnerVectorizedIdentitySP(vecType, isRegression, true);
 
   // training
-  gtimings = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine,
-                              SolverConfigFinal, AdaptConfig, false, lambda);
+  gtimings = myLearner->train(dataSP, classesSP, GridConfig, SolverConfigRefine, SolverConfigFinal,
+                              AdaptConfig, false, lambda);
 
   // testing
   gtrainAcc = myLearner->getAccuracy(dataSP, classesSP);
@@ -354,6 +332,7 @@ void adaptClassificationTestSP(SGPP::base::DataMatrixSP& dataSP,
 
   printResults();
 }
+#endif
 
 /**
  * Testapplication for the Intel VTune Profiling Tool
@@ -380,48 +359,49 @@ int main(int argc, char* argv[]) {
   SGPP::base::RegularGridConfiguration gridConfig;
   SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
   SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
+#if USE_DOUBLE_PRECISION == 0
   SGPP::solver::SLESolverSPConfiguration SLESolverSPConfigRefine;
   SGPP::solver::SLESolverSPConfiguration SLESolverSPConfigFinal;
+#endif
   SGPP::base::AdpativityConfiguration adaptConfig;
   SGPP::parallel::VectorizationType vecType;
 
   bool regression;
 
   std::cout << std::endl;
-  std::cout << "==============================================================="
-            << std::endl;
+  std::cout << "===============================================================" << std::endl;
   std::cout << "Classification Test Application" << std::endl;
-  std::cout << "==============================================================="
-            << std::endl;
+  std::cout << "===============================================================" << std::endl;
   std::cout << std::endl;
 
   if (argc != 16) {
     std::cout << std::endl;
-    std::cout << "Help for classification/regression benchmark" << std::endl <<
-              std::endl;
+    std::cout << "Help for classification/regression benchmark" << std::endl << std::endl;
     std::cout << "Needed parameters:" << std::endl;
-    std::cout << "	Traindata-file" << std::endl;
-    std::cout << "	Testdata-file" << std::endl;
-    std::cout << "	regression (0/1)" << std::endl;
-    std::cout << "	precision (SP,DP)" << std::endl;
-    std::cout << "	gridtype (linear,linearboundary,modlinear)" << std::endl;
-    std::cout << "	Startlevel" << std::endl;
-    std::cout << "	lambda" << std::endl;
-    std::cout << "	CG max. iterations" << std::endl;
-    std::cout << "	CG epsilon" << std::endl;
-    std::cout << "	#refinements" << std::endl;
-    std::cout << "	Refinement threshold" << std::endl;
-    std::cout << "	#points refined" << std::endl;
-    std::cout << "	CG max. iterations, first refinement steps" << std::endl;
-    std::cout << "	CG epsilon, first refinement steps" << std::endl;
-    std::cout << "	Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " <<
-              std::endl;
-    std::cout << "			for classical sparse grid algorithms choose: REC" << std::endl
-              << std::endl << std::endl;
+    std::cout << "  Traindata-file" << std::endl;
+    std::cout << "  Testdata-file" << std::endl;
+    std::cout << "  regression (0/1)" << std::endl;
+    std::cout << "  precision (SP,DP)" << std::endl;
+    std::cout << "  gridtype (linear,linearboundary,modlinear)" << std::endl;
+    std::cout << "  Startlevel" << std::endl;
+    std::cout << "  lambda" << std::endl;
+    std::cout << "  CG max. iterations" << std::endl;
+    std::cout << "  CG epsilon" << std::endl;
+    std::cout << "  #refinements" << std::endl;
+    std::cout << "  Refinement threshold" << std::endl;
+    std::cout << "  #points refined" << std::endl;
+    std::cout << "  CG max. iterations, first refinement steps" << std::endl;
+    std::cout << "  CG epsilon, first refinement steps" << std::endl;
+    std::cout << "  Vectorization: X86SIMD, OCL, HYBRID_X86SIMD_OCL, ArBB; " << std::endl;
+    std::cout << "      for classical sparse grid algorithms choose: REC" << std::endl
+              << std::endl
+              << std::endl;
     std::cout << "Example call:" << std::endl;
-    std::cout <<
-              "	app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 6 0.0 100 20 0.1 X86SIMD"
-              << std::endl << std::endl << std::endl;
+    std::cout << "  app.exe test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 "
+                 "6 0.0 100 20 0.1 X86SIMD"
+              << std::endl
+              << std::endl
+              << std::endl;
   } else {
     dataFile.assign(argv[1]);
     testFile.assign(argv[2]);
@@ -448,17 +428,17 @@ int main(int argc, char* argv[]) {
     // Fallback
     if (vectorization == "X86SIMD") {
       vecType = SGPP::parallel::X86SIMD;
-    } else if  (vectorization == "OCL") {
+    } else if (vectorization == "OCL") {
       vecType = SGPP::parallel::OpenCL;
-    } else if  (vectorization == "HYBRID_X86SIMD_OCL") {
+    } else if (vectorization == "HYBRID_X86SIMD_OCL") {
       vecType = SGPP::parallel::Hybrid_X86SIMD_OpenCL;
-    } else if  (vectorization == "ArBB") {
+    } else if (vectorization == "ArBB") {
       vecType = SGPP::parallel::ArBB;
-    } else if  (vectorization == "CUDA") {
+    } else if (vectorization == "CUDA") {
       vecType = SGPP::parallel::CUDA;
-    } else if  (vectorization == "MIC") {
+    } else if (vectorization == "MIC") {
       vecType = SGPP::parallel::MIC;
-    } else if  (vectorization == "HYBRID_X86SIMD_MIC") {
+    } else if (vectorization == "HYBRID_X86SIMD_MIC") {
       vecType = SGPP::parallel::Hybrid_X86SIMD_MIC;
     } else {
       vecType = SGPP::parallel::X86SIMD;
@@ -476,30 +456,28 @@ int main(int argc, char* argv[]) {
     SLESolverConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverConfigRefine.threshold_ = -1.0;
     SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
-
+#if USE_DOUBLE_PRECISION == 0
     SLESolverSPConfigRefine.eps_ = static_cast<float>(cg_eps_learning);
     SLESolverSPConfigRefine.maxIterations_ = cg_max_learning;
     SLESolverSPConfigRefine.threshold_ = -1.0f;
     SLESolverSPConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
-
+#endif
     // Set solver for final step
     SLESolverConfigFinal.eps_ = cg_eps;
     SLESolverConfigFinal.maxIterations_ = cg_max;
     SLESolverConfigFinal.threshold_ = -1.0;
     SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
-
+#if USE_DOUBLE_PRECISION == 0
     SLESolverSPConfigFinal.eps_ = static_cast<float>(cg_eps);
     SLESolverSPConfigFinal.maxIterations_ = cg_max;
     SLESolverSPConfigFinal.threshold_ = -1.0f;
     SLESolverSPConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
-
+#endif
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
 
-    SGPP::datadriven::Dataset dataset = SGPP::datadriven::ARFFTools::readARFF(
-                                          tfileTrain);
-    SGPP::datadriven::Dataset testdataset = SGPP::datadriven::ARFFTools::readARFF(
-        tfileTest);
+    SGPP::datadriven::Dataset dataset = SGPP::datadriven::ARFFTools::readARFF(tfileTrain);
+    SGPP::datadriven::Dataset testdataset = SGPP::datadriven::ARFFTools::readARFF(tfileTest);
 
     size_t nDim = dataset.getDimension();
     size_t nInstancesNo = dataset.getNumberInstances();
@@ -511,6 +489,7 @@ int main(int argc, char* argv[]) {
     SGPP::base::DataMatrix testdata = testdataset.getData();
     SGPP::base::DataVector testclasses = testdataset.getTargets();
 
+#if USE_DOUBLE_PRECISION == 0
     // Define SP data
     SGPP::base::DataMatrixSP dataSP(nInstancesNo, nDim);
     SGPP::base::DataVectorSP classesSP(nInstancesNo);
@@ -518,12 +497,10 @@ int main(int argc, char* argv[]) {
     SGPP::base::DataVectorSP testclassesSP(nInstancesTestNo);
 
     SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(data, dataSP);
-    SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(classes,
-        classesSP);
-    SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(testdata,
-        testdataSP);
-    SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(testclasses,
-        testclassesSP);
+    SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(classes, classesSP);
+    SGPP::base::PrecisionConverter::convertDataMatrixToDataMatrixSP(testdata, testdataSP);
+    SGPP::base::PrecisionConverter::convertDataVectorToDataVectorSP(testclasses, testclassesSP);
+#endif
 
     // Set Grid-Information
     gridConfig.dim_ = nDim;
@@ -536,8 +513,9 @@ int main(int argc, char* argv[]) {
     } else if (gridtype == "linear") {
       gridConfig.type_ = SGPP::base::GridType::Linear;
     } else {
-      std::cout << std::endl << "An unsupported grid type was chosen! Exiting...." <<
-                std::endl << std::endl;
+      std::cout << std::endl
+                << "An unsupported grid type was chosen! Exiting...." << std::endl
+                << std::endl;
       return -1;
     }
 
@@ -550,10 +528,10 @@ int main(int argc, char* argv[]) {
     gAdapConfig = adaptConfig;
     gstart_level = start_level;
 
-
-    std::cout << std::endl << "Dims: " << nDim << "; Traininstances: " <<
-              nInstancesNo << "; Testinstances: " << nInstancesTestNo << std::endl <<
-              std::endl;
+    std::cout << std::endl
+              << "Dims: " << nDim << "; Traininstances: " << nInstancesNo
+              << "; Testinstances: " << nInstancesTestNo << std::endl
+              << std::endl;
 
     if (vectorization == "REC") {
       bUseFloat = false;
@@ -562,9 +540,9 @@ int main(int argc, char* argv[]) {
       printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
                     SLESolverConfigFinal, adaptConfig, lambda, vecType);
 
-      adaptClassificationTestRecursive(data, classes, testdata, testclasses,
-                                       regression, gridConfig, SLESolverConfigRefine,
-                                       SLESolverConfigFinal, adaptConfig, lambda, vecType);
+      adaptClassificationTestRecursive(data, classes, testdata, testclasses, regression, gridConfig,
+                                       SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig,
+                                       lambda, vecType);
     } else {
       bUseRecursion = false;
 
@@ -573,22 +551,23 @@ int main(int argc, char* argv[]) {
 
         printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
                       SLESolverConfigFinal, adaptConfig, lambda, vecType);
-
-        adaptClassificationTestSP(dataSP, classesSP, testdataSP, testclassesSP,
-                                  regression, gridConfig, SLESolverSPConfigRefine,
-                                  SLESolverSPConfigFinal, adaptConfig, (float)lambda, vecType);
+#if USE_DOUBLE_PRECISION == 0
+        adaptClassificationTestSP(dataSP, classesSP, testdataSP, testclassesSP, regression,
+                                  gridConfig, SLESolverSPConfigRefine, SLESolverSPConfigFinal,
+                                  adaptConfig, static_cast<float>(lambda), vecType);
+#endif
       } else if (precision == "DP") {
         bUseFloat = false;
 
         printSettings(dataFile, testFile, regression, gridConfig, SLESolverConfigRefine,
                       SLESolverConfigFinal, adaptConfig, lambda, vecType);
 
-        adaptClassificationTest(data, classes, testdata, testclasses, regression,
-                                gridConfig, SLESolverConfigRefine,
-                                SLESolverConfigFinal, adaptConfig, lambda, vecType);
+        adaptClassificationTest(data, classes, testdata, testclasses, regression, gridConfig,
+                                SLESolverConfigRefine, SLESolverConfigFinal, adaptConfig, lambda,
+                                vecType);
       } else {
-        std::cout << "Unsupported precision type has been chosen! Existing...." <<
-                  std::endl << std::endl;
+        std::cout << "Unsupported precision type has been chosen! Existing...." << std::endl
+                  << std::endl;
         return -1;
       }
     }

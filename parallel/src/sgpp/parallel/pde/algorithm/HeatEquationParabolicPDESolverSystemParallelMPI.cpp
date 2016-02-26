@@ -52,10 +52,6 @@ HeatEquationParabolicPDESolverSystemParallelMPI::HeatEquationParabolicPDESolverS
 }
 
 HeatEquationParabolicPDESolverSystemParallelMPI::~HeatEquationParabolicPDESolverSystemParallelMPI() {
-  delete this->OpLaplaceBound;
-  delete this->OpMassBound;
-  delete this->OpLaplaceInner;
-  delete this->OpMassInner;
 
   delete this->BoundaryUpdate;
   delete this->GridConverter;
@@ -76,12 +72,12 @@ HeatEquationParabolicPDESolverSystemParallelMPI::~HeatEquationParabolicPDESolver
 void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixComplete(
   SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
-  size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+  size_t nDims = this->InnerGrid->getStorage().getAlgorithmicDimensions().size();
 
   if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
     SGPP::base::DataVector temp(alpha.getSize());
 
-    ((SGPP::pde::StdUpDown*)(this->OpMassBound))->multParallelBuildingBlock(alpha,
+    ((SGPP::pde::StdUpDown*)(this->OpMassBound.get()))->multParallelBuildingBlock(alpha,
         temp);
 
     result.add(temp);
@@ -96,7 +92,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(
   temp.setAll(0.0);
 
   std::vector<size_t> algoDims =
-    this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+    this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 
   // Apply Laplace, parallel in Dimensions
@@ -107,7 +103,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(
         SGPP::base::DataVector myResult(result.getSize());
 
         /// discuss methods in order to avoid this cast
-        ((SGPP::pde::UpDownOneOpDim*)(this->OpLaplaceBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+        ((SGPP::pde::UpDownOneOpDim*)(this->OpLaplaceBound.get()))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
         // semaphore
         #pragma omp critical
@@ -126,12 +122,12 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorComplete(
 void HeatEquationParabolicPDESolverSystemParallelMPI::applyMassMatrixInner(
   SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
-  size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+  size_t nDims = this->InnerGrid->getStorage().getAlgorithmicDimensions().size();
 
   if (nDims % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
     SGPP::base::DataVector temp(alpha.getSize());
 
-    ((SGPP::pde::StdUpDown*)(this->OpMassInner))->multParallelBuildingBlock(alpha,
+    ((SGPP::pde::StdUpDown*)(this->OpMassInner.get()))->multParallelBuildingBlock(alpha,
         temp);
 
     result.add(temp);
@@ -146,7 +142,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorInner(
   temp.setAll(0.0);
 
   std::vector<size_t> algoDims =
-    this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+    this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 
   // Apply Laplace, parallel in Dimensions
@@ -157,7 +153,7 @@ void HeatEquationParabolicPDESolverSystemParallelMPI::applyLOperatorInner(
         SGPP::base::DataVector myResult(result.getSize());
 
         /// discuss methods in order to avoid this cast
-        ((SGPP::pde::UpDownOneOpDim*)(this->OpLaplaceInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+        ((SGPP::pde::UpDownOneOpDim*)(this->OpLaplaceInner.get()))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
         // semaphore
         #pragma omp critical

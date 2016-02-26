@@ -48,7 +48,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInne
   result.setAll(0.0);
 
   std::vector<size_t> algoDims =
-    this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+    this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t DeltaMutex;
@@ -144,7 +144,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComp
   result.setAll(0.0);
 
   std::vector<size_t> algoDims =
-    this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+    this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 
 #ifdef _OPENMP
@@ -240,7 +240,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyMassMatrixInn
   SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
-  size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+  size_t nDims = this->InnerGrid->getStorage().getAlgorithmicDimensions().size();
   size_t jobs = (((nDims * nDims) + 3 * nDims) / 2) + 2;
 
   if ((jobs - 1) % myGlobalMPIComm->getNumRanks() ==
@@ -256,7 +256,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyMassMatrixCom
   SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
-  size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+  size_t nDims = this->InnerGrid->getStorage().getAlgorithmicDimensions().size();
   size_t jobs = (((nDims * nDims) + 3 * nDims) / 2) + 2;
 
   if ((jobs - 1) % myGlobalMPIComm->getNumRanks() ==
@@ -566,17 +566,16 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 
     // check if we are doing an American put -> handle early exercise
     if (this->option_type == "std_amer_put") {
-      SGPP::base::OperationHierarchisation* myHierarchisation =
+      std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
         SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
-      size_t dim = this->BoundGrid->getStorage()->getDimension();
-      SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*
-          (this->BoundGrid->getBoundingBox()));
+      size_t dim = this->BoundGrid->getStorage().getDimension();
+      SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
       double* dblFuncValues = new double[dim];
 
-      for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
-        std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(
+      for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
+        std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(
                                *myBB);
         std::stringstream coordsStream(coords);
 
@@ -609,7 +608,6 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
       delete[] dblFuncValues;
 
       myHierarchisation->doHierarchisation(*this->alpha_complete);
-      delete myHierarchisation;
       delete myBB;
     }
 
@@ -622,7 +620,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
       // Start integrated refinement & coarsening
       ///////////////////////////////////////////////////
 
-      size_t originalGridSize = this->BoundGrid->getStorage()->size();
+      size_t originalGridSize = this->BoundGrid->getStorage().getSize();
 
       // Coarsen the grid
       base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
@@ -638,12 +636,12 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 
         if (this->refineMode == "maxLevel") {
           myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-          this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+          this->alpha_complete->resizeZero(this->BoundGrid->getStorage().getSize());
         }
 
         if (this->refineMode == "classic") {
           myGenerator.refine(myRefineFunc);
-          this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+          this->alpha_complete->resizeZero(this->BoundGrid->getStorage().getSize());
         }
       }
 
@@ -666,7 +664,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
   if (this->useCoarsen == true && isLastTimestep == false) {
     // Communicate new grid
     if (myGlobalMPIComm->getMyRank() == 0) {
-      std::string bound_grid_storage = this->BoundGrid->getStorage()->serialize();
+      std::string bound_grid_storage = this->BoundGrid->getStorage().serialize();
 
       myGlobalMPIComm->broadcastGridStorage(bound_grid_storage);
 
@@ -678,9 +676,9 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 
       myGlobalMPIComm->receiveGridStorage(bound_grid_storage);
 
-      this->BoundGrid->getStorage()->emptyStorage();
-      this->BoundGrid->getStorage()->unserialize_noAlgoDims(bound_grid_storage);
-      this->alpha_complete->resize(this->BoundGrid->getStorage()->size());
+      this->BoundGrid->getStorage().emptyStorage();
+      this->BoundGrid->getStorage().unserialize_noAlgoDims(bound_grid_storage);
+      this->alpha_complete->resize(this->BoundGrid->getStorage().getSize());
 
       // rebuild the inner grid + coefficients
       this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid,

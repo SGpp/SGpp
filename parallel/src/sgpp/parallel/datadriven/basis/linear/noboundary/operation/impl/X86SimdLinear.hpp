@@ -9,26 +9,20 @@
 #include <sgpp/parallel/datadriven/basis/common/X86SimdKernelBase.hpp>
 
 #include <sgpp/globaldef.hpp>
-
-
+#include <algorithm>
 namespace SGPP {
 namespace parallel {
 
 class X86SimdLinear : public X86SimdKernelBase {
  public:
   static const KernelType kernelType = Standard;
-  static inline void multImpl(
-    SGPP::base::DataMatrix* level,
-    SGPP::base::DataMatrix* index,
-    SGPP::base::DataMatrix* /*mask*/, //unused for this specialization
-    SGPP::base::DataMatrix* /*offset*/, //unused for this specialization
-    SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+  static inline void multImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
+                              SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
+                              SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
+                              SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+                              SGPP::base::DataVector& result, const size_t start_index_grid,
+                              const size_t end_index_grid, const size_t start_index_data,
+                              const size_t end_index_data) {
 #if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
@@ -38,13 +32,12 @@ class X86SimdLinear : public X86SimdKernelBase {
     size_t result_size = result.getSize();
     size_t dims = dataset->getNrows();
 
-    CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid,
-                    start_index_data, end_index_data);
+    CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid, start_index_data,
+                    end_index_data);
 
     for (size_t c = start_index_data; c < end_index_data;
          c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
-      size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c,
-                                         end_index_data);
+      size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c, end_index_data);
 
 #ifdef __ICC
 #pragma ivdep
@@ -58,11 +51,10 @@ class X86SimdLinear : public X86SimdKernelBase {
       for (size_t m = start_index_grid; m < end_index_grid;
            m += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m))) {
 #if defined(__SSE3__) && !defined(__AVX__)
-        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(),
-                                           (end_index_grid - m));
+        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
-        long long imask = 0x7FFFFFFFFFFFFFFF;
-        double* fmask = (double*)&imask;
+        int64_t imask = 0x7FFFFFFFFFFFFFFF;
+        double* fmask = reinterpret_cast<double*>(&imask);
 
         for (size_t i = c; i < c + getChunkDataPoints(); i += 12) {
           for (size_t j = m; j < m + grid_inc; j++) {
@@ -156,11 +148,10 @@ class X86SimdLinear : public X86SimdKernelBase {
 
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(),
-                                           (end_index_grid - m));
+        size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
-        long long imask = 0x7FFFFFFFFFFFFFFF;
-        double* fmask = (double*)&imask;
+        int64_t imask = 0x7FFFFFFFFFFFFFFF;
+        double* fmask = reinterpret_cast<double*>(&imask);
 
         for (size_t i = c; i < c + getChunkDataPoints(); i += 24) {
           for (size_t j = m; j < m + grid_inc; j++) {
@@ -254,8 +245,7 @@ class X86SimdLinear : public X86SimdKernelBase {
 
 #endif
 #if !defined(__SSE3__) && !defined(__AVX__)
-        size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints() + m,
-                                           end_index_grid);
+        size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints() + m, end_index_grid);
 
         for (size_t i = c; i < data_end; i++) {
           for (size_t j = m; j < grid_end; j++) {
@@ -278,24 +268,20 @@ class X86SimdLinear : public X86SimdKernelBase {
       }
     }
 
-#else /* USE_DOUBLE_PRECISION */
-    throw std::logic_error("Not implemented when compiling with single "
-                           "precision support, use SPX86SimdLinear instead.");
+#else  /* USE_DOUBLE_PRECISION */
+    throw std::logic_error(
+        "Not implemented when compiling with single "
+        "precision support, use SPX86SimdLinear instead.");
 #endif /* USE_DOUBLE_PRECISION */
   }
 
   static inline void multTransposeImpl(
-    SGPP::base::DataMatrix* level,
-    SGPP::base::DataMatrix* index,
-    SGPP::base::DataMatrix* /*mask*/, //unused for this specialization
-    SGPP::base::DataMatrix* /*offset*/, //unused for this specialization
-    SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+      SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
+      SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
+      SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
+      SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
+      SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+      const size_t start_index_data, const size_t end_index_data) {
 #if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
@@ -305,17 +291,16 @@ class X86SimdLinear : public X86SimdKernelBase {
     size_t source_size = source.getSize();
     size_t dims = dataset->getNrows();
 
-    CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid,
-                             end_index_grid, start_index_data, end_index_data);
+    CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid, end_index_grid,
+                             start_index_data, end_index_data);
 
     for (size_t k = start_index_grid; k < end_index_grid;
          k += std::min<size_t>(getChunkGridPoints(), (end_index_grid - k))) {
-      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(),
-                                         (end_index_grid - k));
+      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k));
 
 #if defined(__SSE3__) && !defined(__AVX__)
-      long long imask = 0x7FFFFFFFFFFFFFFF;
-      double* fmask = (double*)&imask;
+      int64_t imask = 0x7FFFFFFFFFFFFFFF;
+      double* fmask = reinterpret_cast<double*>(&imask);
 
       for (size_t i = start_index_data; i < end_index_data; i += 12) {
         for (size_t j = k; j < k + grid_inc; j++) {
@@ -402,8 +387,8 @@ class X86SimdLinear : public X86SimdKernelBase {
 
 #endif
 #if defined(__SSE3__) && defined(__AVX__)
-      long long imask = 0x7FFFFFFFFFFFFFFF;
-      double* fmask = (double*)&imask;
+      int64_t imask = 0x7FFFFFFFFFFFFFFF;
+      double* fmask = reinterpret_cast<double*>(&imask);
 
       for (size_t i = start_index_data; i < end_index_data; i += 24) {
         for (size_t j = k; j < k + grid_inc; j++) {
@@ -472,8 +457,8 @@ class X86SimdLinear : public X86SimdKernelBase {
             support_5 = _mm256_mul_pd(support_5, eval_5);
           }
 
-          const __m256i ldStMaskAVX = _mm256_set_epi64x(0x0000000000000000,
-                                      0x0000000000000000, 0x0000000000000000, 0xFFFFFFFFFFFFFFFF);
+          const __m256i ldStMaskAVX = _mm256_set_epi64x(0x0000000000000000, 0x0000000000000000,
+                                                        0x0000000000000000, 0xFFFFFFFFFFFFFFFF);
 
           support_0 = _mm256_add_pd(support_0, support_1);
           support_2 = _mm256_add_pd(support_2, support_3);
@@ -485,7 +470,7 @@ class X86SimdLinear : public X86SimdKernelBase {
           __m256d tmp = _mm256_permute2f128_pd(support_0, support_0, 0x81);
           support_0 = _mm256_add_pd(support_0, tmp);
 
-          // Workaround: bug with maskload in GCC (4.6.1)
+// Workaround: bug with maskload in GCC (4.6.1)
 #ifdef __ICC
           __m256d res_0 = _mm256_maskload_pd(&(ptrResult[j]), ldStMaskAVX);
           res_0 = _mm256_add_pd(res_0, support_0);
@@ -521,9 +506,10 @@ class X86SimdLinear : public X86SimdKernelBase {
 #endif
     }
 
-#else /* USE_DOUBLE_PRECISION */
-    throw std::logic_error("Not implemented when compiling with single "
-                           "precision support, use SPX86SimdLinear instead.");
+#else  /* USE_DOUBLE_PRECISION */
+    throw std::logic_error(
+        "Not implemented when compiling with single "
+        "precision support, use SPX86SimdLinear instead.");
 #endif /* USE_DOUBLE_PRECISION */
   }
 };
@@ -531,18 +517,13 @@ class X86SimdLinear : public X86SimdKernelBase {
 class X86SimdLinear1 : public X86SimdKernelBase1 {
  public:
   static const KernelType kernelType = Standard;
-  static inline void multImpl(
-    SGPP::base::DataMatrix* level,
-    SGPP::base::DataMatrix* index,
-    SGPP::base::DataMatrix* /*mask*/, //unused for this specialization
-    SGPP::base::DataMatrix* /*offset*/, //unused for this specialization
-    SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+  static inline void multImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
+                              SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
+                              SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
+                              SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
+                              SGPP::base::DataVector& result, const size_t start_index_grid,
+                              const size_t end_index_grid, const size_t start_index_data,
+                              const size_t end_index_data) {
 #if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
@@ -552,13 +533,12 @@ class X86SimdLinear1 : public X86SimdKernelBase1 {
     size_t result_size = result.getSize();
     size_t dims = dataset->getNrows();
 
-    CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid,
-                    start_index_data, end_index_data);
+    CHECK_ARGS_MULT(level, dataset, result, start_index_grid, end_index_grid, start_index_data,
+                    end_index_data);
 
     for (size_t c = start_index_data; c < end_index_data;
          c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {
-      size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c,
-                                         end_index_data);
+      size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c, end_index_data);
 
       for (size_t i = c; i < data_end; i++) {
         ptrResult[i] = 0.0;
@@ -566,9 +546,7 @@ class X86SimdLinear1 : public X86SimdKernelBase1 {
 
       for (size_t m = start_index_grid; m < end_index_grid;
            m += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m))) {
-
-        size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints() + m,
-                                           end_index_grid);
+        size_t grid_end = std::min<size_t>((size_t)getChunkGridPoints() + m, end_index_grid);
 
         for (size_t i = c; i < data_end; i++) {
           for (size_t j = m; j < grid_end; j++) {
@@ -589,24 +567,20 @@ class X86SimdLinear1 : public X86SimdKernelBase1 {
       }
     }
 
-#else /* USE_DOUBLE_PRECISION */
-    throw std::logic_error("Not implemented when compiling with single "
-                           "precision support, use SPX86SimdLinear instead.");
+#else  /* USE_DOUBLE_PRECISION */
+    throw std::logic_error(
+        "Not implemented when compiling with single "
+        "precision support, use SPX86SimdLinear instead.");
 #endif /* USE_DOUBLE_PRECISION */
   }
 
   static inline void multTransposeImpl(
-    SGPP::base::DataMatrix* level,
-    SGPP::base::DataMatrix* index,
-    SGPP::base::DataMatrix* /*mask*/, //unused for this specialization
-    SGPP::base::DataMatrix* /*offset*/, //unused for this specialization
-    SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+      SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
+      SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
+      SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
+      SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
+      SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+      const size_t start_index_data, const size_t end_index_data) {
 #if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
@@ -616,13 +590,12 @@ class X86SimdLinear1 : public X86SimdKernelBase1 {
     size_t source_size = source.getSize();
     size_t dims = dataset->getNrows();
 
-    CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid,
-                             end_index_grid, start_index_data, end_index_data);
+    CHECK_ARGS_MULTTRANSPOSE(level, dataset, source, start_index_grid, end_index_grid,
+                             start_index_data, end_index_data);
 
     for (size_t k = start_index_grid; k < end_index_grid;
          k += std::min<size_t>(getChunkGridPoints(), (end_index_grid - k))) {
-      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(),
-                                         (end_index_grid - k));
+      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k));
 
       for (size_t i = start_index_data; i < end_index_data; i++) {
         for (size_t j = k; j < k + grid_inc; j++) {
@@ -642,13 +615,14 @@ class X86SimdLinear1 : public X86SimdKernelBase1 {
       }
     }
 
-#else /* USE_DOUBLE_PRECISION */
-    throw std::logic_error("Not implemented when compiling with single "
-                           "precision support, use SPX86SimdLinear instead.");
+#else  /* USE_DOUBLE_PRECISION */
+    throw std::logic_error(
+        "Not implemented when compiling with single "
+        "precision support, use SPX86SimdLinear instead.");
 #endif /* USE_DOUBLE_PRECISION */
   }
 };
 
-}
-}
-#endif // X86SIMDLINEAR_HPP
+}  // namespace parallel
+}  // namespace SGPP
+#endif  // X86SIMDLINEAR_HPP

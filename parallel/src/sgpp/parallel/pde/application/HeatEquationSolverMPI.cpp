@@ -17,18 +17,17 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
-
-#include <sgpp/globaldef.hpp>
-
+#include <string>
 
 namespace SGPP {
 namespace parallel {
 
-HeatEquationSolverMPI::HeatEquationSolverMPI() :
-  SGPP::pde::ParabolicPDESolver() {
+HeatEquationSolverMPI::HeatEquationSolverMPI() : SGPP::pde::ParabolicPDESolver() {
   this->bGridConstructed = false;
   this->myScreen = NULL;
 }
@@ -39,8 +38,7 @@ HeatEquationSolverMPI::~HeatEquationSolverMPI() {
   }
 }
 
-void HeatEquationSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox,
-    int level) {
+void HeatEquationSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox, int level) {
   this->dim = BoundingBox.getDimensions();
   this->levels = level;
 
@@ -48,27 +46,26 @@ void HeatEquationSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox,
 
   this->myGrid->getGenerator().regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   this->bGridConstructed = true;
 }
 
-void HeatEquationSolverMPI::setHeatCoefficient(double a) {
-  this->a = a;
+void HeatEquationSolverMPI::setHeatCoefficient(double a) { this->a = a; }
+
+void HeatEquationSolverMPI::solveExplicitEuler(size_t numTimesteps, double timestepsize,
+                                               size_t maxCGIterations, double epsilonCG,
+                                               SGPP::base::DataVector& alpha, bool verbose,
+                                               bool generateAnimation, size_t numEvalsAnimation) {
+  throw SGPP::base::application_exception(
+      "HeatEquationSolver::solveExplicitEuler : Explicit Euler is not supported!");
 }
 
-void HeatEquationSolverMPI::solveExplicitEuler(size_t numTimesteps,
-    double timestepsize, size_t maxCGIterations, double epsilonCG,
-    SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation,
-    size_t numEvalsAnimation) {
-  throw SGPP::base::application_exception("HeatEquationSolver::solveExplicitEuler : Explicit Euler is not supported!");
-}
-
-void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps,
-    double timestepsize, size_t maxCGIterations, double epsilonCG,
-    SGPP::base::DataVector& alpha, bool verbose, bool generateAnimation,
-    size_t numEvalsAnimation) {
+void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps, double timestepsize,
+                                               size_t maxCGIterations, double epsilonCG,
+                                               SGPP::base::DataVector& alpha, bool verbose,
+                                               bool generateAnimation, size_t numEvalsAnimation) {
   if (this->bGridConstructed) {
     if (this->myScreen != NULL) {
       this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
@@ -78,28 +75,30 @@ void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps,
     SGPP::solver::OperationParabolicPDESolverSystem* myHESolver;
 
     double dNeededTime;
-    SGPP::solver::Euler* myEuler = new SGPP::solver::Euler("ImEul", numTimesteps,
-        timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
+    SGPP::solver::Euler* myEuler = new SGPP::solver::Euler(
+        "ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
 
     // read env variable, which solver type should be selected
     char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
     if (alg_selector != NULL) {
-      if (! strcmp(alg_selector, "X86SIMD")) {
+      if (!strcmp(alg_selector, "X86SIMD")) {
         myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
         myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(
-          *this->myGrid, alpha, this->a, timestepsize, "ImEul");
-      } else if (! strcmp(alg_selector, "OCL")) {
+            *this->myGrid, alpha, this->a, timestepsize, "ImEul");
+      } else if (!strcmp(alg_selector, "OCL")) {
         myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
         myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(
-          *this->myGrid, alpha, this->a, timestepsize, "ImEul");
+            *this->myGrid, alpha, this->a, timestepsize, "ImEul");
       } else {
-        throw base::application_exception("HeatEquationSolverMPI::solveImplicitEuler : You have selected an unsupport vectorization method!");
+        throw base::application_exception(
+            "HeatEquationSolverMPI::solveImplicitEuler : You have selected an unsupport "
+            "vectorization method!");
       }
     } else {
       myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-      myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid,
-          alpha, this->a, timestepsize, "ImEul");
+      myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(
+          *this->myGrid, alpha, this->a, timestepsize, "ImEul");
     }
 
     SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
@@ -120,13 +119,14 @@ void HeatEquationSolverMPI::solveImplicitEuler(size_t numTimesteps,
     delete myCG;
     delete myEuler;
   } else {
-    throw SGPP::base::application_exception("HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception(
+        "HeatEquationSolver::solveImplicitEuler : A grid wasn't constructed before!");
   }
 }
 
-void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps,
-    double timestepsize, size_t maxCGIterations, double epsilonCG,
-    SGPP::base::DataVector& alpha, size_t NumImEul) {
+void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps, double timestepsize,
+                                               size_t maxCGIterations, double epsilonCG,
+                                               SGPP::base::DataVector& alpha, size_t NumImEul) {
   if (this->bGridConstructed) {
     if (this->myScreen != NULL) {
       this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
@@ -139,21 +139,23 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps,
     char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
     if (alg_selector != NULL) {
-      if (! strcmp(alg_selector, "X86SIMD")) {
+      if (!strcmp(alg_selector, "X86SIMD")) {
         myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
         myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(
-          *this->myGrid, alpha, this->a, timestepsize, "CrNic");
-      } else if (! strcmp(alg_selector, "OCL")) {
+            *this->myGrid, alpha, this->a, timestepsize, "CrNic");
+      } else if (!strcmp(alg_selector, "OCL")) {
         myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
         myHESolver = new HeatEquationParabolicPDESolverSystemVectorizedMPI(
-          *this->myGrid, alpha, this->a, timestepsize, "CrNic");
+            *this->myGrid, alpha, this->a, timestepsize, "CrNic");
       } else {
-        throw base::application_exception("HeatEquationSolverMPI::solveCrankNicolson : You have selected an unsupport vectorization method!");
+        throw base::application_exception(
+            "HeatEquationSolverMPI::solveCrankNicolson : You have selected an unsupport "
+            "vectorization method!");
       }
     } else {
       myCG = new ConjugateGradientsMPI(maxCGIterations, epsilonCG);
-      myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(*this->myGrid,
-          alpha, this->a, timestepsize, "CrNic");
+      myHESolver = new HeatEquationParabolicPDESolverSystemParallelMPI(
+          *this->myGrid, alpha, this->a, timestepsize, "CrNic");
     }
 
     SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
@@ -169,10 +171,9 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps,
 
     numIESteps = NumImEul;
 
-    SGPP::solver::Euler* myEuler = new SGPP::solver::Euler("ImEul", numIESteps,
-        timestepsize, false, 0, this->myScreen);
-    SGPP::solver::CrankNicolson* myCN = new SGPP::solver::CrankNicolson(numCNSteps,
-        timestepsize);
+    SGPP::solver::Euler* myEuler =
+        new SGPP::solver::Euler("ImEul", numIESteps, timestepsize, false, 0, this->myScreen);
+    SGPP::solver::CrankNicolson* myCN = new SGPP::solver::CrankNicolson(numCNSteps, timestepsize);
 
     MPI_Barrier(MPI_COMM_WORLD);
     myStopwatch->start();
@@ -198,19 +199,19 @@ void HeatEquationSolverMPI::solveCrankNicolson(size_t numTimesteps,
     delete myCN;
     delete myEuler;
   } else {
-    throw SGPP::base::application_exception("HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception(
+        "HeatEquationSolver::solveCrankNicolson : A grid wasn't constructed before!");
   }
 }
 
-void HeatEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector&
-    alpha, double mu, double sigma, double factor) {
+void HeatEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu,
+                                                   double sigma, double factor) {
   if (this->bGridConstructed) {
     double tmp;
     double* dblFuncValues = new double[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
-      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(
-                             *this->myBoundingBox);
+    for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
+      std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {
@@ -222,8 +223,9 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector&
       tmp = 1.0;
 
       for (size_t j = 0; j < this->dim; j++) {
-        tmp *=  factor * factor * ((1.0 / (sigma * 2.0 * 3.145)) * exp((-0.5) * ((
-                                     dblFuncValues[j] - mu) / sigma) * ((dblFuncValues[j] - mu) / sigma)));
+        tmp *= factor * factor *
+               ((1.0 / (sigma * 2.0 * 3.145)) * exp((-0.5) * ((dblFuncValues[j] - mu) / sigma) *
+                                                    ((dblFuncValues[j] - mu) / sigma)));
       }
 
       alpha[i] = tmp;
@@ -231,14 +233,13 @@ void HeatEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector&
 
     delete[] dblFuncValues;
 
-    SGPP::base::OperationHierarchisation* myHierarchisation =
-      SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
+        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
   } else {
-    throw SGPP::base::application_exception("HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
+    throw SGPP::base::application_exception(
+        "HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
-
 }
 
 void HeatEquationSolverMPI::initScreen() {
@@ -246,6 +247,5 @@ void HeatEquationSolverMPI::initScreen() {
   this->myScreen->writeTitle("SGpp - Heat Equation Solver, 1.0.0",
                              "Alexander Heinecke, (C) 2009-2011");
 }
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP

@@ -79,7 +79,7 @@ void BlackScholesSolverMPI::getGridNormalDistribution(SGPP::base::DataVector&
     base::StdNormalDistribution myNormDistr;
     double* s_coords = new double[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*
                            (this->myBoundingBox));
       std::stringstream coordsStream(coords);
@@ -129,8 +129,8 @@ void BlackScholesSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox,
 
   this->myGrid->getGenerator().regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   //std::string serGrid;
   //myGrid->serialize(serGrid);
@@ -809,7 +809,7 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(
   double tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(
                              *this->myBoundingBox);
       std::stringstream coordsStream(coords);
@@ -844,10 +844,9 @@ void BlackScholesSolverMPI::initCartesianGridWithPayoff(
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
+    std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
       SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
   } else {
     throw base::application_exception("BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
   }
@@ -858,7 +857,7 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(
   double tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(
                              *this->myBoundingBox);
       std::stringstream coordsStream(coords);
@@ -893,10 +892,9 @@ void BlackScholesSolverMPI::initLogTransformedGridWithPayoff(
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
+    std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
       SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
   } else {
     throw base::application_exception("BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
@@ -907,7 +905,7 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(
   double tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getStorage().getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(
                              *this->myBoundingBox);
       std::stringstream coordsStream(coords);
@@ -954,10 +952,9 @@ void BlackScholesSolverMPI::initPATTransformedGridWithPayoff(
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
+    std::unique_ptr<base::OperationHierarchisation> myHierarchisation =
       SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
   } else {
     throw base::application_exception("BlackScholesSolverMPI::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
@@ -988,10 +985,9 @@ double BlackScholesSolverMPI::evalOption(std::vector<double>& eval_point,
     }
   }
 
-  SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(
+  std::unique_ptr<SGPP::base::OperationEval> myEval = SGPP::op_factory::createOperationEval(
                                         *this->myGrid);
   double result = myEval->eval(alpha, trans_eval);
-  delete myEval;
 
   // discounting, if PAT is used
   // discounting, if PAT is used
@@ -1033,23 +1029,22 @@ void BlackScholesSolverMPI::printSparseGridPAT(SGPP::base::DataVector& alpha,
     std::string tfilename, bool bSurplus) const {
   base::DataVector temp(alpha);
   double tmp = 0.0;
-  size_t dim = myGrid->getStorage()->getDimension();
+  size_t dim = myGrid->getStorage().getDimension();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    base::OperationHierarchisation* myHier =
+    std::unique_ptr<base::OperationHierarchisation> myHier =
       SGPP::op_factory::createOperationHierarchisation(*myGrid);
     myHier->doDehierarchisation(temp);
-    delete myHier;
   }
 
   // Open filehandle
   fileout.open(tfilename.c_str());
 
-  for (size_t i = 0; i < myGrid->getStorage()->size(); i++) {
-    std::string coords =  myGrid->getStorage()->get(i)->getCoordsStringBB(
-                            *myGrid->getBoundingBox());
+  for (size_t i = 0; i < myGrid->getStorage().getSize(); i++) {
+    std::string coords =  myGrid->getStorage().get(i)->getCoordsStringBB(
+                            myGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
 
     double* dblFuncValues = new double[dim];

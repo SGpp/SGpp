@@ -3896,6 +3896,46 @@ def GetPreviousNonBlankLine(clean_lines, linenum):
     prevlinenum -= 1
   return ('', -1)
 
+def GetPreviousNonBlankMultiLineHelper(clean_lines, linenum, multiline):
+  """Concatenates all immediately preceding lines of linenum, that end with 
+  a backslash with multiline
+  Args:
+    clean_lines A CleansedLines instance containing the file contents.
+    linenum: The number of the line to check.
+    multiline: string, to which the preceding lines should be prepended
+  """
+  prevmultilinenum = linenum - 1
+  while prevmultilinenum >=0:
+    prevtestmultiline = clean_lines.elided[prevmultilinenum]
+    if Search(r'\\\s*$', prevtestmultiline):
+        return GetPreviousNonBlankMultiLineHelper(clean_lines, 
+          prevmultilinenum, prevtestmultiline + multiline)
+    else:
+        break
+  return (multiline, linenum)
+    
+    
+def GetPreviousNonBlankMultiLine(clean_lines, linenum):
+  """Return the most recent non-blank line and its line number.
+
+  Args:
+    clean_lines: A CleansedLines instance containing the file contents.
+    linenum: The number of the line to check.
+
+  Returns:
+    A tuple with two elements.  The first element is the contents of the last
+    non-blank line before the current line, or the empty string if this is the
+    first non-blank line.  The second is the line number of that line, or -1
+    if this is the first non-blank line.
+  """
+
+  prevlinenum = linenum - 1
+  while prevlinenum >= 0:
+    prevline = clean_lines.elided[prevlinenum]
+    if not IsBlankLine(prevline):     # if not a blank line...
+      return GetPreviousNonBlankMultiLineHelper(clean_lines, prevlinenum, prevline)
+    prevlinenum -= 1
+  return ('', -1)
 
 def CheckBraces(filename, clean_lines, linenum, error):
   """Looks for misplaced braces (e.g. at the end of line).
@@ -3917,9 +3957,9 @@ def CheckBraces(filename, clean_lines, linenum, error):
     # perfectly: we just don't complain if the last non-whitespace character on
     # the previous non-blank line is ',', ';', ':', '(', '{', or '}', or if the
     # previous line starts a preprocessor block.
-    prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
+    prevline = GetPreviousNonBlankMultiLine(clean_lines, linenum)[0]
     if (not Search(r'[,;:}{(]\s*$', prevline) and
-        not Match(r'\s*#', prevline)):
+        not Match(r'\s*#', prevline)):  # \s: white space; * previous 0 or multiple times; -> '(one or multiple whitespaces)#'  
       error(filename, linenum, 'whitespace/braces', 4,
             '{ should almost always be at the end of the previous line')
 
