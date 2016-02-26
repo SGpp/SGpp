@@ -40,6 +40,12 @@ void StaticParameterTuner::addParameter(const std::string &name,
 
 SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
     SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName) {
+  if (scenario.getInternalPrecision() == InternalPrecision::Float) {
+    this->fixedParameters.replaceIDAttr("INTERNAL_PRECISION", "float");
+  } else {
+    this->fixedParameters.replaceIDAttr("INTERNAL_PRECISION", "double");
+  }
+
   std::vector<std::string> platformsCopy = this->fixedParameters["PLATFORMS"].keys();
   for (const std::string &platformName : platformsCopy) {
     json::Node &platformNode = this->fixedParameters["PLATFORMS"][platformName];

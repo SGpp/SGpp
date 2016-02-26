@@ -399,6 +399,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   if env['PLATFORM'] == 'win32':
     # install the python library to that temporary folder
     dependencies.append(env.Command('installPythonLibToTmp', [pysgppTempFolder], installPythonLibToTmp))
+    
 
   # print message that python tests are about to start
   dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))
@@ -453,8 +454,8 @@ for exampleTarget in exampleTargetList:
 #     dependencies.append(env.Command('printFinished', [], printFinished))
 
 # necessary to enforce an order on the final steps of the building of the wrapper
-# for i in range(len(dependencies) - 1):
-#   env.Depends(dependencies[i + 1], dependencies[i])
+for i in range(len(dependencies) - 1):
+  env.Depends(dependencies[i + 1], dependencies[i])
  
 # Stuff needed for system install
 env.Clean("distclean",

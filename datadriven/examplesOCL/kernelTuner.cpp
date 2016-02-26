@@ -71,8 +71,7 @@ int main(int argc, char **argv) {
 
   size_t dotPos = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPos);
-  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix +
-                                     "_" + parameter["INTERNAL_PRECISION"].get();
+  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
 
   if (collectStatistics) {
     staticParameterTuner.setStatisticsFolder(statisticsFolderName);

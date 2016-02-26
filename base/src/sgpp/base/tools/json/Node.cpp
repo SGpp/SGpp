@@ -11,9 +11,7 @@
 
 namespace json {
 
-Node::Node() :
-  orderedKeyIndex(0), parent(nullptr) {
-}
+Node::Node() : orderedKeyIndex(0), parent(nullptr) {}
 
 Node& Node::operator=(const Node& right) {
   // members of this base class are actually copied
@@ -45,25 +43,19 @@ void Node::setDouble(double doubleValue) {
   throw json_exception("setNumericValue() is only implemented for id nodes");
 }
 
-uint64_t Node::getUInt() {
-  throw json_exception("getUInt() is only implemented for id nodes");
-}
+uint64_t Node::getUInt() { throw json_exception("getUInt() is only implemented for id nodes"); }
 
 void Node::setUInt(uint64_t uintValue) {
   throw json_exception("setUInt() is only implemented for id nodes");
 }
 
-int64_t Node::getInt() {
-  throw json_exception("getInt() is only implemented for id nodes");
-}
+int64_t Node::getInt() { throw json_exception("getInt() is only implemented for id nodes"); }
 
 void Node::setInt(int64_t intValue) {
   throw json_exception("setInt() is only implemented for id nodes");
 }
 
-bool Node::getBool() {
-  throw json_exception("getBool() is only implemented for id nodes");
-}
+bool Node::getBool() { throw json_exception("getBool() is only implemented for id nodes"); }
 
 void Node::setBool(bool boolValue) {
   throw json_exception("setBool() is only implemented for id nodes");
@@ -144,6 +136,14 @@ Node& Node::replaceIDAttr(const std::string& name, const std::string& value) {
 
 // returns the node to which the attribute was added
 // replaces a node, adds a new node, if the node does not exist, the old node is deleted
+// cast internally to string, prevents the boolean overload from being used, if the value is a
+// string literal
+Node& Node::replaceIDAttr(const std::string& name, const char* value) {
+  throw json_exception("replaceIDAttr() is only implemented for dict nodes");
+}
+
+// returns the node to which the attribute was added
+// replaces a node, adds a new node, if the node does not exist, the old node is deleted
 Node& Node::replaceIDAttr(const std::string& name, const double& value) {
   throw json_exception("replaceIDAttr() is only implemented for dict nodes");
 }
@@ -199,6 +199,8 @@ Node& Node::addIdValue(const std::string& value) {
 }
 
 // returns the list node to which the value was added
+// cast internally to string, prevents the boolean overload from being used, if the value is a
+// string literal
 Node& Node::addIdValue(const char* value) {
   throw json_exception("addIdValue() is only implemented for list nodes");
 }

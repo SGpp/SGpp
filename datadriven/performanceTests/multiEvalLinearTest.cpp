@@ -85,7 +85,7 @@ void getRuntime(SGPP::base::GridType gridType, const std::string& kernel, std::s
 
   size_t dim = dataset.getDimension();
 
-  SGPP::base::Grid* grid;
+  std::unique_ptr<SGPP::base::Grid> grid;
 
   if (gridType == SGPP::base::GridType::Linear) {
     grid = SGPP::base::Grid::createLinearGrid(dim);
@@ -95,21 +95,21 @@ void getRuntime(SGPP::base::GridType gridType, const std::string& kernel, std::s
     throw nullptr;
   }
 
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->getDimension());
+  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage.getDimension());
 
   SGPP::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
-  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->getSize());
+  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage.getSize());
   BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
 
   doDirectedRefinements(adaptConfig, *grid, gridGen);
   //    doRandomRefinements(adaptConfig, *grid, gridGen);
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
-  refinedGridSize = gridStorage->getSize();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage.getSize());
+  refinedGridSize = gridStorage.getSize();
 
-  SGPP::base::DataVector alpha(gridStorage->getSize());
+  SGPP::base::DataVector alpha(gridStorage.getSize());
 
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -121,7 +121,7 @@ void getRuntime(SGPP::base::GridType gridType, const std::string& kernel, std::s
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  SGPP::base::OperationMultipleEval* eval =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
@@ -277,12 +277,12 @@ void getRuntimeDataMining(SGPP::base::GridType gridType, const std::string& kern
 
   SGPP::base::Grid& grid = learner->getLearnedGrid();
 
-  SGPP::base::GridStorage* gridStorage = grid.getStorage();
+  SGPP::base::GridStorage& gridStorage = grid.getStorage();
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
-  refinedGridSize = gridStorage->getSize();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage.getSize());
+  refinedGridSize = gridStorage.getSize();
 
-  SGPP::base::DataVector alpha(gridStorage->getSize());
+  SGPP::base::DataVector alpha(gridStorage.getSize());
 
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -294,7 +294,7 @@ void getRuntimeDataMining(SGPP::base::GridType gridType, const std::string& kern
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  SGPP::base::OperationMultipleEval* eval =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
       SGPP::op_factory::createOperationMultipleEval(grid, trainingData, configuration);
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
@@ -372,10 +372,10 @@ void getRuntimeDataMiningTransposed(
 
   SGPP::base::Grid& grid = learner->getLearnedGrid();
 
-  SGPP::base::GridStorage* gridStorage = grid.getStorage();
+  SGPP::base::GridStorage& gridStorage = grid.getStorage();
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
-  refinedGridSize = gridStorage->getSize();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage.getSize());
+  refinedGridSize = gridStorage.getSize();
 
   SGPP::base::DataVector source(dataset.getNumberInstances());
 
@@ -389,10 +389,10 @@ void getRuntimeDataMiningTransposed(
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  SGPP::base::OperationMultipleEval* eval =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
       SGPP::op_factory::createOperationMultipleEval(grid, trainingData, configuration);
 
-  SGPP::base::DataVector gridSizeVectorResult(gridStorage->getSize());
+  SGPP::base::DataVector gridSizeVectorResult(gridStorage.getSize());
   gridSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");
@@ -445,7 +445,7 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string& kern
 
   size_t dim = dataset.getDimension();
 
-  SGPP::base::Grid* grid;
+  std::unique_ptr<SGPP::base::Grid> grid;
 
   if (gridType == SGPP::base::GridType::Linear) {
     grid = SGPP::base::Grid::createLinearGrid(dim);
@@ -455,19 +455,19 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string& kern
     throw nullptr;
   }
 
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage->getDimension());
+  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  BOOST_TEST_MESSAGE("dimensionality:        " << gridStorage.getDimension());
 
   SGPP::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
-  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage->getSize());
+  BOOST_TEST_MESSAGE("number of grid points: " << gridStorage.getSize());
   BOOST_TEST_MESSAGE("number of data points: " << dataset.getNumberInstances());
 
   doDirectedRefinements(adaptConfig, *grid, gridGen);
   //    doRandomRefinements(adaptConfig, *grid, gridGen);
 
-  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage->getSize());
-  refinedGridSize = gridStorage->getSize();
+  BOOST_TEST_MESSAGE("size of refined grid: " << gridStorage.getSize());
+  refinedGridSize = gridStorage.getSize();
 
   SGPP::base::DataVector source(dataset.getNumberInstances());
 
@@ -481,10 +481,10 @@ void getRuntimeTransposed(SGPP::base::GridType gridType, const std::string& kern
   }
 
   BOOST_TEST_MESSAGE("creating operation with unrefined grid");
-  SGPP::base::OperationMultipleEval* eval =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  SGPP::base::DataVector gridSizeVectorResult(gridStorage->getSize());
+  SGPP::base::DataVector gridSizeVectorResult(gridStorage.getSize());
   gridSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");
