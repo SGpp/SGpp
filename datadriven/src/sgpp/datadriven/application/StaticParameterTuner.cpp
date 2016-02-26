@@ -28,7 +28,10 @@ namespace datadriven {
 
 StaticParameterTuner::StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
                                            bool collectStatistics, bool verbose)
-    : collectStatistics(collectStatistics), verbose(verbose), fixedParameters(fixedParameters) {}
+    : verbose(verbose),
+      collectStatistics(collectStatistics),
+      statisticsFolder("."),
+      fixedParameters(fixedParameters) {}
 
 void StaticParameterTuner::addParameter(const std::string &name,
                                         const std::vector<std::string> &valueRange) {
@@ -145,6 +148,10 @@ SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
   return this->fixedParameters;
 }
 
+void StaticParameterTuner::setStatisticsFolder(const std::string &statisticsFolder) {
+  this->statisticsFolder = statisticsFolder;
+}
+
 void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &scenario,
                                           const std::string &platformName,
                                           const std::string &deviceName,
@@ -188,9 +195,11 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
   }
 
   // evaluate initial parameter combination
-  double shortestDuration = evaluateSetup(scenario, fixedParameters, kernelName);
+  double shortestDuration;
+  double highestGFlops;
+  evaluateSetup(scenario, fixedParameters, kernelName, shortestDuration, highestGFlops);
   if (collectStatistics) {
-    this->statistics.push_back(std::make_pair(fixedParameters, shortestDuration));
+    this->statistics.emplace_back(fixedParameters, shortestDuration, highestGFlops);
   }
 
   std::unique_ptr<json::Node> bestParameters(kernelNode.clone());
@@ -217,16 +226,21 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
       }
 
       // evaluate current parameter combination
-      double duration = evaluateSetup(scenario, fixedParameters, kernelName);
+
+      double duration;
+      double GFlops;
+      evaluateSetup(scenario, fixedParameters, kernelName, duration, GFlops);
+
       if (duration < shortestDuration) {
         std::cout << "new best combination! old: " << shortestDuration << " new: " << duration
                   << std::endl;
         shortestDuration = duration;
+        highestGFlops = GFlops;
         bestParameters = std::unique_ptr<json::Node>(kernelNode.clone());
         std::cout << *bestParameters << std::endl;
       }
       if (collectStatistics) {
-        this->statistics.push_back(std::make_pair(fixedParameters, duration));
+        this->statistics.emplace_back(fixedParameters, duration, GFlops);
       }
     } else {
       parameterIndex += 1;
@@ -245,7 +259,8 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
 
 double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
                                            SGPP::base::OCLOperationConfiguration &currentParameters,
-                                           const std::string &kernelName) {
+                                           const std::string &kernelName, double &duration,
+                                           double &GFlops) {
   SGPP::datadriven::MetaLearner learner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
       scenario.getSolverConfigurationFinal(), scenario.getAdaptivityConfiguration(),
@@ -273,7 +288,7 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
 
   std::string fileName = scenario.getDatasetFileName();
 
-  double duration = std::numeric_limits<double>::max();
+  duration = std::numeric_limits<double>::max();
   try {
     std::cout << "evaluating parameter combination" << std::endl;
 
@@ -282,6 +297,8 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
     LearnerTiming timing = learner.getLearnerTiming();
 
     duration = timing.timeComplete_;
+
+    GFlops = timing.GFlop_;
 
     TestsetConfiguration testsetConfiguration = scenario.getTestsetConfiguration();
 
@@ -308,7 +325,7 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
     throw;
   }
 
-  std::ofstream file(statisticsFileName);
+  std::ofstream file(statisticsFolder + "/" + statisticsFileName);
 
   bool first = true;
   for (TunableParameter &columnParameter : this->tunableParameters) {
@@ -322,13 +339,14 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
   if (this->tunableParameters.size() > 0) {
     file << ", ";
   }
-  file << "duration" << std::endl;
+  file << "duration, GFlops" << std::endl;
 
-  for (auto &parameterDurationPair : this->statistics) {
-    SGPP::base::OCLOperationConfiguration &parameter = parameterDurationPair.first;
+  for (auto &parameterDurationGFlopsTuple : this->statistics) {
+    SGPP::base::OCLOperationConfiguration &parameter = std::get<0>(parameterDurationGFlopsTuple);
     json::Node &kernelNode =
         parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
-    double duration = parameterDurationPair.second;
+    double duration = std::get<1>(parameterDurationGFlopsTuple);
+    double GFlops = std::get<2>(parameterDurationGFlopsTuple);
 
     first = true;
     for (TunableParameter &columnParameter : this->tunableParameters) {
@@ -342,7 +360,7 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
     if (this->tunableParameters.size() > 0) {
       file << ", ";
     }
-    file << duration << std::endl;
+    file << duration << ", " << GFlops << std::endl;
   }
 }
 
