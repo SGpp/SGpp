@@ -54,6 +54,7 @@ class Dataset {
   void setData(const SGPP::base::DataMatrix&);
   void setTargets(const SGPP::base::DataVector& targets);
 
+  Dataset& operator=(const Dataset& vec);
 
  protected:
   size_t numberInstances;
