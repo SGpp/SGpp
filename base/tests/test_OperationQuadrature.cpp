@@ -15,14 +15,14 @@
 
 #include <vector>
 
-using SGPP::base::DataVector;
-using SGPP::base::Grid;
-using SGPP::base::GridStorage;
-using SGPP::base::HashGridIndex;
-using SGPP::base::OperationQuadrature;
-using SGPP::base::OperationQuadratureMC;
-using SGPP::base::SPolyBase;
-using SGPP::base::SPolyBoundaryBase;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridStorage;
+using sgpp::base::HashGridIndex;
+using sgpp::base::OperationQuadrature;
+using sgpp::base::OperationQuadratureMC;
+using sgpp::base::SPolyBase;
+using sgpp::base::SPolyBoundaryBase;
 
 BOOST_AUTO_TEST_SUITE(testQuadratureLinear)
 
@@ -42,16 +42,16 @@ BOOST_AUTO_TEST_CASE(testQuadrature) {
 
   DataVector* alpha = new DataVector(v);
 
-  SGPP::float_t qres = 0.0;
-  SGPP::float_t lSum;
+  double qres = 0.0;
+  double lSum;
 
   for (size_t i = 0; i < N; i++) {
-    lSum = static_cast<SGPP::float_t>(gS.get(i)->getLevelSum());
+    lSum = static_cast<double>(gS.get(i)->getLevelSum());
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
-  SGPP::float_t quadOperation =
-      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, qres, 0.0);
 
   delete alpha;
@@ -76,12 +76,12 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
 
   DataVector* alpha = new DataVector(v);
 
-  SGPP::float_t resDirect =
-      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double resDirect =
+      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
 
   // Monte Carlo quadrature
   OperationQuadratureMC* opMC = new OperationQuadratureMC(*grid, 100000);
-  SGPP::float_t resMC = opMC->doQuadrature(*alpha);
+  double resMC = opMC->doQuadrature(*alpha);
 
   BOOST_CHECK_CLOSE(resDirect, resMC, 1.0);
 
@@ -106,21 +106,21 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
 
   SPolyBase* basis = new SPolyBase(deg);
 
-  SGPP::float_t quad[7] = {0.666667, 0.333333, 0.333333, 0.168254, 0.164444, 0.164444, 0.168254};
-  SGPP::float_t quadManual = 0.0;
+  double quad[7] = {0.666667, 0.333333, 0.333333, 0.168254, 0.164444, 0.164444, 0.168254};
+  double quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
     HashGridIndex* gp = gS.get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
-    SGPP::float_t quadSGPP =
+    double quadSGPP =
         basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }
 
-  SGPP::float_t quadOperation =
-      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.00012);
 
   delete alpha;
@@ -144,22 +144,22 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
 
   SPolyBoundaryBase* basis = new SPolyBoundaryBase(deg);
 
-  SGPP::float_t quad[9] = {0.5,      0.5,      0.666667, 0.333333, 0.333333,
+  double quad[9] = {0.5,      0.5,      0.666667, 0.333333, 0.333333,
                            0.168254, 0.164444, 0.164444, 0.168254};
-  SGPP::float_t quadManual = 0.0;
+  double quadManual = 0.0;
 
   for (size_t i = 0; i < N; i++) {
     HashGridIndex* gp = gS.get(i);
     HashGridIndex::level_type lvl = gp->getLevel(0);
     HashGridIndex::index_type idx = gp->getIndex(0);
-    SGPP::float_t quadSGPP =
+    double quadSGPP =
         basis->getIntegral(static_cast<unsigned int>(lvl), static_cast<unsigned int>(idx));
     BOOST_CHECK_CLOSE(quadSGPP, quad[i], 5);
     quadManual += alpha->get(i) * quad[i];
   }
 
-  SGPP::float_t quadOperation =
-      SGPP::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
+  double quadOperation =
+      sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
   BOOST_CHECK_CLOSE(quadOperation, quadManual, 0.0001);
 
   delete alpha;

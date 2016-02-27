@@ -17,7 +17,7 @@
 #include <utility>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -47,7 +47,7 @@ class AlgorithmEvaluationTransposed {
    * @param alpha the coefficient of the regarded ansatzfunction
    * @param result vector that will contain the local support of the given ansatzfuction for all evaluations points
    */
-  void operator()(BASIS& basis, DataVector& point, float_t alpha,
+  void operator()(BASIS& basis, DataVector& point, double alpha,
                   DataVector& result) {
     GridStorage::grid_iterator working(storage);
 
@@ -92,8 +92,8 @@ class AlgorithmEvaluationTransposed {
 
     for (size_t d = 0; d < dim; ++d) {
       // This does not really work on grids with borders.
-      float_t temp = floor(point[d] *
-                           static_cast<float_t>(1 << (bits - 2))) * 2;
+      double temp = floor(point[d] *
+                           static_cast<double>(1 << (bits - 2))) * 2;
 
       if (point[d] == 1.0) {
         source[d] = static_cast<index_type>(temp - 1);
@@ -124,8 +124,8 @@ class AlgorithmEvaluationTransposed {
    * @param result vector that will contain the local support of the given ansatzfuction for all evaluations points
    */
   void rec(BASIS& basis, DataVector& point, size_t current_dim,
-           float_t value, GridStorage::grid_iterator& working,
-           GridStorage::index_type::index_type* source, float_t alpha,
+           double value, GridStorage::grid_iterator& working,
+           GridStorage::index_type::index_type* source, double alpha,
            DataVector& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
@@ -149,7 +149,7 @@ class AlgorithmEvaluationTransposed {
 
         working.get(current_dim, temp, work_index);
 
-        float_t new_value = basis.eval(work_level, work_index,
+        double new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
         new_value *= value;
 
@@ -184,6 +184,6 @@ class AlgorithmEvaluationTransposed {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ALGORITHMEVALUATIONTRANSPOSED_HPP */

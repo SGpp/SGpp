@@ -12,7 +12,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -32,7 +32,7 @@ namespace optimization {
 class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
  public:
   /// default adaptivity
-  static constexpr float_t DEFAULT_ADAPTIVITY = 0.85;
+  static constexpr double DEFAULT_ADAPTIVITY = 0.85;
   /// default level of initial regular sparse grid
   static const base::level_t DEFAULT_INITIAL_LEVEL = 3;
   /// default maximal level of grid points
@@ -56,7 +56,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
    *                      but only approximative)
    */
   IterativeGridGeneratorRitterNovak(ScalarFunction& f, base::Grid& grid, size_t N,
-                                    float_t adaptivity = DEFAULT_ADAPTIVITY,
+                                    double adaptivity = DEFAULT_ADAPTIVITY,
                                     base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
                                     base::level_t maxLevel = DEFAULT_MAX_LEVEL,
                                     PowMethod powMethod = STD_POW);
@@ -76,12 +76,12 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   /**
    * @return            adaptivity between 0 and 1
    */
-  float_t getAdaptivity() const;
+  double getAdaptivity() const;
 
   /**
    * @param adaptivity  adaptivity between 0 and 1
    */
-  void setAdaptivity(float_t adaptivity);
+  void setAdaptivity(double adaptivity);
 
   /**
    * @return              level of initial regular sparse grid
@@ -115,7 +115,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
 
  protected:
   /// adaptivity
-  float_t gamma;
+  double gamma;
   /// level of initial regular sparse grid
   base::level_t initialLevel;
   /// maximal level of grid points
@@ -124,6 +124,6 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   PowMethod powMethod;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP */

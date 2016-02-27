@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -41,7 +41,7 @@ class OperationNaiveEvalGradientWavelet : public OperationNaiveEvalGradient {
    * @param[out]  gradient    gradient of linear combination
    * @return                  value of linear combination
    */
-  float_t evalGradient(const DataVector& alpha,
+  double evalGradient(const DataVector& alpha,
                        const DataVector& point,
                        DataVector& gradient) override;
 
@@ -53,6 +53,6 @@ class OperationNaiveEvalGradientWavelet : public OperationNaiveEvalGradient {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALGRADIENTWAVELET_HPP */

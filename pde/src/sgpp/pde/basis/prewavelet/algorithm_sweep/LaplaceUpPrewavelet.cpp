@@ -7,26 +7,26 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
-LaplaceUpPrewavelet::LaplaceUpPrewavelet(SGPP::base::GridStorage* storage) : storage(storage) {}
+LaplaceUpPrewavelet::LaplaceUpPrewavelet(sgpp::base::GridStorage* storage) : storage(storage) {}
 
 LaplaceUpPrewavelet::~LaplaceUpPrewavelet() {}
 
-void LaplaceUpPrewavelet::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+void LaplaceUpPrewavelet::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                                      grid_iterator& index, size_t dim) {
   size_t seq = index.seq();
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
-  SGPP::base::GridStorage::index_type::level_type l_old;
-  SGPP::base::GridStorage::index_type::index_type i_old;
-  SGPP::base::GridStorage::index_type::index_type last_index;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l_old;
+  sgpp::base::GridStorage::index_type::index_type i_old;
+  sgpp::base::GridStorage::index_type::index_type last_index;
   size_t _seq;
   size_t _seql1;
   size_t _seqr1;
   size_t _seqr2;
-  float_t _val, _vall1, _vall2, _valr1, _valr2;
-  float_t h;
+  double _val, _vall1, _vall2, _valr1, _valr2;
+  double h;
   bool hasChilds = false;
   // GridStorage::index_type::level_type max_level = getGridDepth(index, dim);
 
@@ -43,7 +43,7 @@ void LaplaceUpPrewavelet::operator()(SGPP::base::DataVector& source, SGPP::base:
 
   // Level 2
   l = 2;
-  h = static_cast<float_t>(1 << l);
+  h = static_cast<double>(1 << l);
   index.set(dim, 2, 1);
 
   if (!hasChilds && (index.hintLeft(dim) || index.hintRight(dim))) hasChilds = true;
@@ -182,4 +182,4 @@ void LaplaceUpPrewavelet::operator()(SGPP::base::DataVector& source, SGPP::base:
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

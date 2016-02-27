@@ -13,7 +13,7 @@
 #include <iostream>
 #include <exception>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearGridStencil::LinearGridStencil(std::istream& istr) :
@@ -34,8 +34,8 @@ LinearGridStencil::LinearGridStencil(BoundingBox& BB) :
 LinearGridStencil::~LinearGridStencil() {
 }
 
-SGPP::base::GridType LinearGridStencil::getType() {
-  return SGPP::base::GridType::LinearStencil;
+sgpp::base::GridType LinearGridStencil::getType() {
+  return sgpp::base::GridType::LinearStencil;
 }
 
 const SBasis& LinearGridStencil::getBasis() {
@@ -60,4 +60,4 @@ GridGenerator& LinearGridStencil::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

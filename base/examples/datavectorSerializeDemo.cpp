@@ -7,7 +7,7 @@
 
 #include "sgpp/base/datatypes/DataVector.hpp"
 
-using SGPP::base::DataVector;
+using sgpp::base::DataVector;
 
 int main() {
   DataVector v;

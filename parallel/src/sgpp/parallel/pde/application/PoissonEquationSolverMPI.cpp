@@ -22,10 +22,10 @@
 #include <cstring>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
-PoissonEquationSolverMPI::PoissonEquationSolverMPI() : SGPP::pde::EllipticPDESolver() {
+PoissonEquationSolverMPI::PoissonEquationSolverMPI() : sgpp::pde::EllipticPDESolver() {
   this->bGridConstructed = false;
   this->myScreen = NULL;
 }
@@ -36,11 +36,11 @@ PoissonEquationSolverMPI::~PoissonEquationSolverMPI() {
   }
 }
 
-void PoissonEquationSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBox, int level) {
+void PoissonEquationSolverMPI::constructGrid(sgpp::base::BoundingBox& BoundingBox, int level) {
   this->dim = BoundingBox.getDimensions();
   this->levels = level;
 
-  this->myGrid = new SGPP::base::LinearBoundaryGrid(BoundingBox);
+  this->myGrid = new sgpp::base::LinearBoundaryGrid(BoundingBox);
 
   this->myGrid->getGenerator().regular(this->levels);
 
@@ -50,15 +50,15 @@ void PoissonEquationSolverMPI::constructGrid(SGPP::base::BoundingBox& BoundingBo
   this->bGridConstructed = true;
 }
 
-void PoissonEquationSolverMPI::solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs,
+void PoissonEquationSolverMPI::solvePDE(sgpp::base::DataVector& alpha, sgpp::base::DataVector& rhs,
                                         size_t maxCGIterations, double epsilonCG, bool verbose) {
   double dTimeAlpha = 0.0;
   double dTimeRHS = 0.0;
   double dTimeSolver = 0.0;
-  SGPP::solver::SLESolver* myCG;
-  SGPP::pde::OperationEllipticPDESolverSystemDirichlet* mySystem;
+  sgpp::solver::SLESolver* myCG;
+  sgpp::pde::OperationEllipticPDESolverSystemDirichlet* mySystem;
 
-  SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
+  sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
 
   // read env variable, which solver type should be selected
   char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
@@ -92,12 +92,12 @@ void PoissonEquationSolverMPI::solvePDE(SGPP::base::DataVector& alpha, SGPP::bas
 
   MPI_Barrier(MPI_COMM_WORLD);
   myStopwatch->start();
-  SGPP::base::DataVector* alpha_solve = mySystem->getGridCoefficientsForCG();
+  sgpp::base::DataVector* alpha_solve = mySystem->getGridCoefficientsForCG();
   MPI_Barrier(MPI_COMM_WORLD);
   dTimeAlpha = myStopwatch->stop();
 
   // generate RHS
-  SGPP::base::DataVector* rhs_solve = NULL;
+  sgpp::base::DataVector* rhs_solve = NULL;
 
   if (myGlobalMPIComm->getMyRank() == 0)
     std::cout << "coefficients has been initialized for solving!" << std::endl;
@@ -154,7 +154,7 @@ void PoissonEquationSolverMPI::solvePDE(SGPP::base::DataVector& alpha, SGPP::bas
   delete myStopwatch;
 }
 
-void PoissonEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu,
+void PoissonEquationSolverMPI::initGridWithSmoothHeat(sgpp::base::DataVector& alpha, double mu,
                                                       double sigma, double factor) {
   if (this->bGridConstructed) {
     double tmp;
@@ -196,16 +196,16 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeat(SGPP::base::DataVector& al
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PoissonEquationSolverMPI::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
 }
 
-void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(SGPP::base::DataVector& alpha,
+void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(sgpp::base::DataVector& alpha,
                                                                 double mu, double sigma,
                                                                 double factor) {
   if (this->bGridConstructed) {
@@ -235,23 +235,23 @@ void PoissonEquationSolverMPI::initGridWithSmoothHeatFullDomain(SGPP::base::Data
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "HeatEquationSolverMPI::initGridWithSmoothHeatFullDomain : A grid wasn't constructed "
         "before!");
   }
 }
 
-void PoissonEquationSolverMPI::initGridWithExpHeat(SGPP::base::DataVector& alpha, double factor) {
+void PoissonEquationSolverMPI::initGridWithExpHeat(sgpp::base::DataVector& alpha, double factor) {
   if (this->bGridConstructed) {
     double tmp;
     double* dblFuncValues = new double[this->dim];
     double* rightBound = new double[this->dim];
 
-    SGPP::base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
+    sgpp::base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
 
     for (size_t j = 0; j < this->dim; j++) {
       rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
@@ -292,23 +292,23 @@ void PoissonEquationSolverMPI::initGridWithExpHeat(SGPP::base::DataVector& alpha
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }
 
-void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(SGPP::base::DataVector& alpha,
+void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(sgpp::base::DataVector& alpha,
                                                              double factor) {
   if (this->bGridConstructed) {
     double tmp;
     double* dblFuncValues = new double[this->dim];
     double* rightBound = new double[this->dim];
 
-    SGPP::base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
+    sgpp::base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
 
     for (size_t j = 0; j < this->dim; j++) {
       rightBound[j] = (tmpBB->getBoundary(j)).rightBoundary;
@@ -336,19 +336,19 @@ void PoissonEquationSolverMPI::initGridWithExpHeatFullDomain(SGPP::base::DataVec
 
     delete[] dblFuncValues;
 
-    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
+        sgpp::op_factory::createOperationHierarchisation(*this->myGrid);
     myHierarchisation->doHierarchisation(alpha);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PoissonEquationSolverMPI::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }
 
 void PoissonEquationSolverMPI::initScreen() {
-  this->myScreen = new SGPP::base::ScreenOutput();
+  this->myScreen = new sgpp::base::ScreenOutput();
   this->myScreen->writeTitle("SGpp - Poisson Equation Solver, 1.0.0",
                              "Alexander Heinecke, (C) 2009-2011");
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

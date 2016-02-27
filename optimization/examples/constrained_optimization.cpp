@@ -25,28 +25,28 @@
 int main() {
   std::cout << "Hello World!\n";
 
-  SGPP::optimization::Printer::getInstance().setVerbosity(5);
-  SGPP::optimization::RandomNumberGenerator::getInstance().setSeed();
+  sgpp::optimization::Printer::getInstance().setVerbosity(5);
+  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed();
 
-  SGPP::optimization::test_problems::G04 problem;
+  sgpp::optimization::test_problems::G04 problem;
   const size_t d = problem.getObjectiveFunction().getNumberOfParameters();
 
   /*const size_t d = 6;
-  SGPP::optimization::test_problems::ProductOnSphere problem(d);*/
+  sgpp::optimization::test_problems::ProductOnSphere problem(d);*/
 
   problem.generateDisplacement();
 
-  SGPP::optimization::ScalarFunction& f =
+  sgpp::optimization::ScalarFunction& f =
     problem.getObjectiveFunction();
-  SGPP::optimization::VectorFunction& g =
+  sgpp::optimization::VectorFunction& g =
     problem.getInequalityConstraintFunction();
-  SGPP::optimization::VectorFunction& h =
+  sgpp::optimization::VectorFunction& h =
     problem.getEqualityConstraintFunction();
 
-  /*SGPP::optimization::WrapperScalarFunctionGradient fGradient(
-    d, [d](const SGPP::base::DataVector & x,
-  SGPP::base::DataVector & gradient) {
-    SGPP::float_t fx = -1.0;
+  /*sgpp::optimization::WrapperScalarFunctionGradient fGradient(
+    d, [d](const sgpp::base::DataVector & x,
+  sgpp::base::DataVector & gradient) {
+    double fx = -1.0;
     gradient.setAll(-1.0);
 
     for (size_t t = 0; t < d; t++) {
@@ -62,11 +62,11 @@ int main() {
     return fx;
   });
 
-  SGPP::optimization::WrapperVectorFunctionGradient gGradient(
-    d, 1, [d](const SGPP::base::DataVector & x,
-              SGPP::base::DataVector & value,
-  SGPP::base::DataMatrix & gradient) {
-    SGPP::float_t gx = -1.0;
+  sgpp::optimization::WrapperVectorFunctionGradient gGradient(
+    d, 1, [d](const sgpp::base::DataVector & x,
+              sgpp::base::DataVector & value,
+  sgpp::base::DataMatrix & gradient) {
+    double gx = -1.0;
 
     for (size_t t = 0; t < d; t++) {
       gx += x[t] * x[t];
@@ -76,33 +76,33 @@ int main() {
     value[0] = gx;
   });
 
-  SGPP::optimization::VectorFunctionGradient& hGradient =
-    SGPP::optimization::EmptyVectorFunctionGradient::getInstance();*/
+  sgpp::optimization::VectorFunctionGradient& hGradient =
+    sgpp::optimization::EmptyVectorFunctionGradient::getInstance();*/
 
   const size_t mG = g.getNumberOfComponents();
   const size_t mH = h.getNumberOfComponents();
 
   const size_t p = 5;
-  std::unique_ptr<SGPP::base::Grid> grid(
-    SGPP::base::Grid::createModBsplineGrid(d, p));
+  std::unique_ptr<sgpp::base::Grid> grid(
+    sgpp::base::Grid::createModBsplineGrid(d, p));
 
   const size_t l = 5;
   grid->getGenerator().regular(l);
 
-  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
 
   const size_t N = grid->getSize();
 
-  std::unique_ptr<SGPP::optimization::OperationMultipleHierarchisation> hierOp(
-    SGPP::op_factory::createOperationMultipleHierarchisation(*grid));
+  std::unique_ptr<sgpp::optimization::OperationMultipleHierarchisation> hierOp(
+    sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
 
-  SGPP::base::DataVector x(d), gx(mG), hx(mH);
-  SGPP::base::DataVector fAlpha(N);
-  SGPP::base::DataMatrix gAlpha(N, mG);
-  SGPP::base::DataMatrix hAlpha(N, mH);
+  sgpp::base::DataVector x(d), gx(mG), hx(mH);
+  sgpp::base::DataVector fAlpha(N);
+  sgpp::base::DataMatrix gAlpha(N, mG);
+  sgpp::base::DataMatrix hAlpha(N, mH);
 
   for (size_t i = 0; i < N; i++) {
-    const SGPP::base::GridIndex& gp = *gridStorage[i];
+    const sgpp::base::GridIndex& gp = *gridStorage[i];
 
     for (size_t t = 0; t < d; t++) {
       x[t] = gp.getCoord(t);
@@ -121,48 +121,48 @@ int main() {
   hierOp->doHierarchisation(gAlpha);
   hierOp->doHierarchisation(hAlpha);
 
-  SGPP::optimization::InterpolantScalarFunction ft(*grid, fAlpha);
-  SGPP::optimization::InterpolantScalarFunctionGradient ftGradient(
+  sgpp::optimization::InterpolantScalarFunction ft(*grid, fAlpha);
+  sgpp::optimization::InterpolantScalarFunctionGradient ftGradient(
     *grid, fAlpha);
 
-  SGPP::optimization::InterpolantVectorFunction gt(*grid, gAlpha);
-  SGPP::optimization::InterpolantVectorFunctionGradient gtGradient(
+  sgpp::optimization::InterpolantVectorFunction gt(*grid, gAlpha);
+  sgpp::optimization::InterpolantVectorFunctionGradient gtGradient(
     *grid, gAlpha);
 
-  SGPP::optimization::InterpolantVectorFunction ht(*grid, hAlpha);
-  SGPP::optimization::InterpolantVectorFunctionGradient htGradient(
+  sgpp::optimization::InterpolantVectorFunction ht(*grid, hAlpha);
+  sgpp::optimization::InterpolantVectorFunctionGradient htGradient(
     *grid, hAlpha);
 
-  SGPP::optimization::optimizer::AugmentedLagrangian optimizer(
+  sgpp::optimization::optimizer::AugmentedLagrangian optimizer(
     ft, ftGradient, gt, gtGradient, ht, htGradient);
-  /*SGPP::optimization::optimizer::AugmentedLagrangian optimizer(
+  /*sgpp::optimization::optimizer::AugmentedLagrangian optimizer(
     f, fGradient, g, gGradient, h, hGradient);*/
 
   optimizer.setN(10000);
 
-  const SGPP::base::DataVector x0(optimizer.findFeasiblePoint());
-  // const SGPP::base::DataVector x0(d, 0.2);
+  const sgpp::base::DataVector x0(optimizer.findFeasiblePoint());
+  // const sgpp::base::DataVector x0(d, 0.2);
 
   optimizer.setStartingPoint(x0);
   optimizer.optimize();
 
-  SGPP::base::DataVector xOpt(d);
+  sgpp::base::DataVector xOpt(d);
   problem.getOptimalPoint(xOpt);
-  const SGPP::base::DataVector xOptStar(optimizer.getOptimalPoint());
+  const sgpp::base::DataVector xOptStar(optimizer.getOptimalPoint());
 
-  for (const SGPP::base::DataVector& x : {
+  for (const sgpp::base::DataVector& x : {
   xOpt, x0, xOptStar
 }) {
-    const SGPP::float_t fx = f.eval(x);
-    SGPP::base::DataVector gx(mG);
+    const double fx = f.eval(x);
+    sgpp::base::DataVector gx(mG);
     g.eval(x, gx);
-    SGPP::base::DataVector hx(mH);
+    sgpp::base::DataVector hx(mH);
     h.eval(x, hx);
 
-    const SGPP::float_t ftx = ft.eval(x);
-    SGPP::base::DataVector gtx(mG);
+    const double ftx = ft.eval(x);
+    sgpp::base::DataVector gtx(mG);
     gt.eval(x, gtx);
-    SGPP::base::DataVector htx(mH);
+    sgpp::base::DataVector htx(mH);
     ht.eval(x, htx);
 
     std::cout << "x = " << x.toString() << "\n";

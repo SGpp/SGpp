@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& G13::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G13::getEqualityConstraintFunction() { return h; }
 
-float_t G13::getOptimalPointUndisplaced(base::DataVector& x) {
+double G13::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(5);
   x[0] = 0.126708043478261;
   x[1] = 0.846893260869565;
@@ -36,12 +36,12 @@ G13Objective::G13Objective() : TestScalarFunction(5) {}
 
 G13Objective::~G13Objective() {}
 
-float_t G13Objective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 4.6 * x[0] - 2.3;
-  const float_t x2 = 4.6 * x[1] - 2.3;
-  const float_t x3 = 6.4 * x[2] - 3.2;
-  const float_t x4 = 6.4 * x[3] - 3.2;
-  const float_t x5 = 6.4 * x[4] - 3.2;
+double G13Objective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 4.6 * x[0] - 2.3;
+  const double x2 = 4.6 * x[1] - 2.3;
+  const double x3 = 6.4 * x[2] - 3.2;
+  const double x4 = 6.4 * x[3] - 3.2;
+  const double x5 = 6.4 * x[4] - 3.2;
 
   return std::exp(x1 * x2 * x3 * x4 * x5);
 }
@@ -65,11 +65,11 @@ G13EqualityConstraint::G13EqualityConstraint() : TestVectorFunction(5, 3) {}
 G13EqualityConstraint::~G13EqualityConstraint() {}
 
 void G13EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 4.6 * x[0] - 2.3;
-  const float_t x2 = 4.6 * x[1] - 2.3;
-  const float_t x3 = 6.4 * x[2] - 3.2;
-  const float_t x4 = 6.4 * x[3] - 3.2;
-  const float_t x5 = 6.4 * x[4] - 3.2;
+  const double x1 = 4.6 * x[0] - 2.3;
+  const double x2 = 4.6 * x[1] - 2.3;
+  const double x3 = 6.4 * x[2] - 3.2;
+  const double x4 = 6.4 * x[3] - 3.2;
+  const double x5 = 6.4 * x[4] - 3.2;
 
   value[0] = x1 * x1 + x2 * x2 + x3 * x3 + x4 * x4 + x5 * x5 - 10.0;
   value[1] = x2 * x3 - 5.0 * x4 * x5;
@@ -81,4 +81,4 @@ void G13EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

@@ -181,12 +181,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
         else:
            env.Append(CPPFLAGS=['-g', '-O0'])
 
-    if not env['USE_DOUBLE_PRECISION']:
-       print "Using single precision"
-       env.Append(CPPFLAGS=['-DUSE_DOUBLE_PRECISION=0'])
-    else:
-       print "Using double precision"
-
     # make settings case-insensitive
     env['COMPILER'] = env['COMPILER'].lower()
     env['ARCH'] = env['ARCH'].lower()
@@ -222,15 +216,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
-
-        if not env['USE_DOUBLE_PRECISION']:
-            if gcc_ver >= (4, 9, 0):
-                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
-                # (-Wno-float-conversion was introduced with g++ 4.9)
-                env.Append(CPPFLAGS=['-Wno-float-conversion'])
-            else:
-                # disable all conversion warnings
-                env.Append(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
@@ -281,15 +266,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
         if env['USE_STATICLIB']:
             env.Append(CPPFLAGS=['-D_USE_STATICLIB'])
 
-        if not env['USE_DOUBLE_PRECISION']:
-            if gcc_ver >= (4, 9, 0):
-                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
-                # (-Wno-float-conversion was introduced with g++ 4.9)
-                env.Append(CPPFLAGS=['-Wno-float-conversion'])
-            else:
-                # disable all conversion warnings
-                env.Append(CPPFLAGS=['-Wno-conversion'])
-
         if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])
         elif env['ARCH'] == 'sse42':
@@ -328,15 +304,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
 
         if env['USE_STATICLIB']:
             env.AppendUnique(CPPFLAGS=['-D_USE_STATICLIB'])
-
-        if not env['USE_DOUBLE_PRECISION']:
-            if gcc_ver >= (4, 9, 0):
-                # disable warnings which occur for, e.g., "SGPP::float_t value = 1.0/3.0;"
-                # (-Wno-float-conversion was introduced with g++ 4.9)
-                env.AppendUnique(CPPFLAGS=['-Wno-float-conversion'])
-            else:
-                # disable all conversion warnings
-                env.AppendUnique(CPPFLAGS=['-Wno-conversion'])
 
         if env['ARCH'] == 'sse3':
             config.env.AppendUnique(CPPFLAGS=["-msse3"])

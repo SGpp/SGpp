@@ -15,15 +15,15 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
 DifferentialEvolution::DifferentialEvolution(ScalarFunction& f, size_t maxFcnEvalCount,
-                                             size_t populationSize, float_t crossoverProbability,
-                                             float_t scalingFactor, size_t idleGenerationsCount,
-                                             float_t avgImprovementThreshold,
-                                             float_t maxDistanceThreshold)
+                                             size_t populationSize, double crossoverProbability,
+                                             double scalingFactor, size_t idleGenerationsCount,
+                                             double avgImprovementThreshold,
+                                             double maxDistanceThreshold)
     : UnconstrainedOptimizer(f, maxFcnEvalCount),
       populationSize((populationSize > 0) ? populationSize : 10 * f.getNumberOfParameters()),
       crossoverProbability(crossoverProbability),
@@ -67,15 +67,15 @@ void DifferentialEvolution::optimize() {
   }
 
   // smallest function value in the population
-  float_t fCurrentOpt = INFINITY;
+  double fCurrentOpt = INFINITY;
   // index of the point with value fOpt
   size_t xOptIndex = 0;
   // iteration number of the last iteration with significant improvement
   size_t lastNonidleK = 0;
   // average of all function values
-  float_t avg = 0.0;
+  double avg = 0.0;
   // average in the previous round
-  float_t lastAvg = 0.0;
+  double lastAvg = 0.0;
   // number of iterations
   size_t maxK = std::max(static_cast<size_t>(2), N / populationSize) - 1;
 
@@ -145,7 +145,7 @@ void DifferentialEvolution::optimize() {
 
         // for each dimension
         for (size_t t = 0; t < d; t++) {
-          const float_t& curProb = prob_ki[t];
+          const double& curProb = prob_ki[t];
 
           if ((t == cur_j) || (curProb < crossoverProbability)) {
             // mutate point in this dimension
@@ -163,7 +163,7 @@ void DifferentialEvolution::optimize() {
         }
 
         // evaluate mutated point (if not out of bounds)
-        const float_t fy = (inDomain ? curFPtr->eval(y) : INFINITY);
+        const double fy = (inDomain ? curFPtr->eval(y) : INFINITY);
 
         if (fy < fx[i]) {
 // function_value is better ==> replace point with mutated one
@@ -198,7 +198,7 @@ void DifferentialEvolution::optimize() {
       avg += fx[i];
     }
 
-    avg /= static_cast<float_t>(populationSize);
+    avg /= static_cast<double>(populationSize);
 
     if (lastAvg - avg >= avgImprovementThreshold) {
       // significant improvement
@@ -207,14 +207,14 @@ void DifferentialEvolution::optimize() {
       // last significant improvement too long ago
       // ==> calculate maximum squared distance of all points
       // to the best one
-      float_t maxDistance2 = 0.0;
+      double maxDistance2 = 0.0;
 
       for (size_t i = 0; i < populationSize; i++) {
         if (i == xOptIndex) {
           continue;
         }
 
-        float_t distance2 = 0.0;
+        double distance2 = 0.0;
 
         for (size_t t = 0; t < d; t++) {
           distance2 +=
@@ -266,4 +266,4 @@ void DifferentialEvolution::clone(std::unique_ptr<UnconstrainedOptimizer>& clone
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

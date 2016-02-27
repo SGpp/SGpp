@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -69,6 +69,6 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_CONSTRAINEDOPTIMIZER_HPP */

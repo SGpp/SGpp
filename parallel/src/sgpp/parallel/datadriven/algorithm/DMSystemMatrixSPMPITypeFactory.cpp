@@ -50,9 +50,7 @@
 #include <cstring>
 #include <string>
 
-#if USE_DOUBLE_PRECISION == 0
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 template <typename KernelImplementation>
 datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::createDMSystemMatrixMPITypeSP(
@@ -65,56 +63,56 @@ datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::createDMSystem
     case MPIAllreduce:
       parallelizationType = "Allreduce";
       result =
-          new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityAllreduce<KernelImplementation>(
+          new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityAllreduce<KernelImplementation>(
               grid, trainDataset, lambda, vecType);
       break;
 
     case MPIAlltoallv:
       parallelizationType = "Alltoallv";
-      result = new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda,
+      result = new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda,
                                                                          vecType);
       break;
 
     case MPIAsync:
       parallelizationType = "Asynchronous Communication";
-      result = new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityAsyncMPI<KernelImplementation>(
+      result = new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityAsyncMPI<KernelImplementation>(
           grid, trainDataset, lambda, vecType);
       break;
 
     case MPITrueAsync:
       parallelizationType = "True Asynchronous Communication";
       result =
-          new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
+          new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI<KernelImplementation>(
               grid, trainDataset, lambda, vecType);
       break;
 
     case MPIOnesided:
       parallelizationType = "Onesided Communication";
       result =
-          new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityOnesidedMPI<KernelImplementation>(
+          new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityOnesidedMPI<KernelImplementation>(
               grid, trainDataset, lambda, vecType);
       break;
 
     case MPIBigdata:
       parallelizationType = "MPI Bigdata";
-      result = new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityBigdataAllreduce<
+      result = new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityBigdataAllreduce<
           KernelImplementation>(grid, trainDataset, lambda, vecType);
       break;
 
     case MPINone:
       parallelizationType = "No MPI Implementation is used.";
-      result = new SGPP::parallel::DMSystemMatrixSPVectorizedIdentity(grid, trainDataset, lambda,
+      result = new sgpp::parallel::DMSystemMatrixSPVectorizedIdentity(grid, trainDataset, lambda,
                                                                       vecType);
       break;
 
     default:
-      throw SGPP::base::factory_exception("this type of MPI communication is not yet implemented");
+      throw sgpp::base::factory_exception("this type of MPI communication is not yet implemented");
       break;
   }
 
-  if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
+  if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
     std::cout << "Using MPI Parallelization: " << parallelizationType << " ("
-              << SGPP::parallel::myGlobalMPIComm->getNumRanks() << " Processes)" << std::endl;
+              << sgpp::parallel::myGlobalMPIComm->getNumRanks() << " Processes)" << std::endl;
     size_t thread_count = 1;
 #ifdef _OPENMP
 #pragma omp parallel
@@ -165,7 +163,7 @@ datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::getDMSystemMat
       std::cout << "WARNING: vectorization not implemented for this type of MPI-Communication. "
                    "Using default (alltoallv). Please fix this in MPITypeFactory!!!!!! ("
                 << __LINE__ << "in" << __FILE__ << ")" << std::endl;
-      return new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda,
+      return new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda,
                                                                        vecType);
     }
   } else if (strcmp(grid.getType(), "modlinear") == 0) {
@@ -241,7 +239,7 @@ datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::getDMSystemMat
       std::cout << "WARNING: vectorization not implemented for this type of MPI-Communication. "
                    "Using default (alltoallv). Please fix this in MPITypeFactory."
                 << std::endl;
-      return new SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda,
+      return new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda,
                                                                        vecType);
     }
   } else {
@@ -250,5 +248,4 @@ datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::getDMSystemMat
   }
 }
 }  // namespace parallel
-}  // namespace SGPP
-#endif
+}  // namespace sgpp

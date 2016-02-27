@@ -11,7 +11,7 @@
 #include "SubspaceNodeCombined.hpp"
 #include "OperationMultipleEvalSubspaceCombinedParameters.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 SubspaceNodeCombined::SubspaceNodeCombined(std::vector<uint32_t>& level,
@@ -94,8 +94,8 @@ void SubspaceNodeCombined::printLevel() {
 // this method will decide how to best represent the subspace (list or array type)
 // and prepare the subspace for its representation
 void SubspaceNodeCombined::unpack() {
-  float_t usageRatio = (float_t) this->existingGridPointsOnLevel /
-                       (float_t) this->gridPointsOnLevel;
+  double usageRatio = (double) this->existingGridPointsOnLevel /
+                       (double) this->gridPointsOnLevel;
 
   if (usageRatio < X86COMBINED_LIST_RATIO
       && this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
@@ -106,20 +106,20 @@ void SubspaceNodeCombined::unpack() {
     this->subspaceArray.resize(this->gridPointsOnLevel);
 
     for (size_t i = 0; i < this->gridPointsOnLevel; i++) {
-      this->subspaceArray[i] = std::numeric_limits<float_t>::quiet_NaN();
+      this->subspaceArray[i] = std::numeric_limits<double>::quiet_NaN();
     }
   }
 }
 
 // the first call initializes the array for ARRAY type subspaces
 //
-void SubspaceNodeCombined::setSurplus(size_t indexFlat, float_t surplus) {
+void SubspaceNodeCombined::setSurplus(size_t indexFlat, double surplus) {
   if (this->type == ARRAY) {
     this->subspaceArray[indexFlat] = surplus;
   } else if (this->type == LIST) {
     bool found = false;
 
-    for (std::pair<uint32_t, float_t>& tuple : this->indexFlatSurplusPairs) {
+    for (std::pair<uint32_t, double>& tuple : this->indexFlatSurplusPairs) {
       if (tuple.first == indexFlat) {
         tuple.second = surplus;
         found = true;
@@ -134,12 +134,12 @@ void SubspaceNodeCombined::setSurplus(size_t indexFlat, float_t surplus) {
 }
 
 // the first call initializes the array for ARRAY type subspaces
-float_t SubspaceNodeCombined::getSurplus(size_t indexFlat) {
+double SubspaceNodeCombined::getSurplus(size_t indexFlat) {
 
   if (this->type == ARRAY) {
     return this->subspaceArray[indexFlat];
   } else if (this->type == LIST) {
-    for (std::pair<uint32_t, float_t> tuple : this->indexFlatSurplusPairs) {
+    for (std::pair<uint32_t, double> tuple : this->indexFlatSurplusPairs) {
       if (tuple.first == indexFlat) {
         return tuple.second;
       }

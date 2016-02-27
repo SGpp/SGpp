@@ -12,7 +12,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLPlatformWrapper::OCLPlatformWrapper(
@@ -37,7 +37,7 @@ OCLPlatformWrapper::OCLPlatformWrapper(
     std::stringstream errorString;
     errorString << "OCL Error: Failed to create OpenCL context! Error Code: "
                 << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   // Create a command queue for each device
@@ -49,7 +49,7 @@ OCLPlatformWrapper::OCLPlatformWrapper(
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create command queue! Error Code: "
                   << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     char deviceName[128] = {0};
@@ -60,7 +60,7 @@ OCLPlatformWrapper::OCLPlatformWrapper(
       std::stringstream errorString;
       errorString << "OCL Error: Failed to read the device name for device: "
                   << this->deviceIds[i] << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
     this->deviceNames.push_back(deviceName);
   }
@@ -68,4 +68,4 @@ OCLPlatformWrapper::OCLPlatformWrapper(
 
 size_t OCLPlatformWrapper::getDeviceCount() { return this->deviceIds.size(); }
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

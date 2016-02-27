@@ -14,7 +14,7 @@
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 BoundaryGridGenerator::BoundaryGridGenerator(GridStorage& storage,
@@ -86,4 +86,4 @@ size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

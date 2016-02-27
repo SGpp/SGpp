@@ -19,7 +19,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -41,16 +41,16 @@ void callback(const gmm::iteration& iter) {
  * @param[out]  x   solution of the linear system
  * @return          whether all went well (false if errors occurred)
  */
-bool solveInternal(const gmm::csr_matrix<float_t>& A, base::DataVector& b, base::DataVector& x) {
+bool solveInternal(const gmm::csr_matrix<double>& A, base::DataVector& b, base::DataVector& x) {
   // allow warnings
   gmm::warning_level::level(1);
   const size_t n = b.getSize();
-  std::vector<float_t> bVec(b.getPointer(), b.getPointer() + n);
-  std::vector<float_t> xVec(n, 0.0);
+  std::vector<double> bVec(b.getPointer(), b.getPointer() + n);
+  std::vector<double> xVec(n, 0.0);
 
   // ILU preconditioning
   Printer::getInstance().printStatusUpdate("constructing preconditioner");
-  gmm::ilu_precond<gmm::csr_matrix<float_t>> P(A);
+  gmm::ilu_precond<gmm::csr_matrix<double>> P(A);
 
   Printer::getInstance().printStatusNewLine();
   Printer::getInstance().printStatusUpdate("solving with Gmm++");
@@ -62,7 +62,7 @@ bool solveInternal(const gmm::csr_matrix<float_t>& A, base::DataVector& b, base:
     // call GMRES
     gmm::gmres(A, xVec, bVec, P, 50, iter);
 
-    float_t res = iter.get_res();
+    double res = iter.get_res();
 
     if (iter.converged() && (res < 1e3)) {
       // GMRES converged
@@ -115,10 +115,10 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
 
   const size_t n = system.getDimension();
   size_t nnz = 0;
-  gmm::csr_matrix<float_t> A2;
+  gmm::csr_matrix<double> A2;
 
   {
-    gmm::row_matrix<gmm::rsvector<float_t>> A(n, n);
+    gmm::row_matrix<gmm::rsvector<double>> A(n, n);
 
 // parallelize only if the system is cloneable
 #pragma omp parallel if (system.isCloneable()) shared(system, A, nnz) default(none)
@@ -139,7 +139,7 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
 
       for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
-          float_t entry = system2->getMatrixEntry(i, j);
+          double entry = system2->getMatrixEntry(i, j);
 
           if (entry != 0) {
 #pragma omp critical
@@ -156,7 +156,7 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
           {
             char str[10];
             snprintf(str, sizeof(str), "%.1f%%",
-                     static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+                     static_cast<double>(i) / static_cast<double>(n) * 100.0);
             Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
                                                      std::string(str) + ")");
           }
@@ -175,8 +175,8 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnz_ratio =
-        static_cast<float_t>(nnz) / (static_cast<float_t>(n) * static_cast<float_t>(n));
+    double nnz_ratio =
+        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
     snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
@@ -193,4 +193,4 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
 }
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

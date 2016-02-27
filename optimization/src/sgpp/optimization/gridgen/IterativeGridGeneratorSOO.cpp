@@ -16,11 +16,11 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(ScalarFunction& f, base::Grid& grid, size_t N,
-                                                     float_t adaptivity)
+                                                     double adaptivity)
     : IterativeGridGenerator(f, grid, N) {
   setAdaptivity(adaptivity);
 }
@@ -31,7 +31,7 @@ IterativeGridGeneratorSOO::AdaptivityFunction IterativeGridGeneratorSOO::getAdap
   return hMax;
 }
 
-void IterativeGridGeneratorSOO::setAdaptivity(float_t adaptivity) {
+void IterativeGridGeneratorSOO::setAdaptivity(double adaptivity) {
   hMax = [adaptivity](size_t n) { return static_cast<size_t>(std::pow(n, adaptivity)); };
 }
 
@@ -105,7 +105,7 @@ bool IterativeGridGeneratorSOO::generate() {
     {
       char str[10];
       snprintf(str, sizeof(str), "%.1f%%",
-               static_cast<float_t>(currentN) / static_cast<float_t>(N) * 100.0);
+               static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
       Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
                                                std::to_string(currentN) + ", k = " +
                                                std::to_string(k) + ")");
@@ -113,10 +113,10 @@ bool IterativeGridGeneratorSOO::generate() {
 
     const size_t curDepthBound =
         std::min(depthMap.size() - 1, static_cast<size_t>(hMax(n)) + depthBoundOffset);
-    float_t nuMin = INFINITY;
+    double nuMin = INFINITY;
 
     for (size_t depth = 0; depth <= curDepthBound; depth++) {
-      float_t fBest = INFINITY;
+      double fBest = INFINITY;
       size_t iBest = 0;
 
       for (size_t i : depthMap[depth]) {
@@ -208,4 +208,4 @@ bool IterativeGridGeneratorSOO::generate() {
   }
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

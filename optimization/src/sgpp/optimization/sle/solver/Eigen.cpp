@@ -17,19 +17,14 @@
 #include <iostream>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
 #ifdef USE_EIGEN
 
-#if USE_DOUBLE_PRECISION
 typedef ::Eigen::VectorXd EigenVector;
 typedef ::Eigen::MatrixXd EigenMatrix;
-#else
-typedef ::Eigen::VectorXf EigenVector;
-typedef ::Eigen::MatrixXf EigenMatrix;
-#endif
 
 /**
  * @param       A     coefficient matrix
@@ -40,12 +35,7 @@ typedef ::Eigen::MatrixXf EigenMatrix;
  */
 bool solveInternal(const EigenMatrix& A, const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
                    base::DataVector& b, base::DataVector& x) {
-  const SGPP::float_t tolerance =
-#if USE_DOUBLE_PRECISION
-      1e-12;
-#else
-      1e-4;
-#endif
+  const double tolerance = 1e-12;
 
   // solve system
   EigenVector bEigen = EigenVector::Map(b.getPointer(), b.getSize());
@@ -120,7 +110,7 @@ bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
         {
           char str[10];
           snprintf(str, sizeof(str), "%.1f%%",
-                   static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+                   static_cast<double>(i) / static_cast<double>(n) * 100.0);
           Printer::getInstance().printStatusUpdate("constructing matrix (" + std::string(str) +
                                                    ")");
         }
@@ -134,8 +124,8 @@ bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnz_ratio =
-        static_cast<float_t>(nnz) / (static_cast<float_t>(n) * static_cast<float_t>(n));
+    double nnz_ratio =
+        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
     snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
@@ -179,4 +169,4 @@ bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
 }
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

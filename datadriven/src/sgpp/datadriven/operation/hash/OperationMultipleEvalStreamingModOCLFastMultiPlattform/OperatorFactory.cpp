@@ -13,12 +13,12 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "OperationMultiEvalStreamingModOCLFastMultiPlatform.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval *createStreamingModOCLFastMultiPlatformConfigured(
     base::Grid &grid, base::DataMatrix &dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration &configuration) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
@@ -47,4 +47,4 @@ base::OperationMultipleEval *createStreamingModOCLFastMultiPlatformConfigured(
   }
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

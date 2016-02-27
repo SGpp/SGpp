@@ -17,22 +17,22 @@
 #define STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH 96
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class OperationMultiEvalStreaming : public base::OperationMultipleEval {
  protected:
-  SGPP::base::DataMatrix preparedDataset;
+  sgpp::base::DataMatrix preparedDataset;
   /// Member to store the sparse grid's levels for better vectorization
-  SGPP::base::DataMatrix* level_ = nullptr;
+  sgpp::base::DataMatrix* level_ = nullptr;
   /// Member to store the sparse grid's indices for better vectorization
-  SGPP::base::DataMatrix* index_ = nullptr;
+  sgpp::base::DataMatrix* index_ = nullptr;
   /// Timer object to handle time measurements
-  SGPP::base::SGppStopwatch myTimer_;
+  sgpp::base::SGppStopwatch myTimer_;
 
   base::GridStorage* storage;
 
-  float_t duration;
+  double duration;
 
  public:
   OperationMultiEvalStreaming(base::Grid& grid, base::DataMatrix& dataset);
@@ -43,32 +43,32 @@ class OperationMultiEvalStreaming : public base::OperationMultipleEval {
 
   size_t getChunkDataPoints();
 
-  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override;
+  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) override;
 
-  void multTranspose(SGPP::base::DataVector& source, SGPP::base::DataVector& result) override;
+  void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override;
 
   void prepare() override;
 
-  float_t getDuration() override;
+  double getDuration() override;
 
  private:
   void getPartitionSegment(size_t start, size_t end, size_t segmentCount, size_t segmentNumber,
                            size_t* segmentStart, size_t* segmentEnd, size_t blockSize);
 
-  size_t padDataset(SGPP::base::DataMatrix& dataset);
+  size_t padDataset(sgpp::base::DataMatrix& dataset);
 
   void getOpenMPPartitionSegment(size_t start, size_t end, size_t* segmentStart, size_t* segmentEnd,
                                  size_t blocksize);
 
-  void multImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-                SGPP::base::DataVector& result, const size_t start_index_grid,
+  void multImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                sgpp::base::DataVector& result, const size_t start_index_grid,
                 const size_t end_index_grid, const size_t start_index_data,
                 const size_t end_index_data);
 
-  void multTransposeImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                         SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-                         SGPP::base::DataVector& result, const size_t start_index_grid,
+  void multTransposeImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                         sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+                         sgpp::base::DataVector& result, const size_t start_index_grid,
                          const size_t end_index_grid, const size_t start_index_data,
                          const size_t end_index_data);
 
@@ -76,4 +76,4 @@ class OperationMultiEvalStreaming : public base::OperationMultipleEval {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

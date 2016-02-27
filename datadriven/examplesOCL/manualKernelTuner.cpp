@@ -19,15 +19,15 @@ int main(int argc, char** argv) {
   int maxLevel = 10;
   //    std::string fileName = "friedman_4d_small.arff";
   std::string fileName = "friedman_4d.arff";
-  SGPP::base::RegularGridConfiguration gridConfig;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
+  sgpp::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = maxLevel;
-  gridConfig.type_ = SGPP::base::GridType::Linear;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;
@@ -40,35 +40,35 @@ int main(int argc, char** argv) {
   SLESolverConfigRefine.eps_ = 0;
   SLESolverConfigRefine.maxIterations_ = 1;
   SLESolverConfigRefine.threshold_ = -1.0;
-  SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigRefine.type_ = sgpp::solver::SLESolverType::CG;
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
   SLESolverConfigFinal.maxIterations_ = 1;
   SLESolverConfigFinal.threshold_ = -1.0;
-  SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
   double lambda = 0.000001;
 
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
+  sgpp::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
                                              SLESolverConfigFinal, adaptConfig);
 
   std::string kernelName("StreamingOCLMultiPlatform");
 
-  SGPP::base::OCLOperationConfiguration parameter("skeleton.cfg");
+  sgpp::base::OCLOperationConfiguration parameter("skeleton.cfg");
   //    json::Node &kernelNode =
   //    parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS]"][kernelName];
 
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   //    staticParameterTuner.addFixedParameter("OCL_MANAGER_VERBOSE", "false",
-  //    SGPP::datadriven::ParameterType::ID);
+  //    sgpp::datadriven::ParameterType::ID);
   //    staticParameterTuner.addFixedParameter("VERBOSE", "false",
-  //    SGPP::datadriven::ParameterType::ID);
+  //    sgpp::datadriven::ParameterType::ID);
   //    staticParameterTuner.addFixedParameter("PLATFORM", "NVIDIA CUDA",
-  //    SGPP::datadriven::ParameterType::TEXT);
+  //    sgpp::datadriven::ParameterType::TEXT);
   //    staticParameterTuner.addFixedParameter("INTERNAL_PRECISION", "float",
-  //    SGPP::datadriven::ParameterType::TEXT);
+  //    sgpp::datadriven::ParameterType::TEXT);
 
   staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"false"});        // , "true"
   staticParameterTuner.addParameter("KERNEL_DATA_BLOCK_SIZE", {"1", "4"});        // , "2", "4", "8"
@@ -78,10 +78,10 @@ int main(int argc, char** argv) {
 
   //    staticParameterTuner.writeToFile("testOut.tuner");
   //
-  //    SGPP::datadriven::StaticParameterTuner
+  //    sgpp::datadriven::StaticParameterTuner
   //    readStaticParameterTuner("testOut.tuner");
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   //    json::Node &kernelNode =

@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -61,7 +61,7 @@ void MultiStart::optimize() {
   // generate pseudorandom starting points
   for (size_t k = 0; k < populationSize; k++) {
     roundN[k] = static_cast<size_t>(
-        std::ceil(static_cast<float_t>(remainingN) / static_cast<float_t>(populationSize - k)));
+        std::ceil(static_cast<double>(remainingN) / static_cast<double>(populationSize - k)));
     remainingN -= roundN[k];
 
     for (size_t t = 0; t < d; t++) {
@@ -86,7 +86,7 @@ void MultiStart::optimize() {
   #endif ** _OPENMP **
 
     base::DataVector curXOpt(d);
-    float_t curFOpt;
+    double curFOpt;
 
     #pragma omp for ordered schedule(dynamic)
 
@@ -112,8 +112,8 @@ void MultiStart::optimize() {
       {
         char str[10];
         snprintf(str, 10, "%.1f%%",
-                 static_cast<float_t>(k) /
-                 static_cast<float_t>(populationSize) * 100.0);
+                 static_cast<double>(k) /
+                 static_cast<double>(populationSize) * 100.0);
         Printer::getInstance().getMutex().lock();
         Printer::getInstance().enableStatusPrinting();
         Printer::getInstance().printStatusUpdate(std::string(str) +
@@ -127,7 +127,7 @@ void MultiStart::optimize() {
   Printer::getInstance().enableStatusPrinting();*/
 
   base::DataVector xCurrentOpt(d);
-  float_t fCurrentOpt = INFINITY;
+  double fCurrentOpt = INFINITY;
 
   // temporarily save x0 and N (will be overwritten by the loop)
   const base::DataVector tmpX0(optimizer.getStartingPoint());
@@ -152,7 +152,7 @@ void MultiStart::optimize() {
 #endif /* _OPENMP */
 
     base::DataVector xLocalOpt(d);
-    float_t fLocalOpt;
+    double fLocalOpt;
 
 #pragma omp for ordered schedule(dynamic)
 
@@ -179,7 +179,7 @@ void MultiStart::optimize() {
       {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
-                 static_cast<float_t>(k) / static_cast<float_t>(populationSize) * 100.0);
+                 static_cast<double>(k) / static_cast<double>(populationSize) * 100.0);
         Printer::getInstance().getMutex().lock();
         Printer::getInstance().enableStatusPrinting();
         Printer::getInstance().printStatusUpdate(std::string(str) + ", f(x) = " +
@@ -221,4 +221,4 @@ void MultiStart::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

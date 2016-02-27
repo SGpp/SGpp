@@ -13,7 +13,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -44,7 +44,7 @@ class OperationNaiveEvalHessianModWavelet : public OperationNaiveEvalHessian {
    * @param[out]  hessian     Hessian matrix of linear combination
    * @return                  value of linear combination
    */
-  float_t evalHessian(const DataVector& alpha,
+  double evalHessian(const DataVector& alpha,
                       const DataVector& point,
                       DataVector& gradient,
                       DataMatrix& hessian) override;
@@ -57,6 +57,6 @@ class OperationNaiveEvalHessianModWavelet : public OperationNaiveEvalHessian {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALHESSIANMODWAVELET_HPP */

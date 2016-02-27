@@ -26,7 +26,7 @@ please see \ref installation.
 
 @section code_examples_quadrature_python Python
 
-First, the example in Python. The function, which @link SGPP::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has one parameter, a sequence (C++ provides a tuple) with the coordinates of the grid point @f$\in[0,1]^d@f$.
+First, the example in Python. The function, which @link sgpp::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has one parameter, a sequence (C++ provides a tuple) with the coordinates of the grid point @f$\in[0,1]^d@f$.
 
 @include python_simple_quadrature.py
 
@@ -38,7 +38,7 @@ This results in an output similar to
 @section code_examples_quadrature_cpp C++
 
 Now, the very same in C++.
-The function, which @link SGPP::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has three parameters. First, the dimensionality (int), then a double* with the coordinates of the grid point @f$\in[0,1]^d@f$, and finally a void* with clientdata for the function, see @ref SGPP::base::FUNC .
+The function, which @link sgpp::base::OperationQuadratureMC OperationQuadratureMC() @endlink takes, has three parameters. First, the dimensionality (int), then a double* with the coordinates of the grid point @f$\in[0,1]^d@f$, and finally a void* with clientdata for the function, see @ref sgpp::base::FUNC .
 
 @include quadrature.cpp
 

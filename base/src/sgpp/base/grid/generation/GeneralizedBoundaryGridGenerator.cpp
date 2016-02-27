@@ -11,7 +11,7 @@
 #include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GeneralizedBoundaryGridGenerator::GeneralizedBoundaryGridGenerator(
@@ -78,5 +78,5 @@ void GeneralizedBoundaryGridGenerator::truncated(size_t level, size_t l_user) {
 // }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

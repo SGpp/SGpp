@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -40,7 +40,7 @@ class ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t eval(const base::DataVector& x) = 0;
+  virtual double eval(const base::DataVector& x) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain
@@ -62,6 +62,6 @@ class ScalarFunction {
   size_t d;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARFUNCTION_HPP */

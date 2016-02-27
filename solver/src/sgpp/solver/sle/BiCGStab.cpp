@@ -8,17 +8,17 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-BiCGStab::BiCGStab(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {}
+BiCGStab::BiCGStab(size_t imax, double epsilon) : SLESolver(imax, epsilon) {}
 
 BiCGStab::~BiCGStab() {}
 
-void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
-                     SGPP::base::DataVector& b, bool reuse, bool verbose, float_t max_threshold) {
+void BiCGStab::solve(sgpp::base::OperationMatrix& SystemMatrix, sgpp::base::DataVector& alpha,
+                     sgpp::base::DataVector& b, bool reuse, bool verbose, double max_threshold) {
   this->nIterations = 1;
-  float_t epsilonSqd = this->myEpsilon * this->myEpsilon;
+  double epsilonSqd = this->myEpsilon * this->myEpsilon;
 
   if (reuse == false) {
     // Choose x0
@@ -26,32 +26,32 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::Data
   }
 
   // Calculate r0
-  SGPP::base::DataVector r(alpha.getSize());
+  sgpp::base::DataVector r(alpha.getSize());
   SystemMatrix.mult(alpha, r);
   r.sub(b);
 
-  float_t delta_0 = r.dotProduct(r) * epsilonSqd;
-  float_t delta = 0.0;
+  double delta_0 = r.dotProduct(r) * epsilonSqd;
+  double delta = 0.0;
 
   if (verbose == true) {
     std::cout << "delta_0 " << delta_0 << std::endl;
   }
 
   // Choose r0 as r
-  SGPP::base::DataVector rZero(r);
+  sgpp::base::DataVector rZero(r);
   // Set p as r0
-  SGPP::base::DataVector p(rZero);
+  sgpp::base::DataVector p(rZero);
 
-  float_t rho = rZero.dotProduct(r);
-  float_t rho_new = 0.0;
-  float_t sigma = 0.0;
-  float_t a = 0.0;
-  float_t omega = 0.0;
-  float_t beta = 0.0;
+  double rho = rZero.dotProduct(r);
+  double rho_new = 0.0;
+  double sigma = 0.0;
+  double a = 0.0;
+  double omega = 0.0;
+  double beta = 0.0;
 
-  SGPP::base::DataVector s(alpha.getSize());
-  SGPP::base::DataVector v(alpha.getSize());
-  SGPP::base::DataVector w(alpha.getSize());
+  sgpp::base::DataVector s(alpha.getSize());
+  sgpp::base::DataVector v(alpha.getSize());
+  sgpp::base::DataVector w(alpha.getSize());
 
   s.setAll(0.0);
   v.setAll(0.0);
@@ -120,4 +120,4 @@ void BiCGStab::solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::Data
 }
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

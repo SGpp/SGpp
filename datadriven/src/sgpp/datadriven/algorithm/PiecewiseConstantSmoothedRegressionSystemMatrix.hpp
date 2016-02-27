@@ -14,7 +14,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -23,19 +23,19 @@ namespace datadriven {
  * density function
  */
 class PiecewiseConstantSmoothedRegressionSystemMatrix: public
-  SGPP::base::OperationMatrix {
+  sgpp::base::OperationMatrix {
  private:
-  SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor;
-  SGPP::base::Grid& grid;
+  sgpp::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor;
+  sgpp::base::Grid& grid;
   /// the lambda, the regularisation parameter
-  float_t lambda;
+  double lambda;
   /// Operation A for calculating the data matrix
   /// (L2 Dot-Product of basis functions)
-  SGPP::base::OperationMatrix* A;
+  sgpp::base::OperationMatrix* A;
   /// OperationB for calculating the data matrix
-  //        SGPP::base::OperationMultipleEval* B;
+  //        sgpp::base::OperationMultipleEval* B;
   /// OperationMatrix, the regularisation method
-  SGPP::base::OperationMatrix* C;
+  sgpp::base::OperationMatrix* C;
 
  public:
   /**
@@ -47,9 +47,9 @@ class PiecewiseConstantSmoothedRegressionSystemMatrix: public
    * @param lambdaRegression the regression parameter
    */
   PiecewiseConstantSmoothedRegressionSystemMatrix(
-    SGPP::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
-    SGPP::base::Grid& grid,
-    SGPP::base::OperationMatrix& C, float_t lambdaRegression);
+    sgpp::datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
+    sgpp::base::Grid& grid,
+    sgpp::base::OperationMatrix& C, double lambdaRegression);
 
   /**
    * Generates the left hand side of the classification equation
@@ -57,7 +57,7 @@ class PiecewiseConstantSmoothedRegressionSystemMatrix: public
    * @param alpha parameters for the sparse grid functions
    * @param result reference to the vector which will contain the result
    */
-  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   /**
    * Generates the right hand side of the classification equation
@@ -65,7 +65,7 @@ class PiecewiseConstantSmoothedRegressionSystemMatrix: public
    * @param b reference to the vector which will contain the result of the
    * matrix vector multiplication on the rhs
    */
-  void generateb(SGPP::base::DataVector& b);
+  void generateb(sgpp::base::DataVector& b);
 
   /**
    * Std-Destructor
@@ -74,5 +74,5 @@ class PiecewiseConstantSmoothedRegressionSystemMatrix: public
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

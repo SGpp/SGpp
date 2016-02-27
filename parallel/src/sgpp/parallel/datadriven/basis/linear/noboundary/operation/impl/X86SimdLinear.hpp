@@ -10,20 +10,19 @@
 
 #include <sgpp/globaldef.hpp>
 #include <algorithm>
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class X86SimdLinear : public X86SimdKernelBase {
  public:
   static const KernelType kernelType = Standard;
-  static inline void multImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                              SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
-                              SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
-                              SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result, const size_t start_index_grid,
+  static inline void multImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                              sgpp::base::DataMatrix* /*mask*/,    // unused for this specialization
+                              sgpp::base::DataMatrix* /*offset*/,  // unused for this specialization
+                              sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                              sgpp::base::DataVector& result, const size_t start_index_grid,
                               const size_t end_index_grid, const size_t start_index_data,
                               const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
     double* ptrAlpha = alpha.getPointer();
@@ -267,22 +266,15 @@ class X86SimdLinear : public X86SimdKernelBase {
 #endif
       }
     }
-
-#else  /* USE_DOUBLE_PRECISION */
-    throw std::logic_error(
-        "Not implemented when compiling with single "
-        "precision support, use SPX86SimdLinear instead.");
-#endif /* USE_DOUBLE_PRECISION */
   }
 
   static inline void multTransposeImpl(
-      SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-      SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
-      SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
-      SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-      SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+      sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+      sgpp::base::DataMatrix* /*mask*/,    // unused for this specialization
+      sgpp::base::DataMatrix* /*offset*/,  // unused for this specialization
+      sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+      sgpp::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
       const size_t start_index_data, const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
     double* ptrSource = source.getPointer();
@@ -505,26 +497,19 @@ class X86SimdLinear : public X86SimdKernelBase {
 
 #endif
     }
-
-#else  /* USE_DOUBLE_PRECISION */
-    throw std::logic_error(
-        "Not implemented when compiling with single "
-        "precision support, use SPX86SimdLinear instead.");
-#endif /* USE_DOUBLE_PRECISION */
   }
 };
 
 class X86SimdLinear1 : public X86SimdKernelBase1 {
  public:
   static const KernelType kernelType = Standard;
-  static inline void multImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                              SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
-                              SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
-                              SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result, const size_t start_index_grid,
+  static inline void multImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                              sgpp::base::DataMatrix* /*mask*/,    // unused for this specialization
+                              sgpp::base::DataMatrix* /*offset*/,  // unused for this specialization
+                              sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                              sgpp::base::DataVector& result, const size_t start_index_grid,
                               const size_t end_index_grid, const size_t start_index_data,
                               const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
     double* ptrAlpha = alpha.getPointer();
@@ -566,22 +551,15 @@ class X86SimdLinear1 : public X86SimdKernelBase1 {
         }
       }
     }
-
-#else  /* USE_DOUBLE_PRECISION */
-    throw std::logic_error(
-        "Not implemented when compiling with single "
-        "precision support, use SPX86SimdLinear instead.");
-#endif /* USE_DOUBLE_PRECISION */
   }
 
   static inline void multTransposeImpl(
-      SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-      SGPP::base::DataMatrix* /*mask*/,    // unused for this specialization
-      SGPP::base::DataMatrix* /*offset*/,  // unused for this specialization
-      SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-      SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+      sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+      sgpp::base::DataMatrix* /*mask*/,    // unused for this specialization
+      sgpp::base::DataMatrix* /*offset*/,  // unused for this specialization
+      sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+      sgpp::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
       const size_t start_index_data, const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION
     double* ptrLevel = level->getPointer();
     double* ptrIndex = index->getPointer();
     double* ptrSource = source.getPointer();
@@ -614,15 +592,9 @@ class X86SimdLinear1 : public X86SimdKernelBase1 {
         }
       }
     }
-
-#else  /* USE_DOUBLE_PRECISION */
-    throw std::logic_error(
-        "Not implemented when compiling with single "
-        "precision support, use SPX86SimdLinear instead.");
-#endif /* USE_DOUBLE_PRECISION */
   }
 };
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 #endif  // X86SIMDLINEAR_HPP

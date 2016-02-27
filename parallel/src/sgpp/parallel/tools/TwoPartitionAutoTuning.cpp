@@ -12,7 +12,7 @@
 
 #define INITIAL_SPEEDUP_PARTITION_2 20.0;
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 TwoPartitionAutoTuning::TwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider,
@@ -87,4 +87,4 @@ void TwoPartitionAutoTuning::resetAutoTuning() {
 
 size_t TwoPartitionAutoTuning::getPartition1Size() { return _sizePartition1; }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

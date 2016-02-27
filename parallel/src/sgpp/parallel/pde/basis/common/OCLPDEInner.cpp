@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 cl_kernel ReduceInnerKernel[NUMDEVS];
@@ -212,7 +212,7 @@ std::string InnerLTwoDotFunction() {
 }
 
 void SetBuffersInner(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t localStorageSize,
-                     size_t localdim, SGPP::base::GridStorage* storage) {
+                     size_t localdim, sgpp::base::GridStorage* storage) {
   padding_size = num_devices * LSIZE;
 
   storageSize = localStorageSize;
@@ -432,7 +432,7 @@ void SetUpMPIInner() {
   size_t minimum_size = num_devices * LSIZE;
   size_t data_size = storageSizePadded;
 
-  SGPP::parallel::PartitioningTool::calcDistribution(data_size, nproz, MPISizeListInner,
+  sgpp::parallel::PartitioningTool::calcDistribution(data_size, nproz, MPISizeListInner,
                                                      MPIOffsetListInner, minimum_size);
 
   if (myrank == 0) {
@@ -445,10 +445,10 @@ void SetUpMPIInner() {
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
-  MPICommunicator = new SGPP::parallel::MPICommunicator(myrank, nproz2);
+  MPICommunicator = new sgpp::parallel::MPICommunicator(myrank, nproz2);
 }
 
-void MPI_CombineResultInner(SGPP::base::DataVector& result) {
+void MPI_CombineResultInner(sgpp::base::DataVector& result) {
   MPICommunicator->reduceGridCoefficients(result);
   //  double * ptrResult = result.getPointer();
   //  MPI_Allreduce(MPI_IN_PLACE, ptrResult,

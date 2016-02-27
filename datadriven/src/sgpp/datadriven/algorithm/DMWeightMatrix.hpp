@@ -14,46 +14,46 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
  * Class that implements the virtual class OperationMatrix for the
  * application of classification for the Systemmatrix with weight
  */
-class DMWeightMatrix : public SGPP::base::OperationMatrix {
+class DMWeightMatrix : public sgpp::base::OperationMatrix {
  private:
   /// the lambda, the regularisation parameter
-  float_t lamb;
-  /// SGPP::base::OperationMatrix, the regularisation mehtod
-  SGPP::base::OperationMatrix* C;
+  double lamb;
+  /// sgpp::base::OperationMatrix, the regularisation mehtod
+  sgpp::base::OperationMatrix* C;
   /// OperationB for calculating the data matrix
-  SGPP::base::OperationMultipleEval* B;
+  sgpp::base::OperationMultipleEval* B;
   /// Pointer to the data vector
-  SGPP::base::DataMatrix* data;
+  sgpp::base::DataMatrix* data;
   /// Pointer to the weight vector
-  SGPP::base::DataVector* weight;
+  sgpp::base::DataVector* weight;
 
  public:
   /**
    * Std-Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param trainData reference to SGPP::base::DataVector that contains the training data
+   * @param trainData reference to sgpp::base::DataVector that contains the training data
    * @param C the regression functional
    * @param lambda the lambda, the regression parameter
    * @param w the weights to the training data
    */
-  DMWeightMatrix(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData,
-                 SGPP::base::OperationMatrix& C, float_t lambda, SGPP::base::DataVector& w);
+  DMWeightMatrix(sgpp::base::Grid& SparseGrid, sgpp::base::DataMatrix& trainData,
+                 sgpp::base::OperationMatrix& C, double lambda, sgpp::base::DataVector& w);
 
   /**
    * Std-Destructor
    */
   virtual ~DMWeightMatrix();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha,
+                    sgpp::base::DataVector& result);
 
   /**
    * Generates the right hand side of the classification equation
@@ -61,11 +61,11 @@ class DMWeightMatrix : public SGPP::base::OperationMatrix {
    * @param classes the class information of the training data
    * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
    */
-  void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
+  void generateb(sgpp::base::DataVector& classes, sgpp::base::DataVector& b);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DMWEIGHTMATRIX_HPP */
 

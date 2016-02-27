@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -19,7 +19,7 @@ namespace parallel {
  * solving parabolic PDEs. It allows for applying both, the mass and stiffness
  * matrix in one mult-call.
  */
-class OperationParabolicPDEMatrixCombined : public SGPP::base::OperationMatrix {
+class OperationParabolicPDEMatrixCombined : public sgpp::base::OperationMatrix {
  protected:
   /// storing the current timestep coefficient
   double TimestepCoeff;
@@ -52,6 +52,6 @@ class OperationParabolicPDEMatrixCombined : public SGPP::base::OperationMatrix {
   double getTimestepCoeff() { return this->TimestepCoeff; }
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONPARABOLICPDEMATRIXCOMBINED_HPP */

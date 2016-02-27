@@ -12,7 +12,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -33,16 +33,16 @@ class WaveletBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of boundary wavelet basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
-    const float_t hinv = static_cast<float_t>(1 << l);
-    const float_t t = x * hinv - static_cast<float_t>(i);
+  inline double eval(LT l, IT i, double x) override {
+    const double hinv = static_cast<double>(1 << l);
+    const double t = x * hinv - static_cast<double>(i);
 
     if ((t >= 2.0) || (t <= -2.0)) {
       // out of support (cut-off)
       return 0.0;
     }
 
-    const float_t t2 = t * t;
+    const double t2 = t * t;
     return (1.0 - t2) * std::exp(-t2);
   }
 
@@ -52,16 +52,16 @@ class WaveletBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of boundary wavelet basis function
    */
-  inline float_t evalDx(LT l, IT i, float_t x) {
-    const float_t hinv = static_cast<float_t>(1 << l);
-    const float_t t = x * hinv - static_cast<float_t>(i);
+  inline double evalDx(LT l, IT i, double x) {
+    const double hinv = static_cast<double>(1 << l);
+    const double t = x * hinv - static_cast<double>(i);
 
     if ((t >= 2.0) || (t <= -2.0)) {
       // out of support (cut-off)
       return 0.0;
     }
 
-    const float_t t2 = t * t;
+    const double t2 = t * t;
     return 2.0 * t * (t2 - 2.0) * std::exp(-t2) * hinv;
   }
 
@@ -71,16 +71,16 @@ class WaveletBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of 2nd derivative of boundary wavelet basis function
    */
-  inline float_t evalDxDx(LT l, IT i, float_t x) {
-    const float_t hinv = static_cast<float_t>(1 << l);
-    const float_t t = x * hinv - static_cast<float_t>(i);
+  inline double evalDxDx(LT l, IT i, double x) {
+    const double hinv = static_cast<double>(1 << l);
+    const double t = x * hinv - static_cast<double>(i);
 
     if ((t >= 2.0) || (t <= -2.0)) {
       // out of support (cut-off)
       return 0.0;
     }
 
-    const float_t t2 = t * t;
+    const double t2 = t * t;
     return -2.0 * (2.0 * t2 * t2 - 7.0 * t2 + 2.0) *
            std::exp(-t2) * hinv * hinv;
   }
@@ -90,6 +90,6 @@ class WaveletBoundaryBasis: public Basis<LT, IT> {
 typedef WaveletBoundaryBasis<unsigned int, unsigned int> SWaveletBoundaryBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* WAVELET_BOUNDARY_BASE_HPP */

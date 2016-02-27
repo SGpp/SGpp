@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationMultipleEvalModPoly::mult(DataVector& alpha, DataVector& result) {
@@ -30,4 +30,4 @@ void OperationMultipleEvalModPoly::multTranspose(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

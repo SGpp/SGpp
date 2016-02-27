@@ -9,12 +9,12 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "OperationMultiEvalAdaptiveOCL.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval *createAdaptiveOCLConfigured(
     base::Grid &grid, base::DataMatrix &dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration &configuration) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration &configuration) {
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
   if (configuration.getParameters().operator bool()) {
@@ -109,4 +109,4 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(
    }*/
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

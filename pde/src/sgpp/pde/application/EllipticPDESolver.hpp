@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -41,10 +41,10 @@ class EllipticPDESolver : public PDESolver {
    * @param epsilonCG the epsilon used in the CG
    * @param verbose enables verbose output during solving
    */
-  virtual void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs,
-                        size_t maxCGIterations, float_t epsilonCG, bool verbose = false) = 0;
+  virtual void solvePDE(sgpp::base::DataVector& alpha, sgpp::base::DataVector& rhs,
+                        size_t maxCGIterations, double epsilonCG, bool verbose = false) = 0;
 };
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ELLIPTICPDESOLVER_HPP */

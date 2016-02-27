@@ -13,12 +13,12 @@
 #include <vector>
 
 void createSupportedGrids(size_t d, size_t p,
-                          std::vector<std::unique_ptr<SGPP::base::Grid>>& grids);
+                          std::vector<std::unique_ptr<sgpp::base::Grid>>& grids);
 
-void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::ScalarFunction& f,
-                      SGPP::base::DataVector& functionValues);
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::ScalarFunction& f,
+                      sgpp::base::DataVector& functionValues);
 
-void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::VectorFunction& f,
-                      SGPP::base::DataMatrix& functionValues);
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::VectorFunction& f,
+                      sgpp::base::DataMatrix& functionValues);
 
 #endif /* GRID_CREATOR_HPP */

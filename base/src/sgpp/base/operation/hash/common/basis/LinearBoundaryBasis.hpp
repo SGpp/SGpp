@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -34,7 +34,7 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of boundary linear basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
+  inline double eval(LT l, IT i, double x) override {
     if (l == 0) {
       // first level
       if (i == 0) {
@@ -43,9 +43,9 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
         return x;
       }
     } else {
-      return std::max(1.0 - std::abs(static_cast<float_t>(static_cast<IT>
+      return std::max(1.0 - std::abs(static_cast<double>(static_cast<IT>
                                      (1) << l) * x -
-                                     static_cast<float_t>(i)), 0.0);
+                                     static_cast<double>(i)), 0.0);
     }
   }
 
@@ -58,7 +58,7 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
    * @param q     scaling factor of basis function
    * @param t     offset of basis function
    */
-  inline virtual float_t eval(LT l, IT i, float_t x, float_t q, float_t t) {
+  inline virtual double eval(LT l, IT i, double x, double q, double t) {
     return eval(l, i, (x - t) / q);
   }
 };
@@ -67,6 +67,6 @@ class LinearBoundaryBasis: public Basis<LT, IT> {
 typedef LinearBoundaryBasis<unsigned int, unsigned int> SLinearBoundaryBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEAR_BOUNDARY_BASE_HPP */

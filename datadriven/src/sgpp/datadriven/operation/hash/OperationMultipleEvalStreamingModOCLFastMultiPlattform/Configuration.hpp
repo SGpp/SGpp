@@ -10,7 +10,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingModOCLFastMultiPlatform {
 
@@ -24,7 +24,7 @@ class Configuration {
     return kernelName;
   }
 
-  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     // setup verbose variable for the operation
     if (parameters.contains("VERBOSE") == false) {
       parameters.addIDAttr("VERBOSE", false);
@@ -102,4 +102,4 @@ class Configuration {
 };
 }  // namespace StreamingModOCLFastMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

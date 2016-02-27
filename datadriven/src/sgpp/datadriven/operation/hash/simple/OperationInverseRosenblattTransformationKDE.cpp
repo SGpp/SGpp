@@ -28,13 +28,13 @@
 
 // #define DEBUG_INVERSE_ROSENBLATT
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 // ----------------------------------------------------------------------------
 
 OperationInverseRosenblattTransformationKDE::OperationInverseRosenblattTransformationKDE(
-    GaussianKDE& kde, float_t sigmaFactor, float_t inversionEpsilon)
+    GaussianKDE& kde, double sigmaFactor, double inversionEpsilon)
     : kde(&kde),
       bandwidths(kde.getDim()),
       xlimits(2, kde.getDim()),
@@ -55,11 +55,11 @@ OperationInverseRosenblattTransformationKDE::~OperationInverseRosenblattTransfor
 
 // ----------------------------------------------------------------------------
 
-float_t OperationInverseRosenblattTransformationKDE::getMaxInversionError() {
+double OperationInverseRosenblattTransformationKDE::getMaxInversionError() {
   return inversionEpsilon;
 }
 
-void OperationInverseRosenblattTransformationKDE::recalcLimits(float_t sigmaFactor) {
+void OperationInverseRosenblattTransformationKDE::recalcLimits(double sigmaFactor) {
   base::DataVector* samples1d = nullptr;
 
   xlimits.resize(2, ndim);
@@ -111,7 +111,7 @@ void OperationInverseRosenblattTransformationKDE::doTransformation(base::DataMat
   base::DataVector kern(nsamples);
   base::DataVector* samples1d = nullptr;
 
-  float_t xi = 0;
+  double xi = 0;
 
   for (size_t idata = 0; idata < pointsUniform.getNrows(); idata++) {
     kern.setAll(1.0);
@@ -148,7 +148,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
   base::DataVector kern(nsamples);
   base::DataVector* samples1d = nullptr;
 
-  float_t xi = 0;
+  double xi = 0;
 
   std::vector<size_t> dims(ndim);
 
@@ -228,7 +228,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //    op_dim = (op_dim + 1) % g_out->getDimension();
 //
 //    /* Step 2: draw a sample in next dim */
-//    float_t x = 0;
+//    double x = 0;
 //    if (g_out->getDimension() > 1) {
 //
 //        // Marginalize to next dimension
@@ -263,9 +263,9 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //    return;
 //}
 
-float_t OperationInverseRosenblattTransformationKDE::doTransformation1D(
-    float_t coord1d, base::DataVector& samples1d, float_t sigma, float_t xlower, float_t xupper,
-    float_t ylower, float_t yupper, base::DataVector& kern) {
+double OperationInverseRosenblattTransformationKDE::doTransformation1D(
+    double coord1d, base::DataVector& samples1d, double sigma, double xlower, double xupper,
+    double ylower, double yupper, base::DataVector& kern) {
   // Cure against extremes
   if (coord1d <= ylower) {
     return xlower;
@@ -279,23 +279,23 @@ float_t OperationInverseRosenblattTransformationKDE::doTransformation1D(
   size_t nsamples = kern.getSize();
 
   // Build denominator
-  float_t denom = 0.0;
+  double denom = 0.0;
 
   for (size_t isamples = 0; isamples < nsamples; isamples++) {
     denom += kern[isamples];
   }
 
   // stores the result
-  float_t xres = 0.;
+  double xres = 0.;
 
   // apply bisection method to obtain a starting posize_t for newton's method
-  float_t xerr = 0.0;
-  float_t xacc = 1e-1;
+  double xerr = 0.0;
+  double xacc = 1e-1;
 
-  float_t xBisection = 0.0;
+  double xBisection = 0.0;
   xerr = bisection(coord1d, xBisection, xlower, xupper, samples1d, sigma, kern, denom, xacc);
   // use this as starting point for next solver
-  float_t xNext = xBisection;
+  double xNext = xBisection;
 
   // use this as starting point for next solver (newton) with higher accuracy
   xerr = newton(coord1d, xNext, samples1d, sigma, kern, denom, inversionEpsilon);
@@ -319,19 +319,19 @@ float_t OperationInverseRosenblattTransformationKDE::doTransformation1D(
   return xres;
 }  // end of compute_1D_cdf()
 
-float_t OperationInverseRosenblattTransformationKDE::bisection(
-    float_t y, float_t& x, float_t& xlower, float_t& xupper, base::DataVector& samples1d,
-    float_t sigma, base::DataVector& kern, float_t denom, float_t xacc, size_t maxIterations) {
+double OperationInverseRosenblattTransformationKDE::bisection(
+    double y, double& x, double& xlower, double& xupper, base::DataVector& samples1d,
+    double sigma, base::DataVector& kern, double denom, double xacc, size_t maxIterations) {
   // iteration counter
   size_t ii = 0;
   size_t ns = samples1d.getSize();
 
   // use Bisection as starting posize_t for newton's method
   // Bisection looks in the size_terval [x1,x2]
-  float_t cdfNormal = 0.0;
-  float_t cdfConditionalized = 0.0;
-  float_t xi = 0.0;
-  float_t xerr = 0.;
+  double cdfNormal = 0.0;
+  double cdfConditionalized = 0.0;
+  double xi = 0.0;
+  double xerr = 0.;
 
   // Bisection loop = search zeros in order to invert CDF = erf
   do {
@@ -376,28 +376,28 @@ float_t OperationInverseRosenblattTransformationKDE::bisection(
   return xerr;
 }
 
-float_t OperationInverseRosenblattTransformationKDE::newton(float_t y, float_t& x,
+double OperationInverseRosenblattTransformationKDE::newton(double y, double& x,
                                                             base::DataVector& samples1d,
-                                                            float_t sigma, base::DataVector& kern,
-                                                            float_t denom, float_t xacc,
+                                                            double sigma, base::DataVector& kern,
+                                                            double denom, double xacc,
                                                             size_t maxIterations) {
   // newton method
   size_t ii = 0;
   size_t ns = samples1d.getSize();
 
   // helper variables
-  float_t cdfNormal = 0.0;
-  float_t pdfNormal = 0.;
+  double cdfNormal = 0.0;
+  double pdfNormal = 0.;
 
   // conditionalized cdf function value
-  float_t fx = 0.0;
+  double fx = 0.0;
   // conditionalized pdf function value = derivative of cdf
-  float_t fdx = 0.0;
+  double fdx = 0.0;
   // normalized normal
-  float_t xi = 0.0;
+  double xi = 0.0;
   // stores old x value and current error
-  float_t xold = 0;
-  float_t xerr = 0.0;
+  double xold = 0;
+  double xerr = 0.0;
 
   do {
     // store old x-value
@@ -440,31 +440,31 @@ float_t OperationInverseRosenblattTransformationKDE::newton(float_t y, float_t& 
   return xerr;
 }
 
-float_t OperationInverseRosenblattTransformationKDE::halley(float_t y, float_t& x,
+double OperationInverseRosenblattTransformationKDE::halley(double y, double& x,
                                                             base::DataVector& samples1d,
-                                                            float_t sigma, base::DataVector& kern,
-                                                            float_t denom, float_t xacc,
+                                                            double sigma, base::DataVector& kern,
+                                                            double denom, double xacc,
                                                             size_t maxIterations) {
   size_t ii = 0;
   size_t ns = samples1d.getSize();
 
-  float_t cdfNormal = 0.0;
-  float_t pdfNormal = 0.;
-  float_t derivativePdfNormal = 0;
+  double cdfNormal = 0.0;
+  double pdfNormal = 0.;
+  double derivativePdfNormal = 0;
 
   // conditionalized cdf function value
-  float_t fx = 0.0;
+  double fx = 0.0;
   // conditionalized pdf function value = derivative of cdf
-  float_t fdx = 0.0;
+  double fdx = 0.0;
   // conditionalized derivative of pdf function value
-  float_t fddx = 0.0;
+  double fddx = 0.0;
 
   // normalized normal
-  float_t xi = 0.0;
+  double xi = 0.0;
 
   // stores old x value and current error
-  float_t xold = 0;
-  float_t xerr = 0.0;
+  double xold = 0;
+  double xerr = 0.0;
 
   do {
     // store old x-value
@@ -515,4 +515,4 @@ float_t OperationInverseRosenblattTransformationKDE::halley(float_t y, float_t& 
   return xerr;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

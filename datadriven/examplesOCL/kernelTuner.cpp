@@ -62,11 +62,11 @@ int main(int argc, char **argv) {
   }
   parameterConfigurationFile.close();
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
 
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
 
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"true", "false"});
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
   //  staticParameterTuner.setupReferenceValues(referenceDataset, referenceValues, expectedMSE,
   //                                            expectedLargestDifference);
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);

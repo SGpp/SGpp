@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -46,6 +46,6 @@ class OperationMultipleEvalLinearBoundary : public OperationMultipleEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALLINEARBOUNDARY_HPP */

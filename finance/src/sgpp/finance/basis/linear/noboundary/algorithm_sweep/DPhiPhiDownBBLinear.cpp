@@ -7,27 +7,27 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
-DPhiPhiDownBBLinear::DPhiPhiDownBBLinear(SGPP::base::GridStorage* storage)
+DPhiPhiDownBBLinear::DPhiPhiDownBBLinear(sgpp::base::GridStorage* storage)
     : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
 DPhiPhiDownBBLinear::~DPhiPhiDownBBLinear() {}
 
-void DPhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+void DPhiPhiDownBBLinear::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                                      grid_iterator& index, size_t dim) {
   rec(source, result, index, dim, 0.0, 0.0);
 }
 
-void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                              grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+void DPhiPhiDownBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                              grid_iterator& index, size_t dim, double fl, double fr) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
@@ -35,7 +35,7 @@ void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVe
   result[seq] = (0.5 * (fr - fl));  // diagonal entry = 0.0
 
   // dehierarchisation
-  float_t fm = ((fl + fr) / 2.0) + alpha_value;
+  double fm = ((fl + fr) / 2.0) + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -55,4 +55,4 @@ void DPhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVe
 }
 
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

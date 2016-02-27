@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -25,13 +25,13 @@ class OperationRegularizationDiagonalLinearBoundary : public OperationRegulariza
    * Initialize Hkmix
    * @param k Parameter k
    */
-  virtual void initHkmix(float_t k);
+  virtual void initHkmix(double k);
 
   /**
    * Initialize H0HkLaplace
    * @param k Parameter k
    */
-  virtual void initH0HkLaplace(float_t k);
+  virtual void initH0HkLaplace(double k);
 
  public:
   /**
@@ -41,11 +41,11 @@ class OperationRegularizationDiagonalLinearBoundary : public OperationRegulariza
    * OperationRegularizationDiagonal::HKMIX.
    * @param k Parameter for @f$H^k@f$
    */
-  OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, float_t k);
+  OperationRegularizationDiagonalLinearBoundary(base::GridStorage* storage, int mode, double k);
   //      : OperationRegularizationDiagonal(storage, mode, k) {
   //      init();
   //    };
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONREGULARIZATIONDIAGONALLINEARBOUNDARY_HPP */

@@ -55,9 +55,7 @@
 #include <cstring>
 #include <limits>
 
-#if USE_DOUBLE_PRECISION == 0
-
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 
@@ -280,6 +278,4 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
   }
 }
 }  // namespace op_factory
-}  // namespace SGPP
-
-#endif
+}  // namespace sgpp

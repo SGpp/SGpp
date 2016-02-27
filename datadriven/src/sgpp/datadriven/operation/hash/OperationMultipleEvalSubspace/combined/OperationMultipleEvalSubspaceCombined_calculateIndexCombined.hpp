@@ -5,14 +5,11 @@
 
 static inline void calculateIndexCombined(size_t dim,
     size_t nextIterationToRecalc,
-    const SGPP::float_t* const (&dataTuplePtr)[4],
+    const double* const (&dataTuplePtr)[4],
     std::vector<uint32_t>& hInversePtr, uint32_t* (&intermediates)[4],
-    SGPP::float_t* (&evalIndexValues)[4],
+    double* (&evalIndexValues)[4],
     //uint32_t *(&indexPtr)[4],
-    uint32_t (&indexFlat)[4], SGPP::float_t (&phiEval)[4]) {
-#if USE_DOUBLE_PRECISION==0
-  assert(false);
-#else
+    uint32_t (&indexFlat)[4], double (&phiEval)[4]) {
   __m128i oneIntegerReg = _mm_set1_epi32((uint32_t) 1);
 
   union {
@@ -30,11 +27,11 @@ static inline void calculateIndexCombined(size_t dim,
   // evaluate only
   union {
     __m256d doubleRegister;
-    SGPP::float_t doubleValue[4];
+    double doubleValue[4];
   } avxUnion;
 
   int64_t absIMask = 0x7FFFFFFFFFFFFFFF;
-  SGPP::float_t* fabsMask = (SGPP::float_t*) &absIMask;
+  double* fabsMask = (double*) &absIMask;
   __m256d absMask = _mm256_broadcast_sd(fabsMask);
   __m256d one = _mm256_set1_pd(1.0);
   //__m256d zero = _mm256_set1_pd(0.0);
@@ -73,7 +70,7 @@ static inline void calculateIndexCombined(size_t dim,
     // __m256d dataTupleReg = allData[dataVectorIndex];
     // dataVectorIndex += 1;
 
-    __m256d hInverseReg = _mm256_set1_pd((SGPP::float_t) hInversePtr[i]);
+    __m256d hInverseReg = _mm256_set1_pd((double) hInversePtr[i]);
     __m256d unadjustedReg = _mm256_mul_pd(dataTupleReg, hInverseReg);
 
     //implies flooring
@@ -129,20 +126,17 @@ static inline void calculateIndexCombined(size_t dim,
 static inline void calculateIndexCombined2(size_t dim,
     size_t nextIterationToRecalc,
     //rep
-    const SGPP::float_t* const (&dataTuplePtr)[4],
-    const SGPP::float_t* const (&dataTuplePtr2)[4],
+    const double* const (&dataTuplePtr)[4],
+    const double* const (&dataTuplePtr2)[4],
     std::vector<uint32_t>& hInversePtr,
     //rep
     uint32_t * (&intermediates)[4], uint32_t * (&intermediates2)[4],
     //rep
-    SGPP::float_t * (&evalIndexValues)[4], SGPP::float_t * (&evalIndexValues2)[4],
+    double * (&evalIndexValues)[4], double * (&evalIndexValues2)[4],
     //rep
     uint32_t (&indexFlat)[4], uint32_t (&indexFlat2)[4],
     //rep
-    SGPP::float_t (&phiEval)[4], SGPP::float_t (&phiEval2)[4]) {
-#if USE_DOUBLE_PRECISION==0
-  assert(false);
-#else
+    double (&phiEval)[4], double (&phiEval2)[4]) {
   __m128i oneIntegerReg = _mm_set1_epi32((uint32_t) 1);
 
   union {
@@ -164,11 +158,11 @@ static inline void calculateIndexCombined2(size_t dim,
   // evaluate only
   union {
     __m256d doubleRegister;
-    SGPP::float_t doubleValue[4];
+    double doubleValue[4];
   } avxUnion;
 
   int64_t absIMask = 0x7FFFFFFFFFFFFFFF;
-  SGPP::float_t* fabsMask = (SGPP::float_t*) &absIMask;
+  double* fabsMask = (double*) &absIMask;
   __m256d absMask = _mm256_broadcast_sd(fabsMask);
   __m256d one = _mm256_set1_pd(1.0);
   __m256d zero = _mm256_set1_pd(0.0);
@@ -191,7 +185,7 @@ static inline void calculateIndexCombined2(size_t dim,
                                           dataTuplePtr2[1][i],
                                           dataTuplePtr2[0][i]);
 
-    __m256d hInverseReg = _mm256_set1_pd((SGPP::float_t) hInversePtr[i]);
+    __m256d hInverseReg = _mm256_set1_pd((double) hInversePtr[i]);
 
     __m256d unadjustedReg = _mm256_mul_pd(dataTupleReg, hInverseReg);
     __m256d unadjustedReg2 = _mm256_mul_pd(dataTupleReg2, hInverseReg);

@@ -11,7 +11,7 @@
 #include <cstddef>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -107,7 +107,7 @@ class PartitioningTool {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // PARTITIONINGTOOL_HPP
 

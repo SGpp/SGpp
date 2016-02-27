@@ -8,15 +8,15 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-DMSystemMatrixBaseSP::DMSystemMatrixBaseSP(SGPP::base::DataMatrixSP& trainData,
+DMSystemMatrixBaseSP::DMSystemMatrixBaseSP(sgpp::base::DataMatrixSP& trainData,
     float lambda)
   : dataset_(&trainData), lambda_(lambda), completeTimeMult_(0.0),
     computeTimeMult_(0.0),
     completeTimeMultTrans_(0.0), computeTimeMultTrans_(0.0) {
-  myTimer_ = new SGPP::base::SGppStopwatch();
+  myTimer_ = new sgpp::base::SGppStopwatch();
 }
 
 DMSystemMatrixBaseSP::~DMSystemMatrixBaseSP() {
@@ -33,8 +33,8 @@ void DMSystemMatrixBaseSP::resetTimers() {
   computeTimeMultTrans_ = 0.0;
 }
 
-void DMSystemMatrixBaseSP::getTimers(float_t& timeMult, float_t& computeMult,
-                                     float_t& timeMultTrans, float_t& computeMultTrans) {
+void DMSystemMatrixBaseSP::getTimers(double& timeMult, double& computeMult,
+                                     double& timeMultTrans, double& computeMultTrans) {
   timeMult = completeTimeMult_;
   computeMult = computeTimeMult_;
   timeMultTrans = completeTimeMultTrans_;
@@ -42,5 +42,5 @@ void DMSystemMatrixBaseSP::getTimers(float_t& timeMult, float_t& computeMult,
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

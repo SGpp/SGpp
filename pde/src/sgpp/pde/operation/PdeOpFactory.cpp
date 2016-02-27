@@ -32,7 +32,7 @@
 
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 
@@ -63,7 +63,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplace(base::Grid& grid) 
 }
 
 std::unique_ptr<base::OperationMatrix> createOperationLaplace(
-    base::Grid& grid, SGPP::base::DataVector& coef) {
+    base::Grid& grid, sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationLaplaceLinear(&grid.getStorage(), coef));
@@ -147,7 +147,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(base::Grid
 }
 
 std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(
-    base::Grid& grid, SGPP::base::DataVector& coef) {
+    base::Grid& grid, sgpp::base::DataVector& coef) {
   if (grid.getType() == base::GridType::Linear) {
     return std::unique_ptr<base::OperationMatrix>(
         new pde::OperationLaplaceEnhancedLinear(&grid.getStorage(), coef));
@@ -161,4 +161,4 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(
   }
 }
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

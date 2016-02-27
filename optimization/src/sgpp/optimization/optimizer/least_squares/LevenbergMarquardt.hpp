@@ -12,7 +12,7 @@
 #include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -22,13 +22,13 @@ namespace optimizer {
 class LevenbergMarquardt : public LeastSquaresOptimizer {
  public:
   /// default tolerance
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
+  static constexpr double DEFAULT_TOLERANCE = 1e-6;
   /// default initial damping
-  static constexpr float_t DEFAULT_INITIAL_DAMPING = 1.0;
+  static constexpr double DEFAULT_INITIAL_DAMPING = 1.0;
   /// default acceptance threshold
-  static constexpr float_t DEFAULT_ACCEPTANCE_THRESHOLD = 0.3;
+  static constexpr double DEFAULT_ACCEPTANCE_THRESHOLD = 0.3;
   /// default effectiveness threshold
-  static constexpr float_t DEFAULT_EFFECTIVENESS_THRESHOLD = 0.9;
+  static constexpr double DEFAULT_EFFECTIVENESS_THRESHOLD = 0.9;
 
   /**
    * Constructor.
@@ -45,10 +45,10 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    * @param effectivenessThreshold  effectiveness threshold
    */
   LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
-                     size_t maxItCount = DEFAULT_N, float_t tolerance = DEFAULT_TOLERANCE,
-                     float_t initialDamping = DEFAULT_INITIAL_DAMPING,
-                     float_t acceptanceThreshold = DEFAULT_ACCEPTANCE_THRESHOLD,
-                     float_t effectivenessThreshold = DEFAULT_EFFECTIVENESS_THRESHOLD);
+                     size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
+                     double initialDamping = DEFAULT_INITIAL_DAMPING,
+                     double acceptanceThreshold = DEFAULT_ACCEPTANCE_THRESHOLD,
+                     double effectivenessThreshold = DEFAULT_EFFECTIVENESS_THRESHOLD);
 
   /**
    * Constructor.
@@ -66,8 +66,8 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    *                                for solving the linear systems
    */
   LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient, size_t maxItCount,
-                     float_t tolerance, float_t initialDamping, float_t acceptanceThreshold,
-                     float_t effectivenessThreshold, const sle_solver::SLESolver& sleSolver);
+                     double tolerance, double initialDamping, double acceptanceThreshold,
+                     double effectivenessThreshold, const sle_solver::SLESolver& sleSolver);
 
   /**
    * Destructor.
@@ -84,42 +84,42 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
   /**
    * @return tolerance
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance tolerance
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return initial damping
    */
-  float_t getInitialDamping() const;
+  double getInitialDamping() const;
 
   /**
    * @param initialDamping initial damping
    */
-  void setInitialDamping(float_t initialDamping);
+  void setInitialDamping(double initialDamping);
 
   /**
    * @return acceptanceThreshold
    */
-  float_t getAcceptanceThreshold() const;
+  double getAcceptanceThreshold() const;
 
   /**
    * @param acceptanceThreshold acceptance threshold
    */
-  void setAcceptanceThreshold(float_t acceptanceThreshold);
+  void setAcceptanceThreshold(double acceptanceThreshold);
 
   /**
    * @return effectiveness threshold
    */
-  float_t getEffectivenessThreshold() const;
+  double getEffectivenessThreshold() const;
 
   /**
    * @param effectivenessThreshold effectiveness threshold
    */
-  void setEffectivenessThreshold(float_t effectivenessThreshold);
+  void setEffectivenessThreshold(double effectivenessThreshold);
 
   /**
    * @param[out] clone pointer to cloned object
@@ -130,13 +130,13 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
   /// phi gradient
   VectorFunctionGradient& phiGradient;
   /// tolerance
-  float_t tol;
+  double tol;
   /// initial damping
-  float_t mu0;
+  double mu0;
   /// acceptance threshold
-  float_t beta0;
+  double beta0;
   /// effectiveness threshold
-  float_t beta1;
+  double beta1;
   /// default linear solver
   const sle_solver::GaussianElimination defaultSleSolver;
   /// linear solver
@@ -144,6 +144,6 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEVENBERGMARQUARDT_HPP */

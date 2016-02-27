@@ -7,21 +7,21 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 PhidPhiUpBBLinearStretchedBoundary::PhidPhiUpBBLinearStretchedBoundary(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : PhidPhiUpBBLinearStretched(storage) {}
 
 PhidPhiUpBBLinearStretchedBoundary::~PhidPhiUpBBLinearStretchedBoundary() {}
 
-void PhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
-                                                    SGPP::base::DataVector& result,
+void PhidPhiUpBBLinearStretchedBoundary::operator()(sgpp::base::DataVector& source,
+                                                    sgpp::base::DataVector& result,
                                                     grid_iterator& index, size_t dim) {
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   // the following computations are independent from a bounding box
   if (!index.hint()) {
@@ -65,4 +65,4 @@ void PhidPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& sour
 }
 
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

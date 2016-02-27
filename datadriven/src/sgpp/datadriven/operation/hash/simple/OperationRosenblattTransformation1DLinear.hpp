@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 class OperationRosenblattTransformation1DLinear : public OperationTransformation1D {
  protected:
@@ -27,9 +27,9 @@ class OperationRosenblattTransformation1DLinear : public OperationTransformation
    * @param coord1d
    * @return
    */
-  float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d);
+  double doTransformation1D(base::DataVector* alpha1d, double coord1d);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONROSENBLATTTRANSFORMATION1DLINEAR_HPP */

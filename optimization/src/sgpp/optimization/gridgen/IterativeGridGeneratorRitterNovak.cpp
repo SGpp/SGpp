@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -40,7 +40,7 @@ inline double fastPow(double a, double b) {
 }
 
 IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
-    ScalarFunction& f, base::Grid& grid, size_t N, float_t adaptivity, base::level_t initialLevel,
+    ScalarFunction& f, base::Grid& grid, size_t N, double adaptivity, base::level_t initialLevel,
     base::level_t maxLevel, PowMethod powMethod)
     : IterativeGridGenerator(f, grid, N),
       gamma(adaptivity),
@@ -50,9 +50,9 @@ IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
 
 IterativeGridGeneratorRitterNovak::~IterativeGridGeneratorRitterNovak() {}
 
-float_t IterativeGridGeneratorRitterNovak::getAdaptivity() const { return gamma; }
+double IterativeGridGeneratorRitterNovak::getAdaptivity() const { return gamma; }
 
-void IterativeGridGeneratorRitterNovak::setAdaptivity(float_t adaptivity) {
+void IterativeGridGeneratorRitterNovak::setAdaptivity(double adaptivity) {
   this->gamma = adaptivity;
 }
 
@@ -162,7 +162,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     {
       char str[10];
       snprintf(str, sizeof(str),
-               "%.1f%%", static_cast<float_t>(currentN) / static_cast<float_t>(N) * 100.0);
+               "%.1f%%", static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
       Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
                                                std::to_string(currentN) + ", k = " +
                                                std::to_string(k) + ")");
@@ -170,7 +170,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
     // determine the best i (i.e. i_best = argmin_i g_i)
     size_t iBest = 0;
-    float_t gBest = INFINITY;
+    double gBest = INFINITY;
 
     for (size_t i = 0; i < currentN; i++) {
       if (ignore[i]) {
@@ -178,11 +178,11 @@ bool IterativeGridGeneratorRitterNovak::generate() {
       }
 
       // refinement criterion
-      float_t g;
+      double g;
 
       if (powMethod == STD_POW) {
-        g = std::pow(static_cast<float_t>(levelSum[i] + degree[i]) + 1.0, gamma) *
-            std::pow(static_cast<float_t>(rank[i]) + 1.0, 1.0 - gamma);
+        g = std::pow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
+            std::pow(static_cast<double>(rank[i]) + 1.0, 1.0 - gamma);
       } else {
         g = fastPow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
             fastPow(static_cast<double>(rank[i]) + 1.0, 1.0 - gamma);
@@ -298,7 +298,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     evalFunction(currentN);
 
     for (size_t i = currentN; i < newN; i++) {
-      const float_t fXi = fX[i];
+      const double fXi = fX[i];
 
       // update rank and fXOrder by insertion sort
       // ==> go through fX from greatest entry to lowest
@@ -343,4 +343,4 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   }
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

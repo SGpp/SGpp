@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <string>
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
@@ -25,18 +25,18 @@ namespace parallel {
  *
  * This version supports single precision floating point numbers.
  */
-class LearnerVectorizedIdentitySP : public SGPP::datadriven::LearnerBaseSP {
+class LearnerVectorizedIdentitySP : public sgpp::datadriven::LearnerBaseSP {
  protected:
   /// vectorization selector
   VectorizationType vecType_;
 
   MPIType mpiType_;
 
-  virtual SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystem(
-      SGPP::base::DataMatrixSP& trainDataset, float lambda);
+  virtual sgpp::datadriven::DMSystemMatrixBaseSP* createDMSystem(
+      sgpp::base::DataMatrixSP& trainDataset, float lambda);
 
-  virtual void postProcessing(const SGPP::base::DataMatrixSP& trainDataset,
-                              const SGPP::solver::SLESolverType& solver,
+  virtual void postProcessing(const sgpp::base::DataMatrixSP& trainDataset,
+                              const sgpp::solver::SLESolverType& solver,
                               const size_t numNeededIterations);
 
  public:
@@ -70,9 +70,9 @@ class LearnerVectorizedIdentitySP : public SGPP::datadriven::LearnerBaseSP {
    */
   virtual ~LearnerVectorizedIdentitySP();
 
-  virtual SGPP::base::DataVectorSP predict(SGPP::base::DataMatrixSP& testDataset);
+  virtual sgpp::base::DataVectorSP predict(sgpp::base::DataMatrixSP& testDataset);
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LEARNERVECTORIZEDIDENTITYSP_HPP */

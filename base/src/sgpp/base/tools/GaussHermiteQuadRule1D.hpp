@@ -9,7 +9,7 @@
 #include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class GaussHermiteQuadRule1D : public QuadRule1D {
@@ -37,11 +37,11 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
   void getLevelPointsAndWeightsNormalized(size_t level,
                                           base::DataVector& coordinates,
                                           base::DataVector& weights,
-                                          float_t mean = 0.0f,
-                                          float_t stdd = 1.0f);
+                                          double mean = 0.0f,
+                                          double stdd = 1.0f);
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GAUSSHERMITEQUADRULE1D_HPP_ */

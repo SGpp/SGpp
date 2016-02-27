@@ -9,21 +9,21 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
-VariableDiscountFactor::VariableDiscountFactor(SGPP::base::GridStorage* storage, int dim_r)
+VariableDiscountFactor::VariableDiscountFactor(sgpp::base::GridStorage* storage, int dim_r)
     : myBoundingBox(storage->getBoundingBox()), storage(storage), dim_r(dim_r) {}
 
 VariableDiscountFactor::~VariableDiscountFactor() {}
 
-void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor, float_t T) {
-  float_t tmp;
+void VariableDiscountFactor::getDiscountFactor(sgpp::base::DataVector& factor, double T) {
+  double tmp;
 
   for (size_t i = 0; i < storage->getSize(); i++) {
     std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
-    float_t dblFuncValues[2];
+    double dblFuncValues[2];
 
     for (size_t j = 0; j < 2; j++) {
       coordsStream >> tmp;
@@ -36,4 +36,4 @@ void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor, f
   }
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

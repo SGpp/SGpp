@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>  // namespace
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace file_io {
 
@@ -110,7 +110,7 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
     const base::GridIndex& gp = *gridStorage[j];
 
     for (size_t t = 0; t < d; t++) {
-      const float_t x = gp.getCoord(t);
+      const double x = gp.getCoord(t);
       base::GridIndex::level_type l = gp.getLevel(t);
       base::GridIndex::index_type i = gp.getIndex(t);
 
@@ -121,8 +121,8 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
     }
 
     // function value at the current grid point
-    const float_t fX = functionValues[j];
-    f.write(reinterpret_cast<const char*>(&fX), sizeof(float_t));
+    const double fX = functionValues[j];
+    f.write(reinterpret_cast<const char*>(&fX), sizeof(double));
   }
 }
 
@@ -147,7 +147,7 @@ void readGrid(const std::string& filename, base::GridStorage& gridStorage,
 
   for (size_t j = 0; j < N; j++) {
     for (size_t t = 0; t < d; t++) {
-      float_t x;
+      double x;
       base::GridIndex::level_type l;
       base::GridIndex::index_type i;
       f.read(reinterpret_cast<char*>(&x), sizeof(x));
@@ -156,7 +156,7 @@ void readGrid(const std::string& filename, base::GridStorage& gridStorage,
       gp.set(t, l, i);
     }
 
-    float_t functionValue;
+    double functionValue;
     f.read(reinterpret_cast<char*>(&functionValue), sizeof(functionValue));
     gridStorage.insert(gp);
     functionValues[j] = functionValue;
@@ -165,12 +165,12 @@ void readGrid(const std::string& filename, base::GridStorage& gridStorage,
 
 void writeMatrix(const std::string& filename, base::DataMatrix& A) {
   // convert DataMatrix to std::vector
-  const std::vector<float_t> AVector(A.getPointer(), A.getPointer() + A.getNrows() * A.getNcols());
+  const std::vector<double> AVector(A.getPointer(), A.getPointer() + A.getNrows() * A.getNcols());
   writeMatrix(filename, AVector, A.getNrows(), A.getNcols());
 }
 
 void readMatrix(const std::string& filename, base::DataMatrix& A) {
-  std::vector<float_t> AVector;
+  std::vector<double> AVector;
   size_t m, n;
   readMatrix(filename, AVector, m, n);
   A.resize(m, n);
@@ -179,12 +179,12 @@ void readMatrix(const std::string& filename, base::DataMatrix& A) {
 
 void writeVector(const std::string& filename, base::DataVector& x) {
   // convert DataVector to std::vector
-  const std::vector<float_t> xVector(x.getPointer(), x.getPointer() + x.getSize());
+  const std::vector<double> xVector(x.getPointer(), x.getPointer() + x.getSize());
   writeMatrix(filename, xVector, 1, x.getSize());
 }
 
 void readVector(const std::string& filename, base::DataVector& x) {
-  std::vector<float_t> xVector;
+  std::vector<double> xVector;
   size_t m, n;
   readMatrix(filename, xVector, m, n);
   x.resize(xVector.size());
@@ -192,4 +192,4 @@ void readVector(const std::string& filename, base::DataVector& x) {
 }
 }  // namespace file_io
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

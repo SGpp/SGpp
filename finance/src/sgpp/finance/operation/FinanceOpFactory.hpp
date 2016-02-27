@@ -18,7 +18,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 /**
@@ -131,7 +131,7 @@ std::unique_ptr<base::OperationMatrix> createOperationHestonGLog(
 std::unique_ptr<base::OperationMatrix> createOperationHestonHLog(
     base::Grid& grid, base::DataMatrix& coef);
 std::unique_ptr<base::OperationMatrix> createOperationHestonKLog(
-    base::Grid& grid, float_t***** coef);
+    base::Grid& grid, double***** coef);
 std::unique_ptr<base::OperationMatrix> createOperationHestonX(
     base::Grid& grid, base::DataMatrix& coef);
 std::unique_ptr<base::OperationMatrix> createOperationHestonY(
@@ -141,6 +141,6 @@ std::unique_ptr<base::OperationMatrix> createOperationHestonW(
 std::unique_ptr<base::OperationMatrix> createOperationHestonZ(
     base::Grid& grid, base::DataVector& coef);
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /*FINANCE_OP_FACTORY_HPP*/

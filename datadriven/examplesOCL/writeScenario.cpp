@@ -17,15 +17,15 @@ int main(int argc, char **argv) {
   int maxLevel = 10;
   //    std::string fileName = "friedman_4d_small.arff";
   std::string fileName = "DR5_train.arff";
-  SGPP::base::RegularGridConfiguration gridConfig;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
+  sgpp::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = maxLevel;
-  gridConfig.type_ = SGPP::base::GridType::ModLinear;
+  gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;
@@ -38,17 +38,17 @@ int main(int argc, char **argv) {
   SLESolverConfigRefine.eps_ = 0;
   SLESolverConfigRefine.maxIterations_ = 1;
   SLESolverConfigRefine.threshold_ = -1.0;
-  SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigRefine.type_ = sgpp::solver::SLESolverType::CG;
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
   SLESolverConfigFinal.maxIterations_ = 1;
   SLESolverConfigFinal.threshold_ = -1.0;
-  SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
   double lambda = 0.000001;
 
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
+  sgpp::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
                                              SLESolverConfigFinal, adaptConfig);
 
   //  scenario.writeToFile("DR5_modlinear.scenario");

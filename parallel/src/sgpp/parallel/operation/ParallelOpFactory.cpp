@@ -64,7 +64,7 @@
 #include <cstring>
 #include <limits>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 
@@ -305,11 +305,11 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(
 }
 
 std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
-createOperationLTwoDotLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector& lambda,
+createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sgpp::base::DataVector& lambda,
                                         const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined>(
+      return std::unique_ptr<sgpp::parallel::OperationParabolicPDEMatrixCombined>(
           new parallel::OperationLTwoDotLaplaceVectorizedLinear(&grid.getStorage(), lambda));
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
@@ -322,7 +322,7 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector
   } else if (grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
-      return std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined>(
+      return std::unique_ptr<sgpp::parallel::OperationParabolicPDEMatrixCombined>(
           new parallel::OperationLTwoDotLaplaceVectorizedLinearBoundary(&grid.getStorage(),
                                                                         lambda));
 #ifdef USEOCL
@@ -408,7 +408,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
 }
 
 std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
-    base::Grid& grid, SGPP::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
+    base::Grid& grid, sgpp::base::DataVector& lambda, const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
     if (vecType == parallel::X86SIMD) {
       return std::unique_ptr<base::OperationMatrix>(
@@ -441,4 +441,4 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
 }
 #endif
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

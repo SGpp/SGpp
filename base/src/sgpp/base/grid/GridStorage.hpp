@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 typedef unsigned int level_t;
@@ -31,6 +31,6 @@ typedef HashGridIndex GridIndex;
 typedef HashGridStorage GridStorage;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GRIDSTORAGE_HPP */

@@ -14,7 +14,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 #ifndef M_SQRT2PI
@@ -31,13 +31,13 @@ class GaussianKDE: public DensityEstimator {
   virtual void initialize(base::DataMatrix& samples);
   virtual void initialize(std::vector<base::DataVector*>& samplesVec);
 
-  float_t mean();
-  float_t variance();
-  float_t std_deviation();
+  double mean();
+  double variance();
+  double std_deviation();
 
   void cov(base::DataMatrix& cov);
 
-  float_t pdf(base::DataVector& x);
+  double pdf(base::DataVector& x);
   void pdf(base::DataMatrix& points, base::DataVector& res);
 
   /// getter and setter functions
@@ -67,17 +67,17 @@ class GaussianKDE: public DensityEstimator {
   base::DataVector norm;
   /// conditionalization factors
   base::DataVector cond;
-  float_t sumCond;
+  double sumCond;
 
   void computeOptKDEbdwth();
   void computeNormalizationFactors();
 
-  float_t getSampleMean(base::DataVector& data);
-  float_t getSampleVariance(base::DataVector& data);
-  float_t getSampleStd(base::DataVector& data);
+  double getSampleMean(base::DataVector& data);
+  double getSampleVariance(base::DataVector& data);
+  double getSampleStd(base::DataVector& data);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GAUSSIANGAUSSIANKDE_HPP_ */

@@ -16,7 +16,7 @@
 #include <unordered_map>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -25,7 +25,7 @@ namespace base {
  * retrieving grid points. Internally, a hash_map is used.
  *
  * Note: GridDataBase currently supports only to store pairs of
- * (grid point -> float_t).
+ * (grid point -> double).
  */
 class GridDataBase {
  private:
@@ -34,18 +34,18 @@ class GridDataBase {
   /*
   #ifndef USETRONE
   #ifndef LARRABEENATIVE
-  typedef std::hash_map<index_pointer, float_t, SGPP::base::hash<index_pointer>, SGPP::base::eqIndex<index_pointer> > grid_map;
+  typedef std::hash_map<index_pointer, double, sgpp::base::hash<index_pointer>, sgpp::base::eqIndex<index_pointer> > grid_map;
   #endif
   #ifdef LARRABEENATIVE
-  typedef std::hash_map<index_pointer, float_t, LRBSGHasher<index_pointer> > grid_map;
+  typedef std::hash_map<index_pointer, double, LRBSGHasher<index_pointer> > grid_map;
   #endif
   #endif
   #ifdef USETRONE
-  typedef std::tr1::unordered_map<index_pointer, float_t, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
+  typedef std::tr1::unordered_map<index_pointer, double, hash<index_pointer>, eqIndex<index_pointer> > grid_map;
   #endif
   */
   //        typedef HashGridStorage::grid_map grid_map;
-  typedef std::unordered_map<index_pointer, float_t,
+  typedef std::unordered_map<index_pointer, double,
           HashGridIndexPointerHashFunctor,
           HashGridIndexPointerEqualityFunctor >
           grid_map;
@@ -135,7 +135,7 @@ class GridDataBase {
    * @param gi a grid index
    * @param value the value to store
    */
-  void set(GridIndex* gi, float_t value);
+  void set(GridIndex* gi, double value);
 
   /**
    * Set values for given grid from stored ones in database.
@@ -168,7 +168,7 @@ class GridDataBase {
    * @param gi a grid index
    * @return value
    */
-  float_t get(GridIndex* gi);
+  double get(GridIndex* gi);
 
   /**
    * Remove grid point from database. Do nothing, if not in database.
@@ -193,7 +193,7 @@ class GridDataBase {
   void load(const std::string filename);
 
   /**
-   * Return iterator to beginning. Entries are of type pair<GridIndex, float_t>.
+   * Return iterator to beginning. Entries are of type pair<GridIndex, double>.
    * @return iterator to beginning.
    */
   grid_map_iterator begin();
@@ -206,5 +206,5 @@ class GridDataBase {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* GRIDDATABASE_HPP */

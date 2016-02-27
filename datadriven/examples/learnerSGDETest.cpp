@@ -19,39 +19,39 @@ int main(int argc, char** argv) {
   std::string filename = "../tests/data/friedman_4d_2000.arff";
 
   cout << "# loading file: " << filename << endl;
-  SGPP::datadriven::Dataset dataset =
-      SGPP::datadriven::ARFFTools::readARFF(filename);
-  SGPP::base::DataMatrix& samples = dataset.getData();
+  sgpp::datadriven::Dataset dataset =
+      sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::base::DataMatrix& samples = dataset.getData();
 
   // configure grid
   cout << "# create grid config" << endl;
-  SGPP::base::RegularGridConfiguration gridConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 4;
-  gridConfig.type_ = SGPP::base::GridType::Linear;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // configure adaptive refinement
   cout << "# create adaptive refinement config" << endl;
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.noPoints_ = 10;
 
   // configure solver
   cout << "# create solver config" << endl;
-  SGPP::solver::SLESolverConfiguration solverConfig;
-  solverConfig.type_ = SGPP::solver::SLESolverType::CG;
+  sgpp::solver::SLESolverConfiguration solverConfig;
+  solverConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-10;
   solverConfig.threshold_ = 1e-10;
 
   // configure regularization
   cout << "# create regularization config" << endl;
-  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
   // configure learner
   cout << "# create learner config" << endl;
-  SGPP::datadriven::LearnerSGDEConfiguration learnerConfig;
+  sgpp::datadriven::LearnerSGDEConfiguration learnerConfig;
   learnerConfig.doCrossValidation_ = true;
   learnerConfig.kfold_ = 3;
   learnerConfig.lambdaStart_ = 1e-1;
@@ -63,12 +63,12 @@ int main(int argc, char** argv) {
   learnerConfig.silent_ = false;
 
   cout << "# creating the learner" << endl;
-  SGPP::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig,
+  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig,
                                         regularizationConfig, learnerConfig);
   learner.initialize(samples);
 
-  SGPP::datadriven::GaussianKDE kde(samples);
-  SGPP::base::DataVector x(learner.getDim());
+  sgpp::datadriven::GaussianKDE kde(samples);
+  sgpp::base::DataVector x(learner.getDim());
 
   for (size_t i = 0; i < x.getSize(); i++) {
     x[i] = 0.5;

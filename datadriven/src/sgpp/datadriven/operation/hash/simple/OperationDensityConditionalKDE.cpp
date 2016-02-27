@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 OperationDensityConditionalKDE::OperationDensityConditionalKDE(GaussianKDE& kde) : kde(&kde) {}
@@ -23,7 +23,7 @@ OperationDensityConditionalKDE::~OperationDensityConditionalKDE() {}
 
 // -------------------------------------------------------------------
 
-void OperationDensityConditionalKDE::doConditional(size_t mdim, float_t xbar,
+void OperationDensityConditionalKDE::doConditional(size_t mdim, double xbar,
                                                    GaussianKDE& conditionalizedKDE) {
   throw base::algorithm_exception(
       "OperationDensityConditionalKDE::doConditional is not implemented");
@@ -100,4 +100,4 @@ void OperationDensityConditionalKDE::condToDimXs(std::vector<size_t>& mdims, bas
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

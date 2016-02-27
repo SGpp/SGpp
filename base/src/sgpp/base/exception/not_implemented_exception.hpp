@@ -9,7 +9,7 @@
 
 #include <exception>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -54,4 +54,4 @@ class not_implemented_exception : public std::exception {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

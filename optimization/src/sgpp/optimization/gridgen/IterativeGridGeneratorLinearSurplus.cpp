@@ -25,12 +25,12 @@
 #include <algorithm>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarFunction& f,
                                                                          base::Grid& grid, size_t N,
-                                                                         float_t adaptivity,
+                                                                         double adaptivity,
                                                                          base::level_t initialLevel)
     : IterativeGridGenerator(f, grid, N), gamma(adaptivity), initialLevel(initialLevel) {
   if ((grid.getType() == base::GridType::Bspline) || (grid.getType() == base::GridType::Wavelet) ||
@@ -61,9 +61,9 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarF
 
 IterativeGridGeneratorLinearSurplus::~IterativeGridGeneratorLinearSurplus() {}
 
-float_t IterativeGridGeneratorLinearSurplus::getAdaptivity() const { return gamma; }
+double IterativeGridGeneratorLinearSurplus::getAdaptivity() const { return gamma; }
 
-void IterativeGridGeneratorLinearSurplus::setAdaptivity(float_t adaptivity) {
+void IterativeGridGeneratorLinearSurplus::setAdaptivity(double adaptivity) {
   this->gamma = adaptivity;
 }
 
@@ -160,7 +160,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   // *real* number of points to be refined
   // (used like 1, 1/2, 1/4, 1/8, ... at the end of the algorithm to
   // fill the grid size up to N)
-  float_t refineFactor = 1.0;
+  double refineFactor = 1.0;
   // success or not?
   bool result = true;
 
@@ -169,7 +169,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     {
       char str[10];
       snprintf(str, sizeof(str), "%.1f%%",
-               static_cast<float_t>(currentN) / static_cast<float_t>(N) * 100.0);
+               static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
       Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
                                                std::to_string(currentN) + ")");
     }
@@ -177,7 +177,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
     // calculate number of points to be refined
     refinablePtsCount = abstractRefinement->getNumberOfRefinablePoints(gridStorage);
     ptsToBeRefinedCount =
-        static_cast<int>(1.0 + refineFactor * gamma * static_cast<float_t>(refinablePtsCount));
+        static_cast<int>(1.0 + refineFactor * gamma * static_cast<double>(refinablePtsCount));
 
     // refine
     base::SurplusRefinementFunctor refineFunc(coeffs, ptsToBeRefinedCount);
@@ -246,4 +246,4 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   }
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

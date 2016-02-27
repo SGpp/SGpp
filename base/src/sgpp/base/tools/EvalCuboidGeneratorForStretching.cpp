@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 EvalCuboidGeneratorForStretching::EvalCuboidGeneratorForStretching() {
@@ -24,12 +24,12 @@ void EvalCuboidGeneratorForStretching::getCuboidEvalPoints(
   if (curDim == 0) {
     if (points > 1) {
       for (size_t i = 0; i < points; i++) {
-        float_t inc = (myStretching.getBoundary(curDim).rightBoundary -
+        double inc = (myStretching.getBoundary(curDim).rightBoundary -
                        myStretching.getBoundary(curDim).leftBoundary) /
-                      static_cast<float_t>(points - 1);
+                      static_cast<double>(points - 1);
 
         curPoint.set(curDim, myStretching.getBoundary(curDim).leftBoundary +
-                     (inc * static_cast<float_t>(i)));
+                     (inc * static_cast<double>(i)));
 
         evalPoints.push_back(curPoint);
       }
@@ -43,12 +43,12 @@ void EvalCuboidGeneratorForStretching::getCuboidEvalPoints(
   } else {
     if (points > 1) {
       for (size_t i = 0; i < points; i++) {
-        float_t inc = (myStretching.getBoundary(curDim).rightBoundary -
+        double inc = (myStretching.getBoundary(curDim).rightBoundary -
                        myStretching.getBoundary(curDim).leftBoundary) /
-                      static_cast<float_t>(points - 1);
+                      static_cast<double>(points - 1);
 
         curPoint.set(curDim, myStretching.getBoundary(curDim).leftBoundary +
-                     (inc * static_cast<float_t>(i)));
+                     (inc * static_cast<double>(i)));
 
         getCuboidEvalPoints(evalPoints, curPoint, myStretching, points,
                             curDim - 1);
@@ -81,4 +81,4 @@ void EvalCuboidGeneratorForStretching::getEvaluationCuboid(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

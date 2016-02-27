@@ -12,7 +12,7 @@
 #include <sstream>
 #include <exception>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 HashGridIterator::HashGridIterator(HashGridStorage& storage) :
@@ -229,5 +229,5 @@ HashGridIterator::toString() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

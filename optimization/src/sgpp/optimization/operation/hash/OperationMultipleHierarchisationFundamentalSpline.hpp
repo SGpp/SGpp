@@ -13,7 +13,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisationFundamentalSpline.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -71,6 +71,6 @@ class OperationMultipleHierarchisationFundamentalSpline : public OperationMultip
   base::OperationHierarchisationFundamentalSpline op;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERFUNDAMENTALSPLINE_HPP */

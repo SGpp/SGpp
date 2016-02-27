@@ -8,23 +8,23 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(SGPP::base::GridStorage* storage,
-                                                   SGPP::base::GridStorage* shadowStorage) {
+UpDownOneOpDimWithShadow::UpDownOneOpDimWithShadow(sgpp::base::GridStorage* storage,
+                                                   sgpp::base::GridStorage* shadowStorage) {
   this->storage = storage;
   this->shadowStorage = shadowStorage;
 }
 
 UpDownOneOpDimWithShadow::~UpDownOneOpDimWithShadow() {}
 
-void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void UpDownOneOpDimWithShadow::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   expandGrid();
 
   // Create new Datavectors for the grid including shadow points.
-  SGPP::base::DataVector alpha_temp(storage->getSize());
-  SGPP::base::DataVector result_temp(storage->getSize());
+  sgpp::base::DataVector alpha_temp(storage->getSize());
+  sgpp::base::DataVector result_temp(storage->getSize());
 
   alpha_temp.setAll(0.0);
   result_temp.setAll(0.0);
@@ -34,7 +34,7 @@ void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha, SGPP::base::D
     alpha_temp[i] = alpha[i];
   }
 
-  SGPP::base::DataVector beta(result_temp.getSize());
+  sgpp::base::DataVector beta(result_temp.getSize());
   beta.setAll(0.0);
 
   for (size_t i = 0; i < storage->getDimension(); i++) {
@@ -65,7 +65,7 @@ void UpDownOneOpDimWithShadow::shrinkGrid() {
   }
 }
 
-void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+void UpDownOneOpDimWithShadow::updown(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                       size_t dim, size_t op_dim) {
   if (dim == op_dim) {
     specialOP(alpha, result, dim, op_dim);
@@ -73,13 +73,13 @@ void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha, SGPP::base:
     // Unidirectional scheme
     if (dim > 0) {
       // Reordering ups and downs
-      SGPP::base::DataVector temp(alpha.getSize());
+      sgpp::base::DataVector temp(alpha.getSize());
       temp.setAll(0.0);
       up(alpha, temp, dim);
       updown(temp, result, dim - 1, op_dim);
 
       // Same from the other direction:
-      SGPP::base::DataVector result_temp(alpha.getSize());
+      sgpp::base::DataVector result_temp(alpha.getSize());
       result_temp.setAll(0.0);
       updown(alpha, temp, dim - 1, op_dim);
       down(temp, result_temp, dim);
@@ -89,7 +89,7 @@ void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha, SGPP::base:
       // Terminates dimension recursion
       up(alpha, result, dim);
 
-      SGPP::base::DataVector temp(alpha.getSize());
+      sgpp::base::DataVector temp(alpha.getSize());
       temp.setAll(0.0);
       down(alpha, temp, dim);
 
@@ -98,19 +98,19 @@ void UpDownOneOpDimWithShadow::updown(SGPP::base::DataVector& alpha, SGPP::base:
   }
 }
 
-void UpDownOneOpDimWithShadow::specialOP(SGPP::base::DataVector& alpha,
-                                         SGPP::base::DataVector& result, size_t dim,
+void UpDownOneOpDimWithShadow::specialOP(sgpp::base::DataVector& alpha,
+                                         sgpp::base::DataVector& result, size_t dim,
                                          size_t op_dim) {
   // Unidirectional scheme
   if (dim > 0) {
     // Reordering ups and downs
-    SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector temp(alpha.getSize());
     temp.setAll(0.0);
     upOpDim(alpha, temp, dim);
     updown(temp, result, dim - 1, op_dim);
 
     // Same from the other direction:
-    SGPP::base::DataVector result_temp(alpha.getSize());
+    sgpp::base::DataVector result_temp(alpha.getSize());
     result_temp.setAll(0.0);
     updown(alpha, temp, dim - 1, op_dim);
     downOpDim(temp, result_temp, dim);
@@ -120,7 +120,7 @@ void UpDownOneOpDimWithShadow::specialOP(SGPP::base::DataVector& alpha,
     // Terminates dimension recursion
     upOpDim(alpha, result, dim);
 
-    SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector temp(alpha.getSize());
     temp.setAll(0.0);
     downOpDim(alpha, temp, dim);
 
@@ -128,4 +128,4 @@ void UpDownOneOpDimWithShadow::specialOP(SGPP::base::DataVector& alpha,
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

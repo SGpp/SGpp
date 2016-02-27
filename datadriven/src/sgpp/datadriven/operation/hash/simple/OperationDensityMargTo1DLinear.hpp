@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -41,5 +41,5 @@ class OperationDensityMargTo1DLinear : public OperationDensityMargTo1D {
                      base::DataVector*& a_out, size_t dims, size_t dim_x, size_t& count);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYMARGTO1DLINEAR_HPP */

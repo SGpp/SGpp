@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& Simionescu::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& Simionescu::getEqualityConstraintFunction() { return h; }
 
-float_t Simionescu::getOptimalPointUndisplaced(base::DataVector& x) {
+double Simionescu::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.1605887450304572;
   x[1] = 0.8394112549695428;
@@ -33,9 +33,9 @@ SimionescuObjective::SimionescuObjective() : TestScalarFunction(2) {}
 
 SimionescuObjective::~SimionescuObjective() {}
 
-float_t SimionescuObjective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 2.5 * x[0] - 1.25;
-  const float_t x2 = 2.5 * x[1] - 1.25;
+double SimionescuObjective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 2.5 * x[0] - 1.25;
+  const double x2 = 2.5 * x[1] - 1.25;
   return 0.1 * x1 * x2;
 }
 
@@ -49,12 +49,12 @@ SimionescuInequalityConstraint::~SimionescuInequalityConstraint() {}
 
 void SimionescuInequalityConstraint::evalUndisplaced(const base::DataVector& x,
                                                      base::DataVector& value) {
-  const float_t rT = 1;
-  const float_t rS = 0.2;
-  const float_t n = 8.0;
-  const float_t x1 = 2.5 * x[0] - 1.25;
-  const float_t x2 = 2.5 * x[1] - 1.25;
-  const float_t tmp = rT + rS * std::cos(n * std::atan(x1 / x2));
+  const double rT = 1;
+  const double rS = 0.2;
+  const double n = 8.0;
+  const double x1 = 2.5 * x[0] - 1.25;
+  const double x2 = 2.5 * x[1] - 1.25;
+  const double tmp = rT + rS * std::cos(n * std::atan(x1 / x2));
 
   value[0] = x1 * x1 + x2 * x2 - tmp * tmp;
 }
@@ -75,4 +75,4 @@ void SimionescuEqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone)
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

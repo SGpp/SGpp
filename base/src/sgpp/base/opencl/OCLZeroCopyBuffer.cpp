@@ -10,7 +10,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLZeroCopyBuffer::OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager) : m_manager(manager) {
@@ -38,7 +38,7 @@ void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to enqueue map buffer command when "
                    "trying to write! Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   if (m_mappedHostBuffer == nullptr)
@@ -62,7 +62,7 @@ void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to enqueue unmap memobject command "
                    "when trying to write! Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 }
 
@@ -77,7 +77,7 @@ void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to enqueue map buffer command "
                    "when trying to read! Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   if (m_mappedHostBuffer == nullptr)
@@ -95,7 +95,7 @@ void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to enqueue unmap memobject command "
                    "when trying to read! Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 }
 
@@ -118,7 +118,7 @@ void OCLZeroCopyBuffer::initializeBuffer(void* initialValues, size_t sizeofType,
     std::stringstream errorString;
     errorString << "OCL Error: Could not allocate buffer! "
                    "Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   this->m_sizeofType = sizeofType;
@@ -145,4 +145,4 @@ void OCLZeroCopyBuffer::freeBuffer() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

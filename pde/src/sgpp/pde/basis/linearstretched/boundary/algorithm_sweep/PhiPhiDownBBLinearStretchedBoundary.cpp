@@ -7,24 +7,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::PhiPhiDownBBLinearStretchedBoundary(
-    SGPP::base::GridStorage* storage)
-    : SGPP::pde::PhiPhiDownBBLinearStretched(storage) {}
+sgpp::pde::PhiPhiDownBBLinearStretchedBoundary::PhiPhiDownBBLinearStretchedBoundary(
+    sgpp::base::GridStorage* storage)
+    : sgpp::pde::PhiPhiDownBBLinearStretched(storage) {}
 
-SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::~PhiPhiDownBBLinearStretchedBoundary() {}
+sgpp::pde::PhiPhiDownBBLinearStretchedBoundary::~PhiPhiDownBBLinearStretchedBoundary() {}
 
-void SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
-                                                                SGPP::base::DataVector& result,
+void sgpp::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(sgpp::base::DataVector& source,
+                                                                sgpp::base::DataVector& result,
                                                                 grid_iterator& index, size_t dim) {
-  float_t q = this->stretching->getIntervalWidth(dim);
-  //  float_t t = this->stretching->getIntervalOffset(dim);
+  double q = this->stretching->getIntervalWidth(dim);
+  //  double t = this->stretching->getIntervalOffset(dim);
 
   // get boundary values
-  float_t left_boundary;
-  float_t right_boundary;
+  double left_boundary;
+  double right_boundary;
   size_t seq_left;
   size_t seq_right;
 
@@ -73,4 +73,4 @@ void SGPP::pde::PhiPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::Data
 }
 
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

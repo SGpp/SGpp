@@ -27,33 +27,33 @@
 #include <vector>
 
 // using namespace std;
-// using namespace SGPP::base;
+// using namespace sgpp::base;
 
-using SGPP::base::DataVector;
-using SGPP::base::DataMatrix;
-using SGPP::base::Grid;
-using SGPP::base::GridStorage;
-using SGPP::base::OperationMatrix;
-using SGPP::base::SurplusRefinementFunctor;
-using SGPP::base::GridIndex;
-using SGPP::base::OperationEval;
-using SGPP::base::GridGenerator;
-using SGPP::base::GridType;
-using SGPP::base::OperationSecondMoment;
-using SGPP::base::OperationFirstMoment;
-using SGPP::base::OperationMultipleEval;
+using sgpp::base::DataVector;
+using sgpp::base::DataMatrix;
+using sgpp::base::Grid;
+using sgpp::base::GridStorage;
+using sgpp::base::OperationMatrix;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::GridIndex;
+using sgpp::base::OperationEval;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridType;
+using sgpp::base::OperationSecondMoment;
+using sgpp::base::OperationFirstMoment;
+using sgpp::base::OperationMultipleEval;
 
 using std::vector;
 using std::cout;
 using std::endl;
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-LearnerSGDE::LearnerSGDE(SGPP::base::RegularGridConfiguration& gridConfig,
-                         SGPP::base::AdpativityConfiguration& adaptivityConfig,
-                         SGPP::solver::SLESolverConfiguration& solverConfig,
-                         SGPP::datadriven::RegularizationConfiguration& regularizationConfig,
+LearnerSGDE::LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
+                         sgpp::base::AdpativityConfiguration& adaptivityConfig,
+                         sgpp::solver::SLESolverConfiguration& solverConfig,
+                         sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                          LearnerSGDEConfiguration& learnerSGDEConfig) :
   grid(NULL), alpha(1), samples(NULL), gridConfig(gridConfig), adaptivityConfig(
     adaptivityConfig), solverConfig(solverConfig), regularizationConfig(
@@ -70,14 +70,14 @@ LearnerSGDE::~LearnerSGDE() {
   }
 }
 
-void LearnerSGDE::initialize(SGPP::base::DataMatrix& psamples) {
+void LearnerSGDE::initialize(sgpp::base::DataMatrix& psamples) {
   samples = new DataMatrix(psamples);
   size_t ndim = psamples.getNcols();
   createRegularGrid(grid, ndim);
   alpha.resize(grid->getSize());
 
   // optimize the regularization parameter
-  float_t lambdaReg = 0.0;
+  double lambdaReg = 0.0;
 
   if (learnerSGDEConfig.doCrossValidation_) {
     lambdaReg = optimizeLambdaCV();
@@ -91,24 +91,24 @@ void LearnerSGDE::initialize(SGPP::base::DataMatrix& psamples) {
 
 // ---------------------------------------------------------------------------
 
-float_t LearnerSGDE::pdf(DataVector& x) {
-  return SGPP::op_factory::createOperationEval(*grid)->eval(alpha, x);
+double LearnerSGDE::pdf(DataVector& x) {
+  return sgpp::op_factory::createOperationEval(*grid)->eval(alpha, x);
 }
 
 void LearnerSGDE::pdf(DataMatrix& points, DataVector& res) {
-  SGPP::op_factory::createOperationMultipleEval(*grid, points)->eval(alpha, res);
+  sgpp::op_factory::createOperationMultipleEval(*grid, points)->eval(alpha, res);
 }
 
-float_t LearnerSGDE::mean() {
+double LearnerSGDE::mean() {
   return op_factory::createOperationFirstMoment(*grid)->doQuadrature(alpha);
 }
 
-float_t LearnerSGDE::variance() {
-  float_t secondMoment = op_factory::createOperationSecondMoment(*grid)->doQuadrature(alpha);
+double LearnerSGDE::variance() {
+  double secondMoment = op_factory::createOperationSecondMoment(*grid)->doQuadrature(alpha);
 
   // use Steiners translation theorem to compute the variance
-  float_t firstMoment = mean();
-  float_t res = secondMoment - firstMoment * firstMoment;
+  double firstMoment = mean();
+  double res = secondMoment - firstMoment * firstMoment;
   return res;
 }
 
@@ -158,15 +158,15 @@ void LearnerSGDE::createRegularGrid(Grid*& grid, size_t ndim) {
   grid->getGenerator().regular(gridConfig.level_);
 }
 
-float_t LearnerSGDE::optimizeLambdaCV() {
+double LearnerSGDE::optimizeLambdaCV() {
   Grid* grid = NULL;
   DataVector* alpha = NULL;
 
-  float_t curLambda;
-  float_t bestLambda = 0;
-  float_t curMean = 0;
-  float_t curMeanAcc = 0;
-  float_t bestMeanAcc = 0;
+  double curLambda;
+  double bestLambda = 0;
+  double curMean = 0;
+  double curMeanAcc = 0;
+  double bestMeanAcc = 0;
 
   size_t kfold = learnerSGDEConfig.kfold_;
 
@@ -174,8 +174,8 @@ float_t LearnerSGDE::optimizeLambdaCV() {
   vector<DataMatrix*> kfold_test(kfold);
   splitset(kfold_train, kfold_test);
 
-  float_t lambdaStart = learnerSGDEConfig.lambdaStart_;
-  float_t lambdaEnd = learnerSGDEConfig.lambdaEnd_;
+  double lambdaStart = learnerSGDEConfig.lambdaStart_;
+  double lambdaEnd = learnerSGDEConfig.lambdaEnd_;
 
   if (learnerSGDEConfig.logScale_) {
     lambdaStart = log(lambdaStart);
@@ -185,8 +185,8 @@ float_t LearnerSGDE::optimizeLambdaCV() {
   for (size_t i = 0; i < learnerSGDEConfig.lambdaSteps_; i++) {
     // compute current lambda
     curLambda = lambdaStart
-                + static_cast<float_t>(i) * (lambdaEnd - lambdaStart)
-                / static_cast<float_t>(learnerSGDEConfig.lambdaSteps_
+                + static_cast<double>(i) * (lambdaEnd - lambdaStart)
+                / static_cast<double>(learnerSGDEConfig.lambdaSteps_
                                        - 1);
 
     if (learnerSGDEConfig.logScale_)
@@ -194,8 +194,8 @@ float_t LearnerSGDE::optimizeLambdaCV() {
 
     if (i
         % static_cast<size_t>(std::max(
-                                static_cast<float_t>(learnerSGDEConfig.lambdaSteps_)
-                                / 10.0f, static_cast<float_t>(1.0f))) == 0) {
+                                static_cast<double>(learnerSGDEConfig.lambdaSteps_)
+                                / 10.0f, static_cast<double>(1.0f))) == 0) {
       if (!learnerSGDEConfig.silent_) {
         cout << i + 1 << "/" << learnerSGDEConfig.lambdaSteps_
              << " (lambda = " << curLambda << ") " << endl;
@@ -227,7 +227,7 @@ float_t LearnerSGDE::optimizeLambdaCV() {
       delete alpha;
     }
 
-    curMeanAcc /= static_cast<float_t>(kfold);
+    curMeanAcc /= static_cast<double>(kfold);
 
     if (i == 0 || curMeanAcc < bestMeanAcc) {
       bestMeanAcc = curMeanAcc;
@@ -254,7 +254,7 @@ float_t LearnerSGDE::optimizeLambdaCV() {
 }
 
 void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
-                        float_t lambdaReg) {
+                        double lambdaReg) {
   size_t dim = train.getNcols();
 
   GridStorage* gridStorage = &grid.getStorage();
@@ -270,14 +270,14 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
   for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
     OperationMatrix* C = computeRegularizationMatrix(grid);
 
-    SGPP::datadriven::DensitySystemMatrix SMatrix(grid, train, *C, lambdaReg);
+    sgpp::datadriven::DensitySystemMatrix SMatrix(grid, train, *C, lambdaReg);
     SMatrix.generateb(rhs);
 
     if (!learnerSGDEConfig.silent_) {
       cout << "# LearnerSGDE: Solving " << endl;
     }
 
-    SGPP::solver::ConjugateGradients myCG(solverConfig.maxIterations_,
+    sgpp::solver::ConjugateGradients myCG(solverConfig.maxIterations_,
                                           solverConfig.eps_);
     myCG.solve(SMatrix, alpha, rhs, false, false, solverConfig.threshold_);
 
@@ -287,7 +287,7 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
       }
 
       // Weight surplus with function evaluation at grid points
-      std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
+      std::unique_ptr<OperationEval> opEval(sgpp::op_factory::createOperationEval(grid));
       GridIndex* gp;
       DataVector p(dim);
       DataVector alphaWeight(alpha.getSize());
@@ -320,13 +320,13 @@ void LearnerSGDE::train(Grid& grid, DataVector& alpha, DataMatrix& train,
   return;
 }
 
-float_t LearnerSGDE::computeResidual(Grid& grid, DataVector& alpha,
-                                     DataMatrix& test, float_t lambdaReg) {
+double LearnerSGDE::computeResidual(Grid& grid, DataVector& alpha,
+                                     DataMatrix& test, double lambdaReg) {
   OperationMatrix* C = computeRegularizationMatrix(grid);
 
   DataVector rhs(grid.getSize());
   DataVector res(grid.getSize());
-  SGPP::datadriven::DensitySystemMatrix SMatrix(grid, test, *C, lambdaReg);
+  sgpp::datadriven::DensitySystemMatrix SMatrix(grid, test, *C, lambdaReg);
   SMatrix.generateb(rhs);
 
   SMatrix.mult(alpha, res);
@@ -339,15 +339,15 @@ float_t LearnerSGDE::computeResidual(Grid& grid, DataVector& alpha,
 }
 
 OperationMatrix* LearnerSGDE::computeRegularizationMatrix(
-  SGPP::base::Grid& grid) {
+  sgpp::base::Grid& grid) {
   OperationMatrix* C = NULL;
 
   if (regularizationConfig.regType_
-      == SGPP::datadriven::RegularizationType::Identity) {
-    C = SGPP::op_factory::createOperationIdentity(grid).release();
+      == sgpp::datadriven::RegularizationType::Identity) {
+    C = sgpp::op_factory::createOperationIdentity(grid).release();
   } else if (regularizationConfig.regType_
-             == SGPP::datadriven::RegularizationType::Laplace) {
-    C = SGPP::op_factory::createOperationLaplace(grid).release();
+             == sgpp::datadriven::RegularizationType::Laplace) {
+    C = sgpp::op_factory::createOperationLaplace(grid).release();
   } else {
     throw base::application_exception("LearnerSGDE::train : unknown regularization type");
   }
@@ -447,5 +447,5 @@ base::DataVector* LearnerSGDE::getAlpha() {
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

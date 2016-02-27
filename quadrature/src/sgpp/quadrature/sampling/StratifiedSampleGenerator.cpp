@@ -10,7 +10,7 @@
 #include <cmath>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 StratifiedSampleGenerator::StratifiedSampleGenerator(std::vector<size_t>& strataPerDimension,
@@ -28,19 +28,19 @@ StratifiedSampleGenerator::StratifiedSampleGenerator(std::vector<size_t>& strata
     if (numberOfStrata[i] < 1) numberOfStrata[i] = 1;
 
     currentStrata[i] = 0;
-    sizeOfStrata[i] = 1. / static_cast<float_t>(this->numberOfStrata[i]);
+    sizeOfStrata[i] = 1. / static_cast<double>(this->numberOfStrata[i]);
   }
 }
 
 StratifiedSampleGenerator::~StratifiedSampleGenerator() {}
 
-void StratifiedSampleGenerator::getSample(SGPP::base::DataVector& dv) {
+void StratifiedSampleGenerator::getSample(sgpp::base::DataVector& dv) {
   // Check for correct dimension of the parameter vector
   if (dv.getSize() != dimensions) return;
 
   // Choose a random number inside the stratum selected for this dimension
   for (size_t i = 0; i < dimensions; i++) {
-    dv[i] = (static_cast<float_t>(currentStrata[i]) + uniformRealDist(rng)) * sizeOfStrata[i];
+    dv[i] = (static_cast<double>(currentStrata[i]) + uniformRealDist(rng)) * sizeOfStrata[i];
   }
 
   // continue to the next stratum used for the next sample
@@ -62,4 +62,4 @@ void StratifiedSampleGenerator::getNextStrata() {
 }
 
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp

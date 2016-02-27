@@ -14,7 +14,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -51,7 +51,7 @@ class InterpolantScalarFunctionGradient : public ScalarFunctionGradient {
    *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x, base::DataVector& gradient) override {
+  inline double eval(const base::DataVector& x, base::DataVector& gradient) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         return INFINITY;
@@ -88,6 +88,6 @@ class InterpolantScalarFunctionGradient : public ScalarFunctionGradient {
   base::DataVector alpha;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_INTERPOLANTSCALARFUNCTIONGRADIENT_HPP */

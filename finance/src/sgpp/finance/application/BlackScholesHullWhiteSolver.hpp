@@ -25,7 +25,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 /**
@@ -36,26 +36,26 @@ namespace finance {
  * Equation with Sparse Grids!
  *
  */
-class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
+class BlackScholesHullWhiteSolver : public sgpp::pde::ParabolicPDESolver {
  private:
   /// vector that contains the assets' weight
-  SGPP::base::DataVector* mus;
+  sgpp::base::DataVector* mus;
   /// vector that contains the standard deviations
-  SGPP::base::DataVector* sigmas;
+  sgpp::base::DataVector* sigmas;
   /// Matrix that contains the correlations
-  SGPP::base::DataMatrix* rhos;
+  sgpp::base::DataMatrix* rhos;
   /// the riskfree rate
-  float_t r;
+  double r;
   /// stores if the stochastic asset data was passed to the solver
   bool bStochasticDataAlloc;
   /// screen object used in this solver
-  SGPP::base::ScreenOutput* myScreen;
+  sgpp::base::ScreenOutput* myScreen;
   /// use coarsening between timesteps in order to reduce gridsize
   bool useCoarsen;
   /// Threshold used to decide if a grid point should be deleted
-  float_t coarsenThreshold;
+  double coarsenThreshold;
   /// Threshold used to decide if a grid point should be refined
-  float_t refineThreshold;
+  double refineThreshold;
   /// adaptive mode during solving Black Scholes Equation: none, coarsen, refine, coarsenNrefine
   std::string adaptSolveMode;
   /// refine mode during solving Black Scholes Equation: classic or maxLevel
@@ -65,26 +65,26 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
   /// identifies if the Black Scholes Equation should be solved on a log-transformed grid
   bool useLogTransform;
   /// max. level for refinement during solving
-  SGPP::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridIndex::level_type refineMaxLevel;
   /// variable to store needed solving iterations
   size_t nNeededIterations;
   /// variable to store the solving time
-  float_t dNeededTime;
-  /// variable to store start grid size (Inner SGPP::base::Grid)
+  double dNeededTime;
+  /// variable to store start grid size (Inner sgpp::base::Grid)
   size_t staInnerGridSize;
-  /// variable to store final grid size (Inner SGPP::base::Grid)
+  /// variable to store final grid size (Inner sgpp::base::Grid)
   size_t finInnerGridSize;
-  /// variable to store average grid size (Inner SGPP::base::Grid)
+  /// variable to store average grid size (Inner sgpp::base::Grid)
   size_t avgInnerGridSize;
   /// Percent how many of the removable points should be tested for deletion
-  float_t coarsenPercent;
+  double coarsenPercent;
   /// denotes the number of coarsening procedures within one timestep
   size_t numExecCoarsen;
-  float_t theta;
+  double theta;
   /// the standard deviations
-  float_t sigma;
+  double sigma;
   ///
-  float_t a;
+  double a;
   /// dimension in which BS is calculated
   int dim_BS;
   /// dimension in which HW is calculated
@@ -101,7 +101,7 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
    */
   virtual ~BlackScholesHullWhiteSolver();
 
-  void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
 
   /**
    * In order to combine the Black Scholes Equation with the Hull White Equation you have to
@@ -109,17 +109,17 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
    * some statistical data about the underlying (assets' weight, standard deviation
    * and the correlation between them). This function allows you to set this data for Black-Scholes.
    *
-   * @param mus a SGPP::base::DataVector that contains the underlyings' weight
-   * @param sigmas a SGPP::base::DataVector that contains the underlyings' standard deviations
-   * @param rhos a SGPP::base::DataMatrix that contains the correlations between the underlyings
+   * @param mus a sgpp::base::DataVector that contains the underlyings' weight
+   * @param sigmas a sgpp::base::DataVector that contains the underlyings' standard deviations
+   * @param rhos a sgpp::base::DataMatrix that contains the correlations between the underlyings
    * @param r the riskfree rate used in the market model
    * @param theta the theta of HullWhite PDE
    * @param sigma the sigma of HullWhite PDE (vola)
    * @param a the a of HullWhite PDE (mean reversion rate)
    */
-  void setStochasticData(SGPP::base::DataVector& mus, SGPP::base::DataVector& sigmas,
-                         SGPP::base::DataMatrix& rhos, float_t r, float_t theta, float_t sigma,
-                         float_t a);
+  void setStochasticData(sgpp::base::DataVector& mus, sgpp::base::DataVector& sigmas,
+                         sgpp::base::DataMatrix& rhos, double r, double theta, double sigma,
+                         double a);
 
   /**
    *  defines the dimension of the stoch. processes (BS and HW). default is BS:0, HW:1
@@ -129,16 +129,16 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
    */
   void setProcessDimensions(int dim_BS, int dim_HW);
 
-  void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
-                          float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+  void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
                           bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
-                          float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+  void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
                           bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
-                          float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+  void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, size_t NumImEul = 0);
 
   /**
    * Inits the alpha vector with a payoff function of an European call option or put option
@@ -150,8 +150,8 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
    * @param a is the mean reversion rate
    * @param sigma is the volatility
    */
-  void initGridWithPayoffBSHW(SGPP::base::DataVector& alpha, float_t strike, std::string payoffType,
-                              float_t a, float_t sigma);
+  void initGridWithPayoffBSHW(sgpp::base::DataVector& alpha, double strike, std::string payoffType,
+                              double a, double sigma);
 
   /**
    * Inits the screen object
@@ -187,9 +187,9 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
    *  @param refineThreshold Threshold needed to determine if a grid point should be refined
    */
   void setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode,
-                               SGPP::base::GridIndex::level_type refineMaxLevel,
-                               int numCoarsenPoints, float_t coarsenThreshold,
-                               float_t refineThreshold);
+                               sgpp::base::GridIndex::level_type refineMaxLevel,
+                               int numCoarsenPoints, double coarsenThreshold,
+                               double refineThreshold);
 
   /**
    * gets the number of gridpoints at the money
@@ -200,7 +200,7 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
    * @param strike the option's strike
    * @param eps epsilon to determine the gridpoints, use if at the money is not exactly on grid
    */
-  size_t getGridPointsAtMoney(std::string payoffType, float_t strike, float_t eps = 0.0);
+  size_t getGridPointsAtMoney(std::string payoffType, double strike, double eps = 0.0);
 
   /**
    * gets the number needed iterations to solve Black Scholes Equation
@@ -216,7 +216,7 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
    * @return needed time in seconds to solve Black Scholes Equation, if called before solving 0 is
    * returned
    */
-  float_t getNeededTimeToSolve();
+  double getNeededTimeToSolve();
 
   /**
    * gets the number of points in start grid
@@ -240,6 +240,6 @@ class BlackScholesHullWhiteSolver : public SGPP::pde::ParabolicPDESolver {
   size_t getAverageInnerGridSize();
 };
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BLACKSCHOLESHULLWHITESOLVER_HPP */

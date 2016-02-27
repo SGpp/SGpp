@@ -14,7 +14,7 @@
 #include <queue>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -125,6 +125,6 @@ class BreadthFirstSearch {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BREADTHFIRSTSEARCH_HPP */

@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /*
@@ -27,13 +27,13 @@ namespace parallel {
  *
  * Vectorized MultipleEvalulation Operations are used!
  */
-class AlgorithmAdaBoostVectorizedIdentity : public SGPP::datadriven::AlgorithmAdaBoostBase {
+class AlgorithmAdaBoostVectorizedIdentity : public sgpp::datadriven::AlgorithmAdaBoostBase {
  protected:
   /// Vectorization mode, possible values are SSE, AVX, OCL, ArBB
   VectorizationType vecMode;
 
-  virtual void alphaSolver(double& lambda, SGPP::base::DataVector& weight,
-                           SGPP::base::DataVector& alpha, bool final);
+  virtual void alphaSolver(double& lambda, sgpp::base::DataVector& weight,
+                           sgpp::base::DataVector& alpha, bool final);
 
  public:
   /**
@@ -65,9 +65,9 @@ class AlgorithmAdaBoostVectorizedIdentity : public SGPP::datadriven::AlgorithmAd
    * @param vecMode vectorization mode, possible values are SSE, AVX, OCL, ArBB
    * @param mode the adaboost type to choose
    */
-  AlgorithmAdaBoostVectorizedIdentity(SGPP::base::Grid& SparseGrid, size_t gridType, int gridLevel,
-                                      SGPP::base::DataMatrix& trainData,
-                                      SGPP::base::DataVector& trainDataClass, size_t NUM,
+  AlgorithmAdaBoostVectorizedIdentity(sgpp::base::Grid& SparseGrid, size_t gridType, int gridLevel,
+                                      sgpp::base::DataMatrix& trainData,
+                                      sgpp::base::DataVector& trainDataClass, size_t NUM,
                                       double lambda, size_t IMAX, double eps, size_t IMAX_final,
                                       double eps_final, double firstLabel, double secondLabel,
                                       double threshold, double maxLambda, double minLambda,
@@ -82,6 +82,6 @@ class AlgorithmAdaBoostVectorizedIdentity : public SGPP::datadriven::AlgorithmAd
 };
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ALGORITHMADABOOSTVECTORIZEDIDENTITY_HPP */

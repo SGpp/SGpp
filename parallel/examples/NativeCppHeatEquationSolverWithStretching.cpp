@@ -30,8 +30,8 @@
  * after creating a screen.
  */
 void writeHelp() {
-  SGPP::pde::HeatEquationSolverWithStretching* myHESolver =
-      new SGPP::pde::HeatEquationSolverWithStretching();
+  sgpp::pde::HeatEquationSolverWithStretching* myHESolver =
+      new sgpp::pde::HeatEquationSolverWithStretching();
 
   myHESolver->initScreen();
 
@@ -135,7 +135,7 @@ int readDiscreteStretchingData(std::string tFile, size_t numAssests,
 }
 
 int readStretchingData(std::string tFile, size_t numAssests,
-                       SGPP::base::Stretching1D* streching1dArray) {
+                       sgpp::base::Stretching1D* streching1dArray) {
   std::fstream file;
   std::string stretchingType;
   double x_0, xsi;
@@ -167,7 +167,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
                       std::string stretchingMode) {
   size_t timesteps = (size_t)(T / dt);
 
-  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
+  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[dim];
 
   // set the bounding box
   for (size_t i = 0; i < dim; i++) {
@@ -177,13 +177,13 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
     myBoundaries[i].bDirichletRight = true;
   }
 
-  SGPP::pde::HeatEquationSolverWithStretching* myHESolver =
-      new SGPP::pde::HeatEquationSolverWithStretching();
-  //  SGPP::BoundingBox* myBoundingBox = new SGPP::BoundingBox(dim, myBoundaries);
-  SGPP::base::Stretching* myStretching;
+  sgpp::pde::HeatEquationSolverWithStretching* myHESolver =
+      new sgpp::pde::HeatEquationSolverWithStretching();
+  //  sgpp::BoundingBox* myBoundingBox = new sgpp::BoundingBox(dim, myBoundaries);
+  sgpp::base::Stretching* myStretching;
 
   if (stretchingMode == "analytic") {
-    SGPP::base::Stretching1D* stretching1dArray = new SGPP::base::Stretching1D[dim];
+    sgpp::base::Stretching1D* stretching1dArray = new sgpp::base::Stretching1D[dim];
     int readStretchData = readStretchingData(fileStretch, dim, stretching1dArray);
 
     if (readStretchData != 0) {
@@ -191,7 +191,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
       return;
     }
 
-    myStretching = new SGPP::base::Stretching(dim, myBoundaries, stretching1dArray);
+    myStretching = new sgpp::base::Stretching(dim, myBoundaries, stretching1dArray);
     delete[] stretching1dArray;
   } else if (stretchingMode == "discrete") {
     std::vector<double>* discreteCoordinates = new std::vector<double>[dim];
@@ -202,7 +202,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
       return;
     }
 
-    myStretching = new SGPP::base::Stretching(dim, discreteCoordinates);
+    myStretching = new sgpp::base::Stretching(dim, discreteCoordinates);
     delete[] discreteCoordinates;
   } else {
     std::cout << "Unsupported Stretching Mode Specified\n";
@@ -218,7 +218,7 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
   myHESolver->constructGrid(*myStretching, level);
 
   // init the basis functions' coefficient vector (start solution)
-  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myHESolver->getNumberGridPoints());
+  sgpp::base::DataVector* alpha = new sgpp::base::DataVector(myHESolver->getNumberGridPoints());
 
   if (initFunc == "smooth") {
     myHESolver->initGridWithSmoothHeat(*alpha, bound_right, bound_right / DIV_SIGMA, DISTRI_FACTOR);

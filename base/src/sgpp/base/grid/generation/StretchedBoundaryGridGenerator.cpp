@@ -14,7 +14,7 @@
 #include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 StretchedBoundaryGridGenerator::StretchedBoundaryGridGenerator(
@@ -82,4 +82,4 @@ size_t StretchedBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

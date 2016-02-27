@@ -15,7 +15,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -45,7 +45,7 @@ class ComponentScalarFunction : public ScalarFunction {
    * @param f             scalar-valued function
    * @param defaultValues Vector of constant default values.
    *                      It can be either empty (the default) or
-   *                      a vector of exactly m float_ts,
+   *                      a vector of exactly m doubles,
    *                      each of which can be finite or NAN.
    *                      If the vector is empty, it will be initialized
    *                      as m NANs (i.e., no restriction of the
@@ -55,7 +55,7 @@ class ComponentScalarFunction : public ScalarFunction {
    *                      values for the corresponding parameter.
    */
   ComponentScalarFunction(ScalarFunction& f,
-                          std::vector<float_t> defaultValues = std::vector<float_t>())
+                          std::vector<double> defaultValues = std::vector<double>())
       :
 
         ScalarFunction((defaultValues.size() > 0)
@@ -65,7 +65,7 @@ class ComponentScalarFunction : public ScalarFunction {
         fVector(nullptr),
         dF(f.getNumberOfParameters()),
         k(0),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
         tmpVec1(dF),
         tmpVec2(0) {
     initialize();
@@ -87,7 +87,7 @@ class ComponentScalarFunction : public ScalarFunction {
    * @param defaultValues see other constructor
    */
   ComponentScalarFunction(VectorFunction& f, size_t k,
-                          std::vector<float_t> defaultValues = std::vector<float_t>())
+                          std::vector<double> defaultValues = std::vector<double>())
       :
 
         ScalarFunction((defaultValues.size() > 0)
@@ -97,7 +97,7 @@ class ComponentScalarFunction : public ScalarFunction {
         fVector(&f),
         dF(f.getNumberOfParameters()),
         k(k),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
         tmpVec1(dF),
         tmpVec2(f.getNumberOfComponents()) {
     initialize();
@@ -114,7 +114,7 @@ class ComponentScalarFunction : public ScalarFunction {
    *              where \f$(x_1, \dotsc, x_n) =
    *              (y_{i_1}, \dotsc, y_{i_n})\f$
    */
-  inline float_t eval(const base::DataVector& x) override {
+  inline double eval(const base::DataVector& x) override {
     size_t t2 = 0;
 
     // select entries of x which correspond to NAN entries in
@@ -153,7 +153,7 @@ class ComponentScalarFunction : public ScalarFunction {
   /// index of component
   size_t k;
   /// vector of default values, indicating free variables with NAN
-  std::vector<float_t> defaultValues;
+  std::vector<double> defaultValues;
   /// temporary vector 1
   base::DataVector tmpVec1;
   /// temporary vector 2
@@ -174,6 +174,6 @@ class ComponentScalarFunction : public ScalarFunction {
   }
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTION_HPP */

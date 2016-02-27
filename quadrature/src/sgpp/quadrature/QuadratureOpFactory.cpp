@@ -7,7 +7,7 @@
 #include <sgpp/globaldef.hpp>
 #include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace op_factory {
 
 std::unique_ptr<quadrature::OperationQuadratureMCAdvanced> createOperationQuadratureMCAdvanced(
@@ -17,4 +17,4 @@ std::unique_ptr<quadrature::OperationQuadratureMCAdvanced> createOperationQuadra
 }
 
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

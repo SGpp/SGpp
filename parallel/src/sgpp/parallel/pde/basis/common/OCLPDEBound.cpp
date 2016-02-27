@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -75,11 +75,11 @@ int* MPIOffsetListBound;
 int* MPISizeListBound;
 #endif
 void boundarytransposer(REAL* sink, REAL* source, size_t dim1, size_t dim2,
-                        SGPP::base::GridStorage* storage) {
+                        sgpp::base::GridStorage* storage) {
   unsigned k = 0;
 
   for (unsigned i = 0; i < dim2; i++) {
-    SGPP::base::GridIndex* curPoint = (*storage)[i];
+    sgpp::base::GridIndex* curPoint = (*storage)[i];
 
     if (curPoint->isInnerPoint()) {
       for (unsigned j = 0; j < dim1; j++) {
@@ -256,7 +256,7 @@ std::string BoundLTwoDotFunction() {
 }
 
 void SetBuffersBound(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t localStorageSize,
-                     size_t localdim, SGPP::base::GridStorage* storage) {
+                     size_t localdim, sgpp::base::GridStorage* storage) {
   padding_size = num_devices * LSIZE;
   storageSizeBound = localStorageSize;
   size_t pad = padding_size - (storageSizeBound % padding_size);
@@ -317,7 +317,7 @@ void SetBuffersBound(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t 
   unsigned num = 0;
 
   for (unsigned i = 0; i < storage->getSize(); i++) {
-    SGPP::base::GridIndex* curPoint = (*storage)[i];
+    sgpp::base::GridIndex* curPoint = (*storage)[i];
 
     if (curPoint->isInnerPoint()) {
       offsetBound[num] = i;
@@ -482,7 +482,7 @@ void SetUpMPIBound() {
   size_t minimum_size = num_devices * LSIZE;
   size_t data_size = storageSizePaddedBound;
 
-  SGPP::parallel::PartitioningTool::calcDistribution(data_size, nproz, MPISizeListBound,
+  sgpp::parallel::PartitioningTool::calcDistribution(data_size, nproz, MPISizeListBound,
                                                      MPIOffsetListBound, minimum_size);
 
   if (myrank == 0) {
@@ -499,7 +499,7 @@ void SetUpMPIBound() {
   MPI_Barrier(MPI_COMM_WORLD);
 }
 
-void MPI_ShareResultAllReduceBound(SGPP::base::DataVector& result) {
+void MPI_ShareResultAllReduceBound(sgpp::base::DataVector& result) {
   REAL* ptrResult = result.getPointer();
   MPI_Allreduce(MPI_IN_PLACE, ptrResultBound, (int)(storageInnerSizeBound), MPI_DOUBLE, MPI_SUM,
                 MPI_COMM_WORLD);

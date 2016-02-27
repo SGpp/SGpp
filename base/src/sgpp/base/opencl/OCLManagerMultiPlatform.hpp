@@ -18,7 +18,7 @@
 #include "OCLOperationConfiguration.hpp"
 #include "OCLDevice.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLManagerMultiPlatform {
@@ -73,4 +73,4 @@ class OCLManagerMultiPlatform {
   std::vector<std::shared_ptr<OCLDevice>> &getDevices();
 };
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

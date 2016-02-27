@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -50,6 +50,6 @@ class OperationMultipleEvalModBspline: public OperationMultipleEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALMODBSPLINE_HPP */

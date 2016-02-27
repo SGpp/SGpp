@@ -21,18 +21,18 @@
 #include <iostream>
 #include <cmath>
 
-using SGPP::base::DataMatrix;
-using SGPP::base::DataVector;
-using SGPP::base::Grid;
-using SGPP::base::GridGenerator;
-using SGPP::base::GridStorage;
-using SGPP::base::HashRefinement;
-using SGPP::base::OperationEval;
-using SGPP::base::PredictiveRefinement;
-using SGPP::base::PredictiveRefinementIndicator;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridStorage;
+using sgpp::base::HashRefinement;
+using sgpp::base::OperationEval;
+using sgpp::base::PredictiveRefinement;
+using sgpp::base::PredictiveRefinementIndicator;
 
 // function to interpolate
-SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
+double f(double x0, double x1) {
   return sin(x0 * M_PI);
 }
 
@@ -42,7 +42,7 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
 
   // traverse dataSet
   DataVector vec(2);
-  std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
+  std::unique_ptr<OperationEval> opEval(sgpp::op_factory::createOperationEval(grid));
 
   for (unsigned int i = 0; i < dataSet.getNrows(); i++) {
     dataSet.getRow(i, vec);
@@ -99,7 +99,7 @@ int main() {
     }
 
     // hierarchize
-    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
+    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
       alpha);
 
     // calculate squared offset

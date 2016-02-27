@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -51,5 +51,5 @@ class OperationDensitySamplingLinear : public OperationDensitySampling {
                               base::DataVector*& sampleVec, size_t& curr_dim, unsigned int* seedp);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYSAMPLINGLINEAR_HPP */

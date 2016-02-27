@@ -18,19 +18,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION == 0
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 template <typename KernelImplementation>
 class DMSystemMatrixSPVectorizedIdentityBigdataAllreduce
-    : public SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
+    : public sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
  private:
   // size of complete dataset (this process handles this->numPatchedTrainingInstances_)
   size_t complete_data_size;
 
  public:
-  DMSystemMatrixSPVectorizedIdentityBigdataAllreduce(SGPP::base::Grid& SparseGrid,
-                                                     SGPP::base::DataMatrixSP& trainData,
+  DMSystemMatrixSPVectorizedIdentityBigdataAllreduce(sgpp::base::Grid& SparseGrid,
+                                                     sgpp::base::DataMatrixSP& trainData,
                                                      float lambda, VectorizationType vecMode)
       : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData,
                                                                         lambda, vecMode) {
@@ -108,6 +107,6 @@ class DMSystemMatrixSPVectorizedIdentityBigdataAllreduce
 };
 
 }  // namespace parallel
-}  // namespace SGPP
-#endif
+}  // namespace sgpp
+
 #endif  // DMSYSTEMMATRIXVECTORIZEDIDENTITYBIGDATAALLREDUCE_H

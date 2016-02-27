@@ -15,7 +15,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -54,7 +54,7 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x, base::DataVector& gradient,
+  inline double eval(const base::DataVector& x, base::DataVector& gradient,
                       base::DataMatrix& hessian) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
@@ -92,6 +92,6 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
   base::DataVector alpha;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_INTERPOLANTSCALARFUNCTIONHESSIAN_HPP */

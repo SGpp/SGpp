@@ -10,7 +10,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLManager.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLZeroCopyBuffer {
@@ -44,4 +44,4 @@ class OCLZeroCopyBuffer {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
