@@ -10,22 +10,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-float_t OperationTestLinearBoundary::test(base::DataVector& alpha, base::DataMatrix& data,
+double OperationTestLinearBoundary::test(base::DataVector& alpha, base::DataMatrix& data,
                                           base::DataVector& classes) {
   base::LinearBoundaryBasis<unsigned int, unsigned int> base;
   return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-float_t OperationTestLinearBoundary::testMSE(base::DataVector& alpha, base::DataMatrix& data,
+double OperationTestLinearBoundary::testMSE(base::DataVector& alpha, base::DataMatrix& data,
                                              base::DataVector& refValues) {
   base::LinearBoundaryBasis<unsigned int, unsigned int> base;
   return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-float_t OperationTestLinearBoundary::testWithCharacteristicNumber(base::DataVector& alpha,
+double OperationTestLinearBoundary::testWithCharacteristicNumber(base::DataVector& alpha,
                                                                   base::DataMatrix& data,
                                                                   base::DataVector& classes,
                                                                   base::DataVector& charaNumbers) {
@@ -34,13 +34,13 @@ float_t OperationTestLinearBoundary::testWithCharacteristicNumber(base::DataVect
                                               charaNumbers, 0.0);
 }
 
-void OperationTestLinearBoundary::calculateROCcurve(SGPP::base::DataVector& alpha,
-                                                    SGPP::base::DataMatrix& data,
-                                                    SGPP::base::DataVector& classes,
-                                                    SGPP::base::DataVector& thresholds,
-                                                    SGPP::base::DataMatrix& ROC_curve) {
+void OperationTestLinearBoundary::calculateROCcurve(sgpp::base::DataVector& alpha,
+                                                    sgpp::base::DataMatrix& data,
+                                                    sgpp::base::DataVector& classes,
+                                                    sgpp::base::DataVector& thresholds,
+                                                    sgpp::base::DataMatrix& ROC_curve) {
   base::LinearBoundaryBasis<unsigned int, unsigned int> base;
   test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

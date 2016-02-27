@@ -9,12 +9,12 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

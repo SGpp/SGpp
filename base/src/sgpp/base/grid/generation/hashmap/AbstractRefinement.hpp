@@ -19,7 +19,7 @@
 #include <memory>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /***
@@ -107,7 +107,7 @@ class AbstractRefinement {
   /**
    * Type of functor value assigned to each refinement atom
    */
-  typedef float_t refinement_value_type;  // refinement functor value
+  typedef double refinement_value_type;  // refinement functor value
 
 
   /**
@@ -317,6 +317,6 @@ class AbstractRefinement {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ABSTRACTREFINEMENT_HPP */

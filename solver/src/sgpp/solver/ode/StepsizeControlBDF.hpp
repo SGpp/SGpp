@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -25,8 +25,8 @@ namespace solver {
  */
 class StepsizeControlBDF : public VarTimestep {
  protected:
-  float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm,
-                       float_t epsilon);
+  double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm,
+                       double epsilon);
 
  public:
   /**
@@ -35,10 +35,10 @@ class StepsizeControlBDF : public VarTimestep {
    * @param nTimesteps number of maximum executed iterations
    * @param timestepSize the size of one timestep
    * @param eps the epsilon for the step size control
-   * @param screen possible pointer to a SGPP::base::ScreenOutput object
+   * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
-  StepsizeControlBDF(size_t nTimesteps, float_t timestepSize, float_t eps,
-                     SGPP::base::ScreenOutput* screen = NULL);
+  StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps,
+                     sgpp::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor
@@ -47,6 +47,6 @@ class StepsizeControlBDF : public VarTimestep {
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* STEPSIZECONTROLBDF_HPP */

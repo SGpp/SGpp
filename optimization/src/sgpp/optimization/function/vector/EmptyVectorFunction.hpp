@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -27,6 +27,6 @@ class EmptyVectorFunction {
   void operator=(const EmptyVectorFunction&) = delete;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORFUNCTION_HPP */

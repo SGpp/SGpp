@@ -69,7 +69,7 @@
 
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 
@@ -304,7 +304,7 @@ std::unique_ptr<base::OperationMatrix> createOperationHestonHLog(
 }
 
 std::unique_ptr<base::OperationMatrix> createOperationHestonKLog(
-    base::Grid& grid, float_t***** coef) {
+    base::Grid& grid, double***** coef) {
   if (grid.getType() == base::GridType::Linear) {
     return std::unique_ptr<base::OperationMatrix>(
         new finance::OperationHestonKLinear(&grid.getStorage(), coef));
@@ -373,4 +373,4 @@ std::unique_ptr<base::OperationMatrix> createOperationHestonZ(
   }
 }
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

@@ -14,13 +14,13 @@
 #include <vector>
 #include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 /**
  * The class NaiveSampleGenerator implements a simple MonteCarlo sample
  * generator. A sample is generated using the standard random number
- * generator from cmath and transforming the values to float_t range 0.0 to
+ * generator from cmath and transforming the values to double range 0.0 to
  * 1.0.
  */
 class LatinHypercubeSampleGenerator : public SampleGenerator {
@@ -48,7 +48,7 @@ class LatinHypercubeSampleGenerator : public SampleGenerator {
    * @param sample DataVector storing the new generated sample vector.
    */
 
-  void getSample(SGPP::base::DataVector& sample);
+  void getSample(sgpp::base::DataVector& sample);
 
  private:
   /**
@@ -65,16 +65,16 @@ class LatinHypercubeSampleGenerator : public SampleGenerator {
   size_t numberOfCurrentSample;
 
   //
-  float_t sizeOfStrata;
+  double sizeOfStrata;
 
   //
   std::vector<std::vector<size_t> > currentStrata;
 
   //
-  std::uniform_real_distribution<float_t> uniformRealDist;
+  std::uniform_real_distribution<double> uniformRealDist;
 };
 
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LATINHYPERCUBESAMPLEGENERATOR_HPP */

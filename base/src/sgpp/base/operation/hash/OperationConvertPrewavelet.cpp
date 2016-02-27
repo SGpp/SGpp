@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationConvertPrewavelet::doConvertToLinear(
@@ -39,4 +39,4 @@ void OperationConvertPrewavelet::doConvertFromLinear(DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

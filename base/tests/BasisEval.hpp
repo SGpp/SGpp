@@ -21,9 +21,9 @@
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-SGPP::float_t basisEvalDx(SGPP::base::SBasis& basis, SGPP::base::level_t l,
-                          SGPP::base::index_t i, SGPP::float_t x);
-SGPP::float_t basisEvalDxDx(SGPP::base::SBasis& basis, SGPP::base::level_t l,
-                            SGPP::base::index_t i, SGPP::float_t x);
+double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
+                          sgpp::base::index_t i, double x);
+double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
+                            sgpp::base::index_t i, double x);
 
 #endif /* BASIS_EVAL_HPP */

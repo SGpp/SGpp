@@ -11,7 +11,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -21,13 +21,13 @@ namespace optimizer {
 class BFGS : public UnconstrainedOptimizer {
  public:
   /// default tolerance
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
+  static constexpr double DEFAULT_TOLERANCE = 1e-6;
   /// default step size increase factor
-  static constexpr float_t DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
+  static constexpr double DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
   /// default step size decrease factor
-  static constexpr float_t DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
+  static constexpr double DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
   /// default line search accuracy
-  static constexpr float_t DEFAULT_LINE_SEARCH_ACCURACY = 0.01;
+  static constexpr double DEFAULT_LINE_SEARCH_ACCURACY = 0.01;
 
   /**
    * Constructor.
@@ -42,10 +42,10 @@ class BFGS : public UnconstrainedOptimizer {
    * @param lineSearchAccuracy      line search accuracy
    */
   BFGS(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount = DEFAULT_N,
-       float_t tolerance = DEFAULT_TOLERANCE,
-       float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
-       float_t stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
-       float_t lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
+       double tolerance = DEFAULT_TOLERANCE,
+       double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
+       double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
+       double lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);
 
   /**
    * Destructor.
@@ -62,42 +62,42 @@ class BFGS : public UnconstrainedOptimizer {
   /**
    * @return tolerance
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance tolerance
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return step size increase factor
    */
-  float_t getStepSizeIncreaseFactor() const;
+  double getStepSizeIncreaseFactor() const;
 
   /**
    * @param stepSizeIncreaseFactor step size increase factor
    */
-  void setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor);
+  void setStepSizeIncreaseFactor(double stepSizeIncreaseFactor);
 
   /**
    * @return step size decrease factor
    */
-  float_t getStepSizeDecreaseFactor() const;
+  double getStepSizeDecreaseFactor() const;
 
   /**
    * @param stepSizeDecreaseFactor step size decrease factor
    */
-  void setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor);
+  void setStepSizeDecreaseFactor(double stepSizeDecreaseFactor);
 
   /**
    * @return line search accuracy
    */
-  float_t getLineSearchAccuracy() const;
+  double getLineSearchAccuracy() const;
 
   /**
    * @param lineSearchAccuracy line search accuracy
    */
-  void setLineSearchAccuracy(float_t lineSearchAccuracy);
+  void setLineSearchAccuracy(double lineSearchAccuracy);
 
   /**
    * @param[out] clone pointer to cloned object
@@ -108,16 +108,16 @@ class BFGS : public UnconstrainedOptimizer {
   /// objective function gradient
   ScalarFunctionGradient& fGradient;
   /// tolerance
-  float_t theta;
+  double theta;
   /// step size increase factor
-  float_t rhoAlphaPlus;
+  double rhoAlphaPlus;
   /// step size decrease factor
-  float_t rhoAlphaMinus;
+  double rhoAlphaMinus;
   /// line search accuracy
-  float_t rhoLs;
+  double rhoLs;
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_BFGS_HPP */

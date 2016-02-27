@@ -10,7 +10,7 @@
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 OperationMultipleHierarchisationModLinear::OperationMultipleHierarchisationModLinear(
@@ -79,4 +79,4 @@ void OperationMultipleHierarchisationModLinear::doDehierarchisation(base::DataMa
   }
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

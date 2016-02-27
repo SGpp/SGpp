@@ -19,44 +19,44 @@
 #include <vector>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
     BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(
-        SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
-        SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, double TimestepSize,
+        sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& lambda,
+        sgpp::base::DataMatrix& eigenvecs, sgpp::base::DataVector& mu_hat, double TimestepSize,
         std::string OperationMode, double dStrike, std::string option_type, double r,
         bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
         double refineThreshold, std::string refineMode,
-        SGPP::base::GridIndex::level_type refineMaxLevel) {
+        sgpp::base::GridIndex::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
-  this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
-  this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
+  this->alpha_complete_old = new sgpp::base::DataVector(*this->alpha_complete);
+  this->alpha_complete_tmp = new sgpp::base::DataVector(*this->alpha_complete);
+  this->oldGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
+  this->secondGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
 
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
-  this->GridConverter = new SGPP::base::DirichletGridConverter();
+  this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->GridConverter = new sgpp::base::DirichletGridConverter();
 
   // set Eigenvalues, Eigenvector of covariance matrix and mu_hat
-  this->lambda = new SGPP::base::DataVector(lambda);
-  this->eigenvecs = new SGPP::base::DataMatrix(eigenvecs);
-  this->mu_hat = new SGPP::base::DataVector(mu_hat);
+  this->lambda = new sgpp::base::DataVector(lambda);
+  this->eigenvecs = new sgpp::base::DataMatrix(eigenvecs);
+  this->mu_hat = new sgpp::base::DataVector(mu_hat);
 
   this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
   this->nExecTimesteps = 0;
 
   // throw exception if grid dimensions not equal algorithmic dimensions
   if (this->BSalgoDims.size() > this->BoundGrid->getStorage().getDimension()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::"
         "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Number of algorithmic "
         "dimensions higher than the number of grid's dimensions.");
@@ -65,7 +65,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and
   // sigma)
   if (this->BoundGrid->getStorage().getDimension() != this->lambda->getSize()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::"
         "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Dimension of mu and sigma "
         "parameters don't match the grid's dimensions!");
@@ -74,7 +74,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
     if (this->BSalgoDims[i] >= this->BoundGrid->getStorage().getDimension()) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::"
           "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : Minimum one algorithmic "
           "dimension is not inside the grid's dimensions!");
@@ -94,7 +94,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
     }
 
     if (dimCount > 1) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::"
           "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : There is minimum one "
           "doubled algorithmic dimension!");
@@ -109,35 +109,35 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
   char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
   if (!strcmp(alg_selector, "X86SIMD")) {
-    this->OpLaplaceInner = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, SGPP::parallel::X86SIMD);
-    this->OpLaplaceBound = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, SGPP::parallel::X86SIMD);
-    this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, SGPP::parallel::X86SIMD);
-    this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, SGPP::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceInner = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, SGPP::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceBound = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, SGPP::parallel::X86SIMD);
+    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::X86SIMD);
+    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::X86SIMD);
+    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD);
+    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD);
+    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::X86SIMD);
+    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::X86SIMD);
 #ifdef USEOCL
   } else if (!strcmp(alg_selector, "OCL")) {
-    this->OpLaplaceInner = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, SGPP::parallel::OpenCL);
-    this->OpLaplaceBound = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, SGPP::parallel::OpenCL);
-    this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, SGPP::parallel::OpenCL);
-    this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, SGPP::parallel::OpenCL);
-    this->OpLTwoDotLaplaceInner = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, *this->lambda, SGPP::parallel::OpenCL);
-    this->OpLTwoDotLaplaceBound = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, *this->lambda, SGPP::parallel::OpenCL);
+    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::OpenCL);
+    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::OpenCL);
+    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL);
+    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL);
+    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, *this->lambda, sgpp::parallel::OpenCL);
+    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, *this->lambda, sgpp::parallel::OpenCL);
 #endif
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::"
         "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI : no supported vectorization "
         "was selected!");
@@ -190,8 +190,8 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyLOperatorComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
   // Apply the Laplace operator
@@ -200,8 +200,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyLOperato
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
 
   // Apply the Laplace operator
@@ -210,8 +210,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyLOperato
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatrixComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -222,8 +222,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatr
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatrixInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -234,8 +234,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatr
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatrixLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -245,8 +245,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatr
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::applyMassMatrixLOperatorBound(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -273,11 +273,11 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::finishTimeste
   if (this->option_type == "std_amer_put") {
     double current_time = static_cast<double>(this->nExecTimesteps) * this->TimestepSize;
 
-    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation =
+        sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid);
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
     size_t dim = this->BoundGrid->getStorage().getDimension();
-    SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(this->BoundGrid->getBoundingBox());
+    sgpp::base::BoundingBox* myBB = new sgpp::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
     double* coords_val = new double[dim];
 
@@ -341,7 +341,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRef
     size_t originalGridSize = this->BoundGrid->getStorage().getSize();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
+    sgpp::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
@@ -349,7 +349,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRef
     if (this->adaptSolveMode == "refine"
         || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator.getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(
           *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
@@ -366,7 +366,7 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRef
     if (this->adaptSolveMode == "coarsen"
         || this->adaptSolveMode == "coarsenNrefine") {
       size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+      sgpp::base::SurplusCoarseningFunctor myCoarsenFunctor(
           *this->alpha_complete, numCoarsen, this->coarsenThreshold);
       myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete,
                                     originalGridSize);
@@ -385,4 +385,4 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::coarsenAndRef
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI::startTimestep() {}
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

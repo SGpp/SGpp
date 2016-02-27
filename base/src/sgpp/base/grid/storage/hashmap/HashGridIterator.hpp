@@ -19,7 +19,7 @@
 #include <exception>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -228,6 +228,6 @@ class HashGridIterator {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHGRIDITERATOR_HPP */

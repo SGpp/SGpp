@@ -14,7 +14,7 @@
 #include <cmath>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -33,32 +33,32 @@ void CMAES::optimize() {
   xHist.resize(0, d);
   fHist.resize(0);
 
-  const float_t dDbl = static_cast<float_t>(d);
+  const double dDbl = static_cast<double>(d);
 
-  const float_t E = std::sqrt(dDbl) * (1.0 - 1.0 / (4.0 * dDbl) + 1.0 / (21.0 * dDbl * dDbl));
+  const double E = std::sqrt(dDbl) * (1.0 - 1.0 / (4.0 * dDbl) + 1.0 / (21.0 * dDbl * dDbl));
 
   const size_t lambda = 4 + static_cast<size_t>(3.0 * std::log(dDbl));
-  const float_t muPrime = static_cast<float_t>(lambda) / 2.0;
+  const double muPrime = static_cast<double>(lambda) / 2.0;
   const size_t mu = static_cast<size_t>(muPrime);
 
   base::DataVector wPrime(mu);
 
   for (size_t i = 0; i < mu; i++) {
-    wPrime[i] = std::log(muPrime + 0.5) - std::log(static_cast<float_t>(i) + 1.0);
+    wPrime[i] = std::log(muPrime + 0.5) - std::log(static_cast<double>(i) + 1.0);
   }
 
   base::DataVector w(wPrime);
   w.mult(1.0 / wPrime.sum());
 
-  const float_t muEff = 1.0 / std::pow(w.l2Norm(), 2.0);
-  const float_t cSigma = (muEff + 2.0) / (dDbl + muEff + 5.0);
-  const float_t dSigma =
+  const double muEff = 1.0 / std::pow(w.l2Norm(), 2.0);
+  const double cSigma = (muEff + 2.0) / (dDbl + muEff + 5.0);
+  const double dSigma =
       1.0 + 2.0 * std::max(0.0, std::sqrt((muEff - 1.0) / (dDbl + 1.0)) - 1.0) + cSigma;
 
-  const float_t cC = (4.0 + muEff / dDbl) / (dDbl + 4.0 + 2.0 * muEff / dDbl);
-  const float_t c1 = 2.0 / (std::pow(static_cast<float_t>(dDbl + 1.3), 2.0) + muEff);
-  const float_t alphaMu = 2.0;
-  const float_t cMu = std::min(1.0 - c1, alphaMu * (muEff - 2.0 + 1.0 / muEff) /
+  const double cC = (4.0 + muEff / dDbl) / (dDbl + 4.0 + 2.0 * muEff / dDbl);
+  const double c1 = 2.0 / (std::pow(static_cast<double>(dDbl + 1.3), 2.0) + muEff);
+  const double alphaMu = 2.0;
+  const double cMu = std::min(1.0 - c1, alphaMu * (muEff - 2.0 + 1.0 / muEff) /
                                              (std::pow(dDbl + 2.0, 2.0) + alphaMu * muEff / 2.0));
 
   base::DataVector pSigma(d, 0.0);
@@ -72,7 +72,7 @@ void CMAES::optimize() {
   }
 
   base::DataVector m(x0);
-  float_t sigma = 0.3;
+  double sigma = 0.3;
 
   base::DataMatrix X(d, lambda), Y(d, lambda);
   base::DataVector x(d), y(d), tmp(d);
@@ -153,13 +153,13 @@ void CMAES::optimize() {
 
     sigma *= std::exp(cSigma / dSigma * (pSigma.l2Norm() / E - 1.0));
 
-    const float_t hSigma =
+    const double hSigma =
         ((pSigma.l2Norm() /
-              std::sqrt(1.0 - std::pow(1.0 - cSigma, 2.0 * (static_cast<float_t>(k) + 1.0))) <
+              std::sqrt(1.0 - std::pow(1.0 - cSigma, 2.0 * (static_cast<double>(k) + 1.0))) <
           (1.4 + 2.0 / (dDbl + 1.0)) * E)
              ? 1.0
              : 0.0);
-    const float_t delta = (1.0 - hSigma) * cC * (2.0 - cC);
+    const double delta = (1.0 - hSigma) * cC * (2.0 - cC);
 
     tmp = yW;
     tmp.mult(hSigma * std::sqrt(cC * (2.0 - cC) * muEff));
@@ -201,4 +201,4 @@ void CMAES::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

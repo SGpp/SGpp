@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -48,6 +48,6 @@ class UMFPACK : public SLESolver {
 };
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_UMFPACK_HPP */

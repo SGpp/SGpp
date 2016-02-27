@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class OperationDensityConditionalKDE {
@@ -28,7 +28,7 @@ class OperationDensityConditionalKDE {
    * @param xbar Point at which to conditionalize
    * @param conditionalizedKDE conditionalized kernel density
    */
-  virtual void doConditional(size_t mdim, float_t xbar,
+  virtual void doConditional(size_t mdim, double xbar,
                              datadriven::GaussianKDE& conditionalizedKDE);
 
   /**
@@ -68,6 +68,6 @@ class OperationDensityConditionalKDE {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONDENSITYCONDITIONALKDE_HPP_ */

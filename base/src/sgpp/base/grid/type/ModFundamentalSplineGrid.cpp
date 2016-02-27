@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ModFundamentalSplineGrid::ModFundamentalSplineGrid(std::istream& istr) :
@@ -35,8 +35,8 @@ ModFundamentalSplineGrid::ModFundamentalSplineGrid(size_t dim,
 ModFundamentalSplineGrid::~ModFundamentalSplineGrid() {
 }
 
-SGPP::base::GridType ModFundamentalSplineGrid::getType() {
-  return SGPP::base::GridType::ModFundamentalSpline;
+sgpp::base::GridType ModFundamentalSplineGrid::getType() {
+  return sgpp::base::GridType::ModFundamentalSpline;
 }
 
 const SBasis& ModFundamentalSplineGrid::getBasis() {
@@ -65,4 +65,4 @@ GridGenerator& ModFundamentalSplineGrid::getGenerator() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

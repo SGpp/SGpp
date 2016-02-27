@@ -10,7 +10,7 @@
 
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -20,15 +20,15 @@ namespace optimizer {
 class DifferentialEvolution : public UnconstrainedOptimizer {
  public:
   /// default crossover probability
-  static constexpr float_t DEFAULT_CROSSOVER_PROBABILITY = 0.5;
+  static constexpr double DEFAULT_CROSSOVER_PROBABILITY = 0.5;
   /// default crossover scaling factor
-  static constexpr float_t DEFAULT_SCALING_FACTOR = 0.6;
+  static constexpr double DEFAULT_SCALING_FACTOR = 0.6;
   /// default stopping criterion parameter 1
   static const size_t DEFAULT_IDLE_GENERATIONS_COUNT = 20;
   /// default stopping criterion parameter 2
-  static constexpr float_t DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
+  static constexpr double DEFAULT_AVG_IMPROVEMENT_THRESHOLD = 1e-6;
   /// default stopping criterion parameter 3
-  static constexpr float_t DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
+  static constexpr double DEFAULT_MAX_DISTANCE_THRESHOLD = 1e-4;
 
   /**
    * Constructor.
@@ -46,11 +46,11 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
    */
   DifferentialEvolution(ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
                         size_t populationSize = 0,
-                        float_t crossoverProbability = DEFAULT_CROSSOVER_PROBABILITY,
-                        float_t scalingFactor = DEFAULT_SCALING_FACTOR,
+                        double crossoverProbability = DEFAULT_CROSSOVER_PROBABILITY,
+                        double scalingFactor = DEFAULT_SCALING_FACTOR,
                         size_t idleGenerationsCount = DEFAULT_IDLE_GENERATIONS_COUNT,
-                        float_t avgImprovementThreshold = DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
-                        float_t maxDistanceThreshold = DEFAULT_MAX_DISTANCE_THRESHOLD);
+                        double avgImprovementThreshold = DEFAULT_AVG_IMPROVEMENT_THRESHOLD,
+                        double maxDistanceThreshold = DEFAULT_MAX_DISTANCE_THRESHOLD);
 
   /**
    * Destructor.
@@ -78,18 +78,18 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
   /// number of individuals
   size_t populationSize;
   /// crossover probability
-  float_t crossoverProbability;
+  double crossoverProbability;
   /// crossover scaling factor
-  float_t scalingFactor;
+  double scalingFactor;
   /// stopping criterion parameter 1
   size_t idleGenerationsCount;
   /// stopping criterion parameter 2
-  float_t avgImprovementThreshold;
+  double avgImprovementThreshold;
   /// stopping criterion parameter 3
-  float_t maxDistanceThreshold;
+  double maxDistanceThreshold;
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_DIFFERENTIALEVOLUTION_HPP */

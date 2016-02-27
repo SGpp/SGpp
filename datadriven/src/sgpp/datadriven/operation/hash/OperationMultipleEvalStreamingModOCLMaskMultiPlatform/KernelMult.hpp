@@ -20,7 +20,7 @@
 #include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
 #include "SourceBuilderMult.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingModOCLMaskMultiPlatform {
 
@@ -164,63 +164,63 @@ class KernelMult {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 1, sizeof(cl_mem), this->deviceIndex.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 2, sizeof(cl_mem), this->deviceMask.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 3, sizeof(cl_mem), this->deviceOffset.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 4, sizeof(cl_mem), this->deviceData.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 5, sizeof(cl_mem), this->deviceAlpha.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err =
             clSetKernelArg(this->kernelMult, 6, sizeof(cl_mem), this->deviceResultData.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 7, sizeof(cl_uint),
                              &rangeSizeUnblocked);  // resultsize == number of entries in dataset
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 8, sizeof(cl_uint), &kernelStartGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(this->kernelMult, 9, sizeof(cl_uint), &kernelEndGrid);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         cl_event clTiming = nullptr;
@@ -241,7 +241,7 @@ class KernelMult {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read the device name for device: "
                       << device->deviceId << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         //                std::cout << "OCL Info: detected device, name: \"" <<
@@ -254,7 +254,7 @@ class KernelMult {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         clFinish(device->commandQueue);
@@ -287,7 +287,7 @@ class KernelMult {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
                          "queue (or crash in mult)! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
@@ -297,7 +297,7 @@ class KernelMult {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
                          "queue! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         clReleaseEvent(clTiming);
@@ -362,4 +362,4 @@ class KernelMult {
 };
 }  // namespace StreamingModOCLMaskMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

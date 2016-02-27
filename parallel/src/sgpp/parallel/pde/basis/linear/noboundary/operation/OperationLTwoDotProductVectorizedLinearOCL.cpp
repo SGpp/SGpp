@@ -12,18 +12,18 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 OperationLTwoDotProductVectorizedLinearOCL::OperationLTwoDotProductVectorizedLinearOCL(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : storage(storage) {
   this->lcl_q = new double[this->storage->getDimension()];
   this->OCLPDEKernelsHandle = OCLPDEKernels();
 
-  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
@@ -37,12 +37,12 @@ OperationLTwoDotProductVectorizedLinearOCL::~OperationLTwoDotProductVectorizedLi
   this->OCLPDEKernelsHandle.CleanUpGPU();
 }
 
-void OperationLTwoDotProductVectorizedLinearOCL::mult(SGPP::base::DataVector& alpha,
-                                                      SGPP::base::DataVector& result) {
+void OperationLTwoDotProductVectorizedLinearOCL::mult(sgpp::base::DataVector& alpha,
+                                                      sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   for (size_t d = 0; d < this->storage->getDimension(); d++) {
-    SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+    sgpp::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     this->lcl_q[d] = boundingBox->getIntervalWidth(d);
   }
 

@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
@@ -43,8 +43,8 @@ void DehierarchisationPoly::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // Dehierarchisation
-  float_t x = static_cast<float_t>(cur_ind) /
-              static_cast<float_t>(1 << cur_lev);
+  double x = static_cast<double>(cur_ind) /
+              static_cast<double>(1 << cur_lev);
 
   // v_i * 1 + sum_{j < i} v_j * \phi(x_i)
   result[seq] = source[seq]
@@ -77,4 +77,4 @@ void DehierarchisationPoly::rec(DataVector& source, DataVector& result,
 
 }  // namespace base
 
-}  // namespace SGPP
+}  // namespace sgpp

@@ -13,7 +13,7 @@
 #include <random>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 /**
@@ -47,7 +47,7 @@ class StratifiedSampleGenerator : public SampleGenerator {
    * @param sample DataVector storing the new generated sample vector.
    */
 
-  void getSample(SGPP::base::DataVector& sample);
+  void getSample(sgpp::base::DataVector& sample);
 
  private:
   // Array containing the number of strata per dimension
@@ -61,7 +61,7 @@ class StratifiedSampleGenerator : public SampleGenerator {
   size_t numberOfCurrentSample;
 
   // Array containing the size of dimension i strata when dividing [0,1] into numberOfStrata[i]
-  std::vector<float_t> sizeOfStrata;
+  std::vector<double> sizeOfStrata;
 
   /**
    * This method computes in which strata the next sample should be generated.
@@ -72,10 +72,10 @@ class StratifiedSampleGenerator : public SampleGenerator {
   void getNextStrata();
 
   //
-  std::uniform_real_distribution<float_t> uniformRealDist;
+  std::uniform_real_distribution<double> uniformRealDist;
 };
 
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* STRATIFIEDSAMPLEGENERATOR_HPP */

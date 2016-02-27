@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ModWaveletGrid::ModWaveletGrid(std::istream& istr) :
@@ -29,8 +29,8 @@ ModWaveletGrid::ModWaveletGrid(size_t dim) :
 ModWaveletGrid::~ModWaveletGrid() {
 }
 
-SGPP::base::GridType ModWaveletGrid::getType() {
-  return SGPP::base::GridType::ModWavelet;
+sgpp::base::GridType ModWaveletGrid::getType() {
+  return sgpp::base::GridType::ModWavelet;
 }
 
 const SBasis& ModWaveletGrid::getBasis() {
@@ -53,4 +53,4 @@ GridGenerator& ModWaveletGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

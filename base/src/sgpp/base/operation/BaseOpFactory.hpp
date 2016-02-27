@@ -30,7 +30,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 
@@ -140,6 +140,6 @@ std::unique_ptr<base::OperationNaiveEvalPartialDerivative>
 createOperationNaiveEvalPartialDerivative(base::Grid& grid);
 
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /*BASE_OP_FACTORY_HPP*/

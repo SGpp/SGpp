@@ -16,7 +16,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -397,6 +397,6 @@ class sweep {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SWEEP_HPP */

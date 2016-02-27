@@ -20,7 +20,7 @@
 #include <fstream>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 PDESolver::PDESolver()
@@ -35,13 +35,13 @@ PDESolver::~PDESolver() {
   }
 }
 
-void PDESolver::getGridNormalDistribution(SGPP::base::DataVector& alpha,
-                                          std::vector<float_t>& norm_mu,
-                                          std::vector<float_t>& norm_sigma) {
+void PDESolver::getGridNormalDistribution(sgpp::base::DataVector& alpha,
+                                          std::vector<double>& norm_mu,
+                                          std::vector<double>& norm_sigma) {
   if (bGridConstructed) {
-    float_t tmp;
-    float_t value;
-    SGPP::base::StdNormalDistribution myNormDistr;
+    double tmp;
+    double value;
+    sgpp::base::StdNormalDistribution myNormDistr;
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
@@ -58,7 +58,7 @@ void PDESolver::getGridNormalDistribution(SGPP::base::DataVector& alpha,
       alpha[i] = value;
     }
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::getGridNormalDistribution : The grid wasn't initialized before!");
   }
 }
@@ -70,7 +70,7 @@ void PDESolver::deleteGrid() {
     myBoundingBox = NULL;
     myGridStorage = NULL;
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::deleteGrid : The grid wasn't initialized before!");
   }
 }
@@ -83,7 +83,7 @@ void PDESolver::setGrid(const std::string& serializedGrid) {
     myGridStorage = NULL;
   }
 
-  myGrid = SGPP::base::Grid::unserialize(serializedGrid).release();
+  myGrid = sgpp::base::Grid::unserialize(serializedGrid).release();
 
   myBoundingBox = &myGrid->getBoundingBox();
   myGridStorage = &myGrid->getStorage();
@@ -101,15 +101,15 @@ std::string PDESolver::getGrid() const {
     // Serialize the grid
     myGrid->serialize(gridSer);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::getGrid : The grid wasn't initialized before!");
   }
 
   return gridSer;
 }
 
-void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numRefinePoints,
-                                         float_t dThreshold) {
+void PDESolver::refineInitialGridSurplus(sgpp::base::DataVector& alpha, int numRefinePoints,
+                                         double dThreshold) {
   size_t nRefinements;
 
   if (numRefinePoints < 0) {
@@ -119,20 +119,20 @@ void PDESolver::refineInitialGridSurplus(SGPP::base::DataVector& alpha, int numR
   }
 
   if (bGridConstructed) {
-    SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
     myGrid->getGenerator().refine(myRefineFunc);
 
     alpha.resize(myGridStorage->getSize());
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::refineIntialGridSurplus : The grid wasn't initialized before!");
   }
 }
 
-void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
-                                                  int numRefinePoints, float_t dThreshold,
-                                                  std::vector<float_t>& norm_mu,
-                                                  std::vector<float_t>& norm_sigma) {
+void PDESolver::refineInitialGridSurplusSubDomain(sgpp::base::DataVector& alpha,
+                                                  int numRefinePoints, double dThreshold,
+                                                  std::vector<double>& norm_mu,
+                                                  std::vector<double>& norm_sigma) {
   size_t nRefinements;
 
   if (numRefinePoints < 0) {
@@ -142,7 +142,7 @@ void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
   }
 
   if (bGridConstructed) {
-    SGPP::base::DataVector stdNormDist(alpha.getSize());
+    sgpp::base::DataVector stdNormDist(alpha.getSize());
 
     // calculate multidimensional normal distribution and apply to alpha on it
     this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
@@ -150,42 +150,42 @@ void PDESolver::refineInitialGridSurplusSubDomain(SGPP::base::DataVector& alpha,
     stdNormDist.componentwise_mult(alpha);
     // printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
-    SGPP::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
     myGrid->getGenerator().refine(myRefineFunc);
 
     alpha.resize(myGridStorage->getSize());
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::refineIntialGridSurplusSubDomain : The grid wasn't initialized before!");
   }
 }
 
 void PDESolver::refineInitialGridSurplusToMaxLevel(
-    SGPP::base::DataVector& alpha, float_t dThreshold,
-    SGPP::base::GridStorage::index_type::level_type maxLevel) {
+    sgpp::base::DataVector& alpha, double dThreshold,
+    sgpp::base::GridStorage::index_type::level_type maxLevel) {
   if (bGridConstructed) {
     size_t nRefinements =
         myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
-    SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
     myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
     alpha.resize(myGridStorage->getSize());
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::refineInitialGridSurplusToMaxLevel : The grid wasn't initialized before!");
   }
 }
 
 void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
-    SGPP::base::DataVector& alpha, float_t dThreshold,
-    SGPP::base::GridStorage::index_type::level_type maxLevel, std::vector<float_t>& norm_mu,
-    std::vector<float_t>& norm_sigma) {
+    sgpp::base::DataVector& alpha, double dThreshold,
+    sgpp::base::GridStorage::index_type::level_type maxLevel, std::vector<double>& norm_mu,
+    std::vector<double>& norm_sigma) {
   if (bGridConstructed) {
     size_t nRefinements =
         myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
-    SGPP::base::DataVector stdNormDist(alpha.getSize());
+    sgpp::base::DataVector stdNormDist(alpha.getSize());
 
     // calculate multidimensional normal distribution and apply to alpha on it
     this->getGridNormalDistribution(stdNormDist, norm_mu, norm_sigma);
@@ -193,85 +193,85 @@ void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
     stdNormDist.componentwise_mult(alpha);
     // printSparseGrid(stdNormDist, "normalDistribution_refine.grid.gnuplot", true);
 
-    SGPP::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(stdNormDist, nRefinements, dThreshold);
     myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
     alpha.resize(myGridStorage->getSize());
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::refineInitialGridSurplusToMaxLevelSubDomain : The grid wasn't initialized "
         "before!");
   }
 }
 
-void PDESolver::coarsenInitialGridSurplus(SGPP::base::DataVector& alpha, float_t dThreshold) {
+void PDESolver::coarsenInitialGridSurplus(sgpp::base::DataVector& alpha, double dThreshold) {
   if (bGridConstructed) {
-    SGPP::base::GridGenerator& myGenerator = myGrid->getGenerator();
+    sgpp::base::GridGenerator& myGenerator = myGrid->getGenerator();
     size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
     size_t originalGridSize = myGrid->getSize();
-    SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(alpha, numCoarsen, dThreshold);
+    sgpp::base::SurplusCoarseningFunctor myCoarsenFunctor(alpha, numCoarsen, dThreshold);
     myGenerator.coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");
   }
 }
 
 void PDESolver::printLevelIndexGrid(std::string tfilename) const {
-  SGPP::base::GridPrinter myPrinter(*this->myGrid);
+  sgpp::base::GridPrinter myPrinter(*this->myGrid);
   myPrinter.printLevelIndexGrid(tfilename);
 }
 
-void PDESolver::printGrid(SGPP::base::DataVector& alpha, float_t PointesPerDimension,
+void PDESolver::printGrid(sgpp::base::DataVector& alpha, double PointesPerDimension,
                           std::string tfilename) const {
-  SGPP::base::GridPrinter myPrinter(*this->myGrid);
+  sgpp::base::GridPrinter myPrinter(*this->myGrid);
   myPrinter.printGrid(alpha, tfilename, static_cast<size_t>(PointesPerDimension));
 }
 
-void PDESolver::printGridDomain(SGPP::base::DataVector& alpha, float_t PointesPerDimension,
-                                SGPP::base::BoundingBox& GridArea, std::string tfilename) const {
-  SGPP::base::GridPrinter myPrinter(*this->myGrid);
+void PDESolver::printGridDomain(sgpp::base::DataVector& alpha, double PointesPerDimension,
+                                sgpp::base::BoundingBox& GridArea, std::string tfilename) const {
+  sgpp::base::GridPrinter myPrinter(*this->myGrid);
   myPrinter.printGridDomain(alpha, tfilename, GridArea, static_cast<size_t>(PointesPerDimension));
 }
 
-void PDESolver::printSparseGrid(SGPP::base::DataVector& alpha, std::string tfilename,
+void PDESolver::printSparseGrid(sgpp::base::DataVector& alpha, std::string tfilename,
                                 bool bSurplus) const {
-  SGPP::base::GridPrinter myPrinter(*this->myGrid);
+  sgpp::base::GridPrinter myPrinter(*this->myGrid);
   myPrinter.printSparseGrid(alpha, tfilename, bSurplus);
 }
 
-void PDESolver::printSparseGridExpTransform(SGPP::base::DataVector& alpha, std::string tfilename,
+void PDESolver::printSparseGridExpTransform(sgpp::base::DataVector& alpha, std::string tfilename,
                                             bool bSurplus) const {
-  SGPP::base::GridPrinter myPrinter(*this->myGrid);
+  sgpp::base::GridPrinter myPrinter(*this->myGrid);
   myPrinter.printSparseGridExpTransform(alpha, tfilename, bSurplus);
 }
 
-float_t PDESolver::evaluatePoint(std::vector<float_t>& evalPoint, SGPP::base::DataVector& alpha) {
-  float_t result = 0.0;
+double PDESolver::evaluatePoint(std::vector<double>& evalPoint, sgpp::base::DataVector& alpha) {
+  double result = 0.0;
 
   if (bGridConstructed) {
-    result = SGPP::op_factory::createOperationEval(*myGrid)->eval(alpha, evalPoint);
+    result = sgpp::op_factory::createOperationEval(*myGrid)->eval(alpha, evalPoint);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::evaluatePoint : A grid wasn't constructed before!");
   }
 
   return result;
 }
 
-void PDESolver::evaluateCuboid(SGPP::base::DataVector& alpha, SGPP::base::DataVector& OptionPrices,
-                               SGPP::base::DataMatrix& EvaluationPoints) {
+void PDESolver::evaluateCuboid(sgpp::base::DataVector& alpha, sgpp::base::DataVector& OptionPrices,
+                               sgpp::base::DataMatrix& EvaluationPoints) {
   if (bGridConstructed) {
     if (OptionPrices.getSize() != EvaluationPoints.getNrows()) {
-      throw SGPP::base::application_exception(
+      throw sgpp::base::application_exception(
           "PDESolver::evaluateCuboid : The size of the price vector doesn't match the size of the "
           "evaluation points' vector!");
     }
 
-    SGPP::op_factory::createOperationMultipleEval(*myGrid, EvaluationPoints)->
+    sgpp::op_factory::createOperationMultipleEval(*myGrid, EvaluationPoints)->
         mult(alpha, OptionPrices);
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::evaluateCuboid : A grid wasn't constructed before!");
   }
 }
@@ -280,7 +280,7 @@ size_t PDESolver::getNumberGridPoints() const {
   if (bGridConstructed) {
     return myGridStorage->getSize();
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
   }
 }
@@ -289,7 +289,7 @@ size_t PDESolver::getNumberInnerGridPoints() const {
   if (bGridConstructed) {
     return myGridStorage->getNumInnerPoints();
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::getNumberGridPoints : A grid wasn't constructed before!");
   }
 }
@@ -298,9 +298,9 @@ size_t PDESolver::getNumberDimensions() const {
   if (bGridConstructed) {
     return myGridStorage->getDimension();
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "PDESolver::getNumberDimensions : A grid wasn't constructed before!");
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

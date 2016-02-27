@@ -8,11 +8,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-CrankNicolson::CrankNicolson(size_t nTimesteps, float_t timestepSize,
-                             SGPP::base::ScreenOutput* screen)
+CrankNicolson::CrankNicolson(size_t nTimesteps, double timestepSize,
+                             sgpp::base::ScreenOutput* screen)
     : ODESolver(nTimesteps, timestepSize), myScreen(screen) {
   this->residuum = 0.0;
 }
@@ -20,10 +20,10 @@ CrankNicolson::CrankNicolson(size_t nTimesteps, float_t timestepSize,
 CrankNicolson::~CrankNicolson() {}
 
 void CrankNicolson::solve(SLESolver& LinearSystemSolver,
-                          SGPP::solver::OperationParabolicPDESolverSystem& System,
+                          sgpp::solver::OperationParabolicPDESolverSystem& System,
                           bool bIdentifyLastStep, bool verbose) {
   size_t allIter = 0;
-  SGPP::base::DataVector* rhs = NULL;
+  sgpp::base::DataVector* rhs = NULL;
 
   for (size_t i = 0; i < this->nMaxIterations; i++) {
     // generate right hand side
@@ -48,7 +48,8 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver,
               << ")";
 
       if (i < this->nMaxIterations - 1) {
-        myScreen->update((size_t)(((float_t)(i + 1) * 100.0) / ((float_t) this->nMaxIterations)),
+        myScreen->update((size_t)((static_cast<double>(i + 1) * 100.0) /
+            static_cast<double>(this->nMaxIterations)),
                          soutput.str());
       } else {
         myScreen->update(100, soutput.str());
@@ -78,4 +79,4 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver,
 }
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

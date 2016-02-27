@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
@@ -43,8 +43,8 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
   index.get(dim, cur_lev, cur_ind);
 
   // hierarchisation
-  float_t x = static_cast<float_t>(cur_ind) /
-              static_cast<float_t>(1 << cur_lev);
+  double x = static_cast<double>(cur_ind) /
+              static_cast<double>(1 << cur_lev);
   result[seq] = source[seq]
                 - base->evalHierToTop(cur_lev, cur_ind, coeffs, x);
 
@@ -74,4 +74,4 @@ void HierarchisationPoly::rec(DataVector& source, DataVector& result,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

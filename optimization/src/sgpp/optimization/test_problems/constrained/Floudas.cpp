@@ -7,7 +7,7 @@
 #include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
 #include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -21,7 +21,7 @@ TestVectorFunction& Floudas::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& Floudas::getEqualityConstraintFunction() { return h; }
 
-float_t Floudas::getOptimalPointUndisplaced(base::DataVector& x) {
+double Floudas::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.776506732492537;
   x[1] = 0.794623268529425;
@@ -32,9 +32,9 @@ FloudasObjective::FloudasObjective() : TestScalarFunction(2) {}
 
 FloudasObjective::~FloudasObjective() {}
 
-float_t FloudasObjective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 3.0 * x[0];
-  const float_t x2 = 4.0 * x[1];
+double FloudasObjective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 3.0 * x[0];
+  const double x2 = 4.0 * x[1];
 
   return -x1 - x2;
 }
@@ -49,12 +49,12 @@ FloudasInequalityConstraint::~FloudasInequalityConstraint() {}
 
 void FloudasInequalityConstraint::evalUndisplaced(const base::DataVector& x,
                                                   base::DataVector& value) {
-  const float_t x1 = 3.0 * x[0];
-  const float_t x2 = 4.0 * x[1];
+  const double x1 = 3.0 * x[0];
+  const double x2 = 4.0 * x[1];
 
-  const float_t x1p2 = x1 * x1;
-  const float_t x1p3 = x1p2 * x1;
-  const float_t x1p4 = x1p3 * x1;
+  const double x1p2 = x1 * x1;
+  const double x1p3 = x1p2 * x1;
+  const double x1p4 = x1p3 * x1;
 
   value[0] = x2 - (2.0 * x1p4 - 8.0 * x1p3 + 8.0 * x1p2 + 2.0);
   value[1] = x2 - (4.0 * x1p4 - 32.0 * x1p3 + 88.0 * x1p2 - 96.0 * x1 + 36.0);
@@ -76,4 +76,4 @@ void FloudasEqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) co
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

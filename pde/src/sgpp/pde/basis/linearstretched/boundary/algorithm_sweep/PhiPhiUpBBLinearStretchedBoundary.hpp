@@ -13,11 +13,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
- * Implementation of SGPP::base::sweep operator (): 1D Up for
+ * Implementation of sgpp::base::sweep operator (): 1D Up for
  * Bilinearform \f$\int_{x} \phi(x) \phi(x) dx\f$
  * on linear boundary grids
  */
@@ -26,9 +26,9 @@ class PhiPhiUpBBLinearStretchedBoundary : public PhiPhiUpBBLinearStretched {
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  explicit PhiPhiUpBBLinearStretchedBoundary(SGPP::base::GridStorage* storage);
+  explicit PhiPhiUpBBLinearStretchedBoundary(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -44,17 +44,17 @@ class PhiPhiUpBBLinearStretchedBoundary : public PhiPhiUpBBLinearStretched {
    * result)
    * So please assure that both functions do exist!
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * @param source sgpp::base::DataVector that contains the gridpoint's coefficients (values from
    * the vector of the laplace operation)
-   * @param result SGPP::base::DataVector that contains the result of the up operation
+   * @param result sgpp::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+  virtual void operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                           grid_iterator& index, size_t dim);
 };
 
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* PHIPHIUPBBLINEARSTRETCHEDBOUNDARY_HPP */

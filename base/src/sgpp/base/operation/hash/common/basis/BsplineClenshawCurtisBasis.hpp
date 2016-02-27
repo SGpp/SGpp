@@ -15,7 +15,7 @@
 #include <cmath>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -39,7 +39,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    */
   explicit BsplineClenshawCurtisBasis(size_t degree)
     : bsplineBasis(BsplineBasis<LT, IT>(degree)),
-      xi(std::vector<float_t>(degree + 2, 0.0)),
+      xi(std::vector<double>(degree + 2, 0.0)),
       clenshawCurtisTable(ClenshawCurtisTable::getInstance()) {
   }
 
@@ -56,7 +56,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
-  inline float_t nonUniformBSpline(float_t x, size_t p, size_t k) const {
+  inline double nonUniformBSpline(double x, size_t p, size_t k) const {
     if (p == 0) {
       // characteristic function of [xi[k], xi[k+1])
       return (((x >= xi[k]) && (x < xi[k + 1])) ? 1.0 : 0.0);
@@ -79,14 +79,14 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of derivative of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
-  inline float_t nonUniformBSplineDx(
-    float_t x, size_t p, size_t k) const {
+  inline double nonUniformBSplineDx(
+    double x, size_t p, size_t k) const {
     if (p == 0) {
       return 0.0;
     } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
       return 0.0;
     } else {
-      const float_t pDbl = static_cast<float_t>(p);
+      const double pDbl = static_cast<double>(p);
 
       return pDbl / (xi[k + p] - xi[k]) * nonUniformBSpline(x, p - 1, k)
              - pDbl / (xi[k + p + 1] - xi[k + 1])
@@ -101,19 +101,19 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of 2nd derivative of non-uniform B-spline
    *              with knots \f$\{\xi_k, ... \xi_{k+p+1}\}\f$
    */
-  inline float_t nonUniformBSplineDxDx(
-    float_t x, size_t p, size_t k) const {
+  inline double nonUniformBSplineDxDx(
+    double x, size_t p, size_t k) const {
     if (p <= 1) {
       return 0.0;
     } else if ((x < xi[k]) || (x >= xi[k + p + 1])) {
       return 0.0;
     } else {
-      const float_t pDbl = static_cast<float_t>(p);
-      const float_t alphaKP = pDbl / (xi[k + p] - xi[k]);
-      const float_t alphaKp1P = pDbl / (xi[k + p + 1] - xi[k + 1]);
-      const float_t alphaKPm1 = (pDbl - 1.0) / (xi[k + p - 1] - xi[k]);
-      const float_t alphaKp1Pm1 = (pDbl - 1.0) / (xi[k + p] - xi[k + 1]);
-      const float_t alphaKp2Pm1 = (pDbl - 1.0) /
+      const double pDbl = static_cast<double>(p);
+      const double alphaKP = pDbl / (xi[k + p] - xi[k]);
+      const double alphaKp1P = pDbl / (xi[k + p + 1] - xi[k + 1]);
+      const double alphaKPm1 = (pDbl - 1.0) / (xi[k + p - 1] - xi[k]);
+      const double alphaKp1Pm1 = (pDbl - 1.0) / (xi[k + p] - xi[k + 1]);
+      const double alphaKp2Pm1 = (pDbl - 1.0) /
                                   (xi[k + p + 1] - xi[k + 2]);
 
       return alphaKP * alphaKPm1 * nonUniformBSpline(x, p - 2, k)
@@ -129,7 +129,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @param i     index of the grid point
    * @return      i-th Clenshaw-Curtis grid point with level l
    */
-  inline float_t clenshawCurtisPoint(LT l, IT i) const {
+  inline double clenshawCurtisPoint(LT l, IT i) const {
     return clenshawCurtisTable.getPoint(l, i);
   }
 
@@ -155,7 +155,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
         xi[j] = clenshawCurtisTable.getPoint(l, static_cast<IT>(j - a));
       }
 
-      float_t h = xi[a + 1] - xi[a];
+      double h = xi[a + 1] - xi[a];
 
       // equivalent to "for (int j = a-1; j >= 0; j--)"
       for (size_t j = a; j-- > 0;) {
@@ -179,7 +179,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
                   l, static_cast<IT>(i - (p + 1) / 2 + j));
       }
 
-      float_t h = xi[b] - xi[b - 1];
+      double h = xi[b] - xi[b - 1];
 
       for (size_t j = b + 1; j < p + 2; j++) {
         xi[j] = xi[j - 1] + h;
@@ -199,11 +199,11 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of Clenshaw-Curtis B-spline basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
+  inline double eval(LT l, IT i, double x) override {
     if (l == 0) {
       return bsplineBasis.uniformBSpline(
-               x - static_cast<float_t>(i)
-               + static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+               x - static_cast<double>(i)
+               + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
                bsplineBasis.getDegree());
     } else {
       constructKnots(l, i);
@@ -218,11 +218,11 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of derivative of Clenshaw-Curtis
    *              B-spline basis function
    */
-  inline float_t evalDx(LT l, IT i, float_t x) {
+  inline double evalDx(LT l, IT i, double x) {
     if (l == 0) {
       return bsplineBasis.uniformBSplineDx(
-               x - static_cast<float_t>(i)
-               + static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+               x - static_cast<double>(i)
+               + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
                bsplineBasis.getDegree());
     } else {
       constructKnots(l, i);
@@ -237,11 +237,11 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
    * @return      value of 2nd derivative of Clenshaw-Curtis
    *              B-spline basis function
    */
-  inline float_t evalDxDx(LT l, IT i, float_t x) {
+  inline double evalDxDx(LT l, IT i, double x) {
     if (l == 0) {
       return bsplineBasis.uniformBSplineDxDx(
-               x - static_cast<float_t>(i)
-               + static_cast<float_t>(bsplineBasis.getDegree() + 1) / 2.0,
+               x - static_cast<double>(i)
+               + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,
                bsplineBasis.getDegree());
     } else {
       constructKnots(l, i);
@@ -260,7 +260,7 @@ class BsplineClenshawCurtisBasis: public Basis<LT, IT> {
   /// B-spline basis for B-spline evaluation
   BsplineBasis<LT, IT> bsplineBasis;
   /// temporary helper vector of fixed size p+2 containing B-spline knots
-  std::vector<float_t> xi;
+  std::vector<double> xi;
   /// reference to the Clenshaw-Curtis cache table
   ClenshawCurtisTable& clenshawCurtisTable;
 };
@@ -270,6 +270,6 @@ typedef BsplineClenshawCurtisBasis<unsigned int, unsigned int>
 SBsplineClenshawCurtisBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BSPLINE_CLENSHAW_CURTIS_BASE_HPP */

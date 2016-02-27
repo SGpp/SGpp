@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -73,6 +73,6 @@ class DehierarchisationPolyBoundary {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DEHIERARCHISATIONPOLYBOUNDARY_HPP */

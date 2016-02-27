@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 SGppStopwatch::SGppStopwatch() :
@@ -22,12 +22,12 @@ void SGppStopwatch::start() {
   start_time = std::chrono::high_resolution_clock::now();
 }
 
-float_t SGppStopwatch::stop() {
+double SGppStopwatch::stop() {
   std::chrono::time_point<std::chrono::high_resolution_clock> end_time =
     std::chrono::high_resolution_clock::now();
-  std::chrono::duration<float_t> elapsed_seconds = end_time - start_time;
+  std::chrono::duration<double> elapsed_seconds = end_time - start_time;
   return elapsed_seconds.count();
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

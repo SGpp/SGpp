@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationMultipleEvalPeriodic::mult(DataVector& alpha,
@@ -33,4 +33,4 @@ void OperationMultipleEvalPeriodic::multTranspose(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

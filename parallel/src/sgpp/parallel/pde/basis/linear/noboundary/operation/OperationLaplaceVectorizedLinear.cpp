@@ -58,10 +58,10 @@
 #include <sgpp/globaldef.hpp>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
-OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(SGPP::base::GridStorage* storage)
+OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(sgpp::base::GridStorage* storage)
     : storage(storage),
       level_(NULL),
       level_int_(NULL),
@@ -83,12 +83,12 @@ OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(SGPP::base::G
   init_constants();
   init_grid_storage();
 
-  this->lambda_ = new SGPP::base::DataVector(storage->getDimension());
+  this->lambda_ = new sgpp::base::DataVector(storage->getDimension());
   this->lambda_->setAll(1.0);
 }
 
-OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(SGPP::base::GridStorage* storage,
-                                                                   SGPP::base::DataVector& lambda)
+OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(sgpp::base::GridStorage* storage,
+                                                                   sgpp::base::DataVector& lambda)
     : storage(storage),
       level_(NULL),
       level_int_(NULL),
@@ -110,7 +110,7 @@ OperationLaplaceVectorizedLinear::OperationLaplaceVectorizedLinear(SGPP::base::G
   init_constants();
   init_grid_storage();
 
-  this->lambda_ = new SGPP::base::DataVector(lambda);
+  this->lambda_ = new sgpp::base::DataVector(lambda);
 }
 
 OperationLaplaceVectorizedLinear::~OperationLaplaceVectorizedLinear() {
@@ -156,7 +156,7 @@ void OperationLaplaceVectorizedLinear::init_constants() {
   all_time = 0.0;
   all_iterations = 0.0;
 #if defined(__SSE4_2__) || defined(__MIC__)
-  this->constants_ = new SGPP::base::DataVector(0);
+  this->constants_ = new sgpp::base::DataVector(0);
 
   this->constants_->append(0);
   this->constants_->append(0.5);
@@ -179,36 +179,36 @@ void OperationLaplaceVectorizedLinear::init_constants() {
 void OperationLaplaceVectorizedLinear::init_grid_storage() {
   if (this->level_) delete this->level_;
 
-  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->level_int_) delete this->level_int_;
 
-  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->index_) delete this->index_;
 
-  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->lcl_q_) delete this->lcl_q_;
 
-  lcl_q_ = new SGPP::base::DataVector(this->storage->getDimension());
+  lcl_q_ = new sgpp::base::DataVector(this->storage->getDimension());
   double* lcl_q_ptr_ = lcl_q_->getPointer();
 
   if (this->lcl_q_inv_) delete this->lcl_q_inv_;
 
-  lcl_q_inv_ = new SGPP::base::DataVector(this->storage->getDimension());
+  lcl_q_inv_ = new sgpp::base::DataVector(this->storage->getDimension());
   double* lcl_q_inv_ptr_ = lcl_q_inv_->getPointer();
 
 #if defined(__MIC__)
-  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
-      storage, *(this->level_), *(this->index_), SGPP::parallel::MIC, BLOCK_LENGTH);
-  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
-      storage, *(this->level_int_), SGPP::parallel::MIC, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
+      storage, *(this->level_), *(this->index_), sgpp::parallel::MIC, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
+      storage, *(this->level_int_), sgpp::parallel::MIC, BLOCK_LENGTH);
 #elif defined(__SSE4_2__) || defined(__AVX__)
-  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
-      storage, *(this->level_), *(this->index_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
-  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
-      storage, *(this->level_int_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
+      storage, *(this->level_), *(this->index_), sgpp::parallel::X86SIMD, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
+      storage, *(this->level_int_), sgpp::parallel::X86SIMD, BLOCK_LENGTH);
 #else
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
@@ -222,7 +222,7 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
 
   if (this->alpha_padded_) delete this->alpha_padded_;
 
-  this->alpha_padded_ = new SGPP::base::DataVector(padded_size);
+  this->alpha_padded_ = new sgpp::base::DataVector(padded_size);
   this->alpha_padded_->setAll(0.0);
 
   size_t single_process_portion = (this->storage->getSize() / process_count) + 1;
@@ -292,22 +292,22 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
 
       if (this->l2dot_temp) delete this->l2dot_temp;
 
-      this->gradient_temp = new SGPP::base::DataVector*[omp_get_num_threads()];
-      this->l2dot_temp = new SGPP::base::DataVector*[omp_get_num_threads()];
+      this->gradient_temp = new sgpp::base::DataVector*[omp_get_num_threads()];
+      this->l2dot_temp = new sgpp::base::DataVector*[omp_get_num_threads()];
     }
 #pragma omp barrier
 
     // std::cout << "OMP THREAD :" << omp_get_thread_num() << std::endl;
 
     gradient_temp[omp_get_thread_num()] =
-        new SGPP::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
+        new sgpp::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
     l2dot_temp[omp_get_thread_num()] =
-        new SGPP::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
+        new sgpp::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
   }
 
   // fill q array
   for (size_t d = 0; d < this->storage->getDimension(); d++) {
-    SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+    sgpp::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     lcl_q_ptr_[d] = boundingBox->getIntervalWidth(d);
     lcl_q_inv_ptr_[d] = 1.0 / boundingBox->getIntervalWidth(d);
   }
@@ -342,12 +342,12 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
             static_cast<int>(matrix_needed_size_gb));
 
     std::cerr << exception_string << std::endl;
-    throw SGPP::base::operation_exception(exception_string);
+    throw sgpp::base::operation_exception(exception_string);
   }
 
   if (operation_result_matrix_) delete operation_result_matrix_;
 
-  operation_result_matrix_ = new SGPP::base::DataMatrix(result_matrix_rows, result_matrix_cols);
+  operation_result_matrix_ = new sgpp::base::DataMatrix(result_matrix_rows, result_matrix_cols);
   operation_result_generated_ = false;
 
 #pragma omp parallel
@@ -355,7 +355,7 @@ void OperationLaplaceVectorizedLinear::init_grid_storage() {
     size_t padded_size = this->operation_result_matrix_->getNcols();
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(0, result_matrix_rows, &thr_start,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(0, result_matrix_rows, &thr_start,
                                                                 &thr_end);
 
     for (size_t i = thr_start; i < thr_end; i++) {
@@ -454,7 +454,7 @@ double OperationLaplaceVectorizedLinear::l2dot(size_t i, size_t j, size_t dim) {
 }
 
 #if defined(__MIC__)
-void mic_mult(size_t process_i_start, size_t process_i_end, SGPP::base::DataVector& result) {
+void mic_mult(size_t process_i_start, size_t process_i_end, sgpp::base::DataVector& result) {
   {
     std::size_t padded_size = this->level_->getNcols();
     double* constants = this->constants_->getPointer();  // {0, 0.5, 2.0 / 3.0, 1, 2};
@@ -485,7 +485,7 @@ void mic_mult(size_t process_i_start, size_t process_i_end, SGPP::base::DataVect
         _mm512_extload_pd(constants + 5, _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
     for (size_t i = thr_start; i < thr_end; i++) {
       __m512d mm_result = mm_zero;
@@ -635,8 +635,8 @@ void mic_mult(size_t process_i_start, size_t process_i_end, SGPP::base::DataVect
 }
 #endif
 
-void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
-                                            SGPP::base::DataVector& result) {
+void OperationLaplaceVectorizedLinear::mult(sgpp::base::DataVector& alpha,
+                                            sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   stopWatch.start();
@@ -695,7 +695,7 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
 
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     for (size_t i = thr_start; i < thr_end; i++) {
@@ -939,7 +939,7 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
 
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     for (size_t i = thr_start; i < thr_end; i++) {
@@ -1148,7 +1148,7 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
 
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     for (size_t i = thr_start; i < thr_end; i++) {
@@ -1194,7 +1194,7 @@ void OperationLaplaceVectorizedLinear::mult(SGPP::base::DataVector& alpha,
   {
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     for (size_t i = thr_start; i < thr_end; i++) {
@@ -1236,4 +1236,4 @@ MPI_Allreduce(MPI_IN_PLACE, result_ptr, (int)result.getSize(), MPI_DOUBLE,
   all_iterations += 1.0;
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

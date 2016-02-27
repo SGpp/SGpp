@@ -8,22 +8,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 DowndPhidPhiBBIterativeLinearStretched::DowndPhidPhiBBIterativeLinearStretched(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : storage(storage) {}
 
 DowndPhidPhiBBIterativeLinearStretched::~DowndPhidPhiBBIterativeLinearStretched() {}
 
-void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& alpha,
-                                                        SGPP::base::DataVector& result,
+void DowndPhidPhiBBIterativeLinearStretched::operator()(sgpp::base::DataVector& alpha,
+                                                        sgpp::base::DataVector& result,
                                                         size_t dim) {
-  SGPP::base::Stretching* stretching = this->storage->getStretching();
-  //  float_t q = stretching->getIntervalWidth(dim);
+  sgpp::base::Stretching* stretching = this->storage->getStretching();
+  //  double q = stretching->getIntervalWidth(dim);
   //
-  //  float_t Qqout = 1.0/q;
+  //  double Qqout = 1.0/q;
 
   /*  // init the coefficients of the ansatz functions with boundary
     result.setAll(0.0);
@@ -33,8 +33,8 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& 
       // traverse all basis function by sequence number
       for(size_t i = 0; i < storage->getSize(); i++)
       {
-        SGPP::base::GridStorage::index_type::level_type level;
-        SGPP::base::GridStorage::index_type::index_type index;
+        sgpp::base::GridStorage::index_type::level_type level;
+        sgpp::base::GridStorage::index_type::index_type index;
         (*storage)[i]->get(dim, level, index);
         //only affects the diagonal of the stiffness matrix
         result[i] = alpha[i]*(Qqout*pow(2.0, static_cast<int>(level+1)));
@@ -45,8 +45,8 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& 
       // traverse all basis function by sequence number
       for(size_t i = 0; i < storage->getSize(); i++)
       {
-        SGPP::base::GridStorage::index_type::level_type level;
-        SGPP::base::GridStorage::index_type::index_type index;
+        sgpp::base::GridStorage::index_type::level_type level;
+        sgpp::base::GridStorage::index_type::index_type index;
         (*storage)[i]->get(dim, level, index);
         //only affects the diagonal of the stiffness matrix
         result[i] = alpha[i]*pow(2.0, static_cast<int>(level+1));
@@ -59,18 +59,18 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& 
 
   // traverse all basis function by sequence number
   for (size_t i = 0; i < storage->getSize(); i++) {
-    SGPP::base::GridStorage::index_type::level_type level;
-    SGPP::base::GridStorage::index_type::index_type index;
+    sgpp::base::GridStorage::index_type::level_type level;
+    sgpp::base::GridStorage::index_type::index_type index;
     (*storage)[i]->get(dim, level, index);
-    float_t posl = 0, posr = 0, posc = 0;
+    double posl = 0, posr = 0, posc = 0;
     stretching->getAdjacentPositions(static_cast<int>(level), static_cast<int>(index), dim, posc,
                                      posl, posr);
-    float_t baseLength = posr - posl;
-    float_t leftLength = posc - posl;
-    float_t rightLength = posr - posc;
+    double baseLength = posr - posl;
+    double leftLength = posc - posl;
+    double rightLength = posr - posc;
     // only affects the diagonal of the stiffness matrix
     result[i] = alpha[i] * baseLength / (leftLength * rightLength);
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

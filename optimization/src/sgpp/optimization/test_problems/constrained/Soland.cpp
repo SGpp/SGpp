@@ -9,7 +9,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -23,7 +23,7 @@ TestVectorFunction& Soland::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& Soland::getEqualityConstraintFunction() { return h; }
 
-float_t Soland::getOptimalPointUndisplaced(base::DataVector& x) {
+double Soland::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.358768096599359;
   x[1] = 0.489947363788600;
@@ -34,9 +34,9 @@ SolandObjective::SolandObjective() : TestScalarFunction(2) {}
 
 SolandObjective::~SolandObjective() {}
 
-float_t SolandObjective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 2.0 * x[0];
-  const float_t x2 = 3.0 * x[1];
+double SolandObjective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 2.0 * x[0];
+  const double x2 = 3.0 * x[1];
 
   return -12.0 * x1 - 7.0 * x2 + x2 * x2;
 }
@@ -61,8 +61,8 @@ SolandEqualityConstraint::SolandEqualityConstraint() : TestVectorFunction(2, 1) 
 SolandEqualityConstraint::~SolandEqualityConstraint() {}
 
 void SolandEqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 2.0 * x[0];
-  const float_t x2 = 3.0 * x[1];
+  const double x1 = 2.0 * x[0];
+  const double x2 = 3.0 * x[1];
 
   value[0] = -2.0 * std::pow(x1, 4.0) + 2.0 - x2;
 }
@@ -72,4 +72,4 @@ void SolandEqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) con
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace x86simple {
 
@@ -117,7 +117,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
 
   //calculate the maxLevel first
   for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -130,7 +130,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
 
   //create map of subspaces -> now we know which subspaces actually exist in the grid
   for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -161,7 +161,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
   // iterate though the subspaces for information (can be removed)
   //////////////////////////////////////////////////////////////////
 
-  /*  float_t averageSubspaceUtilizationPercent = 0;
+  /*  double averageSubspaceUtilizationPercent = 0;
    int averagePointsOnSubspace = 0;
 
    for (typename std::map<size_t, SubspaceNode>::iterator it = allLevelsMap.begin();
@@ -175,7 +175,7 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
    gridPointsOnLevel *= dimTemp;
    }
 
-   float_t subspaceUtilizationPercent = (subspace.actualGridPointsOnLevel / (float_t) gridPointsOnLevel) * 100.0;
+   double subspaceUtilizationPercent = (subspace.actualGridPointsOnLevel / (double) gridPointsOnLevel) * 100.0;
    cout << level.toString() << " populated: " << subspace.actualGridPointsOnLevel;
    cout << " (max: " << gridPointsOnLevel << ")";
    cout << " -> " << subspaceUtilizationPercent << "%" << endl;
@@ -183,9 +183,9 @@ void OperationMultipleEvalSubspaceSimple::prepareSubspaceIterator() {
    averagePointsOnSubspace += subspace.actualGridPointsOnLevel;
    }
 
-   float_t overallUtilization = averageSubspaceUtilizationPercent / (float_t) this->allLevels->getNrows();
+   double overallUtilization = averageSubspaceUtilizationPercent / (double) this->allLevels->getNrows();
    cout << "averageSubspaceUtilizationPercent: " << overallUtilization << "%" << endl;
-   float_t overallPointsOnSubspace = averagePointsOnSubspace / (float_t) this->allLevels->getNrows();
+   double overallPointsOnSubspace = averagePointsOnSubspace / (double) this->allLevels->getNrows();
    cout << "averagePointsOnSubspace: " << overallPointsOnSubspace << endl;
    */
 
@@ -348,7 +348,7 @@ void OperationMultipleEvalSubspaceSimple::createFlatStorage() {
   }
 
   // the linearLevelIndex in allSubspaces encodes the start of the individual level array
-  this->allSurplusses = new float_t[totalGridPoints];
+  this->allSurplusses = new double[totalGridPoints];
 }
 
 void OperationMultipleEvalSubspaceSimple::setCoefficients(
@@ -358,14 +358,14 @@ void OperationMultipleEvalSubspaceSimple::setCoefficients(
   std::vector<size_t> index(dim);
 
   for (size_t i = 0; i < this->totalGridPoints; i++) {
-    this->allSurplusses[i] = std::numeric_limits<float_t>::quiet_NaN();
+    this->allSurplusses[i] = std::numeric_limits<double>::quiet_NaN();
   }
 
   base::level_t curLevel;
   base::index_t curIndex;
 
   for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -388,7 +388,7 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector& result) {
   base::index_t curIndex;
 
   for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
-    SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+    sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
       point->get(d, curLevel, curIndex);
@@ -397,7 +397,7 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector& result) {
       maxIndex[d] = 1 << curLevel;
     }
 
-    float_t surplus;
+    double surplus;
     bool isVirtual;
     this->getSurplus(level, maxIndex, index, surplus, isVirtual);
 
@@ -407,23 +407,23 @@ void OperationMultipleEvalSubspaceSimple::unflatten(base::DataVector& result) {
 
 void OperationMultipleEvalSubspaceSimple::setSurplus(std::vector<size_t>& level,
     std::vector<size_t>& maxIndices,
-    std::vector<size_t>& index, float_t value) {
+    std::vector<size_t>& index, double value) {
   size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
   size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
   uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>
                               (levelFlat)];
-  float_t* levelArray = &(this->allSurplusses[linearLevelIndex]);
+  double* levelArray = &(this->allSurplusses[linearLevelIndex]);
   levelArray[indexFlat] = value;
 }
 
 void OperationMultipleEvalSubspaceSimple::getSurplus(std::vector<size_t>& level,
     std::vector<size_t>& maxIndices,
-    std::vector<size_t>& index, float_t& value, bool& isVirtual) {
+    std::vector<size_t>& index, double& value, bool& isVirtual) {
   size_t levelFlat = this->flattenLevel(this->dim, this->maxLevel, level);
   size_t indexFlat = this->flattenIndex(this->dim, maxIndices, index);
   uint32_t linearLevelIndex = this->allSurplussesIndexMap[static_cast<uint32_t>
                               (levelFlat)];
-  float_t* levelArray = &(this->allSurplusses[linearLevelIndex]);
+  double* levelArray = &(this->allSurplusses[linearLevelIndex]);
   value = levelArray[indexFlat];
 
   if (std::isnan(value)) {

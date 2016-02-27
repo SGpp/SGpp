@@ -13,7 +13,7 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/base/opencl/KernelSourceBuilderBase.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
@@ -299,4 +299,4 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
 };
 }  // namespace StreamingOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -14,25 +14,25 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
  * Implementation for linear functions of Laplace Operation, linear grids with boundaries
  *
  */
-class OperationLaplaceVectorizedLinearBoundaryOCL : public SGPP::base::OperationMatrix {
+class OperationLaplaceVectorizedLinearBoundaryOCL : public sgpp::base::OperationMatrix {
  private:
-  SGPP::base::GridStorage* storage;
-  SGPP::base::DataMatrix* level_;
-  SGPP::base::DataMatrix* level_int_;
-  SGPP::base::DataMatrix* index_;
+  sgpp::base::GridStorage* storage;
+  sgpp::base::DataMatrix* level_;
+  sgpp::base::DataMatrix* level_int_;
+  sgpp::base::DataMatrix* index_;
   double* lcl_q;
   double* lcl_q_inv;
-  SGPP::base::DataVector* lambda;
+  sgpp::base::DataVector* lambda;
   OCLPDEKernels OCLPDEKernelsHandle;
 
-  void mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void mult_dirichlet(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  public:
   /**
@@ -42,24 +42,24 @@ class OperationLaplaceVectorizedLinearBoundaryOCL : public SGPP::base::Operation
    * @param lambda the lambda parameter which is needed in some cases (Black-Scholes) to modify the
    * dimensional local values
    */
-  OperationLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage,
-                                              SGPP::base::DataVector& lambda);
+  OperationLaplaceVectorizedLinearBoundaryOCL(sgpp::base::GridStorage* storage,
+                                              sgpp::base::DataVector& lambda);
 
   /**
    * Construtor of OperationLaplaceLinear
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceVectorizedLinearBoundaryOCL(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~OperationLaplaceVectorizedLinearBoundaryOCL();
 
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONLAPLACEVECTORIZEDLINEARBOUNDARYOCL_HPP */

@@ -15,19 +15,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::
-    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage,
-                                                       SGPP::base::DataVector& lambda)
+    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sgpp::base::GridStorage* storage,
+                                                       sgpp::base::DataVector& lambda)
     : storage(storage) {
   this->TimestepCoeff = 0.0;
-  this->lambda = new SGPP::base::DataVector(lambda);
+  this->lambda = new sgpp::base::DataVector(lambda);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
-  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
   lcl_q = new double[this->storage->getDimension()];
   lcl_q_inv = new double[this->storage->getDimension()];
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
@@ -35,15 +35,15 @@ OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::
 }
 
 OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::
-    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(SGPP::base::GridStorage* storage)
+    OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL(sgpp::base::GridStorage* storage)
     : storage(storage) {
   this->TimestepCoeff = 0.0;
   this->lambda = new base::DataVector(storage->getDimension());
   this->lambda->setAll(1.0);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
-  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
   lcl_q = new double[this->storage->getDimension()];
   lcl_q_inv = new double[this->storage->getDimension()];
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
@@ -61,7 +61,7 @@ OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::
 }
 
 void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   this->OCLPDEKernelsHandle.RunOCLKernelLTwoDotLaplaceBound(
@@ -70,14 +70,14 @@ void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult_dirichlet(
       (unsigned)storage->getDimension(), storage, this->TimestepCoeff);
 }
 
-void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVector& alpha,
-                                                              SGPP::base::DataVector& result) {
+void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult(sgpp::base::DataVector& alpha,
+                                                              sgpp::base::DataVector& result) {
   result.setAll(0.0);
   bool dirichlet = true;
 
   // fill q array
   for (size_t d = 0; d < this->storage->getDimension(); d++) {
-    SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+    sgpp::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     lcl_q[d] = boundingBox->getIntervalWidth(d);
     lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
     dirichlet = dirichlet && boundingBox->hasDirichletBoundaryLeft(d);
@@ -87,7 +87,7 @@ void OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult(SGPP::base::DataVe
   if (dirichlet) {
     mult_dirichlet(alpha, result);
   } else {
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL::mult : This method is only available "
         "on grids with Dirichlet boundaries in all dimensions!");
   }

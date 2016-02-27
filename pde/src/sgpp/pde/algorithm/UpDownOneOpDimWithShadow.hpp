@@ -14,7 +14,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -24,30 +24,30 @@ namespace pde {
  * accordingly.
  *
  */
-class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
+class UpDownOneOpDimWithShadow : public sgpp::base::OperationMatrix {
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    * @param shadowStorage shadow storage
    */
-  UpDownOneOpDimWithShadow(SGPP::base::GridStorage* storage,
-                           SGPP::base::GridStorage* shadowStorage);
+  UpDownOneOpDimWithShadow(sgpp::base::GridStorage* storage,
+                           sgpp::base::GridStorage* shadowStorage);
 
   /**
    * Destructor
    */
   virtual ~UpDownOneOpDimWithShadow();
 
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
 
   /// Pointer to the grid's storage object
-  SGPP::base::GridStorage* storage;
-  SGPP::base::GridStorage* shadowStorage;
+  sgpp::base::GridStorage* storage;
+  sgpp::base::GridStorage* shadowStorage;
 
   /**
    * Recursive procedure for updown().
@@ -57,7 +57,7 @@ class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void updown(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim,
+  void updown(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim,
               size_t op_dim);
 
   /**
@@ -79,7 +79,7 @@ class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
    * @param dim the current dimension in the recursion
    * @param op_dim the dimension in that a special operation is applied
    */
-  virtual void specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim,
+  virtual void specialOP(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim,
                          size_t op_dim);
 
   /**
@@ -89,7 +89,7 @@ class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) = 0;
 
   /**
    * std 1D down operation
@@ -98,7 +98,7 @@ class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) = 0;
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) = 0;
 
   /**
    * special 1D down operation that is only executed in one direction
@@ -107,7 +107,7 @@ class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  virtual void downOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                          size_t dim) = 0;
 
   /**
@@ -117,10 +117,10 @@ class UpDownOneOpDimWithShadow : public SGPP::base::OperationMatrix {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  virtual void upOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                        size_t dim) = 0;
 };
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* UPDOWNONEOPDIMWITHSHADOW_HPP */

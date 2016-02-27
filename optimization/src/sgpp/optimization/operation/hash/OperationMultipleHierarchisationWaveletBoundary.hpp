@@ -12,7 +12,7 @@
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -68,6 +68,6 @@ class OperationMultipleHierarchisationWaveletBoundary : public OperationMultiple
   base::WaveletBoundaryGrid& grid;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERWAVELETBOUNDARY_HPP */

@@ -19,7 +19,7 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -39,8 +39,8 @@ class OperationLaplacePrewavelet : public UpDownOneOpDimWithShadow {
    * @param storage Pointer to the grid's gridstorage obejct
    * @param shadowstorage shadow storage fuer prewavelets
    */
-  OperationLaplacePrewavelet(SGPP::base::GridStorage* storage,
-                             SGPP::base::GridStorage* shadowstorage);
+  OperationLaplacePrewavelet(sgpp::base::GridStorage* storage,
+                             sgpp::base::GridStorage* shadowstorage);
 
   /**
    * Destructor
@@ -48,15 +48,15 @@ class OperationLaplacePrewavelet : public UpDownOneOpDimWithShadow {
   virtual ~OperationLaplacePrewavelet();
 
  protected:
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void upOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 };
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONLAPLACEPREWAVELET_HPP */

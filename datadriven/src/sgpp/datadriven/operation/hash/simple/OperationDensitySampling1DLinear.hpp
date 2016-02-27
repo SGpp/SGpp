@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 class OperationDensitySampling1DLinear : public OperationDensitySampling1D {
  protected:
@@ -33,6 +33,6 @@ class OperationDensitySampling1DLinear : public OperationDensitySampling1D {
                     unsigned int* seedp);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONDENSITYSAMPLING1D_HPP_ */

@@ -15,13 +15,13 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 PiecewiseConstantSmoothedRegressionSystemMatrix::PiecewiseConstantSmoothedRegressionSystemMatrix(
   datadriven::PiecewiseConstantRegression::Node& piecewiseRegressor,
   base::Grid& grid, base::OperationMatrix& C,
-  float_t lambdaRegression) :
+  double lambdaRegression) :
   piecewiseRegressor(piecewiseRegressor), grid(grid) {
   this->lambda = lambdaRegression;
 
@@ -63,7 +63,7 @@ void PiecewiseConstantSmoothedRegressionSystemMatrix::generateb(
 
   std::cout << "totalIntegratedNodes: " << totalIntegratedNodes << std::endl;
   std::cout << "integrated nodes per grid point: "
-            << (static_cast<float_t>(totalIntegratedNodes) / static_cast<float_t>
+            << (static_cast<double>(totalIntegratedNodes) / static_cast<double>
                 (storage->getSize())) << std::endl;
 }
 
@@ -73,5 +73,5 @@ PiecewiseConstantSmoothedRegressionSystemMatrix::
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

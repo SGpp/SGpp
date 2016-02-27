@@ -49,72 +49,72 @@
 
 #include <vector>
 
-using SGPP::optimization::Printer;
-using SGPP::optimization::RandomNumberGenerator;
-using SGPP::optimization::ScalarFunction;
-using SGPP::optimization::test_problems::ConstrainedTestProblem;
-using SGPP::optimization::test_problems::UnconstrainedTestProblem;
-using SGPP::optimization::VectorFunction;
+using sgpp::optimization::Printer;
+using sgpp::optimization::RandomNumberGenerator;
+using sgpp::optimization::ScalarFunction;
+using sgpp::optimization::test_problems::ConstrainedTestProblem;
+using sgpp::optimization::test_problems::UnconstrainedTestProblem;
+using sgpp::optimization::VectorFunction;
 
 BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
-  // Test unconstrained test problems in SGPP::optimization::test_problems.
+  // Test unconstrained test problems in sgpp::optimization::test_problems.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 6;
   std::vector<std::unique_ptr<UnconstrainedTestProblem>> testProblems;
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::AbsoluteValue(d))));
+      new sgpp::optimization::test_problems::AbsoluteValue(d))));
   testProblems.push_back(std::move(
-      std::unique_ptr<UnconstrainedTestProblem>(new SGPP::optimization::test_problems::Ackley(d))));
+      std::unique_ptr<UnconstrainedTestProblem>(new sgpp::optimization::test_problems::Ackley(d))));
   testProblems.push_back(std::move(
-      std::unique_ptr<UnconstrainedTestProblem>(new SGPP::optimization::test_problems::Beale())));
+      std::unique_ptr<UnconstrainedTestProblem>(new sgpp::optimization::test_problems::Beale())));
   testProblems.push_back(std::move(
-      std::unique_ptr<UnconstrainedTestProblem>(new SGPP::optimization::test_problems::Branin())));
+      std::unique_ptr<UnconstrainedTestProblem>(new sgpp::optimization::test_problems::Branin())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::BubbleWrap(d))));
+      new sgpp::optimization::test_problems::BubbleWrap(d))));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::EasomYang(d))));
+      new sgpp::optimization::test_problems::EasomYang(d))));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Eggholder())));
+      new sgpp::optimization::test_problems::Eggholder())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::GoldsteinPrice())));
+      new sgpp::optimization::test_problems::GoldsteinPrice())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Griewank(d))));
+      new sgpp::optimization::test_problems::Griewank(d))));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Hartman3())));
+      new sgpp::optimization::test_problems::Hartman3())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Hartman6())));
+      new sgpp::optimization::test_problems::Hartman6())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Himmelblau())));
+      new sgpp::optimization::test_problems::Himmelblau())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::HoelderTable())));
+      new sgpp::optimization::test_problems::HoelderTable())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::IncreasingPower(d))));
+      new sgpp::optimization::test_problems::IncreasingPower(d))));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Michalewicz())));
+      new sgpp::optimization::test_problems::Michalewicz())));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Mladineo())));
+      new sgpp::optimization::test_problems::Mladineo())));
   testProblems.push_back(std::move(
-      std::unique_ptr<UnconstrainedTestProblem>(new SGPP::optimization::test_problems::Perm(d))));
+      std::unique_ptr<UnconstrainedTestProblem>(new sgpp::optimization::test_problems::Perm(d))));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Rastrigin(d))));
+      new sgpp::optimization::test_problems::Rastrigin(d))));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Rosenbrock(d))));
+      new sgpp::optimization::test_problems::Rosenbrock(d))));
   testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Schwefel(d))));
+      new sgpp::optimization::test_problems::Schwefel(d))));
   testProblems.push_back(std::move(
-      std::unique_ptr<UnconstrainedTestProblem>(new SGPP::optimization::test_problems::SHCB())));
+      std::unique_ptr<UnconstrainedTestProblem>(new sgpp::optimization::test_problems::SHCB())));
   testProblems.push_back(std::move(
-      std::unique_ptr<UnconstrainedTestProblem>(new SGPP::optimization::test_problems::Sphere(d))));
+      std::unique_ptr<UnconstrainedTestProblem>(new sgpp::optimization::test_problems::Sphere(d))));
 
   for (size_t p = 1; p <= 5; p++) {
     testProblems.push_back(std::move(std::unique_ptr<UnconstrainedTestProblem>(
-        new SGPP::optimization::test_problems::TremblingParabola(d, p))));
+        new sgpp::optimization::test_problems::TremblingParabola(d, p))));
   }
 
   for (const auto& problem : testProblems) {
-    SGPP::optimization::test_problems::TestScalarFunction& f = problem->getObjectiveFunction();
+    sgpp::optimization::test_problems::TestScalarFunction& f = problem->getObjectiveFunction();
     const size_t d = f.getNumberOfParameters();
 
     // test cloning
@@ -122,9 +122,9 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
     f.clone(fClone);
 
     // check displacement
-    SGPP::base::DataVector displacement(d, 0.42);
+    sgpp::base::DataVector displacement(d, 0.42);
     f.setDisplacement(displacement);
-    SGPP::base::DataVector displacement2(f.getDisplacement());
+    sgpp::base::DataVector displacement2(f.getDisplacement());
 
     for (size_t t = 0; t < d; t++) {
       BOOST_CHECK_EQUAL(displacement[t], displacement2[t]);
@@ -150,8 +150,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
     problem->generateDisplacement();
 
     // test minimal point
-    SGPP::base::DataVector x(d), xOpt(0);
-    const SGPP::float_t fOpt = problem->getOptimalPoint(xOpt);
+    sgpp::base::DataVector x(d), xOpt(0);
+    const double fOpt = problem->getOptimalPoint(xOpt);
 
     BOOST_CHECK_EQUAL(xOpt.getSize(), d);
 
@@ -160,11 +160,7 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
       BOOST_CHECK_LE(xOpt[t], 1.0);
     }
 
-#if USE_DOUBLE_PRECISION
     BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-12);
-#else
-    BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-3f);
-#endif
 
     // test if xOpt is minimal point for a sample of random points
     for (size_t i = 0; i < 1000; i++) {
@@ -179,44 +175,44 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
 }
 
 BOOST_AUTO_TEST_CASE(TestConstrainedTestProblem) {
-  // Test constrained test problems in SGPP::optimization::test_problems.
+  // Test constrained test problems in sgpp::optimization::test_problems.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = 6;
   std::vector<std::unique_ptr<ConstrainedTestProblem>> testProblems;
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::Floudas())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::Floudas())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G03(d))));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G03(d))));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G04())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G04())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G05())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G05())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G06())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G06())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G08())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G08())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G09())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G09())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G10())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G10())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G11())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G11())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G12())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G12())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::G13())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::G13())));
   testProblems.push_back(std::move(std::unique_ptr<ConstrainedTestProblem>(
-      new SGPP::optimization::test_problems::Simionescu())));
+      new sgpp::optimization::test_problems::Simionescu())));
   testProblems.push_back(std::move(
-      std::unique_ptr<ConstrainedTestProblem>(new SGPP::optimization::test_problems::Soland())));
+      std::unique_ptr<ConstrainedTestProblem>(new sgpp::optimization::test_problems::Soland())));
 
   for (const auto& problem : testProblems) {
-    SGPP::optimization::test_problems::TestScalarFunction& f = problem->getObjectiveFunction();
-    SGPP::optimization::test_problems::TestVectorFunction& g =
+    sgpp::optimization::test_problems::TestScalarFunction& f = problem->getObjectiveFunction();
+    sgpp::optimization::test_problems::TestVectorFunction& g =
         problem->getInequalityConstraintFunction();
-    SGPP::optimization::test_problems::TestVectorFunction& h =
+    sgpp::optimization::test_problems::TestVectorFunction& h =
         problem->getEqualityConstraintFunction();
     const size_t d = f.getNumberOfParameters();
 
@@ -229,13 +225,13 @@ BOOST_AUTO_TEST_CASE(TestConstrainedTestProblem) {
     h.clone(hClone);
 
     // check displacement
-    SGPP::base::DataVector displacement(d, 0.42);
+    sgpp::base::DataVector displacement(d, 0.42);
     f.setDisplacement(displacement);
     g.setDisplacement(displacement);
     h.setDisplacement(displacement);
-    SGPP::base::DataVector displacement2f(f.getDisplacement());
-    SGPP::base::DataVector displacement2g(g.getDisplacement());
-    SGPP::base::DataVector displacement2h(h.getDisplacement());
+    sgpp::base::DataVector displacement2f(f.getDisplacement());
+    sgpp::base::DataVector displacement2g(g.getDisplacement());
+    sgpp::base::DataVector displacement2h(h.getDisplacement());
 
     for (size_t t = 0; t < d; t++) {
       BOOST_CHECK_EQUAL(displacement[t], displacement2f[t]);
@@ -267,8 +263,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedTestProblem) {
     problem->generateDisplacement();
 
     // test minimal point
-    SGPP::base::DataVector x(d), xOpt(0);
-    const SGPP::float_t fOpt = problem->getOptimalPoint(xOpt);
+    sgpp::base::DataVector x(d), xOpt(0);
+    const double fOpt = problem->getOptimalPoint(xOpt);
 
     BOOST_CHECK_EQUAL(xOpt.getSize(), d);
 
@@ -277,34 +273,22 @@ BOOST_AUTO_TEST_CASE(TestConstrainedTestProblem) {
       BOOST_CHECK_LE(xOpt[t], 1.0);
     }
 
-#if USE_DOUBLE_PRECISION
     BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), 1e-6);
-#else
-    BOOST_CHECK_SMALL(fOpt - f.eval(xOpt), static_cast<SGPP::float_t>(1e-3));
-#endif
 
     const size_t mG = g.getNumberOfComponents();
     const size_t mH = h.getNumberOfComponents();
-    SGPP::base::DataVector gx(mG);
-    SGPP::base::DataVector hx(mH);
+    sgpp::base::DataVector gx(mG);
+    sgpp::base::DataVector hx(mH);
 
     g.eval(xOpt, gx);
     h.eval(xOpt, hx);
 
     for (size_t t = 0; t < mG; t++) {
-#if USE_DOUBLE_PRECISION == 1
       BOOST_CHECK_LE(gx[t], 1e-10);
-#else
-      BOOST_CHECK_LE(gx[t], 1e-10f);
-#endif
     }
 
     for (size_t t = 0; t < mH; t++) {
-#if USE_DOUBLE_PRECISION
       BOOST_CHECK_SMALL(hx[t], 1e-3);
-#else
-      BOOST_CHECK_SMALL(hx[t], 1e-3f);
-#endif
     }
 
     // test if xOpt is minimal point for a sample of random points

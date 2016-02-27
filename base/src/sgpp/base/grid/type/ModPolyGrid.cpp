@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ModPolyGrid::ModPolyGrid(std::istream& istr) :
@@ -35,8 +35,8 @@ ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) :
 ModPolyGrid::~ModPolyGrid() {
 }
 
-SGPP::base::GridType ModPolyGrid::getType() {
-  return SGPP::base::GridType::ModPoly;
+sgpp::base::GridType ModPolyGrid::getType() {
+  return sgpp::base::GridType::ModPoly;
 }
 
 const SBasis& ModPolyGrid::getBasis() {
@@ -67,4 +67,4 @@ GridGenerator& ModPolyGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

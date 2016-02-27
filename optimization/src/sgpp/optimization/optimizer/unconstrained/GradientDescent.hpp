@@ -13,7 +13,7 @@
 
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -25,13 +25,13 @@ class GradientDescent : public UnconstrainedOptimizer {
   /// default maximal number of iterations
   static const size_t DEFAULT_MAX_IT_COUNT = 2000;
   /// default beta (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_BETA = 0.5;
+  static constexpr double DEFAULT_BETA = 0.5;
   /// default gamma (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_GAMMA = 1e-2;
+  static constexpr double DEFAULT_GAMMA = 1e-2;
   /// default tolerance (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-8;
+  static constexpr double DEFAULT_TOLERANCE = 1e-8;
   /// default epsilon (parameter for Armijo's rule)
-  static constexpr float_t DEFAULT_EPSILON = 1e-18;
+  static constexpr double DEFAULT_EPSILON = 1e-18;
 
   /**
    * Constructor.
@@ -45,9 +45,9 @@ class GradientDescent : public UnconstrainedOptimizer {
    * @param epsilon       epsilon (parameter for Armijo's rule)
    */
   GradientDescent(ScalarFunction& f, ScalarFunctionGradient& fGradient,
-                  size_t maxItCount = DEFAULT_MAX_IT_COUNT, float_t beta = DEFAULT_BETA,
-                  float_t gamma = DEFAULT_GAMMA, float_t tolerance = DEFAULT_TOLERANCE,
-                  float_t epsilon = DEFAULT_EPSILON);
+                  size_t maxItCount = DEFAULT_MAX_IT_COUNT, double beta = DEFAULT_BETA,
+                  double gamma = DEFAULT_GAMMA, double tolerance = DEFAULT_TOLERANCE,
+                  double epsilon = DEFAULT_EPSILON);
 
   /**
    * Destructor.
@@ -64,42 +64,42 @@ class GradientDescent : public UnconstrainedOptimizer {
   /**
    * @return              beta (parameter for Armijo's rule)
    */
-  float_t getBeta() const;
+  double getBeta() const;
 
   /**
    * @param beta          beta (parameter for Armijo's rule)
    */
-  void setBeta(float_t beta);
+  void setBeta(double beta);
 
   /**
    * @return              gamma (parameter for Armijo's rule)
    */
-  float_t getGamma() const;
+  double getGamma() const;
 
   /**
    * @param gamma         gamma (parameter for Armijo's rule)
    */
-  void setGamma(float_t gamma);
+  void setGamma(double gamma);
 
   /**
    * @return              tolerance (parameter for Armijo's rule)
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance     tolerance (parameter for Armijo's rule)
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return              epsilon (parameter for Armijo's rule)
    */
-  float_t getEpsilon() const;
+  double getEpsilon() const;
 
   /**
    * @param epsilon       epsilon (parameter for Armijo's rule)
    */
-  void setEpsilon(float_t epsilon);
+  void setEpsilon(double epsilon);
 
   /**
    * @param[out] clone pointer to cloned object
@@ -110,16 +110,16 @@ class GradientDescent : public UnconstrainedOptimizer {
   /// objective function gradient
   ScalarFunctionGradient& fGradient;
   /// beta (parameter for Armijo's rule)
-  float_t beta;
+  double beta;
   /// gamma (parameter for Armijo's rule)
-  float_t gamma;
+  double gamma;
   /// tolerance (parameter for Armijo's rule)
-  float_t tol;
+  double tol;
   /// epsilon (parameter for Armijo's rule)
-  float_t eps;
+  double eps;
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_GRADIENTDESCENT_HPP */

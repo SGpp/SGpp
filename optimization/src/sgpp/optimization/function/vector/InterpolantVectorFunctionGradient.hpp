@@ -17,7 +17,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -105,6 +105,6 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
   base::DataMatrix alpha;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_INTERPOLANTVECTORFUNCTIONGRADIENT_HPP */

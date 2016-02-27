@@ -16,7 +16,7 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GridPrinterForStretching::GridPrinterForStretching(Grid& SparseGrid) :
@@ -48,20 +48,20 @@ void GridPrinterForStretching::printGridDomainStretching(DataVector& alpha,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      std::unique_ptr<OperationEval> myEval = SGPP::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval = sgpp::op_factory::createOperationEval(*myGrid);
 
       dimOne = GridArea.getBoundary(0);
       dimTwo = GridArea.getBoundary(1);
 
-      for (float_t i = dimOne.leftBoundary; i <= dimOne.rightBoundary;
+      for (double i = dimOne.leftBoundary; i <= dimOne.rightBoundary;
            i += ((dimOne.rightBoundary - dimOne.leftBoundary) /
-                 static_cast<float_t>
+                 static_cast<double>
                  (PointsPerDimension))) {
-        for (float_t j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary;
+        for (double j = dimTwo.leftBoundary; j <= dimTwo.rightBoundary;
              j += ((dimTwo.rightBoundary - dimTwo.leftBoundary) /
-                   static_cast<float_t>
+                   static_cast<double>
                    (PointsPerDimension))) {
-          std::vector<float_t> point;
+          std::vector<double> point;
           point.push_back(i);
           point.push_back(j);
           fileout << i << " " << j << " " << myEval->eval(alpha, point) <<
@@ -95,42 +95,42 @@ void GridPrinterForStretching::printGrid(DataVector& alpha,
     } else {
       // Open filehandle
       fileout.open(tFilename.c_str());
-      std::unique_ptr<OperationEval> myEval = SGPP::op_factory::createOperationEval(*myGrid);
+      std::unique_ptr<OperationEval> myEval = sgpp::op_factory::createOperationEval(*myGrid);
 
       if (myGrid->getDimension() == 1) {
         dimOne = myGrid->getStretching().getBoundary(0);
 
-        float_t inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary) /
-                         (static_cast<float_t>(PointsPerDimension) - 1.0));
+        double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary) /
+                         (static_cast<double>(PointsPerDimension) - 1.0));
 
         size_t points = PointsPerDimension;
 
         for (size_t i = 0; i < points; i++) {
-          std::vector<float_t> point;
-          point.push_back((((float_t)(i))*inc_x));
-          fileout << (((float_t)(i))*inc_x) << " " << myEval->eval(alpha,
+          std::vector<double> point;
+          point.push_back(((static_cast<double>(i))*inc_x));
+          fileout << ((static_cast<double>(i))*inc_x) << " " << myEval->eval(alpha,
                   point) << std::endl;
         }
       } else if (myGrid->getDimension() == 2) {
         dimOne = myGrid->getStretching().getBoundary(0);
         dimTwo = myGrid->getStretching().getBoundary(1);
 
-        float_t offset_x = dimOne.leftBoundary;
-        float_t offset_y = dimTwo.leftBoundary;
-        float_t inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary) /
-                         (static_cast<float_t>(PointsPerDimension) - 1.0));
-        float_t inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary) /
-                         (static_cast<float_t>(PointsPerDimension) - 1.0));
+        double offset_x = dimOne.leftBoundary;
+        double offset_y = dimTwo.leftBoundary;
+        double inc_x = ((dimOne.rightBoundary - dimOne.leftBoundary) /
+                         (static_cast<double>(PointsPerDimension) - 1.0));
+        double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary) /
+                         (static_cast<double>(PointsPerDimension) - 1.0));
 
         size_t points = PointsPerDimension;
 
         for (size_t i = 0; i < points; i++) {
           for (size_t j = 0; j < points; j++) {
-            std::vector<float_t> point;
-            point.push_back(offset_x + (((float_t)(i))*inc_x));
-            point.push_back(offset_y + (((float_t)(j))*inc_y));
-            fileout << (offset_x + ((float_t)(i))*inc_x) << " " <<
-                    (offset_y + ((float_t)(j))*inc_y) << " " <<
+            std::vector<double> point;
+            point.push_back(offset_x + ((static_cast<double>(i))*inc_x));
+            point.push_back(offset_y + ((static_cast<double>(j))*inc_y));
+            fileout << (offset_x + (static_cast<double>(i))*inc_x) << " " <<
+                    (offset_y + (static_cast<double>(j))*inc_y) << " " <<
                     myEval->eval(alpha, point) << std::endl;
           }
 
@@ -152,13 +152,13 @@ void GridPrinterForStretching::printGrid(DataVector& alpha,
 void GridPrinterForStretching::printSparseGrid(DataVector& alpha,
     std::string tFilename, bool bSurplus) {
   DataVector temp(alpha);
-  float_t tmp = 0.0;
+  double tmp = 0.0;
   size_t dim = myGrid->getDimension();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    SGPP::op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
+    sgpp::op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
   }
 
   // Open filehandle
@@ -184,13 +184,13 @@ void GridPrinterForStretching::printSparseGrid(DataVector& alpha,
 void GridPrinterForStretching::printSparseGridExpTransform(DataVector& alpha,
     std::string tFilename, bool bSurplus) {
   DataVector temp(alpha);
-  float_t tmp = 0.0;
+  double tmp = 0.0;
   size_t dim = myGrid->getDimension();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    SGPP::op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
+    sgpp::op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
   }
 
   // Open filehandle
@@ -214,4 +214,4 @@ void GridPrinterForStretching::printSparseGridExpTransform(DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

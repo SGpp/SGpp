@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -51,8 +51,8 @@ class OperationInverseRosenblattTransformationLinear
   void doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t op_dim,
                                     base::DataVector* cdfs1d, base::DataVector* coords1d,
                                     size_t& curr_dim);
-  float_t doTransformation1D(base::Grid* grid1d, base::DataVector* alpha1d, float_t coord1d);
+  double doTransformation1D(base::Grid* grid1d, base::DataVector* alpha1d, double coord1d);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR_HPP */

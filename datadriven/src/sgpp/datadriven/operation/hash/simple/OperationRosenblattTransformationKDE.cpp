@@ -22,10 +22,10 @@
 
 // #define DEBUG_ROSENBLATT
 
-using SGPP::base::DataMatrix;
-using SGPP::base::DataVector;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 OperationRosenblattTransformationKDE::OperationRosenblattTransformationKDE(GaussianKDE& density)
@@ -47,7 +47,7 @@ void OperationRosenblattTransformationKDE::doTransformation(DataMatrix& pointsCd
   DataVector kern(nsamples);
   DataVector* samples1d = nullptr;
 
-  float_t xi = 0;
+  double xi = 0;
 
   for (size_t idata = 0; idata < pointsCdf.getNrows(); idata++) {
     kern.setAll(1.0);
@@ -82,7 +82,7 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& 
   DataVector kern(nsamples);
   DataVector* samples1d = nullptr;
 
-  float_t xi = 0;
+  double xi = 0;
 
   std::vector<size_t> dims(ndim);
 
@@ -118,15 +118,15 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& 
   return;
 }
 
-float_t OperationRosenblattTransformationKDE::doTransformation1D(float_t x, DataVector& samples1d,
-                                                                 float_t sigma, DataVector& kern) {
+double OperationRosenblattTransformationKDE::doTransformation1D(double x, DataVector& samples1d,
+                                                                 double sigma, DataVector& kern) {
   // helper variables
-  float_t cdfNormal = 0.0;
-  float_t cdfConditionalized = 0.0;
-  float_t xi = 0.;
+  double cdfNormal = 0.0;
+  double cdfConditionalized = 0.0;
+  double xi = 0.;
 
   // compute dependent CDF over all kernels and build denominator
-  float_t denom = 0.0;
+  double denom = 0.0;
 
   for (size_t isample = 0; isample < nsamples; isample++) {
     xi = (x - samples1d[isample]) / sigma;
@@ -147,4 +147,4 @@ float_t OperationRosenblattTransformationKDE::doTransformation1D(float_t x, Data
   return cdfConditionalized;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -20,18 +20,18 @@
 #include "sgpp/globaldef.hpp"
 #include "test_datadrivenCommon.hpp"
 
-using SGPP::base::DataMatrix;
-using SGPP::base::DataVector;
-using SGPP::base::Grid;
-using SGPP::base::GridStorage;
-using SGPP::base::GridGenerator;
-using SGPP::base::OperationMultipleEval;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridStorage;
+using sgpp::base::GridGenerator;
+using sgpp::base::OperationMultipleEval;
 
 DataMatrix* generateBBTMatrix(Grid& grid, DataMatrix& training) {
   GridStorage& storage = grid.getStorage();
 
   std::unique_ptr<OperationMultipleEval> b(
-      SGPP::op_factory::createOperationMultipleEval(grid, training));
+      sgpp::op_factory::createOperationMultipleEval(grid, training));
 
   DataVector alpha(storage.getSize());
   DataVector erg(storage.getSize());
@@ -60,11 +60,7 @@ DataMatrix* generateBBTMatrix(Grid& grid, DataMatrix& training) {
 }
 
 void compareBBTMatrices(DataMatrix* m1, DataMatrix* m2) {
-#if USE_DOUBLE_PRECISION
   double tolerance = 1E-2;
-#else
-  double tolerance = 1E-1;
-#endif
 
   // check dimensions
   BOOST_CHECK_EQUAL(m1->getNrows(), m2->getNrows());
@@ -75,7 +71,7 @@ void compareBBTMatrices(DataMatrix* m1, DataMatrix* m2) {
   size_t cols = m1->getNcols();  // was m
 
   // check diagonal
-  std::vector<SGPP::float_t> valuesDiag;
+  std::vector<double> valuesDiag;
 
   for (size_t i = 0; i < rows; i++) {
     valuesDiag.push_back(m1->get(i, i));
@@ -83,7 +79,7 @@ void compareBBTMatrices(DataMatrix* m1, DataMatrix* m2) {
 
   std::sort(valuesDiag.begin(), valuesDiag.end());
 
-  std::vector<SGPP::float_t> valuesDiagReference;
+  std::vector<double> valuesDiagReference;
 
   for (size_t i = 0; i < rows; i++) {
     valuesDiagReference.push_back(m2->get(i, i));
@@ -98,7 +94,7 @@ void compareBBTMatrices(DataMatrix* m1, DataMatrix* m2) {
   // check row sum
   DataVector v(cols);
 
-  std::vector<SGPP::float_t> values;
+  std::vector<double> values;
 
   for (size_t i = 0; i < rows; i++) {
     m1->getRow(i, v);
@@ -107,7 +103,7 @@ void compareBBTMatrices(DataMatrix* m1, DataMatrix* m2) {
 
   std::sort(values.begin(), values.end());
 
-  std::vector<SGPP::float_t> valuesReference;
+  std::vector<double> valuesReference;
 
   for (size_t i = 0; i < rows; i++) {
     m2->getRow(i, v);
@@ -154,8 +150,8 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   //  for (size_t i = 0; i < trainingData->getNrows(); i++) {
@@ -167,7 +163,7 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -184,13 +180,13 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -207,13 +203,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -230,13 +226,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createModLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createModLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -257,14 +253,14 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
 
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -281,13 +277,13 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -304,13 +300,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -327,13 +323,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -354,13 +350,13 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_prewavelet_dim_1_nopsgrid_7_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createPrewaveletGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -377,13 +373,13 @@ BOOST_AUTO_TEST_CASE(testPrewavelet1D_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_prewavelet_dim_1_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createPrewaveletGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -400,13 +396,13 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_prewavelet_dim_3_nopsgrid_31_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createPrewaveletGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -423,13 +419,13 @@ BOOST_AUTO_TEST_CASE(testPrewaveletdD_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_prewavelet_dim_3_nopsgrid_111_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createPrewaveletGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -446,13 +442,13 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_prewavelet_dim_4_nopsgrid_17_adapt_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createPrewaveletGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createPrewaveletGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -462,7 +458,7 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptivedD_two) {
     alpha[i] = static_cast<double>(i + 1);
   }
 
-  SGPP::base::SurplusRefinementFunctor functor(alpha, 1);
+  sgpp::base::SurplusRefinementFunctor functor(alpha, 1);
   grid->getGenerator().refine(functor);
 
   DataMatrix* m = generateBBTMatrix(*grid, trainingData);
@@ -482,13 +478,13 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim, 0);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -505,13 +501,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim, 0);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -528,13 +524,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim, 0);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim, 0);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -555,13 +551,13 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -578,13 +574,13 @@ BOOST_AUTO_TEST_CASE(testHatRegular1D_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -601,13 +597,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_one) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -624,13 +620,13 @@ BOOST_AUTO_TEST_CASE(testHatRegulardD_two) {
   std::string referenceMatrixFileName(
       "datadriven/tests/data/BBT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz");
   std::string content = uncompressFile(fileName);
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
   DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(dim);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(dim);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -647,7 +643,7 @@ BOOST_AUTO_TEST_SUITE(TestLinearGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   size_t level = 1;
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearGrid(1);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearGrid(1);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -657,11 +653,11 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  std::unique_ptr<SGPP::datadriven::OperationTest> testOP(
-      SGPP::op_factory::createOperationTest(*grid));
+  std::unique_ptr<sgpp::datadriven::OperationTest> testOP(
+      sgpp::op_factory::createOperationTest(*grid));
 
   alpha.setAll(1.0);
-  SGPP::float_t c = testOP->test(alpha, data, classes);
+  double c = testOP->test(alpha, data, classes);
   BOOST_CHECK(c > 0.0);
 
   alpha.setAll(-1.0);
@@ -675,7 +671,7 @@ BOOST_AUTO_TEST_SUITE(TestLinearBoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   size_t level = 1;
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(1);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(1);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -685,13 +681,13 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  std::unique_ptr<SGPP::datadriven::OperationTest> testOP(
-      SGPP::op_factory::createOperationTest(*grid));
+  std::unique_ptr<sgpp::datadriven::OperationTest> testOP(
+      sgpp::op_factory::createOperationTest(*grid));
 
   alpha[0] = 0.0;
   alpha[1] = 0.0;
   alpha[2] = 1.0;
-  SGPP::float_t c = testOP->test(alpha, data, classes);
+  double c = testOP->test(alpha, data, classes);
   BOOST_CHECK(c > 0.0);
 
   alpha[0] = 0.0;
@@ -707,7 +703,7 @@ BOOST_AUTO_TEST_SUITE(TestLinearL0BoundaryGrid)
 
 BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   size_t level = 1;
-  std::unique_ptr<Grid> grid = SGPP::base::Grid::createLinearBoundaryGrid(1, 0);
+  std::unique_ptr<Grid> grid = sgpp::base::Grid::createLinearBoundaryGrid(1, 0);
   grid->getGenerator().regular(level);
   GridStorage& gridStorage = grid->getStorage();
 
@@ -717,13 +713,13 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   DataVector classes(1);
   classes.setAll(1.0);
 
-  std::unique_ptr<SGPP::datadriven::OperationTest> testOP(
-      SGPP::op_factory::createOperationTest(*grid));
+  std::unique_ptr<sgpp::datadriven::OperationTest> testOP(
+      sgpp::op_factory::createOperationTest(*grid));
 
   alpha[0] = 0.0;
   alpha[1] = 0.0;
   alpha[2] = 1.0;
-  SGPP::float_t c = testOP->test(alpha, data, classes);
+  double c = testOP->test(alpha, data, classes);
   BOOST_CHECK(c > 0.0);
 
   alpha[0] = 0.0;

@@ -10,9 +10,9 @@
 #include <cmath>
 
 // using namespace std;
-// busing namespace SGPP::base;
+// busing namespace sgpp::base;
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 // -------------------- constructors and desctructors --------------------
@@ -32,7 +32,7 @@ base::DataMatrix* DensityEstimator::getSamples() {
   return &samples;
 }
 
-float_t DensityEstimator::std_deviation() {
+double DensityEstimator::std_deviation() {
   return std::sqrt(variance());
 }
 
@@ -41,8 +41,8 @@ void DensityEstimator::corrcoef(base::DataMatrix& corr) {
   cov(corr);
 
   // ... normalize it
-  float_t corrij = 0.0;
-  float_t sigmai = 0.0, sigmaj = 0.0;
+  double corrij = 0.0;
+  double sigmai = 0.0, sigmaj = 0.0;
   size_t ndim = corr.getNcols();
 
   for (size_t idim = 0; idim < ndim; idim++) {
@@ -62,4 +62,4 @@ void DensityEstimator::corrcoef(base::DataMatrix& corr) {
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

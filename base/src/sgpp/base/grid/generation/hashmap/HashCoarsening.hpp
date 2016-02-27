@@ -21,7 +21,7 @@
 #include <utility>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -202,6 +202,6 @@ class HashCoarsening {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHCOARSENING_HPP */

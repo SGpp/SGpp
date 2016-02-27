@@ -52,22 +52,22 @@
 #include <string>
 #include <vector>
 
-using SGPP::base::algorithm_exception;
-using SGPP::base::data_exception;
-using SGPP::base::DataMatrix;
-using SGPP::base::DataVector;
-using SGPP::base::factory_exception;
-using SGPP::base::file_exception;
-using SGPP::base::generation_exception;
-using SGPP::base::Grid;
-using SGPP::base::GridDataBase;
-using SGPP::base::GridPrinter;
-using SGPP::base::GridStorage;
-using SGPP::base::operation_exception;
-using SGPP::base::OperationMultipleEval;
-using SGPP::base::PeriodicGridGenerator;
-using SGPP::base::QuadRule1D;
-using SGPP::base::tool_exception;
+using sgpp::base::algorithm_exception;
+using sgpp::base::data_exception;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::factory_exception;
+using sgpp::base::file_exception;
+using sgpp::base::generation_exception;
+using sgpp::base::Grid;
+using sgpp::base::GridDataBase;
+using sgpp::base::GridPrinter;
+using sgpp::base::GridStorage;
+using sgpp::base::operation_exception;
+using sgpp::base::OperationMultipleEval;
+using sgpp::base::PeriodicGridGenerator;
+using sgpp::base::QuadRule1D;
+using sgpp::base::tool_exception;
 
 BOOST_AUTO_TEST_CASE(test_AlgorithmException) {
   DataVector testVector(5);
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(test_AlgorithmException) {
 
 // TODO(menhorn): Add this when datadriven is working
 // BOOST_AUTO_TEST_CASE(test_ApplicationException){
-//   SGPP::datadriven::DataMiningConfiguration* dataMiningConfigurationDummy;
+//   sgpp::datadriven::DataMiningConfiguration* dataMiningConfigurationDummy;
 //   std::string str = "haha... this is not a grid type!";
 //   application_exception expectedException("grid type is unknown");
 //
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
   std::unique_ptr<Grid> linearGrid = Grid::createLinearGrid(dimension);
   DataMatrix dummyMatrix(10, 7);
   std::unique_ptr<OperationMultipleEval> opEval(
-      SGPP::op_factory::createOperationMultipleEval(*linearGrid, dummyMatrix));
+      sgpp::op_factory::createOperationMultipleEval(*linearGrid, dummyMatrix));
 
   operation_exception expectedException(
       "error: OperationMultipleEval::getDuration(): "
@@ -174,14 +174,14 @@ BOOST_AUTO_TEST_CASE(test_OperationException) {
 // BOOST_AUTO_TEST_CASE(test_SolverException){
 //   std::string faultyString = "haha... I am not an Euler mode";
 //   size_t imax = 10;
-//   float_t timestepsize = 0.1f;
+//   double timestepsize = 0.1f;
 //   bool generateAnimation = false;
 //   size_t numEvalsAnimation = 10;
 //   ScreenOutput screen;
 //   solver_exception expectedException("Euler::Euler : An unknown Euler-Mode was specified!");
 //   Euler* faultyEuler;
 //   try{
-//     faultyEuler = new SGPP::solver::Euler(faultyString, imax, timestepsize,
+//     faultyEuler = new sgpp::solver::Euler(faultyString, imax, timestepsize,
 //         generateAnimation, numEvalsAnimation, &screen);
 //   }catch(solver_exception& actualException){
 //     BOOST_CHECK_EQUAL(actualException.what(), expectedException.what());

@@ -10,7 +10,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace solver {
 
@@ -20,20 +20,20 @@ namespace solver {
 enum class SLESolverType { CG, BiCGSTAB };
 
 struct SLESolverConfiguration {
-  SGPP::solver::SLESolverType type_;
-  float_t eps_;
+  sgpp::solver::SLESolverType type_;
+  double eps_;
   size_t maxIterations_;
-  float_t threshold_;
+  double threshold_;
 };
 
 struct SLESolverSPConfiguration {
-  SGPP::solver::SLESolverType type_;
+  sgpp::solver::SLESolverType type_;
   float eps_;
   size_t maxIterations_;
   float threshold_;
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* TYPESSOLVER_HPP */

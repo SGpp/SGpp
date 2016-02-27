@@ -9,14 +9,14 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 OperationMultiEvalModMaskStreaming::OperationMultiEvalModMaskStreaming(base::Grid& grid,
                                                                        base::DataMatrix& dataset)
     : OperationMultipleEval(grid, dataset),
       preparedDataset(dataset),
-      myTimer_(SGPP::base::SGppStopwatch()),
+      myTimer_(sgpp::base::SGppStopwatch()),
       duration(-1.0) {
   this->storage = &grid.getStorage();
   this->padDataset(this->preparedDataset);
@@ -37,12 +37,12 @@ void OperationMultiEvalModMaskStreaming::getPartitionSegment(size_t start, size_
 
   // check for valid input
   if (blockSize == 0) {
-    throw SGPP::base::operation_exception("blockSize must not be zero!");
+    throw sgpp::base::operation_exception("blockSize must not be zero!");
   }
 
   if (totalSize % blockSize != 0) {
     // std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "totalSize must be divisible by blockSize without remainder, but it is not!");
   }
 
@@ -86,8 +86,8 @@ size_t OperationMultiEvalModMaskStreaming::getChunkDataPoints() {
 #endif
 }
 
-void OperationMultiEvalModMaskStreaming::mult(SGPP::base::DataVector& alpha,
-                                              SGPP::base::DataVector& result) {
+void OperationMultiEvalModMaskStreaming::mult(sgpp::base::DataVector& alpha,
+                                              sgpp::base::DataVector& result) {
   this->myTimer_.start();
 
   size_t originalSize = result.getSize();
@@ -110,8 +110,8 @@ void OperationMultiEvalModMaskStreaming::mult(SGPP::base::DataVector& alpha,
   this->duration = this->myTimer_.stop();
 }
 
-void OperationMultiEvalModMaskStreaming::multTranspose(SGPP::base::DataVector& source,
-                                                       SGPP::base::DataVector& result) {
+void OperationMultiEvalModMaskStreaming::multTranspose(sgpp::base::DataVector& source,
+                                                       sgpp::base::DataVector& result) {
   this->myTimer_.start();
 
   size_t originalSize = source.getSize();
@@ -140,7 +140,7 @@ void OperationMultiEvalModMaskStreaming::multTranspose(SGPP::base::DataVector& s
   this->duration = this->myTimer_.stop();
 }
 
-size_t OperationMultiEvalModMaskStreaming::padDataset(SGPP::base::DataMatrix& dataset) {
+size_t OperationMultiEvalModMaskStreaming::padDataset(sgpp::base::DataMatrix& dataset) {
   size_t vecWidth = this->getChunkDataPoints();
 
   // Assure that data has a even number of instances -> padding might be needed
@@ -148,7 +148,7 @@ size_t OperationMultiEvalModMaskStreaming::padDataset(SGPP::base::DataMatrix& da
   size_t loopCount = vecWidth - remainder;
 
   if (loopCount != vecWidth) {
-    SGPP::base::DataVector lastRow(dataset.getNcols());
+    sgpp::base::DataVector lastRow(dataset.getNcols());
     size_t oldSize = dataset.getNrows();
     dataset.getRow(dataset.getNrows() - 1, lastRow);
     dataset.resize(dataset.getNrows() + loopCount);
@@ -161,7 +161,7 @@ size_t OperationMultiEvalModMaskStreaming::padDataset(SGPP::base::DataMatrix& da
   return dataset.getNrows();
 }
 
-float_t OperationMultiEvalModMaskStreaming::getDuration() { return this->duration; }
+double OperationMultiEvalModMaskStreaming::getDuration() { return this->duration; }
 
 void OperationMultiEvalModMaskStreaming::prepare() { this->recalculateLevelIndexMask(); }
 
@@ -178,8 +178,8 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   size_t gridSize = this->storage->getSize() + padding;
   size_t dims = this->storage->getDimension();
 
-  SGPP::base::HashGridIndex::level_type curLevel;
-  SGPP::base::HashGridIndex::index_type curIndex;
+  sgpp::base::HashGridIndex::level_type curLevel;
+  sgpp::base::HashGridIndex::index_type curIndex;
 
   this->level = std::vector<double>(gridSize * dims);
   this->index = std::vector<double>(gridSize * dims);
@@ -208,7 +208,7 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
 
         this->offset[i * dims + dim] = 2.0;
       } else if (curIndex ==
-                 static_cast<SGPP::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
+                 static_cast<sgpp::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
         this->level[i * dims + dim] = static_cast<double>(1 << curLevel);
         this->index[i * dims + dim] = static_cast<double>(curIndex);
 
@@ -241,4 +241,4 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   }
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

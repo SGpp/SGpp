@@ -20,31 +20,31 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& thetas,
-    SGPP::base::DataVector& volvols, SGPP::base::DataVector& kappas, SGPP::base::DataMatrix& rho,
-    float_t r, float_t TimestepSize, std::string OperationMode, float_t dStrike,
-    std::string option_type, bool bLogTransform, bool useCoarsen, float_t coarsenThreshold,
-    std::string adaptSolveMode, int numCoarsenPoints, float_t refineThreshold,
-    std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel) {
+    sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& thetas,
+    sgpp::base::DataVector& volvols, sgpp::base::DataVector& kappas, sgpp::base::DataMatrix& rho,
+    double r, double TimestepSize, std::string OperationMode, double dStrike,
+    std::string option_type, bool bLogTransform, bool useCoarsen, double coarsenThreshold,
+    std::string adaptSolveMode, int numCoarsenPoints, double refineThreshold,
+    std::string refineMode, sgpp::base::GridIndex::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
-  this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
-  this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
+  this->alpha_complete_old = new sgpp::base::DataVector(*this->alpha_complete);
+  this->alpha_complete_tmp = new sgpp::base::DataVector(*this->alpha_complete);
+  this->oldGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
+  this->secondGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
 
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
-  this->GridConverter = new SGPP::base::DirichletGridConverter();
+  this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->GridConverter = new sgpp::base::DirichletGridConverter();
   this->r = r;
   this->thetas = &thetas;
   this->volvols = &volvols;
@@ -56,21 +56,21 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
 
   // throw an exception if we're not using Log coordinates and there is more than one asset
   if (this->nAssets > 1 && !bLogTransform) {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : "
         "Cartesian coordinates are not supported for the basket case.");
   }
 
   // throw exception if algorithmic dimensions isn't even
   if ((this->HestonAlgoDims.size() % 2) != 0) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Number "
         "of algorithmic dimensions is not even.");
   }
 
   // throw exception if grid dimensions not equal algorithmic dimensions
   if (this->HestonAlgoDims.size() != this->BoundGrid->getDimension()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Number "
         "of algorithmic dimensions is not equal to the number of grid's dimensions.");
   }
@@ -80,7 +80,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
   if (this->BoundGrid->getDimension() != (2 * this->thetas->getSize()) ||
       this->BoundGrid->getDimension() != (2 * this->kappas->getSize()) ||
       this->BoundGrid->getDimension() != (2 * this->volvols->getSize())) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : "
         "Dimension of theta/volvol/kappa parameters != half of grid's dimensions!");
   }
@@ -88,7 +88,7 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
   // Test if number of dimensions in the coefficients match the numbers of grid dimensions (hmatrix)
   if (this->BoundGrid->getDimension() != this->hMatrix->getNrows() ||
       this->BoundGrid->getDimension() != this->hMatrix->getNcols()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : Row or "
         "col of hmatrix parameter don't match the grid's dimensions!");
   }
@@ -96,13 +96,13 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
   // Test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->HestonAlgoDims.size(); i++) {
     if (this->HestonAlgoDims[i] >= this->BoundGrid->getDimension()) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : "
           "Minimum one algorithmic dimension is not inside the grid's dimensions!");
     }
   }
 
-  // Test if there are float_t algorithmic dimensions
+  // Test if there are double algorithmic dimensions
   std::vector<size_t> tempAlgoDims(this->HestonAlgoDims);
 
   for (size_t i = 0; i < this->HestonAlgoDims.size(); i++) {
@@ -115,9 +115,9 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
     }
 
     if (dimCount > 1) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "HestonParabolicPDESolverSystemEuropean::HestonParabolicPDESolverSystemEuropean : There "
-          "is minimum one float_td algorithmic dimension!");
+          "is minimum one doubled algorithmic dimension!");
     }
   }
 
@@ -125,17 +125,17 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
   // Some of the coefficient collections are vectors, some are matrices and one is a tensor (for the
   // Up/Down Four Op Dim case)
   size_t coefficientVectorSize = this->HestonAlgoDims.size();
-  this->dCoeff = new SGPP::base::DataVector(coefficientVectorSize);
-  this->eCoeff = new SGPP::base::DataVector(coefficientVectorSize);
-  this->fCoeff = new SGPP::base::DataVector(coefficientVectorSize);
-  this->gCoeff = new SGPP::base::DataVector(coefficientVectorSize);
-  this->zCoeff = new SGPP::base::DataVector(coefficientVectorSize);
-  this->bCoeff = new SGPP::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
-  this->cCoeff = new SGPP::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
-  this->hCoeff = new SGPP::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
-  this->xCoeff = new SGPP::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
-  this->yCoeff = new SGPP::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
-  this->wCoeff = new SGPP::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+  this->dCoeff = new sgpp::base::DataVector(coefficientVectorSize);
+  this->eCoeff = new sgpp::base::DataVector(coefficientVectorSize);
+  this->fCoeff = new sgpp::base::DataVector(coefficientVectorSize);
+  this->gCoeff = new sgpp::base::DataVector(coefficientVectorSize);
+  this->zCoeff = new sgpp::base::DataVector(coefficientVectorSize);
+  this->bCoeff = new sgpp::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+  this->cCoeff = new sgpp::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+  this->hCoeff = new sgpp::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+  this->xCoeff = new sgpp::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+  this->yCoeff = new sgpp::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
+  this->wCoeff = new sgpp::base::DataMatrix(coefficientVectorSize, coefficientVectorSize);
   create4dEqualDimSizeArray(coefficientVectorSize, &(this->kCoeff));
 
   // create the inner grid
@@ -154,33 +154,33 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
     buildDCoefficients();
 
     // Create operators
-    this->OpXBound = SGPP::op_factory::createOperationHestonX(
+    this->OpXBound = sgpp::op_factory::createOperationHestonX(
         *this->BoundGrid, *this->xCoeff).release();
-    this->OpXInner = SGPP::op_factory::createOperationHestonX(
+    this->OpXInner = sgpp::op_factory::createOperationHestonX(
         *this->InnerGrid, *this->xCoeff).release();
-    this->OpYBound = SGPP::op_factory::createOperationHestonY(
+    this->OpYBound = sgpp::op_factory::createOperationHestonY(
         *this->BoundGrid, *this->yCoeff).release();
-    this->OpYInner = SGPP::op_factory::createOperationHestonY(
+    this->OpYInner = sgpp::op_factory::createOperationHestonY(
         *this->InnerGrid, *this->yCoeff).release();
-    this->OpWBound = SGPP::op_factory::createOperationHestonW(
+    this->OpWBound = sgpp::op_factory::createOperationHestonW(
         *this->BoundGrid, *this->wCoeff).release();
-    this->OpWInner = SGPP::op_factory::createOperationHestonW(
+    this->OpWInner = sgpp::op_factory::createOperationHestonW(
         *this->InnerGrid, *this->wCoeff).release();
-    this->OpZBound = SGPP::op_factory::createOperationHestonZ(
+    this->OpZBound = sgpp::op_factory::createOperationHestonZ(
         *this->BoundGrid, *this->zCoeff).release();
-    this->OpZInner = SGPP::op_factory::createOperationHestonZ(
+    this->OpZInner = sgpp::op_factory::createOperationHestonZ(
         *this->InnerGrid, *this->zCoeff).release();
-    this->OpGBound = SGPP::op_factory::createOperationHestonGLog(
+    this->OpGBound = sgpp::op_factory::createOperationHestonGLog(
         *this->BoundGrid, *this->gCoeff).release();
-    this->OpGInner = SGPP::op_factory::createOperationHestonGLog(
+    this->OpGInner = sgpp::op_factory::createOperationHestonGLog(
         *this->InnerGrid, *this->gCoeff).release();
-    this->OpDBound = SGPP::op_factory::createOperationHestonDLog(
+    this->OpDBound = sgpp::op_factory::createOperationHestonDLog(
         *this->BoundGrid, *this->dCoeff).release();
-    this->OpDInner = SGPP::op_factory::createOperationHestonDLog(
+    this->OpDInner = sgpp::op_factory::createOperationHestonDLog(
         *this->InnerGrid, *this->dCoeff).release();
-    this->OpFBound = SGPP::op_factory::createOperationHestonFLog(
+    this->OpFBound = sgpp::op_factory::createOperationHestonFLog(
         *this->BoundGrid, *this->fCoeff).release();
-    this->OpFInner = SGPP::op_factory::createOperationHestonFLog(
+    this->OpFInner = sgpp::op_factory::createOperationHestonFLog(
         *this->InnerGrid, *this->fCoeff).release();
   } else {
     // Log-transformed case
@@ -195,43 +195,43 @@ HestonParabolicPDESolverSystemEuroAmer::HestonParabolicPDESolverSystemEuroAmer(
     buildKCoefficientsLogTransform();
 
     // Create operators
-    this->OpBBound = SGPP::op_factory::createOperationHestonBLog(
+    this->OpBBound = sgpp::op_factory::createOperationHestonBLog(
         *this->BoundGrid, *this->bCoeff).release();
-    this->OpBInner = SGPP::op_factory::createOperationHestonBLog(
+    this->OpBInner = sgpp::op_factory::createOperationHestonBLog(
         *this->InnerGrid, *this->bCoeff).release();
-    this->OpCBound = SGPP::op_factory::createOperationHestonCLog(
+    this->OpCBound = sgpp::op_factory::createOperationHestonCLog(
         *this->BoundGrid, *this->cCoeff).release();
-    this->OpCInner = SGPP::op_factory::createOperationHestonCLog(
+    this->OpCInner = sgpp::op_factory::createOperationHestonCLog(
         *this->InnerGrid, *this->cCoeff).release();
-    this->OpDBound = SGPP::op_factory::createOperationHestonDLog(
+    this->OpDBound = sgpp::op_factory::createOperationHestonDLog(
         *this->BoundGrid, *this->dCoeff).release();
-    this->OpDInner = SGPP::op_factory::createOperationHestonDLog(
+    this->OpDInner = sgpp::op_factory::createOperationHestonDLog(
         *this->InnerGrid, *this->dCoeff).release();
-    this->OpEBound = SGPP::op_factory::createOperationHestonELog(
+    this->OpEBound = sgpp::op_factory::createOperationHestonELog(
         *this->BoundGrid, *this->eCoeff).release();
-    this->OpEInner = SGPP::op_factory::createOperationHestonELog(
+    this->OpEInner = sgpp::op_factory::createOperationHestonELog(
         *this->InnerGrid, *this->eCoeff).release();
-    this->OpFBound = SGPP::op_factory::createOperationHestonFLog(
+    this->OpFBound = sgpp::op_factory::createOperationHestonFLog(
         *this->BoundGrid, *this->fCoeff).release();
-    this->OpFInner = SGPP::op_factory::createOperationHestonFLog(
+    this->OpFInner = sgpp::op_factory::createOperationHestonFLog(
         *this->InnerGrid, *this->fCoeff).release();
-    this->OpGBound = SGPP::op_factory::createOperationHestonGLog(
+    this->OpGBound = sgpp::op_factory::createOperationHestonGLog(
         *this->BoundGrid, *this->gCoeff).release();
-    this->OpGInner = SGPP::op_factory::createOperationHestonGLog(
+    this->OpGInner = sgpp::op_factory::createOperationHestonGLog(
         *this->InnerGrid, *this->gCoeff).release();
-    this->OpHBound = SGPP::op_factory::createOperationHestonHLog(
+    this->OpHBound = sgpp::op_factory::createOperationHestonHLog(
         *this->BoundGrid, *this->hCoeff).release();
-    this->OpHInner = SGPP::op_factory::createOperationHestonHLog(
+    this->OpHInner = sgpp::op_factory::createOperationHestonHLog(
         *this->InnerGrid, *this->hCoeff).release();
-    this->OpKBound = SGPP::op_factory::createOperationHestonKLog(
+    this->OpKBound = sgpp::op_factory::createOperationHestonKLog(
         *this->BoundGrid, &(this->kCoeff)).release();
-    this->OpKInner = SGPP::op_factory::createOperationHestonKLog(
+    this->OpKInner = sgpp::op_factory::createOperationHestonKLog(
         *this->InnerGrid, &(this->kCoeff)).release();
   }
 
   // Create operations that are needed by both the log-transformed and Cartesian case
-  this->OpAInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
-  this->OpABound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+  this->OpAInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
+  this->OpABound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
 
   // right hand side if System
   this->rhs = NULL;
@@ -330,8 +330,8 @@ HestonParabolicPDESolverSystemEuroAmer::~HestonParabolicPDESolverSystemEuroAmer(
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -409,9 +409,9 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(
   }
 }
 
-void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(SGPP::base::DataVector& alpha,
-                                                                 SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(sgpp::base::DataVector& alpha,
+                                                                 sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -489,8 +489,8 @@ void HestonParabolicPDESolverSystemEuroAmer::applyLOperatorInner(SGPP::base::Dat
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -500,9 +500,9 @@ void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(
   result.add(temp);
 }
 
-void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(SGPP::base::DataVector& alpha,
-                                                                  SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+void HestonParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(sgpp::base::DataVector& alpha,
+                                                                  sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -544,11 +544,11 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
     size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
+    sgpp::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator.getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(
           *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
@@ -564,7 +564,7 @@ void HestonParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastTimeste
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+      sgpp::base::SurplusCoarseningFunctor myCoarsenFunctor(
           *this->alpha_complete, numCoarsen, this->coarsenThreshold);
       myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
@@ -585,12 +585,12 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep() {
   // Adjust the boundaries with the riskfree rate
   if (this->r != 0.0) {
     if (this->tOperationMode == "CrNic" || this->tOperationMode == "ImEul") {
-      SGPP::base::GridStorage* storage = &this->BoundGrid->getStorage();
+      sgpp::base::GridStorage* storage = &this->BoundGrid->getStorage();
 
       for (size_t i = 0; i < storage->getSize(); i++) {
-        SGPP::base::GridIndex* curPoint = (*storage)[i];
+        sgpp::base::GridIndex* curPoint = (*storage)[i];
 
-        SGPP::base::DataVector pointCoords(storage->getDimension());
+        sgpp::base::DataVector pointCoords(storage->getDimension());
         curPoint->getCoords(pointCoords);
 
         // Discount the boundary points
@@ -606,25 +606,25 @@ void HestonParabolicPDESolverSystemEuroAmer::startTimestep() {
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficients() {
-  float_t volvol = volvols->get(0);
-  float_t rho = this->hMatrix->get(0, 1);
-  float_t kappa = this->kappas->get(0);
+  double volvol = volvols->get(0);
+  double rho = this->hMatrix->get(0, 1);
+  double kappa = this->kappas->get(0);
 
   this->gCoeff->setAll(0.0);
   this->gCoeff->set(1, (kappa) + rho * volvol);
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficients() {
-  float_t volvol = volvols->get(0);
-  float_t kappa = this->kappas->get(0);
-  float_t theta = this->thetas->get(0);
+  double volvol = volvols->get(0);
+  double kappa = this->kappas->get(0);
+  double theta = this->thetas->get(0);
 
   this->fCoeff->setAll(0.0);
   this->fCoeff->set(1, kappa * theta - 0.5 * pow(volvol, 2.0));
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficients() {
-  float_t volvol = volvols->get(0);
+  double volvol = volvols->get(0);
 
   this->dCoeff->setAll(0.0);
   this->dCoeff->set(1, (0.5) * pow(volvol, 2.0));
@@ -636,8 +636,8 @@ void HestonParabolicPDESolverSystemEuroAmer::buildXCoefficients() {
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildWCoefficients() {
-  float_t volvol = volvols->get(0);
-  float_t rho = this->hMatrix->get(0, 1);
+  double volvol = volvols->get(0);
+  double rho = this->hMatrix->get(0, 1);
 
   this->wCoeff->setAll(0.0);
   this->wCoeff->set(0, 1, rho * volvol);
@@ -662,7 +662,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildBCoefficientsLogTransform() {
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildCCoefficientsLogTransform() {
-  float_t volvol, rho;
+  double volvol, rho;
   this->cCoeff->setAll(0.0);
 
   for (size_t i = 0; i < this->nAssets; i++) {
@@ -678,7 +678,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildDCoefficientsLogTransform() {
 
   for (size_t i = 0; i < this->nAssets; i++) {
     // Determine and set the coefficient for this asset
-    float_t volvol = volvols->get(i);
+    double volvol = volvols->get(i);
     this->dCoeff->set(2 * i + 1, (0.5) * pow(volvol, 2.0));
   }
 }
@@ -692,7 +692,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildECoefficientsLogTransform() {
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform() {
-  float_t theta, kappa, volvol;
+  double theta, kappa, volvol;
   this->fCoeff->setAll(0.0);
 
   for (size_t i = 0; i < nAssets; i++) {
@@ -705,7 +705,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildFCoefficientsLogTransform() {
 
 void HestonParabolicPDESolverSystemEuroAmer::buildGCoefficientsLogTransform() {
   this->gCoeff->setAll(0.0);
-  float_t kappa;
+  double kappa;
 
   for (size_t i = 0; i < nAssets; i++) {
     kappa = this->kappas->get(i);
@@ -722,7 +722,7 @@ void HestonParabolicPDESolverSystemEuroAmer::buildHCoefficientsLogTransform() {
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::buildKCoefficientsLogTransform() {
-  float_t rho;
+  double rho;
   setAll4dEqualDimSizeArray(this->HestonAlgoDims.size(), &(this->kCoeff), 0.0);
 
   for (size_t i = 0; i < nAssets; i++) {
@@ -734,17 +734,17 @@ void HestonParabolicPDESolverSystemEuroAmer::buildKCoefficientsLogTransform() {
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::create4dEqualDimSizeArray(size_t dimSize,
-                                                                       float_t***** array) {
-  (*array) = reinterpret_cast<float_t****>(calloc(dimSize, sizeof(float_t***)));
+                                                                       double***** array) {
+  (*array) = reinterpret_cast<double****>(calloc(dimSize, sizeof(double***)));
 
   for (size_t i = 0; i < dimSize; i++) {
-    (*array)[i] = reinterpret_cast<float_t***>(calloc(dimSize, sizeof(float_t**)));
+    (*array)[i] = reinterpret_cast<double***>(calloc(dimSize, sizeof(double**)));
 
     for (size_t j = 0; j < dimSize; j++) {
-      (*array)[i][j] = reinterpret_cast<float_t**>(calloc(dimSize, sizeof(float_t*)));
+      (*array)[i][j] = reinterpret_cast<double**>(calloc(dimSize, sizeof(double*)));
 
       for (size_t k = 0; k < dimSize; k++) {
-        (*array)[i][j][k] = reinterpret_cast<float_t*>(calloc(dimSize, sizeof(float_t)));
+        (*array)[i][j][k] = reinterpret_cast<double*>(calloc(dimSize, sizeof(double)));
 
         for (size_t m = 0; m < dimSize; m++) {
           (*array)[i][j][k][m] = 0.0;
@@ -755,7 +755,7 @@ void HestonParabolicPDESolverSystemEuroAmer::create4dEqualDimSizeArray(size_t di
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::delete4dEqualDimSizeArray(size_t dimSize,
-                                                                       float_t***** array) {
+                                                                       double***** array) {
   for (size_t i = 0; i < dimSize; i++) {
     for (size_t j = 0; j < dimSize; j++) {
       for (size_t k = 0; k < dimSize; k++) {
@@ -772,8 +772,8 @@ void HestonParabolicPDESolverSystemEuroAmer::delete4dEqualDimSizeArray(size_t di
 }
 
 void HestonParabolicPDESolverSystemEuroAmer::setAll4dEqualDimSizeArray(size_t dimSize,
-                                                                       float_t***** array,
-                                                                       float_t value) {
+                                                                       double***** array,
+                                                                       double value) {
   for (size_t i = 0; i < dimSize; i++) {
     for (size_t j = 0; j < dimSize; j++) {
       for (size_t k = 0; k < dimSize; k++) {
@@ -785,4 +785,4 @@ void HestonParabolicPDESolverSystemEuroAmer::setAll4dEqualDimSizeArray(size_t di
   }
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

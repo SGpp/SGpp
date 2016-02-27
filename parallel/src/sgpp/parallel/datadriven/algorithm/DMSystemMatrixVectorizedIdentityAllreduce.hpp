@@ -18,25 +18,25 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 template <typename KernelImplementation>
 class DMSystemMatrixVectorizedIdentityAllreduce
-    : public SGPP::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
+    : public sgpp::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
  private:
   // which part of the dataset this process handles, it always handles the complete grid
   size_t data_size;
   size_t data_offset;
 
  public:
-  DMSystemMatrixVectorizedIdentityAllreduce(SGPP::base::Grid& SparseGrid,
-                                            SGPP::base::DataMatrix& trainData, double lambda,
+  DMSystemMatrixVectorizedIdentityAllreduce(sgpp::base::Grid& SparseGrid,
+                                            sgpp::base::DataMatrix& trainData, double lambda,
                                             VectorizationType vecMode)
       : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda,
                                                                       vecMode) {
-    SGPP::parallel::PartitioningTool::getMPIPartitionSegment(
+    sgpp::parallel::PartitioningTool::getMPIPartitionSegment(
         this->numPatchedTrainingInstances_, &data_size, &data_offset,
-        SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+        sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
     rebuildLevelAndIndex();
   }
 
@@ -114,6 +114,6 @@ class DMSystemMatrixVectorizedIdentityAllreduce
 };
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // DMSYSTEMMATRIXVECTORIZEDIDENTITYALLREDUCE_H

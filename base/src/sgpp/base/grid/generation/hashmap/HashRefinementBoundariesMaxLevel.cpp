@@ -12,7 +12,7 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
@@ -148,7 +148,7 @@ void HashRefinementBoundariesMaxLevel::refineToMaxLevel(GridStorage& storage,
   // std::cout << "Num refinements: "  << refinements_num << std::endl;
 
   // can refine grid on several points
-  float_t threshold = functor.getRefinementThreshold();
+  double threshold = functor.getRefinementThreshold();
 
   for (size_t i = 0; i < refinements_num; i++) {
     max_value = max_values[i];
@@ -299,4 +299,4 @@ void HashRefinementBoundariesMaxLevel::refineGridpoint(GridStorage& storage,
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

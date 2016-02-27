@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GridStencil::GridStencil(std::istream& istr)
@@ -50,4 +50,4 @@ GridStencil::getWeightStencil() const {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

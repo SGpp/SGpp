@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void OperationDensityMarginalizeKDE::doMarginalize(size_t mdim, GaussianKDE& marginalizedKDE) {
@@ -105,4 +105,4 @@ void OperationDensityMarginalizeKDE::margToDimXs(std::vector<size_t>& mdims,
   marginalizedKDE.initialize(newSamplesVec);
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

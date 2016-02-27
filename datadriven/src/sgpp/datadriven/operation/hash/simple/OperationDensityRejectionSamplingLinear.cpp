@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha,
                                                          base::DataMatrix*& samples,
@@ -22,7 +22,7 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
   samples = new base::DataMatrix(num_samples, num_dims);  // output samples
 
   size_t SEARCH_MAX = 100000;  // find the approximated maximum of function with 100000 points
-  float_t maxValue = 0;        // the approximated maximum value of function
+  double maxValue = 0;        // the approximated maximum value of function
 
   // search for (approx.) maximum of function
   base::DataMatrix* tmp = new base::DataMatrix(SEARCH_MAX, num_dims);
@@ -32,11 +32,11 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
   {
 #ifndef _WIN32
 #ifdef _OPENMP
-    unsigned int seedp = (unsigned int)(static_cast<float_t>(time(NULL)) *
-                                        static_cast<float_t>(omp_get_thread_num() + 1));
+    unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) *
+                                        static_cast<double>(omp_get_thread_num() + 1));
 #else
     unsigned int seedp =
-        (unsigned int)(static_cast<float_t>(time(NULL)) * static_cast<float_t>(1 + 1));
+        (unsigned int)(static_cast<double>(time(NULL)) * static_cast<double>(1 + 1));
 #endif
 #endif
 #pragma omp for
@@ -44,10 +44,10 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
     for (size_t i = 0; i < SEARCH_MAX; i++) {
       for (size_t j = 0; j < num_dims; j++)
 #ifdef _WIN32
-        tmp->set(i, j, (float_t)rand() / RAND_MAX);
+        tmp->set(i, j, static_cast<double>(rand()) / RAND_MAX);
 
 #else
-        tmp->set(i, j, (float_t)rand_r(&seedp) / RAND_MAX);
+        tmp->set(i, j, static_cast<double>(rand_r(&seedp)) / RAND_MAX);
 #endif
     }
   }
@@ -69,7 +69,7 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
 #endif
 #endif
     base::DataVector p(num_dims);
-    float_t fhat = 0.0;
+    double fhat = 0.0;
     std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
 
 #pragma omp for schedule(dynamic)
@@ -82,10 +82,10 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
         // pick a random data point "p"
         for (size_t d = 0; d < num_dims; d++)
 #ifdef _WIN32
-          p[d] = static_cast<float_t>(rand()) / RAND_MAX;
+          p[d] = static_cast<double>(rand()) / RAND_MAX;
 
 #else
-          p[d] = static_cast<float_t>(rand_r(&seedp)) / RAND_MAX;
+          p[d] = static_cast<double>(rand_r(&seedp)) / RAND_MAX;
 #endif
 
         // evaluate at this point "p"
@@ -93,11 +93,11 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
 
 #ifdef _WIN32
 
-        if ((static_cast<float_t>(rand()) / RAND_MAX * maxValue < fhat) &&
+        if ((static_cast<double>(rand()) / RAND_MAX * maxValue < fhat) &&
             (fhat > maxValue * 0.01)) {
 #else
 
-        if ((static_cast<float_t>(rand_r(&seedp)) / RAND_MAX * maxValue < fhat) &&
+        if ((static_cast<double>(rand_r(&seedp)) / RAND_MAX * maxValue < fhat) &&
             (fhat > maxValue * 0.01)) {
 #endif
           samples->setRow(i, p);
@@ -113,4 +113,4 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
   return;
 }  // end of doSampling()
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

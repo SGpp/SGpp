@@ -12,12 +12,12 @@
 #include <iostream>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-NelderMead::NelderMead(ScalarFunction& f, size_t maxFcnEvalCount, float_t alpha, float_t beta,
-                       float_t gamma, float_t delta)
+NelderMead::NelderMead(ScalarFunction& f, size_t maxFcnEvalCount, double alpha, double beta,
+                       double gamma, double delta)
     : UnconstrainedOptimizer(f, maxFcnEvalCount),
       alpha(alpha),
       beta(beta),
@@ -43,7 +43,7 @@ void NelderMead::optimize() {
 
   // construct starting simplex
   for (size_t t = 0; t < d; t++) {
-    points[t + 1][t] = std::min(points[t + 1][t] + STARTING_SIMPLEX_EDGE_LENGTH, float_t(1.0));
+    points[t + 1][t] = std::min(points[t + 1][t] + STARTING_SIMPLEX_EDGE_LENGTH, 1.0);
     fPoints[t + 1] = f.eval(points[t + 1]);
   }
 
@@ -88,7 +88,7 @@ void NelderMead::optimize() {
         pointO[t] += points[i][t];
       }
 
-      pointO[t] /= static_cast<float_t>(d);
+      pointO[t] /= static_cast<double>(d);
       pointR[t] = pointO[t] + alpha * (pointO[t] - points[d][t]);
 
       if ((pointR[t] < 0.0) || (pointR[t] > 1.0)) {
@@ -96,7 +96,7 @@ void NelderMead::optimize() {
       }
     }
 
-    float_t fPointR = (inDomain ? f.eval(pointR) : INFINITY);
+    double fPointR = (inDomain ? f.eval(pointR) : INFINITY);
     numberOfFcnEvals++;
 
     if ((fPoints[0] <= fPointR) && (fPointR < fPoints[d - 1])) {
@@ -114,7 +114,7 @@ void NelderMead::optimize() {
         }
       }
 
-      float_t f_point_e = (inDomain ? f.eval(pointE) : INFINITY);
+      double f_point_e = (inDomain ? f.eval(pointE) : INFINITY);
       numberOfFcnEvals++;
 
       if (f_point_e < fPointR) {
@@ -136,7 +136,7 @@ void NelderMead::optimize() {
         }
       }
 
-      float_t fPointOC = (in_domain ? f.eval(pointOC) : INFINITY);
+      double fPointOC = (in_domain ? f.eval(pointOC) : INFINITY);
       numberOfFcnEvals++;
 
       if (fPointOC <= fPointR) {
@@ -157,7 +157,7 @@ void NelderMead::optimize() {
         }
       }
 
-      float_t fPointIC = (in_domain ? f.eval(pointIC) : INFINITY);
+      double fPointIC = (in_domain ? f.eval(pointIC) : INFINITY);
       numberOfFcnEvals++;
 
       if (fPointIC < fPoints[d]) {
@@ -211,25 +211,25 @@ void NelderMead::optimize() {
   Printer::getInstance().printStatusEnd();
 }
 
-float_t NelderMead::getAlpha() const { return alpha; }
+double NelderMead::getAlpha() const { return alpha; }
 
-void NelderMead::setAlpha(float_t alpha) { this->alpha = alpha; }
+void NelderMead::setAlpha(double alpha) { this->alpha = alpha; }
 
-float_t NelderMead::getBeta() const { return beta; }
+double NelderMead::getBeta() const { return beta; }
 
-void NelderMead::setBeta(float_t beta) { this->beta = beta; }
+void NelderMead::setBeta(double beta) { this->beta = beta; }
 
-float_t NelderMead::getGamma() const { return gamma; }
+double NelderMead::getGamma() const { return gamma; }
 
-void NelderMead::setGamma(float_t gamma) { this->gamma = gamma; }
+void NelderMead::setGamma(double gamma) { this->gamma = gamma; }
 
-float_t NelderMead::getDelta() const { return delta; }
+double NelderMead::getDelta() const { return delta; }
 
-void NelderMead::setDelta(float_t delta) { this->delta = delta; }
+void NelderMead::setDelta(double delta) { this->delta = delta; }
 
 void NelderMead::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
   clone = std::unique_ptr<UnconstrainedOptimizer>(new NelderMead(*this));
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

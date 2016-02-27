@@ -31,7 +31,7 @@
 #include <sstream>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 template <typename KernelImplementation>
 class MICKernel {
@@ -52,7 +52,7 @@ class MICKernel {
         << KernelImplementation::getChunkDataPoints()
         << ") needs to be a multiple of the chunksize of the CPU Kernel ("
         << X86SimdKernelBase::getChunkDataPoints() << ")!";
-      throw SGPP::base::operation_exception(s.str().c_str());
+      throw sgpp::base::operation_exception(s.str().c_str());
     }
 
 #endif
@@ -85,10 +85,10 @@ class MICKernel {
   }
 
   static const KernelType kernelType = KernelImplementation::kernelType;
-  static inline void mult(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                          SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                          SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-                          SGPP::base::DataVector& result, const size_t start_index_grid,
+  static inline void mult(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                          sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                          sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                          sgpp::base::DataVector& result, const size_t start_index_grid,
                           const size_t end_index_grid, const size_t start_index_data,
                           const size_t end_index_data) {
     size_t result_size = result.getSize();
@@ -164,10 +164,10 @@ class MICKernel {
 #endif
   }
 
-  static inline void multTranspose(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                                   SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                                   SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-                                   SGPP::base::DataVector& result, const size_t start_index_grid,
+  static inline void multTranspose(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                                   sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                                   sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+                                   sgpp::base::DataVector& result, const size_t start_index_grid,
                                    const size_t end_index_grid, const size_t start_index_data,
                                    const size_t end_index_data) {
     size_t source_size = source.getSize();
@@ -305,6 +305,6 @@ class MICKernel {
   }
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 #endif  // USEMIC
 #endif  // MICKERNEL_HPP

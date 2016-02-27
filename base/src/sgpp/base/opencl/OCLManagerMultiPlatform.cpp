@@ -12,7 +12,7 @@
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLManagerMultiPlatform::OCLManagerMultiPlatform(bool verbose) {
@@ -67,14 +67,14 @@ OCLManagerMultiPlatform::~OCLManagerMultiPlatform() {
         std::stringstream errorString;
         errorString << "OCL Error: Could not release command queue! Error Code: " << err
                     << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
     cl_int err = clReleaseContext(platform.context);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Could not release context! Error Code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 }
@@ -92,7 +92,7 @@ void OCLManagerMultiPlatform::buildKernel(
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     std::string build_opts;
@@ -130,7 +130,7 @@ void OCLManagerMultiPlatform::buildKernel(
 
       std::stringstream errorString;
       errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     for (size_t i = 0; i < platform.deviceIds.size(); i++) {
@@ -139,7 +139,7 @@ void OCLManagerMultiPlatform::buildKernel(
       if (err != CL_SUCCESS) {
         std::stringstream errorString;
         errorString << "OCL Error: Failed to create kernel! Error code: " << err << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
 
       kernels[platform.platformId].push_back(kernel);
@@ -164,7 +164,7 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   std::string build_opts;
@@ -202,14 +202,14 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   cl_kernel kernel = clCreateKernel(program, kernelName.c_str(), &err);
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to create kernel! Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   if (program) {
@@ -234,7 +234,7 @@ void OCLManagerMultiPlatform::configure(base::OCLOperationConfiguration &configu
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get number of OpenCL platforms. Error Code: " << err
                 << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
@@ -248,7 +248,7 @@ void OCLManagerMultiPlatform::configure(base::OCLOperationConfiguration &configu
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get Platform ID. Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   for (size_t i = 0; i < platformCount; i++) {
@@ -267,7 +267,7 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
   if (CL_SUCCESS != err) {
     std::stringstream errorString;
     errorString << "OCL Error: can't get platform name!" << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   } else {
     if (verbose) {
       std::cout << "OCL Info: detected platform, name: \"" << platformName << "\"" << std::endl;
@@ -282,7 +282,7 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
     if (CL_SUCCESS != err) {
       std::stringstream errorString;
       errorString << "OCL Error: Can't get platform vendor!" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     } else {
       std::cout << "OCL Info: detected platform vendor name: \"" << vendor_name << "\""
                 << std::endl;
@@ -312,7 +312,7 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get device count. Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   std::vector<cl_device_id> deviceIds(currentPlatformDevices);
@@ -323,7 +323,7 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get device id for platform \"" << platformName
                 << "\". Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   std::vector<cl_device_id> filteredDeviceIds;
@@ -370,7 +370,7 @@ void OCLManagerMultiPlatform::configureDevice(cl_device_id deviceId, json::Node 
     std::stringstream errorString;
     errorString << "OCL Error: Failed to read the device name for device: " << deviceId
                 << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
@@ -414,4 +414,4 @@ std::vector<std::shared_ptr<OCLDevice>> &OCLManagerMultiPlatform::getDevices() {
   return this->devices;
 }
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

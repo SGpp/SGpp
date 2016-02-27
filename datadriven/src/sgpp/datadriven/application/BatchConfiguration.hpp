@@ -10,7 +10,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 /**
  * structure to provide parameters for the BatchLearner
@@ -25,17 +25,17 @@ struct BatchConfiguration {
   // 1 = linear (x*y), 2 = pow(y,x), 3 = y/x, 4 = only the last batch counts, 5 = weight new
   // batch by proportion, but at least y
   int wMode;
-  float_t wArgument;  //!< argument for the weighting method
+  double wArgument;  //!< argument for the weighting method
   size_t refineEvery;  //!< refine every xth batch (0=never)
   bool verbose;  //!< verbose flag
   size_t stack;  //!< number of last batches alphavectors to be saved (0=all)
   //!< how many items to test from the data following the batch (0=don't test after learned)
   size_t testsize;
-  float_t lambda;  //!< lambda for solving
+  double lambda;  //!< lambda for solving
 };
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BATCHCONFIGURATION_HPP */

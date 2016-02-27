@@ -18,22 +18,22 @@
 
 #include "BasisEval.hpp"
 
-using SGPP::base::DataMatrix;
-using SGPP::base::DataVector;
-using SGPP::base::Grid;
-using SGPP::base::GridGenerator;
-using SGPP::base::GridIndex;
-using SGPP::base::GridType;
-using SGPP::base::OperationNaiveEval;
-using SGPP::base::OperationNaiveEvalGradient;
-using SGPP::base::OperationNaiveEvalHessian;
-using SGPP::base::OperationNaiveEvalPartialDerivative;
-using SGPP::base::SBasis;
-using SGPP::base::SPolyBase;
-using SGPP::base::SPolyBoundaryBase;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridIndex;
+using sgpp::base::GridType;
+using sgpp::base::OperationNaiveEval;
+using sgpp::base::OperationNaiveEvalGradient;
+using sgpp::base::OperationNaiveEvalHessian;
+using sgpp::base::OperationNaiveEvalPartialDerivative;
+using sgpp::base::SBasis;
+using sgpp::base::SPolyBase;
+using sgpp::base::SPolyBoundaryBase;
 
-SGPP::float_t basisEval(SBasis& basis, GridIndex::level_type l, GridIndex::index_type i,
-                        SGPP::float_t x) {
+double basisEval(SBasis& basis, GridIndex::level_type l, GridIndex::index_type i,
+                        double x) {
   SPolyBase* polyBasis = dynamic_cast<SPolyBase*>(&basis);
   SPolyBoundaryBase* polyBoundaryBasis = dynamic_cast<SPolyBoundaryBase*>(&basis);
 
@@ -53,8 +53,8 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
   std::mt19937 generator;
   generator.seed(42);
-  std::uniform_real_distribution<SGPP::float_t> uniformDistribution(0.0, 1.0);
-  std::normal_distribution<SGPP::float_t> normalDistribution(0.0, 1.0);
+  std::uniform_real_distribution<double> uniformDistribution(0.0, 1.0);
+  std::normal_distribution<double> normalDistribution(0.0, 1.0);
 
   // Test All The Grids!
   std::vector<std::unique_ptr<Grid>> grids;
@@ -77,37 +77,37 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SBsplineBase(p))));
+      new sgpp::base::SBsplineBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SBsplineBoundaryBase(p))));
+      new sgpp::base::SBsplineBoundaryBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SBsplineClenshawCurtisBase(p))));
+      new sgpp::base::SBsplineClenshawCurtisBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SBsplineModifiedBase(p))));
+      new sgpp::base::SBsplineModifiedBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SBsplineModifiedClenshawCurtisBase(p))));
+      new sgpp::base::SBsplineModifiedClenshawCurtisBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SFundamentalSplineBase(p))));
+      new sgpp::base::SFundamentalSplineBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SFundamentalSplineModifiedBase(p))));
+      new sgpp::base::SFundamentalSplineModifiedBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SLinearBase())));
+      new sgpp::base::SLinearBase())));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SLinearBoundaryBase())));
+      new sgpp::base::SLinearBoundaryBase())));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SLinearClenshawCurtisBase())));
+      new sgpp::base::SLinearClenshawCurtisBase())));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SLinearModifiedBase())));
+      new sgpp::base::SLinearModifiedBase())));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SWaveletBase())));
+      new sgpp::base::SWaveletBase())));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SWaveletBoundaryBase())));
+      new sgpp::base::SWaveletBoundaryBase())));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SWaveletModifiedBase())));
+      new sgpp::base::SWaveletModifiedBase())));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SPolyBase(p))));
+      new sgpp::base::SPolyBase(p))));
   bases.push_back(std::move(std::unique_ptr<SBasis>(
-      new SGPP::base::SPolyBoundaryBase(p))));
+      new sgpp::base::SPolyBoundaryBase(p))));
 
   for (size_t k = 0; k < grids.size(); k++) {
     Grid& grid = *grids[k];
@@ -145,16 +145,16 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
     }
 
     // create operations
-    std::unique_ptr<OperationNaiveEval> opEval(SGPP::op_factory::createOperationNaiveEval(grid));
+    std::unique_ptr<OperationNaiveEval> opEval(sgpp::op_factory::createOperationNaiveEval(grid));
     std::unique_ptr<OperationNaiveEvalGradient> opEvalGradient(nullptr);
     std::unique_ptr<OperationNaiveEvalHessian> opEvalHessian(nullptr);
     std::unique_ptr<OperationNaiveEvalPartialDerivative> opEvalPartialDerivative(nullptr);
 
     if (hasGradients) {
-      opEvalGradient = SGPP::op_factory::createOperationNaiveEvalGradient(grid);
-      opEvalHessian = SGPP::op_factory::createOperationNaiveEvalHessian(grid);
+      opEvalGradient = sgpp::op_factory::createOperationNaiveEvalGradient(grid);
+      opEvalHessian = sgpp::op_factory::createOperationNaiveEvalHessian(grid);
       opEvalPartialDerivative =
-          SGPP::op_factory::createOperationNaiveEvalPartialDerivative(grid);
+          sgpp::op_factory::createOperationNaiveEvalPartialDerivative(grid);
     }
 
     DataVector x(d);
@@ -167,14 +167,14 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
         x[t] = uniformDistribution(generator);
       }
 
-      SGPP::float_t fx = 0.0;
+      double fx = 0.0;
       fxGradient.setAll(0.0);
       fxHessian.setAll(0.0);
 
       for (size_t i = 0; i < n; i++) {
         // evaluate function by hand
         GridIndex& gp = *grid.getStorage().get(i);
-        SGPP::float_t val = alpha[i];
+        double val = alpha[i];
 
         for (size_t t = 0; t < d; t++) {
           val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
@@ -222,12 +222,8 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       }
 
       // test function evaluation
-      SGPP::float_t fx2 = opEval->eval(alpha, x);
-#if USE_DOUBLE_PRECISION
+      double fx2 = opEval->eval(alpha, x);
       BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
-#else
-      BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
-#endif
 
       if (!hasGradients) {
         continue;
@@ -237,24 +233,15 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       fx2 = opEvalGradient->evalGradient(alpha, x, fxGradient2);
 
 // test function evaluation
-#if USE_DOUBLE_PRECISION
       BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
-#else
-      BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
-#endif
 
       for (size_t t = 0; t < d; t++) {
         // test gradient evaluation
         BOOST_CHECK_CLOSE(fxGradient[t], fxGradient2[t], 1e-9);
 
 // test partial derivative evaluation
-#if USE_DOUBLE_PRECISION
         BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(alpha, x, t),
                           fxGradient[t], 1e-9);
-#else
-        BOOST_CHECK_CLOSE(opEvalPartialDerivative->evalPartialDerivative(alpha, x, t),
-                          fxGradient[t], 2e-3);
-#endif
       }
 
       fxGradient2.setAll(0.0);
@@ -262,11 +249,7 @@ BOOST_AUTO_TEST_CASE(TestOperationNaiveEval) {
       fx2 = opEvalHessian->evalHessian(alpha, x, fxGradient2, fxHessian2);
 
 // test function evaluation
-#if USE_DOUBLE_PRECISION
       BOOST_CHECK_CLOSE(fx, fx2, 1e-9);
-#else
-      BOOST_CHECK_CLOSE(fx, fx2, 1e-3);
-#endif
 
       for (size_t t1 = 0; t1 < d; t1++) {
         // test gradient evaluation

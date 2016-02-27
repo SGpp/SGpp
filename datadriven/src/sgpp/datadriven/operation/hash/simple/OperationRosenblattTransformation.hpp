@@ -9,7 +9,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -43,5 +43,5 @@ class OperationRosenblattTransformation {
                                 base::DataMatrix* pointscdf, size_t dim_start) = 0;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONROSENBLATTTRANSFORMATION_HPP */

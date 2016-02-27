@@ -5,7 +5,7 @@
 
 %{
 
-namespace SGPP
+namespace sgpp
 {
 namespace base
 {
@@ -15,22 +15,22 @@ namespace base
  * clientdata pointer is used for holding a reference to a 
  * Python callable object. 
  */
-  static float_t PythonCallBackFunc(int len, float_t* a, void *clientdata)
+  static double PythonCallBackFunc(int len, double* a, void *clientdata)
 {
   PyObject *func, *lst, *arglist;
    PyObject *result;
-   float_t    dres = 0;
+   double    dres = 0;
 
    // get Python function
    func = (PyObject *) clientdata;
-   // build argument list (only Python list, convert float_t* to Python list)
+   // build argument list (only Python list, convert double* to Python list)
    lst = PyTuple_New(len);        // alternatively: PyList_New(len)
    if (!lst) {
      PyErr_SetString(PyExc_TypeError, "No data provided!");
      return NULL;
    }
    for (int i=0; i<len; i++) {
-     // create new Python float_t
+     // create new Python double
      PyObject *num = PyFloat_FromDouble(a[i]);
      if (!num) {
        PyErr_SetString(PyExc_TypeError, "No data in list!");
@@ -73,20 +73,20 @@ namespace base
    // set a Python function object as a callback function
    // overloads functions
    // note : PyObject *pyfunc is remapped with a typemap
-   float_t doQuadratureFunc(PyObject *pyfunc) {
-     float_t d;
-     d = self->doQuadratureFunc(SGPP::base::PythonCallBackFunc, (void *) pyfunc);
+   double doQuadratureFunc(PyObject *pyfunc) {
+     double d;
+     d = self->doQuadratureFunc(sgpp::base::PythonCallBackFunc, (void *) pyfunc);
      return d;
    }
-   float_t doQuadratureL2Error(PyObject *pyfunc, SGPP::base::DataVector& alpha) {
-     float_t d;
-     d = self->doQuadratureL2Error(SGPP::base::PythonCallBackFunc, (void *) pyfunc, alpha);
+   double doQuadratureL2Error(PyObject *pyfunc, sgpp::base::DataVector& alpha) {
+     double d;
+     d = self->doQuadratureL2Error(sgpp::base::PythonCallBackFunc, (void *) pyfunc, alpha);
      return d;
    }
 }
 %enddef
 
 %include "base/src/sgpp/base/tools/OperationQuadratureMC.hpp"
-QUADRATURE_CALLBACK_EXTEND(SGPP::base::OperationQuadratureMC)
+QUADRATURE_CALLBACK_EXTEND(sgpp::base::OperationQuadratureMC)
 
 

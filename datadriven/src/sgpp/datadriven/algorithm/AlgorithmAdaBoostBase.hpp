@@ -30,7 +30,7 @@
 #include <cstdlib>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /*
@@ -47,7 +47,7 @@ namespace datadriven {
 class AlgorithmAdaBoostBase {
  protected:
   /// the lambda, the regularisation parameter
-  float_t lamb;
+  double lamb;
   /// the size of the grid
   size_t numData;
   /// Pointer to the data matrix
@@ -74,21 +74,21 @@ class AlgorithmAdaBoostBase {
   /// Parameter for CG solver(during the refinement)
   size_t imax;
   /// Parameter for CG solver(during the refinement)
-  float_t epsilon;
+  double epsilon;
   /// Parameter for CG solver(for the last refinement)
   size_t imax_final;
   /// Parameter for CG solver(for the last refinement)
-  float_t epsilon_final;
+  double epsilon_final;
   /// One label of the DataSet
-  float_t labelOne;
+  double labelOne;
   /// Another label of the DataSet
-  float_t labelTwo;
+  double labelTwo;
   /// Threshold to predict class
-  float_t threshold;
+  double threshold;
   /// Log of the Max lambda in searching for optimal lambda
-  float_t lambLogMax;
+  double lambLogMax;
   /// Interval size with logrange used in searching optimal lambda
-  float_t lambStepsize;
+  double lambStepsize;
   /// Number of iteration in searching for optimal lambda
   size_t lambSteps;
   /// Actual base learners number for Adaboosting
@@ -102,7 +102,7 @@ class AlgorithmAdaBoostBase {
   /// Number of Grid points to refine
   size_t numOfAda;
   /// Percentage of Grid points to refine(between 0 and 1)
-  float_t perOfAda;
+  double perOfAda;
   /// Set the boost mode (1: Discrete Adaboost, 2: Real Adaboost)
   size_t boostMode;
 
@@ -114,7 +114,7 @@ class AlgorithmAdaBoostBase {
   * @param alpha output the coefficients of the sparse grid's basis functions
   * @param final judgement the final step of this base learner
   */
-  virtual void alphaSolver(float_t& lambda, base::DataVector& weight,
+  virtual void alphaSolver(double& lambda, base::DataVector& weight,
                            base::DataVector& alpha, bool final) = 0;
 
  public:
@@ -148,11 +148,11 @@ class AlgorithmAdaBoostBase {
    */
   AlgorithmAdaBoostBase(base::Grid& SparseGrid, size_t gridType,
                         base::HashGenerator::level_t gridLevel, base::DataMatrix& trainData,
-                        base::DataVector& trainDataClass, size_t NUM, float_t lambda, size_t IMAX,
-                        float_t eps, size_t IMAX_final, float_t eps_final, float_t firstLabel,
-                        float_t secondLabel, float_t threshold, float_t maxLambda,
-                        float_t minLambda, size_t searchNum, bool refine, size_t refineMode,
-                        size_t refineNum, size_t numberOfAda, float_t percentOfAda, size_t mode);
+                        base::DataVector& trainDataClass, size_t NUM, double lambda, size_t IMAX,
+                        double eps, size_t IMAX_final, double eps_final, double firstLabel,
+                        double secondLabel, double threshold, double maxLambda,
+                        double minLambda, size_t searchNum, bool refine, size_t refineMode,
+                        size_t refineNum, size_t numberOfAda, double percentOfAda, size_t mode);
 
 
   /**
@@ -222,7 +222,7 @@ class AlgorithmAdaBoostBase {
    */
   void doAdaBoostRT(base::DataMatrix& weights,
                     base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
-                    base::DataMatrix& algorithmValueTest, float_t Tvalue,
+                    base::DataMatrix& algorithmValueTest, double Tvalue,
                     std::string powerType);
 
   /**
@@ -265,8 +265,8 @@ class AlgorithmAdaBoostBase {
    * @param accuracy_test reference to the accuracy for the testing dataset
    */
   void getAccuracy(base::DataMatrix& testData,
-                   base::DataVector& testDataClass, float_t* accuracy_train,
-                   float_t* accuracy_test);
+                   base::DataVector& testDataClass, double* accuracy_train,
+                   double* accuracy_test);
 
   /**
    * Performs an evaluation to get ROC related parameter
@@ -281,8 +281,8 @@ class AlgorithmAdaBoostBase {
    * @param fOneScore reference to the specificity for the validation dataset
    */
   void getROC(base::DataMatrix& validationData,
-              base::DataVector& validationDataClass, float_t* acc, float_t* sensitivity,
-              float_t* specificity, float_t* precision, float_t* recall, float_t* fOneScore);
+              base::DataVector& validationDataClass, double* acc, double* sensitivity,
+              double* specificity, double* precision, double* recall, double* fOneScore);
 
   /**
    * Performs an accuracy evaluation for the testing dataset with a specified number of base learner
@@ -300,8 +300,8 @@ class AlgorithmAdaBoostBase {
   void getAccuracyBL(base::DataMatrix& testData,
                      base::DataVector& testDataClass,
                      base::DataMatrix& algorithmValueTrain,
-                     base::DataMatrix& algorithmValueTest, float_t* accuracy_train,
-                     float_t* accuracy_test, size_t yourBaseLearner);
+                     base::DataMatrix& algorithmValueTest, double* accuracy_train,
+                     double* accuracy_test, size_t yourBaseLearner);
 
   /**
    * Performs refinement of grid to get an adaptive grid
@@ -345,11 +345,11 @@ class AlgorithmAdaBoostBase {
   *
   * @param realValue real value of function
    */
-  float_t hValue(float_t realValue);
+  double hValue(double realValue);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif
 

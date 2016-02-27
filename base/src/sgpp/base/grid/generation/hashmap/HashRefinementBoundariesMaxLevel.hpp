@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -70,6 +70,6 @@ class HashRefinementBoundariesMaxLevel: public HashRefinementBoundaries {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHREFINEMENTBOUNDARIESMAXLEVEL_HPP */

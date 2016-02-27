@@ -23,10 +23,10 @@
 #include "sgpp/datadriven/tools/Dataset.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-StaticParameterTuner::StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
+StaticParameterTuner::StaticParameterTuner(sgpp::base::OCLOperationConfiguration &fixedParameters,
                                            bool collectStatistics, bool verbose)
     : collectStatistics(collectStatistics), verbose(verbose), fixedParameters(fixedParameters) {}
 
@@ -35,8 +35,8 @@ void StaticParameterTuner::addParameter(const std::string &name,
   this->tunableParameters.push_back(TunableParameter(name, valueRange));
 }
 
-SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
-    SGPP::datadriven::LearnerScenario &scenario, const std::string &kernelName) {
+sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
+    sgpp::datadriven::LearnerScenario &scenario, const std::string &kernelName) {
   std::vector<std::string> platformsCopy = this->fixedParameters["PLATFORMS"].keys();
   for (const std::string &platformName : platformsCopy) {
     json::Node &platformNode = this->fixedParameters["PLATFORMS"][platformName];
@@ -145,7 +145,7 @@ SGPP::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
   return this->fixedParameters;
 }
 
-void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &scenario,
+void StaticParameterTuner::tuneParameters(sgpp::datadriven::LearnerScenario &scenario,
                                           const std::string &platformName,
                                           const std::string &deviceName,
                                           const std::string &kernelName) {
@@ -153,7 +153,7 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
     this->statistics.clear();
   }
 
-  //    SGPP::base::OCLOperationConfiguration &currentParameters =
+  //    sgpp::base::OCLOperationConfiguration &currentParameters =
   //    fixedParameters;
 
   for (std::string &platformKey : fixedParameters["PLATFORMS"].keys()) {
@@ -243,32 +243,32 @@ void StaticParameterTuner::tuneParameters(SGPP::datadriven::LearnerScenario &sce
                                     [kernelName] << std::endl;
 }
 
-double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
-                                           SGPP::base::OCLOperationConfiguration &currentParameters,
+double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &scenario,
+                                           sgpp::base::OCLOperationConfiguration &currentParameters,
                                            const std::string &kernelName) {
-  SGPP::datadriven::MetaLearner learner(
+  sgpp::datadriven::MetaLearner learner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
       scenario.getSolverConfigurationFinal(), scenario.getAdaptivityConfiguration(),
       scenario.getLambda(), verbose);
 
-  SGPP::datadriven::OperationMultipleEvalType operationType;
-  SGPP::datadriven::OperationMultipleEvalSubType operationSubType;
+  sgpp::datadriven::OperationMultipleEvalType operationType;
+  sgpp::datadriven::OperationMultipleEvalSubType operationSubType;
 
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
-    operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
+    operationType = sgpp::datadriven::OperationMultipleEvalType::STREAMING;
+    operationSubType = sgpp::datadriven::OperationMultipleEvalSubType::OCLMP;
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
-    operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP;
+    operationType = sgpp::datadriven::OperationMultipleEvalType::STREAMING;
+    operationSubType = sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP;
   } else if (kernelName.compare("StreamingModOCLMaskMultiPlatform") == 0) {
-    operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
-    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP;
+    operationType = sgpp::datadriven::OperationMultipleEvalType::STREAMING;
+    operationSubType = sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP;
   } else {
-    throw SGPP::base::application_exception(
+    throw sgpp::base::application_exception(
         "error: configured kernel is not known to static parameter tuner");
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       operationType, operationSubType, currentParameters);
 
   std::string fileName = scenario.getDatasetFileName();
@@ -288,7 +288,7 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
     if (testsetConfiguration.hasTestDataset) {
       this->verifyLearned(testsetConfiguration, learner.getLearnedAlpha());
     }
-  } catch (SGPP::base::operation_exception &exception) {
+  } catch (sgpp::base::operation_exception &exception) {
     if (verbose) {
       std::cout << "invalid combination detected" << std::endl;
     }
@@ -325,7 +325,7 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
   file << "duration" << std::endl;
 
   for (auto &parameterDurationPair : this->statistics) {
-    SGPP::base::OCLOperationConfiguration &parameter = parameterDurationPair.first;
+    sgpp::base::OCLOperationConfiguration &parameter = parameterDurationPair.first;
     json::Node &kernelNode =
         parameter["PLATFORMS"][platformName]["DEVICES"][deviceName]["KERNELS"][kernelName];
     double duration = parameterDurationPair.second;
@@ -380,6 +380,6 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif

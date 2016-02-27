@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -35,7 +35,7 @@ class OperationQuadratureLinear : public OperationQuadrature {
    *
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadrature(DataVector& alpha) override;
+  double doQuadrature(DataVector& alpha) override;
 
  protected:
   // Pointer to the grid's GridStorage object
@@ -43,6 +43,6 @@ class OperationQuadratureLinear : public OperationQuadrature {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONQUADRATURE_HPP */

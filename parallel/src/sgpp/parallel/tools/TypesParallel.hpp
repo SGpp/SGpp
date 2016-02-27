@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
@@ -32,6 +32,6 @@ enum MPIType {
   MPIBigdata
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* TYPESPARALLEL_HPP */

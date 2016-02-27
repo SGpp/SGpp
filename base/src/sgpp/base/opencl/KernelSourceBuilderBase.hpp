@@ -12,7 +12,7 @@
 #include "OCLDevice.hpp"
 #include "sgpp/base/tools/json/Node.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 template <typename T>
@@ -80,4 +80,4 @@ class KernelSourceBuilderBase {
   }
 };
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

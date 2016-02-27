@@ -23,84 +23,84 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 OperationGammaLogLinearStretchedBoundary::OperationGammaLogLinearStretchedBoundary(
-    SGPP::base::GridStorage* storage, SGPP::base::DataMatrix& coef)
-    : SGPP::pde::UpDownTwoOpDims(storage, coef) {}
+    sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& coef)
+    : sgpp::pde::UpDownTwoOpDims(storage, coef) {}
 
 OperationGammaLogLinearStretchedBoundary::~OperationGammaLogLinearStretchedBoundary() {}
 
-void OperationGammaLogLinearStretchedBoundary::up(SGPP::base::DataVector& alpha,
-                                                  SGPP::base::DataVector& result, size_t dim) {
+void OperationGammaLogLinearStretchedBoundary::up(sgpp::base::DataVector& alpha,
+                                                  sgpp::base::DataVector& result, size_t dim) {
   // phi * phi
-  SGPP::pde::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
+  sgpp::pde::PhiPhiUpBBLinearStretchedBoundary func(this->storage);
+  sgpp::base::sweep<sgpp::pde::PhiPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretchedBoundary::down(SGPP::base::DataVector& alpha,
-                                                    SGPP::base::DataVector& result, size_t dim) {
+void OperationGammaLogLinearStretchedBoundary::down(sgpp::base::DataVector& alpha,
+                                                    sgpp::base::DataVector& result, size_t dim) {
   // phi * phi
-  SGPP::pde::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
+  sgpp::pde::PhiPhiDownBBLinearStretchedBoundary func(this->storage);
+  sgpp::base::sweep<sgpp::pde::PhiPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretchedBoundary::upOpDimOne(SGPP::base::DataVector& alpha,
-                                                          SGPP::base::DataVector& result,
+void OperationGammaLogLinearStretchedBoundary::upOpDimOne(sgpp::base::DataVector& alpha,
+                                                          sgpp::base::DataVector& result,
                                                           size_t dim) {
   // phi * dphi
   PhidPhiUpBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<PhidPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
+  sgpp::base::sweep<PhidPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretchedBoundary::downOpDimOne(SGPP::base::DataVector& alpha,
-                                                            SGPP::base::DataVector& result,
+void OperationGammaLogLinearStretchedBoundary::downOpDimOne(sgpp::base::DataVector& alpha,
+                                                            sgpp::base::DataVector& result,
                                                             size_t dim) {
   // phi * dphi
   PhidPhiDownBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<PhidPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
+  sgpp::base::sweep<PhidPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretchedBoundary::upOpDimTwo(SGPP::base::DataVector& alpha,
-                                                          SGPP::base::DataVector& result,
+void OperationGammaLogLinearStretchedBoundary::upOpDimTwo(sgpp::base::DataVector& alpha,
+                                                          sgpp::base::DataVector& result,
                                                           size_t dim) {
   // dphi * phi
   DPhiPhiUpBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
+  sgpp::base::sweep<DPhiPhiUpBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretchedBoundary::downOpDimTwo(SGPP::base::DataVector& alpha,
-                                                            SGPP::base::DataVector& result,
+void OperationGammaLogLinearStretchedBoundary::downOpDimTwo(sgpp::base::DataVector& alpha,
+                                                            sgpp::base::DataVector& result,
                                                             size_t dim) {
   // dphi * phi
   DPhiPhiDownBBLinearStretchedBoundary func(this->storage);
-  SGPP::base::sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
+  sgpp::base::sweep<DPhiPhiDownBBLinearStretchedBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
 
-void OperationGammaLogLinearStretchedBoundary::upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha,
-                                                                     SGPP::base::DataVector& result,
+void OperationGammaLogLinearStretchedBoundary::upOpDimOneAndOpDimTwo(sgpp::base::DataVector& alpha,
+                                                                     sgpp::base::DataVector& result,
                                                                      size_t dim) {
-  SGPP::pde::UpdPhidPhiBBIterativeLinearStretchedBoundary myUp(this->storage);
+  sgpp::pde::UpdPhidPhiBBIterativeLinearStretchedBoundary myUp(this->storage);
   myUp(alpha, result, dim);
 }
 
 void OperationGammaLogLinearStretchedBoundary::downOpDimOneAndOpDimTwo(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim) {
-  SGPP::pde::DowndPhidPhiBBIterativeLinearStretchedBoundary myDown(this->storage);
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) {
+  sgpp::pde::DowndPhidPhiBBIterativeLinearStretchedBoundary myDown(this->storage);
   myDown(alpha, result, dim);
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

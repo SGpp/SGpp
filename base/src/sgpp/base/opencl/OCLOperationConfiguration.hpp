@@ -12,7 +12,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/tools/OperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLOperationConfiguration : public OperationConfiguration {
@@ -27,4 +27,4 @@ class OCLOperationConfiguration : public OperationConfiguration {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

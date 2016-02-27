@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 OperationParabolicPDESolverSystemDirichlet::OperationParabolicPDESolverSystemDirichlet() {
@@ -18,8 +18,8 @@ OperationParabolicPDESolverSystemDirichlet::OperationParabolicPDESolverSystemDir
 
 OperationParabolicPDESolverSystemDirichlet::~OperationParabolicPDESolverSystemDirichlet() {}
 
-void OperationParabolicPDESolverSystemDirichlet::mult(SGPP::base::DataVector& alpha,
-                                                      SGPP::base::DataVector& result) {
+void OperationParabolicPDESolverSystemDirichlet::mult(sgpp::base::DataVector& alpha,
+                                                      sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   if (this->tOperationMode == "ExEul") {
@@ -27,8 +27,8 @@ void OperationParabolicPDESolverSystemDirichlet::mult(SGPP::base::DataVector& al
   } else if (this->tOperationMode == "ImEul") {
     result.setAll(0.0);
 
-    SGPP::base::DataVector temp(result.getSize());
-    SGPP::base::DataVector temp2(result.getSize());
+    sgpp::base::DataVector temp(result.getSize());
+    sgpp::base::DataVector temp2(result.getSize());
 
 #pragma omp parallel shared(alpha, result, temp, temp2)
     {
@@ -49,8 +49,8 @@ void OperationParabolicPDESolverSystemDirichlet::mult(SGPP::base::DataVector& al
   } else if (this->tOperationMode == "CrNic") {
     result.setAll(0.0);
 
-    SGPP::base::DataVector temp(result.getSize());
-    SGPP::base::DataVector temp2(result.getSize());
+    sgpp::base::DataVector temp(result.getSize());
+    sgpp::base::DataVector temp2(result.getSize());
 
 #pragma omp parallel shared(alpha, result, temp, temp2)
     {
@@ -75,11 +75,11 @@ void OperationParabolicPDESolverSystemDirichlet::mult(SGPP::base::DataVector& al
   } else if (this->tOperationMode == "MPR") {
     applyMassMatrixInner(alpha, result);
   } else if (this->tOperationMode == "BDF2") {
-    float_t tDiff = this->TimestepSize / this->TimestepSize_old;
-    float_t alpha0 = (2.0 * tDiff + 1.0) / (tDiff + 1.0);
+    double tDiff = this->TimestepSize / this->TimestepSize_old;
+    double alpha0 = (2.0 * tDiff + 1.0) / (tDiff + 1.0);
     result.setAll(0.0);
 
-    SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector temp(alpha.getSize());
 
     applyMassMatrixInner(alpha, temp);
 
@@ -90,27 +90,27 @@ void OperationParabolicPDESolverSystemDirichlet::mult(SGPP::base::DataVector& al
     result.axpy((-1.0) * this->TimestepSize, temp);
   } else if (this->tOperationMode == "F23") {
     result.setAll(0.0);
-    float_t tDiff = this->TimestepSize / this->TimestepSize_old;
-    float_t alpha0 = 1.0 / (1.0 + tDiff);
+    double tDiff = this->TimestepSize / this->TimestepSize_old;
+    double alpha0 = 1.0 / (1.0 + tDiff);
 
     applyMassMatrixInner(alpha, result);
     result.mult(alpha0);
 
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
   }
 }
 
-SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS() {
-  SGPP::base::DataVector rhs_complete(this->alpha_complete->getSize());
+sgpp::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS() {
+  sgpp::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
   if (this->tOperationMode == "ExEul") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(rhs_complete.getSize());
-    SGPP::base::DataVector temp2(rhs_complete.getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector temp(rhs_complete.getSize());
+    sgpp::base::DataVector temp2(rhs_complete.getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
 
 #pragma omp parallel shared(myAlpha, temp, temp2)
     {
@@ -135,9 +135,9 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   } else if (this->tOperationMode == "CrNic") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(rhs_complete.getSize());
-    SGPP::base::DataVector temp2(rhs_complete.getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector temp(rhs_complete.getSize());
+    sgpp::base::DataVector temp2(rhs_complete.getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
 
 #pragma omp parallel shared(myAlpha, temp, temp2)
     {
@@ -158,9 +158,9 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   } else if (this->tOperationMode == "AdBas") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(this->alpha_complete->getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
-    SGPP::base::DataVector myOldAlpha(*this->alpha_complete_old);
+    sgpp::base::DataVector temp(this->alpha_complete->getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector myOldAlpha(*this->alpha_complete_old);
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
 
@@ -178,7 +178,7 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
     rhs_complete.add(temp);
     temp.mult((2.0) + this->TimestepSize / this->TimestepSize_old);
 
-    SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp_old(this->alpha_complete->getSize());
 
     applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
@@ -199,7 +199,7 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   } else if (this->tOperationMode == "AdBasC") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp(this->alpha_complete->getSize());
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
     rhs_complete.add(temp);
@@ -208,21 +208,21 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
 
     temp.mult((2.0) + this->TimestepSize / this->TimestepSize_old);
 
-    SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
-    SGPP::base::DataVector alpha_old(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp_old(this->alpha_complete->getSize());
+    sgpp::base::DataVector alpha_old(this->alpha_complete->getSize());
 
-    SGPP::base::DataVector temp_tmp(this->alpha_complete_old->getSize());
+    sgpp::base::DataVector temp_tmp(this->alpha_complete_old->getSize());
     temp_tmp.setAll(0.0);
     temp_tmp.add(*this->alpha_complete_old);
 
-    float_t* OldData = alpha_old.getPointer();
-    float_t* DataTmp = temp_tmp.getPointer();
-    SGPP::base::GridStorage* gs = getGridStorage();
-    SGPP::base::GridStorage* ogs = getOldGridStorage();
-    SGPP::base::GridStorage::grid_map_iterator q;
+    double* OldData = alpha_old.getPointer();
+    double* DataTmp = temp_tmp.getPointer();
+    sgpp::base::GridStorage* gs = getGridStorage();
+    sgpp::base::GridStorage* ogs = getOldGridStorage();
+    sgpp::base::GridStorage::grid_map_iterator q;
     int length = 0;
 
-    for (SGPP::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end(); ++p) {
+    for (sgpp::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end(); ++p) {
       q = ogs->find(p->first);
 
       if ((q->first)->equals(*p->first)) {
@@ -256,9 +256,9 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
         std::cout << "AdBas size" << std::endl;
         std::cout << "AdBas size" << std::endl;
 
-        float_t *OldData = temp_old.getPointer();
-        float_t *Data = temp.getPointer();
-        float_t *Data3 = temp3.getPointer();
+        double *OldData = temp_old.getPointer();
+        double *Data = temp.getPointer();
+        double *Data3 = temp3.getPointer();
         GridStorage *gs = getGridStorage();
         GridStorage *ogs = getOldGridStorage();
         GridStorage::grid_map_iterator q;
@@ -284,9 +284,9 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   } else if (this->tOperationMode == "MPR") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp(this->alpha_complete->getSize());
 
-    SGPP::base::DataVector temp2(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp2(this->alpha_complete->getSize());
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
     temp2.add(temp);
@@ -305,31 +305,31 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   } else if (this->tOperationMode == "BDF2") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp(this->alpha_complete->getSize());
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
 
-    float_t tDiff = this->TimestepSize / this->TimestepSize_old;
+    double tDiff = this->TimestepSize / this->TimestepSize_old;
 
-    float_t alpha1 = tDiff + 1.0;
+    double alpha1 = tDiff + 1.0;
     temp.mult(alpha1);
     rhs_complete.add(temp);
 
-    SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp_old(this->alpha_complete->getSize());
     applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
-    float_t alpha2 = tDiff * tDiff / (1.0 + tDiff);
+    double alpha2 = tDiff * tDiff / (1.0 + tDiff);
     temp_old.mult(alpha2);
     rhs_complete.sub(temp_old);
   } else if (this->tOperationMode == "F23") {
     rhs_complete.setAll(0.0);
-    float_t tDiff = this->TimestepSize / this->TimestepSize_old;
-    float_t alpha0 = (1.0 + tDiff);
-    float_t alpha1 = alpha0 * (tDiff - 1.0);
-    float_t alpha2 = -alpha0 * (tDiff * tDiff / (tDiff + 1.0));
+    double tDiff = this->TimestepSize / this->TimestepSize_old;
+    double alpha0 = (1.0 + tDiff);
+    double alpha1 = alpha0 * (tDiff - 1.0);
+    double alpha2 = -alpha0 * (tDiff * tDiff / (tDiff + 1.0));
 
-    SGPP::base::DataVector temp(this->alpha_complete->getSize());
-    SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp_old(this->alpha_complete->getSize());
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
     temp.mult(alpha1);
@@ -344,7 +344,7 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
 
     rhs_complete.add(temp);
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was "
         "specified!");
   }
@@ -353,8 +353,8 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   this->startTimestep();
 
   // Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-  SGPP::base::DataVector result_complete(this->alpha_complete->getSize());
-  SGPP::base::DataVector alpha_bound(*this->alpha_complete);
+  sgpp::base::DataVector result_complete(this->alpha_complete->getSize());
+  sgpp::base::DataVector alpha_bound(*this->alpha_complete);
 
   result_complete.setAll(0.0);
 
@@ -364,8 +364,8 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   if (this->tOperationMode == "ExEul") {
     applyMassMatrixComplete(alpha_bound, result_complete);
   } else if (this->tOperationMode == "ImEul") {
-    SGPP::base::DataVector temp(alpha_bound.getSize());
-    SGPP::base::DataVector temp2(alpha_bound.getSize());
+    sgpp::base::DataVector temp(alpha_bound.getSize());
+    sgpp::base::DataVector temp2(alpha_bound.getSize());
 
 #pragma omp parallel shared(alpha_bound, temp, temp2)
     {
@@ -384,8 +384,8 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
     result_complete.add(temp);
     result_complete.axpy((-1.0) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "CrNic") {
-    SGPP::base::DataVector temp(alpha_bound.getSize());
-    SGPP::base::DataVector temp2(alpha_bound.getSize());
+    sgpp::base::DataVector temp(alpha_bound.getSize());
+    sgpp::base::DataVector temp2(alpha_bound.getSize());
 
 #pragma omp parallel shared(alpha_bound, temp, temp2)
     {
@@ -408,9 +408,9 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
   } else if (this->tOperationMode == "MPR") {
     applyMassMatrixComplete(alpha_bound, result_complete);
   } else if (this->tOperationMode == "BDF2") {
-    float_t tDiff = this->TimestepSize / this->TimestepSize_old;
-    float_t alpha0 = (2.0 * tDiff + 1.0) / (tDiff + 1.0);
-    SGPP::base::DataVector temp(alpha_bound.getSize());
+    double tDiff = this->TimestepSize / this->TimestepSize_old;
+    double alpha0 = (2.0 * tDiff + 1.0) / (tDiff + 1.0);
+    sgpp::base::DataVector temp(alpha_bound.getSize());
     applyMassMatrixComplete(alpha_bound, temp);
     temp.mult(alpha0);
     result_complete.add(temp);
@@ -419,14 +419,14 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
     result_complete.axpy((-1.0) * this->TimestepSize, temp);
 
   } else if (this->tOperationMode == "F23") {
-    float_t tDiff = this->TimestepSize / this->TimestepSize_old;
-    float_t alpha0 = 1.0 / (1.0 + tDiff);
+    double tDiff = this->TimestepSize / this->TimestepSize_old;
+    double alpha0 = 1.0 / (1.0 + tDiff);
 
     applyMassMatrixComplete(alpha_bound, result_complete);
     result_complete.mult(alpha0);
 
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was "
         "specified!");
   }
@@ -437,16 +437,16 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
     delete this->rhs;
   }
 
-  this->rhs = new SGPP::base::DataVector(this->alpha_inner->getSize());
+  this->rhs = new sgpp::base::DataVector(this->alpha_inner->getSize());
   this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 
   return this->rhs;
 }
 
-SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichlet::getGridCoefficientsForCG() {
+sgpp::base::DataVector* OperationParabolicPDESolverSystemDirichlet::getGridCoefficientsForCG() {
   this->GridConverter->calcInnerCoefs(*this->alpha_complete, *this->alpha_inner);
 
   return this->alpha_inner;
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

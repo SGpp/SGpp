@@ -13,7 +13,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLStretchedBufferMultiPlatform::OCLStretchedBufferMultiPlatform(
@@ -45,7 +45,7 @@ void OCLStretchedBufferMultiPlatform::initializeBuffer(size_t sizeofType, size_t
       std::stringstream errorString;
       errorString << "OCL Error: Could not allocate host buffer! "
                      "Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     this->hostBuffer[platform.platformId] = hostBuffer;
@@ -60,7 +60,7 @@ void OCLStretchedBufferMultiPlatform::initializeBuffer(size_t sizeofType, size_t
         std::stringstream errorString;
         errorString << "OCL Error: Could not allocate buffer! "
                        "Error code: " << err << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
 
@@ -74,7 +74,7 @@ void OCLStretchedBufferMultiPlatform::initializeBuffer(size_t sizeofType, size_t
       std::stringstream errorString;
       errorString << "OCL Error: Could not map pinned memory to host pointer! "
                      "Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     this->mappedHostBuffer[platform.platformId] = hostPinnedMemory;
@@ -97,14 +97,14 @@ void OCLStretchedBufferMultiPlatform::freeBuffer() {
       std::stringstream errorString;
       errorString << "OCL Error: OCLStretchedBufferMultiPlatform in "
                      "partially initialized state: mappedHostBuffer is null" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     if (this->hostBuffer[platform.platformId] == nullptr) {
       std::stringstream errorString;
       errorString << "OCL Error: OCLStretchedBufferMultiPlatform in "
                      "partially initialized state: hostBuffer is null" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     cl_int err =
@@ -115,14 +115,14 @@ void OCLStretchedBufferMultiPlatform::freeBuffer() {
       std::stringstream errorString;
       errorString << "OCL Error: OCLStretchedBuffer unmapping "
                      "memory not successful" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     if (platformBufferList[platform.platformId] == nullptr) {
       std::stringstream errorString;
       errorString << "OCL Error: OCLStretchedBufferMultiPlatform in "
                      "partially initialized state: platform buffer list is null" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     for (size_t i = 0; i < platform.getDeviceCount(); i++) {
@@ -133,7 +133,7 @@ void OCLStretchedBufferMultiPlatform::freeBuffer() {
         std::stringstream errorString;
         errorString << "OCL Error: OCLStretchedBufferMultiPlatform in "
                        "partially initialized state: device buffer is null" << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
 
@@ -148,7 +148,7 @@ void OCLStretchedBufferMultiPlatform::freeBuffer() {
         std::stringstream errorString;
         errorString << "OCL Error: OCLStretchedBufferMultiPlatform in "
                        "partially initialized state: host buffer is null" << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
   }
@@ -165,7 +165,7 @@ void OCLStretchedBufferMultiPlatform::copyToOtherHostBuffers(cl_platform_id orig
     std::stringstream errorString;
     errorString << "OCL Error: tried to \"copyToOtherHostBuffers\" "
                    "with uninitialized buffer" << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   for (OCLPlatformWrapper& platform : this->manager->platforms) {
@@ -214,7 +214,7 @@ void OCLStretchedBufferMultiPlatform::readFromBuffer(std::map<cl_platform_id, si
         std::stringstream errorString;
         errorString << "OCL Error: Failed to enqueue read buffer command! "
                        "Error code: " << err << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
 
@@ -271,11 +271,11 @@ void OCLStretchedBufferMultiPlatform::writeToBuffer() {
         std::stringstream errorString;
         errorString << "OCL Error: Failed to enqueue mapped write command! "
                        "Error code: " << err << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
   }
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

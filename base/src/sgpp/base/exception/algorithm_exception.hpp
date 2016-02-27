@@ -11,7 +11,7 @@
 #include <exception>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -57,6 +57,6 @@ class algorithm_exception : public std::exception {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ALGORITHM_EXCEPTION_HPP */

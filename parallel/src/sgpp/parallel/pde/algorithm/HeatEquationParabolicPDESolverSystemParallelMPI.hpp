@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -22,26 +22,26 @@ namespace parallel {
  * Heat Equation parallelized with MPI.
  */
 class HeatEquationParabolicPDESolverSystemParallelMPI
-    : public SGPP::pde::OperationParabolicPDESolverSystemDirichlet {
+    : public sgpp::pde::OperationParabolicPDESolverSystemDirichlet {
  private:
   /// the heat coefficient
   double a;
   /// the Laplace Operation (Stiffness Matrix), on boundary grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceBound;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpLaplaceBound;
   /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpMassBound;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpMassBound;
   /// the Laplace Operation (Stiffness Matrix), on inner grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceInner;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpLaplaceInner;
   /// the LTwoDotProduct Operation (Mass Matrix), on inner grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpMassInner;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpMassInner;
 
-  void applyMassMatrixComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyMassMatrixComplete(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorComplete(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyMassMatrixInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  public:
   /**
@@ -55,8 +55,8 @@ class HeatEquationParabolicPDESolverSystemParallelMPI
    * explicit Euler,
    *                ImEul for implicit Euler, CrNic for Crank Nicolson solver
    */
-  HeatEquationParabolicPDESolverSystemParallelMPI(SGPP::base::Grid& SparseGrid,
-                                                  SGPP::base::DataVector& alpha, double a,
+  HeatEquationParabolicPDESolverSystemParallelMPI(sgpp::base::Grid& SparseGrid,
+                                                  sgpp::base::DataVector& alpha, double a,
                                                   double TimestepSize,
                                                   std::string OperationMode = "ExEul");
 
@@ -71,11 +71,11 @@ class HeatEquationParabolicPDESolverSystemParallelMPI
 
   void startTimestep();
 
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual SGPP::base::DataVector* generateRHS();
+  virtual sgpp::base::DataVector* generateRHS();
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HEATEQUATIONPARABOLICPDESOLVERSYSTEMPARALLELMPI_HPP */

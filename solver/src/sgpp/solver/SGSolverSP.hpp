@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -84,6 +84,6 @@ class SGSolverSP {
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGSOLVERSP_HPP */
