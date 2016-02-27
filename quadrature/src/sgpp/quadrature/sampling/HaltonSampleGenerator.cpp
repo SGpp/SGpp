@@ -39,9 +39,9 @@ void HaltonSampleGenerator::getSample(sgpp::base::DataVector& dv) {
 
     while (iVector[i] > 0) {
       resultVector[i] =
-          resultVector[i] + fVector[i] * ((double)((size_t)iVector[i] % baseVector[i]));
-      iVector[i] = floor(((double)iVector[i]) / ((double)baseVector[i]));
-      fVector[i] = fVector[i] / ((double)baseVector[i]);
+          resultVector[i] + fVector[i] * (static_cast<double>((size_t)iVector[i] % baseVector[i]));
+      iVector[i] = floor(static_cast<double>(iVector[i]) / static_cast<double>(baseVector[i]));
+      fVector[i] = fVector[i] / static_cast<double>(baseVector[i]);
     }
 
     dv[i] = resultVector[i];
