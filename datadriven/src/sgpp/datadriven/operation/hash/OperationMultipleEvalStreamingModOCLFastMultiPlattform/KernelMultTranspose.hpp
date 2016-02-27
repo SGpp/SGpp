@@ -18,7 +18,7 @@
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp"
 #include "SourceBuilderMultTranspose.hpp"
-#include "sgpp/base/opencl/OCLClonedBufferSD.hpp"
+#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -33,13 +33,13 @@ class KernelMultTranspose {
 
   cl_int err;
 
-  base::OCLClonedBufferSD<T> deviceLevelTranspose;
-  base::OCLClonedBufferSD<T> deviceIndexTranspose;
+  base::OCLBufferWrapperSD<T> deviceLevelTranspose;
+  base::OCLBufferWrapperSD<T> deviceIndexTranspose;
 
-  base::OCLClonedBufferSD<T> deviceDataTranspose;
-  base::OCLClonedBufferSD<T> deviceSourceTranspose;
+  base::OCLBufferWrapperSD<T> deviceDataTranspose;
+  base::OCLBufferWrapperSD<T> deviceSourceTranspose;
 
-  base::OCLClonedBufferSD<T> deviceResultGridTranspose;
+  base::OCLBufferWrapperSD<T> deviceResultGridTranspose;
 
   cl_kernel kernelMultTranspose;
 
@@ -187,8 +187,8 @@ class KernelMultTranspose {
       if (rangeSize > 0) {
         size_t resultOffset =
             kernelStartGrid / (cl_uint)gridBlockSize;  // based on work groups, cannot be
-                                                          // transmitted through
-                                                          // global_work_offset mechanism
+                                                       // transmitted through
+                                                       // global_work_offset mechanism
 
         err = clSetKernelArg(kernelMultTranspose, 0, sizeof(cl_mem),
                              this->deviceLevelTranspose.getBuffer());
@@ -251,24 +251,6 @@ class KernelMultTranspose {
         }
 
         cl_event clTiming;
-
-        // //////////////////////////////////////////////////////////////////////////////////////
-        //        size_t gpuEndGrid = gpu_end_index_grid[platform.platformId][i];
-        //        size_t gpuStartGrid = gpu_start_index_grid[platform.platformId][i];
-        //        size_t rangeSize = (gpuEndGrid / gridBlockingSize) - (gpuStartGrid /
-        //        gridBlockingSize);
-        //
-        //        if (rangeSize > 0) {
-        //          size_t totalWorkItems =
-        //              rangeSize * local;  // TODO(pfandedd): possible bug -> variable might be
-        //                                  // reallocated, the kernel uses a reference...
-        //          // TODO(pfandedd): don't forget the "reqd_work_group_size" kernel attribute
-        //          err = clEnqueueNDRangeKernel(
-        //              platform.commandQueues[i], kernelsMultTrans[platform.platformId][i], 1,
-        //              &gpu_start_index_grid[platform.platformId][i], &totalWorkItems, &local, 0,
-        //              nullptr,
-        //              &(clTimings[platform.platformId][i]));
-        // ///////////////////////////////////////////////////////////////////////////////////////
 
         size_t threads = rangeSizeAfterBlocking * localSize;
         err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, &kernelStartGrid,

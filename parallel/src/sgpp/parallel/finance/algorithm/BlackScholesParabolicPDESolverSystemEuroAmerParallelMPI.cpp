@@ -14,41 +14,40 @@
 #include <sgpp/pde/algorithm/UpDownTwoOpDims.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
+#include <sgpp/globaldef.hpp>
+
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-#include <sgpp/globaldef.hpp>
-
+#include <vector>
+#include <algorithm>
+#include <string>
 
 namespace SGPP {
 namespace parallel {
 
-BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(
-  SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha,
-  SGPP::base::DataVector& mu,
-  SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r,
-  double TimestepSize, std::string OperationMode, double dStrike,
-  std::string option_type,
-  bool bLogTransform, bool useCoarsen, double coarsenThreshold,
-  std::string adaptSolveMode,
-  int numCoarsenPoints, double refineThreshold, std::string refineMode,
-  SGPP::base::GridIndex::level_type refineMaxLevel) :
-  BlackScholesParabolicPDESolverSystemEuroAmer(SparseGrid, alpha, mu, sigma, rho,
-      r, TimestepSize, OperationMode, dStrike, option_type, bLogTransform, useCoarsen,
-      coarsenThreshold, adaptSolveMode, numCoarsenPoints, refineThreshold, refineMode,
-      refineMaxLevel) {
-}
+BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::
+    BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(
+        SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
+        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize,
+        std::string OperationMode, double dStrike, std::string option_type, bool bLogTransform,
+        bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
+        double refineThreshold, std::string refineMode,
+        SGPP::base::GridIndex::level_type refineMaxLevel)
+    : BlackScholesParabolicPDESolverSystemEuroAmer(
+          SparseGrid, alpha, mu, sigma, rho, r, TimestepSize, OperationMode, dStrike, option_type,
+          bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints,
+          refineThreshold, refineMode, refineMaxLevel) {}
 
-BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::~BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI() {
-}
+BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::
+    ~BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI() {}
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInner(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
-  std::vector<size_t> algoDims =
-    this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 #ifdef _OPENMP
   omp_lock_t DeltaMutex;
@@ -61,17 +60,16 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInne
 
   // Apply the riskfree rate
   if (0 % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
-    #pragma omp task shared(alpha, result)
+#pragma omp task shared(alpha, result)
     {
       if (this->r != 0.0) {
         SGPP::base::DataVector myResult(result.getSize());
 
         /// discuss methods in order to avoid this cast
-        ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha,
-        myResult);
+        ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
 
         // no semaphore needed
-        result.axpy((-1.0)*this->r, myResult);
+        result.axpy((-1.0) * this->r, myResult);
       }
     }
   }
@@ -79,14 +77,15 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInne
   // Apply the delta method
   for (size_t i = 0; i < nDims; i++) {
     if ((i + 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
-      #pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
+#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
       {
         SGPP::base::DataVector myResult(result.getSize());
 
         /// discuss methods in order to avoid this cast
-        ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+        ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaInner))
+            ->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
-        // semaphore
+// semaphore
 #ifdef _OPENMP
         omp_set_lock(&DeltaMutex);
 #endif
@@ -106,14 +105,15 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInne
       if (job % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
         // symmetric
         if (j <= i) {
-          #pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
+#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
           {
             SGPP::base::DataVector myResult(result.getSize());
 
             /// discuss methods in order to avoid this cast
-            ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaInner))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
+            ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaInner))
+                ->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
-            // semaphore
+// semaphore
 #ifdef _OPENMP
             omp_set_lock(&GammaMutex);
 #endif
@@ -127,7 +127,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInne
     }
   }
 
-  #pragma omp taskwait
+#pragma omp taskwait
 
 #ifdef _OPENMP
   omp_destroy_lock(&GammaMutex);
@@ -140,11 +140,10 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorInne
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComplete(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
-  std::vector<size_t> algoDims =
-    this->InnerGrid->getStorage()->getAlgorithmicDimensions();
+  std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
 
 #ifdef _OPENMP
@@ -158,17 +157,16 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComp
 
   // Apply the riskfree rate
   if (0 % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
-    #pragma omp task shared(alpha, result)
+#pragma omp task shared(alpha, result)
     {
       if (this->r != 0.0) {
         SGPP::base::DataVector myResult(result.getSize());
 
         /// discuss methods in order to avoid this cast
-        ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha,
-        myResult);
+        ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
 
         // no semaphore needed
-        result.axpy((-1.0)*this->r, myResult);
+        result.axpy((-1.0) * this->r, myResult);
       }
     }
   }
@@ -176,14 +174,15 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComp
   // Apply the delta method
   for (size_t i = 0; i < nDims; i++) {
     if ((i + 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
-      #pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
+#pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
       {
         SGPP::base::DataVector myResult(result.getSize());
 
         /// discuss methods in order to avoid this cast
-        ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
+        ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaBound))
+            ->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
-        // semaphore
+// semaphore
 #ifdef _OPENMP
         omp_set_lock(&DeltaMutex);
 #endif
@@ -203,14 +202,15 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComp
       if (job % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
         // symmetric
         if (j <= i) {
-          #pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
+#pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
           {
             SGPP::base::DataVector myResult(result.getSize());
 
             /// discuss methods in order to avoid this cast
-            ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaBound))->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
+            ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaBound))
+                ->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
-            // semaphore
+// semaphore
 #ifdef _OPENMP
             omp_set_lock(&GammaMutex);
 #endif
@@ -224,7 +224,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComp
     }
   }
 
-  #pragma omp taskwait
+#pragma omp taskwait
 
 #ifdef _OPENMP
   omp_destroy_lock(&GammaMutex);
@@ -237,39 +237,35 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyLOperatorComp
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyMassMatrixInner(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
-  size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+  size_t nDims = this->InnerGrid->getStorage().getAlgorithmicDimensions().size();
   size_t jobs = (((nDims * nDims) + 3 * nDims) / 2) + 2;
 
-  if ((jobs - 1) % myGlobalMPIComm->getNumRanks() ==
-      myGlobalMPIComm->getMyRank()) {
-    ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha,
-        temp);
+  if ((jobs - 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+    ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
 
     result.add(temp);
   }
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::applyMassMatrixComplete(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
   SGPP::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
-  size_t nDims = this->InnerGrid->getStorage()->getAlgorithmicDimensions().size();
+  size_t nDims = this->InnerGrid->getStorage().getAlgorithmicDimensions().size();
   size_t jobs = (((nDims * nDims) + 3 * nDims) / 2) + 2;
 
-  if ((jobs - 1) % myGlobalMPIComm->getNumRanks() ==
-      myGlobalMPIComm->getMyRank()) {
-    ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha,
-        temp);
+  if ((jobs - 1) % myGlobalMPIComm->getNumRanks() == myGlobalMPIComm->getMyRank()) {
+    ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
 
     result.add(temp);
   }
 }
 
-void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::mult(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::mult(SGPP::base::DataVector& alpha,
+                                                                   SGPP::base::DataVector& result) {
   // distribute the current grid coefficients
   myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 
@@ -281,64 +277,57 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::mult(
     SGPP::base::DataVector temp(result.getSize());
     SGPP::base::DataVector temp2(result.getSize());
 
-    #pragma omp parallel shared(alpha, result)
+#pragma omp parallel shared(alpha, result)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (alpha, temp)
-        {
-          applyMassMatrixInner(alpha, temp);
-        }
+#pragma omp task shared(alpha, temp)
+        { applyMassMatrixInner(alpha, temp); }
 
-        #pragma omp task shared (alpha, temp2)
-        {
-          applyLOperatorInner(alpha, temp2);
-        }
+#pragma omp task shared(alpha, temp2)
+        { applyLOperatorInner(alpha, temp2); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
     result.add(temp);
-    result.axpy((-1.0)*this->TimestepSize, temp2);
+    result.axpy((-1.0) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "CrNic") {
     SGPP::base::DataVector temp(result.getSize());
     SGPP::base::DataVector temp2(result.getSize());
 
-    #pragma omp parallel shared(alpha, result)
+#pragma omp parallel shared(alpha, result)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (alpha, temp)
-        {
-          applyMassMatrixInner(alpha, temp);
-        }
+#pragma omp task shared(alpha, temp)
+        { applyMassMatrixInner(alpha, temp); }
 
-        #pragma omp task shared (alpha, temp2)
-        {
-          applyLOperatorInner(alpha, temp2);
-        }
+#pragma omp task shared(alpha, temp2)
+        { applyLOperatorInner(alpha, temp2); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
     result.add(temp);
-    result.axpy((-0.5)*this->TimestepSize, temp2);
+    result.axpy((-0.5) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "AdBas") {
     result.setAll(0.0);
 
     applyMassMatrixInner(alpha, result);
   } else {
-    throw SGPP::base::algorithm_exception(" BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(
+        " BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation "
+        "mode was specified!");
   }
 
   // aggregate all results
   myGlobalMPIComm->reduceGridCoefficientsOnRank0(result);
 }
 
-SGPP::base::DataVector*
-BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
+SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
   // distribute the current grid coefficients
   myGlobalMPIComm->broadcastGridCoefficientsFromRank0(*(this->alpha_complete));
 
@@ -351,21 +340,17 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
     SGPP::base::DataVector temp2(rhs_complete.getSize());
     SGPP::base::DataVector myAlpha(*this->alpha_complete);
 
-    #pragma omp parallel shared(myAlpha, temp, temp2)
+#pragma omp parallel shared(myAlpha, temp, temp2)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (myAlpha, temp)
-        {
-          applyMassMatrixComplete(myAlpha, temp);
-        }
+#pragma omp task shared(myAlpha, temp)
+        { applyMassMatrixComplete(myAlpha, temp); }
 
-        #pragma omp task shared (myAlpha, temp2)
-        {
-          applyLOperatorComplete(myAlpha, temp2);
-        }
+#pragma omp task shared(myAlpha, temp2)
+        { applyLOperatorComplete(myAlpha, temp2); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
@@ -382,26 +367,22 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
     SGPP::base::DataVector temp2(rhs_complete.getSize());
     SGPP::base::DataVector myAlpha(*this->alpha_complete);
 
-    #pragma omp parallel shared(myAlpha, temp, temp2)
+#pragma omp parallel shared(myAlpha, temp, temp2)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (myAlpha, temp)
-        {
-          applyMassMatrixComplete(myAlpha, temp);
-        }
+#pragma omp task shared(myAlpha, temp)
+        { applyMassMatrixComplete(myAlpha, temp); }
 
-        #pragma omp task shared (myAlpha, temp2)
-        {
-          applyLOperatorComplete(myAlpha, temp2);
-        }
+#pragma omp task shared(myAlpha, temp2)
+        { applyLOperatorComplete(myAlpha, temp2); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
     rhs_complete.add(temp);
-    rhs_complete.axpy((0.5)*this->TimestepSize, temp2);
+    rhs_complete.axpy((0.5) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "AdBas") {
     rhs_complete.setAll(0.0);
 
@@ -411,16 +392,14 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
 
-    #pragma omp parallel shared(myAlpha, temp)
+#pragma omp parallel shared(myAlpha, temp)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (myAlpha, temp)
-        {
-          applyLOperatorComplete(myAlpha, temp);
-        }
+#pragma omp task shared(myAlpha, temp)
+        { applyLOperatorComplete(myAlpha, temp); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
@@ -431,24 +410,24 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
 
     applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
-    #pragma omp parallel shared(myOldAlpha, temp_old)
+#pragma omp parallel shared(myOldAlpha, temp_old)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (myOldAlpha, temp_old)
-        {
-          applyLOperatorComplete(myOldAlpha, temp_old);
-        }
+#pragma omp task shared(myOldAlpha, temp_old)
+        { applyLOperatorComplete(myOldAlpha, temp_old); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
     temp_old.mult(this->TimestepSize / this->TimestepSize_old);
     temp.sub(temp_old);
-    rhs_complete.axpy((0.5)*this->TimestepSize, temp);
+    rhs_complete.axpy((0.5) * this->TimestepSize, temp);
   } else {
-    throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(
+        "BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
+        "operation mode was specified!");
   }
 
   // aggregate all results
@@ -472,54 +451,48 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
     SGPP::base::DataVector temp(alpha_bound.getSize());
     SGPP::base::DataVector temp2(alpha_bound.getSize());
 
-    #pragma omp parallel shared(alpha_bound, temp, temp2)
+#pragma omp parallel shared(alpha_bound, temp, temp2)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (alpha_bound, temp)
-        {
-          applyMassMatrixComplete(alpha_bound, temp);
-        }
+#pragma omp task shared(alpha_bound, temp)
+        { applyMassMatrixComplete(alpha_bound, temp); }
 
-        #pragma omp task shared (alpha_bound, temp2)
-        {
-          applyLOperatorComplete(alpha_bound, temp2);
-        }
+#pragma omp task shared(alpha_bound, temp2)
+        { applyLOperatorComplete(alpha_bound, temp2); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
     result_complete.add(temp);
-    result_complete.axpy((-1.0)*this->TimestepSize, temp2);
+    result_complete.axpy((-1.0) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "CrNic") {
     SGPP::base::DataVector temp(alpha_bound.getSize());
     SGPP::base::DataVector temp2(alpha_bound.getSize());
 
-    #pragma omp parallel shared(alpha_bound, temp, temp2)
+#pragma omp parallel shared(alpha_bound, temp, temp2)
     {
-      #pragma omp single nowait
+#pragma omp single nowait
       {
-        #pragma omp task shared (alpha_bound, temp)
-        {
-          applyMassMatrixComplete(alpha_bound, temp);
-        }
+#pragma omp task shared(alpha_bound, temp)
+        { applyMassMatrixComplete(alpha_bound, temp); }
 
-        #pragma omp task shared (alpha_bound, temp2)
-        {
-          applyLOperatorComplete(alpha_bound, temp2);
-        }
+#pragma omp task shared(alpha_bound, temp2)
+        { applyLOperatorComplete(alpha_bound, temp2); }
 
-        #pragma omp taskwait
+#pragma omp taskwait
       }
     }
 
     result_complete.add(temp);
-    result_complete.axpy((-0.5)*this->TimestepSize, temp2);
+    result_complete.axpy((-0.5) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "AdBas") {
     applyMassMatrixComplete(alpha_bound, result_complete);
   } else {
-    throw SGPP::base::algorithm_exception("BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(
+        "BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
+        "operation mode was specified!");
   }
 
   // aggregate all results
@@ -542,15 +515,13 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::generateRHS() {
   return this->rhs;
 }
 
-void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
-  bool isLastTimestep) {
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(bool isLastTimestep) {
   this->nExecTimesteps++;
 
   // Adaptivity stuff is done on rank 0 only
   if (myGlobalMPIComm->getMyRank() == 0) {
     // Replace the inner coefficients on the boundary grid
-    this->GridConverter->updateBoundaryCoefs(*this->alpha_complete,
-        *this->alpha_inner);
+    this->GridConverter->updateBoundaryCoefs(*this->alpha_complete, *this->alpha_inner);
 
 #ifndef NOBOUNDARYDISCOUNT
 
@@ -566,18 +537,17 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
 
     // check if we are doing an American put -> handle early exercise
     if (this->option_type == "std_amer_put") {
-      SGPP::base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
+      std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation =
+          SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
       myHierarchisation->doDehierarchisation(*this->alpha_complete);
-      size_t dim = this->BoundGrid->getStorage()->getDimension();
-      SGPP::base::BoundingBox* myBB = new SGPP::base::BoundingBox(*
-          (this->BoundGrid->getBoundingBox()));
+      size_t dim = this->BoundGrid->getStorage().getDimension();
+      SGPP::base::BoundingBox* myBB =
+          new SGPP::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
       double* dblFuncValues = new double[dim];
 
-      for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
-        std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(
-                               *myBB);
+      for (size_t i = 0; i < this->BoundGrid->getStorage().getSize(); i++) {
+        std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
         std::stringstream coordsStream(coords);
 
         double tmp;
@@ -601,15 +571,18 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
           }
         }
 
-        //      (*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i], (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))), 0.0))*exp(((-1.0)*(this->r*static_cast<double>(this->nExecTimesteps)*this->TimestepSize))));
-        (*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i],
-                                     (std::max<double>(this->dStrike - ((tmp / static_cast<double>(dim))), 0.0)));
+        // (*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i],
+        // (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))),
+        // 0.0))*exp(((-1.0)*(this->r*static_cast<double>
+        // (this->nExecTimesteps)*this->TimestepSize))));
+        (*this->alpha_complete)[i] = std::max<double>(
+            (*this->alpha_complete)[i],
+            (std::max<double>(this->dStrike - ((tmp / static_cast<double>(dim))), 0.0)));
       }
 
       delete[] dblFuncValues;
 
       myHierarchisation->doHierarchisation(*this->alpha_complete);
-      delete myHierarchisation;
       delete myBB;
     }
 
@@ -622,38 +595,35 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
       // Start integrated refinement & coarsening
       ///////////////////////////////////////////////////
 
-      size_t originalGridSize = this->BoundGrid->getStorage()->size();
+      size_t originalGridSize = this->BoundGrid->getStorage().getSize();
 
       // Coarsen the grid
       base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
-      //std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
-      //std::cout << "Grid Size: " << originalGridSize << std::endl;
+      // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
+      // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
-      if (this->adaptSolveMode == "refine"
-          || this->adaptSolveMode == "coarsenNrefine") {
+      if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
         size_t numRefines = myGenerator.getNumberOfRefinablePoints();
-        base::SurplusRefinementFunctor myRefineFunc(
-            *this->alpha_complete, numRefines, this->refineThreshold);
+        base::SurplusRefinementFunctor myRefineFunc(*this->alpha_complete, numRefines,
+                                                    this->refineThreshold);
 
         if (this->refineMode == "maxLevel") {
           myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-          this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+          this->alpha_complete->resizeZero(this->BoundGrid->getStorage().getSize());
         }
 
         if (this->refineMode == "classic") {
           myGenerator.refine(myRefineFunc);
-          this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+          this->alpha_complete->resizeZero(this->BoundGrid->getStorage().getSize());
         }
       }
 
-      if (this->adaptSolveMode == "coarsen"
-          || this->adaptSolveMode == "coarsenNrefine") {
+      if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
         size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
-        base::SurplusCoarseningFunctor myCoarsenFunctor(
-            *this->alpha_complete, numCoarsen, this->coarsenThreshold);
-        myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete,
-                                      originalGridSize);
+        base::SurplusCoarseningFunctor myCoarsenFunctor(*this->alpha_complete, numCoarsen,
+                                                        this->coarsenThreshold);
+        myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
       }
 
       ///////////////////////////////////////////////////
@@ -666,30 +636,29 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI::finishTimestep(
   if (this->useCoarsen == true && isLastTimestep == false) {
     // Communicate new grid
     if (myGlobalMPIComm->getMyRank() == 0) {
-      std::string bound_grid_storage = this->BoundGrid->getStorage()->serialize();
+      std::string bound_grid_storage = this->BoundGrid->getStorage().serialize();
 
       myGlobalMPIComm->broadcastGridStorage(bound_grid_storage);
 
       // rebuild the inner grid + coefficients
-      this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid,
-          *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+      this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete,
+                                                     &this->InnerGrid, &this->alpha_inner);
     } else {
       std::string bound_grid_storage = "";
 
       myGlobalMPIComm->receiveGridStorage(bound_grid_storage);
 
-      this->BoundGrid->getStorage()->emptyStorage();
-      this->BoundGrid->getStorage()->unserialize_noAlgoDims(bound_grid_storage);
-      this->alpha_complete->resize(this->BoundGrid->getStorage()->size());
+      this->BoundGrid->getStorage().emptyStorage();
+      this->BoundGrid->getStorage().unserialize_noAlgoDims(bound_grid_storage);
+      this->alpha_complete->resize(this->BoundGrid->getStorage().getSize());
 
       // rebuild the inner grid + coefficients
-      this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid,
-          *this->alpha_complete, &this->InnerGrid, &this->alpha_inner);
+      this->GridConverter->rebuildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete,
+                                                     &this->InnerGrid, &this->alpha_inner);
     }
 
     myGlobalMPIComm->Barrier();
   }
 }
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP

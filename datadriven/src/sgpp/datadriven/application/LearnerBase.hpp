@@ -305,6 +305,8 @@ class LearnerBase {
   std::vector<std::pair<size_t, float_t> > getRefinementExecTimes();
 
   SGPP::base::Grid& getGrid();
+
+  SGPP::base::DataVector& getAlpha();
 };
 }  // namespace datadriven
 }  // namespace SGPP

@@ -7,13 +7,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
-OperationMultipleEvalVectorized::OperationMultipleEvalVectorized(
-  base::GridStorage* storage, base::DataMatrix* dataset) {
-  this->storage_ = storage;
+OperationMultipleEvalVectorized::OperationMultipleEvalVectorized(base::GridStorage* storage,
+                                                                 base::DataMatrix* dataset)
+    : storage_(*storage) {
   this->dataset_ = dataset;
   this->level_ = NULL;
   this->index_ = NULL;
@@ -25,18 +24,13 @@ OperationMultipleEvalVectorized::OperationMultipleEvalVectorized(
 OperationMultipleEvalVectorized::~OperationMultipleEvalVectorized() {
   delete myTimer_;
 
-  if (this->level_ != NULL)
-    delete this->level_;
+  if (this->level_ != NULL) delete this->level_;
 
-  if (this->index_ != NULL)
-    delete this->index_;
+  if (this->index_ != NULL) delete this->index_;
 
-  if (this->mask_ != NULL)
-    delete this->mask_;
+  if (this->mask_ != NULL) delete this->mask_;
 
-  if (this->offset_ != NULL)
-    delete this->offset_;
+  if (this->offset_ != NULL) delete this->offset_;
 }
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP

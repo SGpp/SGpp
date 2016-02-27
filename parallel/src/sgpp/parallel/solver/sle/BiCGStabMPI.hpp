@@ -10,10 +10,9 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include <iostream>
-
 #include <sgpp/globaldef.hpp>
 
+#include <iostream>
 
 namespace SGPP {
 namespace parallel {
@@ -24,7 +23,8 @@ class BiCGStabMPI : public SGPP::solver::SLESolver {
    * Routine called by the MPI slaves, here just the execution of
    * of sub part of the SystemMatrix's mult-Routine is needed.
    *
-   * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector multiplication
+   * @param SystemMatrix reference to an OperationMatrix Object that implements the matrix vector
+   * multiplication
    * @param alpha the sparse grid's coefficients which have to be determined
    */
   virtual void waitForTask(SGPP::base::OperationMatrix& SystemMatrix,
@@ -49,12 +49,11 @@ class BiCGStabMPI : public SGPP::solver::SLESolver {
    * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
    * http://netlib.org
    */
-  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix,
-                     SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse = false,
-                     bool verbose = false, double max_threshold = -1.0);
+  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
+                     SGPP::base::DataVector& b, bool reuse = false, bool verbose = false,
+                     double max_threshold = -1.0);
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /*BICGSTABMPI_HPP */

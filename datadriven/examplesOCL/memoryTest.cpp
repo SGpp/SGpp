@@ -18,8 +18,7 @@
 #include "sgpp/base/opencl/OCLClonedBuffer.hpp"
 #include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
 
-void doStuffOld(std::shared_ptr<SGPP::base::OCLManager> manager, double* values,
-                size_t valueSize) {
+void doStuffOld(std::shared_ptr<SGPP::base::OCLManager> manager, double* values, size_t valueSize) {
   //    OCLClonedBuffer buffer(manager);
   //    buffer.initializeBuffer(values, sizeof(double), valueSize);
 
@@ -27,8 +26,8 @@ void doStuffOld(std::shared_ptr<SGPP::base::OCLManager> manager, double* values,
   stretched.initializeBuffer(sizeof(double), valueSize);
 }
 
-void doStuff(std::shared_ptr<SGPP::base::OCLManagerMultiPlatform> manager,
-             double* values, size_t valueSize) {
+void doStuff(std::shared_ptr<SGPP::base::OCLManagerMultiPlatform> manager, double* values,
+             size_t valueSize) {
   //    OCLClonedBufferMultiPlatform buffer(manager);
   //    buffer.initializeBuffer(values, sizeof(double), valueSize);
 
@@ -42,8 +41,7 @@ void doStuff(std::shared_ptr<SGPP::base::OCLManagerMultiPlatform> manager,
 int main(int argc, char** argv) {
   auto parameters = std::make_shared<SGPP::base::OCLOperationConfiguration>();
 
-  auto manager =
-      std::make_shared<SGPP::base::OCLManagerMultiPlatform>(parameters);
+  auto manager = std::make_shared<SGPP::base::OCLManagerMultiPlatform>(parameters);
 
   const size_t valueSize = 100000000;
 

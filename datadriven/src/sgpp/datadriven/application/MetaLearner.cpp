@@ -91,6 +91,13 @@ base::Grid &MetaLearner::getLearnedGrid() {
   return this->myLearner->getGrid();
 }
 
+base::DataVector &MetaLearner::getLearnedAlpha() {
+  if (this->myLearner == nullptr) {
+    throw;
+  }
+  return this->myLearner->getAlpha();
+}
+
 void MetaLearner::learnReference(std::string &datasetFileName, bool isRegression) {
   std::ifstream t(datasetFileName);
   if (!t.is_open()) {
