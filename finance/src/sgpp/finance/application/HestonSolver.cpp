@@ -853,7 +853,8 @@ float_t EvaluateHestonClosedFormIntegralFunction(float_t phi, float_t xi, float_
   dBuilder1 = pow(dBuilder1 * phi * rho * xi - b, 2.0);
   dBuilder2 = std::complex<float_t>(0.0, 1.0);
   dBuilder2 = dBuilder2 * phi;
-  dBuilder2 = dBuilder2 * float_t(2.0) * u - pow(phi, float_t(2.0));
+  float_t phi2 = pow(phi, float_t(2.0));
+  dBuilder2 = dBuilder2 * float_t(2.0) * u - phi2;
   dBuilder2 = dBuilder2 * float_t(pow(xi, 2.0));
   d = sqrt(dBuilder1 - dBuilder2);
 

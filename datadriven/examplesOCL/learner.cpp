@@ -149,10 +149,10 @@ int main(int argc, char* argv[]) {
 
   bool verbose = true;
 
-  sg::base::RegularGridConfiguration gridConfig;
-  sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-  sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sg::base::AdpativityConfiguration adaptConfig;
+  SGPP::base::RegularGridConfiguration gridConfig;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
+  SGPP::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;    // dim is inferred from the data
@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
           "isRegression", boost::program_options::value<bool>(&isRegression),
           "true for regression, false for classification, default is "
           "regression, only relevant for LEARNTEST- and LEARN-mode")(
-          "lambda", boost::program_options::value<SGPP::float_t>(&lambda),
+          "lambda", boost::program_options::value<double>(&lambda),
           "regularization parameter for learning")(
           "verbose", boost::program_options::value<bool>(&verbose), "do verbose learning")(
           "learnerMode", boost::program_options::value<SGPP::datadriven::LearnerMode>(&learnerMode),

@@ -12,11 +12,16 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 #include "sgpp/datadriven/application/MetaLearner.hpp"
+#include "sgpp/base/exception/application_exception.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
+#include "sgpp/datadriven/tools/Dataset.hpp"
+#include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -24,24 +29,6 @@ namespace datadriven {
 StaticParameterTuner::StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
                                            bool collectStatistics, bool verbose)
     : collectStatistics(collectStatistics), verbose(verbose), fixedParameters(fixedParameters) {}
-
-// // write a file with detailed stats for the optimization
-// StaticParameterTuner::StaticParameterTuner(const std::string &tunerFileName,
-// SGPP::base::OCLOperationConfiguration &fixedParameters, bool
-// collectStatistics, bool verbose) :
-//        collectStatistics(collectStatistics), verbose(verbose),
-//        fixedParameters(fixedParameters) {
-//    this->readFromFile(tunerFileName);
-//}
-
-// void StaticParameterTuner::addFixedParameter(const std::string &name, const
-// std::string &value, const ParameterType type) {
-//    if (type == ParameterType::TEXT) {
-//        this->kernelNode.addTextAttr(name, value);
-//    } else if (type == ParameterType::ID) {
-//        this->kernelNode.addIDAttr(name, value);
-//    }
-//}
 
 void StaticParameterTuner::addParameter(const std::string &name,
                                         const std::vector<std::string> &valueRange) {
@@ -267,15 +254,18 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
   SGPP::datadriven::OperationMultipleEvalType operationType;
   SGPP::datadriven::OperationMultipleEvalSubType operationSubType;
 
-  // TODO(pfandedd): add better approach for auto-selecting the right kernel
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
     operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
   } else if (kernelName.compare("StreamingModOCLFastMultiPlatform") == 0) {
     operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
     operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP;
+  } else if (kernelName.compare("StreamingModOCLMaskMultiPlatform") == 0) {
+    operationType = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    operationSubType = SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP;
   } else {
-    throw;
+    throw SGPP::base::application_exception(
+        "error: configured kernel is not known to static parameter tuner");
   }
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
@@ -286,11 +276,18 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
   double duration = std::numeric_limits<double>::max();
   try {
     std::cout << "evaluating parameter combination" << std::endl;
+
     learner.learn(configuration, fileName);
 
     LearnerTiming timing = learner.getLearnerTiming();
 
     duration = timing.timeComplete_;
+
+    TestsetConfiguration testsetConfiguration = scenario.getTestsetConfiguration();
+
+    if (testsetConfiguration.hasTestDataset) {
+      this->verifyLearned(testsetConfiguration, learner.getLearnedAlpha());
+    }
   } catch (SGPP::base::operation_exception &exception) {
     if (verbose) {
       std::cout << "invalid combination detected" << std::endl;
@@ -302,117 +299,6 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
   }
   return duration;
 }
-
-/*void StaticParameterTuner::writeToFile(const std::string &fileName) {
- std::ofstream file(fileName);
-
- if (file.is_open()) {
-
- file << "fixed parameters" << std::endl;
-
- for (std::string &key : this->fixedParameters.keys()) {
- file << key << "=" << this->fixedParameters[key].get() << std::endl;
- }
-
- file << "tuned parameters" << std::endl;
-
- for (TunableParameter &parameter : this->tunableParameters) {
-
- file << parameter.getName() << "=";
-
- bool first = true;
- for (std::string &value : parameter.getValues()) {
- if (!first) {
- file << ",";
- } else {
- first = false;
- }
- file << value;
- }
- file << std::endl;
- }
-
- } else {
- throw;
- }
-
- file.close();
- }*/
-
-/*void StaticParameterTuner::readFromFile(const std::string &fileName) {
-
- //reset instance if already initialized
- this->fixedParameters.clear();
- this->tunableParameters.clear();
-
- std::ifstream file(fileName);
-
- if (file.is_open()) {
-
- enum class ParserState {
- INITIAL, FIXED, TUNABLE
- };
-
- ParserState state = ParserState::INITIAL;
-
- std::string line;
-
- while (std::getline(file, line)) {
-
- std::vector<std::string> commentSplitted;
- boost::split(commentSplitted, line, boost::is_any_of("#"));
- std::string withoutComment = commentSplitted[0];
- boost::algorithm::trim(withoutComment);
-
- if (withoutComment.size() == 0) {
- continue;
- }
-
- if (state == ParserState::INITIAL) {
- if (withoutComment.compare("fixed parameters") == 0) {
- state = ParserState::FIXED;
- continue;
- } else {
- throw;
- }
- } else if (state == ParserState::FIXED) {
- if (withoutComment.compare("tuned parameters") == 0) {
- state = ParserState::TUNABLE;
- continue;
- }
- }
-
- std::vector<std::string> keyValueSplitted;
- boost::split(keyValueSplitted, withoutComment, boost::is_any_of("="));
-
- if (keyValueSplitted.size() != 2) {
- throw;
- }
- std::string key = keyValueSplitted[0];
- boost::algorithm::trim(key);
- std::string value = keyValueSplitted[1];
- boost::algorithm::trim(value);
-
- if (state == ParserState::FIXED) {
- this->addFixedParameter(key, value, ParameterType::ID);
- } else if (state == ParserState::TUNABLE) {
- std::vector<std::string> valuesSplitted;
- boost::split(valuesSplitted, value, boost::is_any_of(","));
- for (std::string &singleValue : valuesSplitted) {
- boost::algorithm::trim(singleValue);
- }
- this->addParameter(key, valuesSplitted, ParameterType::ID);
- } else {
- throw;
- }
- }
-
- } else {
- throw;
- }
-
- file.close();
- }*/
 
 void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFileName,
                                                  const std::string &platformName,
@@ -459,6 +345,40 @@ void StaticParameterTuner::writeStatisticsToFile(const std::string &statisticsFi
     file << duration << std::endl;
   }
 }
+
+void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfiguration,
+                                         base::DataVector &alpha) {
+  base::DataVector alphaReference =
+      base::DataVector::fromFile(testsetConfiguration.alphaReferenceFileName);
+
+  if (alphaReference.getSize() != alpha.getSize()) {
+    throw base::application_exception("error: size of reference vector doesn't match");
+  }
+
+  double mse = 0.0;
+  double largestDifference = 0.0;
+  for (size_t i = 0; i < alpha.getSize(); i++) {
+    double difference = fabs(alphaReference[i] - alpha[i]);
+
+    if (difference > largestDifference) {
+      largestDifference = difference;
+    }
+
+    mse += difference * difference;
+  }
+  mse /= static_cast<double>(alpha.getSize());
+
+  if (mse > testsetConfiguration.expectedMSE ||
+      largestDifference > testsetConfiguration.expectedLargestDifference) {
+    std::string message("error: violated the expected error, mse: " + std::to_string(mse) +
+                        " (excepted: " + std::to_string(testsetConfiguration.expectedMSE) +
+                        ") largestDifference: " + std::to_string(largestDifference) +
+                        " (excepted: " +
+                        std::to_string(testsetConfiguration.expectedLargestDifference) + ")");
+    throw base::application_exception(message.c_str());
+  }
+}
+
 }  // namespace datadriven
 }  // namespace SGPP
 

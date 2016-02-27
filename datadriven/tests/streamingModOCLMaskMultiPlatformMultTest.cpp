@@ -45,9 +45,9 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
-    // TODO(pfandedd): add setup of blocking for all tests
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -76,6 +76,37 @@ BOOST_AUTO_TEST_CASE(Local) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
+  }
+
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+
+  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+                                    level, configuration);
+    BOOST_CHECK(mse < std::get<1>(fileNameError));
+  }
+}
+
+BOOST_AUTO_TEST_CASE(Blocking) {
+  std::vector<std::tuple<std::string, double>> fileNamesError = {
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 1E-20),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 1E-13)};
+
+  uint32_t level = 5;
+
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("double");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -104,6 +135,8 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -132,6 +165,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -160,6 +195,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -188,6 +224,37 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
+  }
+
+  OperationMultipleEvalConfiguration configuration(
+      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+
+  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+                                    level, configuration);
+    BOOST_CHECK(mse < std::get<1>(fileNameError));
+  }
+}
+
+BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
+  std::vector<std::tuple<std::string, double>> fileNamesError = {
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_4d.arff.gz", 10E-3),
+      std::tuple<std::string, double>("datadriven/tests/data/friedman_10d.arff.gz", 10E5)};
+
+  uint32_t level = 5;
+
+  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+      getConfigurationDefaultsSingleDevice();
+
+  (*parameters)["INTERNAL_PRECISION"].set("float");
+
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  for (json::Node &deviceNode : deviceNodes) {
+    deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
+    deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -216,6 +283,8 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(
@@ -244,6 +313,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
+    deviceNode.replaceIDAttr("KERNEL_DATA_BLOCK_SIZE", 2ul);
+    deviceNode.replaceIDAttr("KERNEL_STORE_DATA", "register");
   }
 
   OperationMultipleEvalConfiguration configuration(

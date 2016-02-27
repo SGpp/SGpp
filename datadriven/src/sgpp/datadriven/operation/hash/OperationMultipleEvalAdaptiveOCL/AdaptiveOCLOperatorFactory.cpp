@@ -77,7 +77,6 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(
         "\"INTERNAL_PRECISION\"");
   }
 
-  // TODO(pfandedd): make parameters changable through api
   /*std::shared_ptr<base::OCLOperationConfiguration> parameters;
    (*parameters).addTextAttr("KERNEL_USE_LOCAL_MEMORY", "true");
    (*parameters).addTextAttr("KERNEL_MAX_DIM_UNROLL", "10");

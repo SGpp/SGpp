@@ -12,13 +12,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 OperationLTwoDotProductVectorizedLinearOCL::OperationLTwoDotProductVectorizedLinearOCL(
-  SGPP::base::GridStorage* storage) : storage(storage) {
-
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {
   this->lcl_q = new double[this->storage->getDimension()];
   this->OCLPDEKernelsHandle = OCLPDEKernels();
 
@@ -28,7 +27,6 @@ OperationLTwoDotProductVectorizedLinearOCL::OperationLTwoDotProductVectorizedLin
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
-
 }
 
 OperationLTwoDotProductVectorizedLinearOCL::~OperationLTwoDotProductVectorizedLinearOCL() {
@@ -39,8 +37,8 @@ OperationLTwoDotProductVectorizedLinearOCL::~OperationLTwoDotProductVectorizedLi
   this->OCLPDEKernelsHandle.CleanUpGPU();
 }
 
-void OperationLTwoDotProductVectorizedLinearOCL::mult(SGPP::base::DataVector&
-    alpha, SGPP::base::DataVector& result) {
+void OperationLTwoDotProductVectorizedLinearOCL::mult(SGPP::base::DataVector& alpha,
+                                                      SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
   for (size_t d = 0; d < this->storage->getDimension(); d++) {
@@ -48,16 +46,9 @@ void OperationLTwoDotProductVectorizedLinearOCL::mult(SGPP::base::DataVector&
     this->lcl_q[d] = boundingBox->getIntervalWidth(d);
   }
 
-  this->OCLPDEKernelsHandle.
-  RunOCLKernelLTwoDotInner(alpha, result,
-                           this->lcl_q,
-                           this->level_->getPointer(),
-                           this->index_->getPointer(),
-                           this->level_int_->getPointer(),
-                           storage->getSize(),
-                           storage->getDimension(),
-                           storage);
+  this->OCLPDEKernelsHandle.RunOCLKernelLTwoDotInner(
+      alpha, result, this->lcl_q, this->level_->getPointer(), this->index_->getPointer(),
+      this->level_int_->getPointer(), storage->getSize(), storage->getDimension(), storage);
 }
-
 }
 }

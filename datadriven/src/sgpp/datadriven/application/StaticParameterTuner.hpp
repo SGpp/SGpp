@@ -15,6 +15,7 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/application/TunableParameter.hpp"
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
+#include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -29,8 +30,6 @@ class StaticParameterTuner {
 
   std::vector<TunableParameter> tunableParameters;
 
-  //    json::Node &kernelNode;
-
   double evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
                        SGPP::base::OCLOperationConfiguration &currentParameters,
                        const std::string &kernelName);
@@ -38,17 +37,11 @@ class StaticParameterTuner {
   void writeStatisticsToFile(const std::string &statisticsFileName, const std::string &platformName,
                              const std::string &deviceName, const std::string &kernelName);
 
+  void verifyLearned(TestsetConfiguration &testsetConfiguration, base::DataVector &alpha);
+
  public:
   StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
                        bool collectStatistics = false, bool verbose = false);
-
-  ////    //write a file with detailed stats for the optimization
-  //    StaticParameterTuner(const std::string &tunerFileName,
-  //    SGPP::base::OCLOperationConfiguration &fixedParameters,
-  //            bool collectStatistics = false, bool verbose = false);
-
-  //    void addFixedParameter(const std::string &name, const std::string
-  //    &value, const ParameterType type);
 
   void addParameter(const std::string &name, const std::vector<std::string> &valueRange);
 
@@ -57,10 +50,6 @@ class StaticParameterTuner {
 
   void tuneParameters(SGPP::datadriven::LearnerScenario &scenario, const std::string &platformName,
                       const std::string &deviceName, const std::string &kernelName);
-
-  //    void writeToFile(const std::string &fileName);
-  //
-  //    void readFromFile(const std::string &fileName);
 };
 }  // namespace datadriven
 }  // namespace SGPP

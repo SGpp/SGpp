@@ -30,8 +30,6 @@ base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
     parameters = manager->getConfiguration();
   }
 
-  // TODO(pfandedd): filter devices that are disabled (COUNT=0)
-
   StreamingOCLMultiPlatform::Configuration::augmentDefaultParameters(*parameters);
 
   //    std::string &firstPlatformName = (*parameters)["PLATFORMS"].keys()[0];

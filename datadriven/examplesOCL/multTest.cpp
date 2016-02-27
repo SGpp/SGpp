@@ -22,8 +22,8 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::ba
   std::uniform_real_distribution<double> dist(1, 100);
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
-        &alpha, adaptConfig.noPoints_, adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -31,8 +31,6 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::ba
     for (size_t j = oldSize; j < alpha.getSize(); j++) {
       alpha[j] = dist(mt);
     }
-
-    delete myRefineFunc;
   }
 }
 
@@ -43,13 +41,13 @@ int main(int argc, char** argv) {
    << std::endl;*/
 
   //  std::string fileName = "friedman2_90000.arff";
-  //    std::string fileName = "debugging.arff";
+  //  std::string fileName = "debugging.arff";
   std::string fileName = "friedman_4d.arff";
   //  std::string fileName = "friedman_10d.arff";
   //  std::string fileName = "DR5_train.arff";
   //  std::string fileName = "debugging_small.arff";
 
-  uint32_t level = 5;
+  uint32_t level = 6;
 
   SGPP::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
@@ -73,22 +71,22 @@ int main(int argc, char** argv) {
   //    std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
 
   bool modLinear = true;
-  SGPP::base::Grid* grid = nullptr;
+  std::unique_ptr<SGPP::base::Grid> grid(nullptr);
   if (modLinear) {
     grid = SGPP::base::Grid::createModLinearGrid(dim);
   } else {
     grid = SGPP::base::Grid::createLinearGrid(dim);
   }
 
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->getDimension() << std::endl;
+  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
   SGPP::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
-  std::cout << "number of grid points: " << gridStorage->getSize() << std::endl;
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
   std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
 
-  SGPP::base::DataVector alpha(gridStorage->getSize());
+  SGPP::base::DataVector alpha(gridStorage.getSize());
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
     //    alpha[i] = dist(mt);
@@ -96,12 +94,12 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "creating operation with unrefined grid" << std::endl;
-  SGPP::base::OperationMultipleEval* eval =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
   doAllRefinements(adaptConfig, *grid, gridGen, alpha);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->getSize() << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
@@ -119,14 +117,14 @@ int main(int argc, char** argv) {
 
   std::cout << "duration: " << eval->getDuration() << std::endl;
 
-  //    SGPP::base::DataVector alpha2(gridStorage->getSize());
+  //    SGPP::base::DataVector alpha2(gridStorage.getSize());
   //    alpha2.setAll(0.0);
   //
   //    eval->multTranspose(dataSizeVectorResult, alpha2);
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval* evalCompare =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> evalCompare =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
 
   SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
@@ -136,10 +134,26 @@ int main(int argc, char** argv) {
 
   double mse = 0.0;
 
+  double largestDifferenceMine = 0.0;
+  double largestDifferenceReference = 0.0;
+  double largestDifference = 0.0;
+
   for (size_t i = 0; i < dataSizeVectorResultCompare.getSize(); i++) {
-    mse += (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]) *
-           (dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    double difference = std::abs(dataSizeVectorResult[i] - dataSizeVectorResultCompare[i]);
+    if (difference > largestDifference) {
+      largestDifference = difference;
+      largestDifferenceMine = dataSizeVectorResult[i];
+      largestDifferenceReference = dataSizeVectorResultCompare[i];
+    }
+
+    //    std::cout << "difference: " << difference << " mine: " << dataSizeVectorResult[i]
+    //              << " ref: " << dataSizeVectorResultCompare[i] << std::endl;
+
+    mse += difference * difference;
   }
+
+  std::cout << "largestDifference: " << largestDifference << " mine: " << largestDifferenceMine
+            << " ref: " << largestDifferenceReference << std::endl;
 
   mse = mse / static_cast<double>(dataSizeVectorResultCompare.getSize());
   std::cout << "mse: " << mse << std::endl;

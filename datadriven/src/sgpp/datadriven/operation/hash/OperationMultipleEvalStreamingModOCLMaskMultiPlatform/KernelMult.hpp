@@ -13,12 +13,12 @@
 #include <chrono>
 #include <vector>
 
+#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLClonedBufferSD.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
-#include "KernelSourceBuilderMult.hpp"
+#include "SourceBuilderMult.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -33,21 +33,21 @@ class KernelMult {
 
   cl_int err;
 
-  base::OCLClonedBufferSD<real_type> deviceLevel;
-  base::OCLClonedBufferSD<real_type> deviceIndex;
-  base::OCLClonedBufferSD<real_type> deviceMask;
-  base::OCLClonedBufferSD<real_type> deviceOffset;
-  base::OCLClonedBufferSD<real_type> deviceAlpha;
+  base::OCLBufferWrapperSD<real_type> deviceLevel;
+  base::OCLBufferWrapperSD<real_type> deviceIndex;
+  base::OCLBufferWrapperSD<real_type> deviceMask;
+  base::OCLBufferWrapperSD<real_type> deviceOffset;
+  base::OCLBufferWrapperSD<real_type> deviceAlpha;
 
-  base::OCLClonedBufferSD<real_type> deviceData;
+  base::OCLBufferWrapperSD<real_type> deviceData;
 
-  base::OCLClonedBufferSD<real_type> deviceResultData;
+  base::OCLBufferWrapperSD<real_type> deviceResultData;
 
   cl_kernel kernelMult;
 
   double deviceTimingMult;
 
-  KernelSourceBuilderMult<real_type> kernelSourceBuilder;
+  SourceBuilderMult<real_type> kernelSourceBuilder;
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   //    std::shared_ptr<base::OCLOperationConfiguration> parameters;
   json::Node &kernelConfiguration;
@@ -248,7 +248,7 @@ class KernelMult {
         //                deviceName << "\"" << std::endl;
 
         err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelMult, 1, 0,
-                                     &rangeSizeUnblocked, &localSize, 0, nullptr, &clTiming);
+                                     &rangeSizeBlocked, &localSize, 0, nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
@@ -261,8 +261,6 @@ class KernelMult {
         //                std::cout << "executed kernel: " << device->deviceId
         //                << "" << std::endl;
 
-        // TODO(pfandedd): implement treatment of start_index_data in
-        // queueLoadBalancer!
         deviceResultData.readFromBuffer();
 
         //                std::cout << "read from device: " << device->deviceId
