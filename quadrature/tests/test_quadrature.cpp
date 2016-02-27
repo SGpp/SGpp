@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
     sgpp::op_factory::createOperationQuadrature(*grid));
   double analyticIntegral = opQuad->doQuadrature(alpha);
 
-  BOOST_CHECK_CLOSE(analyticIntegral, analyticResult, double(1e-12) );
+  BOOST_CHECK_CLOSE(analyticIntegral, analyticResult, 1e-12);
 
   std::vector<size_t> blockSize(dim);
 

@@ -120,7 +120,6 @@ static inline void calculateIndexCombined(size_t dim,
   //}
   _mm_storeu_si128((__m128i*) indexFlat, indexFlatReg);
   _mm256_storeu_pd(phiEval, phiEvalReg);
-#endif
 }
 
 static inline void calculateIndexCombined2(size_t dim,
@@ -271,5 +270,4 @@ static inline void calculateIndexCombined2(size_t dim,
 
   _mm256_storeu_pd(phiEval, phiEvalReg);
   _mm256_storeu_pd(phiEval2, phiEvalReg2);
-#endif
 }
