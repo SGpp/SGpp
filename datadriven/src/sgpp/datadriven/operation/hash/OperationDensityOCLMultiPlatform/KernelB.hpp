@@ -97,7 +97,8 @@ class KernelDensityB {
     void resetKernel() {
     }
 
-    double rhs(std::vector<T> &data, std::vector<T> &result) {
+  double rhs(std::vector<T> &data, std::vector<T> &result,
+             size_t startid = 0, size_t chunksize = -1) {
         if (verbose) {
             std::cout << "entering mult, device: " << device->deviceName << " ("
                       << device->deviceId << ")" << std::endl;
@@ -146,14 +147,25 @@ class KernelDensityB {
             errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
             throw base::operation_exception(errorString.str());
         }
+        err = clSetKernelArg(this->kernelB, 3, sizeof(cl_uint), &startid);
+        if (err != CL_SUCCESS) {
+            std::stringstream errorString;
+            errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+            throw base::operation_exception(errorString.str());
+        }
 
         cl_event clTiming = nullptr;
 
         // enqueue kernel
         if (verbose)
             std::cout << "Starting the kernel" << std::endl;
-        size_t *globalworkrange = new size_t[1];
-        globalworkrange[0] = gridSize;
+        size_t globalworkrange[1];
+        if (chunksize == -1) {
+          globalworkrange[0] = gridSize;
+        } else {
+          globalworkrange[0] = chunksize;
+        }
+
         err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelB, 1, 0, globalworkrange,
                                      NULL, 0, nullptr, &clTiming);
         if (err != CL_SUCCESS) {
