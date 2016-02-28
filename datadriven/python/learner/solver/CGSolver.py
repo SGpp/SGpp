@@ -8,7 +8,7 @@ from pysgpp import *
 import types
 
 
-## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for sg::ConjugateGradients class.
+## This is a <a href="http://en.wikipedia.org/wiki/Decorator_pattern" target="new">decorator</a> for sgpp::ConjugateGradients class.
 # The ConjugateGradients solver is enhanced with methods of concrete subject of <a href="http://en.wikipedia.org/wiki/Observer_pattern" target="new">the observer design pattern</a>
 # described in @link python.learner.solver.LinearSolver LinearSolver@endlink and function for serialization
 # end deserialization.

@@ -51,14 +51,14 @@ class HashGridStorageConverter {
    */
   static void getLevelIndexArraysForEvalTLBOptimized(
       sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& level,
-      sgpp::base::DataMatrix& index, sg::parallel::VectorizationType vectorizationType,
+      sgpp::base::DataMatrix& index, sgpp::parallel::VectorizationType vectorizationType,
       size_t blocking_length) {
     typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
     typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
 
     // pad datasets
-    sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
-    sg::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
+    sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+    sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
 
     level.setAll(0.0);
     index.setAll(0.0);
@@ -101,13 +101,13 @@ class HashGridStorageConverter {
    */
   static void getLevelForIntegralTLBOptimized(sgpp::base::GridStorage* storage,
                                               sgpp::base::DataMatrix& level,
-                                              sg::parallel::VectorizationType vectorizationType,
+                                              sgpp::parallel::VectorizationType vectorizationType,
                                               size_t blocking_length) {
     typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
     typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
 
     // pad datasets
-    sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+    sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
 
     level.setAll(0.0);
 

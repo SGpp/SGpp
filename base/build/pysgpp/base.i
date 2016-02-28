@@ -75,15 +75,15 @@ namespace std {
 
 %include "base/src/sgpp/base/grid/common/DirichletUpdateVector.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashGenerator.hpp"
-%feature("director") sg::base::AbstractRefinement;
+%feature("director") sgpp::base::AbstractRefinement;
 %include "base/src/sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp"
-%feature("director") sg::base::RefinementDecorator;
+%feature("director") sgpp::base::RefinementDecorator;
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp"
-%feature("director") sg::base::HashRefinement;
+%feature("director") sgpp::base::HashRefinement;
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashCoarsening.hpp"
 %include "base/src/sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp"
-%feature("director") sg::base::SubspaceRefinement;
+%feature("director") sgpp::base::SubspaceRefinement;
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp"
 %include "base/src/sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp"
