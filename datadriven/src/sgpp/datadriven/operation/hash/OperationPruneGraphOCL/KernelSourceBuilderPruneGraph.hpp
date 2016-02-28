@@ -85,10 +85,11 @@ class SourceBuilderPruneGraph: public base::KernelSourceBuilderBase<real_type> {
                      << "void kernel removeEdges(global int *nodes,"
                      << "global const int *starting_points,global const " << this->floatType()
                      << " *data," << std::endl
-                     << this->indent[0] << "global const " << this->floatType() << " *alphas) {"
-                     << std::endl
+                     << this->indent[0] << "global const " << this->floatType()
+                     << " *alphas, int startid) {" << std::endl
                      << this->indent[0] << "size_t index = get_global_id(0);" << std::endl
-                     << this->indent[0] << "size_t global_index=get_global_id(0);" << std::endl
+                     << this->indent[0] << "size_t global_index = startid + get_global_id(0);"
+                     << std::endl
                      << this->indent[0] << "" << this->floatType() << " endwert=0;" << std::endl
                      << this->indent[0] << "for (int gridpoint=0;gridpoint< " << gridSize
                      << " ;gridpoint++)" << std::endl
