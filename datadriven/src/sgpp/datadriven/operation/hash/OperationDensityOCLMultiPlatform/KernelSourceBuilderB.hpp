@@ -8,6 +8,7 @@
 #include <sgpp/base/opencl/KernelSourceBuilderBase.hpp>
 
 #include <fstream>
+#include <sstream>
 #include <string>
 namespace SGPP {
 namespace datadriven {
@@ -66,7 +67,7 @@ class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
 
         sourceStream << "void kernel cscheme(global const int* starting_points," << std::endl
                      <<"global const " << this->floatType() << "* data_points,global "
-                     << this->floatType() << "* C) {" << std::endl
+                     << this->floatType() << "* C, private int startid) {" << std::endl
                      << this->indent[0] << "C[get_global_id(0)]=0.0;" << std::endl
                      << this->indent[0] << "for(unsigned int ds=0;ds< " << datapoints << ";ds++)"
                      << std::endl
@@ -79,12 +80,12 @@ class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
                      << this->indent[2] << "private " << this->floatType() << " wert=1.0;"
                      << std::endl
                      << this->indent[2] << "for(private int z=1;" << std::endl
-                     << this->indent[2] << "z<=starting_points[(get_global_id(0))*2* " << dimensions
-                     << "+2*d+1];z++)" << std::endl
+                     << this->indent[2] << "z<=starting_points[(startid + get_global_id(0))*2* "
+                     << dimensions << "+2*d+1];z++)" << std::endl
                      << this->indent[3] << "wert*=2;" << std::endl
                      << this->indent[2] << "wert*=data_points[ds* " << dimensions << "+d];"
                      << std::endl
-                     << this->indent[2] << "wert-=starting_points[(get_global_id(0))*2* "
+                     << this->indent[2] << "wert-=starting_points[(startid + get_global_id(0))*2* "
                      << dimensions << "+2*d];" << std::endl
                      << this->indent[2] << "if(wert<0)" << std::endl
                      << this->indent[3] << "wert*=-1;" << std::endl
