@@ -25,7 +25,7 @@ class OperationSecondMomentLinear : public OperationSecondMoment {
    *
    * @param storage Pointer to the grid's GridStorage object
    */
-  explicit OperationSecondMomentLinear(GridStorage* storage) : storage(storage) {}
+  explicit OperationSecondMomentLinear(GridStorage& storage) : storage(storage) {}
 
   ~OperationSecondMomentLinear() override {}
 
@@ -39,7 +39,7 @@ class OperationSecondMomentLinear : public OperationSecondMoment {
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

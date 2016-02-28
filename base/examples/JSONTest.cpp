@@ -1,17 +1,14 @@
-/*
- * JSONTest.cpp
- *
- *  Created on: Nov 6, 2015
- *      Author: pfandedd
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "../src/sgpp/base/tools/json/JSON.hpp"
-#include "../src/sgpp/base/tools/json/json_exception.hpp"
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
-#include "../src/sgpp/base/tools/json/TextNode.hpp"
+#include <sgpp/base/tools/json/TextNode.hpp>
 
 int main(int argc, char** argv) {
-
   try {
     json::JSON configuration;
 

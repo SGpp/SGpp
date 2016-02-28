@@ -72,7 +72,7 @@ void OperationHestonCLinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataV
                                 size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiUpBBLinear func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinear> s(func, this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiUpBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
@@ -81,7 +81,7 @@ void OperationHestonCLinear::down(SGPP::base::DataVector& alpha, SGPP::base::Dat
                                   size_t dim) {
   // phi * phi
   SGPP::pde::PhiPhiDownBBLinear func(this->storage);
-  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinear> s(func, this->storage);
+  SGPP::base::sweep<SGPP::pde::PhiPhiDownBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
@@ -90,7 +90,7 @@ void OperationHestonCLinear::upOpDimOne(SGPP::base::DataVector& alpha,
                                         SGPP::base::DataVector& result, size_t dim) {
   // phi * dphi
   PhidPhiUpBBLinear func(this->storage);
-  SGPP::base::sweep<PhidPhiUpBBLinear> s(func, this->storage);
+  SGPP::base::sweep<PhidPhiUpBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
@@ -99,7 +99,7 @@ void OperationHestonCLinear::downOpDimOne(SGPP::base::DataVector& alpha,
                                           SGPP::base::DataVector& result, size_t dim) {
   // phi * dphi
   PhidPhiDownBBLinear func(this->storage);
-  SGPP::base::sweep<PhidPhiDownBBLinear> s(func, this->storage);
+  SGPP::base::sweep<PhidPhiDownBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
@@ -108,7 +108,7 @@ void OperationHestonCLinear::upOpDimTwo(SGPP::base::DataVector& alpha,
                                         SGPP::base::DataVector& result, size_t dim) {
   // x * dphi * phi
   XdPhiPhiUpBBLinear func(this->storage);
-  SGPP::base::sweep<XdPhiPhiUpBBLinear> s(func, this->storage);
+  SGPP::base::sweep<XdPhiPhiUpBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
@@ -117,7 +117,7 @@ void OperationHestonCLinear::downOpDimTwo(SGPP::base::DataVector& alpha,
                                           SGPP::base::DataVector& result, size_t dim) {
   // x * dphi * phi
   XdPhiPhiDownBBLinear func(this->storage);
-  SGPP::base::sweep<XdPhiPhiDownBBLinear> s(func, this->storage);
+  SGPP::base::sweep<XdPhiPhiDownBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }

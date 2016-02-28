@@ -25,7 +25,7 @@ OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(SGPP::base::Grid& g
                                                              size_t numberOfSamples,
                                                              std::uint64_t seed)
     : grid(&grid), numberOfSamples(numberOfSamples), seed(seed) {
-  dimensions = grid.getStorage()->dim();
+  dimensions = grid.getDimension();
   myGenerator = new SGPP::quadrature::NaiveSampleGenerator(dimensions, seed);
 }
 
@@ -81,10 +81,8 @@ float_t OperationQuadratureMCAdvanced::doQuadrature(SGPP::base::DataVector& alph
 
   myGenerator->getSamples(dm);
 
-  SGPP::base::OperationMultipleEval* opEval =
-      SGPP::op_factory::createOperationMultipleEval(*grid, dm);
   SGPP::base::DataVector res = SGPP::base::DataVector(numberOfSamples);
-  opEval->mult(alpha, res);
+  SGPP::op_factory::createOperationMultipleEval(*grid, dm)->mult(alpha, res);
   return res.sum() / static_cast<float_t>(numberOfSamples);
 }
 
@@ -113,7 +111,8 @@ float_t OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clie
   float_t* p = new float_t[dimensions];
 
   SGPP::base::DataVector point(dimensions);
-  SGPP::base::OperationEval* opEval = SGPP::op_factory::createOperationEval(*grid);
+  std::unique_ptr<SGPP::base::OperationEval> opEval(
+      SGPP::op_factory::createOperationEval(*grid));
   // create number of paths (uniformly drawn from [0,1]^d)
   float_t res = 0;
 

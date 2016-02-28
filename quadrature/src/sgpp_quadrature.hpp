@@ -14,6 +14,7 @@
 #include <sgpp/quadrature/sampling/LatinHypercubeSampleGenerator.hpp>
 #include <sgpp/quadrature/sampling/HaltonSampleGenerator.hpp>
 
+#include <sgpp/quadrature/QuadratureOpFactory.hpp>
 #include <sgpp/quadrature/operation/hash/OperationQuadratureMCAdvanced.hpp>
 
 #endif /* QUADRATURE_HPP */

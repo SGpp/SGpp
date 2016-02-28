@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -21,16 +20,14 @@ namespace parallel {
  * Implements the standard L 2 scalar product on linear grids (no boundaries)
  *
  */
-class OperationLTwoDotProductVectorizedLinearOCL : public
-  SGPP::base::OperationMatrix {
-
+class OperationLTwoDotProductVectorizedLinearOCL : public SGPP::base::OperationMatrix {
  private:
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
   SGPP::base::DataMatrix* level_int_;
   SGPP::base::DataMatrix* index_;
   double* lcl_q;
-  OCLPDEKernels OCLPDEKernelsHandle ;
+  OCLPDEKernels OCLPDEKernelsHandle;
 
  public:
   /**
@@ -38,7 +35,7 @@ class OperationLTwoDotProductVectorizedLinearOCL : public
    *
    * @param storage the grid's SGPP::base::GridStorage object
    */
-  OperationLTwoDotProductVectorizedLinearOCL(SGPP::base::GridStorage* storage);
+  explicit OperationLTwoDotProductVectorizedLinearOCL(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -46,13 +43,9 @@ class OperationLTwoDotProductVectorizedLinearOCL : public
   virtual ~OperationLTwoDotProductVectorizedLinearOCL();
 
  protected:
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
-
-
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLTWODOTPRODUCTVECTORIZEDLINEAROCL_HPP */

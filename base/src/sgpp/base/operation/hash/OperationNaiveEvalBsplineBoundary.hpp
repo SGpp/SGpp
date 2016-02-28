@@ -26,7 +26,7 @@ class OperationNaiveEvalBsplineBoundary : public OperationNaiveEval {
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationNaiveEvalBsplineBoundary(GridStorage* storage, size_t degree) :
+  OperationNaiveEvalBsplineBoundary(GridStorage& storage, size_t degree) :
     storage(storage), base(degree) {
   }
 
@@ -45,7 +45,7 @@ class OperationNaiveEvalBsplineBoundary : public OperationNaiveEval {
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineBoundaryBase base;
 };

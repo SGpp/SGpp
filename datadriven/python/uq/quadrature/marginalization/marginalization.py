@@ -7,7 +7,7 @@ from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
 def __doMarginalize(grid, alpha, dd, measure=None):
     gs = grid.getStorage()
 
-    dim = gs.dim()
+    dim = gs.getDimension()
 
     if dim < 2:
         raise AttributeError("The grid has to be at least of dimension 2")

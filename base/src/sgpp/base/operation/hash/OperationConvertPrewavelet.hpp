@@ -31,7 +31,7 @@ class OperationConvertPrewavelet : public OperationConvert {
      * @param storage Pointer to the grid's gridstorage obejct
    * @param shadowstorage shadow points (see detailed description)
    */
-  OperationConvertPrewavelet(GridStorage* storage, GridStorage* shadowstorage) :
+  OperationConvertPrewavelet(GridStorage& storage, GridStorage& shadowstorage) :
     storage(storage), shadowstorage(shadowstorage) {
   }
 
@@ -45,9 +45,9 @@ class OperationConvertPrewavelet : public OperationConvert {
   void doConvertFromLinear(DataVector& alpha) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
-  GridStorage* shadowstorage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
+  GridStorage& shadowstorage;
 };
 
 }  // namespace base

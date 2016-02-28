@@ -59,7 +59,7 @@ class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval
         std::unique_ptr<StreamingBSplineOCLKernelImpl<T>>(new StreamingBSplineOCLKernelImpl<T>(
             dims, dynamic_cast<base::BsplineGrid&>(grid).getDegree(), this->manager, parameters));
 
-    this->storage = grid.getStorage();
+    this->storage = &grid.getStorage();
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
     this->datasetSize = this->preparedDataset.getNcols();
@@ -188,8 +188,8 @@ class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval
 
  private:
   size_t padDataset(SGPP::base::DataMatrix& dataset) {
-    size_t vecWidth = (*parameters)["LOCAL_SIZE"].getUInt() *
-                      (*parameters)["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
+    size_t vecWidth =
+        (*parameters)["LOCAL_SIZE"].getUInt() * (*parameters)["KERNEL_DATA_BLOCK_SIZE"].getUInt();
 
     // Assure that data has a even number of instances -> padding might be needed
     size_t remainder = dataset.getNrows() % vecWidth;
@@ -216,22 +216,22 @@ class OperationMultiEvalStreamingBSplineOCL : public base::OperationMultipleEval
 
     uint32_t localWorkSize = (uint32_t)(*parameters)["LOCAL_SIZE"].getUInt();
 
-    size_t remainder = this->storage->size() % localWorkSize;
+    size_t remainder = this->storage->getSize() % localWorkSize;
     size_t padding = 0;
 
     if (remainder != 0) {
       padding = localWorkSize - remainder;
     }
 
-    this->gridSize = this->storage->size() + padding;
+    this->gridSize = this->storage->getSize() + padding;
 
     SGPP::base::DataMatrix* levelMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
     SGPP::base::DataMatrix* indexMatrix = new SGPP::base::DataMatrix(this->gridSize, this->dims);
 
     this->storage->getLevelIndexArraysForEval(*levelMatrix, *indexMatrix);
 
-    for (size_t i = this->storage->size(); i < this->gridSize; i++) {
-      for (size_t j = 0; j < this->storage->dim(); j++) {
+    for (size_t i = this->storage->getSize(); i < this->gridSize; i++) {
+      for (size_t j = 0; j < this->storage->getDimension(); j++) {
         levelMatrix->set(i, j, 1.0);
         indexMatrix->set(i, j, 1.0);
       }

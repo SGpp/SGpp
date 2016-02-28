@@ -8,10 +8,9 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
-
+#include <cstring>
 
 namespace SGPP {
 namespace datadriven {
@@ -22,7 +21,7 @@ namespace datadriven {
 
 class OperationDensityMarginalizeLinear : public OperationDensityMarginalize {
  public:
-  OperationDensityMarginalizeLinear(base::Grid* grid) : grid(grid) {}
+  explicit OperationDensityMarginalizeLinear(base::Grid* grid) : grid(grid) {}
   virtual ~OperationDensityMarginalizeLinear() {}
 
   /**
@@ -33,13 +32,12 @@ class OperationDensityMarginalizeLinear : public OperationDensityMarginalize {
    * @param malpha Coefficient vector for new grid (mg). Will be resized.
    * @param mdim Marginalize in dimension mdim
    */
-  void doMarginalize(base::DataVector& alpha, base::Grid*& mg,
-                     base::DataVector& malpha, unsigned int mdim);
+  void doMarginalize(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
+                     unsigned int mdim);
 
  protected:
   base::Grid* grid;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONDENSITYMARGINALIZELINEAR_HPP */

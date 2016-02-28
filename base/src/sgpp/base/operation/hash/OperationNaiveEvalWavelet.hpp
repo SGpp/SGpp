@@ -25,7 +25,7 @@ class OperationNaiveEvalWavelet : public OperationNaiveEval {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalWavelet(GridStorage* storage) : storage(storage) {
+  explicit OperationNaiveEvalWavelet(GridStorage& storage) : storage(storage) {
   }
 
   /**
@@ -43,7 +43,7 @@ class OperationNaiveEvalWavelet : public OperationNaiveEval {
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D wavelet basis
   SWaveletBase base;
 };

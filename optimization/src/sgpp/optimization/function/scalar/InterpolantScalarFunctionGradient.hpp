@@ -33,7 +33,7 @@ class InterpolantScalarFunctionGradient : public ScalarFunctionGradient {
    * @param alpha coefficient vector
    */
   InterpolantScalarFunctionGradient(base::Grid& grid, const base::DataVector& alpha)
-      : ScalarFunctionGradient(grid.getStorage()->dim()),
+      : ScalarFunctionGradient(grid.getDimension()),
         grid(grid),
         opEvalGradient(op_factory::createOperationNaiveEvalGradient(grid)),
         alpha(alpha) {}

@@ -20,7 +20,7 @@ VariableDiscountFactor::~VariableDiscountFactor() {}
 void VariableDiscountFactor::getDiscountFactor(SGPP::base::DataVector& factor, float_t T) {
   float_t tmp;
 
-  for (size_t i = 0; i < storage->size(); i++) {
+  for (size_t i = 0; i < storage->getSize(); i++) {
     std::string coords = (*storage)[i]->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     float_t dblFuncValues[2];

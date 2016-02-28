@@ -18,13 +18,13 @@ namespace base {
 
 void OperationHierarchisationModWavelet::doHierarchisation(
   DataVector& node_values) {
-  throw new operation_exception(
+  throw operation_exception(
     "This operation is not implemented, yet! Sorry ;-)");
 }
 
 void OperationHierarchisationModWavelet::doDehierarchisation(
   DataVector& alpha) {
-  throw new operation_exception(
+  throw operation_exception(
     "This operation is not implemented, yet! Sorry ;-)");
 }
 

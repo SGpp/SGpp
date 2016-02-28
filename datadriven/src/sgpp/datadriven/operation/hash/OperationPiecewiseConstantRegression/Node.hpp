@@ -5,11 +5,12 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
+#include <vector>
 
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
+#include "sgpp/globaldef.hpp"
+#include "sgpp/base/grid/GridStorage.hpp"
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 
 namespace SGPP {
 namespace datadriven {
@@ -36,36 +37,31 @@ class Node {
   size_t childCount;
 
   bool verbose;
- public:
 
+ public:
   static uint64_t integratedNodes;
 
   static uint64_t hierarchizeMaxLevel;
 
-  Node(std::vector<float_t> x, std::vector<float_t> h,
-       std::vector<size_t> supportIndizes, base::DataMatrix& dataset,
-       base::DataVector& values, bool verbose = false);
+  Node(std::vector<float_t> x, std::vector<float_t> h, std::vector<size_t> supportIndizes,
+       base::DataMatrix& dataset, base::DataVector& values, bool verbose = false);
 
-  std::vector<size_t> getSupportIndizes(std::vector<float_t>& x,
-                                        std::vector<float_t>& h,
+  std::vector<size_t> getSupportIndizes(std::vector<float_t>& x, std::vector<float_t>& h,
                                         std::vector<size_t>& parentSupport);
 
   float_t getAverage(std::vector<size_t>& supportIndizes, std::vector<float_t>& x,
                      std::vector<float_t>& h);
 
   float_t getMSE(std::vector<size_t>& supportIndizes, std::vector<float_t>& x,
-                 std::vector<float_t>& h,
-                 float_t supportValue);
+                 std::vector<float_t>& h, float_t supportValue);
 
-  std::unique_ptr<Node> hierarchizeChild(std::vector<float_t>& x,
-                                         std::vector<float_t>& h,
-                                         std::vector<size_t>& parentSupport, float_t supportValue, float_t targetMSE,
-                                         size_t targetMaxLevel,
-                                         size_t nextDim, size_t levelLimit);
+  std::unique_ptr<Node> hierarchizeChild(std::vector<float_t>& x, std::vector<float_t>& h,
+                                         std::vector<size_t>& parentSupport, float_t supportValue,
+                                         float_t targetMSE, size_t targetMaxLevel, size_t nextDim,
+                                         size_t levelLimit);
 
-  void hierarchize(float_t targetMSE, size_t targetMaxLevel,
-                   float_t parentValue = 0.0, size_t refineDim = 0,
-                   size_t levelLimit = 0);
+  void hierarchize(float_t targetMSE, size_t targetMaxLevel, float_t parentValue = 0.0,
+                   size_t refineDim = 0, size_t levelLimit = 0);
 
   std::vector<float_t> getLeftChildX(size_t d);
 
@@ -94,9 +90,7 @@ class Node {
 
     return mse;
   }
-
 };
-
-}
-}
-}
+}  // namespace PiecewiseConstantRegression
+}  // namespace datadriven
+}  // namespace SGPP

@@ -1,8 +1,13 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 
-using namespace SGPP::base;
+using SGPP::base::HashGridIndex;
 
 BOOST_AUTO_TEST_SUITE(TestSHashGridIndex)
 

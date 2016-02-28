@@ -14,8 +14,7 @@
 #include <sgpp/parallel/datadriven/basis/common/mic/MICKernelBase.hpp>
 
 #include <sgpp/globaldef.hpp>
-
-
+#include <algorithm>
 namespace SGPP {
 namespace parallel {
 /**
@@ -26,56 +25,46 @@ namespace parallel {
 class SPMICModLinearMask : public SPMICKernelBase {
  public:
   static const KernelType kernelType = Mask;
-  static inline void multImpl(
-    float* ptrLevel,
-    float* ptrIndex,
-    float* ptrMask,
-    float* ptrOffset,
-    float* ptrData,
-    float* ptrAlpha,
-    float* ptrResult,
-    size_t result_size,
-    size_t dims,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
-    for (size_t i = start_index_data; i < end_index_data;
-         i += getChunkDataPoints()) {
+  static inline void multImpl(float* ptrLevel, float* ptrIndex, float* ptrMask, float* ptrOffset,
+                              float* ptrData, float* ptrAlpha, float* ptrResult, size_t result_size,
+                              size_t dims, const size_t start_index_grid,
+                              const size_t end_index_grid, const size_t start_index_data,
+                              const size_t end_index_data) {
+    for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
 #ifdef __MIC__
 
       for (size_t j = start_index_grid; j < end_index_grid; j++) {
-        __m512 support_0 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 support_1 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 support_2 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
-        __m512 support_3 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
+        __m512 support_0 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
+        __m512 support_1 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
+        __m512 support_2 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
+#if (MIC_UNROLLING_WIDTH_SP > 48)
+        __m512 support_3 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
-        __m512 support_4 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 support_5 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
+#if (MIC_UNROLLING_WIDTH_SP > 64)
+        __m512 support_4 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
+        __m512 support_5 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
-        __m512 support_6 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 support_7 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
+#if (MIC_UNROLLING_WIDTH_SP > 96)
+        __m512 support_6 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
+        __m512 support_7 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
-        __m512 support_8 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
+#if (MIC_UNROLLING_WIDTH_SP > 128)
+        __m512 support_8 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
-        __m512 support_9 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
-                                             _MM_BROADCAST_1X16, _MM_HINT_NONE);
+#if (MIC_UNROLLING_WIDTH_SP > 144)
+        __m512 support_9 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16,
+                                             _MM_HINT_NONE);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         __m512 support_10 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
                                               _MM_BROADCAST_1X16, _MM_HINT_NONE);
         __m512 support_11 = _mm512_extload_ps(&(ptrAlpha[j]), _MM_UPCONV_PS_NONE,
@@ -86,121 +75,121 @@ class SPMICModLinearMask : public SPMICKernelBase {
           __m512 eval_0 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 0]));
           __m512 eval_1 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 16]));
           __m512 eval_2 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 32]));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           __m512 eval_3 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 48]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           __m512 eval_4 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 64]));
           __m512 eval_5 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 80]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           __m512 eval_6 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 96]));
           __m512 eval_7 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 112]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           __m512 eval_8 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 128]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           __m512 eval_9 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 144]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           __m512 eval_10 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 160]));
           __m512 eval_11 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 176]));
 #endif
 
-          __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]),
-                                           _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
-          __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]),
-                                           _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+          __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                           _MM_BROADCAST_1X16, _MM_HINT_NONE);
+          __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                           _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
           eval_0 = _mm512_fmsub_ps(eval_0, level, index);
           eval_1 = _mm512_fmsub_ps(eval_1, level, index);
           eval_2 = _mm512_fmsub_ps(eval_2, level, index);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           eval_3 = _mm512_fmsub_ps(eval_3, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           eval_4 = _mm512_fmsub_ps(eval_4, level, index);
           eval_5 = _mm512_fmsub_ps(eval_5, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           eval_6 = _mm512_fmsub_ps(eval_6, level, index);
           eval_7 = _mm512_fmsub_ps(eval_7, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           eval_8 = _mm512_fmsub_ps(eval_8, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           eval_9 = _mm512_fmsub_ps(eval_9, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           eval_10 = _mm512_fmsub_ps(eval_10, level, index);
           eval_11 = _mm512_fmsub_ps(eval_11, level, index);
 #endif
 
           __m512 mask = _mm512_extload_ps(&(ptrMask[(j * dims) + d]), _MM_UPCONV_PS_NONE,
                                           _MM_BROADCAST_1X16, _MM_HINT_NONE);
-          __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]),
-                                            _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+          __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                            _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
-          eval_0 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_0)));
-          eval_1 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_1)));
-          eval_2 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_2)));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
-          eval_3 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_3)));
+          eval_0 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_0)));
+          eval_1 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_1)));
+          eval_2 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_2)));
+#if (MIC_UNROLLING_WIDTH_SP > 48)
+          eval_3 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_3)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
-          eval_4 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_4)));
-          eval_5 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_5)));
+#if (MIC_UNROLLING_WIDTH_SP > 64)
+          eval_4 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_4)));
+          eval_5 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_5)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
-          eval_6 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_6)));
-          eval_7 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_7)));
+#if (MIC_UNROLLING_WIDTH_SP > 96)
+          eval_6 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_6)));
+          eval_7 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_7)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
-          eval_8 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_8)));
+#if (MIC_UNROLLING_WIDTH_SP > 128)
+          eval_8 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_8)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
-          eval_9 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_9)));
+#if (MIC_UNROLLING_WIDTH_SP > 144)
+          eval_9 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_9)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
-          eval_10 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                        _mm512_castps_si512(eval_10)));
-          eval_11 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                        _mm512_castps_si512(eval_11)));
+#if (MIC_UNROLLING_WIDTH_SP > 160)
+          eval_10 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_10)));
+          eval_11 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_11)));
 #endif
 
           eval_0 = _mm512_add_ps(offset, eval_0);
           eval_1 = _mm512_add_ps(offset, eval_1);
           eval_2 = _mm512_add_ps(offset, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           eval_3 = _mm512_add_ps(offset, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           eval_4 = _mm512_add_ps(offset, eval_4);
           eval_5 = _mm512_add_ps(offset, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           eval_6 = _mm512_add_ps(offset, eval_6);
           eval_7 = _mm512_add_ps(offset, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           eval_8 = _mm512_add_ps(offset, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           eval_9 = _mm512_add_ps(offset, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           eval_10 = _mm512_add_ps(offset, eval_10);
           eval_11 = _mm512_add_ps(offset, eval_11);
 #endif
@@ -210,24 +199,24 @@ class SPMICModLinearMask : public SPMICKernelBase {
           eval_0 = _mm512_gmax_ps(zero, eval_0);
           eval_1 = _mm512_gmax_ps(zero, eval_1);
           eval_2 = _mm512_gmax_ps(zero, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           eval_3 = _mm512_gmax_ps(zero, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           eval_4 = _mm512_gmax_ps(zero, eval_4);
           eval_5 = _mm512_gmax_ps(zero, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           eval_6 = _mm512_gmax_ps(zero, eval_6);
           eval_7 = _mm512_gmax_ps(zero, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           eval_8 = _mm512_gmax_ps(zero, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           eval_9 = _mm512_gmax_ps(zero, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           eval_10 = _mm512_gmax_ps(zero, eval_10);
           eval_11 = _mm512_gmax_ps(zero, eval_11);
 #endif
@@ -235,24 +224,24 @@ class SPMICModLinearMask : public SPMICKernelBase {
           support_0 = _mm512_mul_ps(support_0, eval_0);
           support_1 = _mm512_mul_ps(support_1, eval_1);
           support_2 = _mm512_mul_ps(support_2, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           support_3 = _mm512_mul_ps(support_3, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           support_4 = _mm512_mul_ps(support_4, eval_4);
           support_5 = _mm512_mul_ps(support_5, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           support_6 = _mm512_mul_ps(support_6, eval_6);
           support_7 = _mm512_mul_ps(support_7, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           support_8 = _mm512_mul_ps(support_8, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           support_9 = _mm512_mul_ps(support_9, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           support_10 = _mm512_mul_ps(support_10, eval_10);
           support_11 = _mm512_mul_ps(support_11, eval_11);
 #endif
@@ -263,121 +252,121 @@ class SPMICModLinearMask : public SPMICKernelBase {
         __m512 eval_0 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 0]));
         __m512 eval_1 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 16]));
         __m512 eval_2 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 32]));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         __m512 eval_3 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 48]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         __m512 eval_4 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 64]));
         __m512 eval_5 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 80]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         __m512 eval_6 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 96]));
         __m512 eval_7 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 112]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         __m512 eval_8 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 128]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         __m512 eval_9 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 144]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         __m512 eval_10 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 160]));
         __m512 eval_11 = _mm512_load_ps(&(ptrData[(d * result_size) + i + 176]));
 #endif
 
-        __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]),
-                                         _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]),
-                                         _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+        __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                         _MM_BROADCAST_1X16, _MM_HINT_NONE);
+        __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                         _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
         eval_0 = _mm512_fmsub_ps(eval_0, level, index);
         eval_1 = _mm512_fmsub_ps(eval_1, level, index);
         eval_2 = _mm512_fmsub_ps(eval_2, level, index);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         eval_3 = _mm512_fmsub_ps(eval_3, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         eval_4 = _mm512_fmsub_ps(eval_4, level, index);
         eval_5 = _mm512_fmsub_ps(eval_5, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         eval_6 = _mm512_fmsub_ps(eval_6, level, index);
         eval_7 = _mm512_fmsub_ps(eval_7, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         eval_8 = _mm512_fmsub_ps(eval_8, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         eval_9 = _mm512_fmsub_ps(eval_9, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         eval_10 = _mm512_fmsub_ps(eval_10, level, index);
         eval_11 = _mm512_fmsub_ps(eval_11, level, index);
 #endif
 
         __m512 mask = _mm512_extload_ps(&(ptrMask[(j * dims) + d]), _MM_UPCONV_PS_NONE,
                                         _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]),
-                                          _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+        __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                          _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
-        eval_0 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_0)));
-        eval_1 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_1)));
-        eval_2 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_2)));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
-        eval_3 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_3)));
+        eval_0 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_0)));
+        eval_1 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_1)));
+        eval_2 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_2)));
+#if (MIC_UNROLLING_WIDTH_SP > 48)
+        eval_3 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_3)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
-        eval_4 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_4)));
-        eval_5 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_5)));
+#if (MIC_UNROLLING_WIDTH_SP > 64)
+        eval_4 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_4)));
+        eval_5 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_5)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
-        eval_6 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_6)));
-        eval_7 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_7)));
+#if (MIC_UNROLLING_WIDTH_SP > 96)
+        eval_6 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_6)));
+        eval_7 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_7)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
-        eval_8 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_8)));
+#if (MIC_UNROLLING_WIDTH_SP > 128)
+        eval_8 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_8)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
-        eval_9 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_9)));
+#if (MIC_UNROLLING_WIDTH_SP > 144)
+        eval_9 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_9)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
-        eval_10 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                      _mm512_castps_si512(eval_10)));
-        eval_11 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                      _mm512_castps_si512(eval_11)));
+#if (MIC_UNROLLING_WIDTH_SP > 160)
+        eval_10 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_10)));
+        eval_11 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_11)));
 #endif
 
         eval_0 = _mm512_add_ps(offset, eval_0);
         eval_1 = _mm512_add_ps(offset, eval_1);
         eval_2 = _mm512_add_ps(offset, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         eval_3 = _mm512_add_ps(offset, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         eval_4 = _mm512_add_ps(offset, eval_4);
         eval_5 = _mm512_add_ps(offset, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         eval_6 = _mm512_add_ps(offset, eval_6);
         eval_7 = _mm512_add_ps(offset, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         eval_8 = _mm512_add_ps(offset, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         eval_9 = _mm512_add_ps(offset, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         eval_10 = _mm512_add_ps(offset, eval_10);
         eval_11 = _mm512_add_ps(offset, eval_11);
 #endif
@@ -387,24 +376,24 @@ class SPMICModLinearMask : public SPMICKernelBase {
         eval_0 = _mm512_gmax_ps(zero, eval_0);
         eval_1 = _mm512_gmax_ps(zero, eval_1);
         eval_2 = _mm512_gmax_ps(zero, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         eval_3 = _mm512_gmax_ps(zero, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         eval_4 = _mm512_gmax_ps(zero, eval_4);
         eval_5 = _mm512_gmax_ps(zero, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         eval_6 = _mm512_gmax_ps(zero, eval_6);
         eval_7 = _mm512_gmax_ps(zero, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         eval_8 = _mm512_gmax_ps(zero, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         eval_9 = _mm512_gmax_ps(zero, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         eval_10 = _mm512_gmax_ps(zero, eval_10);
         eval_11 = _mm512_gmax_ps(zero, eval_11);
 #endif
@@ -412,10 +401,10 @@ class SPMICModLinearMask : public SPMICKernelBase {
         __m512 res_0 = _mm512_load_ps(&(ptrResult[i + 0]));
         __m512 res_1 = _mm512_load_ps(&(ptrResult[i + 16]));
         __m512 res_2 = _mm512_load_ps(&(ptrResult[i + 32]));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         __m512 res_3 = _mm512_load_ps(&(ptrResult[i + 48]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         __m512 res_4 = _mm512_load_ps(&(ptrResult[i + 64]));
         __m512 res_5 = _mm512_load_ps(&(ptrResult[i + 80]));
 #endif
@@ -423,10 +412,10 @@ class SPMICModLinearMask : public SPMICKernelBase {
         res_0 = _mm512_add_ps(res_0, _mm512_mul_ps(support_0, eval_0));
         res_1 = _mm512_add_ps(res_1, _mm512_mul_ps(support_1, eval_1));
         res_2 = _mm512_add_ps(res_2, _mm512_mul_ps(support_2, eval_2));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         res_3 = _mm512_add_ps(res_3, _mm512_mul_ps(support_3, eval_3));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         res_4 = _mm512_add_ps(res_4, _mm512_mul_ps(support_4, eval_4));
         res_5 = _mm512_add_ps(res_5, _mm512_mul_ps(support_5, eval_5));
 #endif
@@ -434,55 +423,55 @@ class SPMICModLinearMask : public SPMICKernelBase {
         _mm512_store_ps(&(ptrResult[i + 0]), res_0);
         _mm512_store_ps(&(ptrResult[i + 16]), res_1);
         _mm512_store_ps(&(ptrResult[i + 32]), res_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         _mm512_store_ps(&(ptrResult[i + 48]), res_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         _mm512_store_ps(&(ptrResult[i + 64]), res_4);
         _mm512_store_ps(&(ptrResult[i + 80]), res_5);
 #endif
 
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         __m512 res_6 = _mm512_load_ps(&(ptrResult[i + 96]));
         __m512 res_7 = _mm512_load_ps(&(ptrResult[i + 112]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         __m512 res_8 = _mm512_load_ps(&(ptrResult[i + 128]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         __m512 res_9 = _mm512_load_ps(&(ptrResult[i + 144]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         __m512 res_10 = _mm512_load_ps(&(ptrResult[i + 160]));
         __m512 res_11 = _mm512_load_ps(&(ptrResult[i + 176]));
 #endif
 
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         res_6 = _mm512_add_ps(res_6, _mm512_mul_ps(support_6, eval_6));
         res_7 = _mm512_add_ps(res_7, _mm512_mul_ps(support_7, eval_7));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         res_8 = _mm512_add_ps(res_8, _mm512_mul_ps(support_8, eval_8));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         res_9 = _mm512_add_ps(res_9, _mm512_mul_ps(support_9, eval_9));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         res_10 = _mm512_add_ps(res_10, _mm512_mul_ps(support_10, eval_10));
         res_11 = _mm512_add_ps(res_11, _mm512_mul_ps(support_11, eval_11));
 #endif
 
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         _mm512_store_ps(&(ptrResult[i + 96]), res_6);
         _mm512_store_ps(&(ptrResult[i + 112]), res_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         _mm512_store_ps(&(ptrResult[i + 128]), res_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         _mm512_store_ps(&(ptrResult[i + 144]), res_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         _mm512_store_ps(&(ptrResult[i + 160]), res_10);
         _mm512_store_ps(&(ptrResult[i + 176]), res_11);
 #endif
@@ -495,11 +484,11 @@ class SPMICModLinearMask : public SPMICKernelBase {
           float curSupport = ptrAlpha[j];
 
           for (size_t d = 0; d < dims; d++) {
-            float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + ii]))
-                         - (ptrIndex[(j * dims) + d]);
-            unsigned int maskresult = *reinterpret_cast<unsigned int*>
-                                      (&eval) | *reinterpret_cast<unsigned int*>(&(ptrMask[(j * dims) + d]));
-            float masking = *reinterpret_cast<float*>( &maskresult );
+            float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + ii])) -
+                         (ptrIndex[(j * dims) + d]);
+            unsigned int maskresult = *reinterpret_cast<unsigned int*>(&eval) |
+                                      *reinterpret_cast<unsigned int*>(&(ptrMask[(j * dims) + d]));
+            float masking = *reinterpret_cast<float*>(&maskresult);
             float last = masking + ptrOffset[(j * dims) + d];
             float localSupport = std::max<float>(last, 0.0f);
             curSupport *= localSupport;
@@ -513,20 +502,11 @@ class SPMICModLinearMask : public SPMICKernelBase {
     }
   }
 
-  static inline void multTransposeImpl(
-    float* ptrLevel,
-    float* ptrIndex,
-    float* ptrMask,
-    float* ptrOffset,
-    float* ptrData,
-    float* ptrSource,
-    float* ptrResult,
-    size_t sourceSize,
-    size_t dims,
-    const size_t start_index_grid,
-    const size_t end_index_grid,
-    const size_t start_index_data,
-    const size_t end_index_data) {
+  static inline void multTransposeImpl(float* ptrLevel, float* ptrIndex, float* ptrMask,
+                                       float* ptrOffset, float* ptrData, float* ptrSource,
+                                       float* ptrResult, size_t sourceSize, size_t dims,
+                                       const size_t start_index_grid, const size_t end_index_grid,
+                                       const size_t start_index_data, const size_t end_index_data) {
     if (start_index_grid >= end_index_grid) {
       // special handling for grid index (prefetch for last item)
       // so we have to check it here
@@ -535,30 +515,29 @@ class SPMICModLinearMask : public SPMICKernelBase {
 
 #ifdef __MIC__
 
-    for (size_t i = start_index_data; i < end_index_data;
-         i += getChunkDataPoints()) {
+    for (size_t i = start_index_data; i < end_index_data; i += getChunkDataPoints()) {
       for (size_t j = start_index_grid; j < end_index_grid - 1; j++) {
         __m512 support_0 = _mm512_load_ps(&(ptrSource[i + 0]));
         __m512 support_1 = _mm512_load_ps(&(ptrSource[i + 16]));
         __m512 support_2 = _mm512_load_ps(&(ptrSource[i + 32]));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         __m512 support_3 = _mm512_load_ps(&(ptrSource[i + 48]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         __m512 support_4 = _mm512_load_ps(&(ptrSource[i + 64]));
         __m512 support_5 = _mm512_load_ps(&(ptrSource[i + 80]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         __m512 support_6 = _mm512_load_ps(&(ptrSource[i + 96]));
         __m512 support_7 = _mm512_load_ps(&(ptrSource[i + 112]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         __m512 support_8 = _mm512_load_ps(&(ptrSource[i + 128]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         __m512 support_9 = _mm512_load_ps(&(ptrSource[i + 144]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         __m512 support_10 = _mm512_load_ps(&(ptrSource[i + 160]));
         __m512 support_11 = _mm512_load_ps(&(ptrSource[i + 176]));
 #endif
@@ -567,121 +546,121 @@ class SPMICModLinearMask : public SPMICKernelBase {
           __m512 eval_0 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 0]));
           __m512 eval_1 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 16]));
           __m512 eval_2 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 32]));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           __m512 eval_3 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 48]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           __m512 eval_4 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 64]));
           __m512 eval_5 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 80]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           __m512 eval_6 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 96]));
           __m512 eval_7 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 112]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           __m512 eval_8 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 128]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           __m512 eval_9 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 144]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           __m512 eval_10 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 160]));
           __m512 eval_11 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 176]));
 #endif
 
-          __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]),
-                                           _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
-          __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]),
-                                           _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+          __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                           _MM_BROADCAST_1X16, _MM_HINT_NONE);
+          __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                           _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
           eval_0 = _mm512_fmsub_ps(eval_0, level, index);
           eval_1 = _mm512_fmsub_ps(eval_1, level, index);
           eval_2 = _mm512_fmsub_ps(eval_2, level, index);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           eval_3 = _mm512_fmsub_ps(eval_3, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           eval_4 = _mm512_fmsub_ps(eval_4, level, index);
           eval_5 = _mm512_fmsub_ps(eval_5, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           eval_6 = _mm512_fmsub_ps(eval_6, level, index);
           eval_7 = _mm512_fmsub_ps(eval_7, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           eval_8 = _mm512_fmsub_ps(eval_8, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           eval_9 = _mm512_fmsub_ps(eval_9, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           eval_10 = _mm512_fmsub_ps(eval_10, level, index);
           eval_11 = _mm512_fmsub_ps(eval_11, level, index);
 #endif
 
           __m512 mask = _mm512_extload_ps(&(ptrMask[(j * dims) + d]), _MM_UPCONV_PS_NONE,
                                           _MM_BROADCAST_1X16, _MM_HINT_NONE);
-          __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]),
-                                            _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+          __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                            _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
-          eval_0 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_0)));
-          eval_1 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_1)));
-          eval_2 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_2)));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
-          eval_3 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_3)));
+          eval_0 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_0)));
+          eval_1 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_1)));
+          eval_2 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_2)));
+#if (MIC_UNROLLING_WIDTH_SP > 48)
+          eval_3 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_3)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
-          eval_4 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_4)));
-          eval_5 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_5)));
+#if (MIC_UNROLLING_WIDTH_SP > 64)
+          eval_4 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_4)));
+          eval_5 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_5)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
-          eval_6 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_6)));
-          eval_7 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_7)));
+#if (MIC_UNROLLING_WIDTH_SP > 96)
+          eval_6 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_6)));
+          eval_7 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_7)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
-          eval_8 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_8)));
+#if (MIC_UNROLLING_WIDTH_SP > 128)
+          eval_8 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_8)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
-          eval_9 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                       _mm512_castps_si512(eval_9)));
+#if (MIC_UNROLLING_WIDTH_SP > 144)
+          eval_9 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_9)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
-          eval_10 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                        _mm512_castps_si512(eval_10)));
-          eval_11 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                        _mm512_castps_si512(eval_11)));
+#if (MIC_UNROLLING_WIDTH_SP > 160)
+          eval_10 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_10)));
+          eval_11 = _mm512_castsi512_ps(
+              _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_11)));
 #endif
 
           eval_0 = _mm512_add_ps(offset, eval_0);
           eval_1 = _mm512_add_ps(offset, eval_1);
           eval_2 = _mm512_add_ps(offset, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           eval_3 = _mm512_add_ps(offset, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           eval_4 = _mm512_add_ps(offset, eval_4);
           eval_5 = _mm512_add_ps(offset, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           eval_6 = _mm512_add_ps(offset, eval_6);
           eval_7 = _mm512_add_ps(offset, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           eval_8 = _mm512_add_ps(offset, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           eval_9 = _mm512_add_ps(offset, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           eval_10 = _mm512_add_ps(offset, eval_10);
           eval_11 = _mm512_add_ps(offset, eval_11);
 #endif
@@ -691,24 +670,24 @@ class SPMICModLinearMask : public SPMICKernelBase {
           eval_0 = _mm512_gmax_ps(zero, eval_0);
           eval_1 = _mm512_gmax_ps(zero, eval_1);
           eval_2 = _mm512_gmax_ps(zero, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           eval_3 = _mm512_gmax_ps(zero, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           eval_4 = _mm512_gmax_ps(zero, eval_4);
           eval_5 = _mm512_gmax_ps(zero, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           eval_6 = _mm512_gmax_ps(zero, eval_6);
           eval_7 = _mm512_gmax_ps(zero, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           eval_8 = _mm512_gmax_ps(zero, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           eval_9 = _mm512_gmax_ps(zero, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           eval_10 = _mm512_gmax_ps(zero, eval_10);
           eval_11 = _mm512_gmax_ps(zero, eval_11);
 #endif
@@ -716,130 +695,117 @@ class SPMICModLinearMask : public SPMICKernelBase {
           support_0 = _mm512_mul_ps(support_0, eval_0);
           support_1 = _mm512_mul_ps(support_1, eval_1);
           support_2 = _mm512_mul_ps(support_2, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
           support_3 = _mm512_mul_ps(support_3, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
           support_4 = _mm512_mul_ps(support_4, eval_4);
           support_5 = _mm512_mul_ps(support_5, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
           support_6 = _mm512_mul_ps(support_6, eval_6);
           support_7 = _mm512_mul_ps(support_7, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
           support_8 = _mm512_mul_ps(support_8, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
           support_9 = _mm512_mul_ps(support_9, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
           support_10 = _mm512_mul_ps(support_10, eval_10);
           support_11 = _mm512_mul_ps(support_11, eval_11);
 #endif
         }
 
-        _mm_prefetch((const char*) & (ptrLevel[((j + 1)*dims)]), _MM_HINT_ET0);
-        _mm_prefetch((const char*) & (ptrIndex[((j + 1)*dims)]), _MM_HINT_ET0);
+        _mm_prefetch((const char*)&(ptrLevel[((j + 1) * dims)]), _MM_HINT_ET0);
+        _mm_prefetch((const char*)&(ptrIndex[((j + 1) * dims)]), _MM_HINT_ET0);
         // Prefetch exclusive -> non sync is needed
-        _mm_prefetch((const char*) & (ptrResult[j + 1]), _MM_HINT_ET0);
+        _mm_prefetch((const char*)&(ptrResult[j + 1]), _MM_HINT_ET0);
 
         support_0 = _mm512_add_ps(support_0, support_1);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         support_2 = _mm512_add_ps(support_2, support_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         support_4 = _mm512_add_ps(support_4, support_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         support_6 = _mm512_add_ps(support_6, support_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         support_8 = _mm512_add_ps(support_8, support_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         support_10 = _mm512_add_ps(support_10, support_11);
 #endif
 
         support_0 = _mm512_add_ps(support_0, support_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         support_4 = _mm512_add_ps(support_4, support_6);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         support_8 = _mm512_add_ps(support_8, support_10);
 #endif
 
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         support_0 = _mm512_add_ps(support_0, support_4);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         support_0 = _mm512_add_ps(support_0, support_8);
 #endif
 
         ptrResult[j] += _mm512_reduce_add_ps(support_0);
       }
 
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 0]),
-                   _MM_HINT_T0);
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 16]),
-                   _MM_HINT_T0);
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 32]),
-                   _MM_HINT_T0);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 48]),
-                   _MM_HINT_T0);
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 0]), _MM_HINT_T0);
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 16]), _MM_HINT_T0);
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 32]), _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 48)
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 48]), _MM_HINT_T0);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 64]),
-                   _MM_HINT_T0);
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 80]),
-                   _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 64)
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 64]), _MM_HINT_T0);
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 80]), _MM_HINT_T0);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 96]),
-                   _MM_HINT_T0);
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 112]),
-                   _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 96)
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 96]), _MM_HINT_T0);
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 112]), _MM_HINT_T0);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 128]),
-                   _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 128)
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 128]), _MM_HINT_T0);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 144]),
-                   _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 144)
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 144]), _MM_HINT_T0);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 160]),
-                   _MM_HINT_T0);
-      _mm_prefetch((const char*) & (ptrSource[i + MIC_UNROLLING_WIDTH_SP + 176]),
-                   _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 160)
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 160]), _MM_HINT_T0);
+      _mm_prefetch((const char*)&(ptrSource[i + MIC_UNROLLING_WIDTH_SP + 176]), _MM_HINT_T0);
 #endif
-
 
       size_t j = end_index_grid - 1;
 
       __m512 support_0 = _mm512_load_ps(&(ptrSource[i + 0]));
       __m512 support_1 = _mm512_load_ps(&(ptrSource[i + 16]));
       __m512 support_2 = _mm512_load_ps(&(ptrSource[i + 32]));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
       __m512 support_3 = _mm512_load_ps(&(ptrSource[i + 48]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
       __m512 support_4 = _mm512_load_ps(&(ptrSource[i + 64]));
       __m512 support_5 = _mm512_load_ps(&(ptrSource[i + 80]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
       __m512 support_6 = _mm512_load_ps(&(ptrSource[i + 96]));
       __m512 support_7 = _mm512_load_ps(&(ptrSource[i + 112]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
       __m512 support_8 = _mm512_load_ps(&(ptrSource[i + 128]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
       __m512 support_9 = _mm512_load_ps(&(ptrSource[i + 144]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
       __m512 support_10 = _mm512_load_ps(&(ptrSource[i + 160]));
       __m512 support_11 = _mm512_load_ps(&(ptrSource[i + 176]));
 #endif
@@ -848,164 +814,163 @@ class SPMICModLinearMask : public SPMICKernelBase {
         __m512 eval_0 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 0]));
         __m512 eval_1 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 16]));
         __m512 eval_2 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 32]));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         __m512 eval_3 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 48]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         __m512 eval_4 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 64]));
         __m512 eval_5 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 80]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         __m512 eval_6 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 96]));
         __m512 eval_7 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 112]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         __m512 eval_8 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 128]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         __m512 eval_9 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 144]));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         __m512 eval_10 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 160]));
         __m512 eval_11 = _mm512_load_ps(&(ptrData[(d * sourceSize) + i + 176]));
 #endif
 
-        __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]),
-                                         _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]),
-                                         _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+        __m512 level = _mm512_extload_ps(&(ptrLevel[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                         _MM_BROADCAST_1X16, _MM_HINT_NONE);
+        __m512 index = _mm512_extload_ps(&(ptrIndex[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                         _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 0]), _MM_HINT_T0);
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 16]), _MM_HINT_T0);
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 32]), _MM_HINT_T0);
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 0]),
+                     _MM_HINT_T0);
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 16]),
+                     _MM_HINT_T0);
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 32]),
+                     _MM_HINT_T0);
 
         eval_0 = _mm512_fmsub_ps(eval_0, level, index);
         eval_1 = _mm512_fmsub_ps(eval_1, level, index);
         eval_2 = _mm512_fmsub_ps(eval_2, level, index);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         eval_3 = _mm512_fmsub_ps(eval_3, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         eval_4 = _mm512_fmsub_ps(eval_4, level, index);
         eval_5 = _mm512_fmsub_ps(eval_5, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         eval_6 = _mm512_fmsub_ps(eval_6, level, index);
         eval_7 = _mm512_fmsub_ps(eval_7, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         eval_8 = _mm512_fmsub_ps(eval_8, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         eval_9 = _mm512_fmsub_ps(eval_9, level, index);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         eval_10 = _mm512_fmsub_ps(eval_10, level, index);
         eval_11 = _mm512_fmsub_ps(eval_11, level, index);
 #endif
 
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 48]), _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 48)
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 48]),
+                     _MM_HINT_T0);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 64]), _MM_HINT_T0);
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 80]), _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 64)
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 64]),
+                     _MM_HINT_T0);
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 80]),
+                     _MM_HINT_T0);
 #endif
 
         __m512 mask = _mm512_extload_ps(&(ptrMask[(j * dims) + d]), _MM_UPCONV_PS_NONE,
                                         _MM_BROADCAST_1X16, _MM_HINT_NONE);
-        __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]),
-                                          _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+        __m512 offset = _mm512_extload_ps(&(ptrOffset[(j * dims) + d]), _MM_UPCONV_PS_NONE,
+                                          _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
-        eval_0 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_0)));
-        eval_1 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_1)));
-        eval_2 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_2)));
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
-        eval_3 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_3)));
+        eval_0 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_0)));
+        eval_1 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_1)));
+        eval_2 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_2)));
+#if (MIC_UNROLLING_WIDTH_SP > 48)
+        eval_3 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_3)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
-        eval_4 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_4)));
-        eval_5 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_5)));
+#if (MIC_UNROLLING_WIDTH_SP > 64)
+        eval_4 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_4)));
+        eval_5 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_5)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
-        eval_6 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_6)));
-        eval_7 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_7)));
+#if (MIC_UNROLLING_WIDTH_SP > 96)
+        eval_6 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_6)));
+        eval_7 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_7)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
-        eval_8 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_8)));
+#if (MIC_UNROLLING_WIDTH_SP > 128)
+        eval_8 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_8)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
-        eval_9 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                     _mm512_castps_si512(eval_9)));
+#if (MIC_UNROLLING_WIDTH_SP > 144)
+        eval_9 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_9)));
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
-        eval_10 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                      _mm512_castps_si512(eval_10)));
-        eval_11 = _mm512_castsi512_ps(_mm512_or_epi32( _mm512_castps_si512(mask),
-                                      _mm512_castps_si512(eval_11)));
-#endif
-
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 96]), _MM_HINT_T0);
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 112]), _MM_HINT_T0);
-#endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 128]), _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 160)
+        eval_10 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_10)));
+        eval_11 = _mm512_castsi512_ps(
+            _mm512_or_epi32(_mm512_castps_si512(mask), _mm512_castps_si512(eval_11)));
 #endif
 
+#if (MIC_UNROLLING_WIDTH_SP > 96)
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 96]),
+                     _MM_HINT_T0);
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 112]),
+                     _MM_HINT_T0);
+#endif
+#if (MIC_UNROLLING_WIDTH_SP > 128)
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 128]),
+                     _MM_HINT_T0);
+#endif
 
         eval_0 = _mm512_add_ps(offset, eval_0);
         eval_1 = _mm512_add_ps(offset, eval_1);
         eval_2 = _mm512_add_ps(offset, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         eval_3 = _mm512_add_ps(offset, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         eval_4 = _mm512_add_ps(offset, eval_4);
         eval_5 = _mm512_add_ps(offset, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         eval_6 = _mm512_add_ps(offset, eval_6);
         eval_7 = _mm512_add_ps(offset, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         eval_8 = _mm512_add_ps(offset, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         eval_9 = _mm512_add_ps(offset, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         eval_10 = _mm512_add_ps(offset, eval_10);
         eval_11 = _mm512_add_ps(offset, eval_11);
 #endif
 
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 144]), _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 144)
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 144]),
+                     _MM_HINT_T0);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 160]), _MM_HINT_T0);
-        _mm_prefetch((const char*) & (ptrData[(d * sourceSize) + i +
-                                              MIC_UNROLLING_WIDTH_SP + 172]), _MM_HINT_T0);
+#if (MIC_UNROLLING_WIDTH_SP > 160)
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 160]),
+                     _MM_HINT_T0);
+        _mm_prefetch((const char*)&(ptrData[(d * sourceSize) + i + MIC_UNROLLING_WIDTH_SP + 172]),
+                     _MM_HINT_T0);
 #endif
 
         __m512 zero = _mm512_set_1to16_ps(0.0f);
@@ -1013,24 +978,24 @@ class SPMICModLinearMask : public SPMICKernelBase {
         eval_0 = _mm512_gmax_ps(zero, eval_0);
         eval_1 = _mm512_gmax_ps(zero, eval_1);
         eval_2 = _mm512_gmax_ps(zero, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         eval_3 = _mm512_gmax_ps(zero, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         eval_4 = _mm512_gmax_ps(zero, eval_4);
         eval_5 = _mm512_gmax_ps(zero, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         eval_6 = _mm512_gmax_ps(zero, eval_6);
         eval_7 = _mm512_gmax_ps(zero, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         eval_8 = _mm512_gmax_ps(zero, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         eval_9 = _mm512_gmax_ps(zero, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         eval_10 = _mm512_gmax_ps(zero, eval_10);
         eval_11 = _mm512_gmax_ps(zero, eval_11);
 #endif
@@ -1038,58 +1003,58 @@ class SPMICModLinearMask : public SPMICKernelBase {
         support_0 = _mm512_mul_ps(support_0, eval_0);
         support_1 = _mm512_mul_ps(support_1, eval_1);
         support_2 = _mm512_mul_ps(support_2, eval_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
         support_3 = _mm512_mul_ps(support_3, eval_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
         support_4 = _mm512_mul_ps(support_4, eval_4);
         support_5 = _mm512_mul_ps(support_5, eval_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
         support_6 = _mm512_mul_ps(support_6, eval_6);
         support_7 = _mm512_mul_ps(support_7, eval_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
         support_8 = _mm512_mul_ps(support_8, eval_8);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
         support_9 = _mm512_mul_ps(support_9, eval_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
         support_10 = _mm512_mul_ps(support_10, eval_10);
         support_11 = _mm512_mul_ps(support_11, eval_11);
 #endif
       }
 
       support_0 = _mm512_add_ps(support_0, support_1);
-#if  ( MIC_UNROLLING_WIDTH_SP >  48 )
+#if (MIC_UNROLLING_WIDTH_SP > 48)
       support_2 = _mm512_add_ps(support_2, support_3);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
       support_4 = _mm512_add_ps(support_4, support_5);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
       support_6 = _mm512_add_ps(support_6, support_7);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  144 )
+#if (MIC_UNROLLING_WIDTH_SP > 144)
       support_8 = _mm512_add_ps(support_8, support_9);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
       support_10 = _mm512_add_ps(support_10, support_11);
 #endif
 
       support_0 = _mm512_add_ps(support_0, support_2);
-#if  ( MIC_UNROLLING_WIDTH_SP >  96 )
+#if (MIC_UNROLLING_WIDTH_SP > 96)
       support_4 = _mm512_add_ps(support_4, support_6);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  160 )
+#if (MIC_UNROLLING_WIDTH_SP > 160)
       support_8 = _mm512_add_ps(support_8, support_10);
 #endif
 
-#if  ( MIC_UNROLLING_WIDTH_SP >  64 )
+#if (MIC_UNROLLING_WIDTH_SP > 64)
       support_0 = _mm512_add_ps(support_0, support_4);
 #endif
-#if  ( MIC_UNROLLING_WIDTH_SP >  128 )
+#if (MIC_UNROLLING_WIDTH_SP > 128)
       support_0 = _mm512_add_ps(support_0, support_8);
 #endif
 
@@ -1105,9 +1070,9 @@ class SPMICModLinearMask : public SPMICKernelBase {
         for (size_t d = 0; d < dims; d++) {
           float eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * sourceSize) + i])) -
                        (ptrIndex[(j * dims) + d]);
-          unsigned int maskresult = *reinterpret_cast<unsigned int*>
-                                    (&eval) | *reinterpret_cast<unsigned int*>(&(ptrMask[(j * dims) + d]));
-          float masking = *reinterpret_cast<float*>( &maskresult );
+          unsigned int maskresult = *reinterpret_cast<unsigned int*>(&eval) |
+                                    *reinterpret_cast<unsigned int*>(&(ptrMask[(j * dims) + d]));
+          float masking = *reinterpret_cast<float*>(&maskresult);
           float last = masking + ptrOffset[(j * dims) + d];
           float localSupport = std::max<float>(last, 0.0f);
           curSupport *= localSupport;
@@ -1119,10 +1084,9 @@ class SPMICModLinearMask : public SPMICKernelBase {
 
 #endif
   }
-
 };
-}
-}
-#endif // USEMIC
+}  // namespace parallel
+}  // namespace SGPP
+#endif  // USEMIC
 
-#endif // SPMICMODLINEARMASK_HPP
+#endif  // SPMICMODLINEARMASK_HPP

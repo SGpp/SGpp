@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -21,7 +20,7 @@ namespace datadriven {
 
 class OperationDensitySamplingLinear : public OperationDensitySampling {
  public:
-  OperationDensitySamplingLinear(base::Grid* grid) : grid(grid) {}
+  explicit OperationDensitySamplingLinear(base::Grid* grid) : grid(grid) {}
   virtual ~OperationDensitySamplingLinear() {}
 
   /**
@@ -31,8 +30,7 @@ class OperationDensitySamplingLinear : public OperationDensitySampling {
    * @param samples Output DataMatrix (rows: # of samples, columns: # of dims)
    * @param num_samples # of samples to draw
    */
-  void doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
-                  size_t num_samples);
+  void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples);
 
   /**
    * Sampling with specified starting dimension
@@ -42,23 +40,16 @@ class OperationDensitySamplingLinear : public OperationDensitySampling {
    * @param num_samples # of samples to draw
    * @param dim_x Starting dimension
    */
-  void doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
-                  size_t num_samples, size_t dim_x);
+  void doSampling(base::DataVector* alpha, base::DataMatrix*& samples, size_t num_samples,
+                  size_t dim_x);
 
  protected:
   base::Grid* grid;
-  void doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in,
-                             size_t dim_start, base::DataVector*& sampleVec, unsigned int* seedp);
-  void doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in,
-                              size_t dim_x, base::DataVector*& sampleVec, size_t& curr_dim,
-                              unsigned int* seedp);
+  void doSampling_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start,
+                             base::DataVector*& sampleVec, unsigned int* seedp);
+  void doSampling_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t dim_x,
+                              base::DataVector*& sampleVec, size_t& curr_dim, unsigned int* seedp);
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONDENSITYSAMPLINGLINEAR_HPP */
-
-
-
-
-

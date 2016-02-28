@@ -7,11 +7,7 @@
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,15 +16,18 @@ namespace SGPP {
 namespace base {
 
 LinearStretchedGrid::LinearStretchedGrid(std::istream& istr) :
-  Grid(istr) {
+  Grid(istr),
+  generator(storage) {
 }
 
 LinearStretchedGrid::LinearStretchedGrid(size_t dim) :
-  Grid(dim) {
+  Grid(dim),
+  generator(storage) {
 }
 
 LinearStretchedGrid::LinearStretchedGrid(Stretching& BB) :
-  Grid(BB) {
+  Grid(BB),
+  generator(storage) {
 }
 
 LinearStretchedGrid::~LinearStretchedGrid() {
@@ -43,16 +42,16 @@ const SBasis& LinearStretchedGrid::getBasis() {
   return basis;
 }
 
-Grid* LinearStretchedGrid::unserialize(std::istream& istr) {
-  return new LinearStretchedGrid(istr);
+std::unique_ptr<Grid> LinearStretchedGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new LinearStretchedGrid(istr));
 }
 
 /**
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* LinearStretchedGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& LinearStretchedGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base

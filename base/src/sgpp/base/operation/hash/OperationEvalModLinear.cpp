@@ -35,7 +35,7 @@ float_t OperationEvalModLinear::eval(const DataVector& alpha,
   point_bb.copyFrom(point);
 
   // Get bounding box
-  BoundingBox* bb = storage->getBoundingBox();
+  BoundingBox* bb = storage.getBoundingBox();
   size_t dim = bb->getDimensions();
 
   if (bb != NULL) {

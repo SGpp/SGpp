@@ -12,19 +12,19 @@
 
 int main(int argc, char** argv) {
   //  int maxLevel = 9;
-  int maxLevel = 10;
+  int maxLevel = 5;
 
   // std::string fileName = "debugging.arff";
-  std::string fileName = "DR5_train_larger.arff";
-  //    std::string fileName = "friedman_4d.arff";
-  //    std::string fileName = "friedman_4d_large.arff";
+  //  std::string fileName = "DR5_train_larger.arff";
+  std::string fileName = "friedman_4d.arff";
+  //  std::string fileName = "friedman_4d_large.arff";
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "bigger.arff";
 
-  sg::base::RegularGridConfiguration gridConfig;
-  sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-  sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sg::base::AdpativityConfiguration adaptConfig;
+  SGPP::base::RegularGridConfiguration gridConfig;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
+  SGPP::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
@@ -50,17 +50,16 @@ int main(int argc, char** argv) {
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
-  std::string metaInformation =
-      "refine: " + std::to_string(adaptConfig.numRefinements_) + " points: " +
-      std::to_string(adaptConfig.noPoints_) + " iterations: " +
-      std::to_string(SLESolverConfigRefine.maxIterations_);
+  std::string metaInformation = "refine: " + std::to_string(adaptConfig.numRefinements_) +
+                                " points: " + std::to_string(adaptConfig.noPoints_) +
+                                " iterations: " +
+                                std::to_string(SLESolverConfigRefine.maxIterations_);
 
   double lambda = 0.000001;
 
   bool verbose = true;
-  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine,
-                                        SLESolverConfigFinal, adaptConfig,
-                                        lambda, verbose);
+  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
+                                        adaptConfig, lambda, verbose);
 
   // learner.learn(kernelType, fileName);
   // learner.learnReference(fileName);
@@ -78,12 +77,12 @@ int main(int argc, char** argv) {
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
       SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
-  learner.learn(configuration, fileName);
+  //  learner.learn(configuration, fileName);
   // learner.learnReference(fileName);
 
   // learner.learnAndTest(fileName, testFileName,
   // isBinaryClassificationProblem);
-  //    learner.learnAndCompare(configuration, fileName, 4);
+  learner.learnAndCompare(configuration, fileName, 5);
 
   // learner.writeStatisticsFile("statistics.csv", "test");
 

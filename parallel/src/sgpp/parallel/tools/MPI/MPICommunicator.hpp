@@ -12,47 +12,46 @@
 
 #include <mpi.h>
 
-#include <string>
-
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
-//#define ENABLE_DEBUG_MPI
-#ifdef ENABLE_DEBUG_MPI
-#define debugMPI(globalComm, messageStream) \
-    { \
-        int rank = static_cast<int>(globalComm->getMyRank()); \
-        int rcvbuffer; \
-        int token = 93453; \
-        MPI_Barrier(MPI_COMM_WORLD); \
-        if(rank > 0){ \
-                MPI_Recv(&rcvbuffer, 1, MPI_INT, rank-1, token, MPI_COMM_WORLD, MPI_STATUS_IGNORE); \
-        } \
-        std::cout << "[" << rank << "] " <<  messageStream << std::endl; \
-        std::cout.flush();\
-        if(rank < globalComm->getNumRanks()-1){ \
-            MPI_Send(&rank, 1, MPI_INT, rank+1, token, MPI_COMM_WORLD); \
-        } \
-        MPI_Barrier(MPI_COMM_WORLD); \
-    }
+#include <string>
 
-#define debugMPI_0(messageStream) \
-    { \
-        size_t rank = globalComm->getMyRank(); \
-        MPI_Barrier(MPI_COMM_WORLD); \
-        if(rank == 0){ \
-            std::cout << "[0] " <<  messageStream << std::endl; \
-        } \
-        MPI_Barrier(MPI_COMM_WORLD); \
-    }
+// #define ENABLE_DEBUG_MPI
+#ifdef ENABLE_DEBUG_MPI
+#define debugMPI(globalComm, messageStream)                                                 \
+  {                                                                                         \
+    int rank = static_cast<int>(globalComm->getMyRank());                                   \
+    int rcvbuffer;                                                                          \
+    int token = 93453;                                                                      \
+    MPI_Barrier(MPI_COMM_WORLD);                                                            \
+    if (rank > 0) {                                                                         \
+      MPI_Recv(&rcvbuffer, 1, MPI_INT, rank - 1, token, MPI_COMM_WORLD, MPI_STATUS_IGNORE); \
+    }                                                                                       \
+    std::cout << "[" << rank << "] " << messageStream << std::endl;                         \
+    std::cout.flush();                                                                      \
+    if (rank < globalComm->getNumRanks() - 1) {                                             \
+      MPI_Send(&rank, 1, MPI_INT, rank + 1, token, MPI_COMM_WORLD);                         \
+    }                                                                                       \
+    MPI_Barrier(MPI_COMM_WORLD);                                                            \
+  }
+
+#define debugMPI_0(messageStream)                        \
+  {                                                      \
+    size_t rank = globalComm->getMyRank();               \
+    MPI_Barrier(MPI_COMM_WORLD);                         \
+    if (rank == 0) {                                     \
+      std::cout << "[0] " << messageStream << std::endl; \
+    }                                                    \
+    MPI_Barrier(MPI_COMM_WORLD);                         \
+  }
 #else
 #define debugMPI(globalComm, messageStream)
 #define debugMPI_0(messageStream)
 #endif
 
 #include <sgpp/globaldef.hpp>
-
 
 namespace SGPP {
 namespace parallel {
@@ -181,15 +180,15 @@ class MPICommunicator {
    */
   void dataVectorAllToAll(SGPP::base::DataVector& alpha, int* distributionOffsets,
                           int* distributionSizes);
-  void dataVectorSPAllToAll(SGPP::base::DataVectorSP& alpha,
-                            int* distributionOffsets, int* distributionSizes);
+  void dataVectorSPAllToAll(SGPP::base::DataVectorSP& alpha, int* distributionOffsets,
+                            int* distributionSizes);
 
   void IsendToAll(double* ptr, size_t size, int tag, MPI_Request* reqs);
-  void IrecvFromAll(double* ptr, size_t chunkSizePerProc, int* sizes,
-                    int* offsets, int* tag, MPI_Request* reqs);
+  void IrecvFromAll(double* ptr, size_t chunkSizePerProc, int* sizes, int* offsets, int* tag,
+                    MPI_Request* reqs);
   void IsendToAllSP(float* ptr, size_t size, int tag, MPI_Request* reqs);
-  void IrecvFromAllSP(float* ptr, size_t chunkSizePerProc, int* sizes,
-                      int* offsets, int* tag, MPI_Request* reqs);
+  void IrecvFromAllSP(float* ptr, size_t chunkSizePerProc, int* sizes, int* offsets, int* tag,
+                      MPI_Request* reqs);
 
   /**
    * @brief putToAll puts @a count entries that the pointer @a ptr points to into the
@@ -248,9 +247,7 @@ class MPICommunicator {
    */
   void waitForAnyRequest(size_t size, MPI_Request* reqs, int* result);
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* MPICOMMUNICATOR_HPP */

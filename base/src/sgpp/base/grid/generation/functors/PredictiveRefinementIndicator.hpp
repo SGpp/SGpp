@@ -54,8 +54,8 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * @param minSupportPoints The minimal number of data points that have to be within the support of a basis function
    * for refinement.
    */
-  PredictiveRefinementIndicator(Grid* grid, DataMatrix* dataSet,
-                                DataVector* errorVector,
+  PredictiveRefinementIndicator(Grid& grid, DataMatrix& dataSet,
+                                DataVector& errorVector,
                                 size_t refinements_num = 1,
                                 float_t threshold = 0.0,
                                 uint64_t minSupportPoints = 0);
@@ -74,9 +74,9 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * @param gridPoint for which to calculate an indicator value
    * @return refinement value
    */
-  virtual float_t operator()(AbstractRefinement::index_type* gridPoint) const;
+  virtual float_t operator()(AbstractRefinement::index_type& gridPoint) const;
 
-  float_t runOperator(GridStorage* storage, size_t seq);
+  float_t runOperator(GridStorage& storage, size_t seq);
 
 
   /**
@@ -116,17 +116,17 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   * This should be returning a refinement value for every grid point.
   * The point with the highest value will be refined first.
   *
-  * @param storage pointer to the grids storage object
+  * @param storage reference to the grids storage object
   * @param seq sequence number in the coefficients array
   *
   * @return refinement value
   */
-  float_t operator()(GridStorage* storage, size_t seq) const override;
+  float_t operator()(GridStorage& storage, size_t seq) const override;
 
  protected:
   // for each Point in the dataSet, this Contains the squared absolute
   // offset between sparse grid and data point value;
-  DataVector* errorVector;
+  DataVector& errorVector;
   /// number of grid points to refine
   size_t refinementsNum;
   /// threshold, only the points with greater to equal absolute values
@@ -134,7 +134,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   float_t threshold;
 
   // data set that will be evaluated
-  DataMatrix* dataSet;
+  DataMatrix& dataSet;
 
   /*
    * Evaluates a basis function at a point on level "level" and index "index". The type of basis function is determinded
@@ -158,8 +158,8 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * @param dataVector in the dimensions of the grid Point, where each row of the data vector represents the maximum of the
    * support in the dimension of the grid point.
    */
-  void buildGPSupportMask(AbstractRefinement::index_type* gridPoint,
-                          DataVector* floorMask, DataVector* ceilingMask);
+  void buildGPSupportMask(AbstractRefinement::index_type& gridPoint,
+                          DataVector& floorMask, DataVector& ceilingMask);
 
   /*
    * Figures out if an data point from the data set is on the support of the basis function associated with a grid point. Helper method for the operator()(index_type*)
@@ -168,7 +168,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * @param entry size_t row in data set to be analyzed
    * @return true if the point from the dataset is located on the support of the basis function, else false.
    */
-  bool isOnSupport(DataVector* floorMask, DataVector* ceilingMask,
+  bool isOnSupport(DataVector& floorMask, DataVector& ceilingMask,
                    size_t entry);
 
   /*
@@ -176,7 +176,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    */
   SGPP::base::GridType gridType;
 
-  Grid* grid_;
+  Grid& grid_;
 
   uint64_t minSupportPoints_;
 };

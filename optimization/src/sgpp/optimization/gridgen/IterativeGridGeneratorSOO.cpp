@@ -45,7 +45,7 @@ bool IterativeGridGeneratorSOO::generate() {
 
   bool result = true;
   base::GridIndex::PointDistribution distr = base::GridIndex::PointDistribution::Normal;
-  base::GridStorage& gridStorage = *grid.getStorage();
+  base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   HashRefinementMultiple refinement;
@@ -128,11 +128,11 @@ bool IterativeGridGeneratorSOO::generate() {
 
       if (fBest < nuMin) {
         refinementAlpha[iBest] = 1.0;
-        base::SurplusRefinementFunctor refineFunc(&refinementAlpha, 1);
-        refinement.free_refine(&gridStorage, &refineFunc);
+        base::SurplusRefinementFunctor refineFunc(refinementAlpha, 1);
+        refinement.free_refine(gridStorage, refineFunc);
 
         // new grid size
-        const size_t newN = gridStorage.size();
+        const size_t newN = gridStorage.getSize();
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)

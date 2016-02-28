@@ -28,7 +28,7 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
    * @param removements_num Number of grid points which should be removed (if possible - there could be less removable grid points)
    * @param threshold The absolute value of the entries have to be greater or equal than the threshold
    */
-  SurplusCoarseningFunctor(DataVector* alpha, size_t removements_num = 1,
+  SurplusCoarseningFunctor(DataVector& alpha, size_t removements_num = 1,
                            float_t threshold = 0.0);
 
   /**
@@ -36,7 +36,7 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
    */
   ~SurplusCoarseningFunctor() override;
 
-  float_t operator()(GridStorage* storage, size_t seq) override;
+  float_t operator()(GridStorage& storage, size_t seq) override;
 
   float_t start() const override;
 
@@ -46,7 +46,7 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
 
  protected:
   /// pointer to the vector that stores the alpha values
-  DataVector* alpha;
+  DataVector& alpha;
 
   /// number of grid points to remove
   size_t removements_num;

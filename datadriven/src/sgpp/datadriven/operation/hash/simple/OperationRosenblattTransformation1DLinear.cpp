@@ -3,11 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <map>
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DLinear.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
@@ -15,6 +10,12 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <map>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <utility>
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -22,37 +23,29 @@ namespace datadriven {
  * WARNING: the grid must be a 1D grid!
  */
 OperationRosenblattTransformation1DLinear::OperationRosenblattTransformation1DLinear(
-  base::Grid* grid) :
-  grid(grid) {
-}
+    base::Grid* grid)
+    : grid(grid) {}
 
-OperationRosenblattTransformation1DLinear::~OperationRosenblattTransformation1DLinear() {
-}
+OperationRosenblattTransformation1DLinear::~OperationRosenblattTransformation1DLinear() {}
 
-float_t OperationRosenblattTransformation1DLinear::doTransformation1D(
-  base::DataVector* alpha1d, float_t coord1d) {
-
+float_t OperationRosenblattTransformation1DLinear::doTransformation1D(base::DataVector* alpha1d,
+                                                                      float_t coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
   std::multimap<float_t, float_t> coord_pdf, coord_cdf;
   std::multimap<float_t, float_t>::iterator it1, it2;
 
-  base::GridStorage* gs = this->grid->getStorage();
-  base::OperationEval* opEval = op_factory::createOperationEval(
-                                  *(this->grid));
+  base::GridStorage* gs = &this->grid->getStorage();
+  std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(this->grid));
   base::DataVector coord(1);
 
-  for (unsigned int i = 0; i < gs->size(); i++) {
+  for (unsigned int i = 0; i < gs->getSize(); i++) {
     coord[0] = gs->get(i)->getCoord(0);
-    coord_pdf.insert(
-      std::pair<float_t, float_t>(coord[0],
-                                  opEval->eval(*alpha1d, coord)));
+    coord_pdf.insert(std::pair<float_t, float_t>(coord[0], opEval->eval(*alpha1d, coord)));
     coord_cdf.insert(std::pair<float_t, float_t>(coord[0], i));
   }
 
-  delete opEval;
-  opEval = NULL;
   // include values at the boundary [0,1]
   coord_pdf.insert(std::pair<float_t, float_t>(0.0, 0.0));
   coord_pdf.insert(std::pair<float_t, float_t>(1.0, 0.0));
@@ -67,10 +60,9 @@ float_t OperationRosenblattTransformation1DLinear::doTransformation1D(
   float_t sum = 0.0, area;
 
   for (++it2; it2 != coord_pdf.end(); ++it2) {
-    //(*it).first : the coordinate
-    //(*it).second : the function value
-    area = ((*it2).first - (*it1).first) / 2
-           * ((*it1).second + (*it2).second);
+    // (*it).first : the coordinate
+    // (*it).second : the function value
+    area = ((*it2).first - (*it1).first) / 2 * ((*it1).second + (*it2).second);
 
     // make sure that the cdf is monotonically increasing
     // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
@@ -91,8 +83,7 @@ float_t OperationRosenblattTransformation1DLinear::doTransformation1D(
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
     tmp_sum = 0.0;
 
-    for (unsigned int j = 0; j <= i; ++j)
-      tmp_sum += tmp[j];
+    for (unsigned int j = 0; j <= i; ++j) tmp_sum += tmp[j];
 
     ++i;
     (*it1).second = tmp_sum / sum;
@@ -107,8 +98,7 @@ float_t OperationRosenblattTransformation1DLinear::doTransformation1D(
 
   // find cdf interval
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
-    if ((*it1).first >= coord1d)
-      break;
+    if ((*it1).first >= coord1d) break;
   }
 
   x2 = (*it1).first;
@@ -121,7 +111,6 @@ float_t OperationRosenblattTransformation1DLinear::doTransformation1D(
 
   /***************** STEP 2. Done  ********************/
   return y;
-} // end of compute_1D_cdf()
-
-}
-}
+}  // end of compute_1D_cdf()
+}  // namespace datadriven
+}  // namespace SGPP

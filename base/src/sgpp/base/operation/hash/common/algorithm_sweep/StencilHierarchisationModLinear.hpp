@@ -26,7 +26,7 @@ class StencilHierarchisationModLinear {
   typedef GridStorage::grid_iterator grid_iterator;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
  public:
   /**
@@ -38,7 +38,7 @@ class StencilHierarchisationModLinear {
    * @param weightStencil weighted stencil
    */
   StencilHierarchisationModLinear(
-    GridStorage* storage,
+    GridStorage& storage,
     OperationStencilHierarchisation::IndexStencil& surplusStencil,
     OperationStencilHierarchisation::IndexStencil& neighborStencil,
     OperationStencilHierarchisation::WeightStencil& weightStencil);

@@ -26,7 +26,7 @@ class OperationQuadraturePolyBoundary : public OperationQuadrature {
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationQuadraturePolyBoundary(GridStorage* storage,
+  OperationQuadraturePolyBoundary(GridStorage& storage,
                                   size_t degree) : storage(storage), base(degree) {}
 
   ~OperationQuadraturePolyBoundary() override {}
@@ -40,7 +40,7 @@ class OperationQuadraturePolyBoundary : public OperationQuadrature {
 
  protected:
   // Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Poly Boundary Basis object
   SPolyBoundaryBase base;
 };

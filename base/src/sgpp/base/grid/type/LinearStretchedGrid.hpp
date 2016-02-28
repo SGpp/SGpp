@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/common/Stretching.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -20,6 +21,8 @@ namespace base {
  */
 class LinearStretchedGrid : public Grid {
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   explicit LinearStretchedGrid(std::istream& istr);
 
  public:
@@ -46,8 +49,8 @@ class LinearStretchedGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  GridGenerator* createGridGenerator() override;
-  static Grid* unserialize(std::istream& istr);
+  GridGenerator& getGenerator() override;
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
 };
 
 }  // namespace base

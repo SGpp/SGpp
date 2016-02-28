@@ -34,7 +34,7 @@ class DirichletUpdateVector {
   //  /// stretching of the grid
   //  Stretching* myStretching;
   /// Grid Storage object
-  GridStorage* storage;
+  GridStorage& storage;
 
  public:
   /**
@@ -42,7 +42,7 @@ class DirichletUpdateVector {
    *
    * @param storage the grid's storage object; needed to determine the bounding box and to iterate of the entries in the coefficient vector
    */
-  explicit DirichletUpdateVector(GridStorage* storage);
+  explicit DirichletUpdateVector(GridStorage& storage);
 
   /**
    * Std-Destructor
@@ -95,7 +95,7 @@ class DirichletUpdateVector {
    * the multiplyBoundary method.
    */
   void multiply(DataVector& updateVector, float_t value,
-                bool (*predicate)(GridIndex*, GridStorage*));
+                bool (*predicate)(GridIndex*, GridStorage&));
 };
 
 }  // namespace base

@@ -14,7 +14,7 @@ namespace SGPP {
 namespace base {
 
 DehierarchisationPolyBoundary::DehierarchisationPolyBoundary(
-  GridStorage* storage, SPolyBoundaryBase* base) :
+  GridStorage& storage, SPolyBoundaryBase* base) :
   storage(storage), base(base) {
 }
 
@@ -71,14 +71,14 @@ void DehierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, coeffs);
     }
 

@@ -23,8 +23,8 @@ void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha, SGPP::base::D
   expandGrid();
 
   // Create new Datavectors for the grid including shadow points.
-  SGPP::base::DataVector alpha_temp(storage->size());
-  SGPP::base::DataVector result_temp(storage->size());
+  SGPP::base::DataVector alpha_temp(storage->getSize());
+  SGPP::base::DataVector result_temp(storage->getSize());
 
   alpha_temp.setAll(0.0);
   result_temp.setAll(0.0);
@@ -37,8 +37,8 @@ void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha, SGPP::base::D
   SGPP::base::DataVector beta(result_temp.getSize());
   beta.setAll(0.0);
 
-  for (size_t i = 0; i < storage->dim(); i++) {
-    this->updown(alpha_temp, beta, storage->dim() - 1, i);
+  for (size_t i = 0; i < storage->getDimension(); i++) {
+    this->updown(alpha_temp, beta, storage->getDimension() - 1, i);
 
     result_temp.add(beta);
   }
@@ -48,19 +48,19 @@ void UpDownOneOpDimWithShadow::mult(SGPP::base::DataVector& alpha, SGPP::base::D
 
   // Copy the result in the actual result vector. The values for the shadow
   // grid points are just needed for data transport, thus they can be omitted
-  for (size_t i = 0; i < storage->size(); i++) {
+  for (size_t i = 0; i < storage->getSize(); i++) {
     result[i] = result_temp[i];
   }
 }
 
 void UpDownOneOpDimWithShadow::expandGrid() {
-  for (size_t i = 0; i < shadowStorage->size(); i++) {
+  for (size_t i = 0; i < shadowStorage->getSize(); i++) {
     storage->insert(*shadowStorage->get(i));
   }
 }
 
 void UpDownOneOpDimWithShadow::shrinkGrid() {
-  for (size_t i = 0; i < shadowStorage->size(); i++) {
+  for (size_t i = 0; i < shadowStorage->getSize(); i++) {
     storage->deleteLast();
   }
 }

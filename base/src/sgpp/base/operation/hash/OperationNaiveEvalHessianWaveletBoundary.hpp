@@ -28,7 +28,7 @@ class OperationNaiveEvalHessianWaveletBoundary : public
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalHessianWaveletBoundary(GridStorage* storage) :
+  explicit OperationNaiveEvalHessianWaveletBoundary(GridStorage& storage) :
     storage(
       storage) {
   }
@@ -53,7 +53,7 @@ class OperationNaiveEvalHessianWaveletBoundary : public
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D wavelet basis
   SWaveletBoundaryBase base;
 };

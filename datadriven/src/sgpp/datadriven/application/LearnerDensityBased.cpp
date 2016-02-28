@@ -87,9 +87,7 @@ void LearnerDensityBased::InitializeGrid(const
     }
 
     // Generate regular Grid with LEVELS Levels
-    SGPP::base::GridGenerator* myGenerator = gridVec_[i]->createGridGenerator();
-    myGenerator->regular(GridConfig.level_);
-    delete myGenerator;
+    gridVec_[i]->getGenerator().regular(GridConfig.level_);
 
     // Create alpha
     alphaVec_.push_back(SGPP::base::DataVector(gridVec_[i]->getSize()));
@@ -234,10 +232,8 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     // Do Refinements
     if (i > 0) {
       for (size_t ii = 0; ii < alphaVec_.size(); ii++) {
-        SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-          new SGPP::base::SurplusRefinementFunctor(&alphaVec_[ii], AdaptConfig.noPoints_);
-        gridVec_[ii]->createGridGenerator()->refine(myRefineFunc);
-        delete myRefineFunc;
+        SGPP::base::SurplusRefinementFunctor myRefineFunc(alphaVec_[ii], AdaptConfig.noPoints_);
+        gridVec_[ii]->getGenerator().refine(myRefineFunc);
 
         // DMSystem->rebuildLevelAndIndex();   not implemented
 
@@ -264,9 +260,9 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
 
     for (size_t ii = 0; ii < class_indeces.size(); ii++) {
       if (this->CMode_ == SGPP::datadriven::RegularizationType::Laplace) {
-        CVec_.push_back(SGPP::op_factory::createOperationLaplace(*this->gridVec_[ii]));
+        CVec_.push_back(SGPP::op_factory::createOperationLaplace(*this->gridVec_[ii]).release());
       } else if (this->CMode_ == SGPP::datadriven::RegularizationType::Identity) {
-        CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]));
+        CVec_.push_back(SGPP::op_factory::createOperationIdentity(*this->gridVec_[ii]).release());
       } else {
         throw base::application_exception("LearnerDensityBased::train: Unknown regularization "
           "operator");
@@ -277,8 +273,8 @@ LearnerTiming LearnerDensityBased::train(SGPP::base::DataMatrix& trainDataset,
     for (size_t ii = 0; ii < trainDataClasses.size(); ii++) {
       SGPP::datadriven::DensitySystemMatrix DMatrix(*gridVec_[ii],
           trainDataClasses[ii], *(CVec_[ii]), lambda);
-      SGPP::base::DataVector rhs(gridVec_[ii]->getStorage()->size());
-      SGPP::base::DataVector alpha(gridVec_[ii]->getStorage()->size());
+      SGPP::base::DataVector rhs(gridVec_[ii]->getSize());
+      SGPP::base::DataVector alpha(gridVec_[ii]->getSize());
       alpha.setAll(0.0);
       DMatrix.generateb(rhs);
 
@@ -388,8 +384,8 @@ SGPP::base::DataVector LearnerDensityBased::predict(
       int class_index = 0;
 
       for (it = alphaVec_.begin(); it != alphaVec_.end(); it++) {
-        SGPP::base::OperationEval* Eval = SGPP::op_factory::createOperationEval(
-                                            *gridVec_[class_index]);
+        std::unique_ptr<SGPP::base::OperationEval> Eval(
+            SGPP::op_factory::createOperationEval(*gridVec_[class_index]));
         SGPP::base::DataVector alpha = *it;
         // posterior = likelihood*prior
         float_t res = Eval->eval(alpha, p) * this->prior[class_index];
@@ -400,7 +396,6 @@ SGPP::base::DataVector LearnerDensityBased::predict(
         }
 
         class_index++;
-        delete Eval;
       }
 
       result[i] = index_to_class_[max_index];

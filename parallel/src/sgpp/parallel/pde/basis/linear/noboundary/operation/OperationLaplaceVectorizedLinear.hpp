@@ -11,7 +11,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #if defined(__SSE4_2__) || defined(__AVX__)
@@ -27,6 +26,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
 namespace SGPP {
 namespace parallel {
@@ -35,10 +35,8 @@ namespace parallel {
  * Implementation for linear functions of Laplace Operation, linear grids without boundaries
  *
  */
-class OperationLaplaceVectorizedLinear: public SGPP::base::OperationMatrix {
+class OperationLaplaceVectorizedLinear : public SGPP::base::OperationMatrix {
  private:
-
-
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
   SGPP::base::DataMatrix* level_int_;
@@ -69,7 +67,6 @@ class OperationLaplaceVectorizedLinear: public SGPP::base::OperationMatrix {
   std::vector<int> recv_start;
   std::vector<int> recv_size;
 
-
   void init_constants();
   void init_grid_storage();
 
@@ -85,7 +82,7 @@ class OperationLaplaceVectorizedLinear: public SGPP::base::OperationMatrix {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLaplaceVectorizedLinear(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceVectorizedLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Construtor of OperationLaplaceLinear
@@ -101,14 +98,11 @@ class OperationLaplaceVectorizedLinear: public SGPP::base::OperationMatrix {
    */
   virtual ~OperationLaplaceVectorizedLinear();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual void reset();
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEVECTORIZEDLINEAR_HPP */

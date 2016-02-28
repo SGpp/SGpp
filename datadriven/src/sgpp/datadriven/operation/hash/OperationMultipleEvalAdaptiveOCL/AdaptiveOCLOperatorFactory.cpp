@@ -32,8 +32,8 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(
       (*parameters).addIDAttr("LOCAL_SIZE", 128ul);
     }
 
-    if ((*parameters).contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-      (*parameters).addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+    if ((*parameters).contains("KERNEL_DATA_BLOCK_SIZE") == false) {
+      (*parameters).addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
     }
 
     if ((*parameters).contains("LINEAR_LOAD_BALANCING_VERBOSE") == false) {
@@ -77,7 +77,6 @@ base::OperationMultipleEval *createAdaptiveOCLConfigured(
         "\"INTERNAL_PRECISION\"");
   }
 
-  // TODO(pfandedd): make parameters changable through api
   /*std::shared_ptr<base::OCLOperationConfiguration> parameters;
    (*parameters).addTextAttr("KERNEL_USE_LOCAL_MEMORY", "true");
    (*parameters).addTextAttr("KERNEL_MAX_DIM_UNROLL", "10");

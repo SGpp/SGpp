@@ -11,7 +11,7 @@
 namespace SGPP {
 namespace base {
 
-SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha,
+SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector& alpha,
     size_t removements_num, float_t threshold) : alpha(alpha),
   removements_num(removements_num), threshold(threshold) {
 }
@@ -19,8 +19,8 @@ SurplusCoarseningFunctor::SurplusCoarseningFunctor(DataVector* alpha,
 SurplusCoarseningFunctor::~SurplusCoarseningFunctor() {}
 
 
-float_t SurplusCoarseningFunctor::operator()(GridStorage* storage, size_t seq) {
-  return fabs(alpha->get(seq));
+float_t SurplusCoarseningFunctor::operator()(GridStorage& storage, size_t seq) {
+  return fabs(alpha[seq]);
 }
 
 float_t SurplusCoarseningFunctor::start() const {

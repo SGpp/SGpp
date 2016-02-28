@@ -72,18 +72,20 @@ else:
 
 libInstall = env.Install(BUILD_DIR, lib)
 
-if env['RUN_CPPLINT']:
-    for path in cpps + hpps:
-        lintCommand = env.Command(path + ".lint", path, lintAction)
-        env.Depends(lib, lintCommand)
-
+# build examples
 if env["ARCH"] != "mic":
+    example_env = env.Clone()
+    example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
     for fileName in os.listdir("examples"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
-            example = env.Program(source=os.path.join("examples", fileName),
-                                  LIBS=[libname] + moduleDependencies)
-            env.Requires(example, libInstall)
+            cpp = os.path.join("examples", fileName)
+            cpps.append(cpp)
+            example = example_env.Program(source=cpp)
+            example_env.Requires(example, libInstall)
             exampleTargetList.append(example)
+        elif fnmatch.fnmatch(fileName, "*.hpp"):
+            hpp = os.path.join("examples", fileName)
+            hpps.append(hpp)
 
 # build unit tests
 if env['COMPILE_BOOST_TESTS']:
@@ -95,7 +97,12 @@ if env['COMPILE_BOOST_TESTS']:
     testObjects = []
     for currentFolder, subdirNames, fileNames in os.walk("tests", topdown=True):
       for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        testObjects.append(test_env.SharedObject(os.path.join(currentFolder, fileName)))
+        cpp = os.path.join(currentFolder, fileName)
+        cpps.append(cpp)
+        testObjects.append(test_env.SharedObject(cpp))
+      for fileName in fnmatch.filter(fileNames, '*.hpp'):
+        hpp = os.path.join(currentFolder, fileName)
+        hpps.append(hpp)
     if len(testObjects) > 0:
         fileName = os.path.join("tests", "test_{}_boost".format(moduleName)) + \
                 (".exe" if env['PLATFORM'] == 'win32' else '')
@@ -106,6 +113,12 @@ if env['COMPILE_BOOST_TESTS']:
             executable = fileName + "_run"
             testRun = test_env.BoostTest(executable, source=fileName)
             boostTestTargetList.append(testRun)
+
+# run cpplint
+if env['RUN_CPPLINT']:
+    for path in cpps + hpps:
+        lintCommand = env.Command(path + ".lint", path, lintAction)
+        env.Depends(lib, lintCommand)
 
 libraryTargetList.append(lib)
 installTargetList.append(libInstall)

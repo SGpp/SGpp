@@ -26,7 +26,7 @@ class OperationNaiveEvalGradientModWavelet : public OperationNaiveEvalGradient {
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalGradientModWavelet(GridStorage* storage) : storage(
+  explicit OperationNaiveEvalGradientModWavelet(GridStorage& storage) : storage(
       storage) {
   }
 
@@ -48,7 +48,7 @@ class OperationNaiveEvalGradientModWavelet : public OperationNaiveEvalGradient {
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D wavelet basis
   SWaveletModifiedBase base;
 };

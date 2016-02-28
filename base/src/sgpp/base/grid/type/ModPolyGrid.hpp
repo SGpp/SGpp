@@ -8,7 +8,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
-
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -42,15 +42,17 @@ class ModPolyGrid : public Grid {
 
   const SBasis& getBasis() override;
 
-  virtual GridGenerator* createGridGenerator();
+  GridGenerator& getGenerator() override;
 
-  static Grid* unserialize(std::istream& istr);
+  static std::unique_ptr<Grid> unserialize(std::istream& istr);
   virtual size_t getDegree() const;
 
  protected:
+  /// grid generator
+  StandardGridGenerator generator;
   /// max. polynom's degree
   size_t degree;
-  const SPolyModifiedBase* basis_;
+  std::unique_ptr<SPolyModifiedBase> basis_;
 };
 
 }  // namespace base

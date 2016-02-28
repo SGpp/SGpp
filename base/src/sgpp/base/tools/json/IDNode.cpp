@@ -10,20 +10,25 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <stdexcept>
 
 namespace json {
 
-IDNode::IDNode() :
-  value(),
-  //        internalType(InternalIDType::ID),
-  isDouble(false), doubleValue(0.0), isUnsigned(false), unsignedValue(0),
-  isSigned(false), signedValue(0), isBool(
-    false), boolValue(false) {
-}
+IDNode::IDNode()
+    : value(),
+      //        internalType(InternalIDType::ID),
+      isDouble(false),
+      doubleValue(0.0),
+      isUnsigned(false),
+      unsignedValue(0),
+      isSigned(false),
+      signedValue(0),
+      isBool(false),
+      boolValue(false) {}
 
 Node& IDNode::operator=(const Node& right) {
   const IDNode& idNode = dynamic_cast<const IDNode&>(right);
-  this->operator =(idNode);
+  this->operator=(idNode);
   return *this;
 }
 
@@ -64,7 +69,7 @@ void IDNode::setupInternalType() {
       this->isUnsigned = true;
       this->unsignedValue = asUnsigned;
       //            this->internalType = InternalIDType::UINT;
-      return;
+      //      return;
     }
   } catch (std::invalid_argument& e) {
   }
@@ -78,7 +83,7 @@ void IDNode::setupInternalType() {
       this->isSigned = true;
       this->signedValue = asSigned;
       //            this->internalType = InternalIDType::INT;
-      return;
+      //      return;
     }
   } catch (std::invalid_argument& e) {
   }
@@ -92,15 +97,13 @@ void IDNode::setupInternalType() {
       this->isDouble = true;
       this->doubleValue = asDouble;
       //            this->internalType = InternalIDType::DOUBLE;
-      return;
+      //      return;
     }
   } catch (std::invalid_argument& e) {
   }
 }
 
-std::string& IDNode::get() {
-  return this->value;
-}
+std::string& IDNode::get() { return this->value; }
 
 void IDNode::set(const std::string& value) {
   this->value = value;
@@ -183,13 +186,9 @@ void IDNode::setBool(bool boolValue) {
   this->setupInternalType();
 }
 
-void IDNode::serialize(std::ostream& outFile, size_t indentWidth) {
-  outFile << this->value;
-}
+void IDNode::serialize(std::ostream& outFile, size_t indentWidth) { outFile << this->value; }
 
-size_t IDNode::size() {
-  return 1;
-}
+size_t IDNode::size() { return 1; }
 
 Node* IDNode::clone() {
   IDNode* newNode = new IDNode(*this);

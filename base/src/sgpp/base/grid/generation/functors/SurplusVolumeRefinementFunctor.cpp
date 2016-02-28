@@ -13,7 +13,7 @@ namespace SGPP {
 namespace base {
 
 SurplusVolumeRefinementFunctor::SurplusVolumeRefinementFunctor(
-  DataVector* alpha, size_t refinements_num, float_t threshold) : alpha(alpha),
+  DataVector& alpha, size_t refinements_num, float_t threshold) : alpha(alpha),
   refinements_num(refinements_num), threshold(threshold) {
 }
 
@@ -21,11 +21,10 @@ SurplusVolumeRefinementFunctor::SurplusVolumeRefinementFunctor(
 SurplusVolumeRefinementFunctor::~SurplusVolumeRefinementFunctor() {
 }
 
-float_t SurplusVolumeRefinementFunctor::operator()(GridStorage* storage,
+float_t SurplusVolumeRefinementFunctor::operator()(GridStorage& storage,
     size_t seq) const {
   return pow(2, static_cast<float_t>(
-               -(static_cast<int>(storage->get(seq)->getLevelSum())))) *
-         fabs(alpha->get(seq));
+               -(static_cast<int>(storage.get(seq)->getLevelSum())))) * fabs(alpha[seq]);
 }
 
 float_t SurplusVolumeRefinementFunctor::start() const {

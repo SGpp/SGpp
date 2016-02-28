@@ -30,7 +30,7 @@ IndexInSubspaceGenerator::iterator IndexInSubspaceGenerator::begin() {
 bool IndexInSubspaceGenerator::compareVectors(value_type& vec1,
     value_type& vec2) {
   if (vec1.size() != vec2.size()) {
-    throw new std::length_error("Vector size mismatch");
+    throw std::length_error("Vector size mismatch");
   }
 
   bool res = true;

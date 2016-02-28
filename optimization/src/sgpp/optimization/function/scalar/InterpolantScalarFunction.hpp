@@ -44,7 +44,7 @@ class InterpolantScalarFunction : public ScalarFunction {
    * @param alpha coefficient vector
    */
   InterpolantScalarFunction(base::Grid& grid, const base::DataVector& alpha)
-      : ScalarFunction(grid.getStorage()->dim()),
+      : ScalarFunction(grid.getDimension()),
         grid(grid),
         opEval(op_factory::createOperationNaiveEval(grid)),
         alpha(alpha) {}

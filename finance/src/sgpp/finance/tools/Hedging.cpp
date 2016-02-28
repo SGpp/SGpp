@@ -41,7 +41,8 @@ void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid, SGPP::base::DataVector
   std::ofstream fileout;
   fileout.open(sfilename.str().c_str());
 
-  SGPP::base::OperationEval* myEval = SGPP::op_factory::createOperationEval(sparse_grid);
+  std::unique_ptr<SGPP::base::OperationEval> myEval(
+      SGPP::op_factory::createOperationEval(sparse_grid));
 
   // loop overall evaluation points
   for (size_t i = 0; i < m_hedge_points->getNrows(); i++) {
@@ -101,7 +102,6 @@ void Hedging::calc_hedging(SGPP::base::Grid& sparse_grid, SGPP::base::DataVector
     }
   }
 
-  delete myEval;
   fileout.close();
 }
 }  // namespace finance

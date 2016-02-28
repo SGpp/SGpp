@@ -25,7 +25,7 @@ class OperationEvalLinearStretched : public OperationEval {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationEvalLinearStretched(GridStorage* storage) :
+  explicit OperationEvalLinearStretched(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -37,8 +37,8 @@ class OperationEvalLinearStretched : public OperationEval {
                const DataVector& point) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
 };
 
 }  // namespace base

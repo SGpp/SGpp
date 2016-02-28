@@ -13,7 +13,7 @@ namespace base {
 
 
 
-DehierarchisationLinear::DehierarchisationLinear(GridStorage* storage) :
+DehierarchisationLinear::DehierarchisationLinear(GridStorage& storage) :
   storage(storage) {
 }
 
@@ -43,14 +43,14 @@ void DehierarchisationLinear::rec(DataVector& source, DataVector& result,
     // descend left
     index.leftChild(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fl, fm);
     }
 
     // descend right
     index.stepRight(dim);
 
-    if (!storage->end(index.seq())) {
+    if (!storage.end(index.seq())) {
       rec(source, result, index, dim, fm, fr);
     }
 

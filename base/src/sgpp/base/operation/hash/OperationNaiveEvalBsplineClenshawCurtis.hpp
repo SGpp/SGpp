@@ -27,7 +27,7 @@ class OperationNaiveEvalBsplineClenshawCurtis : public OperationNaiveEval {
    * @param degree        B-spline degree
    */
   OperationNaiveEvalBsplineClenshawCurtis(
-    GridStorage* storage, size_t degree)
+    GridStorage& storage, size_t degree)
     : storage(storage),
       base(degree) {
   }
@@ -47,7 +47,7 @@ class OperationNaiveEvalBsplineClenshawCurtis : public OperationNaiveEval {
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D B-spline basis
   SBsplineClenshawCurtisBase base;
 };

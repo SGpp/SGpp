@@ -38,9 +38,9 @@ class HashGridIterator {
   /**
    * Constructor of the griditerator object
    *
-   * @param storage pointer the hashmap that stores the grid points
+   * @param storage reference to the hashmap that stores the grid points
    */
-  explicit HashGridIterator(HashGridStorage* storage);
+  explicit HashGridIterator(HashGridStorage& storage);
 
   /**
    * Copy Constructor of the griditerator object
@@ -168,7 +168,7 @@ class HashGridIterator {
   inline void set(size_t d, index_type::level_type l,
                   index_type::index_type i) {
     index.set(d, l, i);
-    this->seq_ = storage->seq(&index);
+    this->seq_ = storage.seq(&index);
   }
 
   /**
@@ -179,7 +179,7 @@ class HashGridIterator {
    */
   inline void set(const index_type& point) {
     index = point;
-    this->seq_ = storage->seq(&index);
+    this->seq_ = storage.seq(&index);
   }
 
   /**
@@ -217,8 +217,8 @@ class HashGridIterator {
   std::string toString();
 
  private:
-  /// Pointer the the hashmap that stores the gridpoints
-  HashGridStorage* storage;
+  /// reference the the hashmap that stores the gridpoints
+  HashGridStorage& storage;
   /// GridIndex object used to operate on the current position in the hashmap
   HashGridIndex index;
   /// true if the current point is a leaf, otherwise false

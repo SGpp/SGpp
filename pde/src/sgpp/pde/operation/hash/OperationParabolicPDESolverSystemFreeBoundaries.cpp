@@ -70,7 +70,7 @@ void OperationParabolicPDESolverSystemFreeBoundaries::mult(SGPP::base::DataVecto
     result.mult(alpha0);
 
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "OperationParabolicPDESolverSystemNeumann::mult : An unknown operation mode was "
         "specified!");
   }
@@ -164,7 +164,7 @@ SGPP::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::generat
 
     rhs_complete.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception(
+    throw SGPP::base::algorithm_exception(
         "OperationParabolicPDESolverSystemNeumann::generateRHS : An unknown operation mode was "
         "specified!");
   }

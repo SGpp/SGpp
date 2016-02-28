@@ -24,8 +24,8 @@ DensitySystemMatrix::DensitySystemMatrix(SGPP::base::Grid& grid,
   this->data = &trainData;
   this->lambda = lambdaRegression;
 
-  this->A = SGPP::op_factory::createOperationLTwoDotProduct(grid);
-  this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->data));
+  this->A = SGPP::op_factory::createOperationLTwoDotProduct(grid).release();
+  this->B = SGPP::op_factory::createOperationMultipleEval(grid, *(this->data)).release();
   this->C = &C;
 }
 

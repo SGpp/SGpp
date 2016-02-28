@@ -81,15 +81,15 @@ const char* getTypeString(const std::vector<std::string>& A) {
 }
 
 void writeGrid(const std::string& filename, const base::GridStorage& gridStorage) {
-  const size_t N = gridStorage.size();
+  const size_t N = gridStorage.getSize();
   const base::DataVector functionValues(N, 0.0);
   writeGrid(filename, gridStorage, functionValues);
 }
 
 void writeGrid(const std::string& filename, const base::GridStorage& gridStorage,
                const base::DataVector& functionValues) {
-  const size_t N = gridStorage.size();
-  const size_t d = gridStorage.dim();
+  const size_t N = gridStorage.getSize();
+  const size_t d = gridStorage.getDimension();
 
   if (functionValues.getSize() != N) {
     throw std::invalid_argument(

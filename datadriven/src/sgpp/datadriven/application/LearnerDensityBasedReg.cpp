@@ -142,11 +142,8 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
 
     // Do Refinements
     if (i > 0) {
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-        new SGPP::base::SurplusRefinementFunctor(alpha_,
-            AdaptConfig.noPoints_);
-      grid_->createGridGenerator()->refine(myRefineFunc);
-      delete myRefineFunc;
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(*alpha_, AdaptConfig.noPoints_);
+      grid_->getGenerator().refine(myRefineFunc);
 
       alpha_->resize(grid_->getSize());
 
@@ -166,16 +163,16 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
       delete C_;
 
     if (this->CMode_ == SGPP::datadriven::RegularizationType::Laplace) {
-      C_ = SGPP::op_factory::createOperationLaplace(*grid_);
+      C_ = SGPP::op_factory::createOperationLaplace(*grid_).release();
     } else if (this->CMode_ == SGPP::datadriven::RegularizationType::Identity) {
-      C_ = SGPP::op_factory::createOperationIdentity(*grid_);
+      C_ = SGPP::op_factory::createOperationIdentity(*grid_).release();
     } else {
       // should not happen
     }
 
     SGPP::datadriven::DensitySystemMatrix DMatrix(*grid_, densityMatrix, *C_,
         lambda);
-    SGPP::base::DataVector rhs(grid_->getStorage()->size());
+    SGPP::base::DataVector rhs(grid_->getSize());
     DMatrix.generateb(rhs);
 
     if (i == AdaptConfig.numRefinements_) {
@@ -255,15 +252,9 @@ SGPP::base::DataVector LearnerDensityBasedReg::predict(
 
     // Conditionalize for all dimensions, but the last one:
     for (size_t j = 0; j < dim; j++) {
-      OperationDensityConditional* cond =
-        SGPP::op_factory::createOperationDensityConditional(
-          *tempGrid);
-
       SGPP::base::DataVector* tempAlpha = new SGPP::base::DataVector(1);
-      cond->doConditional(*lastAlpha, tempGrid, *tempAlpha, 0,
-                          point.get(j));
-
-      delete cond;
+      SGPP::op_factory::createOperationDensityConditional(*tempGrid)->
+          doConditional(*lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
       if (j > 0) {
         delete lastAlpha;
@@ -275,16 +266,13 @@ SGPP::base::DataVector LearnerDensityBasedReg::predict(
     }
 
     // Compute conditional expectation:
-    SGPP::base::OperationFirstMoment* fm =
-      SGPP::op_factory::createOperationFirstMoment(*lastGrid);
-
-    float_t value_normalized = fm->doQuadrature(*lastAlpha);
+    float_t value_normalized =
+        SGPP::op_factory::createOperationFirstMoment(*lastGrid)->doQuadrature(*lastAlpha);
 
     res.set(i, ((value_normalized - border_) * delta) + minValue_);
 
     delete lastAlpha;
     delete lastGrid;
-    delete fm;
   }
 
   return res;
@@ -299,13 +287,9 @@ void LearnerDensityBasedReg::dumpDensityAtPoint(SGPP::base::DataVector& point,
 
   // Conditionalize for all dimensions, but the last one:
   for (size_t j = 0; j < dim; j++) {
-    OperationDensityConditional* cond =
-      SGPP::op_factory::createOperationDensityConditional(*tempGrid);
-
     SGPP::base::DataVector* tempAlpha = new SGPP::base::DataVector(1);
-    cond->doConditional(*lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
-
-    delete cond;
+    SGPP::op_factory::createOperationDensityConditional(*tempGrid)->doConditional(
+        *lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
     if (j > 0) {
       delete lastAlpha;

@@ -374,7 +374,7 @@ class ASGCAnalysis(Analysis):
 #
 #         v[0] = 0
 #         v[1] = self.__grid.getStorage().getMaxLevel()
-#         v[2] = self.__grid.getStorage().size()
+#         v[2] = self.__grid.getSize()
 #         v[3] = 0.0
 #
 #         # # get alpha and test setting
@@ -530,7 +530,7 @@ class ASGCAnalysis(Analysis):
         gs = self.__knowledge.getGrid(self._qoi).getStorage()
 
         n = len(ts)
-        n1 = gs.dim()
+        n1 = gs.getDimension()
         n2 = 2 ** n1 - 1
         data = DataMatrix(n, n1 + n2 + 1)
         names = ['time'] + [None] * (n1 + n2)
@@ -578,7 +578,7 @@ class ASGCAnalysis(Analysis):
 #
 #             # init
 #             gs = self.__grid.getStorage()
-#             dim = gs.dim()
+#             dim = gs.getDimension()
 #
 #             # do random sampling
 #             data = DataMatrix(uniform(0, 1).rvs([n, dim]))
@@ -607,7 +607,7 @@ class ASGCAnalysis(Analysis):
 
             # init
             gs = grid.getStorage()
-            dim = gs.dim()
+            dim = gs.getDimension()
 
             # -----------------------------------------
             # do full grid sampling of sparse grid function
@@ -731,7 +731,7 @@ class ASGCAnalysis(Analysis):
 
 #     def writeRefinementEvaluation(self, filename):
 #         gs = self.__grid.getStorage()
-#         dim = gs.dim()
+#         dim = gs.getDimension()
 #         stats = self.__learner.newPoints
 #         numberPoints = self.__learner.numberPoints
 #         # init

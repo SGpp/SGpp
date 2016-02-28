@@ -14,10 +14,9 @@
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace parallel {
@@ -37,7 +36,7 @@ class DMWeightMatrixVectorizedIdentity : public SGPP::base::OperationMatrix {
   /// the lambda, the regularisation parameter
   double lamb;
   /// OperationB for calculating the data matrix
-  SGPP::parallel::OperationMultipleEvalVectorized* B;
+  std::unique_ptr<SGPP::parallel::OperationMultipleEvalVectorized> B;
   /// Pointer to the data vector
   SGPP::base::DataMatrix* data;
   /// Pointer to the weight vector
@@ -72,8 +71,8 @@ class DMWeightMatrixVectorizedIdentity : public SGPP::base::OperationMatrix {
    * @param w the weights to the training data
    * @param vecMode vectorization mode, possible values are X86SIMD, OCL, ArBB, HYBRID_X86SIMD_OCL
    */
-  DMWeightMatrixVectorizedIdentity(SGPP::base::Grid& SparseGrid,
-                                   SGPP::base::DataMatrix& trainData, double lambda, SGPP::base::DataVector& w,
+  DMWeightMatrixVectorizedIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData,
+                                   double lambda, SGPP::base::DataVector& w,
                                    VectorizationType vecMode);
 
   /**
@@ -81,14 +80,14 @@ class DMWeightMatrixVectorizedIdentity : public SGPP::base::OperationMatrix {
    */
   virtual ~DMWeightMatrixVectorizedIdentity();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   /**
    * Generates the right hand side of the classification equation
    *
    * @param classes the class information of the training data
-   * @param b reference to the vector that will contain the result of the matrix vector multiplication on the rhs
+   * @param b reference to the vector that will contain the result of the matrix vector
+   * multiplication on the rhs
    */
   void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
 
@@ -114,7 +113,7 @@ class DMWeightMatrixVectorizedIdentity : public SGPP::base::OperationMatrix {
                  double& computeMultTrans);
 };
 
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* DMWEIGHTMATRIXVECTORIZEDIDENTITY_HPP */

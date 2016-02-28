@@ -15,7 +15,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -30,68 +29,61 @@ arbb::dense<arbb::f64, 2> ArBB_Level;
 arbb::dense<arbb::f64, 2> ArBB_Index;
 
 template <typename fp_Type>
-void arbb_evalGridPoint_oneDim(const arbb::dense<fp_Type>& dataPointsDim,
-                               const fp_Type& levelPoint, const fp_Type& index, arbb::dense<fp_Type>& result) {
-  result = arbb::max((1.0 - arbb::abs(((levelPoint * dataPointsDim) - index))),
-                     0.0);
+void arbb_evalGridPoint_oneDim(const arbb::dense<fp_Type>& dataPointsDim, const fp_Type& levelPoint,
+                               const fp_Type& index, arbb::dense<fp_Type>& result) {
+  result = arbb::max((1.0 - arbb::abs(((levelPoint * dataPointsDim) - index))), 0.0);
 }
 
 template <typename fp_Type>
 void arbb_evalGridPoint_oneDim_mod(const arbb::dense<fp_Type>& dataPointsDim,
-                                   const fp_Type& levelPoint, const fp_Type& index, arbb::dense<fp_Type>& result) {
-  _if (levelPoint == 2.0) {
+                                   const fp_Type& levelPoint, const fp_Type& index,
+                                   arbb::dense<fp_Type>& result) {
+  _if(levelPoint == 2.0) {
     // nothing
   }
-  _else_if (index == 1.0) {
-    result = arbb::max(2.0 - (levelPoint * dataPointsDim), 0.0);
-  }
-  _else_if (index == (levelPoint - 1.0)) {
+  _else_if(index == 1.0) { result = arbb::max(2.0 - (levelPoint * dataPointsDim), 0.0); }
+  _else_if(index == (levelPoint - 1.0)) {
     result = arbb::max((levelPoint * dataPointsDim) - index + 1.0, 0.0);
   }
-  _else {
-    result = arbb::max((1.0 - arbb::abs(((levelPoint * dataPointsDim) - index))), 0.0);
-  } _end_if;
+  _else { result = arbb::max((1.0 - arbb::abs(((levelPoint * dataPointsDim) - index))), 0.0); }
+  _end_if;
 }
 
 template <typename fp_Type>
-void arbb_evalTransGridPoint_oneDim(const fp_Type& dataPointDim,
-                                    const arbb::dense<fp_Type>& level, const arbb::dense<fp_Type>& index,
+void arbb_evalTransGridPoint_oneDim(const fp_Type& dataPointDim, const arbb::dense<fp_Type>& level,
+                                    const arbb::dense<fp_Type>& index,
                                     arbb::dense<fp_Type>& result) {
   result = arbb::max((1.0 - arbb::abs(((level * dataPointDim) - index))), 0.0);
 }
 
 template <typename fp_Type>
 void arbb_evalTransGridPoint_oneDim_mod(const fp_Type& dataPointDim,
-                                        const arbb::dense<fp_Type>& level, const arbb::dense<fp_Type>& index,
+                                        const arbb::dense<fp_Type>& level,
+                                        const arbb::dense<fp_Type>& index,
                                         arbb::dense<fp_Type>& result) {
   _for(arbb::usize i = 0, i < level.num_rows(), i++) {
-    _if (level[i] == 2.0) {
-      result[i] = 1.0;
-    }
-    _else_if (index[i] == 1.0) {
-      result[i] = arbb::max(2.0 - (level[i] * dataPointDim), 0.0);
-    }
-    _else_if (index[i] == (level[i] - 1.0)) {
+    _if(level[i] == 2.0) { result[i] = 1.0; }
+    _else_if(index[i] == 1.0) { result[i] = arbb::max(2.0 - (level[i] * dataPointDim), 0.0); }
+    _else_if(index[i] == (level[i] - 1.0)) {
       result[i] = arbb::max((level[i] * dataPointDim) - index[i] + 1.0, 0.0);
     }
-    _else {
-      result[i] = arbb::max((1.0 - arbb::abs(((level[i] * dataPointDim) - index[i]))), 0.0);
-    } _end_if;
+    _else { result[i] = arbb::max((1.0 - arbb::abs(((level[i] * dataPointDim) - index[i]))), 0.0); }
+    _end_if;
   }
   _end_for;
 }
 
 template <typename fp_Type>
-void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data,
-                    const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index,
-                    const arbb::dense<fp_Type>& source, arbb::dense<fp_Type>& result) {
+void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level,
+                    const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& source,
+                    arbb::dense<fp_Type>& result) {
   arbb::usize source_size = Data.num_rows();
   arbb::usize storage_size = Level.num_rows();
 
   arbb::dense<fp_Type, 2> LevelTrans = arbb::transpose(Level);
   arbb::dense<fp_Type, 2> IndexTrans = arbb::transpose(Index);
 
-  _for (arbb::usize i = 0, i < source_size, i++) {
+  _for(arbb::usize i = 0, i < source_size, i++) {
     arbb::dense<fp_Type> curDataPoint = Data.row(i);
     fp_Type s = source[i];
 
@@ -103,8 +95,7 @@ void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data,
       arbb::usize d = m;
       fp_Type dataDim = curDataPoint[d];
 
-      arbb_evalTransGridPoint_oneDim(dataDim, LevelTrans.row(d), IndexTrans.row(d),
-                                     temp);
+      arbb_evalTransGridPoint_oneDim(dataDim, LevelTrans.row(d), IndexTrans.row(d), temp);
 
       temp_result *= temp;
     }
@@ -115,16 +106,16 @@ void arbb_multTrans(const arbb::dense<fp_Type, 2>& Data,
 }
 
 template <typename fp_Type>
-void arbb_multTrans_mod(const arbb::dense<fp_Type, 2>& Data,
-                        const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index,
-                        const arbb::dense<fp_Type>& source, arbb::dense<fp_Type>& result) {
+void arbb_multTrans_mod(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level,
+                        const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& source,
+                        arbb::dense<fp_Type>& result) {
   arbb::usize source_size = Data.num_rows();
   arbb::usize storage_size = Level.num_rows();
 
   arbb::dense<fp_Type, 2> LevelTrans = arbb::transpose(Level);
   arbb::dense<fp_Type, 2> IndexTrans = arbb::transpose(Index);
 
-  _for (arbb::usize i = 0, i < source_size, i++) {
+  _for(arbb::usize i = 0, i < source_size, i++) {
     arbb::dense<fp_Type> curDataPoint = Data.row(i);
     fp_Type s = source[i];
 
@@ -136,8 +127,7 @@ void arbb_multTrans_mod(const arbb::dense<fp_Type, 2>& Data,
       arbb::usize d = m;
       fp_Type dataDim = curDataPoint[d];
 
-      arbb_evalTransGridPoint_oneDim_mod(dataDim, LevelTrans.row(d),
-                                         IndexTrans.row(d), temp);
+      arbb_evalTransGridPoint_oneDim_mod(dataDim, LevelTrans.row(d), IndexTrans.row(d), temp);
 
       temp_result *= temp;
     }
@@ -148,15 +138,15 @@ void arbb_multTrans_mod(const arbb::dense<fp_Type, 2>& Data,
 }
 
 template <typename fp_Type>
-void arbb_mult(const arbb::dense<fp_Type, 2>& Data,
-               const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index,
-               const arbb::dense<fp_Type>& alpha, arbb::dense<fp_Type>& result) {
+void arbb_mult(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level,
+               const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& alpha,
+               arbb::dense<fp_Type>& result) {
   arbb::usize result_size = result.length();
   arbb::usize storage_size = Level.num_rows();
 
   arbb::dense<fp_Type, 2> DataTrans = arbb::transpose(Data);
 
-  _for (arbb::usize j = 0, j < storage_size, j++) {
+  _for(arbb::usize j = 0, j < storage_size, j++) {
     arbb::dense<fp_Type> curLevel = Level.row(j);
     arbb::dense<fp_Type> curIndex = Index.row(j);
     fp_Type a = alpha[j];
@@ -170,7 +160,7 @@ void arbb_mult(const arbb::dense<fp_Type, 2>& Data,
       fp_Type l = curLevel[d];
       fp_Type i = curIndex[d];
 
-      //arbb::dense<fp_Type> index = arbb::fill(i, result_size);
+      // arbb::dense<fp_Type> index = arbb::fill(i, result_size);
 
       arbb_evalGridPoint_oneDim(DataTrans.row(d), l, i, temp);
 
@@ -183,15 +173,15 @@ void arbb_mult(const arbb::dense<fp_Type, 2>& Data,
 }
 
 template <typename fp_Type>
-void arbb_mult_mod(const arbb::dense<fp_Type, 2>& Data,
-                   const arbb::dense<fp_Type, 2>& Level, const arbb::dense<fp_Type, 2>& Index,
-                   const arbb::dense<fp_Type>& alpha, arbb::dense<fp_Type>& result) {
+void arbb_mult_mod(const arbb::dense<fp_Type, 2>& Data, const arbb::dense<fp_Type, 2>& Level,
+                   const arbb::dense<fp_Type, 2>& Index, const arbb::dense<fp_Type>& alpha,
+                   arbb::dense<fp_Type>& result) {
   arbb::usize result_size = result.length();
   arbb::usize storage_size = Level.num_rows();
 
   arbb::dense<fp_Type, 2> DataTrans = arbb::transpose(Data);
 
-  _for (arbb::usize j = 0, j < storage_size, j++) {
+  _for(arbb::usize j = 0, j < storage_size, j++) {
     arbb::dense<fp_Type> curLevel = Level.row(j);
     arbb::dense<fp_Type> curIndex = Index.row(j);
     fp_Type a = alpha[j];
@@ -205,7 +195,7 @@ void arbb_mult_mod(const arbb::dense<fp_Type, 2>& Data,
       fp_Type l = curLevel[d];
       fp_Type i = curIndex[d];
 
-      //arbb::dense<fp_Type> index = arbb::fill(i, result_size);
+      // arbb::dense<fp_Type> index = arbb::fill(i, result_size);
 
       arbb_evalGridPoint_oneDim_mod(DataTrans.row(d), l, i, temp);
 
@@ -225,11 +215,10 @@ ArBBKernels::ArBBKernels() {
   isMultfirst = true;
 }
 
-ArBBKernels::~ArBBKernels() {
-}
+ArBBKernels::~ArBBKernels() {}
 
-double ArBBKernels::multTransArBB(double* ptrSource, double* ptrData,
-                                  double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
+double ArBBKernels::multTransArBB(double* ptrSource, double* ptrData, double* ptrLevel,
+                                  double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
                                   size_t storageSize, size_t dims) {
   double time = 0.0;
 
@@ -249,8 +238,8 @@ double ArBBKernels::multTransArBB(double* ptrSource, double* ptrData,
     arbb::bind(ArBB_result, ptrGlobalResult, storageSize);
     arbb::bind(ArBB_source, ptrSource, sourceSize);
 
-    arbb::call(&(arbb_multTrans<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index,
-        ArBB_source, ArBB_result);
+    arbb::call(&(arbb_multTrans<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_source,
+                                             ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -258,9 +247,9 @@ double ArBBKernels::multTransArBB(double* ptrSource, double* ptrData,
   return time;
 }
 
-double ArBBKernels::multArBB(double* ptrAlpha, double* ptrData,
-                             double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size,
-                             size_t storageSize, size_t dims) {
+double ArBBKernels::multArBB(double* ptrAlpha, double* ptrData, double* ptrLevel, double* ptrIndex,
+                             double* ptrResult, size_t result_size, size_t storageSize,
+                             size_t dims) {
   double time = 0.0;
 
   global_dims = dims;
@@ -279,8 +268,7 @@ double ArBBKernels::multArBB(double* ptrAlpha, double* ptrData,
     arbb::bind(ArBB_result, ptrResult, result_size);
     arbb::bind(ArBB_alpha, ptrAlpha, storageSize);
 
-    arbb::call(&(arbb_mult<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index,
-                                        ArBB_alpha, ArBB_result);
+    arbb::call(&(arbb_mult<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_alpha, ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -288,8 +276,8 @@ double ArBBKernels::multArBB(double* ptrAlpha, double* ptrData,
   return time;
 }
 
-double ArBBKernels::multTransSPArBB(float* ptrSource, float* ptrData,
-                                    float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize,
+double ArBBKernels::multTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel,
+                                    float* ptrIndex, float* ptrGlobalResult, size_t sourceSize,
                                     size_t storageSize, size_t dims) {
   double time = 0.0;
 
@@ -309,8 +297,8 @@ double ArBBKernels::multTransSPArBB(float* ptrSource, float* ptrData,
     arbb::bind(ArBB_result, ptrGlobalResult, storageSize);
     arbb::bind(ArBB_source, ptrSource, sourceSize);
 
-    arbb::call(&(arbb_multTrans<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP,
-        ArBB_IndexSP, ArBB_source, ArBB_result);
+    arbb::call(&(arbb_multTrans<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP, ArBB_source,
+                                             ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -318,8 +306,8 @@ double ArBBKernels::multTransSPArBB(float* ptrSource, float* ptrData,
   return time;
 }
 
-double ArBBKernels::multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel,
-                               float* ptrIndex, float* ptrResult, size_t result_size, size_t storageSize,
+double ArBBKernels::multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex,
+                               float* ptrResult, size_t result_size, size_t storageSize,
                                size_t dims) {
   double time = 0.0;
 
@@ -339,8 +327,8 @@ double ArBBKernels::multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel,
     arbb::bind(ArBB_result, ptrResult, result_size);
     arbb::bind(ArBB_alpha, ptrAlpha, storageSize);
 
-    arbb::call(&(arbb_mult<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP,
-                                        ArBB_alpha, ArBB_result);
+    arbb::call(&(arbb_mult<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP, ArBB_alpha,
+                                        ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -348,8 +336,8 @@ double ArBBKernels::multSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel,
   return time;
 }
 
-double ArBBKernels::multModTransArBB(double* ptrSource, double* ptrData,
-                                     double* ptrLevel, double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
+double ArBBKernels::multModTransArBB(double* ptrSource, double* ptrData, double* ptrLevel,
+                                     double* ptrIndex, double* ptrGlobalResult, size_t sourceSize,
                                      size_t storageSize, size_t dims) {
   double time = 0.0;
 
@@ -369,8 +357,8 @@ double ArBBKernels::multModTransArBB(double* ptrSource, double* ptrData,
     arbb::bind(ArBB_result, ptrGlobalResult, storageSize);
     arbb::bind(ArBB_source, ptrSource, sourceSize);
 
-    arbb::call(&(arbb_multTrans_mod<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index,
-        ArBB_source, ArBB_result);
+    arbb::call(&(arbb_multTrans_mod<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_source,
+                                                 ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -378,8 +366,8 @@ double ArBBKernels::multModTransArBB(double* ptrSource, double* ptrData,
   return time;
 }
 
-double ArBBKernels::multModArBB(double* ptrAlpha, double* ptrData,
-                                double* ptrLevel, double* ptrIndex, double* ptrResult, size_t result_size,
+double ArBBKernels::multModArBB(double* ptrAlpha, double* ptrData, double* ptrLevel,
+                                double* ptrIndex, double* ptrResult, size_t result_size,
                                 size_t storageSize, size_t dims) {
   double time = 0.0;
 
@@ -399,8 +387,8 @@ double ArBBKernels::multModArBB(double* ptrAlpha, double* ptrData,
     arbb::bind(ArBB_result, ptrResult, result_size);
     arbb::bind(ArBB_alpha, ptrAlpha, storageSize);
 
-    arbb::call(&(arbb_mult_mod<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index,
-                                            ArBB_alpha, ArBB_result);
+    arbb::call(&(arbb_mult_mod<arbb::f64>))(ArBB_Data, ArBB_Level, ArBB_Index, ArBB_alpha,
+                                            ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -408,8 +396,8 @@ double ArBBKernels::multModArBB(double* ptrAlpha, double* ptrData,
   return time;
 }
 
-double ArBBKernels::multModTransSPArBB(float* ptrSource, float* ptrData,
-                                       float* ptrLevel, float* ptrIndex, float* ptrGlobalResult, size_t sourceSize,
+double ArBBKernels::multModTransSPArBB(float* ptrSource, float* ptrData, float* ptrLevel,
+                                       float* ptrIndex, float* ptrGlobalResult, size_t sourceSize,
                                        size_t storageSize, size_t dims) {
   double time = 0.0;
 
@@ -429,8 +417,8 @@ double ArBBKernels::multModTransSPArBB(float* ptrSource, float* ptrData,
     arbb::bind(ArBB_result, ptrGlobalResult, storageSize);
     arbb::bind(ArBB_source, ptrSource, sourceSize);
 
-    arbb::call(&(arbb_multTrans_mod<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP,
-        ArBB_IndexSP, ArBB_source, ArBB_result);
+    arbb::call(&(arbb_multTrans_mod<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP,
+                                                 ArBB_source, ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -438,9 +426,9 @@ double ArBBKernels::multModTransSPArBB(float* ptrSource, float* ptrData,
   return time;
 }
 
-double ArBBKernels::multModSPArBB(float* ptrAlpha, float* ptrData,
-                                  float* ptrLevel, float* ptrIndex, float* ptrResult, size_t result_size,
-                                  size_t storageSize, size_t dims) {
+double ArBBKernels::multModSPArBB(float* ptrAlpha, float* ptrData, float* ptrLevel, float* ptrIndex,
+                                  float* ptrResult, size_t result_size, size_t storageSize,
+                                  size_t dims) {
   double time = 0.0;
 
   global_dims = dims;
@@ -459,8 +447,8 @@ double ArBBKernels::multModSPArBB(float* ptrAlpha, float* ptrData,
     arbb::bind(ArBB_result, ptrResult, result_size);
     arbb::bind(ArBB_alpha, ptrAlpha, storageSize);
 
-    arbb::call(&(arbb_mult_mod<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP,
-                                            ArBB_alpha, ArBB_result);
+    arbb::call(&(arbb_mult_mod<arbb::f32>))(ArBB_DataSP, ArBB_LevelSP, ArBB_IndexSP, ArBB_alpha,
+                                            ArBB_result);
   } catch (const std::exception& e) {
     std::cout << "Error using Intel ArBB: " << e.what() << std::endl;
   }
@@ -479,7 +467,5 @@ void ArBBKernels::resetKernels() {
   isMultModTransfirst = true;
   isMultModfirst = true;
 }
-
 }
-
 }

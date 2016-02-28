@@ -16,9 +16,9 @@ float_t OperationFirstMomentLinear::doQuadrature(const DataVector& alpha) {
   float_t res = 0;
   float_t tmpres = 1;
   GridStorage::index_type index;
-  GridStorage::grid_map_iterator end_iter = storage->end();
+  GridStorage::grid_map_iterator end_iter = storage.end();
 
-  for (GridStorage::grid_map_iterator iter = storage->begin(); iter != end_iter;
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
        iter++) {
     // index = *(iter->first);
     // std::cout << iter->second << " " << iter->first->getLevelSum() <<
@@ -26,7 +26,7 @@ float_t OperationFirstMomentLinear::doQuadrature(const DataVector& alpha) {
     // std::endl;
     tmpres = 1.;
 
-    for (size_t dim = 0; dim < storage->dim(); dim++)
+    for (size_t dim = 0; dim < storage.getDimension(); dim++)
       tmpres *= iter->first->getIndex(dim) * pow(4.0,
                 -static_cast<float_t>(iter->first->getLevel(dim)));
 
