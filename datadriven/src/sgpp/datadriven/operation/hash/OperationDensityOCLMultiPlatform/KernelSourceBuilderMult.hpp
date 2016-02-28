@@ -9,6 +9,7 @@
 #include <sgpp/base/opencl/KernelSourceBuilderBase.hpp>
 
 #include <fstream>
+#include <sstream>
 #include <string>
 namespace SGPP {
 namespace datadriven {
@@ -61,8 +62,10 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
 
         sourceStream << "void kernel multdensity(global const int *starting_points,global const "
                      << this->floatType() << " *alpha, global " << this->floatType()
-                     << " *result,const " << this->floatType() << " lambda)" << std::endl;
+                     << " *result,const " << this->floatType() << " lambda, int startid)" << std::endl;
         sourceStream << "{" << std::endl;
+        sourceStream << this->indent[0] << "int gridindex = startid + get_global_id(0);"
+                     << std::endl;
         sourceStream << this->indent[0] << this->floatType() << " gesamtint = 0.0;" << std::endl;
         sourceStream << this->indent[0] << "for(private int i = 0;i< " << gridsize
                      << ";i++) {" << std::endl;
@@ -70,24 +73,24 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
                      << std::endl;
         sourceStream << this->indent[1] << "for(private int dim = 0;dim< " << dimensions
                      << ";dim++) {" << std::endl;
-        sourceStream << this->indent[2] << "int index = starting_points[get_global_id(0)* "
+        sourceStream << this->indent[2] << "int index = starting_points[gridindex* "
                      << dimensions << "*2+2*dim];" << std::endl;
-        sourceStream << this->indent[2] << "int level = starting_points[get_global_id(0)* "
+        sourceStream << this->indent[2] << "int level = starting_points[gridindex* "
                      << dimensions << "*2+2*dim+1];" << std::endl;
         sourceStream << this->indent[2] << "int index2 = starting_points[i* " << dimensions
                      << "*2+2*dim];" << std::endl;
         sourceStream << this->indent[2] << "int level2 = starting_points[i* " << dimensions
                      << "*2+2*dim+1];" << std::endl;
-        sourceStream << this->indent[2] << "if(starting_points[get_global_id(0)* " << dimensions
+        sourceStream << this->indent[2] << "if(starting_points[gridindex* " << dimensions
                      << "*2+2*dim+1]>starting_points[i* " << dimensions
                      << "*2+2*dim+1]) {" << std::endl;
         sourceStream << this->indent[3] << "index = starting_points[i* "
                      << dimensions << "*2+2*dim];" << std::endl;
         sourceStream << this->indent[3] << "level = starting_points[i* "
                      << dimensions << "*2+2*dim+1];" << std::endl;
-        sourceStream << this->indent[3] << "index2 = starting_points[get_global_id(0)* "
+        sourceStream << this->indent[3] << "index2 = starting_points[gridindex* "
                      << dimensions << "*2+2*dim];" << std::endl;
-        sourceStream << this->indent[3] << "level2 = starting_points[get_global_id(0)* "
+        sourceStream << this->indent[3] << "level2 = starting_points[gridindex* "
                      << dimensions << "*2+2*dim+1];" << std::endl;
         sourceStream << this->indent[2] << "}" << std::endl;
         sourceStream << this->indent[2] << "int teiler = (1 << level2);" << std::endl;
@@ -112,11 +115,11 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
         sourceStream << this->indent[2] << "if(uright<0)" << std::endl;
         sourceStream << this->indent[3] << "uright = 0;" << std::endl;
         sourceStream << this->indent[2] << "if(starting_points[i* " << dimensions
-                     << "*2+2*dim+1] == starting_points[get_global_id(0)* "
+                     << "*2+2*dim+1] == starting_points[gridindex* "
                      << dimensions << "*2+2*dim+1]) {" << std::endl;
         sourceStream <<  this->indent[3] <<"zellenintegral *= 2.0/3.0*h;" << std::endl;
         sourceStream << this->indent[3] << "if(starting_points[i* " << dimensions
-                     << "*2+2*dim] != starting_points[get_global_id(0)* "
+                     << "*2+2*dim] != starting_points[gridindex* "
                      << dimensions << "*2+2*dim])" << std::endl;
         sourceStream << this->indent[4] << "zellenintegral = 0.0;" << std::endl;
         sourceStream << this->indent[2] << "}" << std::endl;
@@ -126,7 +129,7 @@ class SourceBuilderMult: public base::KernelSourceBuilderBase<real_type> {
         sourceStream << this->indent[1] << "gesamtint += zellenintegral*alpha[i];" << std::endl;
         sourceStream << this->indent[0] << "}" << std::endl;
         sourceStream << this->indent[0] << "result[get_global_id(0)] = gesamtint;" << std::endl;
-        sourceStream << this->indent[0] << "result[get_global_id(0)] += alpha[get_global_id(0)]*"
+        sourceStream << this->indent[0] << "result[get_global_id(0)] += alpha[gridindex]*"
                      << "lambda;" << std::endl;
         sourceStream << "}" << std::endl;
 
