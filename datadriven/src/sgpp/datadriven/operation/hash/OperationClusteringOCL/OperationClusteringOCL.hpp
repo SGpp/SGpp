@@ -24,11 +24,11 @@ namespace ClusteringOCL {
 
 template<typename T>
 class OperationClusteringOCL {
-private:
+ private:
   bool verbose;
   std::string opencl_configuration;
 
-public:
+ public:
   OperationClusteringOCL(std::string opencl_configuration, bool verbose)
       : verbose(verbose), opencl_configuration(opencl_configuration) {
   }
@@ -74,7 +74,7 @@ public:
     prune_operation->prune_graph(graph);
 
     std::vector<size_t> ret = DensityOCLMultiPlatform::
-                              OperationCreateGraphOCL::find_clusters(graph, k);
+        OperationCreateGraphOCL::find_clusters(graph, k);
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     if (verbose) {

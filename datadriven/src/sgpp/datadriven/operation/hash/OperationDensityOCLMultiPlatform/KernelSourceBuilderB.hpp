@@ -17,94 +17,94 @@ namespace DensityOCLMultiPlatform {
 template<typename real_type>
 class SourceBuilderB: public base::KernelSourceBuilderBase<real_type> {
  private:
-    std::shared_ptr<base::OCLDevice> device;
+  std::shared_ptr<base::OCLDevice> device;
 
-    json::Node &kernelConfiguration;
+  json::Node &kernelConfiguration;
 
-    size_t dims;
+  size_t dims;
 
-    size_t localWorkgroupSize;
-    bool useLocalMemory;
-    size_t dataBlockSize;
-    size_t transGridBlockSize;
-    uint64_t maxDimUnroll;
+  size_t localWorkgroupSize;
+  bool useLocalMemory;
+  size_t dataBlockSize;
+  size_t transGridBlockSize;
+  uint64_t maxDimUnroll;
 
-    std::string getData(std::string dim, size_t dataBlockingIndex) {
-        std::stringstream output;
-        if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
-            output << "data_" << dataBlockingIndex << "[" << dim << "]";
-        } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
-            output << "data_" << dataBlockingIndex << "_" << dim;
-        } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
-            output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim
-                   << ") + " << dataBlockingIndex << "]";
-        } else {
-            std::string error("OCL Error: Illegal value for parameter \"KERNEL_STORE_DATA\"");
-            throw new base::operation_exception(error.c_str());
-        }
-        return output.str();
+  std::string getData(std::string dim, size_t dataBlockingIndex) {
+    std::stringstream output;
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("array") == 0) {
+      output << "data_" << dataBlockingIndex << "[" << dim << "]";
+    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0) {
+      output << "data_" << dataBlockingIndex << "_" << dim;
+    } else if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("pointer") == 0) {
+      output << "ptrData[(" << dataBlockSize << " * globalIdx) + (resultSize * " << dim
+             << ") + " << dataBlockingIndex << "]";
+    } else {
+      std::string error("OCL Error: Illegal value for parameter \"KERNEL_STORE_DATA\"");
+      throw new base::operation_exception(error.c_str());
     }
+    return output.str();
+  }
 
  public:
-    SourceBuilderB(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
-                   size_t dims) :
-        device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
+  SourceBuilderB(std::shared_ptr<base::OCLDevice> device, json::Node &kernelConfiguration,
+                 size_t dims) :
+      device(device), kernelConfiguration(kernelConfiguration), dims(dims) {
+  }
+
+  std::string generateSource(size_t dimensions, size_t datapoints) {
+    if (kernelConfiguration.contains("REUSE_SOURCE")) {
+      if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
+        return this->reuseSource("DensityOCLMultiPlatform_mult.cl");
+      }
     }
 
-    std::string generateSource(size_t dimensions, size_t datapoints) {
-        if (kernelConfiguration.contains("REUSE_SOURCE")) {
-            if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
-                return this->reuseSource("DensityOCLMultiPlatform_mult.cl");
-            }
-        }
+    std::stringstream sourceStream;
 
-        std::stringstream sourceStream;
-
-        if (this->floatType().compare("double") == 0) {
-            sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
-                         << std::endl;
-        }
-
-        sourceStream << "void kernel cscheme(global const int* starting_points," << std::endl
-                     <<"global const " << this->floatType() << "* data_points,global "
-                     << this->floatType() << "* C, private int startid) {" << std::endl
-                     << this->indent[0] << "C[get_global_id(0)]=0.0;" << std::endl
-                     << this->indent[0] << "for(unsigned int ds=0;ds< " << datapoints << ";ds++)"
-                     << std::endl
-                     << this->indent[0] << "{" << std::endl
-                     << this->indent[1] << "private " << this->floatType() << " value=1;"
-                     << std::endl
-                     << this->indent[1] << "for(private int d=0;d< " << dimensions << ";d++)"
-                     << std::endl
-                     << this->indent[1] << "{" << std::endl
-                     << this->indent[2] << "private " << this->floatType() << " wert=1.0;"
-                     << std::endl
-                     << this->indent[2] << "for(private int z=1;" << std::endl
-                     << this->indent[2] << "z<=starting_points[(startid + get_global_id(0))*2* "
-                     << dimensions << "+2*d+1];z++)" << std::endl
-                     << this->indent[3] << "wert*=2;" << std::endl
-                     << this->indent[2] << "wert*=data_points[ds* " << dimensions << "+d];"
-                     << std::endl
-                     << this->indent[2] << "wert-=starting_points[(startid + get_global_id(0))*2* "
-                     << dimensions << "+2*d];" << std::endl
-                     << this->indent[2] << "if(wert<0)" << std::endl
-                     << this->indent[3] << "wert*=-1;" << std::endl
-                     << this->indent[2] << "wert=1-wert;" << std::endl
-                     << this->indent[2] << "if(wert<0)" << std::endl
-                     << this->indent[3] << "wert=0;" << std::endl
-                     << this->indent[2] << "value*=wert;" << std::endl
-                     << this->indent[1] << "}" << std::endl
-                     << this->indent[1] << "C[get_global_id(0)]+=value/ " << datapoints << ";"
-                     << std::endl
-                     << this->indent[0] << "}" << std::endl
-                     <<"}" << std::endl;
-        if (kernelConfiguration.contains("WRITE_SOURCE")) {
-            if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-                this->writeSource("DensityOCLMultiPlatform_mult.cl", sourceStream.str());
-            }
-        }
-        return sourceStream.str();
+    if (this->floatType().compare("double") == 0) {
+      sourceStream << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable" << std::endl
+                   << std::endl;
     }
+
+    sourceStream << "void kernel cscheme(global const int* starting_points," << std::endl
+                 <<"global const " << this->floatType() << "* data_points,global "
+                 << this->floatType() << "* C, private int startid) {" << std::endl
+                 << this->indent[0] << "C[get_global_id(0)]=0.0;" << std::endl
+                 << this->indent[0] << "for(unsigned int ds=0;ds< " << datapoints << ";ds++)"
+                 << std::endl
+                 << this->indent[0] << "{" << std::endl
+                 << this->indent[1] << "private " << this->floatType() << " value=1;"
+                 << std::endl
+                 << this->indent[1] << "for(private int d=0;d< " << dimensions << ";d++)"
+                 << std::endl
+                 << this->indent[1] << "{" << std::endl
+                 << this->indent[2] << "private " << this->floatType() << " wert=1.0;"
+                 << std::endl
+                 << this->indent[2] << "for(private int z=1;" << std::endl
+                 << this->indent[2] << "z<=starting_points[(startid + get_global_id(0))*2* "
+                 << dimensions << "+2*d+1];z++)" << std::endl
+                 << this->indent[3] << "wert*=2;" << std::endl
+                 << this->indent[2] << "wert*=data_points[ds* " << dimensions << "+d];"
+                 << std::endl
+                 << this->indent[2] << "wert-=starting_points[(startid + get_global_id(0))*2* "
+                 << dimensions << "+2*d];" << std::endl
+                 << this->indent[2] << "if(wert<0)" << std::endl
+                 << this->indent[3] << "wert*=-1;" << std::endl
+                 << this->indent[2] << "wert=1-wert;" << std::endl
+                 << this->indent[2] << "if(wert<0)" << std::endl
+                 << this->indent[3] << "wert=0;" << std::endl
+                 << this->indent[2] << "value*=wert;" << std::endl
+                 << this->indent[1] << "}" << std::endl
+                 << this->indent[1] << "C[get_global_id(0)]+=value/ " << datapoints << ";"
+                 << std::endl
+                 << this->indent[0] << "}" << std::endl
+                 <<"}" << std::endl;
+    if (kernelConfiguration.contains("WRITE_SOURCE")) {
+      if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
+        this->writeSource("DensityOCLMultiPlatform_mult.cl", sourceStream.str());
+      }
+    }
+    return sourceStream.str();
+  }
 };
 
 }  // namespace DensityOCLMultiPlatform

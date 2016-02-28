@@ -18,10 +18,10 @@ namespace DensityOCLMultiPlatform {
 
 class OperationDensityOCL: public base::OperationMatrix {
  public:
-    OperationDensityOCL()  {
-    }
-    virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
-    virtual void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b) = 0;
+  OperationDensityOCL()  {
+  }
+  virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
+  virtual void generateb(base::DataMatrix &dataset, SGPP::base::DataVector &b) = 0;
 };
 
 }  // namespace DensityOCLMultiPlatform
