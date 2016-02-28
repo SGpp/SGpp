@@ -36,3 +36,4 @@ class DataMiningConfiguration: public json::JSON {
 }  // namespace base
 }  // namespace SGPP
 
+//git please do not delete me

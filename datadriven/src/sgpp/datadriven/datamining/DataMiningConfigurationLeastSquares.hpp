@@ -54,3 +54,4 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
 
 }  // namespace base
 }  // namespace SGPP
+//git please do not delete me
