@@ -9,17 +9,15 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
-FunctionWrapper::FunctionWrapper(datadriven::DataMiningConfiguration& config) : SampleProvider(config) {
-}
+FunctionWrapper::FunctionWrapper(datadriven::DataMiningConfiguration& config)
+    : SampleProvider(config) {}
 
 FunctionWrapper::~FunctionWrapper() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
 
 } /* namespace datadriven */
 } /* namespace SGPP */
-//git please do not delete me

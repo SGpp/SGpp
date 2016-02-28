@@ -26,55 +26,49 @@ namespace datadriven {
  * Furthermore this Learner provides support for several
  * vectorization approaches covering GPUs, CPUs and coprocessors.
  */
-class ModelFittingLeastSquares: public ModelFittingBase {
-private:
-	base::OperationMultipleEval* kernel = nullptr;
+class ModelFittingLeastSquares : public ModelFittingBase {
+ private:
+  base::OperationMultipleEval* kernel = nullptr;
 
-	datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
+  datadriven::OperationMultipleEvalConfiguration implementationConfiguration;
 
-	DataMiningConfigurationLeastSquares configuration;
+  DataMiningConfigurationLeastSquares configuration;
 
-	std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
+  std::shared_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
 
-	std::shared_ptr<solver::SLESolver> solver;
-protected:
+  std::shared_ptr<solver::SLESolver> solver;
 
-	virtual datadriven::DMSystemMatrixBase* createSystemMatrix(
-			base::DataMatrix& trainDataset, float_t lambda);
+ protected:
+  virtual datadriven::DMSystemMatrixBase* createSystemMatrix(base::DataMatrix& trainDataset,
+                                                             float_t lambda);
 
-public:
-	/**
-	 * Constructor
-	 *
-	 * @param config configuration
-	 */
-	ModelFittingLeastSquares(
-	SGPP::datadriven::DataMiningConfigurationLeastSquares config);
+ public:
+  /**
+   * Constructor
+   *
+   * @param config configuration
+   */
+  ModelFittingLeastSquares(SGPP::datadriven::DataMiningConfigurationLeastSquares config);
 
-	/**
-	 * Destructor
-	 */
-	virtual ~ModelFittingLeastSquares();
+  /**
+   * Destructor
+   */
+  virtual ~ModelFittingLeastSquares();
 
-	// new grid and new dataset
-	void fit(datadriven::Dataset& dataset) override;
+  // new grid and new dataset
+  void fit(datadriven::Dataset& dataset) override;
 
-	// reuse grid and assume old dataset
-	// for grid refinement steps
+  // reuse grid and assume old dataset
+  // for grid refinement steps
   void refine() override;
 
   // reuse grid and new dataset
   // for online learning
   void update(datadriven::Dataset& dataset) override;
 
-	void setImplementation(
-			datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
-		this->implementationConfiguration = operationConfiguration;
-	}
+  void setImplementation(datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
+    this->implementationConfiguration = operationConfiguration;
+  }
 };
-
 }
-
 }
-
-//git please do not delete me

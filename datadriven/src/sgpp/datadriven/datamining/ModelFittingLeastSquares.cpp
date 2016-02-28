@@ -28,8 +28,7 @@ ModelFittingLeastSquares::~ModelFittingLeastSquares() {}
 datadriven::DMSystemMatrixBase* ModelFittingLeastSquares::createSystemMatrix(
     base::DataMatrix& trainDataset, float_t lambda) {
   datadriven::SystemMatrixLeastSquaresIdentity* systemMatrix =
-      new datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid),
-                                                       trainDataset, lambda);
+      new datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid), trainDataset, lambda);
   systemMatrix->setImplementation(this->implementationConfiguration);
   return systemMatrix;
 }
@@ -55,16 +54,14 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
   systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
       createSystemMatrix(dataset.getData(), configuration.getLambda()));
 
-  if (configuration.getSolverRefineConfig().type_ ==
-      SGPP::solver::SLESolverType::CG) {
+  if (configuration.getSolverRefineConfig().type_ == SGPP::solver::SLESolverType::CG) {
     solver = std::make_shared<solver::ConjugateGradients>(
         configuration.getSolverRefineConfig().maxIterations_,
         configuration.getSolverRefineConfig().eps_);
-  } else if (configuration.getSolverRefineConfig().type_ ==
-             SGPP::solver::SLESolverType::BiCGSTAB) {
-    solver = std::make_shared<solver::BiCGStab>(
-        configuration.getSolverRefineConfig().maxIterations_,
-        configuration.getSolverRefineConfig().eps_);
+  } else if (configuration.getSolverRefineConfig().type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
+    solver =
+        std::make_shared<solver::BiCGStab>(configuration.getSolverRefineConfig().maxIterations_,
+                                           configuration.getSolverRefineConfig().eps_);
   } else {
     throw base::application_exception(
         "LearnerBase::train: An unsupported SLE solver type was "
@@ -75,8 +72,7 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
   systemMatrix->generateb(dataset.getTargets(), b);
 
   if (configuration.getRefinementConfig().numRefinements_ == 0) {
-    solver->setMaxIterations(
-        configuration.getSolverFinalConfig().maxIterations_);
+    solver->setMaxIterations(configuration.getSolverFinalConfig().maxIterations_);
     solver->setEpsilon(configuration.getSolverFinalConfig().eps_);
   }
 
@@ -137,4 +133,3 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
 }
 }
 }
-//git please do not delete me

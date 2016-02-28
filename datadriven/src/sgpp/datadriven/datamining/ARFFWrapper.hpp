@@ -13,14 +13,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 #include <string>
-
 
 namespace SGPP {
 namespace datadriven {
 
-class ARFFWrapper: public DataWrapper {
+class ARFFWrapper : public DataWrapper {
  public:
   ARFFWrapper(datadriven::DataMiningConfiguration& config);
 
@@ -30,7 +28,7 @@ class ARFFWrapper: public DataWrapper {
 
   Dataset allSamples();
 
-protected:
+ protected:
   /**
    * Reads an ARFF file.
    *
@@ -48,11 +46,10 @@ protected:
    * @param[out] numberInstances number of instances in the dataset
    * @param[out] dimension number of dimensions in the dataset
    */
-  static void readARFFSize(const std::string& filename, size_t& numberInstances,
-                           size_t& dimension);
+  static void readARFFSize(const std::string& filename, size_t& numberInstances, size_t& dimension);
 
-  static void readARFFSizeFromString(const std::string& content,
-                                     size_t& numberInstances, size_t& dimension);
+  static void readARFFSizeFromString(const std::string& content, size_t& numberInstances,
+                                     size_t& dimension);
 
   /**
    * stores the attribute info of one instance into a SGPP::base::DataMatrix
@@ -71,18 +68,15 @@ protected:
    * @param destination SGPP::base::DataVector into which the instance is stored
    * @param instanceNo the number of the instance
    */
-  static void writeNewClass(const std::string& arffLine,
-                            SGPP::base::DataVector& destination, size_t instanceNo);
-
+  static void writeNewClass(const std::string& arffLine, SGPP::base::DataVector& destination,
+                            size_t instanceNo);
 
   size_t seed;
   size_t dimension;
   size_t numberInstances;
-
 };
 
 } /* namespace datadriven */
 } /* namespace SGPP */
 
 #endif /* ARFFWRAPPER_HPP_ */
-//git please do not delete me

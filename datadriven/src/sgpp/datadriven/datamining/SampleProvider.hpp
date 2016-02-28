@@ -15,40 +15,37 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
 class SampleProvider {
-public:
-	SampleProvider(datadriven::DataMiningConfiguration& config){};
-	virtual ~SampleProvider(){};
+ public:
+  SampleProvider(datadriven::DataMiningConfiguration& config){};
+  virtual ~SampleProvider(){};
 
-	/**
-	 * Selects a certain number of samples
-	 * @param how_many number of samples to return
-	 * @return dataset
-	 */
-	virtual Dataset nextSamples(int how_many) = 0;
+  /**
+   * Selects a certain number of samples
+   * @param how_many number of samples to return
+   * @return dataset
+   */
+  virtual Dataset nextSamples(int how_many) = 0;
 
-	/**
-	 * Returns all samples
-	 * @return dataset
-	 */
-	virtual Dataset allSamples() = 0;
+  /**
+   * Returns all samples
+   * @return dataset
+   */
+  virtual Dataset allSamples() = 0;
 
-	/**
-	 * Returns the dimensionality of the data source
-	 * @return dimensionality
-	 */
-	size_t getDim(){ return dim;}
+  /**
+   * Returns the dimensionality of the data source
+   * @return dimensionality
+   */
+  size_t getDim() { return dim; }
 
-protected:
-	size_t dim;
-
+ protected:
+  size_t dim;
 };
 }
 }
 
 #endif /* SAMPLEPROVIDER_HPP_ */
-//git please do not delete me

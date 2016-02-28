@@ -11,14 +11,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
 Scorer::~Scorer() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
 
 } /* namespace datadriven */
 } /* namespace SGPP */
-//git please do not delete me

@@ -21,8 +21,7 @@ namespace datadriven {
 
 class DataWrapper : public SampleProvider {
  public:
-  DataWrapper(datadriven::DataMiningConfiguration& config)
-      : SampleProvider(config) {
+  DataWrapper(datadriven::DataMiningConfiguration& config) : SampleProvider(config) {
     try {
       filename = config["filename"].get();
     } catch (json::json_exception& e) {
@@ -39,4 +38,3 @@ class DataWrapper : public SampleProvider {
 } /* namespace SGPP */
 
 #endif /* DATAWRAPPER_H_ */
-//git please do not delete me

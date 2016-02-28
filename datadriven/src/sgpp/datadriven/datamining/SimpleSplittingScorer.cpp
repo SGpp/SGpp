@@ -19,8 +19,9 @@ namespace SGPP {
 namespace datadriven {
 
 SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
-    std::shared_ptr<ModelFittingBase> fitter, datadriven::DataMiningConfiguration config): Scorer(metric, fitter) {
-
+                                             std::shared_ptr<ModelFittingBase> fitter,
+                                             datadriven::DataMiningConfiguration config)
+    : Scorer(metric, fitter) {
   try {
     trainPortion = config["trainPortion"].getDouble();
     // TODO: if seed not set use random seed
@@ -30,14 +31,11 @@ SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
   }
 }
 
-
 SimpleSplittingScorer::~SimpleSplittingScorer() {
   // TODO Auto-generated destructor stub
 }
 
-
 double SimpleSplittingScorer::getScore(Dataset& dataset) {
-
   // initialize data structures
   size_t dim = dataset.getDimension();
   size_t datasetSize = dataset.getNumberInstances();  // size of data
@@ -56,10 +54,7 @@ double SimpleSplittingScorer::getScore(Dataset& dataset) {
   return (*metric)(predictedValues, testSet.getTargets());
 }
 
-
-void SimpleSplittingScorer::splitset(Dataset& dataset,
-                                     Dataset& trainingSet,
-                                     Dataset& testSet,
+void SimpleSplittingScorer::splitset(Dataset& dataset, Dataset& trainingSet, Dataset& testSet,
                                      bool permute) {
   size_t dim = dataset.getDimension();
   size_t datasetSize = dataset.getNumberInstances();  // size of data
@@ -69,7 +64,7 @@ void SimpleSplittingScorer::splitset(Dataset& dataset,
   // generate range of all indices and permute them if required
   std::vector<size_t> indices(datasetSize);
 
-  for (size_t i = 0; i < datasetSize; i++ ) {
+  for (size_t i = 0; i < datasetSize; i++) {
     indices.push_back(i);
   }
 
@@ -109,10 +104,7 @@ void SimpleSplittingScorer::splitset(Dataset& dataset,
 
     testSet.getTargets().set(j - trainSize, tmpLine[dim]);
   }
-
 }
-
 
 } /* namespace datadriven */
 } /* namespace SGPP */
-//git please do not delete me

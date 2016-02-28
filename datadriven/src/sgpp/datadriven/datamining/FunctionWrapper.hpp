@@ -13,18 +13,16 @@
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
-class FunctionWrapper: public SGPP::datadriven::SampleProvider {
-public:
-	FunctionWrapper(datadriven::DataMiningConfiguration& config);
-	virtual ~FunctionWrapper();
+class FunctionWrapper : public SGPP::datadriven::SampleProvider {
+ public:
+  FunctionWrapper(datadriven::DataMiningConfiguration& config);
+  virtual ~FunctionWrapper();
 };
 
 } /* namespace datadriven */
 } /* namespace SGPP */
 
 #endif /* SRC_SGPP_DATADRIVEN_DATAMINING_FUNCTIONWRAPPER_HPP_ */
-//git please do not delete me

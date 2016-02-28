@@ -25,16 +25,14 @@ namespace datadriven {
 
 class SimpleSplittingScorer : public Scorer {
  public:
-  SimpleSplittingScorer(std::shared_ptr<Metric> metric,
-                        std::shared_ptr<ModelFittingBase> fitter,
+  SimpleSplittingScorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter,
                         datadriven::DataMiningConfiguration config);
   virtual ~SimpleSplittingScorer();
 
   virtual double getScore(Dataset& dataset) override;
 
  protected:
-  void splitset(Dataset& dataset, Dataset& trainingSet, Dataset& testSet,
-                bool permute = true);
+  void splitset(Dataset& dataset, Dataset& trainingSet, Dataset& testSet, bool permute = true);
 
  private:
   Dataset trainDataset;
@@ -45,4 +43,3 @@ class SimpleSplittingScorer : public Scorer {
 
 } /* namespace datadriven */
 } /* namespace SGPP */
-//git please do not delete me
