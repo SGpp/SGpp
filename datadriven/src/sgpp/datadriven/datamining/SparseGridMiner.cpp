@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * SparseGridMiner.cpp
  *
  *  Created on: Feb 9, 2016
@@ -42,7 +46,7 @@ void SparseGridMiner::run() {
 
   double score = scorer.getScore(dataset);
   uint32_t iter = 0;
-  while (score > threshold and iter < maxRefinenum) {
+  while (score > threshold && iter < maxRefinenum) {
     fitter->refine();
     score = scorer.getScore(dataset);
     iter++;

@@ -100,5 +100,5 @@ SGPP::solver::SLESolverType DataMiningConfiguration::stringToSolverType(std::str
   }
 }
 
-}  // namespace base
+}  // namespace datadriven
 }  // namespace SGPP

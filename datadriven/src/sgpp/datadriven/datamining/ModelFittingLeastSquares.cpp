@@ -14,7 +14,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
-// TODO: use the system matrix with flexible regularization
+// TODO(lettrich): use the system matrix with flexible regularization
 
 namespace SGPP {
 namespace datadriven {
@@ -131,5 +131,5 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
   //    myCG->setEpsilon(configuration.getSolverFinalConfig().eps_);
   //  }
 }
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP

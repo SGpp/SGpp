@@ -12,7 +12,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 
-using namespace SGPP::base;
+using namespace SGPP::base;  // NOLINT
 
 namespace SGPP {
 namespace datadriven {

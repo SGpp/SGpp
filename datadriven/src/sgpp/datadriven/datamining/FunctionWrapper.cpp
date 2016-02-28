@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * FunctionWrapper.cpp
  *
  *  Created on: Feb 8, 2016
@@ -16,7 +20,7 @@ FunctionWrapper::FunctionWrapper(datadriven::DataMiningConfiguration& config)
     : SampleProvider(config) {}
 
 FunctionWrapper::~FunctionWrapper() {
-  // TODO Auto-generated destructor stub
+  // TODO(lettrich): Auto-generated destructor stub
 }
 
 } /* namespace datadriven */

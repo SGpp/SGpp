@@ -1,13 +1,14 @@
+
 //// Copyright (C) 2008-today The SG++ project
 //// This file is part of the SG++ project. For conditions of distribution and
 //// use, please see the copyright notice provided with SG++ or at
 //// sgpp.sparsegrids.org
 //
-//#include <sgpp/datadriven/datamining/DataMiningConfigurationDensityEstimation.hpp>
-//#include <sgpp/base/exception/application_exception.hpp>
-//#include <sgpp/base/tools/json/json_exception.hpp>
+//#include <sgpp/datadriven/datamining/DataMiningConfigurationDensityEstimation.hpp> //	NOLINT
+//#include <sgpp/base/exception/application_exception.hpp> //	NOLINT
+//#include <sgpp/base/tools/json/json_exception.hpp> //	NOLINT
 //
-//#include <string>
+//#include <string> //	NOLINT
 //
 // namespace SGPP {
 // namespace datadriven {

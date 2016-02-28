@@ -28,9 +28,9 @@ class DataMiningConfiguration : public json::JSON {
 
   virtual DataMiningConfiguration* clone();
 
-  SGPP::base::GridType stringToGridType(std::string& gridType);
-  SGPP::datadriven::RegularizationType stringToRegularizationType(std::string& regularizationType);
-  SGPP::solver::SLESolverType stringToSolverType(std::string& solverType);
+  base::GridType stringToGridType(std::string& gridType);
+  RegularizationType stringToRegularizationType(std::string& regularizationType);
+  solver::SLESolverType stringToSolverType(std::string& solverType);
 };
 
 }  // namespace datadriven
