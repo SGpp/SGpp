@@ -11,8 +11,8 @@ namespace sgpp {
 namespace parallel {
 
 OperationMultipleEvalVectorizedSP::OperationMultipleEvalVectorizedSP(base::GridStorage* storage,
-                                                                     base::DataMatrixSP* dataset) {
-  this->storage_ = storage;
+                                                                     base::DataMatrixSP* dataset)
+    : storage_(*storage) {
   this->dataset_ = dataset;
   this->level_ = NULL;
   this->index_ = NULL;

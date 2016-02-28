@@ -78,7 +78,7 @@ class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedS
                                           OperationMultipleEvalVectorizedSP>(this);
 
     if (gridTo == std::numeric_limits<size_t>::max()) {
-      gridTo = this->storage_->size();
+      gridTo = this->storage_.getSize();
     }
 
     m_gridFrom = gridFrom;

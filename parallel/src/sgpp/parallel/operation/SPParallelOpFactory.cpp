@@ -66,7 +66,7 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
                                         size_t datasetFrom, size_t datasetTo) {
   // handle default upper boundaries
   if (gridTo == std::numeric_limits<size_t>::max()) {
-    gridTo = grid.getStorage()->size();
+    gridTo = grid.getStorage().getSize();
   }
 
   if (datasetTo == std::numeric_limits<size_t>::max()) {
@@ -85,36 +85,36 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
               parallel::SPCPUKernel<parallel::SPX86SimdLinear> >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
               parallel::SPOCLKernel<parallel::OCLLinear<float> > >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
     } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<parallel::SPOCLCPUHybridKernel<
               parallel::SPX86SimdLinear, parallel::OCLLinear<float> > >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
 #ifdef USEARBB
     } else if (vecType == parallel::ArBB) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
-          new parallel::OperationMultipleEvalIterativeSPArBBLinear(grid.getStorage(), dataset));
+          new parallel::OperationMultipleEvalIterativeSPArBBLinear(&grid.getStorage(), dataset));
 #endif
 #ifdef USECUDA
     } else if (vecType == parallel::CUDA) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
-          new parallel::OperationMultipleEvalIterativeSPCUDALinear(grid.getStorage(), dataset));
+          new parallel::OperationMultipleEvalIterativeSPCUDALinear(&grid.getStorage(), dataset));
 #endif
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
-              parallel::SPMICKernel<parallel::SPMICLinear> >(grid.getStorage(), dataset, gridFrom,
+              parallel::SPMICKernel<parallel::SPMICLinear> >(&grid.getStorage(), dataset, gridFrom,
                                                              gridTo, datasetFrom, datasetTo));
 
 #ifdef __INTEL_OFFLOAD  // Hybrid CPU MIC Mode only makes sense in offload mode
@@ -122,7 +122,7 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
               parallel::SPMICCPUHybridKernel<parallel::SPX86SimdLinear, parallel::SPMICLinear> >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
 #endif
@@ -135,38 +135,38 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
               parallel::SPCPUKernel<parallel::SPX86SimdLinear> >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
               parallel::SPOCLKernel<parallel::OCLLinear<float> > >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
     } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<parallel::SPOCLCPUHybridKernel<
               parallel::SPX86SimdLinear, parallel::OCLLinear<float> > >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
 #ifdef USEARBB
     } else if (vecType == parallel::ArBB) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
-          new parallel::OperationMultipleEvalIterativeSPArBBLinear(grid.getStorage(), dataset));
+          new parallel::OperationMultipleEvalIterativeSPArBBLinear(&grid.getStorage(), dataset));
 
 #endif
 #ifdef USECUDA
     } else if (vecType == parallel::CUDA) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
-          new parallel::OperationMultipleEvalIterativeSPCUDALinear(grid.getStorage(), dataset));
+          new parallel::OperationMultipleEvalIterativeSPCUDALinear(&grid.getStorage(), dataset));
 
 #endif
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
-              parallel::SPMICKernel<parallel::SPMICLinear> >(grid.getStorage(), dataset, gridFrom,
+              parallel::SPMICKernel<parallel::SPMICLinear> >(&grid.getStorage(), dataset, gridFrom,
                                                              gridTo, datasetFrom, datasetTo));
 
 #ifdef __INTEL_OFFLOAD  // Hybrid CPU MIC Mode only makes sense in offload mode
@@ -174,7 +174,7 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
       return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
           new parallel::OperationMultipleEvalIterativeSP<
               parallel::SPMICCPUHybridKernel<parallel::SPX86SimdLinear, parallel::SPMICLinear> >(
-              grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+              &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
 #endif
@@ -187,12 +187,12 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<
                 parallel::SPCPUKernel<parallel::SPX86SimdModLinear> >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<
                 parallel::SPCPUKernel<parallel::SPX86SimdModLinearMask> >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -204,12 +204,12 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<
                 parallel::SPOCLKernel<parallel::OCLModLinear<float> > >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<
                 parallel::SPOCLKernel<parallel::OCLModLinearMask<float> > >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -220,12 +220,12 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<parallel::SPOCLCPUHybridKernel<
                 parallel::SPX86SimdModLinear, parallel::OCLModLinear<float> > >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<parallel::SPOCLCPUHybridKernel<
                 parallel::SPX86SimdModLinearMask, parallel::OCLModLinearMask<float> > >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -238,12 +238,12 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<
                 parallel::SPMICKernel<parallel::SPMICModLinear> >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP
                < parallel::SPMICKernel < parallel::SPMICModLinearMask > >
-               (grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+               (&grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -255,12 +255,12 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<parallel::SPMICCPUHybridKernel<
                 parallel::SPX86SimdModLinear, parallel::SPMICModLinear> >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorizedSP>(
             new parallel::OperationMultipleEvalIterativeSP<parallel::SPMICCPUHybridKernel<
                 parallel::SPX86SimdModLinearMask, parallel::SPMICModLinearMask> >(
-                grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");

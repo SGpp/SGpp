@@ -28,7 +28,7 @@ class DMSystemMatrixSPVectorizedIdentityMPIBase : public sgpp::datadriven::DMSys
   size_t numPatchedTrainingInstances_;
 
   /// Pointer to the grid's gridstorage object
-  sgpp::base::GridStorage* storage_;
+  sgpp::base::GridStorage& storage_;
   /// Member to store the sparse grid's levels for better vectorization
   sgpp::base::DataMatrixSP* level_;
   /// Member to store the sparse grid's indices for better vectorization
@@ -77,7 +77,7 @@ class DMSystemMatrixSPVectorizedIdentityMPIBase : public sgpp::datadriven::DMSys
       this->dataset_->transpose();
     }
 
-    this->result_tmp = new sgpp::base::DataVectorSP(storage_->size());
+    this->result_tmp = new sgpp::base::DataVectorSP(storage_.getSize());
   }
 
   virtual ~DMSystemMatrixSPVectorizedIdentityMPIBase() {
@@ -103,7 +103,7 @@ class DMSystemMatrixSPVectorizedIdentityMPIBase : public sgpp::datadriven::DMSys
       delete this->result_tmp;
     }
 
-    this->result_tmp = new sgpp::base::DataVectorSP(storage_->size());
+    this->result_tmp = new sgpp::base::DataVectorSP(storage_.getSize());
     kernel_.resetKernel();
   }
   friend struct LevelIndexMaskOffsetHelperSP::rebuild<

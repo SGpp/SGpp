@@ -93,7 +93,8 @@ sgpp::base::DataVectorSP LearnerVectorizedIdentitySP::predict(
   }
 
   sgpp::parallel::OperationMultipleEvalVectorizedSP* MultEval =
-      sgpp::op_factory::createOperationMultipleEvalVectorizedSP(*grid_, vecType_, &tmpDataSet);
+      sgpp::op_factory::createOperationMultipleEvalVectorizedSP(*grid_, vecType_,
+                                                                &tmpDataSet).release();
   MultEval->multVectorized(*alpha_, classesComputed);
   delete MultEval;
 

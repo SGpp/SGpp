@@ -32,7 +32,7 @@ namespace parallel {
 class OperationMultipleEvalVectorizedSP {
  protected:
   /// Pointer to the grid's GridStorage object
-  sgpp::base::GridStorage* storage_;
+  sgpp::base::GridStorage& storage_;
   /// Pointer to the dataset that should be evaluated on the grid
   sgpp::base::DataMatrixSP* dataset_;
   /// Member to store the sparse grid's levels for better vectorization

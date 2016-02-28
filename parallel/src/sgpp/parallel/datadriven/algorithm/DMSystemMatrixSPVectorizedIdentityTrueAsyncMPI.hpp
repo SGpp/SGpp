@@ -220,7 +220,7 @@ class DMSystemMatrixSPVectorizedIdentityTrueAsyncMPI
 
     size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
 
-    sgpp::parallel::PartitioningTool::calcDistribution(this->storage_->size(), mpi_size,
+    sgpp::parallel::PartitioningTool::calcDistribution(this->storage_.getSize(), mpi_size,
                                                        _mpi_grid_sizes, _mpi_grid_offsets, 1);
   }
 };

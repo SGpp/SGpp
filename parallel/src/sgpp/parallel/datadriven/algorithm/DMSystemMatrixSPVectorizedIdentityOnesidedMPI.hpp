@@ -87,9 +87,9 @@ class DMSystemMatrixSPVectorizedIdentityOnesidedMPI
       MPI_Win_free(&_mpi_grid_window);
     }
 
-    _mpi_grid_window_buffer = new sgpp::base::DataVectorSP(this->storage_->size());
+    _mpi_grid_window_buffer = new sgpp::base::DataVectorSP(this->storage_.getSize());
 
-    MPI_Win_create(_mpi_grid_window_buffer->getPointer(), this->storage_->size() * sizeof(float),
+    MPI_Win_create(_mpi_grid_window_buffer->getPointer(), this->storage_.getSize() * sizeof(float),
                    static_cast<int>(sizeof(float)), MPI_INFO_NULL, MPI_COMM_WORLD,
                    &_mpi_grid_window);
     MPI_Win_fence(MPI_MODE_NOSUCCEED, _mpi_grid_window);
@@ -266,7 +266,7 @@ class DMSystemMatrixSPVectorizedIdentityOnesidedMPI
     size_t mpi_size = myGlobalMPIComm->getNumRanks();
 
     size_t sendChunkSize = 2;
-    size_t sizePerProc = this->storage_->size() / mpi_size;
+    size_t sizePerProc = this->storage_.getSize() / mpi_size;
     std::max<size_t>(sizePerProc / sendChunkSize, 1);
 
     _chunkCountPerProcGrid = 1;
@@ -278,7 +278,7 @@ class DMSystemMatrixSPVectorizedIdentityOnesidedMPI
 
     _mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];
     _mpi_grid_offsets = new int[_chunkCountPerProcGrid * mpi_size];
-    PartitioningTool::calcMPIChunkedDistribution(this->storage_->size(), _chunkCountPerProcGrid,
+    PartitioningTool::calcMPIChunkedDistribution(this->storage_.getSize(), _chunkCountPerProcGrid,
                                                  _mpi_grid_sizes, _mpi_grid_offsets, 1);
     createAndInitGridBuffers();
   }

@@ -40,7 +40,7 @@ DMSystemMatrixSPVectorizedIdentity::DMSystemMatrixSPVectorizedIdentity(
   }
 
   this->B_ = sgpp::op_factory::createOperationMultipleEvalVectorizedSP(SparseGrid, this->vecMode_,
-                                                                       this->dataset_);
+                                                                       this->dataset_).release();
 }
 
 DMSystemMatrixSPVectorizedIdentity::~DMSystemMatrixSPVectorizedIdentity() {

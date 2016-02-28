@@ -281,7 +281,7 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
 
     size_t mpi_size = myGlobalMPIComm->getNumRanks();
     size_t sendChunkSize = 16;
-    size_t sizePerProc = this->storage_->size() / mpi_size;
+    size_t sizePerProc = this->storage_.getSize() / mpi_size;
     std::max<size_t>(sizePerProc / sendChunkSize, 1);
 
     _chunkCountPerProcGrid = 1;
@@ -293,7 +293,7 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
 
     _mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];
     _mpi_grid_offsets = new int[_chunkCountPerProcGrid * mpi_size];
-    PartitioningTool::calcMPIChunkedDistribution(this->storage_->size(), _chunkCountPerProcGrid,
+    PartitioningTool::calcMPIChunkedDistribution(this->storage_.getSize(), _chunkCountPerProcGrid,
                                                  _mpi_grid_sizes, _mpi_grid_offsets, 1);
   }
 
