@@ -133,8 +133,9 @@ datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::getDMSystemMat
     modlinear_mode = "mask";
   }
 
-  if (strcmp(grid.getType(), "linear") == 0 || strcmp(grid.getType(), "linearL0Boundary") == 0 ||
-      strcmp(grid.getType(), "linearBoundary") == 0) {
+  if (grid.getType() == sgpp::base::GridType::Linear ||
+      grid.getType() == sgpp::base::GridType::LinearL0Boundary ||
+      grid.getType() == sgpp::base::GridType::LinearBoundary) {
     if (vecType == parallel::X86SIMD) {
       return createDMSystemMatrixMPITypeSP<SPCPUKernel<SPX86SimdLinear> >(grid, trainDataset,
                                                                           lambda, vecType, mpiType);
@@ -166,7 +167,7 @@ datadriven::DMSystemMatrixBaseSP* DMSystemMatrixSPMPITypeFactory::getDMSystemMat
       return new sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPI(grid, trainDataset, lambda,
                                                                        vecType);
     }
-  } else if (strcmp(grid.getType(), "modlinear") == 0) {
+  } else if (grid.getType() == sgpp::base::GridType::ModLinear) {
     if (vecType == parallel::X86SIMD) {
       if (strcmp(modlinear_mode, "orig") == 0) {
         return createDMSystemMatrixMPITypeSP<SPCPUKernel<SPX86SimdModLinear> >(

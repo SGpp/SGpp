@@ -51,7 +51,7 @@ DMSystemMatrixSPVectorizedIdentityMPI::DMSystemMatrixSPVectorizedIdentityMPI(
   _mpi_data_offsets = new int[mpi_size];
 
   // calculate distribution
-  sgpp::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(), mpi_size,
+  sgpp::parallel::PartitioningTool::calcDistribution(m_grid.getStorage().getSize(), mpi_size,
                                                      _mpi_grid_sizes, _mpi_grid_offsets, 1);
   sgpp::parallel::PartitioningTool::calcDistribution(
       this->numPatchedTrainingInstances_, mpi_size, _mpi_data_sizes, _mpi_data_offsets,
@@ -60,7 +60,7 @@ DMSystemMatrixSPVectorizedIdentityMPI::DMSystemMatrixSPVectorizedIdentityMPI(
   this->B_ = sgpp::op_factory::createOperationMultipleEvalVectorizedSP(
       m_grid, this->vecMode_, this->dataset_, _mpi_grid_offsets[mpi_rank],
       _mpi_grid_offsets[mpi_rank] + _mpi_grid_sizes[mpi_rank], _mpi_data_offsets[mpi_rank],
-      _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]);
+      _mpi_data_offsets[mpi_rank] + _mpi_data_sizes[mpi_rank]).release();
   waitting_time = 0.0;
 }
 
@@ -135,7 +135,7 @@ void DMSystemMatrixSPVectorizedIdentityMPI::generateb(sgpp::base::DataVectorSP& 
 }
 
 void DMSystemMatrixSPVectorizedIdentityMPI::rebuildLevelAndIndex() {
-  sgpp::parallel::PartitioningTool::calcDistribution(m_grid.getStorage()->size(),
+  sgpp::parallel::PartitioningTool::calcDistribution(m_grid.getStorage().getSize(),
                                                      sgpp::parallel::myGlobalMPIComm->getNumRanks(),
                                                      _mpi_grid_sizes, _mpi_grid_offsets, 1);
   size_t mpi_rank = sgpp::parallel::myGlobalMPIComm->getMyRank();

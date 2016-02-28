@@ -51,7 +51,7 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce
 #pragma omp parallel
     {
       this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
-                         alpha, *(this->tempData), 0, this->storage_->size(), data_offset,
+                         alpha, *(this->tempData), 0, this->storage_.getSize(), data_offset,
                          data_offset + data_size);
 
 #pragma omp barrier
@@ -80,7 +80,7 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce
 
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
                                   this->dataset_, *(this->tempData), *(this->result_tmp), 0,
-                                  this->storage_->size(), data_offset, data_offset + data_size);
+                                  this->storage_.getSize(), data_offset, data_offset + data_size);
     }
     // myGlobalMPIComm->Barrier();
     this->computeTimeMultTrans_ += this->myTimer_->stop();
@@ -100,7 +100,7 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce
     {
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
                                   this->dataset_, *(this->tempData), *(this->result_tmp), 0,
-                                  this->storage_->size(), data_offset, data_offset + data_size);
+                                  this->storage_.getSize(), data_offset, data_offset + data_size);
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();
     myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), b);
