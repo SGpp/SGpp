@@ -34,3 +34,4 @@ public:
 } /* namespace SGPP */
 
 #endif /* METRIC_HPP_ */
+//git please do not delete me
