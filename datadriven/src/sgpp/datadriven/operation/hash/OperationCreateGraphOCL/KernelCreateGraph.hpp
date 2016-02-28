@@ -81,7 +81,7 @@ class KernelCreateGraph {
         }
     }
 
-    double create_graph(std::vector<int> &result) {
+    double create_graph(std::vector<int> &result, size_t startid, size_t chunksize) {
         if (verbose) {
             std::cout << "entering graph, device: " << device->deviceName
                       << " (" << device->deviceId << ")"
@@ -129,14 +129,24 @@ class KernelCreateGraph {
             errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
             throw base::operation_exception(errorString.str());
         }
+        err = clSetKernelArg(this->kernel, 3, sizeof(cl_uint), &startid);
+        if (err != CL_SUCCESS) {
+            std::stringstream errorString;
+            errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+            throw base::operation_exception(errorString.str());
+        }
 
         cl_event clTiming = nullptr;
 
         // enqueue kernel
         if (verbose)
             std::cout << "Starting the kernel" << std::endl;
-        size_t *globalworkrange = new size_t[1];
-        globalworkrange[0] = data.size()/dims;
+        size_t globalworkrange[1];
+        if (chunksize == -1) {
+          globalworkrange[0] = data.size()/dims;
+        } else {
+          globalworkrange[0] = chunksize;
+        }
         err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
                                      NULL, 0, nullptr, &clTiming);
         if (err != CL_SUCCESS) {
