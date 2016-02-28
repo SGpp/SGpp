@@ -1,19 +1,25 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * CrossValidationScorer.cpp
  *
  *  Created on: Feb 8, 2016
  *      Author: perun
  */
 
-#include <iostream>
 #include <random>
 #include <ctime>
+#include <iostream>
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/datamining/SimpleSplittingScorer.hpp>
-#include <sgpp/base/tools/json/json_exception.hpp>
+#include <vector>
 
-using namespace SGPP::base;
+#include <sgpp/globaldef.hpp>                                    //NOLINT (is no systemheader)
+#include <sgpp/datadriven/datamining/SimpleSplittingScorer.hpp>  //NOLINT (is no systemheader)
+#include <sgpp/base/tools/json/json_exception.hpp>               //NOLINT (is no systemheader)
+
+using namespace SGPP::base;  // NOLINT
 
 namespace SGPP {
 namespace datadriven {
@@ -24,7 +30,7 @@ SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
     : Scorer(metric, fitter) {
   try {
     trainPortion = config["trainPortion"].getDouble();
-    // TODO: if seed not set use random seed
+    // TODO(lettrich): if seed not set use random seed
     seed = config["seed"].getUInt();
   } catch (json::json_exception& e) {
     std::cout << e.what() << std::endl;
@@ -32,7 +38,7 @@ SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
 }
 
 SimpleSplittingScorer::~SimpleSplittingScorer() {
-  // TODO Auto-generated destructor stub
+  // TODO(lettrich): Auto-generated destructor stub
 }
 
 double SimpleSplittingScorer::getScore(Dataset& dataset) {

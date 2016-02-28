@@ -3,15 +3,15 @@
 //// use, please see the copyright notice provided with SG++ or at
 //// sgpp.sparsegrids.org
 //
-//#pragma once
+//#pragma once // NOLINT
 //
-//#include <sgpp/globaldef.hpp>
+//#include <sgpp/globaldef.hpp> // NOLINT
 //
-//#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
-//#include <sgpp/base/grid/Grid.hpp>
-//#include <sgpp/solver/TypesSolver.hpp>
-//#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
-//#include <sgpp/datadriven/tools/Dataset.hpp>
+//#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp> // NOLINT
+//#include <sgpp/base/grid/Grid.hpp> //	NOLINT
+//#include <sgpp/solver/TypesSolver.hpp> //	NOLINT
+//#include <sgpp/datadriven/application/RegularizationConfiguration.hpp> //	NOLINT
+//#include <sgpp/datadriven/tools/Dataset.hpp> // NOLINT
 //
 // namespace SGPP {
 // namespace datadriven {
