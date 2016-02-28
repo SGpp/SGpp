@@ -32,8 +32,8 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 
   this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
   this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(*(this->BoundGrid)->getStorage());
+  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
+  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
 
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
@@ -52,7 +52,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
   this->nExecTimesteps = 0;
 
   // throw exception if grid dimensions not equal algorithmic dimensions
-  if (this->BSalgoDims.size() > this->BoundGrid->getStorage()->dim()) {
+  if (this->BSalgoDims.size() > this->BoundGrid->getDimension()) {
     throw SGPP::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystemn : "
         "Number of algorithmic dimensions higher than the number of grid's dimensions.");
@@ -60,7 +60,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and
   // sigma)
-  if (this->BoundGrid->getStorage()->dim() != this->lambda->getSize()) {
+  if (this->BoundGrid->getDimension() != this->lambda->getSize()) {
     throw SGPP::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : "
         "Dimension of mu and sigma parameters don't match the grid's dimensions!");
@@ -68,7 +68,7 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
 
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
-    if (this->BSalgoDims[i] >= this->BoundGrid->getStorage()->dim()) {
+    if (this->BSalgoDims[i] >= this->BoundGrid->getDimension()) {
       throw SGPP::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : "
           "Minimum one algorithmic dimension is not inside the grid's dimensions!");
@@ -100,11 +100,13 @@ BlackScholesPATParabolicPDESolverSystemEuroAmer::BlackScholesPATParabolicPDESolv
                                                &this->InnerGrid, &this->alpha_inner);
 
   // Create operations
-  this->OpLaplaceInner = SGPP::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda);
-  this->OpLaplaceBound = SGPP::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda);
+  this->OpLaplaceInner =
+      SGPP::op_factory::createOperationLaplace(*this->InnerGrid, *this->lambda).release();
+  this->OpLaplaceBound =
+      SGPP::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda).release();
 
-  this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
-  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid);
+  this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
+  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
 
   // right hand side if System
   this->rhs = NULL;
@@ -210,18 +212,18 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep() {
   if (this->option_type == "std_amer_put") {
     float_t current_time = static_cast<float_t>(this->nExecTimesteps) * this->TimestepSize;
 
-    SGPP::base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid);
+    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation(
+        SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid));
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
-    size_t dim = this->BoundGrid->getStorage()->dim();
+    size_t dim = this->BoundGrid->getDimension();
     SGPP::base::BoundingBox* myBB =
-        new SGPP::base::BoundingBox(*(this->BoundGrid->getBoundingBox()));
+        new SGPP::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
     float_t* coords_val = new float_t[dim];
 
-    for (size_t i = 0; i < this->BoundGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
       std::vector<float_t> eval_point_coord;
-      std::string coords = this->BoundGrid->getStorage()->get(i)->getCoordsStringBB(*myBB);
+      std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
       std::stringstream coordsStream(coords);
 
       float_t tmp;
@@ -256,7 +258,6 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::finishTimestep() {
     delete[] coords_val;
 
     myHierarchisation->doHierarchisation(*this->alpha_complete);
-    delete myHierarchisation;
     delete myBB;
   }
 }
@@ -270,42 +271,36 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLa
     // Start integrated refinement & coarsening
     ///////////////////////////////////////////////////
 
-    size_t originalGridSize = this->BoundGrid->getStorage()->size();
+    size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator* myGenerator = this->BoundGrid->createGridGenerator();
+    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numRefines = myGenerator->getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor* myRefineFunc = new SGPP::base::SurplusRefinementFunctor(
-          this->alpha_complete, numRefines, this->refineThreshold);
+      size_t numRefines = myGenerator.getNumberOfRefinablePoints();
+      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+          *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
-        myGenerator->refineMaxLevel(myRefineFunc, this->refineMaxLevel);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        myGenerator.refineMaxLevel(myRefineFunc, this->refineMaxLevel);
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
 
       if (this->refineMode == "classic") {
-        myGenerator->refine(myRefineFunc);
-        this->alpha_complete->resizeZero(this->BoundGrid->getStorage()->size());
+        myGenerator.refine(myRefineFunc);
+        this->alpha_complete->resizeZero(this->BoundGrid->getSize());
       }
-
-      delete myRefineFunc;
     }
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
-      size_t numCoarsen = myGenerator->getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor* myCoarsenFunctor =
-          new SGPP::base::SurplusCoarseningFunctor(this->alpha_complete, numCoarsen,
-                                                   this->coarsenThreshold);
-      myGenerator->coarsenNFirstOnly(myCoarsenFunctor, this->alpha_complete, originalGridSize);
-      delete myCoarsenFunctor;
+      size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
+      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+          *this->alpha_complete, numCoarsen, this->coarsenThreshold);
+      myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
-
-    delete myGenerator;
 
     ///////////////////////////////////////////////////
     // End integrated refinement & coarsening

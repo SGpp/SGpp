@@ -17,10 +17,10 @@ int main(int argc, char **argv) {
   int maxLevel = 10;
   //    std::string fileName = "friedman_4d_small.arff";
   std::string fileName = "DR5_train.arff";
-  sg::base::RegularGridConfiguration gridConfig;
-  sg::solver::SLESolverConfiguration SLESolverConfigRefine;
-  sg::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sg::base::AdpativityConfiguration adaptConfig;
+  SGPP::base::RegularGridConfiguration gridConfig;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
+  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
+  SGPP::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
@@ -48,11 +48,11 @@ int main(int argc, char **argv) {
 
   double lambda = 0.000001;
 
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig,
-                                             SLESolverConfigRefine,
+  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
                                              SLESolverConfigFinal, adaptConfig);
 
-  scenario.writeToFile("DR5_modlinear.scenario");
+  //  scenario.writeToFile("DR5_modlinear.scenario");
+  scenario.serialize("DR5_modlinear.scenario");
 
   std::cout << "done" << std::endl;
 

@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/application/GaussianKDE.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <vector>
 
 namespace SGPP {
 namespace datadriven {
@@ -19,11 +20,8 @@ namespace datadriven {
 
 class OperationDensityMarginalizeKDE {
  public:
-  OperationDensityMarginalizeKDE(datadriven::GaussianKDE& kde) :
-    kde(&kde) {
-  }
-  virtual ~OperationDensityMarginalizeKDE() {
-  }
+  explicit OperationDensityMarginalizeKDE(datadriven::GaussianKDE& kde) : kde(&kde) {}
+  virtual ~OperationDensityMarginalizeKDE() {}
 
   /**
    * Marginalizes (Density) functions in dimension mdim
@@ -38,8 +36,7 @@ class OperationDensityMarginalizeKDE {
    * @param mdims marginalized in all dimensions in mdims
    * @param marginalizedKDE marginalized kernel density
    */
-  void doMarginalize(std::vector<size_t>& mdims,
-                     datadriven::GaussianKDE& marginalizedKDE);
+  void doMarginalize(std::vector<size_t>& mdims, datadriven::GaussianKDE& marginalizedKDE);
 
   /**
    * Keep applying marginalizes to (Density) Functions, until it's reduced to 1 dimension (dim_x)
@@ -57,13 +54,11 @@ class OperationDensityMarginalizeKDE {
    * @param marginalizedKDE result of marginalization
    */
 
-  void margToDimXs(std::vector<size_t>& mdims,
-                   datadriven::GaussianKDE& marginalizedKDE);
+  void margToDimXs(std::vector<size_t>& mdims, datadriven::GaussianKDE& marginalizedKDE);
 
  private:
   datadriven::GaussianKDE* kde;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONDENSITYMARGINALIZEKDE_HPP */

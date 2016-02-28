@@ -54,7 +54,7 @@ class TestLearnerBuilder(unittest.TestCase):
 #        foldingPolicy = FoldingPolicy(dataContainer)
 #        self.classifier.setFoldingPolicy(foldingPolicy)
 #        grid = Grid.createLinearGrid(dim)
-#        storage = grid.createGridGenerator()
+#        storage = grid.getGenerator()
 #        storage.regular(level)
 #        self.classifier.setGrid(grid)
 #        self.classifier.setLearnedKnowledge(LearnedKnowledge(None))

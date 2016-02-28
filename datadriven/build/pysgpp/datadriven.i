@@ -20,7 +20,8 @@
 %include "datadriven/src/sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/SubspaceNodeSimple.hpp"
 #endif
 
-%include "datadriven/src/sgpp/datadriven/DatadrivenOpFactory.hpp"
+%include "OpFactory.i"
+
 %include "datadriven/src/sgpp/datadriven/tools/TypesDatadriven.hpp"
 %include "datadriven/src/sgpp/datadriven/application/LearnerBase.hpp"
 %include "datadriven/src/sgpp/datadriven/application/DensityEstimator.hpp"

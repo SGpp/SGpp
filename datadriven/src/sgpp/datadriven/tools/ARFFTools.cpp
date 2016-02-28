@@ -57,7 +57,7 @@ void ARFFTools::readARFFSize(const std::string& filename,
 
   if (!myfile.is_open()) {
     std::string msg = "Unable to open file: " + filename;
-    throw new SGPP::base::file_exception(msg.c_str());
+    throw SGPP::base::file_exception(msg.c_str());
   }
 
   while (!myfile.eof()) {

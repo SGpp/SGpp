@@ -69,7 +69,7 @@ class DehierarchisationFundamentalSpline {
   /// grid
   FundamentalSplineGrid* grid;
   /// grid storage
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

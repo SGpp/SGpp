@@ -72,7 +72,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     this->kernel = std::unique_ptr<AdaptiveOCLKernelImpl<T>>(
         new AdaptiveOCLKernelImpl<T>(m_dims, this->manager, parameters));
 
-    this->storage = grid.getStorage();
+    this->storage = &grid.getStorage();
     this->gridSize = grid.getSize();
     this->padDataset(this->preparedDataset);
     this->preparedDataset.transpose();
@@ -386,8 +386,8 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   }
 
   void buildDatastructure() {
-    size_t dataBlocking = parameters["KERNEL_DATA_BLOCKING_SIZE"].getUInt();
-    size_t transGridBlocking = parameters["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt();
+    size_t dataBlocking = parameters["KERNEL_DATA_BLOCK_SIZE"].getUInt();
+    size_t transGridBlocking = parameters["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt();
 
     // TODO(leiterrl): is this a bug, Raphael? (David)
     size_t blockingSize = std::max(dataBlocking, transGridBlocking);
@@ -395,14 +395,14 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     uint32_t localWorkSize = static_cast<uint32_t>(parameters["LOCAL_SIZE"].getUInt()) *
                              static_cast<uint32_t>(blockingSize);
 
-    size_t remainder = this->storage->size() % localWorkSize;
+    size_t remainder = this->storage->getSize() % localWorkSize;
     size_t padding = 0;
 
     if (remainder != 0) {
       padding = localWorkSize - remainder;
     }
 
-    this->gridSize = this->storage->size() + padding;
+    this->gridSize = this->storage->getSize() + padding;
 
     m_streamingCounter = 0;
     m_subspaceCounter = 0;
@@ -429,7 +429,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       uint32_t* level = new uint32_t[this->m_dims];
       uint32_t* index = new uint32_t[this->m_dims];
 
-      if (gridIndex < this->storage->size()) {
+      if (gridIndex < this->storage->getSize()) {
         SGPP::base::GridIndex* point = this->storage->get(gridIndex);
 
         for (size_t d = 0; d < this->m_dims; d++) {

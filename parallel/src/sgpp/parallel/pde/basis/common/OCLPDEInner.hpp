@@ -12,6 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace parallel {
@@ -27,9 +28,9 @@ extern cl_mem d_ptrResultPinnedInner[NUMDEVS];
 extern cl_mem d_ptrParResultInner[NUMDEVS];
 extern cl_mem d_ptrAlphaInner[NUMDEVS];
 extern cl_mem d_ptrAlphaPinnedInner[NUMDEVS];
-extern cl_mem
-d_ptrLevelIndexLevelintconInner[NUMDEVS]; // constant memory buffer holding all three components
-extern cl_mem d_ptrLcl_qInner[NUMDEVS]; // Also holds q_inverse
+extern cl_mem d_ptrLevelIndexLevelintconInner[NUMDEVS];  // constant memory buffer holding all three
+                                                         // components
+extern cl_mem d_ptrLcl_qInner[NUMDEVS];                  // Also holds q_inverse
 
 extern REAL* ptrLevelTInner;
 extern REAL* ptrIndexTInner;
@@ -37,13 +38,12 @@ extern REAL* ptrLevel_intTInner;
 extern REAL* ptrParResultInner;
 extern REAL* ptrAlphaEndInner;
 extern REAL*
-ptrLevelIndexLevelintInner;  // for the constant memory buffer holding all three components
-extern REAL* ptrLcl_qInner;             // Also holds q_inverse
+    ptrLevelIndexLevelintInner;  // for the constant memory buffer holding all three components
+extern REAL* ptrLcl_qInner;      // Also holds q_inverse
 extern REAL* ptrResultTemp;
 extern REAL* ptrResultZero;
 extern REAL* ptrResultPinnedInner;
 extern REAL* ptrAlphaPinnedInner;
-
 
 extern size_t storageSize;
 extern size_t storageSizePadded;
@@ -62,19 +62,20 @@ extern size_t isFirstTimeLaplaceInner;
 extern size_t isFirstTimeLTwoDotInner;
 extern size_t isFirstTimeLTwoDotLaplaceInner;
 
-/// Returns the string with the OpenCL code for the Reduction kernel for the operators on the inner grid.
+/// Returns the string with the OpenCL code for the Reduction kernel for the operators on the inner
+/// grid.
 std::string ReduceInnerKernelStr();
-/// Compiles the OpenCL code for the Reduction kernel for the operators on the inner grid and saves it in kernel[id]. kernel_src must match the name of the OpenCL function.
+/// Compiles the OpenCL code for the Reduction kernel for the operators on the inner grid and saves
+/// it in kernel[id]. kernel_src must match the name of the OpenCL function.
 void CompileReduceInner(int id, std::string kernel_src, cl_kernel* kernel);
 
-/// Returns the string with the OpenCL code for the LTwoDot function for the operators on the inner grid.
+/// Returns the string with the OpenCL code for the LTwoDot function for the operators on the inner
+/// grid.
 std::string InnerLTwoDotFunction();
 
-/// Allocates and initializes the main part of the buffers needed by the OpenCL code for the operators on the inner grid.
-void SetBuffersInner(REAL* ptrLevel,
-                     REAL* ptrIndex,
-                     REAL* ptrLevel_int,
-                     size_t localStorageSize,
+/// Allocates and initializes the main part of the buffers needed by the OpenCL code for the
+/// operators on the inner grid.
+void SetBuffersInner(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t localStorageSize,
                      size_t localdim, SGPP::base::GridStorage* storage);
 #ifdef USE_MPI
 extern int* MPIOffsetListInner;
@@ -88,8 +89,9 @@ void MPI_CombineResultInner(SGPP::base::DataVector& result);
 void CleanUpLaplaceInner();
 /// Deallocates all data pertaining to the LTwoDot operator on the inner grid
 void CleanUpLTwoDotInner();
-/// Deallocates all data pertaining to the combined LTwoDot+Laplace Operator working on the inner grid
+/// Deallocates all data pertaining to the combined LTwoDot+Laplace Operator working on the inner
+/// grid
 void CleanUpLTwoDotLaplaceInner();
-}
-}
-}
+}  // namespace oclpdekernels
+}  // namespace parallel
+}  // namespace SGPP

@@ -52,7 +52,7 @@ class BilinearQuadratureStrategy(HashQuadrature):
         # run over all entries
         for j, gpj in enumerate(gpsj):
             # run over all dimensions
-            for d in xrange(gpi.dim()):
+            for d in xrange(gpi.getDimension()):
                 # compute bilinear form for one entry
                 s, erri = self.getBilinearFormEntry(gpi, basisi, gpj, basisj, d)
                 # combine different dimensions

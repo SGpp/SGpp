@@ -27,7 +27,7 @@ class SurplusRefinementFunctor : public RefinementFunctor {
    * @param refinements_num Number of grid points which should be refined (if possible - there could be less refinable grid points)
    * @param threshold The absolute value of the entries have to be greater or equal than the threshold
    */
-  SurplusRefinementFunctor(DataVector* alpha, size_t refinements_num = 1,
+  SurplusRefinementFunctor(DataVector& alpha, size_t refinements_num = 1,
                            float_t threshold = 0.0);
 
   /**
@@ -35,7 +35,7 @@ class SurplusRefinementFunctor : public RefinementFunctor {
    */
   ~SurplusRefinementFunctor() override;
 
-  float_t operator()(GridStorage* storage, size_t seq) const override;
+  float_t operator()(GridStorage& storage, size_t seq) const override;
 
 
   float_t start() const override;
@@ -47,7 +47,7 @@ class SurplusRefinementFunctor : public RefinementFunctor {
 
  protected:
   /// pointer to the vector that stores the alpha values
-  DataVector* alpha;
+  DataVector& alpha;
 
   /// number of grid points to refine
   size_t refinements_num;

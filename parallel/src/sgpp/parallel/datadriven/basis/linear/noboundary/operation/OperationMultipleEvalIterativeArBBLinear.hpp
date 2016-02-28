@@ -17,24 +17,25 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 /**
- * This class implements SGPP::base::OperationMultipleEval for a grids with linear basis ansatzfunctions without boundaries
+ * This class implements SGPP::base::OperationMultipleEval for a grids with linear basis
+ * ansatzfunctions without boundaries
  *
  * However in this case high efficient vector code (Intel Array Building Blocks) is generated
  * to implement a iterative OperationB version. In addition cache blocking is used
  * in order to assure a most efficient cache usage.
  *
  * IMPORTANT REMARK:
- * In order to use this routine you have to keep following points in mind (for multVectorized and multTransposeVectorized):
+ * In order to use this routine you have to keep following points in mind (for multVectorized and
+ * multTransposeVectorized):
  * @li data MUST a have even number of points AND it must be transposed
  * @li result MUST have the same size as data points that should be evaluated
  */
-class OperationMultipleEvalIterativeArBBLinear : public
-  SGPP::parallel::OperationMultipleEvalVectorized {
+class OperationMultipleEvalIterativeArBBLinear
+    : public SGPP::parallel::OperationMultipleEvalVectorized {
  public:
   /**
    * Construtor of SGPP::base::OperationMultipleEvalLinear
@@ -48,15 +49,14 @@ class OperationMultipleEvalIterativeArBBLinear : public
    * @param dataset dataset that should be evaluated on the grid
    */
   OperationMultipleEvalIterativeArBBLinear(SGPP::base::GridStorage* storage,
-      SGPP::base::DataMatrix* dataset);
+                                           SGPP::base::DataMatrix* dataset);
 
   /**
    * Destructor
    */
   virtual ~OperationMultipleEvalIterativeArBBLinear();
 
-  virtual double multVectorized(SGPP::base::DataVector& alpha,
-                                SGPP::base::DataVector& result);
+  virtual double multVectorized(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual double multTransposeVectorized(SGPP::base::DataVector& source,
                                          SGPP::base::DataVector& result);
@@ -79,8 +79,7 @@ class OperationMultipleEvalIterativeArBBLinear : public
   /// Object to access the ArBB 10D Kernel
   ArBBKernels10D* myArBBKernels10D;
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONMULTIPLEEVALITERATIVEARBBLINEAR_HPP */

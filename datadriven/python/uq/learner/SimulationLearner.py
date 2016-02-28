@@ -80,7 +80,7 @@ class SimulationLearner(Learner):
                 .getIndependentJointDistribution()
         for dtype in self.getKnowledgeTypes():
             ans[dtype] = {}
-            dim = self.grid.getStorage().dim()
+            dim = self.grid.getDimension()
 
             # prepare data container depending on the given knowledge type
             tmp = KnowledgeTypes.transformData(data, U, dtype)
@@ -270,8 +270,8 @@ class SimulationLearner(Learner):
         Create a set of all collocation nodes
         """
         gs = self.grid.getStorage()
-        ps = np.ndarray([gs.size(), gs.dim()], dtype='float32')
-        p = DataVector(gs.dim())
+        ps = np.ndarray([gs.size(), gs.getDimension()], dtype='float32')
+        p = DataVector(gs.getDimension())
         for i in xrange(gs.size()):
             gs.get(i).getCoords(p)
             ps[i, :] = p.array()
@@ -310,8 +310,8 @@ class SimulationLearner(Learner):
 
         # parse them to a numpy array
         gs = self.grid.getStorage()
-        p = DataVector(gs.dim())
-        ans = np.ndarray([len(newCollocationNodes), gs.dim()], dtype='float32')
+        p = DataVector(gs.getDimension())
+        ans = np.ndarray([len(newCollocationNodes), gs.getDimension()], dtype='float32')
         for i, gp in enumerate(newCollocationNodes):
             gp.getCoords(p)
             ans[i, :] = p.array()

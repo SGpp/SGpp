@@ -43,7 +43,7 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
   this->maxLevel = 0;
 
   //calculate the maxLevel first - required for level vector flattening
-  for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
+  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
     SGPP::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
@@ -60,7 +60,7 @@ void OperationMultipleEvalSubspaceCombined::prepareSubspaceIterator() {
   //also find out how many grid points the largest subspace contains
   this->maxGridPointsOnLevel = 0;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
+  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
     SGPP::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {

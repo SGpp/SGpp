@@ -26,7 +26,7 @@ class OperationHierarchisationLinearStretched : public
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationHierarchisationLinearStretched(GridStorage* storage) :
+  explicit OperationHierarchisationLinearStretched(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -38,8 +38,8 @@ class OperationHierarchisationLinearStretched : public
   void doDehierarchisation(DataVector& alpha) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
 };
 
 }  // namespace base

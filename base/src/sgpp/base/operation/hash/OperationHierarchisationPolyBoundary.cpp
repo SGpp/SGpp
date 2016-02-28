@@ -16,22 +16,22 @@ namespace base {
 
 void OperationHierarchisationPolyBoundary::doHierarchisation(
   DataVector& node_values) {
-  HierarchisationPolyBoundary func(this->storage, &this->base);
-  sweep<HierarchisationPolyBoundary> s(func, this->storage);
+  HierarchisationPolyBoundary func(storage, &base);
+  sweep<HierarchisationPolyBoundary> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     s.sweep1D_Boundary(node_values, node_values, i);
   }
 }
 
 void OperationHierarchisationPolyBoundary::doDehierarchisation(
   DataVector& alpha) {
-  DehierarchisationPolyBoundary func(this->storage, &this->base);
-  sweep<DehierarchisationPolyBoundary> s(func, this->storage);
+  DehierarchisationPolyBoundary func(storage, &base);
+  sweep<DehierarchisationPolyBoundary> s(func, storage);
 
   // Execute hierarchisation in every dimension of the grid
-  for (size_t i = 0; i < this->storage->dim(); i++) {
+  for (size_t i = 0; i < this->storage.getDimension(); i++) {
     DataVector source(alpha);
     s.sweep1D_Boundary(source, alpha, i);
   }

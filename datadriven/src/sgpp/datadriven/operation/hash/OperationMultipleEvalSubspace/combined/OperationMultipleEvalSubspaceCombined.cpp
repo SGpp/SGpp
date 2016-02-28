@@ -19,7 +19,7 @@ OperationMultipleEvalSubspaceCombined::OperationMultipleEvalSubspaceCombined(
   Grid& grid, DataMatrix& dataset) :
   AbstractOperationMultipleEvalSubspace(grid, dataset) {
   this->paddedDataset = this->padDataset(dataset);
-  this->storage = grid.getStorage();
+  this->storage = &grid.getStorage();
   //this->dataset = dataset;
   this->dim = dataset.getNcols();
 
@@ -70,7 +70,7 @@ void OperationMultipleEvalSubspaceCombined::setCoefficients(
   base::level_t curLevel;
   base::index_t curIndex;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
+  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
     SGPP::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {
@@ -93,7 +93,7 @@ void OperationMultipleEvalSubspaceCombined::unflatten(DataVector& result) {
   base::level_t curLevel;
   base::index_t curIndex;
 
-  for (size_t gridIndex = 0; gridIndex < this->storage->size(); gridIndex++) {
+  for (size_t gridIndex = 0; gridIndex < this->storage->getSize(); gridIndex++) {
     SGPP::base::GridIndex* point = this->storage->get(gridIndex);
 
     for (size_t d = 0; d < this->dim; d++) {

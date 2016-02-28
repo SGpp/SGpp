@@ -27,8 +27,7 @@ namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
 template <typename T>
-class OperationMultiEvalStreamingOCLMultiPlatform
-    : public base::OperationMultipleEval {
+class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultipleEval {
  protected:
   size_t dims;
 
@@ -60,10 +59,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
 
   std::vector<StreamingOCLMultiPlatform::KernelMult<T>> multKernels;
-  std::vector<StreamingOCLMultiPlatform::KernelMultTranspose<T>>
-      multTransposeKernels;
+  std::vector<StreamingOCLMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
-  // TODO(pfandedd): improve for per-device configuration
   json::Node &configuration;
 
   bool verbose;
@@ -75,8 +72,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform
   OperationMultiEvalStreamingOCLMultiPlatform(
       base::Grid &grid, base::DataMatrix &dataset,
       std::shared_ptr<base::OCLManagerMultiPlatform> manager,
-      std::shared_ptr<base::OCLOperationConfiguration> parameters,
-      json::Node &configuration)
+      std::shared_ptr<base::OCLOperationConfiguration> parameters, json::Node &configuration)
       : OperationMultipleEval(grid, dataset),
         preparedDataset(dataset),
         parameters(parameters),
@@ -85,50 +81,14 @@ class OperationMultiEvalStreamingOCLMultiPlatform
         manager(manager),
         devices(manager->getDevices()),
         configuration(configuration) {
-    // TODO(pfandedd): move check into kernel
-    //        std::string &firstPlatformName =
-    //        configuration["PLATFORMS"].keys()[0];
-    //        std::string &firstDeviceName =
-    //        configuration["PLATFORMS"][firstPlatformName]["DEVICES"].keys()[0];
-    //        json::Node &deviceNode =
-    //        configuration["PLATFORMS"][firstPlatformName]["DEVICES"][firstDeviceName];
-    //        json::Node &firstDeviceConfig =
-    //        deviceNode["KERNELS"][StreamingOCLMultiPlatform::Configuration::getKernelName()];
-    //
-    //        if
-    //        (firstDeviceConfig["KERNEL_STORE_DATA"].get().compare("register")
-    //        == 0
-    //                && dataset.getNcols() >
-    //                firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
-    //            std::stringstream errorString;
-    //            errorString
-    //                    << "OCL Error: setting \"KERNEL_DATA_STORE\" to
-    //                    \"register\" requires value of
-    //                    \"KERNEL_MAX_DIM_UNROLL\"";
-    //            errorString << " to be greater than the dimension of the data
-    //            set, was set to"
-    //                    <<
-    //                    firstDeviceConfig["KERNEL_MAX_DIM_UNROLL"].getUInt()
-    //                    << std::endl;
-    //            throw SGPP::base::operation_exception(errorString.str());
-    //        }
-
     this->dims = dataset.getNcols();  // be aware of transpose!
     this->verbose = configuration["VERBOSE"].getBool();
 
     this->commonDatasetPadding = calculateCommonDatasetPadding();
     this->commonGridPadding = calculateCommonGridPadding();
 
-    //        this->kernelMult = std::make_unique<KernelMult<T>>(dims,
-    //        this->manager, parameters, firstDeviceConfig);
-    //        this->kernelMultTranspose =
-    //        std::make_unique<KernelMultTranspose<T>>(dims, this->manager,
-    //        parameters,
-    //                firstDeviceConfig);
-
     queueLoadBalancerMult = std::make_shared<base::QueueLoadBalancer>();
-    queueLoadBalancerMultTranspose =
-        std::make_shared<base::QueueLoadBalancer>();
+    queueLoadBalancerMultTranspose = std::make_shared<base::QueueLoadBalancer>();
 
     this->padDataset(this->preparedDataset, datasetSize);
     this->preparedDataset.transpose();
@@ -136,8 +96,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;
 
-    this->kernelDataset = std::vector<T>(this->preparedDataset.getNrows() *
-                                         this->preparedDataset.getNcols());
+    this->kernelDataset =
+        std::vector<T>(this->preparedDataset.getNrows() * this->preparedDataset.getNcols());
 
     for (size_t i = 0; i < this->preparedDataset.getSize(); i++) {
       this->kernelDataset[i] = (T) this->preparedDataset[i];
@@ -149,18 +109,15 @@ class OperationMultiEvalStreamingOCLMultiPlatform
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
       json::Node &kernelConfiguration =
-          deviceConfiguration["KERNELS"][StreamingOCLMultiPlatform::
-                                             Configuration::getKernelName()];
+          deviceConfiguration["KERNELS"][StreamingOCLMultiPlatform::Configuration::getKernelName()];
 
-      multKernels.emplace_back(devices[deviceIndex], dims, this->manager,
-                               kernelConfiguration, queueLoadBalancerMult);
-      multTransposeKernels.emplace_back(devices[deviceIndex], dims,
-                                        this->manager, kernelConfiguration,
-                                        queueLoadBalancerMultTranspose);
+      multKernels.emplace_back(devices[deviceIndex], dims, this->manager, kernelConfiguration,
+                               queueLoadBalancerMult);
+      multTransposeKernels.emplace_back(devices[deviceIndex], dims, this->manager,
+                                        kernelConfiguration, queueLoadBalancerMultTranspose);
     }
 
-    // create the kernel specific data structures and initialize gridSize and
-    // gridSizeExtra
+    // create the kernel specific data structures and initialize gridSize and gridSizeExtra
     this->prepare();
   }
 
@@ -206,16 +163,14 @@ class OperationMultiEvalStreamingOCLMultiPlatform
     {
       size_t threadId = omp_get_thread_num();
       this->multKernels[threadId].mult(this->level, this->index, this->gridSize,
-                                       this->kernelDataset, this->datasetSize,
-                                       alphaArray, resultArray, gridFrom,
-                                       gridTo, datasetFrom, datasetTo);
+                                       this->kernelDataset, this->datasetSize, alphaArray,
+                                       resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
     }
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
 
     if (verbose) {
-      std::cout << "duration mult ocl: " << elapsed_seconds.count()
-                << std::endl;
+      std::cout << "duration mult ocl: " << elapsed_seconds.count() << std::endl;
     }
 
     for (size_t i = 0; i < result.getSize(); i++) {
@@ -225,8 +180,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform
     this->duration = this->myTimer.stop();
   }
 
-  void multTranspose(base::DataVector &source,
-                     base::DataVector &result) override {
+  void multTranspose(base::DataVector &source, base::DataVector &result) override {
     this->prepare();
 
     this->myTimer.start();
@@ -262,14 +216,13 @@ class OperationMultiEvalStreamingOCLMultiPlatform
       size_t threadId = omp_get_thread_num();
 
       this->multTransposeKernels[threadId].multTranspose(
-          this->level, this->index, this->kernelDataset, sourceArray,
-          resultArray, gridFrom, gridTo, datasetFrom, datasetTo);
+          this->level, this->index, this->kernelDataset, sourceArray, resultArray, gridFrom, gridTo,
+          datasetFrom, datasetTo);
     }
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     if (verbose) {
-      std::cout << "duration multTranspose ocl: " << elapsed_seconds.count()
-                << std::endl;
+      std::cout << "duration multTranspose ocl: " << elapsed_seconds.count() << std::endl;
     }
 
     for (size_t i = 0; i < result.getSize(); i++) {
@@ -312,16 +265,16 @@ class OperationMultiEvalStreamingOCLMultiPlatform
   }
 
   void recalculateLevelAndIndex(size_t &gridSize) {
-    base::GridStorage *storage = grid.getStorage();
+    base::GridStorage &storage = grid.getStorage();
 
-    size_t remainder = storage->size() % commonGridPadding;
+    size_t remainder = storage.getSize() % commonGridPadding;
     size_t padding = 0;
 
     if (remainder != 0) {
       padding = commonGridPadding - remainder;
     }
 
-    gridSize = storage->size() + padding;
+    gridSize = storage.getSize() + padding;
 
     level = std::vector<T>(gridSize * dims);
     index = std::vector<T>(gridSize * dims);
@@ -332,8 +285,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform
     /// pointer to index_type
     base::HashGridStorage::index_pointer gridPoint;
 
-    for (size_t i = 0; i < storage->size(); i++) {
-      gridPoint = storage->get(i);
+    for (size_t i = 0; i < storage.getSize(); i++) {
+      gridPoint = storage.get(i);
       for (size_t dim = 0; dim < dims; dim++) {
         gridPoint->get(dim, curLevel, curIndex);
         level[i * dims + dim] = static_cast<T>(1 << curLevel);
@@ -341,8 +294,8 @@ class OperationMultiEvalStreamingOCLMultiPlatform
       }
     }
 
-    for (size_t i = storage->size(); i < this->gridSize; i++) {
-      for (size_t dim = 0; dim < storage->dim(); dim++) {
+    for (size_t i = storage.getSize(); i < this->gridSize; i++) {
+      for (size_t dim = 0; dim < storage.getDimension(); dim++) {
         level[i * dims + dim] = 1.0;
         index[i * dims + dim] = 1.0;
       }
@@ -357,13 +310,11 @@ class OperationMultiEvalStreamingOCLMultiPlatform
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
       json::Node &kernelConfiguration =
-          deviceConfiguration["KERNELS"][StreamingOCLMultiPlatform::
-                                             Configuration::getKernelName()];
+          deviceConfiguration["KERNELS"][StreamingOCLMultiPlatform::Configuration::getKernelName()];
 
-      commonPaddingRequiredment =
-          std::max(commonPaddingRequiredment,
-                   kernelConfiguration["KERNEL_DATA_BLOCKING_SIZE"].getUInt() *
-                       kernelConfiguration["LOCAL_SIZE"].getUInt());
+      commonPaddingRequiredment = std::max(commonPaddingRequiredment,
+                                           kernelConfiguration["KERNEL_DATA_BLOCK_SIZE"].getUInt() *
+                                               kernelConfiguration["LOCAL_SIZE"].getUInt());
     }
     return commonPaddingRequiredment;
   }
@@ -376,13 +327,11 @@ class OperationMultiEvalStreamingOCLMultiPlatform
       json::Node &deviceConfiguration =
           platformConfiguration["DEVICES"][devices[deviceIndex]->deviceName];
       json::Node &kernelConfiguration =
-          deviceConfiguration["KERNELS"][StreamingOCLMultiPlatform::
-                                             Configuration::getKernelName()];
+          deviceConfiguration["KERNELS"][StreamingOCLMultiPlatform::Configuration::getKernelName()];
 
       commonPaddingRequiredment = std::max(
-          commonPaddingRequiredment,
-          kernelConfiguration["KERNEL_TRANS_GRID_BLOCKING_SIZE"].getUInt() *
-              kernelConfiguration["LOCAL_SIZE"].getUInt());
+          commonPaddingRequiredment, kernelConfiguration["KERNEL_TRANS_GRID_BLOCK_SIZE"].getUInt() *
+                                         kernelConfiguration["LOCAL_SIZE"].getUInt());
     }
     return commonPaddingRequiredment;
   }

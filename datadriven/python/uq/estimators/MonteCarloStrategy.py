@@ -114,13 +114,13 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # nodalValues = dehierarchize(grid, alpha)
         # gs = grid.getStorage()
         # bordergs = borderGrid.getStorage()
-        # p = DataVector(gs.dim())
+        # p = DataVector(gs.getDimension())
         # for i in xrange(gs.size()):
         #     gs.get(i).getCoords(p)
         #     nodalValues[i] -= evalSGFunction(borderGrid, borderAlpha, p)
         # nalpha = hierarchize(grid, nodalValues)
         # # # check if interpolation criterion is fulfilled for splitted grid
-        # # p = DataVector(gs.dim())
+        # # p = DataVector(gs.getDimension())
         # # for i in xrange(gs.size()):
         # #     gp = gs.get(i)
         # #     if bordergs.has_key(gp):

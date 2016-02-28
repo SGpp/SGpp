@@ -27,7 +27,7 @@ class HierarchisationLinear {
   typedef GridStorage::grid_iterator grid_iterator;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
  public:
   /**
@@ -35,7 +35,7 @@ class HierarchisationLinear {
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    */
-  explicit HierarchisationLinear(GridStorage* storage);
+  explicit HierarchisationLinear(GridStorage& storage);
 
   /**
    * Destructor

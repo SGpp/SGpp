@@ -42,7 +42,7 @@ def callback_deprecated(option, opt, value, parser):
 def calc_condition():
     factory = Grid.createLinearGrid(6)
     level = 3
-    gen = factory.createGridGenerator()
+    gen = factory.getGenerator()
     gen.regular(level)
     
     training = buildTrainingVector(openFile('datasets/bupa_liver/liver-disorders_normalized.arff.gz'))
@@ -50,7 +50,7 @@ def calc_condition():
     aem = 345
     lam = 0.001
     
-    print "Number of gridpoints:" + str(factory.getStorage().size())
+    print "Number of gridpoints:" + str(factory.getSize())
     print "generating laplacian matrix..."
     laplace_m = generateCMatrix(factory)
     print laplace_m

@@ -5,10 +5,10 @@
 
 #include <sgpp/parallel/pde/basis/common/OCLPDEBound.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
-using namespace SGPP::base;
 
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace parallel {
@@ -21,18 +21,19 @@ extern double CounterLTwoDotBound;
 extern double LTwoDotBoundStartupTime;
 extern double LTwoDotBoundExecTime;
 extern double LTwoDotBoundAllReduceTime;
-extern SGppStopwatch* myStopwatch;
+extern SGPP::base::SGppStopwatch* myStopwatch;
 
-/// Generates and compiles the OpenCL code for the function for the LTwoDot operator on the boundary grid.
+/// Generates and compiles the OpenCL code for the function for the LTwoDot operator on the boundary
+/// grid.
 void CompileLTwoDotBound(int id, std::string kernel_src, cl_kernel* kernel);
 
-/// Compiles all kernels pertaining to the LTwoDot operator (LTwoDot kernel, Reduction kernel) on boundary grids.
+/// Compiles all kernels pertaining to the LTwoDot operator (LTwoDot kernel, Reduction kernel) on
+/// boundary grids.
 void CompileLTwoDotBoundKernels();
 
 /// Sets arguments for all kernels pertaining to the LTwoDot operator on boundary grids.
 void SetArgumentsLTwoDotBound();
 
-
-} // namespace oclpdekernels
-}
-}
+}  // namespace oclpdekernels
+}  // namespace parallel
+}  // namespace SGPP

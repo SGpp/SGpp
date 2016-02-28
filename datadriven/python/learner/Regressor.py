@@ -93,6 +93,6 @@ class Regressor(Learner):
     def refineGrid(self):
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
         
-        pointsNum = self.specification.getNumOfPointsToRefine( self.grid.createGridGenerator().getNumberOfRefinablePoints() )
-        self.grid.createGridGenerator().refine( SurplusRefinementFunctor(self.errors, pointsNum, self.specification.getAdaptThreshold()) )
+        pointsNum = self.specification.getNumOfPointsToRefine( self.grid.getGenerator().getNumberOfRefinablePoints() )
+        self.grid.getGenerator().refine( SurplusRefinementFunctor(self.errors, pointsNum, self.specification.getAdaptThreshold()) )
 

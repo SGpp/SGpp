@@ -115,11 +115,11 @@ class Regressor(Learner):
         TrainingSpecification object
         """
         self.notifyEventControllers(LearnerEvents.REFINING_GRID)
-        refinableNum = self.grid.createGridGenerator().getNumberOfRefinablePoints()
+        refinableNum = self.grid.getGenerator().getNumberOfRefinablePoints()
         pointsNum = self.getNumOfPointsToRefine(refinableNum)
         functor = SurplusRefinementFunctor(self.errors, pointsNum,
                                            self.getAdaptThreshold())
-        self.grid.createGridGenerator().refine(functor)
+        self.grid.getGenerator().refine(functor)
 
 #     ## Creates Regressor object without any parameter set
 #     # @param jsonObject: A json object.

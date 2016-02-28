@@ -27,7 +27,7 @@ class OperationNaiveEvalPartialDerivativeWavelet :
    *
    * @param storage   storage of the sparse grid
    */
-  explicit OperationNaiveEvalPartialDerivativeWavelet(GridStorage* storage) :
+  explicit OperationNaiveEvalPartialDerivativeWavelet(GridStorage& storage) :
     storage(storage) {
   }
 
@@ -49,7 +49,7 @@ class OperationNaiveEvalPartialDerivativeWavelet :
 
  protected:
   /// storage of the sparse grid
-  GridStorage* storage;
+  GridStorage& storage;
   /// 1D wavelet basis
   SWaveletBase base;
 };

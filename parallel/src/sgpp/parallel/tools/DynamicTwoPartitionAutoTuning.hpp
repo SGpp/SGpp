@@ -10,20 +10,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 class DynamicTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
  public:
-  DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider,
-                                size_t retune_cycles);
+  DynamicTwoPartitionAutoTuning(size_t problemSize, size_t partition2Divider, size_t retune_cycles);
   virtual void resetAutoTuning();
+
  protected:
   void autoTune();
   double _partition2_speedup;
 };
+}  // namespace parallel
+}  // namespace SGPP
 
-}
-}
-#endif // DYNAMICTWOPARTITIONAUTOTUNING_HPP
+#endif  // DYNAMICTWOPARTITIONAUTOTUNING_HPP

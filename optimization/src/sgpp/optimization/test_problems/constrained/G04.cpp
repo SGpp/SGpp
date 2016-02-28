@@ -29,7 +29,7 @@ float_t G04::getOptimalPointUndisplaced(base::DataVector& x) {
   x[2] = 0.166403112537889;
   x[3] = 1.0;
   x[4] = 0.543100716988222;
-  return -30665.54;
+  return -30665.538671783201;
 }
 
 G04Objective::G04Objective() : TestScalarFunction(5) {}

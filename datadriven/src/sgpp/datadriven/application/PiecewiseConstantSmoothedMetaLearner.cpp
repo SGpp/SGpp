@@ -196,7 +196,7 @@ void PiecewiseConstantSmoothedRegressionMetaLearner::train(
 
   // initialize standard grid and alpha vector
   grid = std::shared_ptr<base::Grid>(createRegularGrid(this->dim));
-  alpha = std::make_shared<base::DataVector>(grid->getStorage()->size());
+  alpha = std::make_shared<base::DataVector>(grid->getSize());
 
   learner.train(*piecewiseRegressor, *grid, *alpha, lambda);
 
@@ -211,18 +211,17 @@ base::Grid* PiecewiseConstantSmoothedRegressionMetaLearner::createRegularGrid(
 
   // load grid
   if (gridConfig.type_ == base::GridType::Linear) {
-    grid = base::Grid::createLinearGrid(dim);
+    grid = base::Grid::createLinearGrid(dim).release();
   } else if (gridConfig.type_ == base::GridType::LinearL0Boundary) {
-    grid = base::Grid::createLinearBoundaryGrid(dim, 0);
+    grid = base::Grid::createLinearBoundaryGrid(dim, 0).release();
   } else if (gridConfig.type_ == base::GridType::LinearBoundary) {
-    grid = base::Grid::createLinearBoundaryGrid(dim);
+    grid = base::Grid::createLinearBoundaryGrid(dim).release();
   } else {
     throw base::application_exception("DensityRegressionMetaLearner::initialize : grid type is "
       "not supported");
   }
 
-  base::GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(gridConfig.level_);
+  grid->getGenerator().regular(gridConfig.level_);
 
   return grid;
 }
@@ -233,7 +232,7 @@ float_t PiecewiseConstantSmoothedRegressionMetaLearner::calculateMSE(
   bool verbose) {
   float_t mse = 0.0;
 
-  base::OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+  std::unique_ptr<base::OperationEval> opEval = SGPP::op_factory::createOperationEval(grid);
 
   for (size_t i = 0; i < testSubset.getNrows(); i++) {
     base::DataVector point(dim);

@@ -44,7 +44,7 @@ def createGrid(dim, level, borderType, isFull=False):
         raise Exception('Unknown border type')
 
     # create regular grid of level accLevel
-    gridGen = grid.createGridGenerator()
+    gridGen = grid.getGenerator()
     if isFull:
         gridGen.full(level)
     else:
@@ -168,7 +168,7 @@ def eval_fullGrid(level, dim, border=True):
     else:
         grid = Grid.createLinearGrid(dim)
 
-    grid.createGridGenerator().full(level)
+    grid.getGenerator().full(level)
     gs = grid.getStorage()
     ans = DataMatrix(gs.size(), dim)
     p = DataVector(dim)

@@ -17,27 +17,24 @@
 namespace SGPP {
 namespace datadriven {
 
-#ifndef M_1_SQRT2PI
-#define M_1_SQRT2PI     0.398942280401432702863218082712   /* 1 / sqrt(2*pi) */
-#endif
-
 /**
  * Do inverse transformation in all dimensions
  */
 class OperationInverseRosenblattTransformationKDE {
  public:
   OperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde,
-      float_t sigmaFactor = 6.0, float_t inversionEpsilon = 1e-10);
+                                              float_t sigmaFactor = 6.0,
+                                              float_t inversionEpsilon = 1e-10);
   virtual ~OperationInverseRosenblattTransformationKDE();
 
   /**
    * inverse Rosenblatt Transformation with mixed starting dimension
    *
-   * @param pointsUniform data points to be transformed DataMatrix (rows: # of samples, columns: # of dims)
+   * @param pointsUniform data points to be transformed DataMatrix (rows: # of samples, columns: #
+   * of dims)
    * @param pointsCdf Output DataMatrix (rows: # of samples, columns: # of dims)
    */
-  virtual void doTransformation(base::DataMatrix& pointsUniform,
-                                base::DataMatrix& pointsCdf);
+  virtual void doTransformation(base::DataMatrix& pointsUniform, base::DataMatrix& pointsCdf);
 
   virtual void doShuffledTransformation(base::DataMatrix& pointsUniform,
                                         base::DataMatrix& pointsCdf);
@@ -55,9 +52,9 @@ class OperationInverseRosenblattTransformationKDE {
    * @param kern kernel evaluations
    * @return error of inversion
    */
-  float_t doTransformation1D(float_t y, base::DataVector& samples1d,
-                             float_t sigma, float_t xlower, float_t xupper, float_t ylower,
-                             float_t yupper, base::DataVector& kern);
+  float_t doTransformation1D(float_t y, base::DataVector& samples1d, float_t sigma, float_t xlower,
+                             float_t xupper, float_t ylower, float_t yupper,
+                             base::DataVector& kern);
 
   /// get the maximum error made during inversion
   float_t getMaxInversionError();
@@ -109,9 +106,9 @@ class OperationInverseRosenblattTransformationKDE {
    * @param xacc accuracy
    * @param maxIterations maximum number of iterations
    */
-  float_t newton(float_t y, float_t& x, base::DataVector& samples1d,
-                 float_t sigma, base::DataVector& kern, float_t denom, float_t xacc =
-                   1e-10, size_t maxIterations = 20);
+  float_t newton(float_t y, float_t& x, base::DataVector& samples1d, float_t sigma,
+                 base::DataVector& kern, float_t denom, float_t xacc = 1e-10,
+                 size_t maxIterations = 20);
 
   /**
    * Root finding using halley's algorithm for inverse CDF of KDE
@@ -124,11 +121,10 @@ class OperationInverseRosenblattTransformationKDE {
    * @param xacc accuracy
    * @param maxIterations maximum number of iterations
    */
-  float_t halley(float_t y, float_t& x, base::DataVector& samples1d,
-                 float_t sigma, base::DataVector& kern, float_t denom, float_t xacc =
-                   1e-10, size_t maxIterations = 20);
+  float_t halley(float_t y, float_t& x, base::DataVector& samples1d, float_t sigma,
+                 base::DataVector& kern, float_t denom, float_t xacc = 1e-10,
+                 size_t maxIterations = 20);
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONKDE_HPP */

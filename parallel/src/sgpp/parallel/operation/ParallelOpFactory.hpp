@@ -21,6 +21,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <limits>
 
 namespace SGPP {
 
@@ -39,16 +40,16 @@ namespace op_factory {
  * @param gridTo upper bound index (exclusive) that describes where to end processing the storage
  *
  * @note the bounds describe for which part of the dataset/grid the create instance will be
- * responsible. However, for performance optimizations, implementations might actually calculate (and write to)
+ * responsible. However, for performance optimizations, implementations might actually calculate
+ * (and write to)
  * data that lies beyond these boundaries.
  *
  * @return Pointer to the new OperationMultipleEvalVectorized for the Grid grid
  */
-parallel::OperationMultipleEvalVectorized*
-createOperationMultipleEvalVectorized(base::Grid& grid,
-                                      const parallel::VectorizationType vecType, base::DataMatrix* dataset,
-                                      size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(),
-                                      size_t datasetFrom = 0, size_t datasetTo = std::numeric_limits<size_t>::max());
+std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultipleEvalVectorized(
+    base::Grid& grid, const parallel::VectorizationType vecType, base::DataMatrix* dataset,
+    size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(), size_t datasetFrom = 0,
+    size_t datasetTo = std::numeric_limits<size_t>::max());
 
 #ifdef USE_MPI
 /**
@@ -61,11 +62,12 @@ createOperationMultipleEvalVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-base::OperationMatrix* createOperationLTwoDotProductVectorized(base::Grid& grid,
-    const parallel::VectorizationType& vecType);
+std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(
+    base::Grid& grid, const parallel::VectorizationType& vecType);
 
 /**
- * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for the grid at hand.
+ * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for
+ * the grid at hand.
  * Note: object has to be freed after use.
  *
  * This LTwoDotLaplace operation is implemented directly be creating each matrix element on the fly
@@ -75,12 +77,13 @@ base::OperationMatrix* createOperationLTwoDotProductVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-parallel::OperationParabolicPDEMatrixCombined*
-createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
-                                        SGPP::base::DataVector& lambda, const parallel::VectorizationType& vecType);
+std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
+createOperationLTwoDotLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector& lambda,
+                                        const parallel::VectorizationType& vecType);
 
 /**
- * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for the grid at hand.
+ * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for
+ * the grid at hand.
  * Note: object has to be freed after use.
  *
  * This LTwoDotLaplace operation is implemented directly be creating each matrix element on the fly
@@ -89,7 +92,7 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-parallel::OperationParabolicPDEMatrixCombined*
+std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
 createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
                                         const parallel::VectorizationType& vecType);
 
@@ -103,8 +106,8 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid,
-    base::DataVector& lambda, const parallel::VectorizationType& vecType);
+std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
+    base::Grid& grid, base::DataVector& lambda, const parallel::VectorizationType& vecType);
 
 /**
  * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
@@ -117,11 +120,10 @@ base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid,
  * @param vecType selected vectorization
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
-base::OperationMatrix* createOperationLaplaceVectorized(base::Grid& grid,
-    const parallel::VectorizationType& vecType);
+std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
+    base::Grid& grid, const parallel::VectorizationType& vecType);
 #endif
-}
-
-}
+}  // namespace op_factory
+}  // namespace SGPP
 
 #endif /*PARALLEL_OP_FACTORY_HPP*/

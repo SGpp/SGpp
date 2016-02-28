@@ -3,11 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
-#include <iterator>
-
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
+
+#include <iostream>
+#include <iterator>
+#include <algorithm>
 
 /**
  * Example test function.
@@ -121,7 +122,7 @@ int main(int argc, const char* argv[]) {
 
   // determine best grid point as starting point
   {
-    SGPP::base::GridStorage& gridStorage = *grid.getStorage();
+    SGPP::base::GridStorage& gridStorage = grid.getStorage();
 
     // index of grid point with minimal function value
     size_t x0Index = std::distance(

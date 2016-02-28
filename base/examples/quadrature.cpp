@@ -3,12 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
 // All SG++ base headers
 #include <sgpp_base.hpp>
 
-using namespace std;
-using namespace SGPP::base;
+#include <iostream>
+
+using SGPP::base::DataVector;
+using SGPP::base::Grid;
+using SGPP::base::GridGenerator;
+using SGPP::base::GridIndex;
+using SGPP::base::GridStorage;
+using SGPP::base::OperationQuadrature;
+using SGPP::base::OperationQuadratureMC;
 
 // function to interpolate
 SGPP::float_t f(int dim, SGPP::float_t* x, void* clientdata) {
@@ -24,23 +30,22 @@ SGPP::float_t f(int dim, SGPP::float_t* x, void* clientdata) {
 int main() {
   // create a two-dimensional piecewise bi-linear grid
   int dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
-  GridStorage* gridStorage = grid->getStorage();
-  cout << "dimensionality:        " << gridStorage->dim() << endl;
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   int level = 3;
-  GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  cout << "number of grid points: " << gridStorage->size() << endl;
+  grid->getGenerator().regular(level);
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage->size());
+  DataVector alpha(gridStorage.getSize());
   GridIndex* gp;
   SGPP::float_t p[2];
 
-  for (size_t i = 0; i < gridStorage->size(); i++) {
-    gp = gridStorage->get(i);
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    gp = gridStorage.get(i);
     p[0] = gp->getCoord(0);
     p[1] = gp->getCoord(1);
     alpha[i] = f(2, p, NULL);
@@ -50,25 +55,22 @@ int main() {
     alpha);
 
   // direct quadrature
-  OperationQuadrature* opQ = SGPP::op_factory::createOperationQuadrature(*grid);
+  std::unique_ptr<OperationQuadrature> opQ(SGPP::op_factory::createOperationQuadrature(*grid));
   SGPP::float_t res = opQ->doQuadrature(alpha);
-  cout << "exact integral value:  " << res << endl;
-  delete opQ;
+  std::cout << "exact integral value:  " << res << std::endl;
 
   // Monte Carlo quadrature using 100000 paths
   OperationQuadratureMC opMC(*grid, 100000);
   res = opMC.doQuadrature(alpha);
-  cout << "Monte Carlo value:     " << res << endl;
+  std::cout << "Monte Carlo value:     " << res << std::endl;
   res = opMC.doQuadrature(alpha);
-  cout << "Monte Carlo value:     " << res << endl;
+  std::cout << "Monte Carlo value:     " << res << std::endl;
 
   // Monte Carlo quadrature of a function
   res = opMC.doQuadratureFunc(f, NULL);
-  cout << "MC value:              " << res << endl;
+  std::cout << "MC value:              " << res << std::endl;
 
   // Monte Carlo quadrature of error
   res = opMC.doQuadratureL2Error(f, NULL, alpha);
-  cout << "MC L2-error:           " << res << endl;
-
-  delete grid;
+  std::cout << "MC L2-error:           " << res << std::endl;
 }

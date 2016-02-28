@@ -11,7 +11,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 
-
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
 #if defined(__SSE4_2__) || defined(__AVX__)
@@ -27,6 +26,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
 
 namespace SGPP {
 namespace parallel {
@@ -35,10 +35,8 @@ namespace parallel {
 * Implementation for linear functions of LTwoDotProduct Operation, linear grids without boundaries
  *
  */
-class OperationLTwoDotProductVectorizedLinear: public
-  SGPP::base::OperationMatrix {
+class OperationLTwoDotProductVectorizedLinear : public SGPP::base::OperationMatrix {
  private:
-
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
   SGPP::base::DataMatrix* level_int_;
@@ -67,7 +65,6 @@ class OperationLTwoDotProductVectorizedLinear: public
   std::vector<int> recv_start;
   std::vector<int> recv_size;
 
-
   void init_constants();
   void init_grid_storage();
 
@@ -82,7 +79,7 @@ class OperationLTwoDotProductVectorizedLinear: public
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLTwoDotProductVectorizedLinear(SGPP::base::GridStorage* storage);
+  explicit OperationLTwoDotProductVectorizedLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Construtor of OperationLTwoDotProductVectorizedLinear
@@ -98,14 +95,11 @@ class OperationLTwoDotProductVectorizedLinear: public
    */
   virtual ~OperationLTwoDotProductVectorizedLinear();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   virtual void reset();
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEVECTORIZEDLINEAR_HPP */

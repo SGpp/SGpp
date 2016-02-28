@@ -24,7 +24,7 @@ void OperationLDLinearBoundary::up(SGPP::base::DataVector& alpha, SGPP::base::Da
                                    size_t dim) {
   // X * phi * phi
   XPhiPhiUpBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<XPhiPhiUpBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<XPhiPhiUpBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }
@@ -33,7 +33,7 @@ void OperationLDLinearBoundary::down(SGPP::base::DataVector& alpha, SGPP::base::
                                      size_t dim) {
   // X * phi * phi
   XPhiPhiDownBBLinearBoundary func(this->storage);
-  SGPP::base::sweep<XPhiPhiDownBBLinearBoundary> s(func, this->storage);
+  SGPP::base::sweep<XPhiPhiDownBBLinearBoundary> s(func, *this->storage);
 
   s.sweep1D_Boundary(alpha, result, dim);
 }

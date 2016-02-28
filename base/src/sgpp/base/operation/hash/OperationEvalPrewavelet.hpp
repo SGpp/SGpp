@@ -25,7 +25,7 @@ class OperationEvalPrewavelet : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationEvalPrewavelet(GridStorage* storage) : storage(storage) {}
+  explicit OperationEvalPrewavelet(GridStorage& storage) : storage(storage) {}
 
   /**
    * Destructor
@@ -41,7 +41,7 @@ class OperationEvalPrewavelet : public OperationEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

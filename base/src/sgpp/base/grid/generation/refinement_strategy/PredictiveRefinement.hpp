@@ -68,7 +68,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
 
   explicit PredictiveRefinement(AbstractRefinement* refinement):
     RefinementDecorator(refinement),
-    iThreshold_(0.0), alpha_(NULL) {}
+    iThreshold_(0.0), alpha_(0) {}
 
 
   /**
@@ -80,8 +80,8 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    * @param storage hashmap that stores the grid points
    * @param functor a RefinementFunctor specifying the refinement criteria
    */
-  void free_refine(GridStorage* storage,
-                   PredictiveRefinementIndicator* functor);
+  void free_refine(GridStorage& storage,
+                   PredictiveRefinementIndicator& functor);
 
 
 
@@ -91,7 +91,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    * Setter for the alpha vector
    * @param alpha
    */
-  void setAlpha(DataVector* alpha) {
+  void setAlpha(DataVector& alpha) {
     alpha_ = alpha;
   }
 
@@ -105,8 +105,8 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   * @param collection container that contains elements to refine (empty initially)
   */
   void collectRefinablePoints(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type&  collection) override;
 
 
@@ -118,8 +118,8 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    * @param collection container that contains elements to refine (empty initially)
    */
   virtual void refineGridpointsCollection(
-    GridStorage* storage,
-    RefinementFunctor* functor,
+    GridStorage& storage,
+    RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection);
 
 
@@ -132,9 +132,9 @@ class PredictiveRefinement: public virtual RefinementDecorator {
   * @return list with indicator elements
   */
   AbstractRefinement::refinement_list_type getIndicator(
-    GridStorage* storage,
+    GridStorage& storage,
     const GridStorage::grid_map_iterator& iter,
-    const RefinementFunctor* functor) const;
+    const RefinementFunctor& functor) const;
 
 
   /**
@@ -155,7 +155,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
 
  private:
   float_t iThreshold_;
-  DataVector* alpha_;
+  DataVector alpha_;
 };
 
 }  // namespace base

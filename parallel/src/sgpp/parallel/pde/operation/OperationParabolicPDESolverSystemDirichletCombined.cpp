@@ -8,20 +8,20 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
-OperationParabolicPDESolverSystemDirichletCombined::OperationParabolicPDESolverSystemDirichletCombined() {
+OperationParabolicPDESolverSystemDirichletCombined::
+    OperationParabolicPDESolverSystemDirichletCombined() {
   this->numSumGridpointsInner = 0;
   this->numSumGridpointsComplete = 0;
 }
 
-OperationParabolicPDESolverSystemDirichletCombined::~OperationParabolicPDESolverSystemDirichletCombined() {
-}
+OperationParabolicPDESolverSystemDirichletCombined::
+    ~OperationParabolicPDESolverSystemDirichletCombined() {}
 
-void OperationParabolicPDESolverSystemDirichletCombined::mult(
-  SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+void OperationParabolicPDESolverSystemDirichletCombined::mult(SGPP::base::DataVector& alpha,
+                                                              SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
   if (this->tOperationMode == "ImEul") {
@@ -30,8 +30,8 @@ void OperationParabolicPDESolverSystemDirichletCombined::mult(
     // Combined
     SGPP::base::DataVector temp(result.getSize());
 
-    //this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
-    setTimestepCoefficientInner(-0.5 * (-1.0)*this->TimestepSize);
+    // this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+    setTimestepCoefficientInner(-0.5 * (-1.0) * this->TimestepSize);
 
     applyMassMatrixLOperatorInner(alpha, temp);
     result.add(temp);
@@ -40,19 +40,19 @@ void OperationParabolicPDESolverSystemDirichletCombined::mult(
     result.setAll(0.0);
     SGPP::base::DataVector temp(result.getSize());
 
-    //this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
-    setTimestepCoefficientInner(-0.5 * (-0.5)*this->TimestepSize);
+    // this->OpLTwoDotLaplaceInner->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+    setTimestepCoefficientInner(-0.5 * (-0.5) * this->TimestepSize);
 
     applyMassMatrixLOperatorInner(alpha, temp);
 
     result.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(
+        "OperationParabolicPDESolverSystem::mult : An unknown operation mode was specified!");
   }
 }
 
-SGPP::base::DataVector*
-OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
+SGPP::base::DataVector* OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
   SGPP::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
   if (this->tOperationMode == "ImEul") {
@@ -66,14 +66,16 @@ OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
     SGPP::base::DataVector temp2(rhs_complete.getSize());
     SGPP::base::DataVector myAlpha(*this->alpha_complete);
 
-    //this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(0.5)*this->TimestepSize);
-    setTimestepCoefficientBound(-0.5 * (0.5)*this->TimestepSize);
+    // this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(0.5)*this->TimestepSize);
+    setTimestepCoefficientBound(-0.5 * (0.5) * this->TimestepSize);
 
     applyMassMatrixLOperatorBound(myAlpha, temp);
 
     rhs_complete.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(
+        "OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was "
+        "specified!");
   }
 
   // Now we have the right hand side, lets apply the riskfree rate for the next timestep
@@ -92,8 +94,8 @@ OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
     SGPP::base::DataVector temp(alpha_bound.getSize());
     SGPP::base::DataVector temp2(alpha_bound.getSize());
 
-    //this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
-    setTimestepCoefficientBound(-0.5 * (-1.0)*this->TimestepSize);
+    // this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-1.0)*this->TimestepSize);
+    setTimestepCoefficientBound(-0.5 * (-1.0) * this->TimestepSize);
 
     applyMassMatrixLOperatorBound(alpha_bound, temp);
 
@@ -102,14 +104,16 @@ OperationParabolicPDESolverSystemDirichletCombined::generateRHS() {
     SGPP::base::DataVector temp(alpha_bound.getSize());
     SGPP::base::DataVector temp2(alpha_bound.getSize());
 
-    //this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
-    setTimestepCoefficientBound(-0.5 * (-0.5)*this->TimestepSize);
+    // this->OpLTwoDotLaplaceBound->setTimestepCoeff(-0.5*(-0.5)*this->TimestepSize);
+    setTimestepCoefficientBound(-0.5 * (-0.5) * this->TimestepSize);
 
     applyMassMatrixLOperatorBound(alpha_bound, temp);
 
     result_complete.add(temp);
   } else {
-    throw new SGPP::base::algorithm_exception("OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was specified!");
+    throw SGPP::base::algorithm_exception(
+        "OperationParabolicPDESolverSystem::generateRHS : An unknown operation mode was "
+        "specified!");
   }
 
   rhs_complete.sub(result_complete);
@@ -130,5 +134,5 @@ OperationParabolicPDESolverSystemDirichletCombined::getGridCoefficientsForCG() {
 
   return this->alpha_inner;
 }
-}
-}
+}  // namespace parallel
+}  // namespace SGPP

@@ -7,10 +7,9 @@
 #define OPERATIONTRANSFORMATION1D_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <cstring>
 
 #include <sgpp/globaldef.hpp>
-
+#include <cstring>
 
 namespace SGPP {
 namespace datadriven {
@@ -21,10 +20,8 @@ namespace datadriven {
 
 class OperationTransformation1D {
  public:
-  OperationTransformation1D() {
-  }
-  virtual ~OperationTransformation1D() {
-  }
+  OperationTransformation1D() {}
+  virtual ~OperationTransformation1D() {}
 
   /**
    * Transform 1d
@@ -32,10 +29,9 @@ class OperationTransformation1D {
    * @param coord1d
    * @return
    */
-  virtual float_t doTransformation1D(base::DataVector* alpha1d,
-                                     float_t coord1d) = 0;
+  virtual float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d) = 0;
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONTRANSFORMATION1D_HPP */

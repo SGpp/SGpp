@@ -89,15 +89,15 @@ def runHierarchisationDehierarchisationLinearBoundaryRegularTestPrintND(dim, lev
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim, 0)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
     
-    node_values = DataVector(storage.size(), 1)
+    node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.size()):
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -147,15 +147,15 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTestPrintND
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
     
-    node_values = DataVector(storage.size(), 1)
+    node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.size()):
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -205,15 +205,15 @@ def runHierarchisationDehierarchisationLinearRegularTestPrintND(dim, level, reso
     
     # generate a regular test grid
     grid = Grid.createLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
     
-    node_values = DataVector(storage.size(), 1)
+    node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.size()):
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -263,15 +263,15 @@ def runHierarchisationDehierarchisationModLinearTestPrintND(dim, level, resoluti
     
     # generate a regular test grid
     grid = Grid.createModLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
     
-    node_values = DataVector(storage.size(), 1)
+    node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.size()):
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -320,15 +320,15 @@ def runHierarchisationDehierarchisationLinearTruncatedBoundaryRegularTest(dim, l
     
     # generate a regular test grid
     grid = Grid.createLinearBoundaryGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
     
-    node_values = DataVector(storage.size(), 1)
+    node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.size()):
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -370,15 +370,15 @@ def runHierarchisationDehierarchisationLinearRegularTest(dim, level):
     
     # generate a regular test grid
     grid = Grid.createLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
     
-    node_values = DataVector(storage.size(), 1)
+    node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.size()):
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         
@@ -420,15 +420,15 @@ def runHierarchisationDehierarchisationModLinearRegularTest(dim, level):
     
     # generate a regular test grid
     grid = Grid.createModLinearGrid(dim)
-    generator  = grid.createGridGenerator()
+    generator  = grid.getGenerator()
     generator.regular(level)
     
     # generate the node_values vector
     storage = grid.getStorage()
     
-    node_values = DataVector(storage.size(), 1)
+    node_values = DataVector(storage.getSize(), 1)
     
-    for n in xrange(storage.size()):
+    for n in xrange(storage.getSize()):
         points = storage.get(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)
         

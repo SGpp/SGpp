@@ -26,6 +26,7 @@ namespace std {
 %import "base/src/sgpp/base/operation/hash/common/basis/Basis.hpp"
 %template(SBasis) SGPP::base::Basis<unsigned int, unsigned int>;
 %include "GridFactory.i"
+%include "OpFactory.i"
 //%include "Operations.i"
 
 %rename(operatorAssignment) SGPP::base::DataVector::operator=;
@@ -120,8 +121,6 @@ namespace std {
 
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
 
-%include "base/src/sgpp/base/grid/type/PeriodicGrid.hpp"
-
 /*%include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemFreeBoundaries.hpp"*/
@@ -183,13 +182,6 @@ namespace std {
 %include "solver/src/sgpp/solver/sle/BiCGStab.hpp"
 %include "solver/src/sgpp/solver/ode/Euler.hpp"
 %include "solver/src/sgpp/solver/ode/CrankNicolson.hpp"*/
-
-// static factory methods
-%include "base/src/sgpp/base/operation/BaseOpFactory.hpp"
-/*%include "datadriven/src/sgpp/datadriven/DatadrivenOpFactory.hpp"
-%include "finance/src/sgpp/finance/operation/FinanceOpFactory.hpp"
-%include "pde/src/sgpp/pde/operation/PdeOpFactory.hpp"
-%include "base/src/sgpp/base/operation/BaseOpFactory.hpp"*/
 
 
 // and the rest

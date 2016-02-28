@@ -37,12 +37,10 @@ void HeatEquationSolverWithStretching::constructGrid(base::Stretching& stretchin
 
   this->myGrid = new base::LinearStretchedBoundaryGrid(stretching);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
-  this->myStretching = this->myGrid->getStretching();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myStretching = &this->myGrid->getStretching();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   this->bGridConstructed = true;
 }
@@ -87,7 +85,7 @@ void HeatEquationSolverWithStretching::solveExplicitEuler(size_t numTimesteps, f
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::solveExplicitEuler : A grid wasn't constructed before!");
   }
 }
@@ -127,7 +125,7 @@ void HeatEquationSolverWithStretching::solveImplicitEuler(size_t numTimesteps, f
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::solveImplicitEuler : A grid wasn't constructed before!");
   }
 }
@@ -185,7 +183,7 @@ void HeatEquationSolverWithStretching::solveCrankNicolson(size_t numTimesteps, f
     delete myCN;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::solveCrankNicolson : A grid wasn't constructed before!");
   }
 }
@@ -196,7 +194,7 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(base::DataVector& 
     float_t tmp;
     float_t* dblFuncValues = new float_t[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords =
           this->myGridStorage->get(i)->getCoordsStringStretching(*this->myStretching);
       std::stringstream coordsStream(coords);
@@ -220,12 +218,9 @@ void HeatEquationSolverWithStretching::initGridWithSmoothHeat(base::DataVector& 
 
     delete[] dblFuncValues;
 
-    base::OperationHierarchisation* myHierarchisation =
-        SGPP::op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "HeatEquationSolverWithStretching::initGridWithSmoothHeat : A grid wasn't constructed "
         "before!");
   }
@@ -248,7 +243,7 @@ void HeatEquationSolverWithStretching::printGridDomain(base::DataVector& alpha,
                                                        float_t PointesPerDimension,
                                                        base::BoundingBox& GridArea,
                                                        std::string tfilename) const {
-  throw new base::application_exception(
+  throw base::application_exception(
       "HeatEquationSolverWithStretching::printGridDomain : BoundingBox not supported with this "
       "solver, use printGridDomainStretching instead ");
 }

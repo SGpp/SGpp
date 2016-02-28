@@ -20,7 +20,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         LEVEL = 2
 
         self.grid = Grid.createLinearGrid(DIM)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(LEVEL)
 
 
@@ -43,13 +43,14 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         self.classes = DataVector(ys)
         self.alpha = DataVector([3, 6, 7, 9, -1])
         self.multEval = createOperationMultipleEval(self.grid, self.trainData)
+        opEval = createOperationEval(self.grid)
 
         self.errors = DataVector(DELTA_RECI**2)
         coord = DataVector(DIM)
 
         for i in xrange(self.trainData.getNrows()):
             self.trainData.getRow(i, coord)
-            self.errors.__setitem__ (i, abs(self.classes[i] - self.grid.eval(self.alpha, coord)))
+            self.errors.__setitem__ (i, abs(self.classes[i] - opEval.eval(self.alpha, coord)))
 
         #
         # OnlinePredictiveRefinementDimension
@@ -65,7 +66,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
 
         storage = self.grid.getStorage()
         gridSize = self.grid.getSize()
-        numDim = storage.dim()
+        numDim = storage.getDimension()
 
         print "######"
         print "Expected result:"

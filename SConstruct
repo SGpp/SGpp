@@ -424,10 +424,10 @@ if env['COMPILE_BOOST_TESTS'] and env['RUN_BOOST_TESTS']:
 # Examples
 #########################################################################
 
-def printLinkingExamples(target, source, env):
-  print "\n" + separator + "\nLinking examples...\n" + separator
-
-dependencies.append(env.Command('printLinkingExamples', [], printLinkingExamples))
+# def printLinkingExamples(target, source, env):
+#   print "\n" + separator + "\nLinking examples...\n" + separator
+# 
+# dependencies.append(env.Command('printLinkingExamples', [], printLinkingExamples))
 
 for exampleTarget in exampleTargetList:
   env.Requires(exampleTarget, installTargetList)
@@ -436,39 +436,40 @@ for exampleTarget in exampleTargetList:
 # Final output
 #########################################################################
 
-def printFinished(target, source, env):
-  import string
-  if env['PLATFORM'] in ['cygwin', 'win32']:
-    filename = "INSTRUCTIONS_WINDOWS"
-  else:
-    filename = "INSTRUCTIONS"
-
-  with open(filename) as f:
-    instructionsTemplate = string.Template(f.read())
-    print
-    print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-                                               PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
-
-if env["PRINT_INSTRUCTIONS"]:
-    dependencies.append(env.Command('printFinished', [], printFinished))
+# def printFinished(target, source, env):
+#   import string
+#   if env['PLATFORM'] in ['cygwin', 'win32']:
+#     filename = "INSTRUCTIONS_WINDOWS"
+#   else:
+#     filename = "INSTRUCTIONS"
+#  
+#   with open(filename) as f:
+#     instructionsTemplate = string.Template(f.read())
+#     print
+#     print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
+#                                                PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
+#  
+# if env["PRINT_INSTRUCTIONS"]:
+#     dependencies.append(env.Command('printFinished', [], printFinished))
 
 # necessary to enforce an order on the final steps of the building of the wrapper
-for i in range(len(dependencies) - 1):
-  env.Depends(dependencies[i + 1], dependencies[i])
-
+# for i in range(len(dependencies) - 1):
+#   env.Depends(dependencies[i + 1], dependencies[i])
+ 
 # Stuff needed for system install
 env.Clean("distclean",
   [
     "config.log",
   ])
-Default(libraryTargetList, dependencies)
-
+# TODO(killian): the next line messes up the dependency tracking, seems to not be required, please check (reported by David)
+#Default(libraryTargetList, dependencies)
+    
 ils = env.Alias('install-lib-sgpp', Install(os.path.join( env.get('LIBDIR'), 'sgpp'), libraryTargetList))
-
+   
 headerFinalDestList = []
 for headerDest in headerDestList:
   headerFinalDestList.append(os.path.join( env.get('INCLUDEDIR'), headerDest))
-
+   
 iis = env.Alias('install-inc-sgpp', InstallAs(headerFinalDestList, headerSourceList))
-
+   
 env.Alias('install', [ils, iis])

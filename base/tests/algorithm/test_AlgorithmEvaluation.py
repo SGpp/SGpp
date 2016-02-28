@@ -24,7 +24,7 @@ class TestAlgorithmEvaluation(unittest.TestCase):
         print test_desc
 
         self.grid = Grid.createLinearGrid(d)
-        self.grid_gen = self.grid.createGridGenerator()
+        self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(l)
 
         alpha = DataVector([1] * self.grid.getSize())
@@ -44,6 +44,7 @@ class TestAlgorithmEvaluation(unittest.TestCase):
         inside = True
 
         x_trans = DataVector(d)
+        opEval = createOperationEval(self.grid)
 
         for d_k in xrange(d):
             if not (bb[d_k][0] <= x[d_k] and x[d_k] <= bb[d_k][1]):
@@ -54,7 +55,7 @@ class TestAlgorithmEvaluation(unittest.TestCase):
 
         if inside:
             p = DataVector(x_trans)
-            expected = self.grid.eval(alpha, p)
+            expected = opEval.eval(alpha, p)
         else:
             expected = 0.0
 
@@ -63,7 +64,7 @@ class TestAlgorithmEvaluation(unittest.TestCase):
         self.grid.getStorage().setBoundingBox(bb_)
 
         p = DataVector(x)
-        actual = self.grid.eval(alpha, p)
+        actual = opEval.eval(alpha, p)
 
         self.assertAlmostEqual(actual, expected)
 

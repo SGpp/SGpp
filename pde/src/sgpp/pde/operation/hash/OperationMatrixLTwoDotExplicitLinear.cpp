@@ -26,18 +26,18 @@ OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(
 
 OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(SGPP::base::Grid* grid)
     : ownsMatrix_(true) {
-  m_ = new SGPP::base::DataMatrix(grid->getStorage()->size(), grid->getStorage()->size());
+  m_ = new SGPP::base::DataMatrix(grid->getSize(), grid->getSize());
   buildMatrix(grid);
 }
 
 void OperationMatrixLTwoDotExplicitLinear::buildMatrix(SGPP::base::Grid* grid) {
-  size_t gridSize = grid->getStorage()->size();
-  size_t gridDim = grid->getStorage()->dim();
+  size_t gridSize = grid->getSize();
+  size_t gridDim = grid->getDimension();
 
   SGPP::base::DataMatrix level(gridSize, gridDim);
   SGPP::base::DataMatrix index(gridSize, gridDim);
 
-  grid->getStorage()->getLevelIndexArraysForEval(level, index);
+  grid->getStorage().getLevelIndexArraysForEval(level, index);
 
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = i; j < gridSize; j++) {

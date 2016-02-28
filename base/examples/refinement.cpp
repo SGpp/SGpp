@@ -3,9 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
 // All SG++ headers
-//#include <sgpp_base.hpp>
+// #include <sgpp_base.hpp>
 
 // Or, better!, include only those that are required
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -16,8 +15,14 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
-using namespace std;
-using namespace SGPP::base;
+#include <iostream>
+
+using SGPP::base::DataVector;
+using SGPP::base::Grid;
+using SGPP::base::GridGenerator;
+using SGPP::base::GridIndex;
+using SGPP::base::GridStorage;
+using SGPP::base::SurplusRefinementFunctor;
 
 // function to interpolate
 SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
@@ -27,29 +32,27 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
 int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
-  Grid* grid = Grid::createLinearGrid(dim);
-  GridStorage* gridStorage = grid->getStorage();
-  cout << "dimensionality:                   " << gridStorage->dim() << endl;
+  std::unique_ptr<Grid> grid = Grid::createLinearGrid(dim);
+  GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:                   " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   size_t level = 3;
-  GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  cout << "number of initial grid points:    " << gridStorage->size() << endl;
+  grid->getGenerator().regular(level);
+  std::cout << "number of initial grid points:    " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(gridStorage->size());
+  DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
-  cout << "length of alpha vector:           " << alpha.getSize() << endl;
+  std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
 
   GridIndex* gp;
 
   // refine adaptively 5 times
   for (int step = 0; step < 5; step++) {
-
     // set function values in alpha
-    for (size_t i = 0; i < gridStorage->size(); i++) {
-      gp = gridStorage->get(i);
+    for (size_t i = 0; i < gridStorage.getSize(); i++) {
+      gp = gridStorage.get(i);
       alpha[i] = f(gp->getCoord(0), gp->getCoord(1));
     }
 
@@ -58,13 +61,12 @@ int main() {
       alpha);
 
     // refine a single grid point each time
-    gridGen->refine(new SurplusRefinementFunctor(&alpha, 1));
-    cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
-         << endl;
+    SurplusRefinementFunctor functor(alpha, 1);
+    grid->getGenerator().refine(functor);
+    std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
+         << std::endl;
 
     // extend alpha vector (new entries uninitialized)
-    alpha.resize(gridStorage->size());
+    alpha.resize(gridStorage.getSize());
   }
-
-  delete grid;
 }

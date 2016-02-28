@@ -14,10 +14,9 @@
 #include <sgpp/parallel/datadriven/operation/OperationMultipleEvalVectorized.hpp>
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 
+#include <string>
 
 namespace SGPP {
 namespace parallel {
@@ -31,8 +30,7 @@ namespace parallel {
  * For the Operation B's mult and mutlTransposed functions
  * vectorized formulations are used.
  */
-class DMSystemMatrixVectorizedIdentity : public
-  SGPP::datadriven::DMSystemMatrixBase {
+class DMSystemMatrixVectorizedIdentity : public SGPP::datadriven::DMSystemMatrixBase {
  private:
   /// vectorization mode
   VectorizationType vecMode_;
@@ -41,7 +39,7 @@ class DMSystemMatrixVectorizedIdentity : public
   /// Number of patched and used training instances
   size_t numPatchedTrainingInstances_;
   /// OperationB for calculating the data matrix
-  SGPP::parallel::OperationMultipleEvalVectorized* B_;
+  std::unique_ptr<SGPP::parallel::OperationMultipleEvalVectorized> B_;
 
  public:
   /**
@@ -52,24 +50,22 @@ class DMSystemMatrixVectorizedIdentity : public
    * @param lambda the lambda, the regression parameter
    * @param vecMode vectorization mode
    */
-  DMSystemMatrixVectorizedIdentity(SGPP::base::Grid& SparseGrid,
-                                   SGPP::base::DataMatrix& trainData, double lambda, VectorizationType vecMode);
+  DMSystemMatrixVectorizedIdentity(SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData,
+                                   double lambda, VectorizationType vecMode);
 
   /**
    * Std-Destructor
    */
   virtual ~DMSystemMatrixVectorizedIdentity();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-  virtual void generateb(SGPP::base::DataVector& classes,
-                         SGPP::base::DataVector& b);
+  virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b);
 
   virtual void rebuildLevelAndIndex();
 };
 
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* DMSYSTEMMATRIXVECTORIZEDIDENTITY_HPP */

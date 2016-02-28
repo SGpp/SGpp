@@ -35,12 +35,12 @@ class RefinementFunctor {
    * This should be returning a refinement value for every grid point.
    * The point with the highest value will be refined first.
    *
-   * @param storage pointer to the grids storage object
+   * @param storage reference to the grids storage object
    * @param seq sequence number in the coefficients array
    *
    * @return refinement value
    */
-  virtual float_t operator()(GridStorage* storage, size_t seq) const = 0;
+  virtual float_t operator()(GridStorage& storage, size_t seq) const = 0;
 
   /**
    * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
@@ -77,11 +77,11 @@ class RefinementFunctor {
    * @param storage pointer to the grids storage object
    * @return total sum of local (error) indicators used for refinement
    */
-  virtual float_t getTotalRefinementValue(GridStorage* storage) const {
+  virtual float_t getTotalRefinementValue(GridStorage& storage) const {
     float_t sum = 0;
-    GridStorage::grid_map_iterator end_iter = storage->end();
+    GridStorage::grid_map_iterator end_iter = storage.end();
 
-    for (GridStorage::grid_map_iterator iter = storage->begin();
+    for (GridStorage::grid_map_iterator iter = storage.begin();
          iter != end_iter; iter++) {
       sum += operator()(storage, iter->second);
     }

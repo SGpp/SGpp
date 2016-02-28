@@ -26,9 +26,8 @@ class OperationMultipleEvalPrewavelet : public OperationMultipleEval {
    * @param grid grid
    * @param dataset Dataset
    */
-  OperationMultipleEvalPrewavelet(Grid& grid,
-                                  DataMatrix& dataset) : OperationMultipleEval(grid, dataset) {
-    this->storage = grid.getStorage();
+  OperationMultipleEvalPrewavelet(Grid& grid, DataMatrix& dataset) :
+    OperationMultipleEval(grid, dataset), storage(grid.getStorage()) {
   }
 
   /**
@@ -40,8 +39,8 @@ class OperationMultipleEvalPrewavelet : public OperationMultipleEval {
   void multTranspose(DataVector& source, DataVector& result) override;
 
  protected:
-  /// Pointer to the grid's GridStorage object
-  GridStorage* storage;
+  /// reference to the grid's GridStorage object
+  GridStorage& storage;
 };
 
 }  // namespace base

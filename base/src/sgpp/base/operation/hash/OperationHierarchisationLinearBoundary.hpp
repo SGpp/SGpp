@@ -26,7 +26,7 @@ class OperationHierarchisationLinearBoundary : public OperationHierarchisation {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationHierarchisationLinearBoundary(GridStorage* storage) :
+  explicit OperationHierarchisationLinearBoundary(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -39,7 +39,7 @@ class OperationHierarchisationLinearBoundary : public OperationHierarchisation {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

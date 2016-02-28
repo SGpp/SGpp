@@ -27,7 +27,7 @@ class DehierarchisationModLinear {
   typedef GridStorage::grid_iterator grid_iterator;
 
   /// the grid object
-  GridStorage* storage;
+  GridStorage& storage;
 
  public:
   /**
@@ -35,7 +35,7 @@ class DehierarchisationModLinear {
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    */
-  explicit DehierarchisationModLinear(GridStorage* storage);
+  explicit DehierarchisationModLinear(GridStorage& storage);
   /**
    * Destructor
    */

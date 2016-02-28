@@ -15,15 +15,12 @@
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 
-void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
-                      SGPP::base::Grid& grid,
-                      SGPP::base::GridGenerator& gridGen,
-                      SGPP::base::DataVector& alpha, std::mt19937 mt,
-                      std::uniform_real_distribution<double>& dist) {
+void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::base::Grid& grid,
+                      SGPP::base::GridGenerator& gridGen, SGPP::base::DataVector& alpha,
+                      std::mt19937 mt, std::uniform_real_distribution<double>& dist) {
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor* myRefineFunc =
-        new SGPP::base::SurplusRefinementFunctor(&alpha, adaptConfig.noPoints_,
-                                                 adaptConfig.threshold_);
+    SGPP::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
+                                                      adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -31,8 +28,6 @@ void doAllRefinements(SGPP::base::AdpativityConfiguration& adaptConfig,
     for (size_t j = oldSize; j < alpha.getSize(); j++) {
       alpha[j] = dist(mt);
     }
-
-    delete myRefineFunc;
   }
 }
 
@@ -68,22 +63,21 @@ int main(int argc, char** argv) {
   SGPP::base::DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
-  //    SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
-  SGPP::base::Grid* grid = SGPP::base::Grid::createLinearGrid(dim);
-  SGPP::base::GridStorage* gridStorage = grid->getStorage();
-  std::cout << "dimensionality:        " << gridStorage->dim() << std::endl;
+  //    std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  std::unique_ptr<SGPP::base::Grid> grid = SGPP::base::Grid::createLinearGrid(dim);
+  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
-  SGPP::base::GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  std::cout << "number of grid points: " << gridStorage->size() << std::endl;
-  std::cout << "number of data points: " << dataset.getNumberInstances()
-            << std::endl;
+  SGPP::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
+  std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
+  std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
 
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
 
-  SGPP::base::DataVector alpha(gridStorage->size());
+  SGPP::base::DataVector alpha(gridStorage.getSize());
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
     //    alpha[i] = dist(mt);
@@ -91,14 +85,12 @@ int main(int argc, char** argv) {
   }
 
   std::cout << "creating operation with unrefined grid" << std::endl;
-  SGPP::base::OperationMultipleEval* eval =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                    configuration);
+  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
+      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  doAllRefinements(adaptConfig, *grid, *gridGen, alpha, mt, dist);
+  doAllRefinements(adaptConfig, *grid, gridGen, alpha, mt, dist);
 
-  std::cout << "number of grid points after refinement: " << gridStorage->size()
-            << std::endl;
+  std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;
 
   SGPP::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
@@ -114,11 +106,10 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  SGPP::base::OperationMultipleEval* evalCompare =
+  std::unique_ptr<SGPP::base::OperationMultipleEval> evalCompare =
       SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
 
-  SGPP::base::DataVector dataSizeVectorResultCompare(
-      dataset.getNumberInstances());
+  SGPP::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
   dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);

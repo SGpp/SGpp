@@ -63,12 +63,12 @@ class Configuration {
           kernelNode.addIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
         }
 
-        if (kernelNode.contains("KERNEL_DATA_BLOCKING_SIZE") == false) {
-          kernelNode.addIDAttr("KERNEL_DATA_BLOCKING_SIZE", 1ul);
+        if (kernelNode.contains("KERNEL_DATA_BLOCK_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_DATA_BLOCK_SIZE", 1ul);
         }
 
-        if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCKING_SIZE") == false) {
-          kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCKING_SIZE", 1ul);
+        if (kernelNode.contains("KERNEL_TRANS_GRID_BLOCK_SIZE") == false) {
+          kernelNode.addIDAttr("KERNEL_TRANS_GRID_BLOCK_SIZE", 1ul);
         }
 
         if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {

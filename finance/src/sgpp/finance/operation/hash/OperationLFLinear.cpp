@@ -24,7 +24,7 @@ void OperationLFLinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector
                            size_t dim) {
   // X * dphi * phi
   XdPhiPhiUpBBLinear func(this->storage);
-  SGPP::base::sweep<XdPhiPhiUpBBLinear> s(func, this->storage);
+  SGPP::base::sweep<XdPhiPhiUpBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }
@@ -33,7 +33,7 @@ void OperationLFLinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVect
                              size_t dim) {
   // X * dphi * phi
   XdPhiPhiDownBBLinear func(this->storage);
-  SGPP::base::sweep<XdPhiPhiDownBBLinear> s(func, this->storage);
+  SGPP::base::sweep<XdPhiPhiDownBBLinear> s(func, *this->storage);
 
   s.sweep1D(alpha, result, dim);
 }

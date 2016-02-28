@@ -99,7 +99,7 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
     base::StdNormalDistribution myNormDistr;
     float_t* s_coords = new float_t[this->dim];
 
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
       std::stringstream coordsStream(coords);
 
@@ -135,7 +135,7 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
 
     delete[] s_coords;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::getGridNormalDistribution : The grid wasn't initialized before!");
   }
 }
@@ -146,12 +146,10 @@ void BlackScholesSolver::constructGrid(base::BoundingBox& BoundingBox, int level
 
   this->myGrid = new base::LinearBoundaryGrid(BoundingBox);
 
-  base::GridGenerator* myGenerator = this->myGrid->createGridGenerator();
-  myGenerator->regular(this->levels);
-  delete myGenerator;
+  this->myGrid->getGenerator().regular(this->levels);
 
-  this->myBoundingBox = this->myGrid->getBoundingBox();
-  this->myGridStorage = this->myGrid->getStorage();
+  this->myBoundingBox = &this->myGrid->getBoundingBox();
+  this->myGridStorage = &this->myGrid->getStorage();
 
   // std::string serGrid;
   // myGrid->serialize(serGrid);
@@ -179,7 +177,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
         float_t* dblFuncValues = new float_t[dim];
         float_t dDistance = 0.0;
 
-        for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
               this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
           std::stringstream coordsStream(coords);
@@ -214,24 +212,20 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
 
         delete[] dblFuncValues;
 
-        base::SurplusRefinementFunctor* myRefineFunc =
-            new base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+        base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
+        this->myGrid->getGenerator().refine(myRefineFunc);
 
-        this->myGrid->createGridGenerator()->refine(myRefineFunc);
-
-        delete myRefineFunc;
-
-        alpha.resize(this->myGridStorage->size());
+        alpha.resize(this->myGridStorage->getSize());
 
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "BlackScholesSolver::refineInitialGridWithPayoff : An unsupported payoffType was "
             "specified!");
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "BlackScholesSolver::refineInitialGridWithPayoff : The grid wasn't initialized before!");
     }
   }
@@ -257,7 +251,7 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
 
         this->tBoundaryType = "Dirichlet";
 
-        for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+        for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
           std::stringstream coordsStream(coords);
 
@@ -291,24 +285,20 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
 
         delete[] dblFuncValues;
 
-        base::SurplusRefinementFunctor* myRefineFunc =
-            new base::SurplusRefinementFunctor(&refineVector, nRefinements, 0.0);
+        base::SurplusRefinementFunctor myRefineFunc(refineVector, nRefinements, 0.0);
+        this->myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
 
-        this->myGrid->createGridGenerator()->refineMaxLevel(myRefineFunc, maxLevel);
-
-        delete myRefineFunc;
-
-        alpha.resize(this->myGridStorage->size());
+        alpha.resize(this->myGridStorage->getSize());
 
         // reinit the grid with the payoff function
         initGridWithPayoff(alpha, strike, payoffType);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : An unsupported payoffType "
             "was specified!");
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel : The grid wasn't initialized "
           "before!");
     }
@@ -749,7 +739,7 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, float_t timeste
 
     this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -858,7 +848,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, float_t timeste
 
     this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -992,7 +982,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, float_t timeste
 
     this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic "
         "parameters weren't set!");
   }
@@ -1163,7 +1153,7 @@ void BlackScholesSolver::solveX(size_t numTimesteps, float_t timestepsize, size_
 
     this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::solveX : A grid wasn't constructed before or stochastic parameters "
         "weren't set!");
   }
@@ -1226,7 +1216,7 @@ void BlackScholesSolver::solve1DAnalytic(std::vector<std::pair<float_t, float_t>
       premiums.push_back(std::make_pair(stock, prem));
     }
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::solve1DAnalytic : Stochastic parameters weren't set!");
   }
 }
@@ -1250,17 +1240,17 @@ void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, fl
   float_t coord;
 
   if (dim != 1) {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::getAnalyticAlpha1D : A grid wasn't constructed before!");
   }
 
   if (!this->bGridConstructed) {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::getAnalyticAlpha1D : function only available for dim = 1!");
   }
 
   // compute values of analytic solution on given grid
-  for (size_t i = 0; i < this->myGridStorage->size(); i++) {
+  for (size_t i = 0; i < this->myGridStorage->getSize(); i++) {
     std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
     std::stringstream coordsStream(coords);
     coordsStream >> coord;
@@ -1280,11 +1270,7 @@ void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, fl
 
   if (hierarchized) {
     // hierarchize computed values
-    base::OperationHierarchisation* myHier =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHier->doHierarchisation(alpha_analytic);
-
-    delete myHier;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha_analytic);
   }
 }
 
@@ -1295,7 +1281,7 @@ void BlackScholesSolver::evaluate1DAnalyticCuboid(base::DataVector& AnalyticOpti
   size_t n = EvaluationPoints.getNrows();
 
   if (AnalyticOptionPrices.getSize() != n) {
-    throw new base::application_exception(
+    throw base::application_exception(
         "PDESolver::evaluate1DAnalyticCuboid : The size of the price vector doesn't match the size "
         "of the evaluation points' vector!");
   }
@@ -1320,7 +1306,7 @@ void BlackScholesSolver::setAlgorithmicDimensions(std::vector<size_t> newAlgoDim
   if (this->tBoundaryType == "freeBoundaries") {
     this->myGrid->setAlgorithmicDimensions(newAlgoDims);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::setAlgorithmicDimensions : Set algorithmic dimensions is only "
         "supported when choosing option type all!");
   }
@@ -1351,7 +1337,7 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
                                                          size_t numTestpoints, float_t strike) {
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      if (this->myGrid->getStorage()->getBoundingBox()->getDimensions() == 2) {
+      if (this->myGrid->getStorage().getBoundingBox()->getDimensions() == 2) {
         if (numTestpoints < 2) numTestpoints = 2;
 
         float_t dInc = (2.0 * strike) / static_cast<float_t>(numTestpoints - 1);
@@ -1362,7 +1348,8 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
         std::ofstream file;
         file.open(tFilename.c_str());
 
-        base::OperationEval* myEval = op_factory::createOperationEval(*this->myGrid);
+        std::unique_ptr<base::OperationEval> myEval(
+            op_factory::createOperationEval(*this->myGrid));
 
         for (size_t i = 0; i < numTestpoints; i++) {
           std::vector<float_t> point;
@@ -1379,12 +1366,10 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
           dY -= dInc;
         }
 
-        delete myEval;
-
         file.close();
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "BlackScholesSolver::getPayoffInterpolationError : A grid wasn't constructed before!");
     }
   }
@@ -1396,7 +1381,7 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, float_t 
 
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
-      for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+      for (size_t i = 0; i < this->myGrid->getSize(); i++) {
         bool isAtMoney = true;
         base::DataVector coords(this->dim);
         this->myGridStorage->get(i)->getCoordsBB(coords, *this->myBoundingBox);
@@ -1410,7 +1395,7 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, float_t 
             }
           }
         } else {
-          throw new base::application_exception(
+          throw base::application_exception(
               "BlackScholesSolver::getGridPointsAtMoney : An unknown payoff-type was specified!");
         }
 
@@ -1419,7 +1404,7 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, float_t 
         }
       }
     } else {
-      throw new base::application_exception(
+      throw base::application_exception(
           "BlackScholesSolver::getGridPointsAtMoney : A grid wasn't constructed before!");
     }
   }
@@ -1432,7 +1417,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -1460,7 +1445,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
 
         alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "BlackScholesSolver::initCartesianGridWithPayoff : An unknown payoff-type was "
             "specified!");
       }
@@ -1468,12 +1453,9 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::initCartesianGridWithPayoff : A grid wasn't constructed before!");
   }
 }
@@ -1483,7 +1465,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -1511,7 +1493,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
 
         alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "BlackScholesSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was "
             "specified!");
       }
@@ -1519,12 +1501,9 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::initLogTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
 }
@@ -1534,7 +1513,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
   float_t tmp;
 
   if (this->bGridConstructed) {
-    for (size_t i = 0; i < this->myGrid->getStorage()->size(); i++) {
+    for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
       float_t* dblFuncValues = new float_t[dim];
@@ -1574,7 +1553,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
 
         alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
       } else {
-        throw new base::application_exception(
+        throw base::application_exception(
             "BlackScholesSolver::initPATTransformedGridWithPayoff : An unknown payoff-type was "
             "specified!");
       }
@@ -1582,12 +1561,9 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
       delete[] dblFuncValues;
     }
 
-    base::OperationHierarchisation* myHierarchisation =
-        op_factory::createOperationHierarchisation(*this->myGrid);
-    myHierarchisation->doHierarchisation(alpha);
-    delete myHierarchisation;
+    op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::initPATTransformedGridWithPayoff : A grid wasn't constructed before!");
   }
 }
@@ -1616,9 +1592,8 @@ float_t BlackScholesSolver::evalOption(std::vector<float_t>& eval_point, base::D
     }
   }
 
-  base::OperationEval* myEval = op_factory::createOperationEval(*this->myGrid);
-  float_t result = myEval->eval(alpha, trans_eval);
-  delete myEval;
+
+  float_t result = op_factory::createOperationEval(*this->myGrid)->eval(alpha, trans_eval);
 
   // discounting, if PAT is used
   if (this->usePAT == true && this->payoffType != "std_amer_put") {
@@ -1659,21 +1634,19 @@ void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string
                                             bool bSurplus) const {
   base::DataVector temp(alpha);
   float_t tmp = 0.0;
-  size_t dim = myGrid->getStorage()->dim();
+  size_t dim = myGrid->getDimension();
   std::ofstream fileout;
 
   // Do Dehierarchisation, is specified
   if (bSurplus == false) {
-    base::OperationHierarchisation* myHier = op_factory::createOperationHierarchisation(*myGrid);
-    myHier->doDehierarchisation(temp);
-    delete myHier;
+    op_factory::createOperationHierarchisation(*myGrid)->doDehierarchisation(temp);
   }
 
   // Open filehandle
   fileout.open(tfilename.c_str());
 
-  for (size_t i = 0; i < myGrid->getStorage()->size(); i++) {
-    std::string coords = myGrid->getStorage()->get(i)->getCoordsStringBB(*myGrid->getBoundingBox());
+  for (size_t i = 0; i < myGrid->getSize(); i++) {
+    std::string coords = myGrid->getStorage().get(i)->getCoordsStringBB(myGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
 
     float_t* dblFuncValues = new float_t[dim];
@@ -1745,7 +1718,7 @@ void BlackScholesSolver::storeInnerRHS(base::DataVector& alpha, std::string tFil
     delete myStopwatch;
     delete myBSSystem;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::storeInnerMatrix : A grid wasn't constructed before!");
   }
 }
@@ -1786,7 +1759,7 @@ void BlackScholesSolver::storeInnerSolution(base::DataVector& alpha, size_t numT
     delete myCG;
     delete myEuler;
   } else {
-    throw new base::application_exception(
+    throw base::application_exception(
         "BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before!");
   }
 }

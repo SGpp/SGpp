@@ -3,12 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/operation_exception.hpp>
-
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include "sgpp/base/exception/operation_exception.hpp"
+#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
 #include "SystemMatrixLeastSquaresIdentity.hpp"
-
-#include <sgpp/globaldef.hpp>
+#include "sgpp/globaldef.hpp"
 
 // #include <iostream>
 
@@ -18,16 +16,16 @@ namespace SGPP {
 namespace datadriven {
 
 SystemMatrixLeastSquaresIdentity::SystemMatrixLeastSquaresIdentity(base::Grid& grid,
-    base::DataMatrix& trainData, float_t lambda) :
-    DMSystemMatrixBase(trainData, lambda), instances(0), paddedInstances(0),
-    grid(grid) {
+                                                                   base::DataMatrix& trainData,
+                                                                   float_t lambda)
+    : DMSystemMatrixBase(trainData, lambda), instances(0), paddedInstances(0), grid(grid) {
   this->dataset_ = new base::DataMatrix(trainData);
   this->instances = this->dataset_->getNrows();
   // this->paddedInstances = PaddingAssistant::padDataset(*(this->dataset_));
   // datadriven::OperationMultipleEvalType type =
   // datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
   this->B = op_factory::createOperationMultipleEval(grid, *(this->dataset_),
-            this->implementationConfiguration);
+                                                    this->implementationConfiguration).release();
   // padded during Operator construction, fetch new size
   this->paddedInstances = this->dataset_->getNrows();
 }
@@ -37,8 +35,7 @@ SystemMatrixLeastSquaresIdentity::~SystemMatrixLeastSquaresIdentity() {
   delete this->dataset_;
 }
 
-void SystemMatrixLeastSquaresIdentity::mult(base::DataVector& alpha,
-    base::DataVector& result) {
+void SystemMatrixLeastSquaresIdentity::mult(base::DataVector& alpha, base::DataVector& result) {
   base::DataVector temp(this->paddedInstances);
 
   // Operation B
@@ -53,8 +50,7 @@ void SystemMatrixLeastSquaresIdentity::mult(base::DataVector& alpha,
   result.axpy(static_cast<float_t>(this->instances) * this->lambda_, alpha);
 }
 
-void SystemMatrixLeastSquaresIdentity::generateb(base::DataVector&
-    classes, base::DataVector& b) {
+void SystemMatrixLeastSquaresIdentity::generateb(base::DataVector& classes, base::DataVector& b) {
   base::DataVector myClasses(classes);
 
   this->myTimer_->start();
@@ -62,10 +58,7 @@ void SystemMatrixLeastSquaresIdentity::generateb(base::DataVector&
   this->completeTimeMultTrans_ += this->myTimer_->stop();
 }
 
-void SystemMatrixLeastSquaresIdentity::prepareGrid() {
-  this->B->prepare();
-}
+void SystemMatrixLeastSquaresIdentity::prepareGrid() { this->B->prepare(); }
 
 }  // namespace datadriven
 }  // namespace SGPP
-

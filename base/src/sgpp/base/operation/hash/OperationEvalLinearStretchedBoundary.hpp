@@ -27,7 +27,7 @@ class OperationEvalLinearStretchedBoundary : public OperationEval {
    *
    * @param storage the grid's GridStorage object
    */
-  explicit OperationEvalLinearStretchedBoundary(GridStorage* storage) :
+  explicit OperationEvalLinearStretchedBoundary(GridStorage& storage) :
     storage(storage) {}
 
   /**
@@ -40,7 +40,7 @@ class OperationEvalLinearStretchedBoundary : public OperationEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

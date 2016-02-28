@@ -41,7 +41,7 @@ class TestCheckpointController(unittest.TestCase):
         dim = 2
         level = 2
         grid = Grid.createLinearGrid(dim)
-        generator = grid.createGridGenerator()
+        generator = grid.getGenerator()
         generator.regular(level)
 
         controller = CheckpointController("savegrid", pathlocal)
@@ -63,15 +63,15 @@ class TestCheckpointController(unittest.TestCase):
         dim = 2
         level = 2
         grid = Grid.createLinearGrid(dim)
-        generator = grid.createGridGenerator()
+        generator = grid.getGenerator()
         generator.regular(level)
 
         controller = CheckpointController("sample", pathlocal)
         sampleGrid = controller.loadGrid(0)
 
         # check dimension and size
-        self.assertEqual(dim, sampleGrid.getStorage().dim())
-        self.assertEqual(grid.getStorage().size(), sampleGrid.getStorage().size())
+        self.assertEqual(dim, sampleGrid.getDimension())
+        self.assertEqual(grid.getSize(), sampleGrid.getSize())
 
         # if string representations are equal, then grids are equal
         self.assertEqual(grid.serialize(), sampleGrid.serialize())

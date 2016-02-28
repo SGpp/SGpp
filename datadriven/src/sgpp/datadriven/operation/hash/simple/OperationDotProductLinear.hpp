@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -22,8 +21,7 @@ class OperationDotProductLinear {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationDotProductLinear(SGPP::base::GridStorage* storage) : storage(
-      storage) {}
+  explicit OperationDotProductLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
@@ -36,8 +34,7 @@ class OperationDotProductLinear {
   /// Pointer to the grid's GridStorage object
   SGPP::base::GridStorage* storage;
 };
-
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 
 #endif /* OPERATIONDOTPRODUCTLINEAR_HPP */

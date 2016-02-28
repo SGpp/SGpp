@@ -31,7 +31,7 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& 
     if (q != 1.0)
     {
       // traverse all basis function by sequence number
-      for(size_t i = 0; i < storage->size(); i++)
+      for(size_t i = 0; i < storage->getSize(); i++)
       {
         SGPP::base::GridStorage::index_type::level_type level;
         SGPP::base::GridStorage::index_type::index_type index;
@@ -43,7 +43,7 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& 
     else
     {
       // traverse all basis function by sequence number
-      for(size_t i = 0; i < storage->size(); i++)
+      for(size_t i = 0; i < storage->getSize(); i++)
       {
         SGPP::base::GridStorage::index_type::level_type level;
         SGPP::base::GridStorage::index_type::index_type index;
@@ -58,7 +58,7 @@ void DowndPhidPhiBBIterativeLinearStretched::operator()(SGPP::base::DataVector& 
   result.setAll(0.0);
 
   // traverse all basis function by sequence number
-  for (size_t i = 0; i < storage->size(); i++) {
+  for (size_t i = 0; i < storage->getSize(); i++) {
     SGPP::base::GridStorage::index_type::level_type level;
     SGPP::base::GridStorage::index_type::index_type index;
     (*storage)[i]->get(dim, level, index);

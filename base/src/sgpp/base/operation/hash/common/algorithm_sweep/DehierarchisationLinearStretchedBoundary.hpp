@@ -32,7 +32,7 @@ class DehierarchisationLinearStretchedBoundary : public
    *
    * @param storage the grid storage object of the the grid, on which the dehierarchisation should be executed
    */
-  explicit DehierarchisationLinearStretchedBoundary(GridStorage* storage);
+  explicit DehierarchisationLinearStretchedBoundary(GridStorage& storage);
 
   /**
    * Destructor

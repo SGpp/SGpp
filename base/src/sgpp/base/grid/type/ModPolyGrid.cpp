@@ -6,13 +6,9 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp>
-
-
 
 #include <sgpp/globaldef.hpp>
 
@@ -22,22 +18,21 @@ namespace base {
 
 ModPolyGrid::ModPolyGrid(std::istream& istr) :
   Grid(istr),
-  degree(1 << 16),
-  basis_(NULL) {
+  generator(storage),
+  degree(1 << 16) {
   istr >> degree;
+  basis_.reset(new SPolyModifiedBase(degree));
 }
 
 
 ModPolyGrid::ModPolyGrid(size_t dim, size_t degree) :
   Grid(dim),
+  generator(storage),
   degree(degree),
-  basis_(NULL) {
+  basis_(new SPolyModifiedBase(degree)) {
 }
 
 ModPolyGrid::~ModPolyGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType ModPolyGrid::getType() {
@@ -45,10 +40,6 @@ SGPP::base::GridType ModPolyGrid::getType() {
 }
 
 const SBasis& ModPolyGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SPolyModifiedBase(degree);
-  }
-
   return *basis_;
 }
 
@@ -56,8 +47,8 @@ size_t ModPolyGrid::getDegree() const {
   return this->degree;
 }
 
-Grid* ModPolyGrid::unserialize(std::istream& istr) {
-  return new ModPolyGrid(istr);
+std::unique_ptr<Grid> ModPolyGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new ModPolyGrid(istr));
 }
 
 void ModPolyGrid::serialize(std::ostream& ostr) {
@@ -70,8 +61,8 @@ void ModPolyGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* ModPolyGrid::createGridGenerator() {
-  return new StandardGridGenerator(this->storage);
+GridGenerator& ModPolyGrid::getGenerator() {
+  return generator;
 }
 
 

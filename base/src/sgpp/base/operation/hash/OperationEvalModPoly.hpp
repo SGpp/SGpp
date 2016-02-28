@@ -29,7 +29,7 @@ class OperationEvalModPoly : public OperationEval {
    * @param storage the grid's GridStorage object
    * @param degree the polynom's max. degree
    */
-  OperationEvalModPoly(GridStorage* storage, size_t degree) : storage(storage),
+  OperationEvalModPoly(GridStorage& storage, size_t degree) : storage(storage),
     base(degree) {}
 
   /**
@@ -42,7 +42,7 @@ class OperationEvalModPoly : public OperationEval {
 
  protected:
   /// Pointer to GridStorage object
-  GridStorage* storage;
+  GridStorage& storage;
   /// Mod Poly Basis object
   SGPP::base::SPolyModifiedBase base;
 };

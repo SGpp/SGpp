@@ -43,7 +43,7 @@ class BreadthFirstSearch {
    *
    * @param storage   storage of the grid
    */
-  explicit BreadthFirstSearch(GridStorage* storage) :
+  explicit BreadthFirstSearch(GridStorage& storage) :
     functor(),
     storage(storage) {
   }
@@ -54,7 +54,7 @@ class BreadthFirstSearch {
    * @param functor   functor to apply in the BFS
    * @param storage   storage of the grid
    */
-  BreadthFirstSearch(FUNC& functor, GridStorage* storage) :
+  BreadthFirstSearch(FUNC& functor, GridStorage& storage) :
     functor(functor),
     storage(storage) {
   }
@@ -73,8 +73,8 @@ class BreadthFirstSearch {
    */
   template<class DataType>
   void execute(const DataType& source, DataType& result) {
-    const size_t n = storage->size();
-    const size_t d = storage->dim();
+    const size_t n = storage.getSize();
+    const size_t d = storage.getDimension();
 
     std::vector<bool> visited(n, false);
     grid_iterator iterator(storage);
@@ -87,7 +87,7 @@ class BreadthFirstSearch {
       index = queue.front();
       queue.pop();
 
-      const GridIndex& point = *(*storage)[index];
+      const GridIndex& point = *storage[index];
       iterator.set(point);
       functor(source, result, iterator);
 
@@ -121,7 +121,7 @@ class BreadthFirstSearch {
   /// functor to apply in the BFS
   FUNC functor;
   /// storage of the grid
-  GridStorage* storage;
+  GridStorage& storage;
 };
 
 }  // namespace base

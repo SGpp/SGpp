@@ -11,7 +11,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
@@ -19,14 +18,11 @@ namespace datadriven {
  * keep applying marginalize to function until it's reduced to only 1 dimension
  */
 
-class OperationInverseRosenblattTransformationLinear: public
-  OperationInverseRosenblattTransformation {
+class OperationInverseRosenblattTransformationLinear
+    : public OperationInverseRosenblattTransformation {
  public:
-  OperationInverseRosenblattTransformationLinear(base::Grid* grid) :
-    grid(grid) {
-  }
-  virtual ~OperationInverseRosenblattTransformationLinear() {
-  }
+  explicit OperationInverseRosenblattTransformationLinear(base::Grid* grid) : grid(grid) {}
+  virtual ~OperationInverseRosenblattTransformationLinear() {}
   /**
    * Transformation with mixed starting dimensions
    *
@@ -50,15 +46,13 @@ class OperationInverseRosenblattTransformationLinear: public
 
  protected:
   base::Grid* grid;
-  void doTransformation_start_dimX(base::Grid* g_in, base::DataVector* a_in,
-                                   size_t dim_start, base::DataVector* cdfs1d,
-                                   base::DataVector* coords1d);
-  void doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in,
-                                    size_t op_dim, base::DataVector* cdfs1d, base::DataVector* coords1d,
+  void doTransformation_start_dimX(base::Grid* g_in, base::DataVector* a_in, size_t dim_start,
+                                   base::DataVector* cdfs1d, base::DataVector* coords1d);
+  void doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in, size_t op_dim,
+                                    base::DataVector* cdfs1d, base::DataVector* coords1d,
                                     size_t& curr_dim);
-  float_t doTransformation1D(base::Grid* grid1d, base::DataVector* alpha1d,
-                             float_t coord1d);
+  float_t doTransformation1D(base::Grid* grid1d, base::DataVector* alpha1d, float_t coord1d);
 };
-}
-}
+}  // namespace datadriven
+}  // namespace SGPP
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONLINEAR_HPP */

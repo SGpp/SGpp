@@ -3,10 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
-#include <cmath>
 // All SG++ headers
-//#include <sgpp_base.hpp>
+// #include <sgpp_base.hpp>
 
 // Or, better!, include only those that are required
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -20,8 +18,18 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 
-using namespace std;
-using namespace SGPP::base;
+#include <iostream>
+#include <cmath>
+
+using SGPP::base::DataMatrix;
+using SGPP::base::DataVector;
+using SGPP::base::Grid;
+using SGPP::base::GridGenerator;
+using SGPP::base::GridStorage;
+using SGPP::base::HashRefinement;
+using SGPP::base::OperationEval;
+using SGPP::base::PredictiveRefinement;
+using SGPP::base::PredictiveRefinementIndicator;
 
 // function to interpolate
 SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
@@ -30,11 +38,11 @@ SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
 
 DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
                            const DataVector& alpha, DataVector& error) {
-  cout << "calculating error" << endl;
+  std::cout << "calculating error" << std::endl;
 
-  //traverse dataSet
+  // traverse dataSet
   DataVector vec(2);
-  OperationEval* opEval = SGPP::op_factory::createOperationEval(grid);
+  std::unique_ptr<OperationEval> opEval(SGPP::op_factory::createOperationEval(grid));
 
   for (unsigned int i = 0; i < dataSet.getNrows(); i++) {
     dataSet.getRow(i, vec);
@@ -48,20 +56,19 @@ DataVector& calculateError(const DataMatrix& dataSet, Grid& grid,
 int main() {
   // create a two-dimensional piecewise bilinear grid
   size_t dim = 2;
-  Grid* grid = Grid::createModLinearGrid(dim);
-  GridStorage* hashGridStorage = grid->getStorage();
-  cout << "dimensionality:                   " << hashGridStorage->dim() << endl;
+  std::unique_ptr<Grid> grid = Grid::createModLinearGrid(dim);
+  GridStorage& gridStorage = grid->getStorage();
+  std::cout << "dimensionality:                   " << gridStorage.getDimension() << std::endl;
 
   // create regular grid, level 3
   size_t level = 1;
-  GridGenerator* gridGen = grid->createGridGenerator();
-  gridGen->regular(level);
-  cout << "number of initial grid points:    " << hashGridStorage->size() << endl;
+  grid->getGenerator().regular(level);
+  std::cout << "number of initial grid points:    " << gridStorage.getSize() << std::endl;
 
   // create coefficient vector
-  DataVector alpha(hashGridStorage->size());
+  DataVector alpha(gridStorage.getSize());
   alpha.setAll(0.0);
-  cout << "length of alpha vector:           " << alpha.getSize() << endl;
+  std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
 
   int rows = 100;
   int cols = 100;
@@ -73,21 +80,21 @@ int main() {
   // This represents a regular 2d grid with a step size of 1 / rows and 1 / cols.
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      //xcoord
+      // xcoord
       dataSet.set(i * cols + j, 0, i * 1.0 / rows);
-      //ycoord
+      // ycoord
       dataSet.set(i * cols + j, 1, j * 1.0 / cols);
       vals[i * cols + j] = f(i * 1.0 / rows, j * 1.0 / cols);
     }
   }
 
-  //refine adaptively 20 times
+  // refine adaptively 20 times
   for (int step = 0; step < 20; step++) {
     // set function values in alpha
     DataVector gridPointCoordinates(dim);
 
-    for (size_t i = 0; i < hashGridStorage->size(); i++) {
-      hashGridStorage->get(i)->getCoords(gridPointCoordinates);
+    for (size_t i = 0; i < gridStorage.getSize(); i++) {
+      gridStorage.get(i)->getCoords(gridPointCoordinates);
       alpha[i] = f(gridPointCoordinates[0], gridPointCoordinates[1]);
     }
 
@@ -104,18 +111,16 @@ int main() {
     PredictiveRefinement decorator(&refinement);
 
     // refine a single grid point each time
-    cout << "Error over all = "  << errorVector.sum() << endl;
-    PredictiveRefinementIndicator indicator(grid, &dataSet, &errorVector, 1);
-    decorator.free_refine(hashGridStorage, &indicator);
+    std::cout << "Error over all = "  << errorVector.sum() << std::endl;
+    PredictiveRefinementIndicator indicator(*grid, dataSet, errorVector, 1);
+    decorator.free_refine(gridStorage, indicator);
 
-    cout << "Refinement step " << step + 1 << ", new grid size: " <<
-         hashGridStorage->size() << endl;
+    std::cout << "Refinement step " << step + 1 << ", new grid size: " <<
+         gridStorage.getSize() << std::endl;
 
     // plot grid
 
     // extend alpha vector (new entries uninitialized)
-    alpha.resize(hashGridStorage->size());
+    alpha.resize(gridStorage.getSize());
   }
-
-  delete grid;
 }

@@ -1,7 +1,10 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
-#include <cstdio>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
@@ -12,6 +15,9 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
+#include <string>
+#include <vector>
+
 #include "ObjectiveFunctions.hpp"
 
 const bool use_double_precision =
@@ -21,16 +27,16 @@ const bool use_double_precision =
   false;
 #endif /* USE_DOUBLE_PRECISION */
 
-using namespace SGPP;
-using namespace SGPP::optimization;
+using SGPP::optimization::Printer;
+using SGPP::optimization::RandomNumberGenerator;
 
-void gridEqualityTest(base::Grid& grid1, base::Grid& grid2) {
-  base::GridStorage& storage1 = *grid1.getStorage();
-  base::GridStorage& storage2 = *grid2.getStorage();
-  const size_t d = storage1.dim();
-  BOOST_CHECK_EQUAL(d, storage2.dim());
-  const size_t n = storage1.size();
-  BOOST_CHECK_EQUAL(n, storage2.size());
+void gridEqualityTest(SGPP::base::Grid& grid1, SGPP::base::Grid& grid2) {
+  SGPP::base::GridStorage& storage1 = grid1.getStorage();
+  SGPP::base::GridStorage& storage2 = grid2.getStorage();
+  const size_t d = storage1.getDimension();
+  BOOST_CHECK_EQUAL(d, storage2.getDimension());
+  const size_t n = storage1.getSize();
+  BOOST_CHECK_EQUAL(n, storage2.getSize());
 
   for (size_t k = 0; k < n; k++) {
     for (size_t t = 0; t < d; t++) {
@@ -65,7 +71,7 @@ SGPP::float_t calculateVariance(std::vector<SGPP::float_t>& x) {
   return var;
 }
 
-void orthogonalityTest(base::DataMatrix& A) {
+void orthogonalityTest(SGPP::base::DataMatrix& A) {
   const size_t n = A.getNrows();
   BOOST_CHECK_EQUAL(n, A.getNcols());
 
@@ -84,7 +90,7 @@ void orthogonalityTest(base::DataMatrix& A) {
   }
 }
 
-void symmetryTest(base::DataMatrix& A) {
+void symmetryTest(SGPP::base::DataMatrix& A) {
   const size_t n = A.getNrows();
   BOOST_CHECK_EQUAL(n, A.getNcols());
 
@@ -95,8 +101,8 @@ void symmetryTest(base::DataMatrix& A) {
   }
 }
 
-void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
-                     base::DataMatrix& B) {
+void similiarityTest(SGPP::base::DataMatrix& A, SGPP::base::DataMatrix& V,
+                     SGPP::base::DataMatrix& B) {
   const size_t n = A.getNrows();
   BOOST_CHECK_EQUAL(n, A.getNcols());
   BOOST_CHECK_EQUAL(n, V.getNrows());
@@ -118,7 +124,7 @@ void similiarityTest(base::DataMatrix& A, base::DataMatrix& V,
   }
 }
 
-void generateRandomMatrix(base::DataMatrix& A) {
+void generateRandomMatrix(SGPP::base::DataMatrix& A) {
   for (size_t i = 0; i < A.getNrows(); i++) {
     for (size_t j = 0; j < A.getNcols(); j++) {
       A(i, j) = RandomNumberGenerator::getInstance().getGaussianRN();
@@ -172,8 +178,8 @@ void testReadWriteMatrix(std::vector<T>& A1, size_t m1, size_t n1) {
 
   {
     const std::string fileName = "testTools_matrix.tmp";
-    file_io::writeMatrix(fileName, A1, m1, n1);
-    file_io::readMatrix(fileName, A2, m2, n2);
+    SGPP::optimization::file_io::writeMatrix(fileName, A1, m1, n1);
+    SGPP::optimization::file_io::readMatrix(fileName, A2, m2, n2);
     std::remove(fileName.c_str());
   }
 
@@ -187,27 +193,26 @@ void testReadWriteMatrix(std::vector<T>& A1, size_t m1, size_t n1) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
-  // Test SGPP::optimization::file_io::readGrid/writeGrid.
+  // Test SGPP::optimization::SGPP::optimization::file_io::readGrid/writeGrid.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
   for (size_t d = 1; d < 6; d++) {
-    std::unique_ptr<base::Grid> grid1(base::Grid::createLinearGrid(d)),
-        grid2(base::Grid::createLinearGrid(d));
-    std::unique_ptr<base::GridGenerator> gridGen(grid1->createGridGenerator());
-    gridGen->regular(3);
+    std::unique_ptr<SGPP::base::Grid> grid1(SGPP::base::Grid::createLinearGrid(d)),
+        grid2(SGPP::base::Grid::createLinearGrid(d));
+    grid1->getGenerator().regular(3);
 
     {
       const std::string fileName = "testTools_grid.tmp";
-      file_io::writeGrid(fileName, *grid1->getStorage());
-      file_io::readGrid(fileName, *grid2->getStorage());
+      SGPP::optimization::file_io::writeGrid(fileName, grid1->getStorage());
+      SGPP::optimization::file_io::readGrid(fileName, grid2->getStorage());
       std::remove(fileName.c_str());
     }
 
     gridEqualityTest(*grid1, *grid2);
 
-    base::DataVector functionValues1(grid1->getStorage()->size());
-    base::DataVector functionValues2(0);
+    SGPP::base::DataVector functionValues1(grid1->getSize());
+    SGPP::base::DataVector functionValues2(0);
 
     for (size_t k = 0; k < functionValues1.getSize(); k++) {
       functionValues1[k] = RandomNumberGenerator::getInstance().getUniformRN();
@@ -215,9 +220,9 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
 
     {
       const std::string fileName = "testTools_grid.tmp";
-      file_io::writeGrid(fileName, *grid1->getStorage(), functionValues1);
-      std::unique_ptr<base::Grid> grid2(base::Grid::createLinearGrid(d));
-      file_io::readGrid(fileName, *grid2->getStorage(), functionValues2);
+      SGPP::optimization::file_io::writeGrid(fileName, grid1->getStorage(), functionValues1);
+      std::unique_ptr<SGPP::base::Grid> grid2(SGPP::base::Grid::createLinearGrid(d));
+      SGPP::optimization::file_io::readGrid(fileName, grid2->getStorage(), functionValues2);
       std::remove(fileName.c_str());
     }
 
@@ -231,7 +236,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
-  // Test SGPP::optimization::file_io::readMatrix/writeMatrix.
+  // Test SGPP::optimization::SGPP::optimization::file_io::readMatrix/writeMatrix.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t m1 = 100;
@@ -280,7 +285,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 
   // test read/write with DataMatrix
   {
-    base::DataMatrix A1(m1, n1), A2(0, 0);
+    SGPP::base::DataMatrix A1(m1, n1), A2(0, 0);
 
     for (size_t i = 0; i < m1; i++) {
       for (size_t j = 0; j < n1; j++) {
@@ -290,8 +295,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 
     {
       const std::string fileName = "testTools_matrix.tmp";
-      file_io::writeMatrix(fileName, A1);
-      file_io::readMatrix(fileName, A2);
+      SGPP::optimization::file_io::writeMatrix(fileName, A1);
+      SGPP::optimization::file_io::readMatrix(fileName, A2);
       std::remove(fileName.c_str());
     }
 
@@ -307,7 +312,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
-  // Test SGPP::optimization::file_io::readVector/writeVector.
+  // Test SGPP::optimization::SGPP::optimization::file_io::readVector/writeVector.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 100;
@@ -322,8 +327,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
 
     {
       const std::string fileName = "testTools_matrix.tmp";
-      file_io::writeVector(fileName, v1);
-      file_io::readVector(fileName, v2);
+      SGPP::optimization::file_io::writeVector(fileName, v1);
+      SGPP::optimization::file_io::readVector(fileName, v2);
       std::remove(fileName.c_str());
     }
 
@@ -336,7 +341,7 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
 
   // test read/write with DataVector
   {
-    base::DataVector v1(n), v2(0);
+    SGPP::base::DataVector v1(n), v2(0);
 
     for (size_t i = 0; i < n; i++) {
       v1[i] = RandomNumberGenerator::getInstance().getUniformRN();
@@ -344,8 +349,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
 
     {
       const std::string fileName = "testTools_vector.tmp";
-      file_io::writeVector(fileName, v1);
-      file_io::readVector(fileName, v2);
+      SGPP::optimization::file_io::writeVector(fileName, v1);
+      SGPP::optimization::file_io::readVector(fileName, v2);
       std::remove(fileName.c_str());
     }
 
@@ -427,10 +432,10 @@ BOOST_AUTO_TEST_CASE(TestRandomNumberGenerator) {
 }
 
 BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
-  // Test SGPP::optimization::math::householderTransformation.
+  // Test SGPP::optimization::SGPP::optimization::math::householderTransformation.
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
-  base::DataMatrix A(n, n);
+  SGPP::base::DataMatrix A(n, n);
   generateRandomMatrix(A);
 
   const std::vector<size_t> ps = {0, 2, 5};
@@ -440,8 +445,8 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
     const size_t p = ps[k];
     const size_t q = qs[k];
     const size_t m = n - p;
-    base::DataMatrix Q(m, m);
-    math::householderTransformation(A, p, q, Q);
+    SGPP::base::DataMatrix Q(m, m);
+    SGPP::optimization::math::householderTransformation(A, p, q, Q);
     symmetryTest(Q);
     orthogonalityTest(Q);
 
@@ -459,14 +464,14 @@ BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
 }
 
 BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
-  // Test SGPP::optimization::math::hessenbergForm.
+  // Test SGPP::optimization::SGPP::optimization::math::hessenbergForm.
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
-  base::DataMatrix A(n, n);
+  SGPP::base::DataMatrix A(n, n);
   generateRandomMatrix(A);
-  base::DataMatrix H(A);
-  base::DataMatrix V(n, n);
-  math::hessenbergForm(H, V);
+  SGPP::base::DataMatrix H(A);
+  SGPP::base::DataMatrix V(n, n);
+  SGPP::optimization::math::hessenbergForm(H, V);
 
   orthogonalityTest(V);
   similiarityTest(A, V, H);
@@ -479,14 +484,14 @@ BOOST_AUTO_TEST_CASE(TestHessenbergForm) {
 }
 
 BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
-  // Test SGPP::optimization::math::QRDecomposition.
+  // Test SGPP::optimization::SGPP::optimization::math::QRDecomposition.
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
-  base::DataMatrix A(n, n);
+  SGPP::base::DataMatrix A(n, n);
   generateRandomMatrix(A);
-  base::DataMatrix R(A);
-  base::DataMatrix Q(n, n);
-  math::QRDecomposition(R, Q);
+  SGPP::base::DataMatrix R(A);
+  SGPP::base::DataMatrix Q(n, n);
+  SGPP::optimization::math::QRDecomposition(R, Q);
 
   orthogonalityTest(Q);
 
@@ -511,10 +516,10 @@ BOOST_AUTO_TEST_CASE(TestQRDecomposition) {
 }
 
 BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
-  // Test SGPP::optimization::math::schurDecomposition.
+  // Test SGPP::optimization::SGPP::optimization::math::schurDecomposition.
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
-  base::DataMatrix A(n, n);
+  SGPP::base::DataMatrix A(n, n);
   generateRandomMatrix(A);
 
   for (size_t i = 0; i < n; i++) {
@@ -523,9 +528,9 @@ BOOST_AUTO_TEST_CASE(TestSchurDecomposition) {
     }
   }
 
-  base::DataMatrix S(A);
-  base::DataMatrix V(n, n);
-  math::schurDecomposition(S, V);
+  SGPP::base::DataMatrix S(A);
+  SGPP::base::DataMatrix V(n, n);
+  SGPP::optimization::math::schurDecomposition(S, V);
 
   orthogonalityTest(V);
   similiarityTest(A, V, S);
@@ -560,18 +565,18 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   BOOST_CHECK_GE(duration, 0.0);
   BOOST_CHECK_LE(duration, 0.01);
 
-  base::DataMatrix A(3, 3, 0.0);
+  SGPP::base::DataMatrix A(3, 3, 0.0);
   A(0, 1) = 12.3;
   A(1, 2) = 42.1337;
-  FullSLE sle(A);
+  SGPP::optimization::FullSLE sle(A);
   Printer::getInstance().printSLE(sle);
 
   const size_t d = 1;
   const size_t p = 5;
   const size_t N = 10;
-  test_problems::SphereObjective f(d);
-  std::unique_ptr<base::Grid> grid(base::Grid::createModBsplineGrid(d, p));
-  IterativeGridGeneratorRitterNovak gridGen(f, *grid, N, 0.85);
+  SGPP::optimization::test_problems::SphereObjective f(d);
+  std::unique_ptr<SGPP::base::Grid> grid(SGPP::base::Grid::createModBsplineGrid(d, p));
+  SGPP::optimization::IterativeGridGeneratorRitterNovak gridGen(f, *grid, N, 0.85);
   BOOST_CHECK(gridGen.generate());
   Printer::getInstance().printIterativeGridGenerator(gridGen);
 

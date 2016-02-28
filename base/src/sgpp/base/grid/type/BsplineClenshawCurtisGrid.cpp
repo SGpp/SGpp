@@ -7,8 +7,6 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
 
 
@@ -20,26 +18,25 @@ namespace base {
 
 BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(std::istream& istr) :
   Grid(istr),
+  generator(storage, boundaryLevel),
   degree(1 << 16),
-  basis_(NULL),
   boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
+  basis_.reset(new SBsplineClenshawCurtisBase(degree));
 }
 
 BsplineClenshawCurtisGrid::BsplineClenshawCurtisGrid(size_t dim,
     size_t degree,
     level_t boundaryLevel) :
   Grid(dim),
+  generator(storage, boundaryLevel),
   degree(degree),
-  basis_(NULL),
+  basis_(new SBsplineClenshawCurtisBase(degree)),
   boundaryLevel(boundaryLevel) {
 }
 
 BsplineClenshawCurtisGrid::~BsplineClenshawCurtisGrid() {
-  if (basis_ != NULL) {
-    delete basis_;
-  }
 }
 
 SGPP::base::GridType BsplineClenshawCurtisGrid::getType() {
@@ -47,10 +44,6 @@ SGPP::base::GridType BsplineClenshawCurtisGrid::getType() {
 }
 
 const SBasis& BsplineClenshawCurtisGrid::getBasis() {
-  if (basis_ == NULL) {
-    basis_ = new SBsplineClenshawCurtisBase(degree);
-  }
-
   return *basis_;
 }
 
@@ -58,8 +51,8 @@ size_t BsplineClenshawCurtisGrid::getDegree() {
   return this->degree;
 }
 
-Grid* BsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
-  return new BsplineClenshawCurtisGrid(istr);
+std::unique_ptr<Grid> BsplineClenshawCurtisGrid::unserialize(std::istream& istr) {
+  return std::unique_ptr<Grid>(new BsplineClenshawCurtisGrid(istr));
 }
 
 void BsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
@@ -72,8 +65,8 @@ void BsplineClenshawCurtisGrid::serialize(std::ostream& ostr) {
  * Creates new GridGenerator
  * This must be changed if we add other storage types
  */
-GridGenerator* BsplineClenshawCurtisGrid::createGridGenerator() {
-  return new BoundaryGridGenerator(this->storage, boundaryLevel);
+GridGenerator& BsplineClenshawCurtisGrid::getGenerator() {
+  return generator;
 }
 
 }  // namespace base
