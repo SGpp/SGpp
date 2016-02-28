@@ -41,6 +41,8 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
     std::vector<int> points;
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     T lambda;
+    size_t start_id;
+    size_t chunksize;
 
  public:
     OperationDensityOCLMultiPlatform(base::Grid& grid, size_t dimensions,
@@ -50,7 +52,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
                                                  gridSize(grid.getStorage()->size()), grid(grid),
                                                  firstKernelConfig(firstKernelConfig),
         secondKernelConfig(secondKernelConfig), devices(manager->getDevices()), manager(manager),
-        lambda(lambda) {
+                                                 lambda(lambda), start_id(0), chunksize(-1) {
         verbose = true;
         // Store Grid in a opencl compatible buffer
         SGPP::base::GridStorage* gridStorage = grid.getStorage();
@@ -77,6 +79,11 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
         delete bKernel;
     }
 
+    void set_problemchunk(size_t start_id, size_t chunksize) {
+        this->start_id = start_id;
+        this->chunksize = chunksize;
+    }
+
     void mult(base::DataVector& alpha, base::DataVector& result) override {
         std::vector<T> alphaVector(gridSize);
         std::vector<T> resultVector(gridSize);
@@ -88,7 +95,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
             std::cout << "starting multiplication with " << gridSize << " entries" << std::endl;
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
-        this->multKernel->mult(alphaVector, resultVector);
+        this->multKernel->mult(alphaVector, resultVector, start_id, chunksize);
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
 
@@ -110,7 +117,7 @@ class OperationDensityOCLMultiPlatform: public OperationDensityOCL {
         for (size_t i = 0; i < dataset.getSize(); i++)
             datasetVector[i] = static_cast<T>(data_raw[i]);
         start = std::chrono::system_clock::now();
-        bKernel->rhs(datasetVector, bVector);
+        bKernel->rhs(datasetVector, bVector, start_id, chunksize);
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
 
