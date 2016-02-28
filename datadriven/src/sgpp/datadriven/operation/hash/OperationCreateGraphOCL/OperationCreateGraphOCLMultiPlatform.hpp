@@ -36,12 +36,15 @@ class OperationCreateGraphOCLMultiPlatform : public OperationCreateGraphOCL {
     std::shared_ptr<base::OCLManagerMultiPlatform> manager;
     std::vector<T> dataVector;
 
+    size_t start_id;
+    size_t chunksize;
  public:
     OperationCreateGraphOCLMultiPlatform(base::DataMatrix& data, size_t dimensions,
                                          std::shared_ptr<base::OCLManagerMultiPlatform> manager,
                                          json::Node &configuration, size_t k) :
         OperationCreateGraphOCL(), dims(dimensions), configuration(configuration),
-        devices(manager->getDevices()), manager(manager), dataVector(data.getSize()) {
+        devices(manager->getDevices()), manager(manager), dataVector(data.getSize()),
+        start_id(0), chunksize(-1) {
             verbose = true;
             double *data_raw = data.getPointer();
             for (size_t i = 0; i < data.getSize(); i++)
@@ -53,6 +56,10 @@ class OperationCreateGraphOCLMultiPlatform : public OperationCreateGraphOCL {
     ~OperationCreateGraphOCLMultiPlatform(void) {
         delete graph_kernel;
     }
+    void set_problemchunk(size_t start_id, size_t chunksize) {
+        this->start_id = start_id;
+        this->chunksize = chunksize;
+    }
 
     void create_graph(std::vector<int> &resultVector) {
         if (verbose)
@@ -60,7 +67,7 @@ class OperationCreateGraphOCLMultiPlatform : public OperationCreateGraphOCL {
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
         try {
-            this->graph_kernel->create_graph(resultVector);
+            this->graph_kernel->create_graph(resultVector, start_id, chunksize);
         }
         catch(base::operation_exception &e) {
             std::cerr << "Error! Could not create graph." << std::endl
