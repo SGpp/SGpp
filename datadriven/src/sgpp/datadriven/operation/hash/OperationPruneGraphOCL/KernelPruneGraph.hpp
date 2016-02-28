@@ -106,7 +106,7 @@ class KernelPruneGraph {
     void resetKernel() {
     }
 
-    double prune_graph(std::vector<int> &graph) {
+    double prune_graph(std::vector<int> &graph, size_t startid, size_t chunksize) {
         if (verbose)
             std::cout << "entering prune graph, device: " << device->deviceName
                       << " (" << device->deviceId << ")"
@@ -154,6 +154,12 @@ class KernelPruneGraph {
             errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
             throw base::operation_exception(errorString.str());
         }
+        err = clSetKernelArg(this->kernel, 4, sizeof(cl_uint), &startid);
+        if (err != CL_SUCCESS) {
+            std::stringstream errorString;
+            errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
+            throw base::operation_exception(errorString.str());
+        }
 
         cl_event clTiming = nullptr;
 
@@ -161,7 +167,11 @@ class KernelPruneGraph {
         if (verbose)
             std::cout << "Starting the kernel" << std::endl;
         size_t globalworkrange[1];
-        globalworkrange[0] = graph.size()/k;
+        if (chunksize == -1) {
+            globalworkrange[0] = graph.size()/k;
+        } else {
+          globalworkrange[0] = chunksize;
+        }
         err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
                                      NULL, 0, nullptr, &clTiming);
         if (err != CL_SUCCESS) {
