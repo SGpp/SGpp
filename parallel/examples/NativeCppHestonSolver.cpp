@@ -363,6 +363,7 @@ void testNUnderlyings(size_t numAssets, int l, std::string fileStoch, std::strin
     std::cout << "Unsupported grid transformation!" << std::endl;
     std::cout << std::endl << std::endl;
     writeHelp();
+    return;
   }
 
   sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(pdeDim, myBoundaries);
