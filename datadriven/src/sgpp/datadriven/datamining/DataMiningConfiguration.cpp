@@ -11,15 +11,13 @@
 namespace SGPP {
 namespace datadriven {
 
-DataMiningConfiguration::DataMiningConfiguration(): json::JSON() {
-}
+DataMiningConfiguration::DataMiningConfiguration() : json::JSON() {}
 
-DataMiningConfiguration::DataMiningConfiguration(const std::string& fileName):
-  json::JSON(fileName) {
-}
+DataMiningConfiguration::DataMiningConfiguration(const std::string& fileName)
+    : json::JSON(fileName) {}
 
 DataMiningConfiguration* DataMiningConfiguration::clone() {
-	DataMiningConfiguration* clone = new DataMiningConfiguration(*this);
+  DataMiningConfiguration* clone = new DataMiningConfiguration(*this);
   return clone;
 }
 
@@ -81,7 +79,8 @@ SGPP::base::GridType DataMiningConfiguration::stringToGridType(std::string& grid
   }
 }
 
-SGPP::datadriven::RegularizationType DataMiningConfiguration::stringToRegularizationType(std::string& regularizationType) {
+SGPP::datadriven::RegularizationType DataMiningConfiguration::stringToRegularizationType(
+    std::string& regularizationType) {
   if (regularizationType.compare("Identity") == 0) {
     return SGPP::datadriven::RegularizationType::Identity;
   } else if (regularizationType.compare("Laplace") == 0) {
@@ -103,5 +102,3 @@ SGPP::solver::SLESolverType DataMiningConfiguration::stringToSolverType(std::str
 
 }  // namespace base
 }  // namespace SGPP
-
-//git please do not delete me

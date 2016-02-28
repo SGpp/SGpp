@@ -55,32 +55,23 @@ DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares(
     gridConfig.type_ = stringToGridType((*this)["grid"]["type"].get());
 
     // configure adaptive refinement
-    adaptivityConfig.maxLevelType_ =
-        (*this)["refinement"]["maxLevelType"].getBool();
+    adaptivityConfig.maxLevelType_ = (*this)["refinement"]["maxLevelType"].getBool();
     adaptivityConfig.noPoints_ = (*this)["refinement"]["numPoints"].getUInt();
-    adaptivityConfig.numRefinements_ =
-        (*this)["refinement"]["numRefinements"].getUInt();
+    adaptivityConfig.numRefinements_ = (*this)["refinement"]["numRefinements"].getUInt();
     adaptivityConfig.percent_ = (*this)["refinement"]["percent"].getDouble();
-    adaptivityConfig.threshold_ =
-        (*this)["refinement"]["threshold"].getDouble();
+    adaptivityConfig.threshold_ = (*this)["refinement"]["threshold"].getDouble();
 
     // configure solver
-    solverRefineConfig.type_ =
-        stringToSolverType((*this)["solverRefine"]["type"].get());
-    solverRefineConfig.maxIterations_ =
-        (*this)["solverRefine"]["maxIterations"].getUInt();
+    solverRefineConfig.type_ = stringToSolverType((*this)["solverRefine"]["type"].get());
+    solverRefineConfig.maxIterations_ = (*this)["solverRefine"]["maxIterations"].getUInt();
     solverRefineConfig.eps_ = (*this)["solverRefine"]["eps"].getDouble();
-    solverRefineConfig.threshold_ =
-        (*this)["solverRefine"]["threshold"].getDouble();
+    solverRefineConfig.threshold_ = (*this)["solverRefine"]["threshold"].getDouble();
 
     // configure solver
-    solverFinalConfig.type_ =
-        stringToSolverType((*this)["solverFinal"]["type"].get());
-    solverFinalConfig.maxIterations_ =
-        (*this)["solverFinal"]["maxIterations"].getUInt();
+    solverFinalConfig.type_ = stringToSolverType((*this)["solverFinal"]["type"].get());
+    solverFinalConfig.maxIterations_ = (*this)["solverFinal"]["maxIterations"].getUInt();
     solverFinalConfig.eps_ = (*this)["solverFinal"]["eps"].getDouble();
-    solverFinalConfig.threshold_ =
-        (*this)["solverFinal"]["threshold"].getDouble();
+    solverFinalConfig.threshold_ = (*this)["solverFinal"]["threshold"].getDouble();
 
     // configure regularization
     regularizationConfig.regType_ =
@@ -92,23 +83,19 @@ DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares(
   }
 }
 
-base::RegularGridConfiguration
-DataMiningConfigurationLeastSquares::getGridConfig() {
+base::RegularGridConfiguration DataMiningConfigurationLeastSquares::getGridConfig() {
   return gridConfig;
 }
 
-base::AdpativityConfiguration
-DataMiningConfigurationLeastSquares::getRefinementConfig() {
+base::AdpativityConfiguration DataMiningConfigurationLeastSquares::getRefinementConfig() {
   return adaptivityConfig;
 }
 
-solver::SLESolverConfiguration
-DataMiningConfigurationLeastSquares::getSolverRefineConfig() {
+solver::SLESolverConfiguration DataMiningConfigurationLeastSquares::getSolverRefineConfig() {
   return solverRefineConfig;
 }
 
-solver::SLESolverConfiguration
-DataMiningConfigurationLeastSquares::getSolverFinalConfig() {
+solver::SLESolverConfiguration DataMiningConfigurationLeastSquares::getSolverFinalConfig() {
   return solverFinalConfig;
 }
 
@@ -144,16 +131,12 @@ void DataMiningConfigurationLeastSquares::setRegularizationConfig(
   this->regularizationConfig = regularizationConfig;
 }
 
-void DataMiningConfigurationLeastSquares::setLambda(double lambda) {
-  this->lambda = lambda;
-}
+void DataMiningConfigurationLeastSquares::setLambda(double lambda) { this->lambda = lambda; }
 
 DataMiningConfiguration *DataMiningConfigurationLeastSquares::clone() {
-  DataMiningConfiguration *clone =
-      new DataMiningConfigurationLeastSquares(*this);
+  DataMiningConfiguration *clone = new DataMiningConfigurationLeastSquares(*this);
   return clone;
 }
 
 }  // namespace datadriven
 }  // namespace SGPP
-//git please do not delete me

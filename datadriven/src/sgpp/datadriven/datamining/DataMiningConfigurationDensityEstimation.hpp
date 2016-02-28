@@ -13,61 +13,59 @@
 //#include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 //#include <sgpp/datadriven/tools/Dataset.hpp>
 //
-//namespace SGPP {
-//  namespace datadriven {
+// namespace SGPP {
+// namespace datadriven {
 //
-//    struct DataMiningConfigurationDensityEstimationType {
-//      // parameters for cross-validation
-//      bool doCrossValidation_; // enables cross-validation
-//      size_t kfold_; // number of batches for cross validation
-//      uint64_t seed_; // seed for randomized k-fold
-//      bool shuffle_; // randomized/sequential k-fold
-//      bool silent_; // verbosity
+// struct DataMiningConfigurationDensityEstimationType {
+//  // parameters for cross-validation
+//  bool doCrossValidation_;  // enables cross-validation
+//  size_t kfold_;            // number of batches for cross validation
+//  uint64_t seed_;           // seed for randomized k-fold
+//  bool shuffle_;            // randomized/sequential k-fold
+//  bool silent_;             // verbosity
 //
-//      // regularization parameter optimization
-//      float_t lambda_; // regularization parameter
-//      float_t lambdaStart_;  // lower bound for lambda search range
-//      float_t lambdaEnd_; // upper bound for lambda search range
-//      size_t lambdaSteps_; // number of lambdas to be tested within the range defined by lambdaStart and lambdaEdns; must be  1
-//      bool logScale_; // search the optimization interval on a log-scale
-//    };
+//  // regularization parameter optimization
+//  float_t lambda_;       // regularization parameter
+//  float_t lambdaStart_;  // lower bound for lambda search range
+//  float_t lambdaEnd_;    // upper bound for lambda search range
+//  size_t lambdaSteps_;   // number of lambdas to be tested within the range defined by
+//  lambdaStart and lambdaEdns;
+//  must be 1 bool logScale_;  // search the optimization interval on a log-scale
+//};
 //
+//// forward declaration for friend declaration
+// class ModelFittingDensityEstimation;
 //
-//    // forward declaration for friend declaration
-//    class ModelFittingDensityEstimation;
+// class DataMiningConfigurationDensityEstimation : public SGPP::datadriven::DataMiningConfiguration
+// {
+//  friend class ModelFittingDensityEstimation;
 //
+// public:
+//  DataMiningConfigurationDensityEstimation();
 //
-//    class DataMiningConfigurationDensityEstimation : public SGPP::datadriven::DataMiningConfiguration {
+//  explicit DataMiningConfigurationDensityEstimation(const std::string &fileName);
 //
-//        friend class ModelFittingDensityEstimation;
+//  virtual DataMiningConfiguration *clone();
 //
-//      public:
-//        DataMiningConfigurationDensityEstimation();
+//  base::RegularGridConfiguration &getGridConfig();
+//  base::AdpativityConfiguration &getRefinementConfig();
+//  solver::SLESolverConfiguration &getSolverConfig();
+//  datadriven::RegularizationConfiguration &getRegularizationConfig();
+//  datadriven::DataMiningConfigurationDensityEstimationType &getSGDEConfig();
 //
-//        explicit DataMiningConfigurationDensityEstimation(const std::string& fileName);
+//  void setGridConfig(base::RegularGridConfiguration &gridConfig);
+//  void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
+//  void setSolverConfig(solver::SLESolverConfiguration &solverConfig);
+//  void setRegularizationConfig(datadriven::RegularizationConfiguration &regularizationConfig);
+//  void setSGDEConfig(datadriven::DataMiningConfigurationDensityEstimationType &sgdeConfig);
 //
-//        virtual DataMiningConfiguration* clone();
+// private:
+//  SGPP::base::RegularGridConfiguration gridConfig;
+//  SGPP::base::AdpativityConfiguration adaptivityConfig;
+//  SGPP::solver::SLESolverConfiguration solverConfig;
+//  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+//  SGPP::datadriven::DataMiningConfigurationDensityEstimationType sgdeConfig;
+//};
 //
-//        base::RegularGridConfiguration &getGridConfig();
-//        base::AdpativityConfiguration &getRefinementConfig();
-//        solver::SLESolverConfiguration &getSolverConfig();
-//        datadriven::RegularizationConfiguration &getRegularizationConfig();
-//        datadriven::DataMiningConfigurationDensityEstimationType &getSGDEConfig();
-//
-//        void setGridConfig(base::RegularGridConfiguration &gridConfig);
-//        void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
-//        void setSolverConfig(solver::SLESolverConfiguration &solverConfig);
-//        void setRegularizationConfig(datadriven::RegularizationConfiguration &regularizationConfig);
-//        void setSGDEConfig(datadriven::DataMiningConfigurationDensityEstimationType &sgdeConfig);
-//
-//      private:
-//        SGPP::base::RegularGridConfiguration gridConfig;
-//        SGPP::base::AdpativityConfiguration adaptivityConfig;
-//        SGPP::solver::SLESolverConfiguration solverConfig;
-//        SGPP::datadriven::RegularizationConfiguration regularizationConfig;
-//        SGPP::datadriven::DataMiningConfigurationDensityEstimationType sgdeConfig;
-//    };
-//
-//  } /* namespace datadriven */
+//} /* namespace datadriven */
 //} /* namespace SGPP */
-//git please do not delete me

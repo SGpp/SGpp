@@ -17,57 +17,53 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-
+#include <algorithm>
 
 namespace SGPP {
 namespace datadriven {
 
-ARFFWrapper::ARFFWrapper(datadriven::DataMiningConfiguration& config) : DataWrapper(config), seed(0), dimension(0), numberInstances(0) {
-	  std::string line;
-	  std::ifstream myfile(filename.c_str());
+ARFFWrapper::ARFFWrapper(datadriven::DataMiningConfiguration& config)
+    : DataWrapper(config), seed(0), dimension(0), numberInstances(0) {
+  std::string line;
+  std::ifstream myfile(filename.c_str());
 
-	  // set seed to the current time in seconds
-	  seed = std::time(NULL);
+  // set seed to the current time in seconds
+  seed = std::time(NULL);
 
-	  if (!myfile.is_open()) {
-	    std::string msg = "Unable to open file: " + filename;
-	    throw new SGPP::base::file_exception(msg.c_str());
-	  }
-
-	  while (!myfile.eof()) {
-	    std::getline(myfile, line);
-	    std::transform(line.begin(), line.end(), line.begin(), toupper);
-
-	    if (line.find("@ATTRIBUTE class", 0) != line.npos) {
-	      ;
-	    } else if (line.find("@ATTRIBUTE CLASS", 0) != line.npos) {
-	      ;
-	    } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
-	      dimension++;
-	    } else if (line.find("@DATA", 0) != line.npos) {
-	      numberInstances = 0;
-	    } else if (!line.empty()) {
-	      numberInstances++;
-	    }
-	  }
-
-	  myfile.close();
+  if (!myfile.is_open()) {
+    std::string msg = "Unable to open file: " + filename;
+    throw new SGPP::base::file_exception(msg.c_str());
   }
 
+  while (!myfile.eof()) {
+    std::getline(myfile, line);
+    std::transform(line.begin(), line.end(), line.begin(), toupper);
 
-ARFFWrapper::~ARFFWrapper() {
+    if (line.find("@ATTRIBUTE class", 0) != line.npos) {
+    } else if (line.find("@ATTRIBUTE CLASS", 0) != line.npos) {
+    } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
+      dimension++;
+    } else if (line.find("@DATA", 0) != line.npos) {
+      numberInstances = 0;
+    } else if (!line.empty()) {
+      numberInstances++;
+    }
+  }
+
+  myfile.close();
 }
 
+ARFFWrapper::~ARFFWrapper() {}
 
-Dataset ARFFWrapper::nextSamples(int how_many){
-	// TODO implement
-	return Dataset();
+Dataset ARFFWrapper::nextSamples(int how_many) {
+  // TODO(lettrich): implement
+  return Dataset();
 }
 
-Dataset ARFFWrapper::allSamples(){
-	Dataset dataset(numberInstances, dimension);
-	readARFF(filename, dataset);
-	return dataset;
+Dataset ARFFWrapper::allSamples() {
+  Dataset dataset(numberInstances, dimension);
+  readARFF(filename, dataset);
+  return dataset;
 }
 
 void ARFFWrapper::readARFF(const std::string& filename, Dataset& dataset) {
@@ -79,7 +75,7 @@ void ARFFWrapper::readARFF(const std::string& filename, Dataset& dataset) {
   size_t instanceNo = 0;
 
   readARFFSize(filename, numberInstances, dimension);
-//  Dataset dataset(numberInstances, dimension);
+  //  Dataset dataset(numberInstances, dimension);
 
   while (!myfile.eof()) {
     std::getline(myfile, line);
@@ -97,16 +93,13 @@ void ARFFWrapper::readARFF(const std::string& filename, Dataset& dataset) {
   }
 
   myfile.close();
-
 }
 
-void ARFFWrapper::readARFFSize(const std::string& filename,
-                             size_t& numberInstances, size_t& dimension) {
+void ARFFWrapper::readARFFSize(const std::string& filename, size_t& numberInstances,
+                               size_t& dimension) {}
 
-}
-
-void ARFFWrapper::readARFFSizeFromString(const std::string& content,
-                                       size_t& numberInstances, size_t& dimension) {
+void ARFFWrapper::readARFFSizeFromString(const std::string& content, size_t& numberInstances,
+                                         size_t& dimension) {
   std::string line;
   std::istringstream contentStream(content);
 
@@ -118,9 +111,7 @@ void ARFFWrapper::readARFFSizeFromString(const std::string& content,
     std::transform(line.begin(), line.end(), line.begin(), toupper);
 
     if (line.find("@ATTRIBUTE class", 0) != line.npos) {
-      ;
     } else if (line.find("@ATTRIBUTE CLASS", 0) != line.npos) {
-      ;
     } else if (line.find("@ATTRIBUTE", 0) != line.npos) {
       dimension++;
     } else if (line.find("@DATA", 0) != line.npos) {
@@ -129,7 +120,6 @@ void ARFFWrapper::readARFFSizeFromString(const std::string& content,
       numberInstances++;
     }
   }
-
 }
 
 void ARFFWrapper::readARFFFromString(const std::string& content, Dataset& dataset) {
@@ -142,7 +132,7 @@ void ARFFWrapper::readARFFFromString(const std::string& content, Dataset& datase
   size_t instanceNo = 0;
 
   readARFFSizeFromString(content, numberInstances, dimension);
-//  Dataset dataset(numberInstances, dimension);
+  //  Dataset dataset(numberInstances, dimension);
 
   while (!contentStream.eof()) {
     std::getline(contentStream, line);
@@ -159,12 +149,12 @@ void ARFFWrapper::readARFFFromString(const std::string& content, Dataset& datase
     }
   }
 
-//  return dataset;
+  //  return dataset;
 }
 
 void ARFFWrapper::writeNewTrainingDataEntry(const std::string& arffLine,
-    SGPP::base::DataMatrix& destination,
-    size_t instanceNo) {
+                                            SGPP::base::DataMatrix& destination,
+                                            size_t instanceNo) {
   size_t cur_pos = 0;
   size_t cur_find = 0;
   size_t dim = destination.getNcols();
@@ -180,15 +170,13 @@ void ARFFWrapper::writeNewTrainingDataEntry(const std::string& arffLine,
   }
 }
 
-void ARFFWrapper::writeNewClass(const std::string& arffLine,
-                              SGPP::base::DataVector& destination, size_t instanceNo) {
+void ARFFWrapper::writeNewClass(const std::string& arffLine, SGPP::base::DataVector& destination,
+                                size_t instanceNo) {
   size_t cur_pos = arffLine.find_last_of(",");
   std::string cur_value = arffLine.substr(cur_pos + 1);
   float_t dbl_cur_value = atof(cur_value.c_str());
   destination.set(instanceNo, dbl_cur_value);
 }
 
-
 } /* namespace datadriven */
 } /* namespace SGPP */
-//git please do not delete me

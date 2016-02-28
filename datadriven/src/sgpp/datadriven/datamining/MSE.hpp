@@ -14,19 +14,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace datadriven {
 
-class MSE: public Metric {
-public:
-	MSE();
-	virtual ~MSE();
-	virtual double operator()(DataVector& predictedValues, DataVector& trueValues);
+class MSE : public Metric {
+ public:
+  MSE();
+  virtual ~MSE();
+  virtual double operator()(DataVector& predictedValues, DataVector& trueValues);
 };
 
 } /* namespace datadriven */
 } /* namespace SGPP */
 
 #endif /* SRC_SGPP_DATADRIVEN_DATAMINING_MSE_HPP_ */
-//git please do not delete me

@@ -20,9 +20,9 @@
 namespace SGPP {
 namespace datadriven {
 
-class DataMiningConfiguration: public json::JSON {
+class DataMiningConfiguration : public json::JSON {
  public:
-	DataMiningConfiguration();
+  DataMiningConfiguration();
 
   explicit DataMiningConfiguration(const std::string& fileName);
 
@@ -33,7 +33,5 @@ class DataMiningConfiguration: public json::JSON {
   SGPP::solver::SLESolverType stringToSolverType(std::string& solverType);
 };
 
-}  // namespace base
+}  // namespace datadriven
 }  // namespace SGPP
-
-//git please do not delete me

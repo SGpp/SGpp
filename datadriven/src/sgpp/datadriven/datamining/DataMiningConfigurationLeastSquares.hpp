@@ -42,11 +42,9 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
 
   void setGridConfig(base::RegularGridConfiguration &gridConfig);
   void setRefinementConfig(base::AdpativityConfiguration &adaptivityConfig);
-  void setSolverRefineConfig(
-      solver::SLESolverConfiguration &solverRefineConfig);
+  void setSolverRefineConfig(solver::SLESolverConfiguration &solverRefineConfig);
   void setSolverFinalConfig(solver::SLESolverConfiguration &solverFinalConfig);
-  void setRegularizationConfig(
-      datadriven::RegularizationConfiguration &regularizationConfig);
+  void setRegularizationConfig(datadriven::RegularizationConfiguration &regularizationConfig);
   void setLambda(double lambda);
 
   virtual DataMiningConfiguration *clone() override;
@@ -54,4 +52,3 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
 
 }  // namespace base
 }  // namespace SGPP
-//git please do not delete me

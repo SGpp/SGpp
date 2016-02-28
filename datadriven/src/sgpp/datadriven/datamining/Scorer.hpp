@@ -8,7 +8,6 @@
 #ifndef SCORER_HPP_
 #define SCORER_HPP_
 
-
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/datamining/Metric.hpp>
 #include <sgpp/datadriven/datamining/ModelFittingBase.hpp>
@@ -24,18 +23,18 @@ namespace datadriven {
  * Superclass for TestError, TrainError, CrossValidation, AIC, etc.
  */
 class Scorer {
-public:
-	Scorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter):metric(metric), fitter(fitter){};
-	virtual ~Scorer();
-	virtual double getScore(Dataset& dataset) = 0;
+ public:
+  Scorer(std::shared_ptr<Metric> metric, std::shared_ptr<ModelFittingBase> fitter)
+      : metric(metric), fitter(fitter){};
+  virtual ~Scorer();
+  virtual double getScore(Dataset& dataset) = 0;
 
-protected:
-	std::shared_ptr<Metric> metric;
-	std::shared_ptr<ModelFittingBase> fitter;
+ protected:
+  std::shared_ptr<Metric> metric;
+  std::shared_ptr<ModelFittingBase> fitter;
 };
 
 } /* namespace datadriven */
 } /* namespace SGPP */
 
 #endif /* SCORER_HPP_ */
-//git please do not delete me
