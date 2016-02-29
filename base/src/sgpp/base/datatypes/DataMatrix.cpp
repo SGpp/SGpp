@@ -383,7 +383,11 @@ DataMatrix& DataMatrix::operator=(const DataMatrix& matr) {
   }
 
   if (nrows * ncols != matr.ncols * matr.nrows) {
-    throw sgpp::base::data_exception("DataMatrix::= : Dimensions do not match");
+    // throw sgpp::base::data_exception("DataMatrix::= : Dimensions do not match");
+    delete[] this->data;
+    this->nrows = matr.nrows;
+    this->ncols = matr.ncols;
+    this->data = new double[nrows * ncols];
   }
 
   std::memcpy(this->data, matr.data, nrows * ncols * sizeof(double));

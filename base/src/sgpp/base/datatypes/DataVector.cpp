@@ -282,10 +282,10 @@ DataVector& DataVector::operator=(const DataVector& vec) {
   }
 
   if (size != vec.size) {
-    throw sgpp::base::data_exception("DataVector::add : Dimensions do not match");
-    //        delete[] data;
-    //        size = vec.size;
-    //        this->data = new double[size];
+    // throw sgpp::base::data_exception("DataVector::add : Dimensions do not match");
+    delete[] data;
+    size = vec.size;
+    this->data = new double[size];
   }
 
   std::memcpy(this->data, vec.data, size * sizeof(double));
