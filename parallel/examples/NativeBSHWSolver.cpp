@@ -945,7 +945,7 @@ int main(int argc, char* argv[]) {
       }
 
       testBSHW(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff, atoi(argv[9]),
-               atoi(argv[10]), atoi(argv[11]), atof(argv[12]), solver, atof(argv[14]), dStrike,
+               atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver, atof(argv[14]), dStrike,
                coords);
     }
 
