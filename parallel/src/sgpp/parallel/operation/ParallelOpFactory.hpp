@@ -51,7 +51,7 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
     size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(), size_t datasetFrom = 0,
     size_t datasetTo = std::numeric_limits<size_t>::max());
 
-#ifdef USE_MPI
+// #ifdef USE_MPI
 /**
  * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -122,7 +122,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
  */
 std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
     base::Grid& grid, const parallel::VectorizationType& vecType);
-#endif
+// #endif
 }  // namespace op_factory
 }  // namespace SGPP
 

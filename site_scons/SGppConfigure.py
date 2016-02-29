@@ -77,6 +77,14 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     else:
       print "Info: OpenCL is not enabled"
 
+    # check for mpic++ if SG_PARALLEL is running
+    if env["SG_PARALLEL"]:
+        if not env['CXX']=='mpic++':
+            print 'Hint: not using mpic++, parallel module will not use MPI, since it requires mpic++'
+        else:
+            env['CPPDEFINES']['USE_MPI'] = '1'
+            print 'Using mpic++, parallel module will use MPI'
+    
     # Check the availability of the boost unit test dependencies
     if env['COMPILE_BOOST_TESTS']:
         if not config.CheckHeader(os.path.join("boost", "test", "unit_test.hpp"), language="c++"):
@@ -398,16 +406,6 @@ Please install the corresponding package, e.g. using command on Ubuntu
           (not env['SG_' + moduleFolder.upper()]):
         continue
       env.AppendUnique(CPPPATH=['#/' + moduleFolder + '/src/'])
-
-    # check for mpic++
-    if not env['CXX']=='mpic++':
-        env['SG_PARALLEL'] = 0
-        print 'Hint: not using mpic++, parallel module ("SG_PARALLEL") disabled, since it requires mpic++'
-    elif env['SG_PARALLEL'] != 0:
-        env['CPPDEFINES']['USE_MPI'] = '1'
-        print 'Parallel module ("SG_PARALLEL") enabled'
-    else:
-        print 'Parallel module ("SG_PARALLEL") disabled'
 
     # detour compiler output
     env['PRINT_CMD_LINE_FUNC'] = Helper.print_cmd_line
