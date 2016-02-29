@@ -243,6 +243,8 @@ void testHeatEquation(size_t dim, int level, double bound_left, double bound_rig
                                    std::max(timesteps / SOLUTION_FRAMES, (size_t)1));
   } else if (ODESolver == "CrNic") {
     myHESolver->solveCrankNicolson(timesteps, dt, cg_its, cg_eps, *alpha, CRNIC_IMEUL_STEPS);
+  } else {
+    writeHelp();
   }
 
   // Print the solved Heat Equation into a gnuplot file
@@ -267,7 +269,7 @@ int main(int argc, char* argv[]) {
   std::string option;
 
   if (argc == 1) {
-    //    writeHelp();
+    writeHelp();
     return 0;
   }
 
