@@ -58,8 +58,9 @@ void writeHelp() {
   mySStream << "                      on a refined grid based on" << std::endl;
   mySStream << "                      the hierarchical surplus" << std::endl << std::endl;
   mySStream << "  solveNDadaptSurplusSubDomain   Same as above but" << std::endl;
-  mySStream << "a normal distribution is used" << std::endl;
-  mySStream << "to do refinement just near the strike!" << std::endl << std::endl;
+  mySStream << "                      a normal distribution is used" << std::endl;
+  mySStream << "                      to do refinement just near the strike!" << std::endl
+            << std::endl;
   mySStream << "  solveBonn  Solves an option delivered in Bonn's format" << std::endl
             << std::endl
             << std::endl;
