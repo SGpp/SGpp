@@ -171,6 +171,8 @@ example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
 for fileName in os.listdir("examples"):
     if fnmatch.fnmatch(fileName, "*MPI*") and not 'USE_MPI' in env_parallel['CPPDEFINES']:
         continue  # skip MPI files, if USE_MPI is not defined
+    if not fnmatch.fnmatch(fileName, "*MPI*") and 'USE_MPI' in env_parallel['CPPDEFINES']:
+        continue  # skip non mpi files if USE_MPI is defined
     if fnmatch.fnmatch(fileName, "*.cpp"):
         cpp = os.path.join("examples", fileName)
         cpps.append(cpp)
