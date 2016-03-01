@@ -27,12 +27,25 @@ int main(int argc, char** argv) {
   // testsetConfig.expectedLargestDifference
 
   SGPP::datadriven::InternalPrecision internalPrecision =
-      SGPP::datadriven::InternalPrecision::Double;
-  std::string kernelName = "StreamingOCLMultiPlatform";
+      SGPP::datadriven::InternalPrecision::Float;
+  //  std::string kernelName = "StreamingOCLMultiPlatform";
   std::string datasetFileName = "friedman2_4d_300000.arff";
 
   OperationMultipleEvalType operationType = OperationMultipleEvalType::STREAMING;
-  OperationMultipleEvalSubType operationSubType = OperationMultipleEvalSubType::OCLMP;
+  OperationMultipleEvalSubType operationSubType = OperationMultipleEvalSubType::OCLMASKMP;
+
+  std::string kernelName;
+  if (operationType == OperationMultipleEvalType::STREAMING) {
+    if (operationSubType == OperationMultipleEvalSubType::OCLMASKMP) {
+      kernelName = "StreamingModOCLMaskMultiPlatform";
+    } else if (operationSubType == OperationMultipleEvalSubType::OCLFASTMP) {
+      kernelName = "StreamingModOCLFastMultiPlatform";
+    } else {
+      throw;
+    }
+  } else {
+    throw;
+  }
 
   std::string parameterFileName("allDevices.cfg");
   double lambda = 0.0000001;
@@ -46,7 +59,7 @@ int main(int argc, char** argv) {
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = 10;
-  gridConfig.type_ = SGPP::base::GridType::Linear;
+  gridConfig.type_ = SGPP::base::GridType::ModLinear;
   // dummy values
   gridConfig.boundaryLevel_ = 0;
   gridConfig.maxDegree_ = 30;
