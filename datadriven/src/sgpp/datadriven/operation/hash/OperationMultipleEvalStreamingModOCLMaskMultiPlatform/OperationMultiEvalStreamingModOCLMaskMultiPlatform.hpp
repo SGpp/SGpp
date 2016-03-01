@@ -303,20 +303,20 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
    * grids
    */
   void recalculateLevelIndexMask() {
-    size_t commonGridPadding = calculateCommonGridPadding();
+    //    size_t commonGridPadding = calculateCommonGridPadding();
 
-    size_t remainder = storage.getSize() % commonGridPadding;
+    size_t remainder = storage.getSize() % overallGridBlockingSize;
     size_t padding = 0;
 
     if (remainder != 0) {
-      padding = commonGridPadding - remainder;
+      padding = overallGridBlockingSize - remainder;
     }
 
     // size to distribute, not actual padded grid size
     this->gridSizePadded = storage.getSize() + padding;
 
     // size for distributing schedules of different size
-    this->gridSizeBuffers = storage.getSize() + padding + commonGridPadding;
+    this->gridSizeBuffers = storage.getSize() + padding + overallGridBlockingSize;
 
     SGPP::base::HashGridIndex::level_type curLevel;
     SGPP::base::HashGridIndex::index_type curIndex;
