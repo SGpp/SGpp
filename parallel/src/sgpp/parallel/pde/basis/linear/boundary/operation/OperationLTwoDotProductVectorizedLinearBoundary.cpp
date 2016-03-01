@@ -135,7 +135,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_constants() {
   this->constants_->append(1.0);
   this->constants_->append(2.0);
 
-  uint64_t int abs_mask = 0x7fffffffffffffff;
+  uint64_t abs_mask = 0x7fffffffffffffff;
   this->constants_->append(*(reinterpret_cast<double*>(&abs_mask)));
 #endif
 
