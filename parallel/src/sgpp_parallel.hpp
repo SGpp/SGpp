@@ -26,6 +26,6 @@ bool is_mpi_compiled() {
 #endif
 }
 }  // namespace parallel
-}  // namespace sg
+}  // namespace sgpp
 
 #endif /* PARALLEL_HPP */
