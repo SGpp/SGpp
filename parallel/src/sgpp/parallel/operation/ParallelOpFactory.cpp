@@ -40,7 +40,7 @@
 #include <sgpp/parallel/datadriven/basis/linear/noboundary/operation/OperationMultipleEvalIterativeArBBLinear.hpp>
 #endif
 
-#ifdef USE_MPI
+// #ifdef USE_MPI
 #include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLaplaceVectorizedLinear.hpp>
 #include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLaplaceVectorizedLinearBoundary.hpp>
 #include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotProductVectorizedLinear.hpp>
@@ -57,7 +57,7 @@
 #include <sgpp/parallel/pde/basis/linear/noboundary/operation/OperationLTwoDotLaplaceVectorizedLinearOCL.hpp>
 #include <sgpp/parallel/pde/basis/linear/boundary/operation/OperationLTwoDotLaplaceVectorizedLinearBoundaryOCL.hpp>
 #endif
-#endif
+// #endif
 
 #include <sgpp/globaldef.hpp>
 
@@ -91,18 +91,18 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
     if (vecType == parallel::X86SIMD) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::CPUKernel<parallel::X86SimdLinear> >(&grid.getStorage(), dataset, gridFrom,
-                                                             gridTo, datasetFrom, datasetTo));
+              parallel::CPUKernel<parallel::X86SimdLinear>>(&grid.getStorage(), dataset, gridFrom,
+                                                            gridTo, datasetFrom, datasetTo));
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::OCLKernel<parallel::OCLLinear<double> > >(
+              parallel::OCLKernel<parallel::OCLLinear<double>>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
     } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::OCLCPUHybridKernel<parallel::X86SimdLinear, parallel::OCLLinear<double> > >(
+              parallel::OCLCPUHybridKernel<parallel::X86SimdLinear, parallel::OCLLinear<double>>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 #endif
 #ifdef USEARBB
@@ -114,14 +114,14 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear> >(
+          new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #ifdef __INTEL_OFFLOAD  // Hybrid CPU MIC Mode only makes sense in offload mode
     } else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::MICCPUHybridKernel<parallel::X86SimdLinear, parallel::MICLinear> >(
+              parallel::MICCPUHybridKernel<parallel::X86SimdLinear, parallel::MICLinear>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
@@ -134,18 +134,18 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
     if (vecType == parallel::X86SIMD) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::CPUKernel<parallel::X86SimdLinear> >(&grid.getStorage(), dataset, gridFrom,
-                                                             gridTo, datasetFrom, datasetTo));
+              parallel::CPUKernel<parallel::X86SimdLinear>>(&grid.getStorage(), dataset, gridFrom,
+                                                            gridTo, datasetFrom, datasetTo));
 #ifdef USEOCL
     } else if (vecType == parallel::OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::OCLKernel<parallel::OCLLinear<double> > >(
+              parallel::OCLKernel<parallel::OCLLinear<double>>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
     } else if (vecType == parallel::Hybrid_X86SIMD_OpenCL) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::OCLCPUHybridKernel<parallel::X86SimdLinear, parallel::OCLLinear<double> > >(
+              parallel::OCLCPUHybridKernel<parallel::X86SimdLinear, parallel::OCLLinear<double>>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
@@ -158,14 +158,14 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
 #ifdef USEMIC
     } else if (vecType == parallel::MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-          new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear> >(
+          new parallel::OperationMultipleEvalIterative<parallel::MICKernel<parallel::MICLinear>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #ifdef __INTEL_OFFLOAD  // Hybrid CPU MIC Mode only makes sense in offload mode
     } else if (vecType == parallel::Hybrid_X86SIMD_MIC) {
       return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
           new parallel::OperationMultipleEvalIterative<
-              parallel::MICCPUHybridKernel<parallel::X86SimdLinear, parallel::MICLinear> >(
+              parallel::MICCPUHybridKernel<parallel::X86SimdLinear, parallel::MICLinear>>(
               &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
 
 #endif
@@ -178,12 +178,12 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
       if (strcmp(modlinear_mode, "orig") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<
-                parallel::CPUKernel<parallel::X86SimdModLinear> >(
+                parallel::CPUKernel<parallel::X86SimdModLinear>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<
-                parallel::CPUKernel<parallel::X86SimdModLinearMask> >(
+                parallel::CPUKernel<parallel::X86SimdModLinearMask>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
@@ -195,12 +195,12 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
       if (strcmp(modlinear_mode, "orig") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<
-                parallel::OCLKernel<parallel::OCLModLinear<double> > >(
+                parallel::OCLKernel<parallel::OCLModLinear<double>>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<
-                parallel::OCLKernel<parallel::OCLModLinearMask<double> > >(
+                parallel::OCLKernel<parallel::OCLModLinearMask<double>>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
@@ -211,12 +211,12 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
       if (strcmp(modlinear_mode, "orig") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<parallel::OCLCPUHybridKernel<
-                parallel::X86SimdModLinear, parallel::OCLModLinear<double> > >(
+                parallel::X86SimdModLinear, parallel::OCLModLinear<double>>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<parallel::OCLCPUHybridKernel<
-                parallel::X86SimdModLinearMask, parallel::OCLModLinearMask<double> > >(
+                parallel::X86SimdModLinearMask, parallel::OCLModLinearMask<double>>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
@@ -229,13 +229,13 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
       if (strcmp(modlinear_mode, "orig") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<
-                parallel::MICKernel<parallel::MICModLinear> >(&grid.getStorage(), dataset, gridFrom,
-                                                              gridTo, datasetFrom, datasetTo));
+                parallel::MICKernel<parallel::MICModLinear>>(&grid.getStorage(), dataset, gridFrom,
+                                                             gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
-            new parallel::OperationMultipleEvalIterative
-               < parallel::MICKernel < parallel::MICModLinearMask > >
-               (&grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo);
+            new parallel::OperationMultipleEvalIterative<
+                parallel::MICKernel<parallel::MICModLinearMask>>(
+                &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
             "ParallelOpFactory: SGPP_MODLINEAR_EVAL must be 'mask' or 'orig'.");
@@ -246,12 +246,12 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
       if (strcmp(modlinear_mode, "orig") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<
-                parallel::MICCPUHybridKernel<parallel::X86SimdModLinear, parallel::MICModLinear> >(
+                parallel::MICCPUHybridKernel<parallel::X86SimdModLinear, parallel::MICModLinear>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else if (strcmp(modlinear_mode, "mask") == 0) {
         return std::unique_ptr<parallel::OperationMultipleEvalVectorized>(
             new parallel::OperationMultipleEvalIterative<parallel::MICCPUHybridKernel<
-                parallel::X86SimdModLinearMask, parallel::MICModLinearMask> >(
+                parallel::X86SimdModLinearMask, parallel::MICModLinearMask>>(
                 &grid.getStorage(), dataset, gridFrom, gridTo, datasetFrom, datasetTo));
       } else {
         throw base::factory_exception(
@@ -270,7 +270,7 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
   }
 }
 
-#ifdef USE_MPI
+// #ifdef USE_MPI
 std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(
     base::Grid& grid, const parallel::VectorizationType& vecType) {
   if (grid.getType() == base::GridType::Linear) {
@@ -439,6 +439,6 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
         "OperationLaplaceVectorized is not implemented for this grid type.");
   }
 }
-#endif
+// #endif
 }  // namespace op_factory
 }  // namespace SGPP
