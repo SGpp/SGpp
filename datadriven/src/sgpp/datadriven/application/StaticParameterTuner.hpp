@@ -10,6 +10,7 @@
 #include <utility>
 #include <string>
 #include <vector>
+#include <tuple>
 
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
@@ -22,9 +23,12 @@ namespace datadriven {
 
 class StaticParameterTuner {
  private:
-  bool collectStatistics;
   bool verbose;
-  std::vector<std::pair<SGPP::base::OCLOperationConfiguration, double>> statistics;
+
+  bool collectStatistics;
+  std::string statisticsFolder;
+
+  std::vector<std::tuple<SGPP::base::OCLOperationConfiguration, double, double>> statistics;
 
   SGPP::base::OCLOperationConfiguration fixedParameters;
 
@@ -32,7 +36,7 @@ class StaticParameterTuner {
 
   double evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
                        SGPP::base::OCLOperationConfiguration &currentParameters,
-                       const std::string &kernelName);
+                       const std::string &kernelName, double &duration, double &GFlops);
 
   void writeStatisticsToFile(const std::string &statisticsFileName, const std::string &platformName,
                              const std::string &deviceName, const std::string &kernelName);
@@ -42,6 +46,8 @@ class StaticParameterTuner {
  public:
   StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
                        bool collectStatistics = false, bool verbose = false);
+
+  void setStatisticsFolder(const std::string &statisticsFolder);
 
   void addParameter(const std::string &name, const std::vector<std::string> &valueRange);
 

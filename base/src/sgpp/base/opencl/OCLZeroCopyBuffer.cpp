@@ -13,7 +13,8 @@
 namespace SGPP {
 namespace base {
 
-OCLZeroCopyBuffer::OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager) : m_manager(manager) {
+OCLZeroCopyBuffer::OCLZeroCopyBuffer(std::shared_ptr<OCLManager> manager)
+    : m_manager(manager), m_hostBuffer(nullptr) {
   m_initialized = false;
   m_mappedHostBuffer = nullptr;
   m_sizeofType = 0;

@@ -399,6 +399,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   if env['PLATFORM'] == 'win32':
     # install the python library to that temporary folder
     dependencies.append(env.Command('installPythonLibToTmp', [pysgppTempFolder], installPythonLibToTmp))
+    
 
   # print message that python tests are about to start
   dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))
@@ -424,10 +425,10 @@ if env['COMPILE_BOOST_TESTS'] and env['RUN_BOOST_TESTS']:
 # Examples
 #########################################################################
 
-# def printLinkingExamples(target, source, env):
-#   print "\n" + separator + "\nLinking examples...\n" + separator
-# 
-# dependencies.append(env.Command('printLinkingExamples', [], printLinkingExamples))
+def printLinkingExamples(target, source, env):
+  print "\n" + separator + "\nLinking examples...\n" + separator
+
+dependencies.append(env.Command('printLinkingExamples', [], printLinkingExamples))
 
 for exampleTarget in exampleTargetList:
   env.Requires(exampleTarget, installTargetList)
@@ -436,25 +437,25 @@ for exampleTarget in exampleTargetList:
 # Final output
 #########################################################################
 
-# def printFinished(target, source, env):
-#   import string
-#   if env['PLATFORM'] in ['cygwin', 'win32']:
-#     filename = "INSTRUCTIONS_WINDOWS"
-#   else:
-#     filename = "INSTRUCTIONS"
-#  
-#   with open(filename) as f:
-#     instructionsTemplate = string.Template(f.read())
-#     print
-#     print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
-#                                                PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
-#  
-# if env["PRINT_INSTRUCTIONS"]:
-#     dependencies.append(env.Command('printFinished', [], printFinished))
+def printFinished(target, source, env):
+  import string
+  if env['PLATFORM'] in ['cygwin', 'win32']:
+    filename = "INSTRUCTIONS_WINDOWS"
+  else:
+    filename = "INSTRUCTIONS"
+ 
+  with open(filename) as f:
+    instructionsTemplate = string.Template(f.read())
+    print
+    print instructionsTemplate.safe_substitute(SGPP_BUILD_PATH=BUILD_DIR.abspath,
+                                               PYSGPP_PACKAGE_PATH=PYSGPP_PACKAGE_PATH.abspath)
+ 
+if env["PRINT_INSTRUCTIONS"]:
+    dependencies.append(env.Command('printFinished', [], printFinished))
 
 # necessary to enforce an order on the final steps of the building of the wrapper
-# for i in range(len(dependencies) - 1):
-#   env.Depends(dependencies[i + 1], dependencies[i])
+for i in range(len(dependencies) - 1):
+  env.Depends(dependencies[i + 1], dependencies[i])
  
 # Stuff needed for system install
 env.Clean("distclean",

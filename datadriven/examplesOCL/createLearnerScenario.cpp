@@ -15,16 +15,37 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
+using SGPP::datadriven::OperationMultipleEvalType;
+using SGPP::datadriven::OperationMultipleEvalSubType;
+using SGPP::base::OCLOperationConfiguration;
+
 int main(int argc, char** argv) {
-  //    std::string fileName = "friedman_4d_small.arff";
+  ///////////////////////////////// Configuration start ////////////////////////////////////
 
-  //  std::string scenarioFileName("DR5_Linear.scenario");
-  //  std::string fileName = "DR5_train.arff";
-  //  std::string alphaReferenceFileName = "DR5_Linear_AlphaReference.vec";
+  // to be set manually in the generated scenario file:
+  // testsetConfig.expectedMSE
+  // testsetConfig.expectedLargestDifference
 
-  std::string scenarioFileName("friedman2_4d_Linear.scenario");
-  std::string fileName = "friedman2_4d_300000.arff";
-  std::string alphaReferenceFileName = "friedman2_4d_Linear_AlphaReference.vec";
+  SGPP::datadriven::InternalPrecision internalPrecision =
+      SGPP::datadriven::InternalPrecision::Float;
+  //  std::string kernelName = "StreamingOCLMultiPlatform";
+  std::string datasetFileName = "friedman2_4d_300000.arff";
+
+  OperationMultipleEvalType operationType = OperationMultipleEvalType::STREAMING;
+  OperationMultipleEvalSubType operationSubType = OperationMultipleEvalSubType::OCLMASKMP;
+
+  std::string kernelName;
+  if (operationType == OperationMultipleEvalType::STREAMING) {
+    if (operationSubType == OperationMultipleEvalSubType::OCLMASKMP) {
+      kernelName = "StreamingModOCLMaskMultiPlatform";
+    } else if (operationSubType == OperationMultipleEvalSubType::OCLFASTMP) {
+      kernelName = "StreamingModOCLFastMultiPlatform";
+    } else {
+      throw;
+    }
+  } else {
+    throw;
+  }
 
   std::string parameterFileName("allDevices.cfg");
   double lambda = 0.0000001;
@@ -38,7 +59,7 @@ int main(int argc, char** argv) {
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = 10;
-  gridConfig.type_ = SGPP::base::GridType::Linear;
+  gridConfig.type_ = SGPP::base::GridType::ModLinear;
   // dummy values
   gridConfig.boundaryLevel_ = 0;
   gridConfig.maxDegree_ = 30;
@@ -62,10 +83,28 @@ int main(int argc, char** argv) {
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
 
+  ///////////////////////////////// Configuration end ////////////////////////////////////
+
+  size_t dotPosition = datasetFileName.find('.');
+  std::string datasetName = datasetFileName.substr(0, dotPosition);
+
+  std::string precisionString;
+  if (internalPrecision == SGPP::datadriven::InternalPrecision::Float) {
+    precisionString = "float";
+  } else {
+    precisionString = "double";
+  }
+  std::string scenarioFileName(datasetName + "_" + kernelName + "_" + precisionString +
+                               ".scenario");
+
+  std::string alphaReferenceFileName =
+      datasetName + "_" + kernelName + "_" + precisionString + "_AlphaReference.vec";
+
   // create scenario to learn without testset configuration to get mse and largestDifference for
   // final scenario configuration
-  SGPP::datadriven::LearnerScenario scenario(fileName, lambda, gridConfig, SLESolverConfigRefine,
-                                             SLESolverConfigFinal, adaptConfig);
+  SGPP::datadriven::LearnerScenario scenario(datasetFileName, lambda, internalPrecision, gridConfig,
+                                             SLESolverConfigRefine, SLESolverConfigFinal,
+                                             adaptConfig);
 
   SGPP::datadriven::MetaLearner metaLearner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
@@ -76,16 +115,17 @@ int main(int argc, char** argv) {
   //  SLESolverConfigFinal,
   //                                            adaptConfig, lambda, true);
 
-  SGPP::base::OCLOperationConfiguration parameters(parameterFileName);
+  OCLOperationConfiguration parameters(parameterFileName);
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+  // set precision in configuration as specified
+  parameters.replaceIDAttr("INTERNAL_PRECISION", precisionString);
+
+  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(operationType,
+                                                                     operationSubType, parameters);
 
   std::string datasetFileNameFetched = scenario.getDatasetFileName();
   metaLearner.learn(configuration, datasetFileNameFetched, true);
 
-  //  SGPP::base::Grid& grid = metaLearner.getLearnedGrid();
   SGPP::base::DataVector& alpha = metaLearner.getLearnedAlpha();
 
   alpha.toFile(alphaReferenceFileName);
@@ -95,9 +135,9 @@ int main(int argc, char** argv) {
   testsetConfig.expectedMSE = 0;
   testsetConfig.expectedLargestDifference = 0;
 
-  SGPP::datadriven::LearnerScenario scenarioWithTest(fileName, lambda, gridConfig,
-                                                     SLESolverConfigRefine, SLESolverConfigFinal,
-                                                     adaptConfig, testsetConfig);
+  SGPP::datadriven::LearnerScenario scenarioWithTest(
+      datasetFileName, lambda, internalPrecision, gridConfig, SLESolverConfigRefine,
+      SLESolverConfigFinal, adaptConfig, testsetConfig);
 
   scenarioWithTest.serialize(scenarioFileName);
 

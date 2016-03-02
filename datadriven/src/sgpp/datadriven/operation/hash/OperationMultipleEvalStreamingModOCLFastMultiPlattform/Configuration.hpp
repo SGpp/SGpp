@@ -66,7 +66,7 @@ class Configuration {
         }
 
         if (kernelNode.contains("KERNEL_SCHEDULE_SIZE") == false) {
-          kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 12800ul);
+          kernelNode.addIDAttr("KERNEL_SCHEDULE_SIZE", 102400ul);
         }
 
         if (kernelNode.contains("INTERNAL_PRECISION") == false) {

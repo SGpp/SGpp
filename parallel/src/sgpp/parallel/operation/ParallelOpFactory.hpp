@@ -29,7 +29,6 @@ namespace op_factory {
 
 /**
  * Factory method, returning an OperationMultipleEvalVectorized for the grid at hand.
- * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used for evaluation
  * @param vecType Type of Vectorization used
@@ -51,10 +50,9 @@ std::unique_ptr<parallel::OperationMultipleEvalVectorized> createOperationMultip
     size_t gridFrom = 0, size_t gridTo = std::numeric_limits<size_t>::max(), size_t datasetFrom = 0,
     size_t datasetTo = std::numeric_limits<size_t>::max());
 
-#ifdef USE_MPI
+// #ifdef USE_MPI
 /**
  * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
- * Note: object has to be freed after use.
  *
  * This LTwoDotProduct is implemented directly be creating each matrix element on the fly
  *
@@ -84,7 +82,6 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector
 /**
  * Factory method, returning an OperationLTwoDotLaplace (OperationParabolicPDEMatrixCombined) for
  * the grid at hand.
- * Note: object has to be freed after use.
  *
  * This LTwoDotLaplace operation is implemented directly be creating each matrix element on the fly
  *
@@ -98,20 +95,6 @@ createOperationLTwoDotLaplaceVectorized(base::Grid& grid,
 
 /**
  * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
- * Note: object has to be freed after use.
- *
- * This Laplacian is implemented directly be creating each matrix element on the fly
- *
- * @param grid Grid which is to be used
- * @param vecType selected vectorization
- * @return Pointer to the new OperationMatrix object for the Grid grid
- */
-std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
-    base::Grid& grid, base::DataVector& lambda, const parallel::VectorizationType& vecType);
-
-/**
- * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
- * Note: object has to be freed after use.
  *
  * This Laplacian is implemented directly be creating each matrix element on the fly
  *
@@ -121,8 +104,20 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
 std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
+    base::Grid& grid, base::DataVector& lambda, const parallel::VectorizationType& vecType);
+
+/**
+ * Factory method, returning an OperationLaplace (OperationMatrix) for the grid at hand.
+ *
+ * This Laplacian is implemented directly be creating each matrix element on the fly
+ *
+ * @param grid Grid which is to be used
+ * @param vecType selected vectorization
+ * @return Pointer to the new OperationMatrix object for the Grid grid
+ */
+std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
     base::Grid& grid, const parallel::VectorizationType& vecType);
-#endif
+// #endif
 }  // namespace op_factory
 }  // namespace SGPP
 

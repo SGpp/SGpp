@@ -126,7 +126,7 @@ if env["ARCH"] != "mic":
 # build examples for OpenCL
 if env["USE_OCL"]:
     example_env = env.Clone()
-    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["libboost_program_options"])
+    example_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_program_options", "boost_filesystem", "boost_system"])
     for fileName in os.listdir("examplesOCL"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
             example = example_env.Program(source=os.path.join("examplesOCL", fileName))
@@ -175,7 +175,7 @@ if env['COMPILE_BOOST_TESTS']:
 # build unit tests
 if env['COMPILE_BOOST_PERFORMANCE_TESTS']:
     test_env = env.Clone()
-    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework", "z"])
+    test_env.AppendUnique(LIBS=[libname] + moduleDependencies + ["boost_unit_test_framework", "boost_filesystem", "boost_system", "z"])
     testObjects = []
     for fileName in os.listdir("performanceTests"):
         if fnmatch.fnmatch(fileName, "*.cpp"):
