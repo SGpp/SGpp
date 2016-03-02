@@ -16,7 +16,7 @@ namespace parallel {
 class X86SimdLinear : public X86SimdKernelBase {
  public:
   static const KernelType kernelType = Standard;
-  static inline void multImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+  static inline void multImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* indexI,
                               sgpp::base::DataMatrix* /*mask*/,    // unused for this specialization
                               sgpp::base::DataMatrix* /*offset*/,  // unused for this specialization
                               sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
@@ -24,7 +24,7 @@ class X86SimdLinear : public X86SimdKernelBase {
                               const size_t end_index_grid, const size_t start_index_data,
                               const size_t end_index_data) {
     double* ptrLevel = level->getPointer();
-    double* ptrIndex = index->getPointer();
+    double* ptrIndex = indexI->getPointer();
     double* ptrAlpha = alpha.getPointer();
     double* ptrData = dataset->getPointer();
     double* ptrResult = result.getPointer();

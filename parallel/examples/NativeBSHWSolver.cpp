@@ -817,10 +817,10 @@ void writeHelp() {
   mySStream << "  file_Boundaries: file that contains the bounding box" << std::endl;
   mySStream << "  payoff_func: function for n-d payoff: std_euro_call, GMIB" << std::endl;
   mySStream << "  simeSt: number of time steps of doing HW and BS when calling "
-               "allternatively, default: 1"
+               "alternatively, default: 1"
             << std::endl;
   mySStream << "  dt: timestep size" << std::endl;
-  mySStream << "  CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << "  CGIterations: Maxmimum number of iterations used in CG method" << std::endl;
   mySStream << "  CGEpsilon: Epsilon used in CG" << std::endl;
   mySStream << "  Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
   mySStream << "  T: time to maturity" << std::endl;
@@ -858,7 +858,7 @@ void writeHelp() {
                "allternatively, default: 1"
             << std::endl;
   mySStream << "  dt: timestep size" << std::endl;
-  mySStream << "  CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << "  CGIterations: Maxmimum number of iterations used in CG method" << std::endl;
   mySStream << "  CGEpsilon: Epsilon used in CG" << std::endl;
   mySStream << "  Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
   mySStream << "  T: time to maturity" << std::endl;
@@ -945,7 +945,7 @@ int main(int argc, char* argv[]) {
       }
 
       testBSHW(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff, atoi(argv[9]),
-               atoi(argv[10]), atoi(argv[11]), atof(argv[12]), solver, atof(argv[14]), dStrike,
+               atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver, atof(argv[14]), dStrike,
                coords);
     }
 

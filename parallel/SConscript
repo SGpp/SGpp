@@ -38,12 +38,12 @@ MPIOnlyFiles = [
     "BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI.cpp",
     "BlackScholesPATParabolicPDESolverSystemEuroAmerParallelMPI.cpp",
     "BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI.cpp",
-    "OperationLaplaceVectorizedLinear.cpp",
-    "OperationLaplaceVectorizedLinearBoundary.cpp",
-    "OperationLTwoDotProductVectorizedLinear.cpp",
-    "OperationLTwoDotProductVectorizedLinearBoundary.cpp",
-    "OperationLTwoDotLaplaceVectorizedLinear.cpp",
-    "OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp",
+    #"OperationLaplaceVectorizedLinear.cpp",
+    #"OperationLaplaceVectorizedLinearBoundary.cpp",
+    #"OperationLTwoDotProductVectorizedLinear.cpp",
+    #"OperationLTwoDotProductVectorizedLinearBoundary.cpp",
+    #"OperationLTwoDotLaplaceVectorizedLinear.cpp",
+    #"OperationLTwoDotLaplaceVectorizedLinearBoundary.cpp",
     ]
 
 # Nvidia OpenCL: -I$(OCLINCLUDE) -DUSEOCL -DUSEOCL_NVIDIA -fopenmp
@@ -120,12 +120,13 @@ for currentFolder, subdirNames, fileNames in os.walk("."):
                  #those should probably go into normal example folder.
     if currentFolder.startswith(os.path.join(".", "src")):
         for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            #if fileName in MPIOnlyFiles:
-            #     continue
+            if fileName in MPIOnlyFiles:
+                if not 'USE_MPI' in env_parallel['CPPDEFINES']:
+                    continue
             if fileName in OCLOnlyFiles:
-                 continue
+                continue
             if fileName in ArBBOnlyFiles:
-                 continue
+                continue
             cpp = os.path.join(currentFolder, fileName)
             cpps.append(cpp)
             objs.append(env_parallel.SharedObject(cpp))
@@ -168,6 +169,10 @@ Import('exampleTargetList')
 example_env = env.Clone()
 example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
 for fileName in os.listdir("examples"):
+    if fnmatch.fnmatch(fileName, "*MPI*") and not 'USE_MPI' in env_parallel['CPPDEFINES']:
+        continue  # skip MPI files, if USE_MPI is not defined
+    if not fnmatch.fnmatch(fileName, "*MPI*") and 'USE_MPI' in env_parallel['CPPDEFINES']:
+        continue  # skip non mpi files if USE_MPI is defined
     if fnmatch.fnmatch(fileName, "*.cpp"):
         cpp = os.path.join("examples", fileName)
         cpps.append(cpp)

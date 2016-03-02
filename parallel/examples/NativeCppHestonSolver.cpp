@@ -352,7 +352,7 @@ void testNUnderlyings(size_t numAssets, int l, std::string fileStoch, std::strin
     return;
   }
 
-  sgpp::finance::HestonSolver* myHestonSolver;
+  SGPP::finance::HestonSolver* myHestonSolver;
 
   if (coordsType == "log") {
     myHestonSolver = new sgpp::finance::HestonSolver(true);
