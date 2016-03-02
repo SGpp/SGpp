@@ -282,7 +282,7 @@ DataMatrixSP& DataMatrixSP::operator=(const DataMatrixSP& matr) {
   if (nrows * ncols != matr.ncols * matr.nrows) {
     // throw SGPP::base::data_exception("DataMatrixSP::= : Dimensions do not match");
     delete[] this->data;
-    this->data = new float[nrows * ncols];
+    this->data = new float[matr.nrows * matr.ncols];
   }
 
   this->nrows = matr.nrows;
