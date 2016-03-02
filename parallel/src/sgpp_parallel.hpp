@@ -16,7 +16,7 @@
 #include <sgpp/parallel/operation/ParallelOpFactory.hpp>
 #include <sgpp/parallel/datadriven/algorithm/DMSystemMatrixVectorizedIdentity.hpp>
 
-namespace sg {
+namespace sgpp {
 namespace parallel {
 bool is_mpi_compiled() {
 #ifdef USE_MPI
