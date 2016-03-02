@@ -66,6 +66,11 @@ class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized {
     myTimer_->start();
     result.setAll(0.0);
 
+    // resize vectors if necessary
+    if (index_->getNrows() != result.getSize()) {
+      rebuildLevelAndIndex(0, result.getSize());
+    }
+
 #pragma omp parallel
     {
       m_kernel.multTranspose(level_, index_, mask_, offset_, dataset_, source, result, m_gridFrom,
