@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -23,17 +22,15 @@ namespace parallel {
  * There is a parallelization over all operators, required
  * to solve the poisson equation.
  */
-class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public
-  SGPP::pde::OperationEllipticPDESolverSystemDirichlet {
+class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI
+    : public SGPP::pde::OperationEllipticPDESolverSystemDirichlet {
  protected:
   std::unique_ptr<SGPP::base::OperationMatrix> Laplace_Inner;
   std::unique_ptr<SGPP::base::OperationMatrix> Laplace_Complete;
 
-  void applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                              SGPP::base::DataVector& result);
+  void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
-  void applyLOperatorInner(SGPP::base::DataVector& alpha,
-                           SGPP::base::DataVector& result);
+  void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
  public:
   /**
@@ -42,8 +39,8 @@ class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public
    * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
    * @param rhs the right hand side for solving the elliptic PDE
    */
-  PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs);
+  PoissonEquationEllipticPDESolverSystemDirichletParallelMPI(SGPP::base::Grid& SparseGrid,
+                                                             SGPP::base::DataVector& rhs);
 
   /**
    * Destructor
@@ -54,8 +51,7 @@ class PoissonEquationEllipticPDESolverSystemDirichletParallelMPI : public
 
   SGPP::base::DataVector* generateRHS();
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETPARALLELMPI_HPP */

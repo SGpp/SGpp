@@ -6,14 +6,11 @@
 #ifndef OPERATIONLAPLACEVECTORIZEDLINEARBOUNDARY_HPP
 #define OPERATIONLAPLACEVECTORIZEDLINEARBOUNDARY_HPP
 
-#include <vector>
-
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 
 #include <sgpp/base/tools/SGppStopwatch.hpp>
-
 
 #include <sgpp/parallel/tools/TypesParallel.hpp>
 
@@ -29,7 +26,7 @@
 #endif
 
 #include <sgpp/globaldef.hpp>
-
+#include <vector>
 
 namespace SGPP {
 namespace parallel {
@@ -38,10 +35,8 @@ namespace parallel {
  * Implementation for linear functions of Laplace Operation, linear grids with boundaries
  *
  */
-class OperationLaplaceVectorizedLinearBoundary: public
-  SGPP::base::OperationMatrix {
+class OperationLaplaceVectorizedLinearBoundary : public SGPP::base::OperationMatrix {
  private:
-
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
   SGPP::base::DataMatrix* level_int_;
@@ -80,26 +75,26 @@ class OperationLaplaceVectorizedLinearBoundary: public
   std::vector<int> recv_start;
   std::vector<int> recv_size;
 
-
   void init_constants();
   void init_grid_storage();
 
   double gradient_dirichlet(size_t i, size_t j, size_t dim);
   double l2dot_dirichlet(size_t i, size_t j, size_t dim);
 
-  void mult_dirichlet(SGPP::base::DataVector& alpha,
-                      SGPP::base::DataVector& result);
+  void mult_dirichlet(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void mult_dirichlet_mic(size_t process_i_start, size_t process_i_end);
 
   double all_time;
   double all_iterations;
   SGPP::base::SGppStopwatch stopWatch;
+
  public:
   /**
    * Construtor of OperationLaplaceLinear
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLaplaceVectorizedLinearBoundary(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceVectorizedLinearBoundary(SGPP::base::GridStorage* storage);
 
   /**
    * Construtor of OperationLaplaceLinear
@@ -108,20 +103,17 @@ class OperationLaplaceVectorizedLinearBoundary: public
    * @param lambda Vector which contains pre-factors for every dimension of the operator
    */
   OperationLaplaceVectorizedLinearBoundary(SGPP::base::GridStorage* storage,
-      SGPP::base::DataVector& lambda);
+                                           SGPP::base::DataVector& lambda);
 
   /**
    * Destructor
    */
   virtual ~OperationLaplaceVectorizedLinearBoundary();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
   virtual void reset();
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEVECTORIZEDLINEARBOUNDARY_HPP */

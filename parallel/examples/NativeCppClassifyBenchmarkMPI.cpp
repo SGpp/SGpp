@@ -418,7 +418,7 @@ void printHelp() {
             << std::endl;
   std::cout << "Example call:" << std::endl;
   std::cout << "    app.exe     test.data train.data 0 SP linearboundary 3 0.000001 250 0.0001 "
-               "6 0.0 100 20 0.1 X86SIMD"
+               "6 0.0 100 20 0.1 X86SIMD Async"
             << std::endl
             << std::endl
             << std::endl;
@@ -501,8 +501,8 @@ int main(int argc, char* argv[]) {
   if (argc != 17) {
     printHelp();
   } else {
-    dataFile.assign(argv[1]);
-    testFile.assign(argv[2]);
+    dataFile.assign(argv[1]);  // train
+    testFile.assign(argv[2]);  // test
     regression = false;
 
     if (atoi(argv[3]) == 1) {

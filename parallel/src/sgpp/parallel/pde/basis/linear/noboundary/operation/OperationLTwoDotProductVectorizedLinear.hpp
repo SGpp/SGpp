@@ -26,6 +26,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <vector>
+
 namespace SGPP {
 namespace parallel {
 
@@ -77,7 +79,7 @@ class OperationLTwoDotProductVectorizedLinear : public SGPP::base::OperationMatr
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLTwoDotProductVectorizedLinear(SGPP::base::GridStorage* storage);
+  explicit OperationLTwoDotProductVectorizedLinear(SGPP::base::GridStorage* storage);
 
   /**
    * Construtor of OperationLTwoDotProductVectorizedLinear
@@ -97,7 +99,7 @@ class OperationLTwoDotProductVectorizedLinear : public SGPP::base::OperationMatr
 
   virtual void reset();
 };
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLAPLACEVECTORIZEDLINEAR_HPP */

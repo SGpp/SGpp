@@ -339,6 +339,9 @@ void adaptClassificationTestSP(SGPP::base::DataMatrixSP& dataSP,
  * and a measurement app for Sparse Grid Algorithms building blocks
  */
 int main(int argc, char* argv[]) {
+  if (SGPP::parallel::is_mpi_compiled()) {
+    std::cout << "SGPP library is for compiled for MPI, which it shouldn't be.";
+  }
   std::string dataFile;
   std::string testFile;
   std::string gridtype;

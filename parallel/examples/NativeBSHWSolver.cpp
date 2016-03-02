@@ -9,16 +9,17 @@
 #include <sgpp_parallel.hpp>
 #include <sgpp_solver.hpp>
 #include <sgpp_datadriven.hpp>
+#include <stdlib.h>
+
 #include <iostream>
 #include <string>
-#include <stdlib.h>
 #include <fstream>
 #include <iomanip>
 #include <cmath>
+#include <vector>
 
 std::string tFileEvalCuboid = "evalCuboid.data";
 std::string tFileEvalCuboidValues = "evalCuboidValues.data";
-
 
 /// default number of Implicit Euler steps before starting with Crank Nicolson approach
 #define CRNIC_IMEUL_STEPS 3
@@ -39,9 +40,8 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.data";
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssests,
-                       SGPP::base::DataVector& mu, SGPP::base::DataVector& sigma,
-                       SGPP::base::DataMatrix& rho) {
+int readStochasticData(std::string tFile, size_t numAssests, SGPP::base::DataVector& mu,
+                       SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho) {
   std::fstream file;
   double cur_mu;
   double cur_sigma;
@@ -108,7 +108,6 @@ int readBoudingBoxData(std::string tFile, size_t numAssests,
   return 0;
 }
 
-
 /**
  * reads a cuboid defined by several points from a file. These points are stored in the
  * cuboid DataMatrix
@@ -117,8 +116,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssests,
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile,
-                        size_t dim) {
+int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
   std::fstream file;
   double cur_coord;
 
@@ -213,7 +211,6 @@ int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
   return 0;
 }
 
-
 /**
  * calculate the theta value for the Hull White model
  *
@@ -225,10 +222,9 @@ int readOptionsValues(SGPP::base::DataVector& values, std::string tFile) {
  * @return returns 0 if the file was successfully read, otherwise -1
  */
 
-double calculatetheta(double a, double sigma, double T, int t) {
+double calculatetheta(double a, double sigma, double T, double t) {
   double theta = 0;
-  return theta = 0.04 * a + pow(sigma,
-                                2.0) * (1 - exp(-2 * a * (T - t))) / (2 * a);
+  return theta = 0.04 * a + pow(sigma, 2.0) * (1 - exp(-2 * a * (T - t))) / (2 * a);
 }
 /**
  * Combine Hull White solver and Black Scholes solver with European call option
@@ -246,17 +242,17 @@ double calculatetheta(double a, double sigma, double T, int t) {
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
- * @param Solver specifies the solver that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param Solver specifies the solver that should be used, ExEul, ImEul and CrNic are the
+ * possibilities
  * @param T
  * @param dStrike
  * @param isLogSolve
  */
-void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
-              std::string fileBound, std::string payoffType,
-              size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver,
-              double T, double dStrike, bool isLogSolve) {
+void testBSHW(size_t d, int l, double sigma, double a, std::string fileStoch, std::string fileBound,
+              std::string payoffType, size_t timeSt, double dt, size_t CGIt, double CGeps,
+              std::string Solver, double T, double dStrike, bool isLogSolve) {
   size_t dim = d;
-  size_t level = l;
+  int level = l;
   size_t timesteps_innerCall = timeSt;
   double stepsize_general = dt;
   size_t CGiterations = CGIt;
@@ -265,20 +261,18 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   SGPP::base::DataVector sigmabs(dim);
   SGPP::base::DataMatrix rho(dim, dim);
 
-
   if (readStochasticData(fileStoch, dim, mu, sigmabs, rho) != 0) {
     return;
   }
 
-  SGPP::base::DimensionBoundary* myBoundaries = new
-  SGPP::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
-  //std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
-  //std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
+  // std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
+  // std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
   SGPP::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 
   if (isLogSolve == true) {
@@ -287,9 +281,8 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
     myBSHWSolver = new SGPP::finance::BlackScholesHullWhiteSolver(false);
   }
 
-  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim,
-      myBoundaries);
-  //delete[] myBoundaries; // we need them for calculating the evaluation point later!
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
+  // delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
   // init Screen Object
   myBSHWSolver->initScreen();
@@ -304,21 +297,24 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   myBSHWSolver->constructGrid(*myBoundingBox, level);
 
   // init the basis functions' coefficient vector
-  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(
-    myBSHWSolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSHWSolver->getNumberGridPoints());
 
   std::cout << "Grid has " << level << " Levels" << std::endl;
-  std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() <<
-            std::endl;
-  std::cout << "Initial Grid size (inner): " <<
-            myBSHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+  std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
+  std::cout << "Initial Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints()
+            << std::endl
+            << std::endl
+            << std::endl;
 
   // Init the grid with on payoff function
   myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType, a, sigma);
 
   // Gridpoints @Money
-  std::cout << "Gridpoints @Money: " << myBSHWSolver->getGridPointsAtMoney(
-              payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+  std::cout << "Gridpoints @Money: "
+            << myBSHWSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+            << std::endl
+            << std::endl
+            << std::endl;
 
   std::stringstream level_string;
   level_string << l;
@@ -326,16 +322,14 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      SGPP::base::DimensionBoundary* myAreaBoundaries = new
-      SGPP::base::DimensionBoundary[dim];
+      SGPP::base::DimensionBoundary* myAreaBoundaries = new SGPP::base::DimensionBoundary[dim];
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;
         myAreaBoundaries[i].rightBoundary = 1.1;
       }
 
-      SGPP::base::BoundingBox* myGridArea = new SGPP::base::BoundingBox(dim,
-          myAreaBoundaries);
+      SGPP::base::BoundingBox* myGridArea = new SGPP::base::BoundingBox(dim, myAreaBoundaries);
 
       myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea,
                                     "payoff_area.level_" + level_string.str() + ".gnuplot");
@@ -344,33 +338,31 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
       delete myGridArea;
     }
 
-    myBSHWSolver->printGrid(*alpha, 21,
-                            ("payoffBSHW.level_" + level_string.str() + ".gnuplot"));
-    myBSHWSolver->printSparseGrid(*alpha,
-                                  "payoffBSHW_surplus.grid.level_" + level_string.str() + ".gnuplot", true);
-    myBSHWSolver->printSparseGrid(*alpha,
-                                  "payoffBSHW_nodal.grid.level_" + level_string.str() + ".gnuplot", false);
+    myBSHWSolver->printGrid(*alpha, 21, ("payoffBSHW.level_" + level_string.str() + ".gnuplot"));
+    myBSHWSolver->printSparseGrid(
+        *alpha, "payoffBSHW_surplus.grid.level_" + level_string.str() + ".gnuplot", true);
+    myBSHWSolver->printSparseGrid(
+        *alpha, "payoffBSHW_nodal.grid.level_" + level_string.str() + ".gnuplot", false);
 
-    //myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+    // myBSHWSolver->printPayoffInterpolationError2D(*alpha,
+    // "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
     if (isLogSolve == true) {
-      myBSHWSolver->printSparseGridExpTransform(*alpha,
-          "payoffBSHW_surplus_cart.grid.level_" + level_string.str() + ".gnuplot", true);
-      myBSHWSolver->printSparseGridExpTransform(*alpha,
-          "payoffBSHW_nodal_cart.grid.level_" + level_string.str() + ".gnuplot", false);
+      myBSHWSolver->printSparseGridExpTransform(
+          *alpha, "payoffBSHW_surplus_cart.grid.level_" + level_string.str() + ".gnuplot", true);
+      myBSHWSolver->printSparseGridExpTransform(
+          *alpha, "payoffBSHW_nodal_cart.grid.level_" + level_string.str() + ".gnuplot", false);
     }
   }
 
   // Set stochastic data
-  //myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
+  // myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 
   // Start combining the Black Scholes and Hull White Equation
   if (Solver == "ImEul") {
     double theta = 0;
     int count = 0;
-    double dt_outerCall = stepsize_general * static_cast<double>
-                          (timesteps_innerCall);
+    double dt_outerCall = stepsize_general * static_cast<double>(timesteps_innerCall);
     double t_local = 0.0;
-
 
     SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
     myStopwatch->start();
@@ -378,8 +370,8 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
     for (int i = 0; i < T / dt_outerCall; i++) {
       theta = calculatetheta(a, sigma, T, t_local);
       myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0, theta, sigma, a);
-      myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general,
-                                       CGiterations, CGepsilon, *alpha, false, false, 20);
+      myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations,
+                                       CGepsilon, *alpha, false, false, 20);
       count = count + 1;
       t_local += dt_outerCall;
 
@@ -387,21 +379,18 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
     }
 
     double neededTime = myStopwatch->stop();
-    std::cout << "Time to solve in total: " << neededTime << " seconds" <<
-              std::endl;
+    std::cout << "Time to solve in total: " << neededTime << " seconds" << std::endl;
   } else {
-    std::cout << "!!!! You have chosen an unsupported solver type !!!!" <<
-              std::endl;
+    std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
   }
 
   if (dim < 3) {
     // Print the solved Black Scholes Equation into a gnuplot file
-    myBSHWSolver->printGrid(*alpha, 21,
-                            "solvedBSHW.level_" + level_string.str() + ".gnuplot");
-    myBSHWSolver->printSparseGrid(*alpha,
-                                  "solvedBSHW_surplus.grid.level_" + level_string.str() + ".gnuplot", true);
-    myBSHWSolver->printSparseGrid(*alpha,
-                                  "solvedBSHW_nodal.grid.level_" + level_string.str() + ".gnuplot", false);
+    myBSHWSolver->printGrid(*alpha, 21, "solvedBSHW.level_" + level_string.str() + ".gnuplot");
+    myBSHWSolver->printSparseGrid(
+        *alpha, "solvedBSHW_surplus.grid.level_" + level_string.str() + ".gnuplot", true);
+    myBSHWSolver->printSparseGrid(
+        *alpha, "solvedBSHW_nodal.grid.level_" + level_string.str() + ".gnuplot", false);
     /*if (isLogSolve == true)
     {
       myBSSolver->printSparseGridExpTransform(*alpha, "solvedBSHW_surplus_cart.grid.gnuplot", true);
@@ -423,33 +412,31 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
     //    }
 
     // take the mean of the given domain
-    double point_i = (myBoundaries[i].rightBoundary +
-                      myBoundaries[i].leftBoundary) / 2.0;
+    double point_i = (myBoundaries[i].rightBoundary + myBoundaries[i].leftBoundary) / 2.0;
     point.push_back(point_i);
   }
 
   delete[] myBoundaries;
-  std::cout << "Optionprice at [" << point[0] << ", " << point[1] <<
-            "] (center): " << myBSHWSolver->evaluatePoint(point,
-                *alpha) << std::endl << std::endl;
+  std::cout << "Optionprice at [" << point[0] << ", " << point[1]
+            << "] (center): " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl
+            << std::endl;
 
   // for evaluation at strike
   double PB = 0;
   double PT = 0;
-  double tmp;
+
   int timeT = 12;
   int endtime = 32;
   double c = 0.06;
-  double rr = 0.05; // change the risk-free rate here!!
+  double rr = 0.05;  // change the risk-free rate here!!
 
   for (int k = (timeT + 1); k <= endtime; k++) {
-    PT = exp(0.04 * (timeT - k) + 0.04 * (1 - exp(-a * (k - timeT))) / a - pow(
-               sigma, 2.0) * pow((exp(-a * k) - exp(-a * timeT)),
-                                 2.0) * (exp(2 * a * timeT) - 1) / (4 * pow(a,
-                                     3.0)) - (1 - exp(-a * (k - timeT))) * rr / a);
+    PT = exp(0.04 * (timeT - k) + 0.04 * (1 - exp(-a * (k - timeT))) / a -
+             pow(sigma, 2.0) * pow((exp(-a * k) - exp(-a * timeT)), 2.0) *
+                 (exp(2 * a * timeT) - 1) / (4 * pow(a, 3.0)) -
+             (1 - exp(-a * (k - timeT))) * rr / a);
     PB = PB + c * PT;
   }
-
 
   double dS = 0.01;
 
@@ -461,12 +448,12 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
     point_strike.push_back(rr);
 
     if (j == 0) {
-      std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] <<
-                "] (at-the-money!!): " << myBSHWSolver->evaluatePoint(point_strike,
-                    *alpha) << std::endl;
+      std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1]
+                << "] (at-the-money!!): " << myBSHWSolver->evaluatePoint(point_strike, *alpha)
+                << std::endl;
     } else {
-      std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] <<
-                "]: " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl;
+      std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1]
+                << "]: " << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl;
     }
   }
 
@@ -474,9 +461,6 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
   delete myBSHWSolver;
   delete myBoundingBox;
 }
-
-
-
 
 /**
  * Combine Hull White solver and Black Scholes solver with European call option
@@ -494,30 +478,33 @@ void testBSHW(size_t d, size_t l, double sigma, double a, std::string fileStoch,
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
- * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the
+ * possibilities
  * @param T
  * @param dStrike
  * @param isLogSolve set this to true if the log-transformed Black Scholes Equation should be solved
  * @param refinementMode the mode selected for surplus refinement: available: classic, maxLevel
- * @param maxRefineLevel ignored for refinement mode classic, in maxLevel: max. level to which the grid is refined
- * @param numRefinePoints number of points that should be refined in each refine iteration before Black Scholes Equation is solved: -1 try to refine all points steered by threshold
+ * @param maxRefineLevel ignored for refinement mode classic, in maxLevel: max. level to which the
+ * grid is refined
+ * @param numRefinePoints number of points that should be refined in each refine iteration before
+ * Black Scholes Equation is solved: -1 try to refine all points steered by threshold
  * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  * @param dRefineThreshold Threshold for a point's surplus for refining this point
  * @param useCoarsen specifies if the grid should be coarsened between timesteps
- * @param adaptSolvingMode specifies which adaptive methods are applied during solving the BS Equation
+ * @param adaptSolvingMode specifies which adaptive methods are applied during solving the BS
+ * Equation
  * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
  * @param useNormalDist enable local initial refinement based on a normal distribution
  */
-void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
-                       std::string fileStoch, std::string fileBound, std::string payoffType,
-                       size_t timeSt, double dt, size_t CGIt, double CGeps, std::string Solver,
-                       double T, double dStrike, bool isLogSolve,
-                       std::string refinementMode, int numRefinePoints, size_t maxRefineLevel,
-                       size_t nIterAdaptSteps, double dRefineThreshold,
-                       bool useCoarsen, std::string adaptSolvingMode, double coarsenThreshold,
-                       bool useNormalDist) {
+void testBSHW_adaptive(size_t d, int l, double sigma, double a, std::string fileStoch,
+                       std::string fileBound, std::string payoffType, size_t timeSt, double dt,
+                       size_t CGIt, double CGeps, std::string Solver, double T, double dStrike,
+                       bool isLogSolve, std::string refinementMode, int numRefinePoints,
+                       SGPP::base::GridIndex::level_type maxRefineLevel, size_t nIterAdaptSteps,
+                       double dRefineThreshold, bool useCoarsen, std::string adaptSolvingMode,
+                       double coarsenThreshold, bool useNormalDist) {
   size_t dim = d;
-  size_t level = l;
+  int level = l;
   size_t timesteps_innerCall = timeSt;
   double stepsize_general = dt;
   size_t CGiterations = CGIt;
@@ -530,15 +517,14 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
     return;
   }
 
-  SGPP::base::DimensionBoundary* myBoundaries = new
-  SGPP::base::DimensionBoundary[dim];
+  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
   if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
     return;
   }
 
-  //std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
-  //std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
+  // std::cout<<myBoundaries[0].bDirichletLeft << std::endl;
+  // std::cout<<myBoundaries[1].bDirichletLeft << std::endl;
   SGPP::finance::BlackScholesHullWhiteSolver* myBSHWSolver;
 
   if (isLogSolve == true) {
@@ -547,9 +533,8 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
     myBSHWSolver = new SGPP::finance::BlackScholesHullWhiteSolver(false);
   }
 
-  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim,
-      myBoundaries);
-  //delete[] myBoundaries; // we need them for calculating the evaluation point later!
+  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
+  // delete[] myBoundaries; // we need them for calculating the evaluation point later!
 
   // init Screen Object
   myBSHWSolver->initScreen();
@@ -559,19 +544,19 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
 
   // Enable Coarsening
   if (useCoarsen == true) {
-    myBSHWSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode,
-                                          maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
+    myBSHWSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode, maxRefineLevel, -1,
+                                          coarsenThreshold, dRefineThreshold);
   }
 
   // init the basis functions' coefficient vector
-  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(
-    myBSHWSolver->getNumberGridPoints());
+  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myBSHWSolver->getNumberGridPoints());
 
   std::cout << "Grid has " << level << " Levels" << std::endl;
-  std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() <<
-            std::endl;
-  std::cout << "Initial Grid size (inner): " <<
-            myBSHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+  std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
+  std::cout << "Initial Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints()
+            << std::endl
+            << std::endl
+            << std::endl;
 
   // Init the grid with on payoff function
   myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType, a, sigma);
@@ -587,8 +572,7 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
 
   // read reference values for evaluation cuboid
   SGPP::base::DataVector EvalCuboidValues(1);
-  int retCuboidValues = readOptionsValues(EvalCuboidValues,
-                                          tFileEvalCuboidValues);
+  int retCuboidValues = readOptionsValues(EvalCuboidValues, tFileEvalCuboidValues);
 
   if (EvalCuboid.getNrows() != EvalCuboidValues.getSize()) {
     retCuboid = 1;
@@ -607,33 +591,34 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
   }
 
   // Gridpoints @Money
-  std::cout << "Gridpoints @Money: " << myBSHWSolver->getGridPointsAtMoney(
-              payoffType, dStrike, DFLT_EPS_AT_MONEY) << std::endl << std::endl << std::endl;
+  std::cout << "Gridpoints @Money: "
+            << myBSHWSolver->getGridPointsAtMoney(payoffType, dStrike, DFLT_EPS_AT_MONEY)
+            << std::endl
+            << std::endl
+            << std::endl;
 
-
-  std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() <<
-            std::endl;
-  std::cout << "Initial Grid size (inner): " <<
-            myBSHWSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+  std::cout << "Initial Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
+  std::cout << "Initial Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints()
+            << std::endl
+            << std::endl
+            << std::endl;
 
   // refine the grid to approximate the singularity in the start solution better
   if (refinementMode == "classic") {
-    for (size_t i = 0 ; i < nIterAdaptSteps; i++) {
+    for (size_t i = 0; i < nIterAdaptSteps; i++) {
       std::cout << "Refining Grid..." << std::endl;
 
       if (useNormalDist == true) {
-        myBSHWSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints,
-            dRefineThreshold, norm_mu, norm_sigma);
+        myBSHWSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold,
+                                                        norm_mu, norm_sigma);
       } else {
-        myBSHWSolver->refineInitialGridSurplus(*alpha, numRefinePoints,
-                                               dRefineThreshold);
+        myBSHWSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
       }
 
       myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType, a, sigma);
-      std::cout << "Refined Grid size: " << myBSHWSolver->getNumberGridPoints() <<
-                std::endl;
-      std::cout << "Refined Grid size (inner): " <<
-                myBSHWSolver->getNumberInnerGridPoints() << std::endl;
+      std::cout << "Refined Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
+      std::cout << "Refined Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints()
+                << std::endl;
     }
 
   } else if (refinementMode == "maxLevel") {
@@ -648,18 +633,17 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
         std::cout << "Refining Grid..." << std::endl;
 
         if (useNormalDist == true) {
-          myBSHWSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha,
-              dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
+          myBSHWSolver->refineInitialGridSurplusToMaxLevelSubDomain(
+              *alpha, dRefineThreshold, maxRefineLevel, norm_mu, norm_sigma);
         } else {
           myBSHWSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold,
-              maxRefineLevel);
+                                                           maxRefineLevel);
         }
 
         myBSHWSolver->initGridWithPayoffBSHW(*alpha, dStrike, payoffType, a, sigma);
-        std::cout << "Refined Grid size: " << myBSHWSolver->getNumberGridPoints() <<
-                  std::endl;
-        std::cout << "Refined Grid size (inner): " <<
-                  myBSHWSolver->getNumberInnerGridPoints() << std::endl;
+        std::cout << "Refined Grid size: " << myBSHWSolver->getNumberGridPoints() << std::endl;
+        std::cout << "Refined Grid size (inner): " << myBSHWSolver->getNumberInnerGridPoints()
+                  << std::endl;
         newGridSize = myBSHWSolver->getNumberGridPoints();
         addedGridPoint = newGridSize - oldGridSize;
         stepCounter++;
@@ -672,55 +656,46 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
 
   std::cout << std::endl << std::endl << std::endl;
 
-
-
-
   // Print the payoff function into a gnuplot file
   if (dim < 3) {
     if (dim == 2) {
-      SGPP::base::DimensionBoundary* myAreaBoundaries = new
-      SGPP::base::DimensionBoundary[dim];
+      SGPP::base::DimensionBoundary* myAreaBoundaries = new SGPP::base::DimensionBoundary[dim];
 
       for (size_t i = 0; i < 2; i++) {
         myAreaBoundaries[i].leftBoundary = 0.9;
         myAreaBoundaries[i].rightBoundary = 1.1;
       }
 
-      SGPP::base::BoundingBox* myGridArea = new SGPP::base::BoundingBox(dim,
-          myAreaBoundaries);
+      SGPP::base::BoundingBox* myGridArea = new SGPP::base::BoundingBox(dim, myAreaBoundaries);
 
-      myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea,
-                                    "payoff_area.adaptive.gnuplot");
+      myBSHWSolver->printGridDomain(*alpha, 50, *myGridArea, "payoff_area.adaptive.gnuplot");
 
       delete[] myAreaBoundaries;
       delete myGridArea;
     }
 
     myBSHWSolver->printGrid(*alpha, 21, "payoffBSHW.adaptive.gnuplot");
-    myBSHWSolver->printSparseGrid(*alpha,
-                                  "payoffBSHW_surplus.grid.adaptive.gnuplot", true);
-    myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.adaptive.gnuplot",
-                                  false);
+    myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_surplus.grid.adaptive.gnuplot", true);
+    myBSHWSolver->printSparseGrid(*alpha, "payoffBSHW_nodal.grid.adaptive.gnuplot", false);
 
-    //myBSHWSolver->printPayoffInterpolationError2D(*alpha, "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
+    // myBSHWSolver->printPayoffInterpolationError2D(*alpha,
+    // "payoff_interpolation_error.grid.gnuplot", 10000, dStrike);
     if (isLogSolve == true) {
-      myBSHWSolver->printSparseGridExpTransform(*alpha,
-          "payoffBSHW_surplus_cart.grid.adaptive.gnuplot", true);
-      myBSHWSolver->printSparseGridExpTransform(*alpha,
-          "payoffBSHW_nodal_cart.grid.adaptive.gnuplot", false);
+      myBSHWSolver->printSparseGridExpTransform(
+          *alpha, "payoffBSHW_surplus_cart.grid.adaptive.gnuplot", true);
+      myBSHWSolver->printSparseGridExpTransform(
+          *alpha, "payoffBSHW_nodal_cart.grid.adaptive.gnuplot", false);
     }
   }
 
-
   // Set stochastic data
-  //myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
+  // myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0,theta, sigma, a);
 
   // Start combining the Black Scholes and Hull White Equation
   if (Solver == "ImEul") {
     double theta = 0;
     int count = 0;
-    double dt_outerCall = stepsize_general * static_cast<double>
-                          (timesteps_innerCall);
+    double dt_outerCall = stepsize_general * static_cast<double>(timesteps_innerCall);
     double t_local = 0.0;
 
     SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
@@ -729,28 +704,24 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
     for (int i = 0; i < T / dt_outerCall; i++) {
       theta = calculatetheta(a, sigma, T, t_local);
       myBSHWSolver->setStochasticData(mu, sigmabs, rho, 0.0, theta, sigma, a);
-      myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general,
-                                       CGiterations, CGepsilon, *alpha, false, false, 20);
+      myBSHWSolver->solveImplicitEuler(timesteps_innerCall, stepsize_general, CGiterations,
+                                       CGepsilon, *alpha, false, false, 20);
       count = count + 1;
       t_local += dt_outerCall;
       std::cout << "solved at t = " << t_local << " of T = " << T << std::endl;
     }
 
     double neededTime = myStopwatch->stop();
-    std::cout << "Time to solve in total: " << neededTime << " seconds" <<
-              std::endl;
+    std::cout << "Time to solve in total: " << neededTime << " seconds" << std::endl;
   } else {
-    std::cout << "!!!! You have chosen an unsupported solver type !!!!" <<
-              std::endl;
+    std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
   }
 
   if (dim < 3) {
     // Print the solved Black Scholes Equation into a gnuplot file
     myBSHWSolver->printGrid(*alpha, 21, "solvedBSHW.gnuplot");
-    myBSHWSolver->printSparseGrid(*alpha,
-                                  "solvedBSHW_surplus.grid.adaptive.gnuplot", true);
-    myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.adaptive.gnuplot",
-                                  false);
+    myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_surplus.grid.adaptive.gnuplot", true);
+    myBSHWSolver->printSparseGrid(*alpha, "solvedBSHW_nodal.grid.adaptive.gnuplot", false);
     /*if (isLogSolve == true)
     {
       myBSSolver->printSparseGridExpTransform(*alpha, "solvedBSHW_surplus_cart.grid.gnuplot", true);
@@ -772,30 +743,29 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
     //    }
 
     // take the mean of the given domain
-    double point_i = (myBoundaries[i].rightBoundary +
-                      myBoundaries[i].leftBoundary) / 2.0;
+    double point_i = (myBoundaries[i].rightBoundary + myBoundaries[i].leftBoundary) / 2.0;
     point.push_back(point_i);
   }
 
   delete[] myBoundaries;
-  std::cout << "Optionprice at [" << point[0] << ", " << point[1] <<
-            "] (center of domain): " << myBSHWSolver->evaluatePoint(point,
-                *alpha) << std::endl << std::endl;
+  std::cout << "Optionprice at [" << point[0] << ", " << point[1]
+            << "] (center of domain): " << myBSHWSolver->evaluatePoint(point, *alpha) << std::endl
+            << std::endl;
 
   // for evaluation at strike
   double PB = 0;
   double PT = 0;
-  double tmp;
+
   int timeT = 12;
   int endtime = 32;
   double c = 0.06;
-  double rr = 0.05; // change the risk-free rate here!!
+  double rr = 0.05;  // change the risk-free rate here!!
 
   for (int k = (timeT + 1); k <= endtime; k++) {
-    PT = exp(0.04 * (timeT - k) + 0.04 * (1 - exp(-a * (k - timeT))) / a - pow(
-               sigma, 2.0) * pow((exp(-a * k) - exp(-a * timeT)),
-                                 2.0) * (exp(2 * a * timeT) - 1) / (4 * pow(a,
-                                     3.0)) - (1 - exp(-a * (k - timeT))) * rr / a);
+    PT = exp(0.04 * (timeT - k) + 0.04 * (1 - exp(-a * (k - timeT))) / a -
+             pow(sigma, 2.0) * pow((exp(-a * k) - exp(-a * timeT)), 2.0) *
+                 (exp(2 * a * timeT) - 1) / (4 * pow(a, 3.0)) -
+             (1 - exp(-a * (k - timeT))) * rr / a);
     PB = PB + c * PT;
   }
 
@@ -803,21 +773,15 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
   point_strike.push_back(PB);
   point_strike.push_back(rr);
 
-  std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1] <<
-            "] (at-the-money!!): "
-            << ::std::setprecision( 12 ) << myBSHWSolver->evaluatePoint(point_strike,
-                *alpha) << std::endl << std::endl;
+  std::cout << "Optionprice at [" << point_strike[0] << ", " << point_strike[1]
+            << "] (at-the-money!!): " << ::std::setprecision(12)
+            << myBSHWSolver->evaluatePoint(point_strike, *alpha) << std::endl
+            << std::endl;
 
   delete alpha;
   delete myBSHWSolver;
   delete myBoundingBox;
 }
-
-
-
-
-
-
 
 /**
  * Calls the writeHelp method in the BlackScholesHullWhiteSolver Object
@@ -826,113 +790,102 @@ void testBSHW_adaptive(size_t d, size_t l, double sigma, double a,
 void writeHelp() {
   std::stringstream mySStream;
 
-  mySStream <<
-            "Some instructions for the use of combing Hull White and Black Scholes Solver:"
+  mySStream << "Some instructions for the use of combing Hull White and Black Scholes Solver:"
             << std::endl;
-  mySStream << "------------------------------------------------------" <<
-            std::endl << std::endl;
+  mySStream << "------------------------------------------------------" << std::endl << std::endl;
   mySStream << "Available execution modes are:" << std::endl;
-  mySStream <<
-            "  CombineBSHW                   Combines Hull-White and Black-Scholes" <<
-            std::endl;
-  mySStream <<
-            "  CombineBSHW_adapt             Combines Hull-White and Black-Scholes," <<
-            std::endl;
-  mySStream <<
-            "                                adaptive version                      " <<
-            std::endl;
-  mySStream <<
-            "  CombineBSHW_adapt_subdomain   Combines Hull-White and Black-Scholes," <<
-            std::endl;
-  mySStream <<
-            "                                adaptive version with local restricted adaptivity"
+  mySStream << "  CombineBSHW                   Combines Hull-White and Black-Scholes" << std::endl;
+  mySStream << "  CombineBSHW_adapt             Combines Hull-White and Black-Scholes,"
+            << std::endl;
+  mySStream << "                                adaptive version                      "
+            << std::endl;
+  mySStream << "  CombineBSHW_adapt_subdomain   Combines Hull-White and Black-Scholes,"
+            << std::endl;
+  mySStream << "                                adaptive version with local restricted adaptivity"
             << std::endl;
 
   mySStream << "Execution modes descriptions:" << std::endl;
-  mySStream << "-----------------------------------------------------" <<
-            std::endl;
+  mySStream << "-----------------------------------------------------" << std::endl;
   mySStream << "CombineBSHW" << std::endl << "------" << std::endl;
   mySStream << "the following options must be specified:" << std::endl;
-  mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-  mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-  mySStream <<
-            "	value of sigma: sigma value-determine overall level of volatility for hull white"
+  mySStream << "  dim: the number of dimensions of Sparse Grid" << std::endl;
+  mySStream << "  level: number of levels within the Sparse Grid" << std::endl;
+  mySStream << "  value of sigma: sigma value-determine overall level of volatility for hull white"
             << std::endl;
-  mySStream << "	value of a: a" << std::endl;
-  mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" <<
-            std::endl;
-  mySStream << "	file_Boundaries: file that contains the bounding box" <<
-            std::endl;
-  mySStream << "	payoff_func: function for n-d payoff: std_euro_call, GMIB" <<
-            std::endl;
-  mySStream <<
-            "	simeSt: number of time steps of doing HW and BS when calling allternatively, default: 1"
+  mySStream << "  value of a: a" << std::endl;
+  mySStream << "  file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+  mySStream << "  file_Boundaries: file that contains the bounding box" << std::endl;
+  mySStream << "  payoff_func: function for n-d payoff: std_euro_call, GMIB" << std::endl;
+  mySStream << "  simeSt: number of time steps of doing HW and BS when calling "
+               "alternatively, default: 1"
             << std::endl;
-  mySStream << "	dt: timestep size" << std::endl;
-  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" <<
-            std::endl;
-  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-  mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-  mySStream << "	T: time to maturity" << std::endl;
-  mySStream << "	Strike: the strike" << std::endl;
-  mySStream <<
-            "	Coordinates: cart: cartisian coordinates; log: log coords, this is only related to Black-Scholes"
+  mySStream << "  dt: timestep size" << std::endl;
+  mySStream << "  CGIterations: Maxmimum number of iterations used in CG method" << std::endl;
+  mySStream << "  CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "  Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+  mySStream << "  T: time to maturity" << std::endl;
+  mySStream << "  Strike: the strike" << std::endl;
+  mySStream << "  Coordinates: cart: cartisian coordinates; log: log coords, this is only "
+               "related to Black-Scholes"
             << std::endl;
 
   mySStream << std::endl;
   mySStream << "Example:" << std::endl;
-  mySStream << "2 5 0.01 0.1 stoch.data  bound.data " << " std_euro_call " <<
-            "1.0 " << "0.01 " << "400 " << "0.000001 " << "ImEul " << "1.0 " << "0.3 " <<
-            "cart " << std::endl;
+  mySStream << "2 5 0.01 0.1 stoch.data  bound.data "
+            << " std_euro_call "
+            << "1.0 "
+            << "0.01 "
+            << "400 "
+            << "0.000001 "
+            << "ImEul "
+            << "1.0 "
+            << "0.3 "
+            << "cart " << std::endl;
   mySStream << std::endl;
 
-  mySStream << "CombineBSHW_adapt, CombineBSHW_adapt_subdomain" << std::endl <<
-            "------" << std::endl;
+  mySStream << "CombineBSHW_adapt, CombineBSHW_adapt_subdomain" << std::endl
+            << "------" << std::endl;
   mySStream << "the following options must be specified:" << std::endl;
-  mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-  mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-  mySStream <<
-            "	value of sigma: sigma value-determine overall level of volatility for hull white"
+  mySStream << "  dim: the number of dimensions of Sparse Grid" << std::endl;
+  mySStream << "  level: number of levels within the Sparse Grid" << std::endl;
+  mySStream << "  value of sigma: sigma value-determine overall level of volatility for hull white"
             << std::endl;
-  mySStream << "	value of a: a" << std::endl;
-  mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" <<
-            std::endl;
-  mySStream << "	file_Boundaries: file that contains the bounding box" <<
-            std::endl;
-  mySStream << "	payoff_func: function for n-d payoff: std_euro_call, GMIB" <<
-            std::endl;
-  mySStream <<
-            "	simeSt: number of time steps of doing HW and BS when calling allternatively, default: 1"
+  mySStream << "  value of a: a" << std::endl;
+  mySStream << "  file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+  mySStream << "  file_Boundaries: file that contains the bounding box" << std::endl;
+  mySStream << "  payoff_func: function for n-d payoff: std_euro_call, GMIB" << std::endl;
+  mySStream << "  simeSt: number of time steps of doing HW and BS when calling "
+               "allternatively, default: 1"
             << std::endl;
-  mySStream << "	dt: timestep size" << std::endl;
-  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" <<
-            std::endl;
-  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-  mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-  mySStream << "	T: time to maturity" << std::endl;
-  mySStream << "	Strike: the strike" << std::endl;
-  mySStream <<
-            "	Coordinates: cart: cartisian coordinates; log: log coords, this is only related to Black-Scholes"
+  mySStream << "  dt: timestep size" << std::endl;
+  mySStream << "  CGIterations: Maxmimum number of iterations used in CG method" << std::endl;
+  mySStream << "  CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "  Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+  mySStream << "  T: time to maturity" << std::endl;
+  mySStream << "  Strike: the strike" << std::endl;
+  mySStream << "  Coordinates: cart: cartisian coordinates; log: log coords, this is only "
+               "related to Black-Scholes"
             << std::endl;
-  mySStream << "	RefinementMode: classic or maxLevel" << std::endl;
-  mySStream << "	MaxRefinement Level: Max. Level for refinement" << std::endl;
-  mySStream <<
-            "	numAdaptRefinement: Number of adaptive refinements at the beginning" <<
-            std::endl;
-  mySStream <<
-            "	refinementThreshold: Threshold of point's surplus to refine point" <<
-            std::endl;
-  mySStream << "	adapt-mode during solving: none, coarsen, refine, coarsenNrefine"
-            << std::endl;
-  mySStream <<
-            "	Coarsening Threshold: Threshold of point's surplus to remove point" <<
-            std::endl;
+  mySStream << "  RefinementMode: classic or maxLevel" << std::endl;
+  mySStream << "  MaxRefinement Level: Max. Level for refinement" << std::endl;
+  mySStream << "  numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
+  mySStream << "  refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
+  mySStream << "  adapt-mode during solving: none, coarsen, refine, coarsenNrefine" << std::endl;
+  mySStream << "  Coarsening Threshold: Threshold of point's surplus to remove point" << std::endl;
 
   mySStream << std::endl;
   mySStream << "Example:" << std::endl;
-  mySStream << "2 5 0.01 0.1 stoch.data  bound.data " << " std_euro_call " <<
-            "1.0 " << "0.01 " << "400 " << "0.000001 " << "ImEul " << "1.0 " << "0.3 " <<
-            "cart " << "maxLevel 10 5 1e-10 coarsen 1e-6" << std::endl;
+  mySStream << "2 5 0.01 0.1 stoch.data  bound.data "
+            << " std_euro_call "
+            << "1.0 "
+            << "0.01 "
+            << "400 "
+            << "0.000001 "
+            << "ImEul "
+            << "1.0 "
+            << "0.3 "
+            << "cart "
+            << "maxLevel 10 5 1e-10 coarsen 1e-6" << std::endl;
   mySStream << std::endl;
 
   mySStream << std::endl;
@@ -986,25 +939,20 @@ int main(int argc, char* argv[]) {
       } else if (coordsType == "log") {
         coords = true;
       } else {
-        std::cout << "Unsupported coordinate option! cart or log are supported!" <<
-                  std::endl;
+        std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
         std::cout << std::endl << std::endl;
         writeHelp();
       }
 
-      testBSHW(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff,
-               atof(argv[9]), atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver,
-               atof(argv[14]), dStrike, coords);
+      testBSHW(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff, atoi(argv[9]),
+               atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver, atof(argv[14]), dStrike,
+               coords);
     }
 
-  }
-
-  else if (option == "CombineBSHW_adapt"
-           || option == "CombineBSHW_adapt_subdomain") {
+  } else if (option == "CombineBSHW_adapt" || option == "CombineBSHW_adapt_subdomain") {
     if (argc != 23) {
       writeHelp();
     } else {
-
       bool isNormalDist = false;
 
       if (option == "CombineBSHW_adapt_subdomain") {
@@ -1036,20 +984,16 @@ int main(int argc, char* argv[]) {
       } else if (coordsType == "log") {
         coords = true;
       } else {
-        std::cout << "Unsupported coordinate option! cart or log are supported!" <<
-                  std::endl;
+        std::cout << "Unsupported coordinate option! cart or log are supported!" << std::endl;
         std::cout << std::endl << std::endl;
         writeHelp();
       }
 
-
       refinementMode.assign(argv[17]);
       adaptSolveMode.assign(argv[21]);
 
-
       if (refinementMode != "maxLevel" && refinementMode != "classic") {
-        std::cout << "Unsupported refinement type! classic or maxLevel are supported!"
-                  << std::endl;
+        std::cout << "Unsupported refinement type! classic or maxLevel are supported!" << std::endl;
         std::cout << std::endl << std::endl;
         writeHelp();
         return 0;
@@ -1057,30 +1001,28 @@ int main(int argc, char* argv[]) {
 
       bool useAdaptSolve = false;
 
-      if (adaptSolveMode == "coarsen" || adaptSolveMode == "refine"
-          || adaptSolveMode == "coarsenNrefine") {
+      if (adaptSolveMode == "coarsen" || adaptSolveMode == "refine" ||
+          adaptSolveMode == "coarsenNrefine") {
         useAdaptSolve = true;
       } else if (adaptSolveMode == "none") {
         useAdaptSolve = false;
       } else {
-        std::cout <<
-                  "Unsupported adapt solve mode! none, coarsen, refine or coarsenNrefine are supported!"
+        std::cout << "Unsupported adapt solve mode! none, coarsen, refine or coarsenNrefine are "
+                     "supported!"
                   << std::endl;
         std::cout << std::endl << std::endl;
         writeHelp();
         return 0;
       }
 
-      testBSHW_adaptive(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound,
-                        payoff, atof(argv[9]), atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver,
-                        atof(argv[14]), dStrike, coords,
-                        refinementMode, -1, atoi(argv[18]), atoi(argv[19]), atof(argv[20]),
-                        useAdaptSolve, adaptSolveMode, atof(argv[22]), isNormalDist);
+      testBSHW_adaptive(atoi(argv[2]), atoi(argv[3]), sigma, a, fileStoch, fileBound, payoff,
+                        atoi(argv[9]), atof(argv[10]), atoi(argv[11]), atof(argv[12]), solver,
+                        atof(argv[14]), dStrike, coords, refinementMode, -1, atoi(argv[18]),
+                        atoi(argv[19]), atof(argv[20]), useAdaptSolve, adaptSolveMode,
+                        atof(argv[22]), isNormalDist);
     }
 
-  }
-
-  else {
+  } else {
     writeHelp();
   }
 

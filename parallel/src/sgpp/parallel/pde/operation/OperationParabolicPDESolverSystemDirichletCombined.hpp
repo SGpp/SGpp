@@ -13,7 +13,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -36,8 +35,8 @@ namespace parallel {
  * on on the boundaries the iterative solver (CG or BiCGSTAB) has only to take
  * inner grid points into account.
  */
-class OperationParabolicPDESolverSystemDirichletCombined : public
-  SGPP::solver::OperationParabolicPDESolverSystem {
+class OperationParabolicPDESolverSystemDirichletCombined
+    : public SGPP::solver::OperationParabolicPDESolverSystem {
  protected:
   /// Pointer to the alphas (ansatzfunctions' coefficients; inner points only)
   SGPP::base::DataVector* alpha_inner;
@@ -91,7 +90,7 @@ class OperationParabolicPDESolverSystemDirichletCombined : public
    * @param result reference to the SGPP::base::DataVector into which the result is written
    */
   virtual void applyMassMatrixLOperatorInner(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result) = 0;
+                                             SGPP::base::DataVector& result) = 0;
 
   /**
    * applies the both PDE's mass matrix and system matrix, on boundary grid only
@@ -100,7 +99,7 @@ class OperationParabolicPDESolverSystemDirichletCombined : public
    * @param result reference to the SGPP::base::DataVector into which the result is written
    */
   virtual void applyMassMatrixLOperatorBound(SGPP::base::DataVector& alpha,
-      SGPP::base::DataVector& result) = 0;
+                                             SGPP::base::DataVector& result) = 0;
 
   /**
    * sets the timestep coefficient for the combined inner operator
@@ -131,10 +130,10 @@ class OperationParabolicPDESolverSystemDirichletCombined : public
    * Multiplicates a vector with the matrix
    *
    * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
-   * @param result SGPP::base::DataVector into which the result of the space discretization operation is stored
+   * @param result SGPP::base::DataVector into which the result of the space discretization
+   * operation is stored
    */
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 
   /**
    * generates the right hand side of the system
@@ -145,8 +144,7 @@ class OperationParabolicPDESolverSystemDirichletCombined : public
 
   virtual SGPP::base::DataVector* getGridCoefficientsForCG();
 };
-
-}
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONPARABOLICPDESOLVERSYSTEMDIRICHLETCOMBINED_HPP */

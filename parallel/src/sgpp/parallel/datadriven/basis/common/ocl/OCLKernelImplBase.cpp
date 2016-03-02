@@ -8,7 +8,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
@@ -17,14 +16,13 @@ unsigned int get_ocl_local_size() {
   const char* ocl_local_size_env = getenv("SGPP_OCL_LOCAL_SIZE");
 
   if (ocl_local_size_env != NULL) {
-    unsigned int num_ocl_devices_envvalue = (unsigned int)(strtoul (
-        ocl_local_size_env, NULL, 0));
+    unsigned int num_ocl_devices_envvalue = (unsigned int)(strtoul(ocl_local_size_env, NULL, 0));
 
     if (num_ocl_devices_envvalue != 0) {
       return num_ocl_devices_envvalue;
     } else {
-      std::cout << "Ignoring value: \"" << ocl_local_size_env <<
-                "\" for SGPP_OCL_LOCAL_SIZE" << std::endl;
+      std::cout << "Ignoring value: \"" << ocl_local_size_env << "\" for SGPP_OCL_LOCAL_SIZE"
+                << std::endl;
     }
   }
 
@@ -39,15 +37,14 @@ OCLKernelImplBase::OCLKernelImplBase() {
   unsigned int max_number_ocl_devices = std::numeric_limits<unsigned int>::max();
 
   if (num_ocl_devices_env != NULL) {
-    unsigned int num_ocl_devices_limit = (unsigned int)(strtoul (
-                                           num_ocl_devices_env, NULL, 0));
+    unsigned int num_ocl_devices_limit = (unsigned int)(strtoul(num_ocl_devices_env, NULL, 0));
 
     if (num_ocl_devices_limit != 0) {
-      max_number_ocl_devices = std::min<unsigned int>(max_number_ocl_devices,
-                               num_ocl_devices_limit);
+      max_number_ocl_devices =
+          std::min<unsigned int>(max_number_ocl_devices, num_ocl_devices_limit);
     } else {
-      std::cout << "Ignoring value: \"" << num_ocl_devices_env <<
-                "\" for SGPP_NUM_OCL_DEVICES" << std::endl;
+      std::cout << "Ignoring value: \"" << num_ocl_devices_env << "\" for SGPP_NUM_OCL_DEVICES"
+                << std::endl;
     }
   } else {
     max_number_ocl_devices = 8;
@@ -57,33 +54,30 @@ OCLKernelImplBase::OCLKernelImplBase() {
   err = clGetPlatformIDs(0, NULL, &num_platforms);
 
   if (err != CL_SUCCESS) {
-    std::cout << "OCL Error: Unable to get number of OpenCL platforms. Error Code: "
-              << err << std::endl;
+    std::cout << "OCL Error: Unable to get number of OpenCL platforms. Error Code: " << err
+              << std::endl;
   }
 
-  std::cout << "OCL Info: " << num_platforms <<
-            " OpenCL Platforms have been found" << std::endl;
+  std::cout << "OCL Info: " << num_platforms << " OpenCL Platforms have been found" << std::endl;
 
   // get available platforms
   platform_ids = new cl_platform_id[num_platforms];
   err = clGetPlatformIDs(num_platforms, platform_ids, NULL);
 
   if (err != CL_SUCCESS) {
-    std::cout << "OCL Error: Unable to get Platform ID. Error Code: " << err <<
-              std::endl;
+    std::cout << "OCL Error: Unable to get Platform ID. Error Code: " << err << std::endl;
   }
 
   for (cl_uint ui = 0; ui < num_platforms; ui++) {
     char vendor_name[128] = {0};
-    err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR,
-                            128 * sizeof(char), vendor_name, NULL);
+    err = clGetPlatformInfo(platform_ids[ui], CL_PLATFORM_VENDOR, 128 * sizeof(char), vendor_name,
+                            NULL);
 
     if (CL_SUCCESS != err) {
       std::cout << "OCL Error: Can't get platform vendor!" << std::endl;
     } else {
       if (vendor_name != NULL) {
-        std::cout << "OCL Info: Platform " << ui << " vendor name: " << vendor_name <<
-                  std::endl;
+        std::cout << "OCL Info: Platform " << ui << " vendor name: " << vendor_name << std::endl;
       }
 
 #ifdef USEOCL_INTEL
@@ -125,16 +119,15 @@ OCLKernelImplBase::OCLKernelImplBase() {
 
   std::cout << std::endl;
 
-  // Find out how many devices there are
+// Find out how many devices there are
 #ifdef USEOCL_INTEL
 #ifdef USEOCL_MIC
   device_ids = new cl_device_id[max_number_ocl_devices];
-  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR,
-                       max_number_ocl_devices, device_ids, &num_devices);
+  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ACCELERATOR, max_number_ocl_devices, device_ids,
+                       &num_devices);
 
   if (num_devices == 0) {
-    std::cout << "OCL Error: NO Accelerator OpenCL devices have been found!" <<
-              std::endl;
+    std::cout << "OCL Error: NO Accelerator OpenCL devices have been found!" << std::endl;
   }
 
   // set max number of devices
@@ -151,8 +144,7 @@ OCLKernelImplBase::OCLKernelImplBase() {
 #endif
 
   if (err != CL_SUCCESS) {
-    std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err <<
-              std::endl;
+    std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
   }
 
   num_devices = 1;
@@ -160,8 +152,8 @@ OCLKernelImplBase::OCLKernelImplBase() {
 #endif
 #ifdef USEOCL_AMD
   device_ids = new cl_device_id[max_number_ocl_devices];
-  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices,
-                       device_ids, &num_devices);
+  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices, device_ids,
+                       &num_devices);
 
   if (num_devices == 0) {
     std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
@@ -179,14 +171,12 @@ OCLKernelImplBase::OCLKernelImplBase() {
 #endif
 
   if (err != CL_SUCCESS) {
-    std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err <<
-              std::endl;
+    std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
   }
 
 #endif
 #ifdef USEOCL_NVIDIA
-  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices,
-                       NULL, &num_devices);
+  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, max_number_ocl_devices, NULL, &num_devices);
 
   if (num_devices == 0) {
     std::cout << "OCL Error: NO GPU OpenCL devices have been found!" << std::endl;
@@ -198,17 +188,14 @@ OCLKernelImplBase::OCLKernelImplBase() {
   }
 
   device_ids = new cl_device_id[num_devices];
-  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids,
-                       NULL);
+  err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_GPU, num_devices, device_ids, NULL);
 
   if (err != CL_SUCCESS) {
-    std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err <<
-              std::endl;
+    std::cout << "OCL Error: Unable to get Device ID. Error Code: " << err << std::endl;
   }
 
 #endif
-  std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!"
-            << std::endl;
+  std::cout << "OCL Info: " << num_devices << " OpenCL devices have been found!" << std::endl;
 
   // allocate arrays
   command_queue = new cl_command_queue[num_devices];
@@ -248,28 +235,27 @@ OCLKernelImplBase::OCLKernelImplBase() {
   context = clCreateContext(0, num_devices, device_ids, NULL, NULL, &err);
 
   if (err != CL_SUCCESS) {
-    std::cout << "OCL Error: Failed to create OpenCL context! Error Code: " << err
-              << std::endl;
+    std::cout << "OCL Error: Failed to create OpenCL context! Error Code: " << err << std::endl;
   }
 
   // Creating the command queues
   for (size_t i = 0; i < num_devices; i++) {
 #ifdef USEOCL_CPU
-    command_queue[i] = clCreateCommandQueue(context, device_ids[i],
-                                            CL_QUEUE_PROFILING_ENABLE, &err);
+    command_queue[i] =
+        clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
 #else
-    command_queue[i] = clCreateCommandQueue(context, device_ids[i],
-                                            CL_QUEUE_PROFILING_ENABLE, &err);
+    command_queue[i] =
+        clCreateCommandQueue(context, device_ids[i], CL_QUEUE_PROFILING_ENABLE, &err);
 #endif
 
     if (err != CL_SUCCESS) {
-      std::cout << "OCL Error: Failed to create command queue! Error Code: " << err <<
-                std::endl;
+      std::cout << "OCL Error: Failed to create command queue! Error Code: " << err << std::endl;
     }
   }
 
-  std::cout << "OCL Info: Successfully initialized OpenCL (local workgroup size: "
-            << ocl_local_size << ")" << std::endl << std::endl;
+  std::cout << "OCL Info: Successfully initialized OpenCL (local workgroup size: " << ocl_local_size
+            << ")" << std::endl
+            << std::endl;
 }
 
 OCLKernelImplBase::~OCLKernelImplBase() {
@@ -371,9 +357,7 @@ void OCLKernelImplBase::releaseKernelsAndPrograms() {
   }
 }
 
-void OCLKernelImplBase::resetKernel() {
-  releaseGridBuffers();
-}
+void OCLKernelImplBase::resetKernel() { releaseGridBuffers(); }
 }
 }
 
