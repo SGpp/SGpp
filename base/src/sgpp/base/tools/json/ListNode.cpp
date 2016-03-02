@@ -15,9 +15,7 @@
 
 namespace json {
 
-ListNode::ListNode() :
-  list() {
-}
+ListNode::ListNode() : list() {}
 
 ListNode::ListNode(const ListNode& original) {
   for (auto& element : original.list) {
@@ -46,16 +44,14 @@ ListNode& ListNode::operator=(const ListNode& right) {
 
 Node& ListNode::operator=(const Node& right) {
   const ListNode& listNode = dynamic_cast<const ListNode&>(right);
-  this->operator =(listNode);
+  this->operator=(listNode);
   return *this;
 }
 
 void ListNode::parse(std::vector<Token>& stream) {
   list.clear();
 
-  enum class State {
-    ITEMVALUE, NEXT
-  };
+  enum class State { ITEMVALUE, NEXT };
 
   if (stream[0].type != TokenType::LBRACKET) {
     throw json_exception("expected \"[\"");
@@ -98,8 +94,7 @@ void ListNode::parse(std::vector<Token>& stream) {
         this->list.push_back(std::move(dictNode));
         state = State::NEXT;
       } else {
-        throw json_exception(stream[0],
-                             "expected list value type (string, id, list or dict)");
+        throw json_exception(stream[0], "expected list value type (string, id, list or dict)");
       }
     } else if (state == State::NEXT) {
       if (stream[0].type == TokenType::COMMA) {
@@ -117,9 +112,7 @@ void ListNode::parse(std::vector<Token>& stream) {
   throw json_exception("unexpected end-of-file");
 }
 
-Node& ListNode::operator[](size_t index) {
-  return *this->list[index];
-}
+Node& ListNode::operator[](size_t index) { return *this->list[index]; }
 
 void ListNode::serialize(std::ostream& outFile, size_t indentWidth) {
   outFile << "[";
@@ -138,9 +131,7 @@ void ListNode::serialize(std::ostream& outFile, size_t indentWidth) {
   outFile << "]";
 }
 
-size_t ListNode::size() {
-  return this->list.size();
-}
+size_t ListNode::size() { return this->list.size(); }
 
 void ListNode::addValue(std::unique_ptr<Node> node) {
   if (node->parent != nullptr) {
@@ -184,9 +175,9 @@ Node& ListNode::addIdValue(const std::string& value) {
 }
 
 // returns the list node to which the value was added
-Node& ListNode::addIdValue(const char* value) {
-  return this->addIdValue(std::string(value));
-}
+// cast internally to string, prevents the boolean overload from being used, if the value is a
+// string literal
+Node& ListNode::addIdValue(const char* value) { return this->addIdValue(std::string(value)); }
 
 // returns the list node to which the value was added
 Node& ListNode::addIdValue(const double& value) {

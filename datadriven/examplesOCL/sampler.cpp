@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = maxLevel;
-  gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
-  SLESolverConfigFinal.maxIterations_ = 10;
+  SLESolverConfigFinal.maxIterations_ = 1;
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
@@ -71,11 +71,11 @@ int main(int argc, char** argv) {
   // streaming ocl - 13
 
   //    sgpp::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
-  sgpp::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("singleDevice.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
   //  learner.learn(configuration, fileName);
   // learner.learnReference(fileName);

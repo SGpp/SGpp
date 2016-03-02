@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 #include <iostream>
 #include <string>
@@ -67,6 +68,30 @@ int main(int argc, char **argv) {
   sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
 
   sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+
+  size_t dotPos = scenarioFileName.find('.');
+  std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPos);
+  std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
+
+  if (collectStatistics) {
+    staticParameterTuner.setStatisticsFolder(statisticsFolderName);
+
+    if (boost::filesystem::exists(boost::filesystem::path(statisticsFolderName))) {
+      std::cerr << "error: statistics output directory already exists: " << statisticsFolderName
+                << std::endl;
+      return 1;
+    }
+
+    try {
+      if (boost::filesystem::create_directory(statisticsFolderName)) {
+        std::cout << "created output directory: " << statisticsFolderName << std::endl;
+      }
+    } catch (boost::filesystem::filesystem_error &e) {
+      std::cerr << "could not create statistics output folder: " << statisticsFolderName << ": "
+                << e.what() << std::endl;
+      return 1;
+    }
+  }
 
   if (kernelName.compare("StreamingOCLMultiPlatform") == 0) {
     staticParameterTuner.addParameter("KERNEL_USE_LOCAL_MEMORY", {"true", "false"});

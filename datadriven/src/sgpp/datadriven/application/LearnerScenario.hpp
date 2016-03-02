@@ -15,6 +15,8 @@
 namespace sgpp {
 namespace datadriven {
 
+enum class InternalPrecision { Float, Double };
+
 class TestsetConfiguration {
  public:
   bool hasTestDataset;
@@ -48,13 +50,13 @@ class LearnerScenario : public json::JSON {
 
   explicit LearnerScenario(std::string scenarioFileName);
 
-  LearnerScenario(std::string datasetFileName, double lambda,
+  LearnerScenario(std::string datasetFileName, double lambda, InternalPrecision internalPrecision,
                   base::RegularGridConfiguration gridConfig,
                   solver::SLESolverConfiguration SLESolverConfigRefine,
                   solver::SLESolverConfiguration SLESolverConfigFinal,
                   base::AdpativityConfiguration adaptConfig);
 
-  LearnerScenario(std::string datasetFileName, double lambda,
+  LearnerScenario(std::string datasetFileName, double lambda, InternalPrecision internalPrecision,
                   base::RegularGridConfiguration gridConfig,
                   solver::SLESolverConfiguration SLESolverConfigRefine,
                   solver::SLESolverConfiguration SLESolverConfigFinal,
@@ -68,6 +70,10 @@ class LearnerScenario : public json::JSON {
   void setLambda(double lambda);
 
   double getLambda();
+
+  void setInternalPrecision(InternalPrecision internalPrecision);
+
+  InternalPrecision getInternalPrecision();
 
   void setGridConfig(base::RegularGridConfiguration& gridConfig);
 

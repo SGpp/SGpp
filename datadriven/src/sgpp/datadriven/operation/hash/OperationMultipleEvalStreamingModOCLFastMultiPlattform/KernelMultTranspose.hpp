@@ -185,10 +185,10 @@ class KernelMultTranspose {
       clFinish(device->commandQueue);
 
       if (rangeSize > 0) {
-        size_t resultOffset =
-            kernelStartGrid / (cl_uint)gridBlockSize;  // based on work groups, cannot be
-                                                       // transmitted through
-                                                       // global_work_offset mechanism
+        //        size_t resultOffset =
+        //            kernelStartGrid / (cl_uint)gridBlockSize;  // based on work groups, cannot be
+        //                                                       // transmitted through
+        //                                                       // global_work_offset mechanism
 
         err = clSetKernelArg(kernelMultTranspose, 0, sizeof(cl_mem),
                              this->deviceLevelTranspose.getBuffer());
@@ -225,25 +225,26 @@ class KernelMultTranspose {
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &resultOffset);
+        //        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &resultOffset);
+        //        if (err != CL_SUCCESS) {
+        //          std::stringstream errorString;
+        //          errorString << "OCL Error: Failed to create kernel arguments for device " <<
+        //          std::endl;
+        //          throw base::operation_exception(errorString.str());
+        //        }
+        err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_uint), &sourceSize);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint), &sourceSize);
+        err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_uint), &kernelStartData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
           throw base::operation_exception(errorString.str());
         }
-        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelStartData);
-        if (err != CL_SUCCESS) {
-          std::stringstream errorString;
-          errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw base::operation_exception(errorString.str());
-        }
-        err = clSetKernelArg(kernelMultTranspose, 8, sizeof(cl_uint), &kernelEndData);
+        err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelEndData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
@@ -253,8 +254,11 @@ class KernelMultTranspose {
         cl_event clTiming;
 
         size_t threads = rangeSizeAfterBlocking * localSize;
-        err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, &kernelStartGrid,
-                                     &threads, &localSize, 0, nullptr, &clTiming);
+        //        err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1,
+        //        &kernelStartGrid,
+        //                                     &threads, &localSize, 0, nullptr, &clTiming);
+        err = clEnqueueNDRangeKernel(device->commandQueue, kernelMultTranspose, 1, 0, &threads,
+                                     &localSize, 0, nullptr, &clTiming);
 
         if (err != CL_SUCCESS) {
           std::stringstream errorString;

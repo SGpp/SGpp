@@ -23,6 +23,7 @@ LearnerScenario::LearnerScenario(std::string scenarioFileName)
 }
 
 LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
+                                 InternalPrecision internalPrecision,
                                  base::RegularGridConfiguration gridConfig,
                                  solver::SLESolverConfiguration SLESolverConfigRefine,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
@@ -30,6 +31,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
     : isInitialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
+  this->setInternalPrecision(internalPrecision);
   this->setGridConfig(gridConfig);
   this->setSolverConfigurationRefine(SLESolverConfigRefine);
   this->setSolverConfigurationFinal(SLESolverConfigFinal);
@@ -38,6 +40,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
 }
 
 LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
+                                 InternalPrecision internalPrecision,
                                  base::RegularGridConfiguration gridConfig,
                                  solver::SLESolverConfiguration SLESolverConfigRefine,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
@@ -46,6 +49,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
     : isInitialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
+  this->setInternalPrecision(internalPrecision);
   this->setGridConfig(gridConfig);
   this->setSolverConfigurationRefine(SLESolverConfigRefine);
   this->setSolverConfigurationFinal(SLESolverConfigFinal);
@@ -63,6 +67,25 @@ void LearnerScenario::setLambda(double lambda) { (*this).replaceIDAttr("lambda",
 
 double LearnerScenario::getLambda() { return (*this)["lambda"].getDouble(); }
 
+void LearnerScenario::setInternalPrecision(InternalPrecision internalPrecision) {
+  if (internalPrecision == InternalPrecision::Float) {
+    (*this).replaceIDAttr("INTERNAL_PRECISION", "float");
+  } else {
+    (*this).replaceIDAttr("INTERNAL_PRECISION", "double");
+  }
+}
+
+InternalPrecision LearnerScenario::getInternalPrecision() {
+  if ((*this)["INTERNAL_PRECISION"].get().compare("float") == 0) {
+    return InternalPrecision::Float;
+  } else if ((*this)["INTERNAL_PRECISION"].get().compare("double") == 0) {
+    return InternalPrecision::Double;
+  } else {
+    throw base::not_implemented_exception(
+        "error: learner does only support \"float\" and \"double\"");
+  }
+}
+
 void LearnerScenario::setGridConfig(base::RegularGridConfiguration& gridConfig) {
   (*this).replaceDictAttr("grid");
   (*this)["grid"].replaceIDAttr("boundaryLevel", static_cast<uint64_t>(gridConfig.boundaryLevel_));
@@ -72,7 +95,7 @@ void LearnerScenario::setGridConfig(base::RegularGridConfiguration& gridConfig) 
 
   if (gridConfig.type_ == base::GridType::Linear) {
     (*this)["grid"].replaceTextAttr("type", "Linear");
-  } else if (gridConfig.type_ == base::GridType::Linear) {
+  } else if (gridConfig.type_ == base::GridType::ModLinear) {
     (*this)["grid"].replaceTextAttr("type", "ModLinear");
   } else {
     throw base::not_implemented_exception(
@@ -110,6 +133,9 @@ void LearnerScenario::setSolverConfigurationRefine(
     (*this)["solverRefine"].replaceIDAttr("type", "CG");
   } else if (solverConfigRefine.type_ == solver::SLESolverType::BiCGSTAB) {
     (*this)["solverRefine"].replaceIDAttr("type", "BiCGSTAB");
+  } else {
+    throw base::not_implemented_exception(
+        "error: learner does not support the specified solver type");
   }
 }
 
@@ -118,10 +144,14 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationRefine() {
   solverConfigFinal.eps_ = (*this)["solverRefine"]["eps"].getDouble();
   solverConfigFinal.maxIterations_ = (*this)["solverRefine"]["maxIterations"].getUInt();
   solverConfigFinal.threshold_ = (*this)["solverRefine"]["threshold"].getDouble();
-  if ((*this)["solverRefine"]["type"].get().compare("CG")) {
+  std::string solverType = (*this)["solverRefine"]["type"].get();
+  if (solverType.compare("CG") == 0) {
     solverConfigFinal.type_ = solver::SLESolverType::CG;
-  } else if ((*this)["solverRefine"]["type"].get().compare("BiCGSTAB")) {
+  } else if (solverType.compare("BiCGSTAB") == 0) {
     solverConfigFinal.type_ = solver::SLESolverType::BiCGSTAB;
+  } else {
+    throw base::not_implemented_exception(
+        "error: learner does not support the specified solver type");
   }
   return solverConfigFinal;
 }
@@ -137,6 +167,9 @@ void LearnerScenario::setSolverConfigurationFinal(
     (*this)["solverFinal"].replaceIDAttr("type", "CG");
   } else if (solverConfigFinal.type_ == solver::SLESolverType::BiCGSTAB) {
     (*this)["solverFinal"].replaceIDAttr("type", "BiCGSTAB");
+  } else {
+    throw base::not_implemented_exception(
+        "error: learner does not support the specified solver type");
   }
 }
 
@@ -145,10 +178,14 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
   solverConfigFinal.eps_ = (*this)["solverFinal"]["eps"].getDouble();
   solverConfigFinal.maxIterations_ = (*this)["solverFinal"]["maxIterations"].getUInt();
   solverConfigFinal.threshold_ = (*this)["solverFinal"]["threshold"].getDouble();
-  if ((*this)["solverFinal"]["type"].get().compare("CG")) {
+  std::string solverType = (*this)["solverFinal"]["type"].get();
+  if (solverType.compare("CG") == 0) {
     solverConfigFinal.type_ = solver::SLESolverType::CG;
-  } else if ((*this)["solverFinal"]["type"].get().compare("BiCGSTAB")) {
+  } else if (solverType.compare("BiCGSTAB") == 0) {
     solverConfigFinal.type_ = solver::SLESolverType::BiCGSTAB;
+  } else {
+    throw base::not_implemented_exception(
+        "error: learner does not support the specified solver type");
   }
   return solverConfigFinal;
 }

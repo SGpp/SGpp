@@ -139,7 +139,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
 
   std::string generateSource() {
     if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
-      return this->reuseSource("StreamingOCLMultiPlatform_mult.cl");
+      return this->reuseSource("StreamingModOCLFastMultiPlatform_mult.cl");
     }
 
     std::stringstream sourceStream;
@@ -297,7 +297,7 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
     sourceStream << "}" << std::endl;
 
     if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-      this->writeSource("StreamingOCLMultiPlatform_mult.cl", sourceStream.str());
+      this->writeSource("StreamingModOCLFastMultiPlatform_mult.cl", sourceStream.str());
     }
 
     return sourceStream.str();

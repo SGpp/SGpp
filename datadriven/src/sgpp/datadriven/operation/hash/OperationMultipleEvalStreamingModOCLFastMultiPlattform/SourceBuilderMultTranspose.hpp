@@ -154,7 +154,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
 
   std::string generateSource() {
     if (kernelConfiguration["REUSE_SOURCE"].getBool()) {
-      return this->reuseSource("StreamingOCLMultiPlatform_multTrans.cl");
+      return this->reuseSource("StreamingModOCLFastMultiPlatform_multTrans.cl");
     }
 
     size_t localWorkgroupSize = kernelConfiguration["LOCAL_SIZE"].getUInt();
@@ -183,7 +183,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
                  << std::endl;
     sourceStream << "                  __global       " << this->floatType() << "* ptrResult,"
                  << std::endl;
-    sourceStream << "                  uint resultOffset," << std::endl;
+    //    sourceStream << "                  uint resultOffset," << std::endl;
     sourceStream << "                  uint sourceSize," << std::endl;
     sourceStream << "                  uint start_data," << std::endl;
     sourceStream << "                  uint end_data) {" << std::endl;
@@ -191,8 +191,9 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     sourceStream << this->indent[0] << "int globalIdx = get_global_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int groupIdx = get_group_id(0);" << std::endl;
     sourceStream << this->indent[0] << "int localIdx = get_local_id(0);" << std::endl;
-    sourceStream << this->indent[0] << "int assignedComponentBase = resultOffset + groupIdx;"
-                 << std::endl;
+    sourceStream << this->indent[0] << "int assignedComponentBase = groupIdx;" << std::endl;
+    //    sourceStream << this->indent[0] << "int assignedComponentBase = resultOffset + groupIdx;"
+    //                 << std::endl;
     sourceStream << std::endl;
 
     // array for local reduction
@@ -315,7 +316,7 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<real_typ
     sourceStream << "}" << std::endl;
 
     if (kernelConfiguration["WRITE_SOURCE"].getBool()) {
-      this->writeSource("StreamingOCLMultiPlatform_multTrans.cl", sourceStream.str());
+      this->writeSource("StreamingModOCLFastMultiPlatform_multTrans.cl", sourceStream.str());
     }
 
     return sourceStream.str();
