@@ -10,13 +10,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(
-  SGPP::base::GridStorage* storage,
-  SGPP::base::DataVector& lambda) : storage(storage) {
+    SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda)
+    : storage(storage) {
   this->lambda = new SGPP::base::DataVector(lambda);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
   this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
@@ -30,7 +29,8 @@ OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(
 }
 
 OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(
-  SGPP::base::GridStorage* storage) : storage(storage) {
+    SGPP::base::GridStorage* storage)
+    : storage(storage) {
   this->lambda = new base::DataVector(storage->getDimension());
   this->lambda->setAll(1.0);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
@@ -44,7 +44,6 @@ OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(
   storage->getLevelForIntegral(*(this->level_int_));
 }
 
-
 OperationLaplaceVectorizedLinearOCL::~OperationLaplaceVectorizedLinearOCL() {
   delete this->level_;
   delete this->level_int_;
@@ -55,7 +54,7 @@ OperationLaplaceVectorizedLinearOCL::~OperationLaplaceVectorizedLinearOCL() {
 }
 
 void OperationLaplaceVectorizedLinearOCL::mult(SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result) {
+                                               SGPP::base::DataVector& result) {
   result.setAll(0.0);
 
   // fill q array
@@ -65,17 +64,10 @@ void OperationLaplaceVectorizedLinearOCL::mult(SGPP::base::DataVector& alpha,
     lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
   }
 
-  this->OCLPDEKernelsHandle.
-  RunOCLKernelLaplaceInner(alpha, result, lcl_q, lcl_q_inv,
-                           this->level_->getPointer(),
-                           this->index_->getPointer(),
-                           this->level_int_->getPointer(),
-                           lambda->getPointer(),
-                           storage->getSize(),
-                           storage->getDimension(),
-                           storage);
+  this->OCLPDEKernelsHandle.RunOCLKernelLaplaceInner(
+      alpha, result, lcl_q, lcl_q_inv, this->level_->getPointer(), this->index_->getPointer(),
+      this->level_int_->getPointer(), lambda->getPointer(), storage->getSize(),
+      storage->getDimension(), storage);
 }
-
 }
-
 }

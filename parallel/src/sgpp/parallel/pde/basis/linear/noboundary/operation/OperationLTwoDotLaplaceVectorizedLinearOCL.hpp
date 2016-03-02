@@ -13,16 +13,15 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace SGPP {
 namespace parallel {
 
 /**
- * Implementation for linear functions of LTwoDotLaplace Operation, linear grids without boundaries using OpenCL
+ * Implementation for linear functions of LTwoDotLaplace Operation, linear grids without boundaries
+ * using OpenCL
  *
  */
-class OperationLTwoDotLaplaceVectorizedLinearOCL: public
-  OperationParabolicPDEMatrixCombined {
+class OperationLTwoDotLaplaceVectorizedLinearOCL : public OperationParabolicPDEMatrixCombined {
  private:
   SGPP::base::GridStorage* storage;
   SGPP::base::DataMatrix* level_;
@@ -32,7 +31,7 @@ class OperationLTwoDotLaplaceVectorizedLinearOCL: public
   double* lcl_q_inv;
   SGPP::base::DataVector* lambda;
 
-  OCLPDEKernels OCLPDEKernelsHandle ;
+  OCLPDEKernels OCLPDEKernelsHandle;
   size_t padding_size;
   size_t sizepad;
   double* subresult;
@@ -45,27 +44,23 @@ class OperationLTwoDotLaplaceVectorizedLinearOCL: public
    * @param lambda Vector which contains pre-factors for every dimension of the operator
    */
   OperationLTwoDotLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage,
-      SGPP::base::DataVector& lambda);
+                                             SGPP::base::DataVector& lambda);
 
   /**
    * Construtor of OperationLTwoDotLaplaceVectorizedLinearOCL
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  OperationLTwoDotLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage);
+  explicit OperationLTwoDotLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~OperationLTwoDotLaplaceVectorizedLinearOCL();
 
-  virtual void mult(SGPP::base::DataVector& alpha,
-                    SGPP::base::DataVector& result);
-
+  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
 };
-
-}
-
-}
+}  // namespace parallel
+}  // namespace SGPP
 
 #endif /* OPERATIONLTWODOTLAPLACEVECTORIZEDLINEAROCL_HPP */

@@ -99,7 +99,7 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       //      double value = std::stod(&(serializedVector[i]), &next);
       double value = std::atof(&(serializedVector[i]));
 #else
-      float value = std::stof(&(serializedVector[i]), &next);
+      float value = std::atof(&(serializedVector[i]));
 #endif
       v.append(value);
       state = PARSER_STATE::COMMAEND;
@@ -287,10 +287,10 @@ DataVector& DataVector::operator=(const DataVector& vec) {
   }
 
   if (size != vec.size) {
-    throw SGPP::base::data_exception("DataVector::add : Dimensions do not match");
-    //        delete[] data;
-    //        size = vec.size;
-    //        this->data = new float_t[size];
+    // throw SGPP::base::data_exception("DataVector::add : Dimensions do not match");
+    delete[] data;
+    size = vec.size;
+    this->data = new float_t[size];
   }
 
   std::memcpy(this->data, vec.data, size * sizeof(float_t));

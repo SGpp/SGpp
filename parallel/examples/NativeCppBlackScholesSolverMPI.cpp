@@ -12,12 +12,13 @@
 #include <sgpp_datadriven.hpp>
 #include <sgpp_mpi.hpp>
 
+#include <stdlib.h>
 #include <iostream>
 #include <string>
-#include <stdlib.h>
 #include <fstream>
 #include <iomanip>
 #include <cmath>
+#include <vector>
 
 std::string tFileEvalCuboid = "evalCuboid.MPI.data";
 std::string tFileEvalCuboidValues = "evalCuboidValues.MPI.data";
@@ -34,8 +35,7 @@ std::string tFileEvalCuboidValues = "evalCuboidValues.MPI.data";
  * after creating a screen.
  */
 void writeHelp() {
-  SGPP::parallel::BlackScholesSolverMPI* myBSSolver = new
-  SGPP::parallel::BlackScholesSolverMPI();
+  SGPP::parallel::BlackScholesSolverMPI* myBSSolver = new SGPP::parallel::BlackScholesSolverMPI();
 
   myBSSolver->initScreen();
 
@@ -43,66 +43,45 @@ void writeHelp() {
 
   std::stringstream mySStream;
 
-  mySStream << "Some instructions for the use of Black Scholes Solver:" <<
-            std::endl;
-  mySStream << "------------------------------------------------------" <<
-            std::endl << std::endl;
+  mySStream << "Some instructions for the use of Black Scholes Solver:" << std::endl;
+  mySStream << "------------------------------------------------------" << std::endl << std::endl;
   mySStream << "Available execution modes are:" << std::endl;
-  mySStream << "  solveNDanalyze      same as solveND, but the option is" <<
-            std::endl;
-  mySStream << "                      solved for several regular grids with" <<
-            std::endl;
-  mySStream << "                      different numbers of levels" << std::endl <<
-            std::endl;
-  mySStream << "  solveNDadaptSurplus Solves an European Call/Up option" <<
-            std::endl;
+  mySStream << "  solveNDanalyze      same as solveND, but the option is" << std::endl;
+  mySStream << "                      solved for several regular grids with" << std::endl;
+  mySStream << "                      different numbers of levels" << std::endl << std::endl;
+  mySStream << "  solveNDadaptSurplus Solves an European Call/Up option" << std::endl;
   mySStream << "                      on a refined grid based on" << std::endl;
-  mySStream << "                      the hierarchical surplus" << std::endl <<
-            std::endl;
+  mySStream << "                      the hierarchical surplus" << std::endl << std::endl;
   mySStream << "  solveNDadaptSurplusSubDomain   Same as above but" << std::endl;
-  mySStream << "						a normal distribution is used" << std::endl;
-  mySStream << "						to do refinement just near the strike!" << std::endl <<
-            std::endl;
+  mySStream << "            a normal distribution is used" << std::endl;
+  mySStream << "            to do refinement just near the strike!" << std::endl << std::endl;
 
   mySStream << "Several files are needed to specify inputs:" << std::endl;
-  mySStream << "-----------------------------------------------------" <<
-            std::endl;
-  mySStream << "file_Boundaries:  this file contains the grid's bounding box" <<
-            std::endl;
-  mySStream << "                  for every dimension this file contains a" <<
-            std::endl;
+  mySStream << "-----------------------------------------------------" << std::endl;
+  mySStream << "file_Boundaries:  this file contains the grid's bounding box" << std::endl;
+  mySStream << "                  for every dimension this file contains a" << std::endl;
   mySStream << "                  tuple with the boundaries." << std::endl;
   mySStream << "Example (3 dimensions):" << std::endl;
   mySStream << "                  0.0 2.5" << std::endl;
   mySStream << "                  0.0 2.5" << std::endl;
   mySStream << "                  0.0 2.5" << std::endl << std::endl << std::endl;
 
-  mySStream << "file_Stochdata:   this file contains the option's asset's" <<
-            std::endl;
-  mySStream << "                  expected values, standard deviations and" <<
-            std::endl;
-  mySStream << "                  correlations. The i-th line contains" <<
-            std::endl;
+  mySStream << "file_Stochdata:   this file contains the option's asset's" << std::endl;
+  mySStream << "                  expected values, standard deviations and" << std::endl;
+  mySStream << "                  correlations. The i-th line contains" << std::endl;
   mySStream << "                  followning data:" << std::endl;
   mySStream << "                  mu_i sigma_i rho_i_0 ... rhi_i_d" << std::endl;
   mySStream << "Example (3 dimensions):" << std::endl;
   mySStream << "                  0.05 0.4 1.0 0.1 0.2" << std::endl;
   mySStream << "                  0.05 0.5 0.1 1.0 0.3" << std::endl;
-  mySStream << "                  0.05 0.6 0.2 0.3 1.0" << std::endl << std::endl
-            << std::endl;
+  mySStream << "                  0.05 0.6 0.2 0.3 1.0" << std::endl << std::endl << std::endl;
 
-  mySStream << "file_analyze:     this file contains the options for" <<
-            std::endl;
-  mySStream << "                  the analyzing runs. This file contains" <<
-            std::endl;
-  mySStream << "                  two parts: The first lines is the " <<
-            std::endl;
-  mySStream << "                  evaluation cuboid as bounding box. " <<
-            std::endl;
-  mySStream << "                  The second one is the number of points" <<
-            std::endl;
-  mySStream << "                  in every dimension in the evaluation" <<
-            std::endl;
+  mySStream << "file_analyze:     this file contains the options for" << std::endl;
+  mySStream << "                  the analyzing runs. This file contains" << std::endl;
+  mySStream << "                  two parts: The first lines is the " << std::endl;
+  mySStream << "                  evaluation cuboid as bounding box. " << std::endl;
+  mySStream << "                  The second one is the number of points" << std::endl;
+  mySStream << "                  in every dimension in the evaluation" << std::endl;
   mySStream << "                  cuboid." << std::endl;
   mySStream << "Example (3 dimensions):" << std::endl;
   mySStream << "                  0.0 1.0" << std::endl;
@@ -111,95 +90,81 @@ void writeHelp() {
   mySStream << "                  20" << std::endl << std::endl << std::endl;
 
   mySStream << "Execution modes descriptions:" << std::endl;
-  mySStream << "-----------------------------------------------------" <<
-            std::endl;
+  mySStream << "-----------------------------------------------------" << std::endl;
   mySStream << "solveNDanalyze" << std::endl << "------" << std::endl;
   mySStream << "the following options must be specified:" << std::endl;
-  mySStream <<
-            "	Coordinates: cart: cartisian coordinates; log: log coords; PAT principal axis transform"
+  mySStream << "  Coordinates: cart: cartisian coordinates; log: log coords; PAT principal "
+               "axis transform"
             << std::endl;
-  mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-  mySStream << "	level_start: number of levels within the Sparse Grid (start)" <<
-            std::endl;
-  mySStream << "	level_end: number of levels within the Sparse Grid (end)" <<
-            std::endl;
-  mySStream << "	file_Boundaries: file that contains the bounding box" <<
-            std::endl;
-  mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" <<
-            std::endl;
-  mySStream << "	Strikes: the strike" << std::endl;
-  mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" <<
-            std::endl;
-  mySStream << "	r: the riskfree rate" << std::endl;
-  mySStream << "	T: time to maturity" << std::endl;
-  mySStream << "	dT: timestep size" << std::endl;
-  mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" <<
-            std::endl;
-  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-  mySStream << "	file_analyze: file containing the analyzing options" <<
-            std::endl;
+  mySStream << "  dim: the number of dimensions of Sparse Grid" << std::endl;
+  mySStream << "  level_start: number of levels within the Sparse Grid (start)" << std::endl;
+  mySStream << "  level_end: number of levels within the Sparse Grid (end)" << std::endl;
+  mySStream << "  file_Boundaries: file that contains the bounding box" << std::endl;
+  mySStream << "  file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+  mySStream << "  Strikes: the strike" << std::endl;
+  mySStream << "  payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
+  mySStream << "  r: the riskfree rate" << std::endl;
+  mySStream << "  T: time to maturity" << std::endl;
+  mySStream << "  dT: timestep size" << std::endl;
+  mySStream << "  Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+  mySStream << "  CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << "  CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "  file_analyze: file containing the analyzing options" << std::endl;
   mySStream << std::endl;
   mySStream << "Example:" << std::endl;
-  mySStream << "cart 3 2 5 " << "bound.data stoch.data 1.0 std_euro_call " <<
-            "0.05 " << "1.0 " << "0.01 ImEul " << "400 " << "0.000001 anal.data" <<
-            std::endl;
+  mySStream << "cart 3 2 5 "
+            << "bound.data stoch.data 1.0 std_euro_call "
+            << "0.05 "
+            << "1.0 "
+            << "0.01 ImEul "
+            << "400 "
+            << "0.000001 anal.data" << std::endl;
   mySStream << std::endl;
-  mySStream << "Remark: This test generates following files (dim<=2):" <<
-            std::endl;
-  mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-  mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+  mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+  mySStream << "  payoff.gnuplot: the start condition" << std::endl;
+  mySStream << "  solvedBS.gnuplot: the numerical solution" << std::endl;
   mySStream << "For all cases following files are generated:" << std::endl;
-  mySStream << "	EvalCuboidPoints.data: containing the evaluation" << std::endl;
-  mySStream << "		cuboid" << std::endl;
-  mySStream << "	HighLevelOptionValue.data: containing the option's" << std::endl;
-  mySStream << "		for the highest leveled grid." << std::endl;
+  mySStream << "  EvalCuboidPoints.data: containing the evaluation" << std::endl;
+  mySStream << "    cuboid" << std::endl;
+  mySStream << "  HighLevelOptionValue.data: containing the option's" << std::endl;
+  mySStream << "    for the highest leveled grid." << std::endl;
   mySStream << std::endl << std::endl;
 
-  mySStream << "solveNDadaptSurplus/solveNDadaptSurplusSubDomain" << std::endl <<
-            "------" << std::endl;
+  mySStream << "solveNDadaptSurplus/solveNDadaptSurplusSubDomain" << std::endl
+            << "------" << std::endl;
   mySStream << "the following options must be specified:" << std::endl;
-  mySStream << "	Coordinates: cart: cartisian coordinates; log: log coords" <<
-            std::endl;
-  mySStream << "	dim: the number of dimensions of Sparse Grid" << std::endl;
-  mySStream << "	level: number of levels within the Sparse Grid" << std::endl;
-  mySStream << "	file_Boundaries: file that contains the bounding box" <<
-            std::endl;
-  mySStream << "	file_Stochdata: file with the asset's mu, sigma, rho" <<
-            std::endl;
-  mySStream << "	Strike: the strike" << std::endl;
-  mySStream << "	payoff_func: function for n-d payoff: std_euro_{call|put}" <<
-            std::endl;
-  mySStream << "	r: the riskfree rate" << std::endl;
-  mySStream << "	T: time to maturity" << std::endl;
-  mySStream << "	dT: timestep size" << std::endl;
-  mySStream << "	Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
-  mySStream << "	CGIterations: Maxmimum number of iterations used in CG mehtod" <<
-            std::endl;
-  mySStream << "	CGEpsilon: Epsilon used in CG" << std::endl;
-  mySStream << "	RefinementMode: classic or maxLevel" << std::endl;
-  mySStream << "	MaxRefinement Level: Max. Level for refinement" << std::endl;
-  mySStream <<
-            "	numAdaptRefinement: Number of adaptive refinements at the beginning" <<
-            std::endl;
-  mySStream <<
-            "	refinementThreshold: Threshold of point's surplus to refine point" <<
-            std::endl;
-  mySStream << "	adapt-mode during solving: none, coarsen, refine, coarsenNrefine"
-            << std::endl;
-  mySStream <<
-            "	Coarsening Threshold: Threshold of point's surplus to remove point" <<
-            std::endl;
+  mySStream << "  Coordinates: cart: cartisian coordinates; log: log coords" << std::endl;
+  mySStream << "  dim: the number of dimensions of Sparse Grid" << std::endl;
+  mySStream << "  level: number of levels within the Sparse Grid" << std::endl;
+  mySStream << "  file_Boundaries: file that contains the bounding box" << std::endl;
+  mySStream << "  file_Stochdata: file with the asset's mu, sigma, rho" << std::endl;
+  mySStream << "  Strike: the strike" << std::endl;
+  mySStream << "  payoff_func: function for n-d payoff: std_euro_{call|put}" << std::endl;
+  mySStream << "  r: the riskfree rate" << std::endl;
+  mySStream << "  T: time to maturity" << std::endl;
+  mySStream << "  dT: timestep size" << std::endl;
+  mySStream << "  Solver: the solver to use: ExEul, ImEul or CrNic" << std::endl;
+  mySStream << "  CGIterations: Maxmimum number of iterations used in CG mehtod" << std::endl;
+  mySStream << "  CGEpsilon: Epsilon used in CG" << std::endl;
+  mySStream << "  RefinementMode: classic or maxLevel" << std::endl;
+  mySStream << "  MaxRefinement Level: Max. Level for refinement" << std::endl;
+  mySStream << "  numAdaptRefinement: Number of adaptive refinements at the beginning" << std::endl;
+  mySStream << "  refinementThreshold: Threshold of point's surplus to refine point" << std::endl;
+  mySStream << "  adapt-mode during solving: none, coarsen, refine, coarsenNrefine" << std::endl;
+  mySStream << "  Coarsening Threshold: Threshold of point's surplus to remove point" << std::endl;
   mySStream << std::endl;
   mySStream << "Example:" << std::endl;
-  mySStream << "cart 3 5 " << "bound.data stoch.data 1.0 std_euro_call " <<
-            "0.05 " << "1.0 " << "0.01 ImEul " << "400 " <<
-            "0.000001 classic 0 5 1e-10 coarsen 1e-6" << std::endl;
+  mySStream << "cart 3 5 "
+            << "bound.data stoch.data 1.0 std_euro_call "
+            << "0.05 "
+            << "1.0 "
+            << "0.01 ImEul "
+            << "400 "
+            << "0.000001 classic 0 5 1e-10 coarsen 1e-6" << std::endl;
   mySStream << std::endl;
-  mySStream << "Remark: This test generates following files (dim<=2):" <<
-            std::endl;
-  mySStream << "	payoff.gnuplot: the start condition" << std::endl;
-  mySStream << "	solvedBS.gnuplot: the numerical solution" << std::endl;
+  mySStream << "Remark: This test generates following files (dim<=2):" << std::endl;
+  mySStream << "  payoff.gnuplot: the start condition" << std::endl;
+  mySStream << "  solvedBS.gnuplot: the numerical solution" << std::endl;
   mySStream << std::endl << std::endl;
 
   mySStream << std::endl << std::endl;
@@ -218,9 +183,8 @@ void writeHelp() {
  *
  * @return returns 0 if the file was successfully read, otherwise -1
  */
-int readStochasticData(std::string tFile, size_t numAssets,
-                       SGPP::base::DataVector& mu, SGPP::base::DataVector& sigma,
-                       SGPP::base::DataMatrix& rho) {
+int readStochasticData(std::string tFile, size_t numAssets, SGPP::base::DataVector& mu,
+                       SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho) {
   std::fstream file;
   double cur_mu;
   double cur_sigma;
@@ -245,8 +209,7 @@ int readStochasticData(std::string tFile, size_t numAssets,
   file.close();
 
   if (t < ((numAssets * numAssets) + (2 * numAssets))) {
-    std::cout << "Invalid stoch file: " << tFile << " Last Value:" << test <<
-              std::endl;
+    std::cout << "Invalid stoch file: " << tFile << " Last Value:" << test << std::endl;
     return -1;
   }
 
@@ -303,8 +266,7 @@ int readBoudingBoxData(std::string tFile, size_t numAssets,
   file.close();
 
   if (j < (numAssets * 2)) {
-    std::cout << "Invalid boundary file: " << tFile << " Last Value:" << test <<
-              std::endl;
+    std::cout << "Invalid boundary file: " << tFile << " Last Value:" << test << std::endl;
     return -1;
   }
 
@@ -360,13 +322,11 @@ int readAnalyzeData(std::string tFile, size_t numAssets,
   file.close();
 
   if (j < ((numAssets * 2) + 1)) {
-    std::cout << "Invalid analyze file: " << tFile << " Last Value:" << test <<
-              std::endl;
+    std::cout << "Invalid analyze file: " << tFile << " Last Value:" << test << std::endl;
     return -1;
   }
 
   file.open(tFile.c_str());
-
 
   for (size_t i = 0; i < numAssets; i++) {
     file >> cur_left;
@@ -393,8 +353,7 @@ int readAnalyzeData(std::string tFile, size_t numAssets,
  * @param tFile file that contains the cuboid
  * @param dim the dimensions of cuboid
  */
-int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile,
-                        size_t dim) {
+int readEvalutionCuboid(SGPP::base::DataMatrix& cuboid, std::string tFile, size_t dim) {
   std::fstream file;
   double cur_coord;
 
@@ -508,7 +467,7 @@ int writeDataMatrix(SGPP::base::DataMatrix& data, std::string tFile) {
 
   for (size_t i = 0; i < data.getNrows(); i++) {
     for (size_t j = 0; j < data.getNcols(); j++) {
-      file << std::scientific << std::setprecision( 16 ) << data.get(i, j) << " ";
+      file << std::scientific << std::setprecision(16) << data.get(i, j) << " ";
     }
 
     file << std::endl;
@@ -518,7 +477,6 @@ int writeDataMatrix(SGPP::base::DataMatrix& data, std::string tFile) {
 
   return 0;
 }
-
 
 /**
  * Writes a SGPP::base::DataVector into a file
@@ -538,9 +496,7 @@ int writeDataVector(SGPP::base::DataVector& data, std::string tFile) {
   }
 
   for (size_t i = 0; i < data.getSize(); i++) {
-
-    file << std::scientific << std::setprecision( 16 ) << data.get(
-           i) << " " << std::endl;
+    file << std::scientific << std::setprecision(16) << data.get(i) << " " << std::endl;
   }
 
   file.close();
@@ -563,13 +519,13 @@ int writeDataVector(SGPP::base::DataVector& data, std::string tFile) {
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
- * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the
+ * possibilities
  * @param fileAnalyze filename of the file that contains the analyze data
  * @param coordsType set the type of coordinates that should be used: cart, log, PAT
  */
-void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
-                             std::string fileStoch, std::string fileBound, double dStrike,
-                             std::string payoffType,
+void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l, std::string fileStoch,
+                             std::string fileBound, double dStrike, std::string payoffType,
                              double riskfree, size_t timeSt, double dt, size_t CGIt, double CGeps,
                              std::string Solver, std::string fileAnalyze, std::string coordsType) {
   size_t dim = d;
@@ -623,21 +579,19 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
   }
 
   for (size_t i = start_l; i <= end_l; i++) {
-    int level = (int)i;
+    int level = static_cast<int>(i);
 
     // Reset Solve Time
     myBSSolver->resetSolveTime();
 
     if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
-      SGPP::base::DimensionBoundary* myBoundaries = new
-      SGPP::base::DimensionBoundary[dim];
+      SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
       if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
         return;
       }
 
-      SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim,
-          myBoundaries);
+      SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
       delete[] myBoundaries;
 
       // Construct a grid
@@ -647,43 +601,40 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
       // in first iteration -> calculate the evaluation points
       if (i == start_l) {
         size_t points = 0;
-        SGPP::base::DimensionBoundary* myEvalBoundaries = new
-        SGPP::base::DimensionBoundary[dim];
+        SGPP::base::DimensionBoundary* myEvalBoundaries = new SGPP::base::DimensionBoundary[dim];
 
         if (readAnalyzeData(fileAnalyze, dim, myEvalBoundaries, points) != 0) {
           return;
         }
 
-        SGPP::base::BoundingBox* myEvalBoundingBox = new SGPP::base::BoundingBox(dim,
-            myEvalBoundaries);
+        SGPP::base::BoundingBox* myEvalBoundingBox =
+            new SGPP::base::BoundingBox(dim, myEvalBoundaries);
         delete[] myEvalBoundaries;
 
-        SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new
-        SGPP::base::EvalCuboidGenerator();
+        SGPP::base::EvalCuboidGenerator* myEvalCuboidGen = new SGPP::base::EvalCuboidGenerator();
 
         myEvalCuboidGen->getEvaluationCuboid(EvalPoints, *myEvalBoundingBox, points);
         writeDataMatrix(EvalPoints, tFileEvalCuboid);
 
-        std::cout <<
-                  "=====================================================================" <<
-                  std::endl;
-        std::cout <<
-                  "=====================================================================" <<
-                  std::endl << std::endl;
+        std::cout << "====================================================================="
+                  << std::endl;
+        std::cout << "====================================================================="
+                  << std::endl
+                  << std::endl;
         std::cout << "Calculating norms of relative errors to a grid" << std::endl;
         std::cout << "with the bounding box:" << std::endl;
 
         for (size_t j = 0; j < d; j++) {
-          std::cout << myEvalBoundingBox->getBoundary(j).leftBoundary << " " <<
-                    myEvalBoundingBox->getBoundary(j).rightBoundary << std::endl;
+          std::cout << myEvalBoundingBox->getBoundary(j).leftBoundary << " "
+                    << myEvalBoundingBox->getBoundary(j).rightBoundary << std::endl;
         }
 
-        std::cout <<
-                  "=====================================================================" <<
-                  std::endl;
-        std::cout <<
-                  "=====================================================================" <<
-                  std::endl << std::endl << std::endl;
+        std::cout << "====================================================================="
+                  << std::endl;
+        std::cout << "====================================================================="
+                  << std::endl
+                  << std::endl
+                  << std::endl;
 
         delete myEvalBoundingBox;
         delete myEvalCuboidGen;
@@ -693,10 +644,11 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
       alpha = new SGPP::base::DataVector(myBSSolver->getNumberGridPoints());
 
       std::cout << "Grid has " << level << " Levels" << std::endl;
-      std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() <<
-                std::endl;
-      std::cout << "Initial Grid size (inner): " <<
-                myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+      std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+      std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints()
+                << std::endl
+                << std::endl
+                << std::endl;
 
       // Set stochastic data
       myBSSolver->setStochasticData(mu, sigma, rho, r);
@@ -714,17 +666,15 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
         myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.MPI.gnuplot", false);
 
         if (coordsType == "log") {
-          myBSSolver->printSparseGridExpTransform(*alpha,
-                                                  "payoff_surplus_cart.grid.MPI.gnuplot", true);
-          myBSSolver->printSparseGridExpTransform(*alpha,
-                                                  "payoff_nodal_cart.grid.MPI.gnuplot", false);
+          myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.MPI.gnuplot",
+                                                  true);
+          myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.MPI.gnuplot",
+                                                  false);
         }
 
         if (coordsType == "PAT") {
-          myBSSolver->printSparseGridPAT(*alpha,
-                                         "payoff_surplus_cart.PAT.grid.MPI.gnuplot", true);
-          myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.MPI.gnuplot",
-                                         false);
+          myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.MPI.gnuplot", true);
+          myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.MPI.gnuplot", false);
         }
       }
     }
@@ -755,17 +705,16 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
 
     // Start solving the Black Scholes Equation
     if (Solver == "ExEul") {
-      myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon,
-                                     *alpha, false, false, 20);
+      myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
+                                     false, 20);
     } else if (Solver == "ImEul") {
-      myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon,
-                                     *alpha, false, false, 20);
+      myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
+                                     false, 20);
     } else if (Solver == "CrNic") {
-      myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon,
-                                     *alpha, CRNIC_IMEUL_STEPS);
+      myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha,
+                                     CRNIC_IMEUL_STEPS);
     } else {
-      std::cout << "!!!! You have chosen an unsupported solver type !!!!" <<
-                std::endl;
+      std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
     }
 
     // print solved grid only on rank 0
@@ -780,17 +729,16 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
         myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.MPI.gnuplot", false);
 
         if (coordsType == "log") {
-          myBSSolver->printSparseGridExpTransform(*alpha,
-                                                  "solvedBS_surplus_cart.grid.MPI.gnuplot", true);
-          myBSSolver->printSparseGridExpTransform(*alpha,
-                                                  "solvedBS_nodal_cart.grid.MPI.gnuplot", false);
+          myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.MPI.gnuplot",
+                                                  true);
+          myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.MPI.gnuplot",
+                                                  false);
         }
 
         if (coordsType == "PAT") {
-          myBSSolver->printSparseGridPAT(*alpha,
-                                         "solvedBS_surplus_cart.PAT.grid.MPI.gnuplot", true);
-          myBSSolver->printSparseGridPAT(*alpha,
-                                         "solvedBS_nodal_cart.PAT.grid.MPI.gnuplot", false);
+          myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.MPI.gnuplot",
+                                         true);
+          myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.MPI.gnuplot", false);
         }
       }
 
@@ -801,8 +749,9 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
         point.push_back(dStrike);
       }
 
-      std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(
-                  point, *alpha) << std::endl << std::endl;
+      std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha)
+                << std::endl
+                << std::endl;
 
       if (i == start_l) {
         // if transformed Black Scholes Equation is used -> transform evaluation domain
@@ -826,26 +775,24 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
       writeDataVector(Prices, tFileEvalCuboidValues);
 
       if (i > start_l) {
-        std::cout <<
-                  "=====================================================================" <<
-                  std::endl;
-        std::cout <<
-                  "=====================================================================" <<
-                  std::endl << std::endl;
+        std::cout << "====================================================================="
+                  << std::endl;
+        std::cout << "====================================================================="
+                  << std::endl
+                  << std::endl;
         std::cout << "Calculating norms of relative errors to a grid" << std::endl;
-        std::cout << "with " << i << " levels and testing-coboid" << std::endl <<
-                  std::endl;
+        std::cout << "with " << i << " levels and testing-coboid" << std::endl << std::endl;
 
         double oldMaxNorm = 0.0;
         double oldTwoNorm = 0.0;
 
         // Calculate relative errors and some norms
-        std::cout <<
-                  "Level, max-norm(rel-error), two-norm(rel-error), rate max-norm,  rate two-norm"
-                  << std::endl;
-        std::cout <<
-                  "------------------------------------------------------------------------------"
-                  << std::endl;
+        std::cout
+            << "Level, max-norm(rel-error), two-norm(rel-error), rate max-norm,  rate two-norm"
+            << std::endl;
+        std::cout
+            << "------------------------------------------------------------------------------"
+            << std::endl;
 
         for (size_t j = 0; j < i - start_l; j++) {
           SGPP::base::DataVector maxLevel(results[i - start_l]);
@@ -864,9 +811,11 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
           l2Norm = relError.RMSNorm();
 
           // Printing norms
-          //std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << "; rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
-          std::cout << j + start_l << ", " << maxNorm << ", " << l2Norm << ", " << log(
-                      oldMaxNorm / maxNorm) << ", " << log(oldTwoNorm / l2Norm) << std::endl;
+          // std::cout << "Level " << j + start_l << ": max-norm(rel-error)=" << maxNorm << ";
+          // two-norm(rel-error)=" << l2Norm << "; rate max-norm: " << log(oldMaxNorm/maxNorm) << ";
+          // rate two-norm: " << log(oldTwoNorm/l2Norm) << std::endl;
+          std::cout << j + start_l << ", " << maxNorm << ", " << l2Norm << ", "
+                    << log(oldMaxNorm / maxNorm) << ", " << log(oldTwoNorm / l2Norm) << std::endl;
 
           oldMaxNorm = maxNorm;
           oldTwoNorm = l2Norm;
@@ -899,28 +848,32 @@ void testNUnderlyingsAnalyze(size_t d, size_t start_l, size_t end_l,
  * @param dt the size of delta t in the ODE solver
  * @param CGIt the maximum number of Iterations that are executed by the CG/BiCGStab
  * @param CGeps the epsilon used in the CG/BiCGStab
- * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the possibilities
+ * @param Solver specifies the sovler that should be used, ExEul, ImEul and CrNic are the
+ * possibilities
  * @param refinementMode the mode selected for surplus refinement: available: classic, maxLevel
- * @param maxRefineLevel ignored for refinement mode classic, in maxLevel: max. level to which the grid is refined
- * @param numRefinePoints number of points that should be refined in each refine iteration before Black Scholes Equation is solved: -1 try to refine all points steered by threshold
+ * @param maxRefineLevel ignored for refinement mode classic, in maxLevel: max. level to which the
+ * grid is refined
+ * @param numRefinePoints number of points that should be refined in each refine iteration before
+ * Black Scholes Equation is solved: -1 try to refine all points steered by threshold
  * @param nIterAdaptSteps number of the iterative Grid Refinement that should be executed
  * @param dRefineThreshold Threshold for a point's surplus for refining this point
  * @param useCoarsen specifies if the grid should be coarsened between timesteps
- * @param adaptSolvingMode specifies which adaptive methods are applied during solving the BS Equation
+ * @param adaptSolvingMode specifies which adaptive methods are applied during solving the BS
+ * Equation
  * @param coarsenThreshold Threshold to decide, if a grid point should be deleted
  * @param coordsType set the type of coordinates that should be used: cart, log, PAT
  * @param useNormalDist enable local initial refinement based on a normal distribution
  */
-void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
-                                  std::string fileBound, double dStrike,
-                                  std::string payoffType, double riskfree, size_t timeSt, double dt, size_t CGIt,
-                                  double CGeps,
-                                  std::string Solver, std::string refinementMode, int numRefinePoints,
-                                  size_t maxRefineLevel, size_t nIterAdaptSteps, double dRefineThreshold,
-                                  bool useCoarsen, std::string adaptSolvingMode, double coarsenThreshold,
+void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch, std::string fileBound,
+                                  double dStrike, std::string payoffType, double riskfree,
+                                  size_t timeSt, double dt, size_t CGIt, double CGeps,
+                                  std::string Solver, std::string refinementMode,
+                                  int numRefinePoints, size_t maxRefineLevel,
+                                  size_t nIterAdaptSteps, double dRefineThreshold, bool useCoarsen,
+                                  std::string adaptSolvingMode, double coarsenThreshold,
                                   std::string coordsType, bool useNormalDist) {
   size_t dim = d;
-  int level = (int)l;
+  int level = static_cast<int>(l);
   size_t timesteps = timeSt;
   double stepsize = dt;
   size_t CGiterations = CGIt;
@@ -969,19 +922,18 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
   // Enable Coarsening
   if (useCoarsen == true) {
     myBSSolver->setEnableCoarseningData(adaptSolvingMode, refinementMode,
-                                        (int)maxRefineLevel, -1, coarsenThreshold, dRefineThreshold);
+                                        static_cast<int>(maxRefineLevel), -1, coarsenThreshold,
+                                        dRefineThreshold);
   }
 
   if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
-    SGPP::base::DimensionBoundary* myBoundaries = new
-    SGPP::base::DimensionBoundary[dim];
+    SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[dim];
 
     if (readBoudingBoxData(fileBound, dim, myBoundaries) != 0) {
       return;
     }
 
-    SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim,
-        myBoundaries);
+    SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(dim, myBoundaries);
     delete[] myBoundaries;
 
     // init Screen Object
@@ -1026,28 +978,28 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
       }
     }
 
-    std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() <<
-              std::endl;
-    std::cout << "Initial Grid size (inner): " <<
-              myBSSolver->getNumberInnerGridPoints() << std::endl << std::endl << std::endl;
+    std::cout << "Initial Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+    std::cout << "Initial Grid size (inner): " << myBSSolver->getNumberInnerGridPoints()
+              << std::endl
+              << std::endl
+              << std::endl;
 
     // refine the grid to approximate the singularity in the start solution better
     if (refinementMode == "classic") {
-      for (size_t i = 0 ; i < nIterAdaptSteps; i++) {
+      for (size_t i = 0; i < nIterAdaptSteps; i++) {
         std::cout << "Refining Grid..." << std::endl;
 
         if (useNormalDist == true) {
-          myBSSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints,
-              dRefineThreshold, norm_mu, norm_sigma);
+          myBSSolver->refineInitialGridSurplusSubDomain(*alpha, numRefinePoints, dRefineThreshold,
+                                                        norm_mu, norm_sigma);
         } else {
           myBSSolver->refineInitialGridSurplus(*alpha, numRefinePoints, dRefineThreshold);
         }
 
         myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-        std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() <<
-                  std::endl;
-        std::cout << "Refined Grid size (inner): " <<
-                  myBSSolver->getNumberInnerGridPoints() << std::endl;
+        std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+        std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints()
+                  << std::endl;
       }
 
     } else if (refinementMode == "maxLevel") {
@@ -1062,18 +1014,17 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
           std::cout << "Refining Grid..." << std::endl;
 
           if (useNormalDist == true) {
-            myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(*alpha,
-                dRefineThreshold, (int)maxRefineLevel, norm_mu, norm_sigma);
+            myBSSolver->refineInitialGridSurplusToMaxLevelSubDomain(
+                *alpha, dRefineThreshold, static_cast<int>(maxRefineLevel), norm_mu, norm_sigma);
           } else {
             myBSSolver->refineInitialGridSurplusToMaxLevel(*alpha, dRefineThreshold,
-                (int)maxRefineLevel);
+                                                           static_cast<int>(maxRefineLevel));
           }
 
           myBSSolver->initGridWithPayoff(*alpha, dStrike, payoffType);
-          std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() <<
-                    std::endl;
-          std::cout << "Refined Grid size (inner): " <<
-                    myBSSolver->getNumberInnerGridPoints() << std::endl;
+          std::cout << "Refined Grid size: " << myBSSolver->getNumberGridPoints() << std::endl;
+          std::cout << "Refined Grid size (inner): " << myBSSolver->getNumberInnerGridPoints()
+                    << std::endl;
           newGridSize = myBSSolver->getNumberGridPoints();
           addedGridPoint = newGridSize - oldGridSize;
           stepCounter++;
@@ -1096,17 +1047,15 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
       myBSSolver->printSparseGrid(*alpha, "payoff_nodal.grid.MPI.gnuplot", false);
 
       if (coordsType == "log") {
-        myBSSolver->printSparseGridExpTransform(*alpha,
-                                                "payoff_surplus_cart.grid.MPI.gnuplot", true);
-        myBSSolver->printSparseGridExpTransform(*alpha,
-                                                "payoff_nodal_cart.grid.MPI.gnuplot", false);
+        myBSSolver->printSparseGridExpTransform(*alpha, "payoff_surplus_cart.grid.MPI.gnuplot",
+                                                true);
+        myBSSolver->printSparseGridExpTransform(*alpha, "payoff_nodal_cart.grid.MPI.gnuplot",
+                                                false);
       }
 
       if (coordsType == "PAT") {
-        myBSSolver->printSparseGridPAT(*alpha,
-                                       "payoff_surplus_cart.PAT.grid.MPI.gnuplot", true);
-        myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.MPI.gnuplot",
-                                       false);
+        myBSSolver->printSparseGridPAT(*alpha, "payoff_surplus_cart.PAT.grid.MPI.gnuplot", true);
+        myBSSolver->printSparseGridPAT(*alpha, "payoff_nodal_cart.PAT.grid.MPI.gnuplot", false);
       }
     }
   }
@@ -1137,17 +1086,16 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
 
   // Start solving the Black Scholes Equation
   if (Solver == "ExEul") {
-    myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon,
-                                   *alpha, false, false, 20);
+    myBSSolver->solveExplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
+                                   false, 20);
   } else if (Solver == "ImEul") {
-    myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon,
-                                   *alpha, false, false, 20);
+    myBSSolver->solveImplicitEuler(timesteps, stepsize, CGiterations, CGepsilon, *alpha, false,
+                                   false, 20);
   } else if (Solver == "CrNic") {
-    myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon,
-                                   *alpha, CRNIC_IMEUL_STEPS);
+    myBSSolver->solveCrankNicolson(timesteps, stepsize, CGiterations, CGepsilon, *alpha,
+                                   CRNIC_IMEUL_STEPS);
   } else {
-    std::cout << "!!!! You have chosen an unsupported solver type !!!!" <<
-              std::endl;
+    std::cout << "!!!! You have chosen an unsupported solver type !!!!" << std::endl;
   }
 
   if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
@@ -1161,17 +1109,15 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
       myBSSolver->printSparseGrid(*alpha, "solvedBS_nodal.grid.MPI.gnuplot", false);
 
       if (coordsType == "log") {
-        myBSSolver->printSparseGridExpTransform(*alpha,
-                                                "solvedBS_surplus_cart.grid.MPI.gnuplot", true);
-        myBSSolver->printSparseGridExpTransform(*alpha,
-                                                "solvedBS_nodal_cart.grid.MPI.gnuplot", false);
+        myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_surplus_cart.grid.MPI.gnuplot",
+                                                true);
+        myBSSolver->printSparseGridExpTransform(*alpha, "solvedBS_nodal_cart.grid.MPI.gnuplot",
+                                                false);
       }
 
       if (coordsType == "PAT") {
-        myBSSolver->printSparseGridPAT(*alpha,
-                                       "solvedBS_surplus_cart.PAT.grid.MPI.gnuplot", true);
-        myBSSolver->printSparseGridPAT(*alpha,
-                                       "solvedBS_nodal_cart.PAT.grid.MPI.gnuplot", false);
+        myBSSolver->printSparseGridPAT(*alpha, "solvedBS_surplus_cart.PAT.grid.MPI.gnuplot", true);
+        myBSSolver->printSparseGridPAT(*alpha, "solvedBS_nodal_cart.PAT.grid.MPI.gnuplot", false);
       }
     }
 
@@ -1182,8 +1128,9 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
       point.push_back(dStrike);
     }
 
-    std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(
-                point, *alpha) << std::endl << std::endl;
+    std::cout << "Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha)
+              << std::endl
+              << std::endl;
 
     // calculate relative errors
     ////////////////////////////
@@ -1217,59 +1164,54 @@ void testNUnderlyingsAdaptSurplus(size_t d, size_t l, std::string fileStoch,
       l2Norm = relError.RMSNorm();
 
       // Printing norms
-      std::cout << "Results: max-norm(rel-error)=" << maxNorm <<
-                "; two-norm(rel-error)=" << l2Norm << std::endl;
+      std::cout << "Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm
+                << std::endl;
 
       // reprint data with prefix -> can be easily grep-ed
       std::cout << std::endl << std::endl;
     } else {
-      std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" <<
-                std::endl << std::endl;
+      std::cout << "Couldn't open evaluation cuboid data -> skipping tests!" << std::endl
+                << std::endl;
     }
 
-    std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode <<
-              "; MaxRefLevel: " << maxRefineLevel << std::endl;
+    std::cout << "$ Startlevel: " << level << "; RefineMode: " << refinementMode
+              << "; MaxRefLevel: " << maxRefineLevel << std::endl;
     std::string normDistrefine;
 
     if (useNormalDist == true) {
       std::stringstream normDistRefineStream;
-      normDistRefineStream << "solveNDadaptSurplusSubDomain;" << dStrike << ";" <<
-                           refineSigma;
+      normDistRefineStream << "solveNDadaptSurplusSubDomain;" << dStrike << ";" << refineSigma;
       normDistrefine = normDistRefineStream.str();
       std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplusSubDomain" << std::endl;
-      std::cout << "$ Refine mu = " << dStrike << "; Refine sigma = " << refineSigma
-                << std::endl;
+      std::cout << "$ Refine mu = " << dStrike << "; Refine sigma = " << refineSigma << std::endl;
     } else {
       normDistrefine = "solveNDadaptSurplus;-1.0;1.0";
       std::cout << "$ AdaptSurplus-Mode: solveNDadaptSurplus" << std::endl;
     }
 
-    std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " <<
-              dRefineThreshold << std::endl;
-    std::cout << "$ AdpatSolveMode: " << adaptSolvingMode << "; CoarsenThreshd: " <<
-              coarsenThreshold << std::endl;
-    std::cout << "$ Start #gridpoints (inner): " <<
-              myBSSolver->getStartInnerGridSize() << std::endl;
-    std::cout << "$ Final #gridpoints (inner): " <<
-              myBSSolver->getFinalInnerGridSize() << std::endl;
-    std::cout << "$ Average #gridpoints (inner): " <<
-              myBSSolver->getAverageInnerGridSize() << std::endl;
+    std::cout << "$ NumRefinements: " << nIterAdaptSteps << "; RefineThreshd: " << dRefineThreshold
+              << std::endl;
+    std::cout << "$ AdpatSolveMode: " << adaptSolvingMode
+              << "; CoarsenThreshd: " << coarsenThreshold << std::endl;
+    std::cout << "$ Start #gridpoints (inner): " << myBSSolver->getStartInnerGridSize()
+              << std::endl;
+    std::cout << "$ Final #gridpoints (inner): " << myBSSolver->getFinalInnerGridSize()
+              << std::endl;
+    std::cout << "$ Average #gridpoints (inner): " << myBSSolver->getAverageInnerGridSize()
+              << std::endl;
     std::cout << "$ Needed iterations: " << myBSSolver->getNeededIterationsToSolve()
               << "; Needed time: " << myBSSolver->getNeededTimeToSolve() << std::endl;
-    std::cout << "$ Results: max-norm(rel-error)=" << maxNorm <<
-              "; two-norm(rel-error)=" << l2Norm << std::endl;
-    std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evalOption(
-                point, *alpha) << std::endl;
-    std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" <<
-              maxRefineLevel << ";" << nIterAdaptSteps
-              << ";" << dRefineThreshold << ";" << normDistrefine << ";" << adaptSolvingMode
-              << ";" << coarsenThreshold
-              << ";" << myBSSolver->getStartInnerGridSize() << ";" <<
-              myBSSolver->getFinalInnerGridSize()
-              << ";" << myBSSolver->getAverageInnerGridSize() << ";" <<
-              myBSSolver->getNeededIterationsToSolve()
-              << ";" << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << l2Norm
+    std::cout << "$ Results: max-norm(rel-error)=" << maxNorm << "; two-norm(rel-error)=" << l2Norm
               << std::endl;
+    std::cout << "$ Optionprice at testpoint (Strike): " << myBSSolver->evalOption(point, *alpha)
+              << std::endl;
+    std::cout << "$ CSV-DATA: " << level << ";" << refinementMode << ";" << maxRefineLevel << ";"
+              << nIterAdaptSteps << ";" << dRefineThreshold << ";" << normDistrefine << ";"
+              << adaptSolvingMode << ";" << coarsenThreshold << ";"
+              << myBSSolver->getStartInnerGridSize() << ";" << myBSSolver->getFinalInnerGridSize()
+              << ";" << myBSSolver->getAverageInnerGridSize() << ";"
+              << myBSSolver->getNeededIterationsToSolve() << ";"
+              << myBSSolver->getNeededTimeToSolve() << ";" << maxNorm << ";" << l2Norm << std::endl;
     std::cout << std::endl << std::endl;
   }
 
@@ -1292,13 +1234,12 @@ int main(int argc, char* argv[]) {
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &mpi_ranks);
   MPI_Comm_rank(MPI_COMM_WORLD, &mpi_myid);
-  SGPP::parallel::myGlobalMPIComm = new SGPP::parallel::MPICommunicator(mpi_myid,
-      mpi_ranks);
+  SGPP::parallel::myGlobalMPIComm = new SGPP::parallel::MPICommunicator(mpi_myid, mpi_ranks);
 
   std::streambuf* stdoutBuf = std::cout.rdbuf();
   std::ofstream dummy_out("/dev/null");
 
-  if (mpi_myid != 0) { // disable output for all processes but proc 0
+  if (mpi_myid != 0) {  // disable output for all processes but proc 0
     std::cout.rdbuf(dummy_out.rdbuf());
   }
 
@@ -1340,13 +1281,12 @@ int main(int argc, char* argv[]) {
       std::string coordsType;
       coordsType.assign(argv[2]);
 
-      testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch,
-                              fileBound, dStrike, payoff, atof(argv[10]),
-                              (size_t)(atof(argv[11]) / atof(argv[12])), atof(argv[12]), atoi(argv[14]),
-                              atof(argv[15]), solver, fileAnalyze, coordsType);
+      testNUnderlyingsAnalyze(atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), fileStoch, fileBound,
+                              dStrike, payoff, atof(argv[10]),
+                              (size_t)(atof(argv[11]) / atof(argv[12])), atof(argv[12]),
+                              atoi(argv[14]), atof(argv[15]), solver, fileAnalyze, coordsType);
     }
-  } else if (option == "solveNDadaptSurplus"
-             || option == "solveNDadaptSurplusSubDomain") {
+  } else if (option == "solveNDadaptSurplus" || option == "solveNDadaptSurplusSubDomain") {
     if (argc != 21) {
       if (mpi_myid == 0) {
         writeHelp();
@@ -1382,8 +1322,7 @@ int main(int argc, char* argv[]) {
       coordsType.assign(argv[2]);
 
       if (refinementMode != "maxLevel" && refinementMode != "classic") {
-        std::cout << "Unsupported refinement type! classic or maxLevel are supported!"
-                  << std::endl;
+        std::cout << "Unsupported refinement type! classic or maxLevel are supported!" << std::endl;
         std::cout << std::endl << std::endl;
 
         if (mpi_myid == 0) {
@@ -1396,14 +1335,14 @@ int main(int argc, char* argv[]) {
 
       bool useAdaptSolve = false;
 
-      if (adaptSolveMode == "coarsen" || adaptSolveMode == "refine"
-          || adaptSolveMode == "coarsenNrefine") {
+      if (adaptSolveMode == "coarsen" || adaptSolveMode == "refine" ||
+          adaptSolveMode == "coarsenNrefine") {
         useAdaptSolve = true;
       } else if (adaptSolveMode == "none") {
         useAdaptSolve = false;
       } else {
-        std::cout <<
-                  "Unsupported adapt solve mode! none, coarsen, refine or coarsenNrefine are supported!"
+        std::cout << "Unsupported adapt solve mode! none, coarsen, refine or coarsenNrefine are "
+                     "supported!"
                   << std::endl;
         std::cout << std::endl << std::endl;
 
@@ -1415,11 +1354,11 @@ int main(int argc, char* argv[]) {
         return 0;
       }
 
-      testNUnderlyingsAdaptSurplus(atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound,
-                                   dStrike, payoff, atof(argv[9]), (size_t)(atof(argv[10]) / atof(argv[11])),
-                                   atof(argv[11]), atoi(argv[13]), atof(argv[14]), solver, refinementMode, -1,
-                                   atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve, adaptSolveMode,
-                                   atof(argv[20]), coordsType, isNormalDist);
+      testNUnderlyingsAdaptSurplus(
+          atoi(argv[3]), atoi(argv[4]), fileStoch, fileBound, dStrike, payoff, atof(argv[9]),
+          (size_t)(atof(argv[10]) / atof(argv[11])), atof(argv[11]), atoi(argv[13]), atof(argv[14]),
+          solver, refinementMode, -1, atoi(argv[16]), atoi(argv[17]), atof(argv[18]), useAdaptSolve,
+          adaptSolveMode, atof(argv[20]), coordsType, isNormalDist);
     }
   } else {
     if (mpi_myid == 0) {
@@ -1432,7 +1371,7 @@ int main(int argc, char* argv[]) {
 
   delete SGPP::parallel::myGlobalMPIComm;
 
-  if (mpi_myid != 0) { // restore stdout buffer
+  if (mpi_myid != 0) {  // restore stdout buffer
     std::cout.rdbuf(stdoutBuf);
   }
 

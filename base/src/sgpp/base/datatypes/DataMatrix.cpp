@@ -87,7 +87,7 @@ DataMatrix DataMatrix::fromString(const std::string& serializedVector) {
       //      double value = std::stod(&(serializedVector[i]), &next);
       double value = std::atof(&(serializedVector[i]));
 #else
-      float value = std::stof(&(serializedVector[i]), &next);
+      float value = std::atof(&(serializedVector[i]));
 #endif
       row.append(value);
       state = PARSER_STATE::ROWCOMMAEND;
@@ -388,9 +388,13 @@ DataMatrix& DataMatrix::operator=(const DataMatrix& matr) {
   }
 
   if (nrows * ncols != matr.ncols * matr.nrows) {
-    throw SGPP::base::data_exception("DataMatrix::= : Dimensions do not match");
+    // throw SGPP::base::data_exception("DataMatrix::= : Dimensions do not match");
+    delete[] this->data;
+    this->data = new float_t[matr.nrows * matr.ncols];
   }
 
+  this->nrows = matr.nrows;
+  this->ncols = matr.ncols;
   std::memcpy(this->data, matr.data, nrows * ncols * sizeof(float_t));
   return *this;
 }

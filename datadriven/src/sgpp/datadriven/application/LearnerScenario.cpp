@@ -88,10 +88,10 @@ InternalPrecision LearnerScenario::getInternalPrecision() {
 
 void LearnerScenario::setGridConfig(base::RegularGridConfiguration& gridConfig) {
   (*this).replaceDictAttr("grid");
-  (*this)["grid"].replaceIDAttr("boundaryLevel", gridConfig.boundaryLevel_);
-  (*this)["grid"].replaceIDAttr("dim", gridConfig.dim_);
+  (*this)["grid"].replaceIDAttr("boundaryLevel", static_cast<uint64_t>(gridConfig.boundaryLevel_));
+  (*this)["grid"].replaceIDAttr("dim", static_cast<uint64_t>(gridConfig.dim_));
   (*this)["grid"].replaceIDAttr("level", static_cast<uint64_t>(gridConfig.level_));
-  (*this)["grid"].replaceIDAttr("maxDegree", gridConfig.maxDegree_);
+  (*this)["grid"].replaceIDAttr("maxDegree", static_cast<uint64_t>(gridConfig.maxDegree_));
 
   if (gridConfig.type_ == base::GridType::Linear) {
     (*this)["grid"].replaceTextAttr("type", "Linear");
@@ -126,7 +126,8 @@ void LearnerScenario::setSolverConfigurationRefine(
     solver::SLESolverConfiguration& solverConfigRefine) {
   (*this).replaceDictAttr("solverRefine");
   (*this)["solverRefine"].replaceIDAttr("eps", static_cast<double>(solverConfigRefine.eps_));
-  (*this)["solverRefine"].replaceIDAttr("maxIterations", solverConfigRefine.maxIterations_);
+  (*this)["solverRefine"].replaceIDAttr("maxIterations",
+                                        static_cast<uint64_t>(solverConfigRefine.maxIterations_));
   (*this)["solverRefine"].replaceIDAttr("threshold", solverConfigRefine.threshold_);
   if (solverConfigRefine.type_ == solver::SLESolverType::CG) {
     (*this)["solverRefine"].replaceIDAttr("type", "CG");
@@ -159,7 +160,8 @@ void LearnerScenario::setSolverConfigurationFinal(
     solver::SLESolverConfiguration& solverConfigFinal) {
   (*this).replaceDictAttr("solverFinal");
   (*this)["solverFinal"].replaceIDAttr("eps", static_cast<double>(solverConfigFinal.eps_));
-  (*this)["solverFinal"].replaceIDAttr("maxIterations", solverConfigFinal.maxIterations_);
+  (*this)["solverFinal"].replaceIDAttr("maxIterations",
+                                       static_cast<uint64_t>(solverConfigFinal.maxIterations_));
   (*this)["solverFinal"].replaceIDAttr("threshold", solverConfigFinal.threshold_);
   if (solverConfigFinal.type_ == solver::SLESolverType::CG) {
     (*this)["solverFinal"].replaceIDAttr("type", "CG");
@@ -191,8 +193,10 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
 void LearnerScenario::setAdaptivityConfiguration(base::AdpativityConfiguration& adaptConfig) {
   (*this).replaceDictAttr("adaptivity");
   (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
-  (*this)["adaptivity"].replaceIDAttr("noPoints", adaptConfig.noPoints_);
-  (*this)["adaptivity"].replaceIDAttr("numRefinements", adaptConfig.numRefinements_);
+  (*this)["adaptivity"].replaceIDAttr("noPoints",
+                                      static_cast<uint64_t>(adaptConfig.noPoints_));
+  (*this)["adaptivity"].replaceIDAttr("numRefinements",
+                                      static_cast<uint64_t>(adaptConfig.numRefinements_));
   (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);
   (*this)["adaptivity"].replaceIDAttr("threshold", adaptConfig.threshold_);
 }
