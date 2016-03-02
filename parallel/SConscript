@@ -96,7 +96,7 @@ MICOnlyFiles = [
     "SPMICKernelImpl.cpp"
 ]
 
-moduleDependencies = ['sgppdatadriven', 'sgpppde', 'sgppsolver', 'sgppbase', 'sgppfinance']
+moduleDependencies = ['sgppdatadriven', 'sgppfinance', 'sgpppde', 'sgppsolver', 'sgppbase']
 Export('moduleDependencies')
 
 if env['COMPILER'] == 'vcc':
