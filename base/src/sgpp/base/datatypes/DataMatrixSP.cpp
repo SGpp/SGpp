@@ -280,10 +280,13 @@ DataMatrixSP& DataMatrixSP::operator=(const DataMatrixSP& matr) {
   }
 
   if (nrows * ncols != matr.ncols * matr.nrows) {
-    throw sgpp::base::data_exception(
-      "DataMatrixSP::= : Dimensions do not match");
+    // throw sgpp::base::data_exception("DataMatrixSP::= : Dimensions do not match");
+    delete[] this->data;
+    this->data = new float[matr.nrows * matr.ncols];
   }
 
+  this->nrows = matr.nrows;
+  this->ncols = matr.ncols;
   std::memcpy(this->data, matr.data, nrows * ncols * sizeof(float));
   return *this;
 }
