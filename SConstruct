@@ -398,6 +398,7 @@ if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
   if env['PLATFORM'] == 'win32':
     # install the python library to that temporary folder
     dependencies.append(env.Command('installPythonLibToTmp', [pysgppTempFolder], installPythonLibToTmp))
+    
 
   # print message that python tests are about to start
   dependencies.append(env.Command('printRunningPythonTests', [], printRunningPythonTests))

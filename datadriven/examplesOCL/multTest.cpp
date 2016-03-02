@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
   sgpp::datadriven::ARFFTools arffTools;
   sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating result" << std::endl;
 
-  for (size_t i = 0; i < 1; i++) {
+  for (size_t i = 0; i < 5; i++) {
     std::cout << "repeated mult: " << i << std::endl;
     eval->mult(alpha, dataSizeVectorResult);
   }

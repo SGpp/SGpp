@@ -12,6 +12,7 @@
 *.os
 *.so
 *.exe
+*.a
 
 #ignoring cpplint files
 *.lint

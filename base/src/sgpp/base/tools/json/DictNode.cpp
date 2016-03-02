@@ -16,8 +16,7 @@
 
 namespace json {
 
-DictNode::DictNode() {
-}
+DictNode::DictNode() {}
 
 DictNode::DictNode(const DictNode& original) {
   this->keyOrder = original.keyOrder;
@@ -49,7 +48,7 @@ DictNode& DictNode::operator=(const DictNode& right) {
 
 Node& DictNode::operator=(const Node& right) {
   const DictNode& dictNode = dynamic_cast<const DictNode&>(right);
-  this->operator =(dictNode);
+  this->operator=(dictNode);
   return *this;
 }
 
@@ -81,9 +80,7 @@ void DictNode::parseAttributes(std::vector<Token>& stream) {
   //  Rules rule = Rules::NONE;
   //  size_t i = 0;
 
-  enum class State {
-    NEXT = 0, COLON = 1, VALUE = 2, COMMAFINISH = 3
-  };
+  enum class State { NEXT = 0, COLON = 1, VALUE = 2, COMMAFINISH = 3 };
 
   State state = State::NEXT;
 
@@ -181,29 +178,25 @@ void DictNode::serialize(std::ostream& outFile, size_t indentWidth) {
     }
 
     outFile << attrIndentation << "\"" << key << "\": ";
-    this->attributes[key]->serialize(outFile,
-                                     indentWidth + Node::SERIALIZE_INDENT);
+    this->attributes[key]->serialize(outFile, indentWidth + Node::SERIALIZE_INDENT);
   }
 
-  outFile << std::endl << indentation << "}";
+  outFile << std::endl
+          << indentation << "}";
 }
 
-size_t DictNode::size() {
-  return this->keyOrder.size();
-}
+size_t DictNode::size() { return this->keyOrder.size(); }
 
 Node* DictNode::clone() {
   DictNode* newNode = new DictNode(*this);
   return newNode;
 }
 
-void DictNode::addAttribute(const std::string& name,
-                            std::unique_ptr<Node> node) {
+void DictNode::addAttribute(const std::string& name, std::unique_ptr<Node> node) {
   if (node->parent != nullptr) {
     throw json_exception("addAttribute(): attribute was already added");
   } else if (this->attributes.count(name) > 0) {
-    throw json_exception(
-        "addAttribute(): attribute with same name already exists");
+    throw json_exception("addAttribute(): attribute with same name already exists");
   }
 
   node->parent = this;
@@ -243,6 +236,8 @@ Node& DictNode::addIDAttr(const std::string& name, const std::string& value) {
 }
 
 // returns the node to which the attribute was added
+// cast internally to string, prevents the boolean overload from being used, if the value is a
+// string literal
 Node& DictNode::addIDAttr(const std::string& name, const char* value) {
   return this->addIDAttr(name, std::string(value));
 }
@@ -298,8 +293,7 @@ Node& DictNode::addListAttr(const std::string& name) {
 // returns the node to which the attribute was added
 // replaces a node, adds a new node, if the node does not exist,
 // the old node is deleted
-Node& DictNode::replaceTextAttr(const std::string& name,
-                                const std::string& value) {
+Node& DictNode::replaceTextAttr(const std::string& name, const std::string& value) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
   }
@@ -311,14 +305,22 @@ Node& DictNode::replaceTextAttr(const std::string& name,
 // returns the node to which the attribute was added
 // replaces a node, adds a new node, if the node does not exist,
 // the old node is deleted
-Node& DictNode::replaceIDAttr(const std::string& name,
-                              const std::string& value) {
+Node& DictNode::replaceIDAttr(const std::string& name, const std::string& value) {
   if (this->attributes.count(name) > 0) {
     this->removeAttribute(name);
   }
 
   this->addIDAttr(name, value);
   return *this;
+}
+
+// returns the node to which the attribute was added
+// replaces a node, adds a new node, if the node does not exist,
+// the old node is deleted
+// cast internally to string, prevents the boolean overload from being used, if the value is a
+// string literal
+Node& DictNode::replaceIDAttr(const std::string& name, const char* value) {
+  return this->replaceIDAttr(name, std::string(value));
 }
 
 // returns the node to which the attribute was added
@@ -412,8 +414,6 @@ std::unique_ptr<Node> DictNode::erase(Node& node) {
   throw json_exception("erase(node): node not found");
 }
 
-std::vector<std::string>& DictNode::keys() {
-  return this->keyOrder;
-}
+std::vector<std::string>& DictNode::keys() { return this->keyOrder; }
 
 }  // namespace json
