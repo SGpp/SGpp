@@ -191,8 +191,10 @@ DataVectorSP& DataVectorSP::operator=(const DataVectorSP& vec) {
   }
 
   if (size != vec.size) {
-    throw sgpp::base::data_exception(
-      "DataVectorSP::add : Dimensions do not match");
+    // throw sgpp::base::data_exception("DataVectorSP::add : Dimensions do not match");
+    delete[] data;
+    size = vec.size;
+    this->data = new float[size];
   }
 
   std::memcpy(this->data, vec.data, size * sizeof(float));
