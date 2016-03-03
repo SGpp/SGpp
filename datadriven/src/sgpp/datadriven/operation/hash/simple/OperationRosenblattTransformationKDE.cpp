@@ -45,7 +45,7 @@ void OperationRosenblattTransformationKDE::doTransformation(DataMatrix& pointsCd
   DataVector unif(ndim);
   DataVector cdf(ndim);
   DataVector kern(nsamples);
-  DataVector* samples1d = nullptr;
+  std::shared_ptr<base::DataVector> samples1d;
 
   float_t xi = 0;
 
@@ -80,7 +80,7 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& 
   DataVector unif(ndim);
   DataVector cdf(ndim);
   DataVector kern(nsamples);
-  DataVector* samples1d = nullptr;
+  std::shared_ptr<base::DataVector> samples1d;
 
   float_t xi = 0;
 

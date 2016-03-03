@@ -14,7 +14,8 @@
 namespace SGPP {
 namespace datadriven {
 
-void OperationDensityMarginalizeKDE::doMarginalize(size_t mdim, GaussianKDE& marginalizedKDE) {
+void OperationDensityMarginalizeKDE::doMarginalize(size_t mdim,
+                                                   datadriven::GaussianKDE& marginalizedKDE) {
   // dimensionality of new set
   size_t ndim = kde->getDim();
 
@@ -28,7 +29,7 @@ void OperationDensityMarginalizeKDE::doMarginalize(size_t mdim, GaussianKDE& mar
         "OperationDensityMarginalizeKDE::doMarginalize : Dimensionality is out of range");
   }
 
-  std::vector<base::DataVector*> newSamplesVec(ndim - 1);
+  std::vector<std::shared_ptr<base::DataVector> > newSamplesVec(ndim - 1);
 
   // copy all values but the ones in dim
   size_t currentDim = 0;
@@ -45,12 +46,12 @@ void OperationDensityMarginalizeKDE::doMarginalize(size_t mdim, GaussianKDE& mar
 }
 
 void OperationDensityMarginalizeKDE::doMarginalize(std::vector<size_t>& mdims,
-                                                   GaussianKDE& marginalizedKDE) {
+                                                   datadriven::GaussianKDE& marginalizedKDE) {
   // dimensionality of original and marginalized set
   size_t ndims = kde->getDim();
   size_t newndims = mdims.size();
   // container for new sample set
-  std::vector<base::DataVector*> newSamplesVec(newndims);
+  std::vector<std::shared_ptr<base::DataVector> > newSamplesVec(newndims);
   // copy all enries but the ones in mdim
   size_t currentDim = 0;
 
@@ -77,13 +78,14 @@ void OperationDensityMarginalizeKDE::doMarginalize(std::vector<size_t>& mdims,
   marginalizedKDE.initialize(newSamplesVec);
 }
 
-void OperationDensityMarginalizeKDE::margToDimX(size_t mdim, GaussianKDE& marginalizedKDE) {
+void OperationDensityMarginalizeKDE::margToDimX(size_t mdim,
+                                                datadriven::GaussianKDE& marginalizedKDE) {
   if (mdim >= kde->getDim()) {
     throw base::data_exception("OperationDensityMarginalizeKDE::margToDimX; mdim out of range");
   }
 
   // dimensionality of new set
-  std::vector<base::DataVector*> newSamplesVec(1);
+  std::vector<std::shared_ptr<base::DataVector> > newSamplesVec(1);
   newSamplesVec[0] = kde->getSamples(mdim);
 
   // initialize marginalized kde
@@ -91,10 +93,10 @@ void OperationDensityMarginalizeKDE::margToDimX(size_t mdim, GaussianKDE& margin
 }
 
 void OperationDensityMarginalizeKDE::margToDimXs(std::vector<size_t>& mdims,
-                                                 GaussianKDE& marginalizedKDE) {
+                                                 datadriven::GaussianKDE& marginalizedKDE) {
   // dimensionality of new set
   size_t ndimsNew = mdims.size();
-  std::vector<base::DataVector*> newSamplesVec(ndimsNew);
+  std::vector<std::shared_ptr<base::DataVector> > newSamplesVec(ndimsNew);
 
   // get the subset of the data for marginalized density
   for (size_t idim = 0; idim < ndimsNew; idim++) {

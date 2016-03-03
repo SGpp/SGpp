@@ -57,7 +57,7 @@ class OperationDensityMarginalizeKDE {
   void margToDimXs(std::vector<size_t>& mdims, datadriven::GaussianKDE& marginalizedKDE);
 
  private:
-  datadriven::GaussianKDE* kde;
+  std::shared_ptr<datadriven::GaussianKDE> kde;
 };
 }  // namespace datadriven
 }  // namespace SGPP
