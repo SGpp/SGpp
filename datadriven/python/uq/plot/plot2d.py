@@ -72,16 +72,16 @@ def plotSGDE2d(U, n=100):
     plt.ylim(0, 1)
 
 
-def plotFunction2d(f, addContour=True, n=101):
-    x = np.linspace(0, 1, n)
-    y = np.linspace(0, 1, n)
+def plotFunction2d(f, addContour=True, n=101,
+                   xlim=[0, 1], ylim=[0, 1]):
+    x = np.linspace(xlim[0], xlim[1], n)
+    y = np.linspace(ylim[0], ylim[1], n)
     X, Y = np.meshgrid(x, y)
     Z = np.ones(n * n).reshape(n, n)
 
-    print "-" * 60
     for i in xrange(len(X)):
         for j, (xi, yi) in enumerate(zip(X[i], Y[i])):
-            Z[i, j] = f(xi, yi)
+            Z[i, j] = f(xi, 1 - yi)
 
     plt.imshow(Z, interpolation='bilinear', extent=(0, 1, 0, 1))
 

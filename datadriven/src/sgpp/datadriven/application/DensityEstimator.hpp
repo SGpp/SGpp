@@ -19,7 +19,6 @@ namespace datadriven {
 class DensityEstimator {
  public:
   DensityEstimator();
-  explicit DensityEstimator(base::DataMatrix& samples);
   virtual ~DensityEstimator();
 
   virtual void initialize(base::DataMatrix& samples) = 0;
@@ -33,18 +32,14 @@ class DensityEstimator {
   virtual void cov(base::DataMatrix& cov) = 0;
   virtual void corrcoef(base::DataMatrix& corr);
 
-  virtual base::DataVector* getSamples(size_t dim) = 0;
-  virtual base::DataMatrix* getSamples();
+  virtual std::shared_ptr<base::DataVector> getSamples(size_t dim) = 0;
+  virtual std::shared_ptr<base::DataMatrix> getSamples() = 0;
 
   virtual size_t getDim() = 0;
   virtual size_t getNsamples() = 0;
-
- protected:
-  base::DataMatrix samples;
 };
 
 }  // namespace datadriven
 }  // namespace SGPP
 
 #endif /* DENSITYESTIMATOR_HPP_ */
-
