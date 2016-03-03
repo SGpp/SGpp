@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#error "Test error 3."
+#error "Test error 4."
 
 #ifndef SGPP_GLOBALDEF_HPP_
 #define SGPP_GLOBALDEF_HPP_
