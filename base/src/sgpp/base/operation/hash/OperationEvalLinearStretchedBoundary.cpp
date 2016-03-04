@@ -15,12 +15,12 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
+double OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
     const DataVector& point) {
-  typedef std::vector<std::pair<size_t, float_t> > IndexValVector;
+  typedef std::vector<std::pair<size_t, double> > IndexValVector;
 
   IndexValVector vec;
   LinearStretchedBoundaryBasis<unsigned int, unsigned int> base;
@@ -30,7 +30,7 @@ float_t OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
 
   ga(base, point, vec);
 
-  float_t result = 0.0;
+  double result = 0.0;
 
   for (IndexValVector::iterator iter = vec.begin(); iter != vec.end(); iter++) {
     result += iter->second * alpha[iter->first];
@@ -40,4 +40,4 @@ float_t OperationEvalLinearStretchedBoundary::eval(const DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

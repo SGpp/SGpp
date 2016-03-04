@@ -11,7 +11,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 BoundingBox::BoundingBox(size_t dim) {
@@ -80,12 +80,12 @@ size_t BoundingBox::getDimensions() {
   return nDim;
 }
 
-float_t BoundingBox::getIntervalWidth(size_t dimension) {
+double BoundingBox::getIntervalWidth(size_t dimension) {
   return dimensionBoundaries[dimension].rightBoundary -
          dimensionBoundaries[dimension].leftBoundary;
 }
 
-float_t BoundingBox::getIntervalOffset(size_t dimension) {
+double BoundingBox::getIntervalOffset(size_t dimension) {
   return dimensionBoundaries[dimension].leftBoundary;
 }
 
@@ -120,4 +120,4 @@ std::string BoundingBox::toString() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

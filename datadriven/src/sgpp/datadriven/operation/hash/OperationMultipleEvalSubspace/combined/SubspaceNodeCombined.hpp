@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class SubspaceNodeCombined {
@@ -27,8 +27,8 @@ class SubspaceNodeCombined {
   SubspaceType type;
   //for list representation (and future streaming subspaces)
   std::vector<uint32_t> indices;
-  std::vector<std::pair<uint32_t, float_t> > indexFlatSurplusPairs;
-  std::vector<float_t> subspaceArray;
+  std::vector<std::pair<uint32_t, double> > indexFlatSurplusPairs;
+  std::vector<double> subspaceArray;
   omp_lock_t subspaceLock;
 
   uint32_t jumpTargetIndex;
@@ -59,10 +59,10 @@ class SubspaceNodeCombined {
 
   // the first call initializes the array for ARRAY type subspaces
   //
-  void setSurplus(size_t indexFlat, float_t surplus);
+  void setSurplus(size_t indexFlat, double surplus);
 
   // the first call initializes the array for ARRAY type subspaces
-  float_t getSurplus(size_t indexFlat);
+  double getSurplus(size_t indexFlat);
 
   static uint32_t compareLexicographically(SubspaceNodeCombined& current,
       SubspaceNodeCombined& last);

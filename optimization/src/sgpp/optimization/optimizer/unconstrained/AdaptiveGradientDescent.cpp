@@ -8,13 +8,13 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
 AdaptiveGradientDescent::AdaptiveGradientDescent(
-    ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, float_t tolerance,
-    float_t stepSizeIncreaseFactor, float_t stepSizeDecreaseFactor, float_t lineSearchAccuracy)
+    ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, double tolerance,
+    double stepSizeIncreaseFactor, double stepSizeDecreaseFactor, double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, maxItCount),
       fGradient(fGradient),
       theta(tolerance),
@@ -35,17 +35,17 @@ void AdaptiveGradientDescent::optimize() {
   fHist.resize(0);
 
   base::DataVector x(x0);
-  float_t fx = f.eval(x);
+  double fx = f.eval(x);
   base::DataVector gradFx(d);
 
   xHist.appendRow(x);
   fHist.append(fx);
 
   base::DataVector xNew(d);
-  float_t fxNew;
+  double fxNew;
 
   size_t k = 0;
-  float_t alpha = 1.0;
+  double alpha = 1.0;
   base::DataVector dir(d);
   bool inDomain;
 
@@ -57,7 +57,7 @@ void AdaptiveGradientDescent::optimize() {
     fx = fGradient.eval(x, gradFx);
     k++;
 
-    const float_t gradFxNorm = gradFx.l2Norm();
+    const double gradFxNorm = gradFx.l2Norm();
 
     if (gradFxNorm == 0.0) {
       break;
@@ -81,7 +81,7 @@ void AdaptiveGradientDescent::optimize() {
     k++;
 
     // inner product of gradient and search direction
-    const float_t gradFxTimesDir = -gradFxNorm;
+    const double gradFxTimesDir = -gradFxNorm;
 
     // line search
     while ((fxNew > fx + rhoLs * alpha * gradFxTimesDir) && (alpha > 0.0)) {
@@ -143,25 +143,25 @@ void AdaptiveGradientDescent::optimize() {
 
 ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const { return fGradient; }
 
-float_t AdaptiveGradientDescent::getTolerance() const { return theta; }
+double AdaptiveGradientDescent::getTolerance() const { return theta; }
 
-void AdaptiveGradientDescent::setTolerance(float_t tolerance) { theta = tolerance; }
+void AdaptiveGradientDescent::setTolerance(double tolerance) { theta = tolerance; }
 
-float_t AdaptiveGradientDescent::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
+double AdaptiveGradientDescent::getStepSizeIncreaseFactor() const { return rhoAlphaPlus; }
 
-void AdaptiveGradientDescent::setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor) {
+void AdaptiveGradientDescent::setStepSizeIncreaseFactor(double stepSizeIncreaseFactor) {
   rhoAlphaPlus = stepSizeIncreaseFactor;
 }
 
-float_t AdaptiveGradientDescent::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
+double AdaptiveGradientDescent::getStepSizeDecreaseFactor() const { return rhoAlphaMinus; }
 
-void AdaptiveGradientDescent::setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor) {
+void AdaptiveGradientDescent::setStepSizeDecreaseFactor(double stepSizeDecreaseFactor) {
   rhoAlphaMinus = stepSizeDecreaseFactor;
 }
 
-float_t AdaptiveGradientDescent::getLineSearchAccuracy() const { return rhoLs; }
+double AdaptiveGradientDescent::getLineSearchAccuracy() const { return rhoLs; }
 
-void AdaptiveGradientDescent::setLineSearchAccuracy(float_t lineSearchAccuracy) {
+void AdaptiveGradientDescent::setLineSearchAccuracy(double lineSearchAccuracy) {
   rhoLs = lineSearchAccuracy;
 }
 
@@ -170,4 +170,4 @@ void AdaptiveGradientDescent::clone(std::unique_ptr<UnconstrainedOptimizer>& clo
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

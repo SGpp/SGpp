@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -58,6 +58,6 @@ class HierarchisationLinearStretchedBoundary: public
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HIERARCHISATIONLINEARSTRETCHEDBOUNDARY_HPP */

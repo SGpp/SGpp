@@ -8,7 +8,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class LinearLoadBalancer {
@@ -44,11 +44,11 @@ class LinearLoadBalancer {
 
     // check for valid input
     if (blockSize == 0) {
-      throw SGPP::base::operation_exception("blockSize must not be zero!");
+      throw sgpp::base::operation_exception("blockSize must not be zero!");
     }
 
     if (totalSize % blockSize != 0) {
-      throw SGPP::base::operation_exception(
+      throw sgpp::base::operation_exception(
           "totalSize must be divisible by blockSize without remainder, "
           "but it is not!");
     }
@@ -126,4 +126,4 @@ class LinearLoadBalancer {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

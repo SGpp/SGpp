@@ -8,7 +8,7 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 PolyBoundaryGrid::PolyBoundaryGrid(std::istream& istr) :
@@ -38,8 +38,8 @@ const SBasis& PolyBoundaryGrid::getBasis() {
   return *basis_;
 }
 
-SGPP::base::GridType PolyBoundaryGrid::getType() {
-  return SGPP::base::GridType::PolyBoundary;
+sgpp::base::GridType PolyBoundaryGrid::getType() {
+  return sgpp::base::GridType::PolyBoundary;
 }
 
 size_t PolyBoundaryGrid::getDegree() const {
@@ -65,4 +65,4 @@ GridGenerator& PolyBoundaryGrid::getGenerator() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

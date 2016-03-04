@@ -6,21 +6,21 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/OperationNaiveEvalPartialDerivativeFundamentalSpline.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationNaiveEvalPartialDerivativeFundamentalSpline::evalPartialDerivative(
+double OperationNaiveEvalPartialDerivativeFundamentalSpline::evalPartialDerivative(
   const DataVector& alpha, const DataVector& point, size_t derivDim) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
-  float_t result = 0.0;
+  double result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
     const GridIndex& gp = *storage[i];
-    float_t curValue = 1.0;
+    double curValue = 1.0;
 
     for (size_t t = 0; t < d; t++) {
-      const float_t val1d = ((t == derivDim) ?
+      const double val1d = ((t == derivDim) ?
                              base.evalDx(gp.getLevel(t), gp.getIndex(t), point[t]) :
                              base.eval(gp.getLevel(t), gp.getIndex(t), point[t]));
 
@@ -39,4 +39,4 @@ float_t OperationNaiveEvalPartialDerivativeFundamentalSpline::evalPartialDerivat
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

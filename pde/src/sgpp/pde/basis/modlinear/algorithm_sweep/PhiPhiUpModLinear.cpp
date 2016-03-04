@@ -7,34 +7,34 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-PhiPhiUpModLinear::PhiPhiUpModLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
+PhiPhiUpModLinear::PhiPhiUpModLinear(sgpp::base::GridStorage* storage) : storage(storage) {}
 
 PhiPhiUpModLinear::~PhiPhiUpModLinear() {}
 
-void PhiPhiUpModLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+void PhiPhiUpModLinear::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                                    grid_iterator& index, size_t dim) {
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
   rec(source, result, index, dim, fl, fr);
 }
 
-void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                            grid_iterator& index, size_t dim, float_t& fl, float_t& fr) {
+void PhiPhiUpModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                            grid_iterator& index, size_t dim, double& fl, double& fr) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  float_t h = 1 / pow(2.0, static_cast<int>(l));
-  float_t fml = 0.0;
-  float_t fmr = 0.0;
+  double h = 1 / pow(2.0, static_cast<int>(l));
+  double fml = 0.0;
+  double fmr = 0.0;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -52,7 +52,7 @@ void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVect
     index.up(dim);
   }
 
-  float_t fm = fml + fmr;
+  double fm = fml + fmr;
 
   // level 1, constant function
   if (l == 1) {
@@ -78,4 +78,4 @@ void PhiPhiUpModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVect
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -24,7 +24,7 @@ namespace optimization {
 class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
  public:
   /// default adaptivity
-  static constexpr float_t DEFAULT_ADAPTIVITY = 0.2;
+  static constexpr double DEFAULT_ADAPTIVITY = 0.2;
   /// default level of initial regular sparse grid
   static const base::level_t DEFAULT_INITIAL_LEVEL = 3;
 
@@ -39,7 +39,7 @@ class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
    * @param initialLevel  level of initial regular sparse grid
    */
   IterativeGridGeneratorLinearSurplus(ScalarFunction& f, base::Grid& grid, size_t N,
-                                      float_t adaptivity = DEFAULT_ADAPTIVITY,
+                                      double adaptivity = DEFAULT_ADAPTIVITY,
                                       base::level_t initialLevel = DEFAULT_INITIAL_LEVEL);
 
   /**
@@ -57,12 +57,12 @@ class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
   /**
    * @return            adaptivity between 0 and 1
    */
-  float_t getAdaptivity() const;
+  double getAdaptivity() const;
 
   /**
    * @param adaptivity  adaptivity between 0 and 1
    */
-  void setAdaptivity(float_t adaptivity);
+  void setAdaptivity(double adaptivity);
 
   /**
    * @return              level of initial regular sparse grid
@@ -78,11 +78,11 @@ class IterativeGridGeneratorLinearSurplus : public IterativeGridGenerator {
   /// pointer to a linear grid (of the same type as the "real" grid)
   std::unique_ptr<base::Grid> linearGrid;
   /// adaptivity
-  float_t gamma;
+  double gamma;
   /// level of initial regular sparse grid
   base::level_t initialLevel;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORLINEARSURPLUS_HPP */

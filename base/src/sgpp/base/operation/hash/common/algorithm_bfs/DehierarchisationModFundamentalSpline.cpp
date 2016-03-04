@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/common/algorithm_bfs/DehierarchisationModFundamentalSpline.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 DehierarchisationModFundamentalSpline::DehierarchisationModFundamentalSpline(
   ModFundamentalSplineGrid* grid) :
@@ -52,14 +52,14 @@ void DehierarchisationModFundamentalSpline::operator()(
     }
 
     if (!skipChild) {
-      float_t value = 1.0;
+      double value = 1.0;
 
       for (size_t t = 0; t < d; t++) {
         GridIndex::level_type l;
         GridIndex::level_type i;
         iterator.get(t, l, i);
 
-        const float_t val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getCoord(t));
 
         if (val1d == 0.0) {
           value = 0.0;
@@ -110,14 +110,14 @@ void DehierarchisationModFundamentalSpline::operator()(
     }
 
     if (!skipChild) {
-      float_t value = 1.0;
+      double value = 1.0;
 
       for (size_t t = 0; t < d; t++) {
         GridIndex::level_type l;
         GridIndex::level_type i;
         iterator.get(t, l, i);
 
-        const float_t val1d = base.eval(l, i, point.getCoord(t));
+        const double val1d = base.eval(l, i, point.getCoord(t));
 
         if (val1d == 0.0) {
           value = 0.0;
@@ -138,4 +138,4 @@ void DehierarchisationModFundamentalSpline::operator()(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

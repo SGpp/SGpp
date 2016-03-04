@@ -17,26 +17,25 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION == 0
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 template <typename KernelImplementation>
 class DMSystemMatrixSPVectorizedIdentityAllreduce
-    : public SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
+    : public sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
  private:
   // which part of the dataset this process handles, it always handles the complete grid
   size_t data_size;
   size_t data_offset;
 
  public:
-  DMSystemMatrixSPVectorizedIdentityAllreduce(SGPP::base::Grid& SparseGrid,
-                                              SGPP::base::DataMatrixSP& trainData, float lambda,
+  DMSystemMatrixSPVectorizedIdentityAllreduce(sgpp::base::Grid& SparseGrid,
+                                              sgpp::base::DataMatrixSP& trainData, float lambda,
                                               VectorizationType vecMode)
       : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData,
                                                                         lambda, vecMode) {
-    SGPP::parallel::PartitioningTool::getMPIPartitionSegment(
+    sgpp::parallel::PartitioningTool::getMPIPartitionSegment(
         this->numPatchedTrainingInstances_, &data_size, &data_offset,
-        SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
+        sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
     rebuildLevelAndIndex();
   }
 
@@ -52,7 +51,7 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce
 #pragma omp parallel
     {
       this->kernel_.mult(this->level_, this->index_, this->mask_, this->offset_, this->dataset_,
-                         alpha, *(this->tempData), 0, this->storage_->size(), data_offset,
+                         alpha, *(this->tempData), 0, this->storage_.getSize(), data_offset,
                          data_offset + data_size);
 
 #pragma omp barrier
@@ -81,7 +80,7 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce
 
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
                                   this->dataset_, *(this->tempData), *(this->result_tmp), 0,
-                                  this->storage_->size(), data_offset, data_offset + data_size);
+                                  this->storage_.getSize(), data_offset, data_offset + data_size);
     }
     // myGlobalMPIComm->Barrier();
     this->computeTimeMultTrans_ += this->myTimer_->stop();
@@ -101,7 +100,7 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce
     {
       this->kernel_.multTranspose(this->level_, this->index_, this->mask_, this->offset_,
                                   this->dataset_, *(this->tempData), *(this->result_tmp), 0,
-                                  this->storage_->size(), data_offset, data_offset + data_size);
+                                  this->storage_.getSize(), data_offset, data_offset + data_size);
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();
     myGlobalMPIComm->allreduceSumSP(*(this->result_tmp), b);
@@ -114,6 +113,6 @@ class DMSystemMatrixSPVectorizedIdentityAllreduce
 };
 
 }  // namespace parallel
-}  // namespace SGPP
-#endif
+}  // namespace sgpp
+
 #endif  // DMSYSTEMMATRIXSPVECTORIZEDIDENTITYALLREDUCE_H

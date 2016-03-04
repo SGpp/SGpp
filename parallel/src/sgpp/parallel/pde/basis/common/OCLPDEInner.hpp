@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -76,14 +76,14 @@ std::string InnerLTwoDotFunction();
 /// Allocates and initializes the main part of the buffers needed by the OpenCL code for the
 /// operators on the inner grid.
 void SetBuffersInner(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t localStorageSize,
-                     size_t localdim, SGPP::base::GridStorage* storage);
+                     size_t localdim, sgpp::base::GridStorage* storage);
 #ifdef USE_MPI
 extern int* MPIOffsetListInner;
 extern int* MPISizeListInner;
 /// Creates partitions of the work load along the j-direction for the operators on the inner grid.
 void SetUpMPIInner();
 /// Computes the sum of all subresults result on all processes.
-void MPI_CombineResultInner(SGPP::base::DataVector& result);
+void MPI_CombineResultInner(sgpp::base::DataVector& result);
 #endif
 /// Deallocates all data pertaining to the Laplace operator on the inner grid
 void CleanUpLaplaceInner();
@@ -94,4 +94,4 @@ void CleanUpLTwoDotInner();
 void CleanUpLTwoDotLaplaceInner();
 }  // namespace oclpdekernels
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

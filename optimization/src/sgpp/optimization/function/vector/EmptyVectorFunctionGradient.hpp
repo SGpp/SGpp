@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -27,6 +27,6 @@ class EmptyVectorFunctionGradient {
   void operator=(const EmptyVectorFunctionGradient&) = delete;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_EMPTYVECTORGRADIENT_HPP */

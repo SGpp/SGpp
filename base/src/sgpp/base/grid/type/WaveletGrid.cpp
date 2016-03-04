@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 WaveletGrid::WaveletGrid(std::istream& istr) :
@@ -29,8 +29,8 @@ WaveletGrid::WaveletGrid(size_t dim) :
 WaveletGrid::~WaveletGrid() {
 }
 
-SGPP::base::GridType WaveletGrid::getType() {
-  return SGPP::base::GridType::Wavelet;
+sgpp::base::GridType WaveletGrid::getType() {
+  return sgpp::base::GridType::Wavelet;
 }
 
 const SBasis& WaveletGrid::getBasis() {
@@ -53,4 +53,4 @@ GridGenerator& WaveletGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

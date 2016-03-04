@@ -19,7 +19,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class PiecewiseConstantSmoothedRegressionMetaLearner {
@@ -47,14 +47,14 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
   // bool shuffleDataset, uint32_t shuffleSeed);
 
   void optimizeLambdaLog_(size_t kFold, size_t maxLevel,
-                          float_t fastApproximationMSE,
+                          double fastApproximationMSE,
                           size_t fastApproximationMaxLevel,
                           std::vector<base::DataMatrix>& trainingSets,
                           std::vector<base::DataVector>& trainingSetsValues,
                           std::vector<base::DataMatrix>& testSets,
                           std::vector<base::DataVector>& testSetsValues, size_t curLevel,
-                          float_t lambdaLogStepSize,
-                          float_t& bestLogLambda, float_t& bestMSE);
+                          double lambdaLogStepSize,
+                          double& bestLogLambda, double& bestMSE);
 
  public:
   PiecewiseConstantSmoothedRegressionMetaLearner(bool verbose,
@@ -64,14 +64,14 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
       solver::SLESolverConfiguration solverConfig,
       datadriven::RegularizationConfiguration regularizationConfig);
 
-  float_t optimizeLambdaLog(size_t kFold, size_t maxLevel,
-                            float_t fastApproximationMSE,
+  double optimizeLambdaLog(size_t kFold, size_t maxLevel,
+                            double fastApproximationMSE,
                             size_t fastApproximationMaxLevel);
 
   void optimizeLambdaLog(size_t kFold, size_t maxLevel,
-                         float_t fastApproximationMSE,
+                         double fastApproximationMSE,
                          size_t fastApproximationMaxLevel, std::shared_ptr<base::Grid>& bestGrid,
-                         std::shared_ptr<base::DataVector>& bestAlpha, float_t& lambdaOpt);
+                         std::shared_ptr<base::DataVector>& bestAlpha, double& lambdaOpt);
 
   /**
    * Does the learning step on a given grid, training set and regularization parameter lambda
@@ -86,15 +86,15 @@ class PiecewiseConstantSmoothedRegressionMetaLearner {
    * @param alpha grid coefficients
    */
   void train(base::DataMatrix& train, base::DataVector& trainValues,
-             float_t lambda, float_t fastApproximationMSE,
+             double lambda, double fastApproximationMSE,
              size_t fastApproximationMaxLevel, std::shared_ptr<base::Grid>& grid,
              std::shared_ptr<base::DataVector>& alpha);
 
-  float_t calculateMSE(base::Grid& grid, base::DataVector& alpha,
+  double calculateMSE(base::Grid& grid, base::DataVector& alpha,
                        base::DataMatrix& testSubset,
                        base::DataVector& valuesTestSubset, bool verbose = false);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

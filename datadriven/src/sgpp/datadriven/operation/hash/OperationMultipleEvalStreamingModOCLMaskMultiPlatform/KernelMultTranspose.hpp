@@ -20,7 +20,7 @@
 #include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
 #include "SourceBuilderMultTranspose.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingModOCLMaskMultiPlatform {
 
@@ -162,61 +162,61 @@ class KernelMultTranspose {
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 1, sizeof(cl_mem),
                              this->deviceIndexTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 2, sizeof(cl_mem),
                              this->deviceMaskTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 3, sizeof(cl_mem),
                              this->deviceOffsetTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 4, sizeof(cl_mem),
                              this->deviceDataTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 5, sizeof(cl_mem),
                              this->deviceSourceTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 6, sizeof(cl_mem),
                              this->deviceResultGridTranspose.getBuffer());
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 7, sizeof(cl_uint), &kernelStartData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
         err = clSetKernelArg(kernelMultTranspose, 8, sizeof(cl_uint), &kernelEndData);
         if (err != CL_SUCCESS) {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         cl_event clTiming;
@@ -231,7 +231,7 @@ class KernelMultTranspose {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         clFinish(device->commandQueue);
@@ -265,7 +265,7 @@ class KernelMultTranspose {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command "
                          "queue (or crash in multTranspose)! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTiming, CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
@@ -275,7 +275,7 @@ class KernelMultTranspose {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command "
                          "queue! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         double time = 0.0;
@@ -338,4 +338,4 @@ class KernelMultTranspose {
 
 }  // namespace StreamingModOCLMaskMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

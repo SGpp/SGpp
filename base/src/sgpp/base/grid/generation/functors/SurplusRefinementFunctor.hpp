@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -28,22 +28,22 @@ class SurplusRefinementFunctor : public RefinementFunctor {
    * @param threshold The absolute value of the entries have to be greater or equal than the threshold
    */
   SurplusRefinementFunctor(DataVector& alpha, size_t refinements_num = 1,
-                           float_t threshold = 0.0);
+                           double threshold = 0.0);
 
   /**
    * Destructor
    */
   ~SurplusRefinementFunctor() override;
 
-  float_t operator()(GridStorage& storage, size_t seq) const override;
+  double operator()(GridStorage& storage, size_t seq) const override;
 
 
-  float_t start() const override;
+  double start() const override;
 
 
   size_t getRefinementsNum() const;
 
-  float_t getRefinementThreshold() const;
+  double getRefinementThreshold() const;
 
  protected:
   /// pointer to the vector that stores the alpha values
@@ -56,10 +56,10 @@ class SurplusRefinementFunctor : public RefinementFunctor {
    * threshold, only the points with greater to equal absolute values of the
    * refinement criterion (e.g. alpha or error) will be refined
    */
-  float_t threshold;
+  double threshold;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SURPLUSREFINEMENTFUNCTOR_HPP */

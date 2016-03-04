@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearGrid::LinearGrid(std::istream& istr) :
@@ -33,8 +33,8 @@ LinearGrid::LinearGrid(BoundingBox& BB) :
 LinearGrid::~LinearGrid() {
 }
 
-SGPP::base::GridType LinearGrid::getType() {
-  return SGPP::base::GridType::Linear;
+sgpp::base::GridType LinearGrid::getType() {
+  return sgpp::base::GridType::Linear;
 }
 
 const SBasis& LinearGrid::getBasis() {
@@ -56,4 +56,4 @@ GridGenerator& LinearGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

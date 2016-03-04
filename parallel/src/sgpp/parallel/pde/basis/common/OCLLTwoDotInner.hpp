@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -21,7 +21,7 @@ extern double CounterLTwoDotInner;
 extern double LTwoDotInnerStartupTime;
 extern double LTwoDotInnerExecTime;
 extern double LTwoDotInnerAllReduceTime;
-extern SGPP::base::SGppStopwatch* myStopwatch;
+extern sgpp::base::SGppStopwatch* myStopwatch;
 
 /// Generates and compiles the OpenCL code for the function for the LTwoDot operator on the inner
 /// grid.
@@ -39,4 +39,4 @@ void CleanUpLTwoDotInner();
 
 }  // namespace oclpdekernels
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

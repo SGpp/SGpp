@@ -22,7 +22,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class OperationMultipleEvalSubspaceSimple: public
@@ -37,7 +37,7 @@ class OperationMultipleEvalSubspaceSimple: public
   size_t subspaceSize = -1;
 
   size_t totalGridPoints = 0;
-  float_t* allSurplusses = nullptr;
+  double* allSurplusses = nullptr;
   std::map<uint32_t, uint32_t> allSurplussesIndexMap;
 
   void prepareSubspaceIterator();
@@ -45,10 +45,10 @@ class OperationMultipleEvalSubspaceSimple: public
   void createFlatStorage();
 
   void setSurplus(std::vector<size_t>&  level, std::vector<size_t>& maxIndices,
-                  std::vector<size_t>& index, float_t value);
+                  std::vector<size_t>& index, double value);
 
   void getSurplus(std::vector<size_t>& level, std::vector<size_t>& maxIndices,
-                  std::vector<size_t>& index, float_t& value, bool& isVirtual);
+                  std::vector<size_t>& index, double& value, bool& isVirtual);
 
   void setCoefficients(base::DataVector& surplusVector);
 
@@ -65,7 +65,7 @@ class OperationMultipleEvalSubspaceSimple: public
 
   size_t flattenLevel(size_t dim, size_t maxLevel, std::vector<size_t>& level);
 
-  static inline size_t calculateIndexComponent(float_t unadjusted) {
+  static inline size_t calculateIndexComponent(double unadjusted) {
     //implies flooring
     size_t rounded = static_cast<size_t>(unadjusted);
 
@@ -85,11 +85,11 @@ class OperationMultipleEvalSubspaceSimple: public
 
   void prepare() override;
 
-  void multTransposeImpl(SGPP::base::DataVector& alpha,
-                         SGPP::base::DataVector& result, const size_t start_index_data,
+  void multTransposeImpl(sgpp::base::DataVector& alpha,
+                         sgpp::base::DataVector& result, const size_t start_index_data,
                          const size_t end_index_data) override;
 
-  void multImpl(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+  void multImpl(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                 const size_t start_index_data,
                 const size_t end_index_data) override;
 

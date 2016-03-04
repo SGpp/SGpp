@@ -8,14 +8,14 @@
 
 #include <sgpp/globaldef.hpp>
 #include <string>
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 MPICommunicator::MPICommunicator(int myid, int ranks) : myid_(myid), ranks_(ranks) {}
 
 MPICommunicator::~MPICommunicator() {}
 
-void MPICommunicator::broadcastGridCoefficientsFromRank0(SGPP::base::DataVector& alpha) {
+void MPICommunicator::broadcastGridCoefficientsFromRank0(sgpp::base::DataVector& alpha) {
   MPI_Bcast(reinterpret_cast<void*>(alpha.getPointer()), static_cast<int>(alpha.getSize()),
             MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
@@ -25,7 +25,7 @@ void MPICommunicator::broadcastSPGridCoefficientsFromRank0(base::DataVectorSP& a
             MPI_FLOAT, 0, MPI_COMM_WORLD);
 }
 
-void MPICommunicator::reduceGridCoefficientsOnRank0(SGPP::base::DataVector& alpha) {
+void MPICommunicator::reduceGridCoefficientsOnRank0(sgpp::base::DataVector& alpha) {
   if (myid_ == 0) {
     MPI_Reduce(MPI_IN_PLACE, reinterpret_cast<void*>(alpha.getPointer()),
                static_cast<int>(alpha.getSize()), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -35,7 +35,7 @@ void MPICommunicator::reduceGridCoefficientsOnRank0(SGPP::base::DataVector& alph
   }
 }
 
-void MPICommunicator::reduceGridCoefficients(SGPP::base::DataVector& alpha) {
+void MPICommunicator::reduceGridCoefficients(sgpp::base::DataVector& alpha) {
   MPI_Allreduce(MPI_IN_PLACE, reinterpret_cast<void*>(alpha.getPointer()),
                 static_cast<int>(alpha.getSize()), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 }
@@ -118,7 +118,7 @@ void MPICommunicator::dataVectorAllToAll(base::DataVector& alpha, int* distribut
   int mySendSize = distributionSizes[myRank];
   int mySendOffset = distributionOffsets[myRank];
 
-  SGPP::base::DataVector tmp(alpha.getSize());
+  sgpp::base::DataVector tmp(alpha.getSize());
   double* sendbuf = alpha.getPointer();
   MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_DOUBLE, tmp.getPointer(),
                  distributionSizes, distributionOffsets, MPI_DOUBLE, MPI_COMM_WORLD);
@@ -131,7 +131,7 @@ void MPICommunicator::dataVectorSPAllToAll(base::DataVectorSP& alpha, int* distr
   int mySendSize = distributionSizes[myRank];
   int mySendOffset = distributionOffsets[myRank];
 
-  SGPP::base::DataVectorSP tmp(alpha.getSize());
+  sgpp::base::DataVectorSP tmp(alpha.getSize());
   float* sendbuf = alpha.getPointer();
   MPI_Allgatherv(&(sendbuf[mySendOffset]), mySendSize, MPI_FLOAT, tmp.getPointer(),
                  distributionSizes, distributionOffsets, MPI_FLOAT, MPI_COMM_WORLD);
@@ -219,7 +219,7 @@ size_t MPICommunicator::getNumRanks() { return this->ranks_; }
 void MPICommunicator::waitForAllRequests(size_t size, MPI_Request* reqs) {
   if (MPI_Waitall(static_cast<int>(size), reqs, MPI_STATUSES_IGNORE) != MPI_SUCCESS) {
     std::cout << "communication error in waitall" << std::endl;
-    throw SGPP::base::operation_exception("Communication Error");
+    throw sgpp::base::operation_exception("Communication Error");
   }
 }
 
@@ -230,7 +230,7 @@ void MPICommunicator::waitForAnyRequest(size_t size, MPI_Request* reqs, int* res
 void MPICommunicator::allreduceSum(base::DataVector& source, base::DataVector& result) {
   if (source.getSize() != result.getSize()) {
     std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
-    throw SGPP::base::operation_exception("DataVector sizes do not match in allreduce!");
+    throw sgpp::base::operation_exception("DataVector sizes do not match in allreduce!");
   }
 
   MPI_Allreduce(source.getPointer(), result.getPointer(), static_cast<int>(source.getSize()),
@@ -240,11 +240,11 @@ void MPICommunicator::allreduceSum(base::DataVector& source, base::DataVector& r
 void MPICommunicator::allreduceSumSP(base::DataVectorSP& source, base::DataVectorSP& result) {
   if (source.getSize() != result.getSize()) {
     std::cout << "DataVector sizes do not match in allreduce!" << std::endl;
-    throw SGPP::base::operation_exception("DataVector sizes do not match in allreduce!");
+    throw sgpp::base::operation_exception("DataVector sizes do not match in allreduce!");
   }
 
   MPI_Allreduce(source.getPointer(), result.getPointer(), static_cast<int>(source.getSize()),
                 MPI_FLOAT, MPI_SUM, MPI_COMM_WORLD);
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class DynamicTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
@@ -23,6 +23,6 @@ class DynamicTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
   double _partition2_speedup;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // DYNAMICTWOPARTITIONAUTOTUNING_HPP

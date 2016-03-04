@@ -14,11 +14,11 @@
 #include <fstream>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, float_t timestepSize, float_t eps,
-                                       SGPP::base::ScreenOutput* screen)
+StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps,
+                                       sgpp::base::ScreenOutput* screen)
     : VarTimestep("AdBas", "BDF2", nTimesteps, timestepSize, eps, screen) {
   std::stringstream fnsstream;
   fnsstream << "Time_"
@@ -28,21 +28,21 @@ StepsizeControlBDF::StepsizeControlBDF(size_t nTimesteps, float_t timestepSize, 
 
 StepsizeControlBDF::~StepsizeControlBDF() {}
 
-float_t StepsizeControlBDF::nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
-                                         float_t norm, float_t epsilon) {
-  // float_t deltaY = u/(3.0*(1.0+tmp_timestepsize/tmp_timestepsize_old));
+double StepsizeControlBDF::nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old,
+                                         double norm, double epsilon) {
+  // double deltaY = u/(3.0*(1.0+tmp_timestepsize/tmp_timestepsize_old));
   /*
-      float_t epsilon = 0.001;
+      double epsilon = 0.001;
       YkBDF2.sub(YkF23);
-      float_t u  = std::max(YkBDF2.max(),-YkBDF2.min());
-      float_t tD = tmp_timestepsize/tmp_timestepsize_old;
-      float_t C1 = (1.0+1.0/tD)/6.0;
-      float_t Cp = -(1.0+tD)*(1.0+tD)/(6*tD*(1.0+2.0*tD));
-      float_t alpha0 = (1+2*tD)/(1+tD); //??
-      float_t deltaY = alpha0*C1*u/(tmp_timestepsize*(C1-Cp));
+      double u  = std::max(YkBDF2.max(),-YkBDF2.min());
+      double tD = tmp_timestepsize/tmp_timestepsize_old;
+      double C1 = (1.0+1.0/tD)/6.0;
+      double Cp = -(1.0+tD)*(1.0+tD)/(6*tD*(1.0+2.0*tD));
+      double alpha0 = (1+2*tD)/(1+tD); //??
+      double deltaY = alpha0*C1*u/(tmp_timestepsize*(C1-Cp));
       tmp_timestepsize_new = tmp_timestepsize * sqrt(epsilon/deltaY);
   */
-  return tmp_timestepsize * pow(epsilon / norm, (float_t)1.0 / (float_t)3.0);
+  return tmp_timestepsize * pow(epsilon / norm, 1.0 / 3.0);
 }
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

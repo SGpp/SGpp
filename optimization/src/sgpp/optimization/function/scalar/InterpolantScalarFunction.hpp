@@ -17,7 +17,7 @@
 #include <cstring>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -60,7 +60,7 @@ class InterpolantScalarFunction : public ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x) override {
+  inline double eval(const base::DataVector& x) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         return INFINITY;
@@ -96,6 +96,6 @@ class InterpolantScalarFunction : public ScalarFunction {
   base::DataVector alpha;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_INTERPOLANTSCALARFUNCTION_HPP */

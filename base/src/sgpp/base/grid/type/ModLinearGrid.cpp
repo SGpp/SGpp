@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ModLinearGrid::ModLinearGrid(std::istream& istr) :
@@ -29,8 +29,8 @@ ModLinearGrid::ModLinearGrid(size_t dim) :
 ModLinearGrid::~ModLinearGrid() {
 }
 
-SGPP::base::GridType ModLinearGrid::getType() {
-  return SGPP::base::GridType::ModLinear;
+sgpp::base::GridType ModLinearGrid::getType() {
+  return sgpp::base::GridType::ModLinear;
 }
 
 const SBasis& ModLinearGrid::getBasis() {
@@ -52,4 +52,4 @@ GridGenerator& ModLinearGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

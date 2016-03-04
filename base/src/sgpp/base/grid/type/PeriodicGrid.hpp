@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -37,7 +37,7 @@ class PeriodicGrid : public Grid {
    */
   ~PeriodicGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   GridGenerator& getGenerator() override;
 
@@ -47,6 +47,6 @@ class PeriodicGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* PERIODICGRID_HPP */

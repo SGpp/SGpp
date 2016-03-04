@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& G10::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G10::getEqualityConstraintFunction() { return h; }
 
-float_t G10::getOptimalPointUndisplaced(base::DataVector& x) {
+double G10::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(8);
   x[0] = 0.0484158282828283;
   x[1] = 0.0399936666666667;
@@ -39,15 +39,15 @@ G10Objective::G10Objective() : TestScalarFunction(8) {}
 
 G10Objective::~G10Objective() {}
 
-float_t G10Objective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 9900.0 * x[0] + 100.0;
-  const float_t x2 = 9000.0 * x[1] + 1000.0;
-  const float_t x3 = 9000.0 * x[2] + 1000.0;
-  // const float_t x4 = 990.0 * x[3] + 10.0;
-  // const float_t x5 = 990.0 * x[4] + 10.0;
-  // const float_t x6 = 990.0 * x[5] + 10.0;
-  // const float_t x7 = 990.0 * x[6] + 10.0;
-  // const float_t x8 = 990.0 * x[7] + 10.0;
+double G10Objective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 9900.0 * x[0] + 100.0;
+  const double x2 = 9000.0 * x[1] + 1000.0;
+  const double x3 = 9000.0 * x[2] + 1000.0;
+  // const double x4 = 990.0 * x[3] + 10.0;
+  // const double x5 = 990.0 * x[4] + 10.0;
+  // const double x6 = 990.0 * x[5] + 10.0;
+  // const double x7 = 990.0 * x[6] + 10.0;
+  // const double x8 = 990.0 * x[7] + 10.0;
 
   return x1 + x2 + x3;
 }
@@ -61,14 +61,14 @@ G10InequalityConstraint::G10InequalityConstraint() : TestVectorFunction(8, 6) {}
 G10InequalityConstraint::~G10InequalityConstraint() {}
 
 void G10InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 9900.0 * x[0] + 100.0;
-  const float_t x2 = 9000.0 * x[1] + 1000.0;
-  const float_t x3 = 9000.0 * x[2] + 1000.0;
-  const float_t x4 = 990.0 * x[3] + 10.0;
-  const float_t x5 = 990.0 * x[4] + 10.0;
-  const float_t x6 = 990.0 * x[5] + 10.0;
-  const float_t x7 = 990.0 * x[6] + 10.0;
-  const float_t x8 = 990.0 * x[7] + 10.0;
+  const double x1 = 9900.0 * x[0] + 100.0;
+  const double x2 = 9000.0 * x[1] + 1000.0;
+  const double x3 = 9000.0 * x[2] + 1000.0;
+  const double x4 = 990.0 * x[3] + 10.0;
+  const double x5 = 990.0 * x[4] + 10.0;
+  const double x6 = 990.0 * x[5] + 10.0;
+  const double x7 = 990.0 * x[6] + 10.0;
+  const double x8 = 990.0 * x[7] + 10.0;
 
   value[0] = -1.0 + (x4 + x6) / 400.0;
   value[1] = -1.0 + (x5 + x7 - x4) / 400.0;
@@ -93,4 +93,4 @@ void G10EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

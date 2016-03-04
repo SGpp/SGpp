@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -45,7 +45,7 @@ class LinearGridStencil : public GridStencil {
    */
   ~LinearGridStencil() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
@@ -55,6 +55,6 @@ class LinearGridStencil : public GridStencil {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARGRIDSTENCIL_HPP */

@@ -8,15 +8,15 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
-    const float_t* const datasetPtr, SGPP::base::DataVector& alpha,
+    const double* const datasetPtr, sgpp::base::DataVector& alpha,
     size_t dataIndexBase, size_t end_index_data, SubspaceNodeCombined& subspace,
-    float_t* levelArrayContinuous,
+    double* levelArrayContinuous,
     size_t validIndicesCount, size_t* validIndices, size_t* levelIndices,
-    float_t* evalIndexValuesAll, uint32_t* intermediatesAll) {
+    double* evalIndexValuesAll, uint32_t* intermediatesAll) {
 
   for (size_t validIndex = 0; validIndex < validIndicesCount;
        validIndex += X86COMBINED_VEC_PADDING) {
@@ -32,14 +32,14 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
     size_t nextIterationToRecalc = 0;
 #endif
 
-    const float_t* const dataTuplePtr[4] = {
+    const double* const dataTuplePtr[4] = {
       datasetPtr + (dataIndexBase + parallelIndices[0])* dim,
       datasetPtr + (dataIndexBase + parallelIndices[1])* dim,
       datasetPtr + (dataIndexBase + parallelIndices[2])* dim,
       datasetPtr + (dataIndexBase + parallelIndices[3])* dim
     };
 
-    float_t* evalIndexValues[4];
+    double* evalIndexValues[4];
     evalIndexValues[0] = evalIndexValuesAll + (dim + 1) * parallelIndices[0];
     evalIndexValues[1] = evalIndexValuesAll + (dim + 1) * parallelIndices[1];
     evalIndexValues[2] = evalIndexValuesAll + (dim + 1) * parallelIndices[2];
@@ -53,7 +53,7 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
     intermediates[3] = intermediatesAll + (dim + 1) * parallelIndices[3];
 
     uint32_t indexFlat[4];
-    float_t phiEval[4];
+    double phiEval[4];
 
 #if X86COMBINED_UNROLL == 1
     size_t parallelIndices2[4];
@@ -62,14 +62,14 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
     parallelIndices2[2] = validIndices[validIndex + 6];
     parallelIndices2[3] = validIndices[validIndex + 7];
 
-    const float_t* const dataTuplePtr2[4] = {
+    const double* const dataTuplePtr2[4] = {
       datasetPtr + (dataIndexBase + parallelIndices2[0])* dim,
       datasetPtr + (dataIndexBase + parallelIndices2[1])* dim,
       datasetPtr + (dataIndexBase + parallelIndices2[2])* dim,
       datasetPtr + (dataIndexBase + parallelIndices2[3])* dim
     };
 
-    float_t* evalIndexValues2[4];
+    double* evalIndexValues2[4];
     evalIndexValues2[0] = evalIndexValuesAll + (dim + 1) * parallelIndices2[0];
     evalIndexValues2[1] = evalIndexValuesAll + (dim + 1) * parallelIndices2[1];
     evalIndexValues2[2] = evalIndexValuesAll + (dim + 1) * parallelIndices2[2];
@@ -82,7 +82,7 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
     intermediates2[3] = intermediatesAll + (dim + 1) * parallelIndices2[3];
 
     uint32_t indexFlat2[4];
-    float_t phiEval2[4];
+    double phiEval2[4];
 
     OperationMultipleEvalSubspaceCombined::calculateIndexCombined2(dim,
         nextIterationToRecalc, dataTuplePtr, dataTuplePtr2, subspace.hInverse,
@@ -94,14 +94,14 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
         evalIndexValues, indexFlat, phiEval);
 #endif
 
-    float_t surplus[4];
+    double surplus[4];
     surplus[0] = levelArrayContinuous[indexFlat[0]];
     surplus[1] = levelArrayContinuous[indexFlat[1]];
     surplus[2] = levelArrayContinuous[indexFlat[2]];
     surplus[3] = levelArrayContinuous[indexFlat[3]];
 
 #if X86COMBINED_UNROLL == 1
-    float_t surplus2[4];
+    double surplus2[4];
     surplus2[0] = levelArrayContinuous[indexFlat2[0]];
     surplus2[1] = levelArrayContinuous[indexFlat2[1]];
     surplus2[2] = levelArrayContinuous[indexFlat2[2]];
@@ -112,7 +112,7 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
       size_t parallelIndex = parallelIndices[innerIndex];
 
       if (!std::isnan(surplus[innerIndex])) {
-        float_t partialSurplus = 0.0;
+        double partialSurplus = 0.0;
 
         if (dataIndexBase + parallelIndex < end_index_data
             && parallelIndex < X86COMBINED_PARALLEL_DATA_POINTS) {
@@ -146,7 +146,7 @@ void OperationMultipleEvalSubspaceCombined::listMultInner(size_t dim,
       size_t parallelIndex = parallelIndices2[innerIndex];
 
       if (!std::isnan(surplus2[innerIndex])) {
-        float_t partialSurplus = 0.0;
+        double partialSurplus = 0.0;
 
         if (dataIndexBase + parallelIndex < end_index_data
             && parallelIndex < X86COMBINED_PARALLEL_DATA_POINTS) {

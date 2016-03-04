@@ -12,7 +12,7 @@
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -68,6 +68,6 @@ class OperationMultipleHierarchisationLinearBoundary : public OperationMultipleH
   base::LinearBoundaryGrid& grid;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARBOUNDARY_HPP */

@@ -8,17 +8,17 @@
 
 #include <iostream>
 
-using SGPP::base::DataVector;
-using SGPP::base::Grid;
-using SGPP::base::GridGenerator;
-using SGPP::base::GridIndex;
-using SGPP::base::GridStorage;
-using SGPP::base::OperationQuadrature;
-using SGPP::base::OperationQuadratureMC;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridIndex;
+using sgpp::base::GridStorage;
+using sgpp::base::OperationQuadrature;
+using sgpp::base::OperationQuadratureMC;
 
 // function to interpolate
-SGPP::float_t f(int dim, SGPP::float_t* x, void* clientdata) {
-  SGPP::float_t res = 1.0;
+double f(int dim, double* x, void* clientdata) {
+  double res = 1.0;
 
   for (int i = 0; i < dim; i++) {
     res *= 4.0 * x[i] * (1.0 - x[i]);
@@ -42,7 +42,7 @@ int main() {
   // create coefficient vector
   DataVector alpha(gridStorage.getSize());
   GridIndex* gp;
-  SGPP::float_t p[2];
+  double p[2];
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     gp = gridStorage.get(i);
@@ -51,12 +51,12 @@ int main() {
     alpha[i] = f(2, p, NULL);
   }
 
-  SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
+  sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
     alpha);
 
   // direct quadrature
-  std::unique_ptr<OperationQuadrature> opQ(SGPP::op_factory::createOperationQuadrature(*grid));
-  SGPP::float_t res = opQ->doQuadrature(alpha);
+  std::unique_ptr<OperationQuadrature> opQ(sgpp::op_factory::createOperationQuadrature(*grid));
+  double res = opQ->doQuadrature(alpha);
   std::cout << "exact integral value:  " << res << std::endl;
 
   // Monte Carlo quadrature using 100000 paths

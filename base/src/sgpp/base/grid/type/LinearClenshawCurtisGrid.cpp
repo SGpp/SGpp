@@ -13,7 +13,7 @@
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(std::istream& istr) :
@@ -40,8 +40,8 @@ LinearClenshawCurtisGrid::LinearClenshawCurtisGrid(BoundingBox& BB,
 LinearClenshawCurtisGrid::~LinearClenshawCurtisGrid() {
 }
 
-SGPP::base::GridType LinearClenshawCurtisGrid::getType() {
-  return SGPP::base::GridType::LinearClenshawCurtis;
+sgpp::base::GridType LinearClenshawCurtisGrid::getType() {
+  return sgpp::base::GridType::LinearClenshawCurtis;
 }
 
 const SBasis& LinearClenshawCurtisGrid::getBasis() {
@@ -68,4 +68,4 @@ GridGenerator& LinearClenshawCurtisGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

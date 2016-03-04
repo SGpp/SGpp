@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -62,6 +62,6 @@ class OperationHierarchisationModBspline : public OperationHierarchisation {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONHIERARCHISATIONMODBSPLINE_HPP */

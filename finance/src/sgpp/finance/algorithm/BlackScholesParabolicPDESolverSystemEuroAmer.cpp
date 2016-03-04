@@ -18,30 +18,30 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSystemEuroAmer(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-    SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
-    std::string OperationMode, float_t dStrike, std::string option_type, bool bLogTransform,
-    bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
-    float_t refineThreshold, std::string refineMode, SGPP::base::GridIndex::level_type xLevel) {
+    sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& mu,
+    sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
+    std::string OperationMode, double dStrike, std::string option_type, bool bLogTransform,
+    bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
+    double refineThreshold, std::string refineMode, sgpp::base::GridIndex::level_type xLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
-  this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
-  this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
+  this->alpha_complete_old = new sgpp::base::DataVector(*this->alpha_complete);
+  this->alpha_complete_tmp = new sgpp::base::DataVector(*this->alpha_complete);
+  this->oldGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
+  this->secondGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
 
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
-  this->GridConverter = new SGPP::base::DirichletGridConverter();
+  this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->GridConverter = new sgpp::base::DirichletGridConverter();
   this->r = r;
   this->mus = &mu;
   this->sigmas = &sigma;
@@ -51,7 +51,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
   // throw exception if grid dimensions not equal algorithmic dimensions
   if (this->BSalgoDims.size() != this->BoundGrid->getDimension()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesParabolicPDESolverSystemEuropean::"
         "BlackScholesParabolicPDESolverSystemEuropean : Number of algorithmic dimensions is not "
         "equal to the number of grid's dimensions.");
@@ -61,7 +61,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   // sigma)
   if (this->BoundGrid->getDimension() != this->mus->getSize() ||
       this->BoundGrid->getDimension() != this->sigmas->getSize()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesParabolicPDESolverSystemEuropean::"
         "BlackScholesParabolicPDESolverSystemEuropean : Dimension of mu and sigma parameters don't "
         "match the grid's dimensions!");
@@ -70,7 +70,7 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (rho)
   if (this->BoundGrid->getDimension() != this->rhos->getNrows() ||
       this->BoundGrid->getDimension() != this->rhos->getNcols()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesParabolicPDESolverSystemEuropean::"
         "BlackScholesParabolicPDESolverSystemEuropean : Row or col of rho parameter don't match "
         "the grid's dimensions!");
@@ -79,14 +79,14 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
     if (this->BSalgoDims[i] >= this->BoundGrid->getDimension()) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "BlackScholesParabolicPDESolverSystemEuropean::"
           "BlackScholesParabolicPDESolverSystemEuropean : Minimum one algorithmic dimension is not "
           "inside the grid's dimensions!");
     }
   }
 
-  // test if there are float_t algorithmic dimensions
+  // test if there are double algorithmic dimensions
   std::vector<size_t> tempAlgoDims(this->BSalgoDims);
 
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
@@ -99,16 +99,16 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
     }
 
     if (dimCount > 1) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "BlackScholesParabolicPDESolverSystemEuropean::"
-          "BlackScholesParabolicPDESolverSystemEuropean : There is minimum one float_td "
+          "BlackScholesParabolicPDESolverSystemEuropean : There is minimum one doubled "
           "algorithmic dimension!");
     }
   }
 
   // build the coefficient vectors for the operations
-  this->gammaCoef = new SGPP::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
-  this->deltaCoef = new SGPP::base::DataVector(this->BSalgoDims.size());
+  this->gammaCoef = new sgpp::base::DataMatrix(this->BSalgoDims.size(), this->BSalgoDims.size());
+  this->deltaCoef = new sgpp::base::DataVector(this->BSalgoDims.size());
 
   // create the inner grid
   this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete,
@@ -120,14 +120,14 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
     // Create needed operations, on inner grid
     this->OpDeltaInner =
-        SGPP::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDelta(*this->InnerGrid, *this->deltaCoef).release();
     this->OpGammaInner =
-        SGPP::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGamma(*this->InnerGrid, *this->gammaCoef).release();
     // Create needed operations, on boundary grid
     this->OpDeltaBound =
-        SGPP::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDelta(*this->BoundGrid, *this->deltaCoef).release();
     this->OpGammaBound =
-        SGPP::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGamma(*this->BoundGrid, *this->gammaCoef).release();
   } else {
     // create needed operations that are different in case of a log-transformed Black-Scholoes
     // equation
@@ -136,19 +136,19 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
 
     // operations on boundary grid
     this->OpDeltaBound =
-        SGPP::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDeltaLog(*this->BoundGrid, *this->deltaCoef).release();
     this->OpGammaBound =
-        SGPP::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGammaLog(*this->BoundGrid, *this->gammaCoef).release();
     // operations on inner grid
     this->OpDeltaInner =
-        SGPP::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef).release();
+        sgpp::op_factory::createOperationDeltaLog(*this->InnerGrid, *this->deltaCoef).release();
     this->OpGammaInner =
-        SGPP::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef).release();
+        sgpp::op_factory::createOperationGammaLog(*this->InnerGrid, *this->gammaCoef).release();
   }
 
   // Create operations, independent bLogTransform
-  this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
-  this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+  this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
+  this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
 
   // right hand side if System
   this->rhs = NULL;
@@ -174,19 +174,19 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
   this->b_log_transform = bLogTransform;
 
 #ifdef HEDGE
-  SGPP::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
-  SGPP::base::DimensionBoundary* myBoundaries =
-      new SGPP::base::DimensionBoundary[grid_bb->getDimensions()];
+  sgpp::base::BoundingBox* grid_bb = this->BoundGrid->getBoundingBox();
+  sgpp::base::DimensionBoundary* myBoundaries =
+      new sgpp::base::DimensionBoundary[grid_bb->getDimensions()];
 
   for (size_t d = 0; d < grid_bb->getDimensions(); d++) {
     if (bLogTransform == true) {
-      float_t interval_width =
+      double interval_width =
           exp(grid_bb->getBoundary(d).rightBoundary) - exp(grid_bb->getBoundary(d).leftBoundary);
-      float_t hedge_offset = (interval_width - (interval_width * HEDGE_WIDTH_PERCENT)) / 2.0;
+      double hedge_offset = (interval_width - (interval_width * HEDGE_WIDTH_PERCENT)) / 2.0;
       myBoundaries[d].leftBoundary = exp(grid_bb->getBoundary(d).leftBoundary) + hedge_offset;
       myBoundaries[d].rightBoundary = exp(grid_bb->getBoundary(d).rightBoundary) - hedge_offset;
     } else {
-      float_t hedge_offset =
+      double hedge_offset =
           (grid_bb->getIntervalWidth(d) - (grid_bb->getIntervalWidth(d) * HEDGE_WIDTH_PERCENT)) /
           2.0;
       myBoundaries[d].leftBoundary = grid_bb->getBoundary(d).leftBoundary + hedge_offset;
@@ -197,10 +197,10 @@ BlackScholesParabolicPDESolverSystemEuroAmer::BlackScholesParabolicPDESolverSyst
     myBoundaries[d].bDirichletRight = true;
   }
 
-  SGPP::base::BoundingBox* myHedgeBB =
-      new SGPP::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
+  sgpp::base::BoundingBox* myHedgeBB =
+      new sgpp::base::BoundingBox(grid_bb->getDimensions(), myBoundaries);
   // hedging
-  myHedge = new SGPP::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS, bLogTransform);
+  myHedge = new sgpp::finance::Hedging(*myHedgeBB, HEDGE_POINTS_PER_DIM, HEDGE_EPS, bLogTransform);
 
   delete myHedgeBB;
   delete[] myBoundaries;
@@ -240,8 +240,8 @@ BlackScholesParabolicPDESolverSystemEuroAmer::~BlackScholesParabolicPDESolverSys
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -261,8 +261,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorComplete(
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -282,8 +282,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::applyLOperatorInner(
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -294,8 +294,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixComplete(
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmer::applyMassMatrixInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -325,20 +325,20 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::finishTimestep() {
 
   // check if we are doing an American put -> handle early exercise
   if (this->option_type == "std_amer_put") {
-    std::unique_ptr<SGPP::base::OperationHierarchisation> myHierarchisation(
-        SGPP::op_factory::createOperationHierarchisation(*this->BoundGrid));
+    std::unique_ptr<sgpp::base::OperationHierarchisation> myHierarchisation(
+        sgpp::op_factory::createOperationHierarchisation(*this->BoundGrid));
     myHierarchisation->doDehierarchisation(*this->alpha_complete);
     size_t dim = this->BoundGrid->getDimension();
-    SGPP::base::BoundingBox* myBB =
-        new SGPP::base::BoundingBox(this->BoundGrid->getBoundingBox());
+    sgpp::base::BoundingBox* myBB =
+        new sgpp::base::BoundingBox(this->BoundGrid->getBoundingBox());
 
-    float_t* dblFuncValues = new float_t[dim];
+    double* dblFuncValues = new double[dim];
 
     for (size_t i = 0; i < this->BoundGrid->getSize(); i++) {
       std::string coords = this->BoundGrid->getStorage().get(i)->getCoordsStringBB(*myBB);
       std::stringstream coordsStream(coords);
 
-      float_t tmp;
+      double tmp;
 
       // read coordinates
       for (size_t j = 0; j < dim; j++) {
@@ -359,13 +359,13 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::finishTimestep() {
         }
       }
 
-      //      (*this->alpha_complete)[i] = std::max<float_t>((*this->alpha_complete)[i],
-      //      (std::max<float_t>(this->dStrike-((tmp/static_cast<float_t>(dim))),
+      //      (*this->alpha_complete)[i] = std::max<double>((*this->alpha_complete)[i],
+      //      (std::max<double>(this->dStrike-((tmp/static_cast<double>(dim))),
       //      0.0))*exp(((-1.0)*(this->r*
-      //      static_cast<float_t>(this->nExecTimesteps)*this->TimestepSize))));
-      (*this->alpha_complete)[i] = std::max<float_t>(
+      //      static_cast<double>(this->nExecTimesteps)*this->TimestepSize))));
+      (*this->alpha_complete)[i] = std::max<double>(
           (*this->alpha_complete)[i],
-          (std::max<float_t>(this->dStrike - ((tmp / static_cast<float_t>(dim))), 0.0)));
+          (std::max<double>(this->dStrike - ((tmp / static_cast<double>(dim))), 0.0)));
     }
 
     delete[] dblFuncValues;
@@ -388,14 +388,14 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastT
     size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
+    sgpp::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator.getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(
           *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
@@ -411,7 +411,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::coarsenAndRefine(bool isLastT
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+      sgpp::base::SurplusCoarseningFunctor myCoarsenFunctor(
           *this->alpha_complete, numCoarsen, this->coarsenThreshold);
       myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
@@ -469,7 +469,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::buildGammaCoefficients() {
 
 void BlackScholesParabolicPDESolverSystemEuroAmer::buildDeltaCoefficients() {
   size_t dim = this->BSalgoDims.size();
-  float_t covar_sum = 0.0;
+  double covar_sum = 0.0;
 
   for (size_t i = 0; i < dim; i++) {
     covar_sum = 0.0;
@@ -522,4 +522,4 @@ void BlackScholesParabolicPDESolverSystemEuroAmer::buildDeltaCoefficientsLogTran
   }
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

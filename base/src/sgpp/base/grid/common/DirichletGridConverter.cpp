@@ -16,7 +16,7 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 DirichletGridConverter::DirichletGridConverter() : numTotalGridPoints(0),
@@ -229,4 +229,4 @@ void DirichletGridConverter::updateBoundaryCoefs(DataVector& BoundaryCoefs,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

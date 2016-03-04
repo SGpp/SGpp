@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/common/IndexInSubspaceGenerator.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 IndexInSubspaceGenerator::IndexInSubspaceGenerator(const value_type&
@@ -64,4 +64,4 @@ IndexInSubspaceGenerator* IndexInSubspaceGenerator::next_() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

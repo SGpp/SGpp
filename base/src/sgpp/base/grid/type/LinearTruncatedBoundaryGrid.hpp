@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -47,7 +47,7 @@ class LinearTruncatedBoundaryGrid : public Grid {
    */
   ~LinearTruncatedBoundaryGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
@@ -57,6 +57,6 @@ class LinearTruncatedBoundaryGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARGENERALIZEDTRUNCATEDBOUNDARYGRID_HPP_ */

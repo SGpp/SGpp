@@ -7,19 +7,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
-XdPhidPhiDownBBLinear::XdPhidPhiDownBBLinear(SGPP::base::GridStorage* storage)
+XdPhidPhiDownBBLinear::XdPhidPhiDownBBLinear(sgpp::base::GridStorage* storage)
     : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
 XdPhidPhiDownBBLinear::~XdPhidPhiDownBBLinear() {}
 
-void XdPhidPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
-                                       SGPP::base::DataVector& result, grid_iterator& index,
+void XdPhidPhiDownBBLinear::operator()(sgpp::base::DataVector& source,
+                                       sgpp::base::DataVector& result, grid_iterator& index,
                                        size_t dim) {
-  float_t q = boundingBox->getIntervalWidth(dim);
-  float_t t = boundingBox->getIntervalOffset(dim);
+  double q = boundingBox->getIntervalWidth(dim);
+  double t = boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -34,29 +34,29 @@ void XdPhidPhiDownBBLinear::operator()(SGPP::base::DataVector& source,
   }
 }
 
-void XdPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                                grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+void XdPhidPhiDownBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                grid_iterator& index, size_t dim, double fl, double fr) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  float_t i_dbl = static_cast<float_t>(i);
+  double i_dbl = static_cast<double>(i);
   // int l_int = static_cast<int>(l);
 
-  // float_t h = (1.0/(static_cast<float_t>(1<<(l_int))));
+  // double h = (1.0/(static_cast<double>(1<<(l_int))));
 
-  float_t diagonal = 2 * i_dbl;
+  double diagonal = 2 * i_dbl;
 
   // integration
   result[seq] = ((0.5 * (fl - fr)) + (diagonal * alpha_value));
 
   // dehierarchisation
-  float_t fm = ((fl + fr) / 2.0) + alpha_value;
+  double fm = ((fl + fr) / 2.0) + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -75,30 +75,30 @@ void XdPhidPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::Data
   }
 }
 
-void XdPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                                  grid_iterator& index, size_t dim, float_t fl, float_t fr,
-                                  float_t q, float_t t) {
+void XdPhidPhiDownBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                  grid_iterator& index, size_t dim, double fl, double fr,
+                                  double q, double t) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  // float_t i_dbl = static_cast<float_t>(i);
+  // double i_dbl = static_cast<double>(i);
   int l_int = static_cast<int>(l);
 
-  float_t h = (1.0 / (static_cast<float_t>(1 << (l_int))));
+  double h = (1.0 / (static_cast<double>(1 << (l_int))));
 
-  float_t diagonal = (2 * (static_cast<float_t>(i) * h * q + t)) / (q * h);
+  double diagonal = (2 * (static_cast<double>(i) * h * q + t)) / (q * h);
 
   // integration
   result[seq] = ((0.5 * q * (fl - fr)) + (diagonal * alpha_value));
 
   // dehierarchisation
-  float_t fm = ((fl + fr) / 2.0) + alpha_value;
+  double fm = ((fl + fr) / 2.0) + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -118,4 +118,4 @@ void XdPhidPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::Da
 }
 
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

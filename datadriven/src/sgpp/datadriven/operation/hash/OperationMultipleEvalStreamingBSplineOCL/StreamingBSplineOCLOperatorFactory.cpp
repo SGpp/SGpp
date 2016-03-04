@@ -10,12 +10,12 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingBSplineOCLConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
   if (configuration.getParameters().operator bool()) {
@@ -64,4 +64,4 @@ base::OperationMultipleEval* createStreamingBSplineOCLConfigured(
   }
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

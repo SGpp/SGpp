@@ -7,21 +7,21 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-PhiPhiDownBBLinear::PhiPhiDownBBLinear(SGPP::base::GridStorage* storage)
+PhiPhiDownBBLinear::PhiPhiDownBBLinear(sgpp::base::GridStorage* storage)
     : storage(storage), boundingBox(storage->getBoundingBox()) {}
 
 PhiPhiDownBBLinear::~PhiPhiDownBBLinear() {}
 
-void PhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+void PhiPhiDownBBLinear::operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                                     grid_iterator& index, size_t dim) {
   // std::cout << dim << std::endl;
   // std::cout << index.toString() << std::endl;
 
-  float_t q = this->boundingBox->getIntervalWidth(dim);
-  float_t t = this->boundingBox->getIntervalOffset(dim);
+  double q = this->boundingBox->getIntervalWidth(dim);
+  double t = this->boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -36,25 +36,25 @@ void PhiPhiDownBBLinear::operator()(SGPP::base::DataVector& source, SGPP::base::
   }
 }
 
-void PhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                             grid_iterator& index, size_t dim, float_t fl, float_t fr) {
+void PhiPhiDownBBLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                             grid_iterator& index, size_t dim, double fl, double fr) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  float_t h = 1.0 / static_cast<float_t>(1 << l);
-  float_t tmp_m = ((fl + fr) / 2.0);
+  double h = 1.0 / static_cast<double>(1 << l);
+  double tmp_m = ((fl + fr) / 2.0);
 
   // integration
   result[seq] = (h * tmp_m) + (((2.0 / 3.0) * h) * alpha_value);
 
   // dehierarchisation
-  float_t fm = tmp_m + alpha_value;
+  double fm = tmp_m + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -73,26 +73,26 @@ void PhiPhiDownBBLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVec
   }
 }
 
-void PhiPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                               grid_iterator& index, size_t dim, float_t fl, float_t fr, float_t q,
-                               float_t t) {
+void PhiPhiDownBBLinear::recBB(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                               grid_iterator& index, size_t dim, double fl, double fr, double q,
+                               double t) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  float_t h = 1.0 / static_cast<float_t>(1 << l);
-  float_t tmp_m = ((fl + fr) / 2.0);
+  double h = 1.0 / static_cast<double>(1 << l);
+  double tmp_m = ((fl + fr) / 2.0);
 
   // integration
   result[seq] = ((h * tmp_m) + (((2.0 / 3.0) * h) * alpha_value)) * q;  // diagonal entry
 
   // dehierarchisation
-  float_t fm = tmp_m + alpha_value;
+  double fm = tmp_m + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -112,4 +112,4 @@ void PhiPhiDownBBLinear::recBB(SGPP::base::DataVector& source, SGPP::base::DataV
 }
 
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

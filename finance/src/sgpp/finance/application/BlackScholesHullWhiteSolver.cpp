@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 BlackScholesHullWhiteSolver::BlackScholesHullWhiteSolver(bool useLogTransform)
@@ -94,8 +94,8 @@ void BlackScholesHullWhiteSolver::constructGrid(base::BoundingBox& BoundingBox, 
 }
 
 void BlackScholesHullWhiteSolver::setStochasticData(base::DataVector& mus, base::DataVector& sigmas,
-                                                    base::DataMatrix& rhos, float_t r,
-                                                    float_t theta, float_t sigma, float_t a) {
+                                                    base::DataMatrix& rhos, double r,
+                                                    double theta, double sigma, double a) {
   this->mus = new base::DataVector(mus);
   this->sigmas = new base::DataVector(sigmas);
   this->rhos = new base::DataMatrix(rhos);
@@ -112,8 +112,8 @@ void BlackScholesHullWhiteSolver::setProcessDimensions(int dim_BS, int dim_HW) {
   this->dim_HW = dim_HW;
 }
 
-void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                                     size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
+                                                     size_t maxCGIterations, double epsilonCG,
                                                      base::DataVector& alpha, bool verbose,
                                                      bool generateAnimation,
                                                      size_t numEvalsAnimation) {
@@ -122,8 +122,8 @@ void BlackScholesHullWhiteSolver::solveExplicitEuler(size_t numTimesteps, float_
       "BlackScholesHullWhiteSolver!");
 }
 
-void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                                     size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
+                                                     size_t maxCGIterations, double epsilonCG,
                                                      base::DataVector& alpha, bool verbose,
                                                      bool generateAnimation,
                                                      size_t numEvalsAnimation) {
@@ -200,12 +200,12 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
               << std::endl;
 
     std::cout << "Average Grid size: "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsComplete()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsComplete()) /
+                     static_cast<double>(numTimesteps)
               << std::endl;
     std::cout << "Average Grid size (Inner): "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                     static_cast<double>(numTimesteps)
               << std::endl
               << std::endl
               << std::endl;
@@ -217,8 +217,8 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
 
     this->finInnerGridSize = getNumberInnerGridPoints();
     this->avgInnerGridSize =
-        static_cast<size_t>((static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                             static_cast<float_t>(numTimesteps)) +
+        static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                             static_cast<double>(numTimesteps)) +
                             0.5);
     this->nNeededIterations = myEuler->getNumberIterations();
     delete myBSSystem;
@@ -234,8 +234,8 @@ void BlackScholesHullWhiteSolver::solveImplicitEuler(size_t numTimesteps, float_
   }
 }
 
-void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
-                                                     size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesHullWhiteSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize,
+                                                     size_t maxCGIterations, double epsilonCG,
                                                      base::DataVector& alpha, size_t NumImEul) {
   throw base::application_exception(
       "BlackScholesHullWhiteSolver::solveCrankNicolson : Crank-Nicloson is not supported for "
@@ -259,8 +259,8 @@ void BlackScholesHullWhiteSolver::initScreen() {
 
 void BlackScholesHullWhiteSolver::setEnableCoarseningData(
     std::string adaptSolveMode, std::string refineMode,
-    SGPP::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints,
-    float_t coarsenThreshold, float_t refineThreshold) {
+    sgpp::base::GridIndex::level_type refineMaxLevel, int numCoarsenPoints,
+    double coarsenThreshold, double refineThreshold) {
   this->useCoarsen = true;
   this->coarsenThreshold = coarsenThreshold;
   this->refineThreshold = refineThreshold;
@@ -270,8 +270,8 @@ void BlackScholesHullWhiteSolver::setEnableCoarseningData(
   this->numCoarsenPoints = numCoarsenPoints;
 }
 
-size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType, float_t strike,
-                                                         float_t eps) {
+size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType, double strike,
+                                                         double eps) {
   size_t nPoints = 0;
 
   if (this->useLogTransform == false) {
@@ -283,8 +283,8 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put" || payoffType == "GMIB") {
           for (size_t d = 0; d < this->dim; d++) {
-            if (((coords.sum() / static_cast<float_t>(this->dim)) < (strike - eps)) ||
-                ((coords.sum() / static_cast<float_t>(this->dim)) > (strike + eps))) {
+            if (((coords.sum() / static_cast<double>(this->dim)) < (strike - eps)) ||
+                ((coords.sum() / static_cast<double>(this->dim)) > (strike + eps))) {
               isAtMoney = false;
             }
           }
@@ -307,16 +307,16 @@ size_t BlackScholesHullWhiteSolver::getGridPointsAtMoney(std::string payoffType,
   return nPoints;
 }
 
-void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha, float_t strike,
-                                                         std::string payoffType, float_t a,
-                                                         float_t sigma) {
-  float_t tmp;
+void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha, double strike,
+                                                         std::string payoffType, double a,
+                                                         double sigma) {
+  double tmp;
   int timeT = 12;
   int endtime = 32;
-  float_t c = 0.06;
+  double c = 0.06;
 
   if (this->bGridConstructed) {
-    float_t* dblFuncValues = new float_t[dim];
+    double* dblFuncValues = new double[dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -329,26 +329,26 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
       }
 
       if (payoffType == "std_euro_call") {
-        alpha[i] = std::max<float_t>(dblFuncValues[this->dim_BS] - strike, 0.0);
+        alpha[i] = std::max<double>(dblFuncValues[this->dim_BS] - strike, 0.0);
       } else if (payoffType == "std_euro_put") {
-        alpha[i] = std::max<float_t>(strike - dblFuncValues[this->dim_BS], 0.0);
+        alpha[i] = std::max<double>(strike - dblFuncValues[this->dim_BS], 0.0);
       } else if (payoffType == "GMIB") {
-        float_t PB = 0;
-        float_t PT = 0;
+        double PB = 0;
+        double PT = 0;
 
         for (int k = (timeT + 1); k <= endtime; k++) {
           PT = exp(
-              0.04 * (timeT - k) + 0.04 * (1 - exp(-a * static_cast<float_t>(k - timeT))) / a -
+              0.04 * (timeT - k) + 0.04 * (1 - exp(-a * static_cast<double>(k - timeT))) / a -
               pow(sigma, 2.0) *
-                  pow((exp(-a * static_cast<float_t>(k)) - exp(-a * static_cast<float_t>(timeT))),
+                  pow((exp(-a * static_cast<double>(k)) - exp(-a * static_cast<double>(timeT))),
                       2.0) *
-                  (exp(2 * a * static_cast<float_t>(timeT)) - 1) / (4 * pow(a, 3.0)) -
-              (1 - exp(-a * static_cast<float_t>(k - timeT))) * dblFuncValues[this->dim_HW] / a);
+                  (exp(2 * a * static_cast<double>(timeT)) - 1) / (4 * pow(a, 3.0)) -
+              (1 - exp(-a * static_cast<double>(k - timeT))) * dblFuncValues[this->dim_HW] / a);
           PB = PB + c * PT;
         }
 
         // std::cout << "r=" << dblFuncValues[this->dim_HW] << " PB=" <<PB <<std::endl;
-        alpha[i] = std::max<float_t>(PB - dblFuncValues[this->dim_BS], 0.0);
+        alpha[i] = std::max<double>(PB - dblFuncValues[this->dim_BS], 0.0);
       } else {
         throw base::application_exception(
             "BlackScholesSolver::initGridWithPayoffBSHW : An unknown payoff-type was specified!");
@@ -357,7 +357,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
 
     delete[] dblFuncValues;
 
-    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
+    sgpp::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
         "BlackScholesSolver::initGridWithPayoffBSHW : A grid wasn't constructed before!");
@@ -366,7 +366,7 @@ void BlackScholesHullWhiteSolver::initGridWithPayoffBSHW(base::DataVector& alpha
 
 size_t BlackScholesHullWhiteSolver::getNeededIterationsToSolve() { return this->nNeededIterations; }
 
-float_t BlackScholesHullWhiteSolver::getNeededTimeToSolve() { return this->dNeededTime; }
+double BlackScholesHullWhiteSolver::getNeededTimeToSolve() { return this->dNeededTime; }
 
 size_t BlackScholesHullWhiteSolver::getStartInnerGridSize() { return this->staInnerGridSize; }
 
@@ -374,4 +374,4 @@ size_t BlackScholesHullWhiteSolver::getFinalInnerGridSize() { return this->finIn
 
 size_t BlackScholesHullWhiteSolver::getAverageInnerGridSize() { return this->avgInnerGridSize; }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

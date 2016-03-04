@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,8 +22,8 @@ TestVectorFunction& G03::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G03::getEqualityConstraintFunction() { return h; }
 
-float_t G03::getOptimalPointUndisplaced(base::DataVector& x) {
-  const float_t dDbl = static_cast<float_t>(d);
+double G03::getOptimalPointUndisplaced(base::DataVector& x) {
+  const double dDbl = static_cast<double>(d);
   x.resize(d);
   x.setAll(std::pow(dDbl, -0.5));
   return -std::pow(dDbl, -0.5 * dDbl);
@@ -33,8 +33,8 @@ G03Objective::G03Objective(size_t d) : TestScalarFunction(d) {}
 
 G03Objective::~G03Objective() {}
 
-float_t G03Objective::evalUndisplaced(const base::DataVector& x) {
-  float_t result = -1.0;
+double G03Objective::evalUndisplaced(const base::DataVector& x) {
+  double result = -1.0;
 
   for (size_t t = 0; t < d; t++) {
     result *= x[t];
@@ -62,7 +62,7 @@ G03EqualityConstraint::G03EqualityConstraint(size_t d) : TestVectorFunction(d, 1
 G03EqualityConstraint::~G03EqualityConstraint() {}
 
 void G03EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  float_t result = -1.0;
+  double result = -1.0;
 
   for (size_t t = 0; t < d; t++) {
     result += x[t] * x[t];
@@ -76,4 +76,4 @@ void G03EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

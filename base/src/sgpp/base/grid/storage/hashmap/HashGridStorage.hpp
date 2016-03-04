@@ -31,7 +31,7 @@
 #include <list>
 #include <typeinfo>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class HashGridIterator;
@@ -619,6 +619,6 @@ inline HashGridStorage::seq() const {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHGRIDSTORAGE_HPP */

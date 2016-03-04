@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -24,33 +24,33 @@ class OperationTestLinearBoundary : public OperationTest {
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  explicit OperationTestLinearBoundary(SGPP::base::GridStorage* storage) : storage(storage) {}
+  explicit OperationTestLinearBoundary(sgpp::base::GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
   virtual ~OperationTestLinearBoundary() {}
 
-  virtual float_t test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
-                       SGPP::base::DataVector& classes);
-  virtual float_t testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
-                          SGPP::base::DataVector& refValues);
-  virtual float_t testWithCharacteristicNumber(SGPP::base::DataVector& alpha,
-                                               SGPP::base::DataMatrix& data,
-                                               SGPP::base::DataVector& classes,
-                                               SGPP::base::DataVector& charaNumbers);
-  virtual void calculateROCcurve(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
-                                 SGPP::base::DataVector& classes,
-                                 SGPP::base::DataVector& thresholds,
-                                 SGPP::base::DataMatrix& ROC_curve);
+  virtual double test(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data,
+                       sgpp::base::DataVector& classes);
+  virtual double testMSE(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data,
+                          sgpp::base::DataVector& refValues);
+  virtual double testWithCharacteristicNumber(sgpp::base::DataVector& alpha,
+                                               sgpp::base::DataMatrix& data,
+                                               sgpp::base::DataVector& classes,
+                                               sgpp::base::DataVector& charaNumbers);
+  virtual void calculateROCcurve(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data,
+                                 sgpp::base::DataVector& classes,
+                                 sgpp::base::DataVector& thresholds,
+                                 sgpp::base::DataMatrix& ROC_curve);
 
  protected:
-  /// Pointer to SGPP::base::GridStorage object
-  SGPP::base::GridStorage* storage;
+  /// Pointer to sgpp::base::GridStorage object
+  sgpp::base::GridStorage* storage;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONTESTLINEARBOUNDARY_HPP */

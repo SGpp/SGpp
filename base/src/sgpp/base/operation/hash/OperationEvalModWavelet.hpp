@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -32,7 +32,7 @@ class OperationEvalModWavelet : public OperationEval {
    */
   ~OperationEvalModWavelet() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
@@ -41,6 +41,6 @@ class OperationEvalModWavelet : public OperationEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIINEVALMODWAVELET_HPP */

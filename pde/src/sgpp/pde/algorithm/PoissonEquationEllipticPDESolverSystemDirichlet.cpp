@@ -9,11 +9,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 PoissonEquationEllipticPDESolverSystemDirichlet::PoissonEquationEllipticPDESolverSystemDirichlet(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs)
+    sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& rhs)
     : OperationEllipticPDESolverSystemDirichlet(SparseGrid, rhs) {
   this->Laplace_Complete = op_factory::createOperationLaplace(*this->BoundGrid).release();
   this->Laplace_Inner = op_factory::createOperationLaplace(*this->InnerGrid).release();
@@ -26,13 +26,13 @@ PoissonEquationEllipticPDESolverSystemDirichlet::
 }
 
 void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   Laplace_Inner->mult(alpha, result);
 }
 
 void PoissonEquationEllipticPDESolverSystemDirichlet::applyLOperatorComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   Laplace_Complete->mult(alpha, result);
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

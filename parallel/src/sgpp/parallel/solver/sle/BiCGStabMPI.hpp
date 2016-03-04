@@ -14,10 +14,10 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
-class BiCGStabMPI : public SGPP::solver::SLESolver {
+class BiCGStabMPI : public sgpp::solver::SLESolver {
  private:
   /**
    * Routine called by the MPI slaves, here just the execution of
@@ -27,8 +27,8 @@ class BiCGStabMPI : public SGPP::solver::SLESolver {
    * multiplication
    * @param alpha the sparse grid's coefficients which have to be determined
    */
-  virtual void waitForTask(SGPP::base::OperationMatrix& SystemMatrix,
-                           SGPP::base::DataVector& alpha);
+  virtual void waitForTask(sgpp::base::OperationMatrix& SystemMatrix,
+                           sgpp::base::DataVector& alpha);
 
  public:
   /**
@@ -49,11 +49,11 @@ class BiCGStabMPI : public SGPP::solver::SLESolver {
    * http://www.numerik.math.tu-graz.ac.at/kurse/lgs/SIMNET6.pdf
    * http://netlib.org
    */
-  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
-                     SGPP::base::DataVector& b, bool reuse = false, bool verbose = false,
+  virtual void solve(sgpp::base::OperationMatrix& SystemMatrix, sgpp::base::DataVector& alpha,
+                     sgpp::base::DataVector& b, bool reuse = false, bool verbose = false,
                      double max_threshold = -1.0);
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /*BICGSTABMPI_HPP */

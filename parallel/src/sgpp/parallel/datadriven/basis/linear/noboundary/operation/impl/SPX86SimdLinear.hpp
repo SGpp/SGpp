@@ -10,18 +10,18 @@
 
 #include <sgpp/globaldef.hpp>
 #include <algorithm>
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class SPX86SimdLinear : public SPX86SimdKernelBase {
  public:
   static const KernelType kernelType = Standard;
   static inline void multImpl(
-      SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
-      SGPP::base::DataMatrixSP* /*mask*/,    // unused for this specialization
-      SGPP::base::DataMatrixSP* /*offset*/,  // unused for this specialization
-      SGPP::base::DataMatrixSP* dataset, SGPP::base::DataVectorSP& alpha,
-      SGPP::base::DataVectorSP& result, const size_t start_index_grid, const size_t end_index_grid,
+      sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+      sgpp::base::DataMatrixSP* /*mask*/,    // unused for this specialization
+      sgpp::base::DataMatrixSP* /*offset*/,  // unused for this specialization
+      sgpp::base::DataMatrixSP* dataset, sgpp::base::DataVectorSP& alpha,
+      sgpp::base::DataVectorSP& result, const size_t start_index_grid, const size_t end_index_grid,
       const size_t start_index_data, const size_t end_index_data) {
     float* ptrLevel = level->getPointer();
     float* ptrIndex = index->getPointer();
@@ -269,11 +269,11 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
   }
 
   static inline void multTransposeImpl(
-      SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
-      SGPP::base::DataMatrixSP* /*mask*/,    // unused for this specialization
-      SGPP::base::DataMatrixSP* /*offset*/,  // unused for this specialization
-      SGPP::base::DataMatrixSP* dataset, SGPP::base::DataVectorSP& source,
-      SGPP::base::DataVectorSP& result, const size_t start_index_grid, const size_t end_index_grid,
+      sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+      sgpp::base::DataMatrixSP* /*mask*/,    // unused for this specialization
+      sgpp::base::DataMatrixSP* /*offset*/,  // unused for this specialization
+      sgpp::base::DataMatrixSP* dataset, sgpp::base::DataVectorSP& source,
+      sgpp::base::DataVectorSP& result, const size_t start_index_grid, const size_t end_index_grid,
       const size_t start_index_data, const size_t end_index_data) {
     float* ptrLevel = level->getPointer();
     float* ptrIndex = index->getPointer();
@@ -503,5 +503,5 @@ class SPX86SimdLinear : public SPX86SimdKernelBase {
 };
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 #endif  // SPX86SIMDLINEAR_HPP

@@ -13,12 +13,12 @@
 #include <cstring>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 HeatEquationParabolicPDESolverSystemVectorizedMPI::
-    HeatEquationParabolicPDESolverSystemVectorizedMPI(SGPP::base::Grid& SparseGrid,
-                                                      SGPP::base::DataVector& alpha, double a,
+    HeatEquationParabolicPDESolverSystemVectorizedMPI(sgpp::base::Grid& SparseGrid,
+                                                      sgpp::base::DataVector& alpha, double a,
                                                       double TimestepSize,
                                                       std::string OperationMode) {
   this->a = a;
@@ -29,8 +29,8 @@ HeatEquationParabolicPDESolverSystemVectorizedMPI::
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
 
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
-  this->GridConverter = new SGPP::base::DirichletGridConverter();
+  this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->GridConverter = new sgpp::base::DirichletGridConverter();
 
   // create the inner grid
   this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete,
@@ -40,42 +40,42 @@ HeatEquationParabolicPDESolverSystemVectorizedMPI::
   char* alg_selector = getenv("SGPP_PDE_SOLVER_ALG");
 
   if (!strcmp(alg_selector, "X86SIMD")) {
-    this->OpLaplaceInner = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, SGPP::parallel::X86SIMD);
-    this->OpLaplaceBound = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, SGPP::parallel::X86SIMD);
-    this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, SGPP::parallel::X86SIMD);
-    this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, SGPP::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceInner = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, SGPP::parallel::X86SIMD);
-    this->OpLTwoDotLaplaceBound = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, SGPP::parallel::X86SIMD);
+    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD);
+    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD);
+    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD);
+    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD);
+    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::X86SIMD);
+    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::X86SIMD);
 #ifdef USEOCL
   } else if (!strcmp(alg_selector, "OCL")) {
-    this->OpLaplaceInner = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->InnerGrid, SGPP::parallel::OpenCL);
-    this->OpLaplaceBound = SGPP::op_factory::createOperationLaplaceVectorized(
-        *this->BoundGrid, SGPP::parallel::OpenCL);
-    this->OpLTwoInner = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->InnerGrid, SGPP::parallel::OpenCL);
-    this->OpLTwoBound = SGPP::op_factory::createOperationLTwoDotProductVectorized(
-        *this->BoundGrid, SGPP::parallel::OpenCL);
-    this->OpLTwoDotLaplaceInner = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->InnerGrid, SGPP::parallel::OpenCL);
-    this->OpLTwoDotLaplaceBound = SGPP::op_factory::createOperationLTwoDotLaplaceVectorized(
-        *this->BoundGrid, SGPP::parallel::OpenCL);
+    this->OpLaplaceInner = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL);
+    this->OpLaplaceBound = sgpp::op_factory::createOperationLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL);
+    this->OpLTwoInner = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL);
+    this->OpLTwoBound = sgpp::op_factory::createOperationLTwoDotProductVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL);
+    this->OpLTwoDotLaplaceInner = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->InnerGrid, sgpp::parallel::OpenCL);
+    this->OpLTwoDotLaplaceBound = sgpp::op_factory::createOperationLTwoDotLaplaceVectorized(
+        *this->BoundGrid, sgpp::parallel::OpenCL);
 #endif
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI::"
         "PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI : no supported vectorization "
         "was selected!");
   }
 
   // right hand side if System
-  this->rhs = new SGPP::base::DataVector(1);
+  this->rhs = new sgpp::base::DataVector(1);
 }
 
 HeatEquationParabolicPDESolverSystemVectorizedMPI::
@@ -95,8 +95,8 @@ HeatEquationParabolicPDESolverSystemVectorizedMPI::
 }
 
 void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyLOperatorComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
   // Apply the Laplace operator
@@ -105,8 +105,8 @@ void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyLOperatorComplete(
 }
 
 void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
 
   // Apply the Laplace operator
@@ -115,8 +115,8 @@ void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyLOperatorInner(
 }
 
 void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -127,8 +127,8 @@ void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixComplete(
 }
 
 void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -139,8 +139,8 @@ void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixInner(
 }
 
 void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -150,8 +150,8 @@ void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixLOperator
 }
 
 void HeatEquationParabolicPDESolverSystemVectorizedMPI::applyMassMatrixLOperatorBound(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
@@ -179,4 +179,4 @@ void HeatEquationParabolicPDESolverSystemVectorizedMPI::coarsenAndRefine(bool is
 
 void HeatEquationParabolicPDESolverSystemVectorizedMPI::startTimestep() {}
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

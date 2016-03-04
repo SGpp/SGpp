@@ -17,7 +17,7 @@
 #include <vector>
 #include <utility>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 /**
  * WARNING: the grid must be a 1D grid!
@@ -34,8 +34,8 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
-  std::multimap<float_t, float_t> coord_pdf, coord_cdf;
-  std::multimap<float_t, float_t>::iterator it1, it2;
+  std::multimap<double, double> coord_pdf, coord_cdf;
+  std::multimap<double, double>::iterator it1, it2;
 
   base::GridStorage* gs = &this->grid->getStorage();
   std::unique_ptr<base::OperationEval> opEval = op_factory::createOperationEval(*(this->grid));
@@ -43,22 +43,22 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
     coord[0] = gs->get(i)->getCoord(0);
-    coord_pdf.insert(std::pair<float_t, float_t>(coord[0], opEval->eval(*alpha, coord)));
-    coord_cdf.insert(std::pair<float_t, float_t>(coord[0], i));
+    coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha, coord)));
+    coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }
 
   // include values at the boundary [0,1]
-  coord_pdf.insert(std::pair<float_t, float_t>(0.0, 0.0));
-  coord_pdf.insert(std::pair<float_t, float_t>(1.0, 0.0));
-  coord_cdf.insert(std::pair<float_t, float_t>(0.0, 0.0));
-  coord_cdf.insert(std::pair<float_t, float_t>(1.0, 1.0));
+  coord_pdf.insert(std::pair<double, double>(0.0, 0.0));
+  coord_pdf.insert(std::pair<double, double>(1.0, 0.0));
+  coord_cdf.insert(std::pair<double, double>(0.0, 0.0));
+  coord_cdf.insert(std::pair<double, double>(1.0, 1.0));
 
   // Composite rule: trapezoidal (b-a)/2 * (f(a)+f(b))
   it1 = coord_pdf.begin();
   it2 = coord_pdf.begin();
-  std::vector<float_t> tmp;
+  std::vector<double> tmp;
   tmp.push_back(0.0);
-  float_t sum = 0.0, area;
+  double sum = 0.0, area;
 
   for (++it2; it2 != coord_pdf.end(); ++it2) {
     // (*it).first : the coordinate
@@ -70,7 +70,7 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   }
 
   // compute CDF
-  float_t tmp_sum;
+  double tmp_sum;
   unsigned int i = 0;
 
   for (it1 = coord_cdf.begin(); it1 != coord_cdf.end(); ++it1) {
@@ -89,14 +89,14 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   /***************** STEP 2. Sampling  ********************/
   samples = new base::DataVector(num_samples);
 
-  float_t y, x1, x2, y1, y2;
+  double y, x1, x2, y1, y2;
 
   for (size_t i = 0; i < num_samples; i++) {
 // drand48_r() is thread_safe
 #ifdef _WIN32
-    y = static_cast<float_t>(rand()) / RAND_MAX;
+    y = static_cast<double>(rand()) / RAND_MAX;
 #else
-    y = static_cast<float_t>(rand_r(seedp)) / RAND_MAX;
+    y = static_cast<double>(rand_r(seedp)) / RAND_MAX;
 #endif
 
     // find cdf interval
@@ -118,4 +118,4 @@ void OperationDensitySampling1DLinear::doSampling1D(base::DataVector* alpha, siz
   return;
 }  // end of compute_1D_cdf()
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

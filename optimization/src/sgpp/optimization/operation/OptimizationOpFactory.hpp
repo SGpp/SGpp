@@ -11,12 +11,12 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace op_factory {
 
 /**
  * Creates a OperationMultipleHierarchisation for the given
- * SGPP::optimization grid.
+ * sgpp::optimization grid.
  * Don't forget to delete the object after use.
  *
  * @param grid  sparse grid
@@ -26,6 +26,6 @@ namespace op_factory {
 std::unique_ptr<optimization::OperationMultipleHierarchisation>
 createOperationMultipleHierarchisation(base::Grid& grid);
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_OPERATIONOPFACTORY_HPP */

@@ -13,22 +13,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
  * Implementation for linear functions of Laplace Operation, linear grids without boundaries
  *
  */
-class OperationLaplaceVectorizedLinearOCL : public SGPP::base::OperationMatrix {
+class OperationLaplaceVectorizedLinearOCL : public sgpp::base::OperationMatrix {
  private:
-  SGPP::base::GridStorage* storage;
-  SGPP::base::DataMatrix* level_;
-  SGPP::base::DataMatrix* level_int_;
-  SGPP::base::DataMatrix* index_;
+  sgpp::base::GridStorage* storage;
+  sgpp::base::DataMatrix* level_;
+  sgpp::base::DataMatrix* level_int_;
+  sgpp::base::DataMatrix* index_;
   double* lcl_q;
   double* lcl_q_inv;
-  SGPP::base::DataVector* lambda;
+  sgpp::base::DataVector* lambda;
   OCLPDEKernels OCLPDEKernelsHandle;
 
  public:
@@ -38,24 +38,24 @@ class OperationLaplaceVectorizedLinearOCL : public SGPP::base::OperationMatrix {
    * @param storage Pointer to the grid's gridstorage obejct
    * @param lambda Vector which contains pre-factors for every dimension of the operator
    */
-  OperationLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage,
-                                      SGPP::base::DataVector& lambda);
+  OperationLaplaceVectorizedLinearOCL(sgpp::base::GridStorage* storage,
+                                      sgpp::base::DataVector& lambda);
 
   /**
    * Construtor of OperationLaplaceLinear
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationLaplaceVectorizedLinearOCL(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceVectorizedLinearOCL(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
    */
   virtual ~OperationLaplaceVectorizedLinearOCL();
 
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONLAPLACEVECTORIZEDLINEAROCL_HPP */

@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -44,7 +44,7 @@ class OperationNaiveEvalGradientFundamentalSpline : public
    * @param[out]  gradient    gradient of linear combination
    * @return                  value of linear combination
    */
-  float_t evalGradient(const DataVector& alpha,
+  double evalGradient(const DataVector& alpha,
                        const DataVector& point,
                        DataVector& gradient) override;
 
@@ -56,6 +56,6 @@ class OperationNaiveEvalGradientFundamentalSpline : public
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALGRADIENTFUNDAMENTALSPLINE_HPP */

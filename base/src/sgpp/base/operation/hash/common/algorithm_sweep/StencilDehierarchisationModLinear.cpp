@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -185,4 +185,4 @@ void StencilDehierarchisationModLinear::rec(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

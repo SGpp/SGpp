@@ -14,7 +14,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -68,6 +68,6 @@ class ConvertPrewaveletToLinear {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* CONVERTPREWAVELETTOLINEAR_HPP */

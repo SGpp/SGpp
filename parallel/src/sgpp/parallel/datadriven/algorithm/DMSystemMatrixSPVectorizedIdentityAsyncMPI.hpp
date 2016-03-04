@@ -23,12 +23,11 @@
 #include <omp.h>
 #endif
 
-#if USE_DOUBLE_PRECISION == 0
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
- * Class that implements the virtual class SGPP::base::OperationMatrix for the
+ * Class that implements the virtual class sgpp::base::OperationMatrix for the
  * application of classification for the Systemmatrix
  *
  * The Identity matrix is used as regularization operator.
@@ -38,22 +37,22 @@ namespace parallel {
  */
 template <typename KernelImplementation>
 class DMSystemMatrixSPVectorizedIdentityAsyncMPI
-    : public SGPP::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
+    : public sgpp::parallel::DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation> {
  public:
   /**
    * Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param trainData reference to SGPP::base::DataMatrix that contains the training data
+   * @param trainData reference to sgpp::base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
    * @param vecMode vectorization mode
    */
-  DMSystemMatrixSPVectorizedIdentityAsyncMPI(SGPP::base::Grid& SparseGrid,
-                                             SGPP::base::DataMatrixSP& trainData, float lambda,
+  DMSystemMatrixSPVectorizedIdentityAsyncMPI(sgpp::base::Grid& SparseGrid,
+                                             sgpp::base::DataMatrixSP& trainData, float lambda,
                                              VectorizationType vecMode)
       : DMSystemMatrixSPVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData,
                                                                         lambda, vecMode) {
-    size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
+    size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
 
     /* calculate distribution of data */
     _chunkCountPerProcData = 2;
@@ -62,9 +61,9 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
     PartitioningTool::calcMPIChunkedDistribution(
         this->numPatchedTrainingInstances_, _chunkCountPerProcData, _mpi_data_sizes,
         _mpi_data_offsets,
-        SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
+        sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidthSP(this->vecMode_));
 
-    if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
       std::cout << "Max size per chunk Data: " << _mpi_data_sizes[0] << std::endl;
     }
 
@@ -86,18 +85,18 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
     delete[] this->_mpi_data_offsets;
   }
 
-  virtual void mult(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
+  virtual void mult(sgpp::base::DataVectorSP& alpha, sgpp::base::DataVectorSP& result) {
 #ifdef X86_MIC_SYMMETRIC
     myGlobalMPIComm->broadcastSPGridCoefficientsFromRank0(alpha);
 #endif
-    SGPP::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
+    sgpp::base::DataVectorSP temp(this->numPatchedTrainingInstances_);
     result.setAll(0.0f);
     temp.setAll(0.0f);
     float* ptrResult = result.getPointer();
     float* ptrTemp = temp.getPointer();
 
-    size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
-    size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
+    size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
+    size_t mpi_myrank = sgpp::parallel::myGlobalMPIComm->getMyRank();
 
     size_t totalChunkCountGrid = _chunkCountPerProcGrid * mpi_size;
     size_t totalChunkCountData = _chunkCountPerProcData * mpi_size;
@@ -112,7 +111,7 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
       tagsData[i] = static_cast<int>(i * 2 + 2);
     }
 
-    SGPP::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrTemp, _chunkCountPerProcData,
+    sgpp::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrTemp, _chunkCountPerProcData,
                                                     _mpi_data_sizes, _mpi_data_offsets, tagsData,
                                                     dataRecvReqs);
 
@@ -126,7 +125,7 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
       tagsGrid[i] = static_cast<int>(i * 2 + 3);
     }
 
-    SGPP::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrResult, _chunkCountPerProcGrid,
+    sgpp::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrResult, _chunkCountPerProcGrid,
                                                     _mpi_grid_sizes, _mpi_grid_offsets, tagsGrid,
                                                     gridRecvReqs);
     MPI_Request* dataSendReqs = new MPI_Request[totalChunkCountData];
@@ -213,14 +212,14 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
     delete[] tagsGrid;
   }  // end mult
 
-  virtual void generateb(SGPP::base::DataVectorSP& classes, SGPP::base::DataVectorSP& b) {
-    size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
-    size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
+  virtual void generateb(sgpp::base::DataVectorSP& classes, sgpp::base::DataVectorSP& b) {
+    size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
+    size_t mpi_myrank = sgpp::parallel::myGlobalMPIComm->getMyRank();
 
     float* ptrB = b.getPointer();
     b.setAll(0.0f);
 
-    SGPP::base::DataVectorSP myClasses(classes);
+    sgpp::base::DataVectorSP myClasses(classes);
 
     // Apply padding
     if (this->numPatchedTrainingInstances_ != myClasses.getSize()) {
@@ -237,7 +236,7 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
       tags[i] = static_cast<int>(i + 1);
     }
 
-    SGPP::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrB, _chunkCountPerProcGrid, _mpi_grid_sizes,
+    sgpp::parallel::myGlobalMPIComm->IrecvFromAllSP(ptrB, _chunkCountPerProcGrid, _mpi_grid_sizes,
                                                     _mpi_grid_offsets, tags, gridRecvReqs);
     MPI_Request* gridSendReqs = new MPI_Request[totalChunkCount];
     this->myTimer_->start();
@@ -282,7 +281,7 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
 
     size_t mpi_size = myGlobalMPIComm->getNumRanks();
     size_t sendChunkSize = 16;
-    size_t sizePerProc = this->storage_->size() / mpi_size;
+    size_t sizePerProc = this->storage_.getSize() / mpi_size;
     std::max<size_t>(sizePerProc / sendChunkSize, 1);
 
     _chunkCountPerProcGrid = 1;
@@ -294,7 +293,7 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
 
     _mpi_grid_sizes = new int[_chunkCountPerProcGrid * mpi_size];
     _mpi_grid_offsets = new int[_chunkCountPerProcGrid * mpi_size];
-    PartitioningTool::calcMPIChunkedDistribution(this->storage_->size(), _chunkCountPerProcGrid,
+    PartitioningTool::calcMPIChunkedDistribution(this->storage_.getSize(), _chunkCountPerProcGrid,
                                                  _mpi_grid_sizes, _mpi_grid_offsets, 1);
   }
 
@@ -313,7 +312,6 @@ class DMSystemMatrixSPVectorizedIdentityAsyncMPI
 };
 
 }  // namespace parallel
-}  // namespace SGPP
-#endif
+}  // namespace sgpp
 
 #endif /* DMSYSTEMMATRIXSPVECTORIZEDIDENTITYASYNCMPI_HPP */

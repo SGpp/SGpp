@@ -28,7 +28,7 @@ pysgpp.omp_set_num_threads(1)
 # increase output verbosity
 pysgpp.OptPrinter.getInstance().setVerbosity(2)
 
-print "SGPP::optimization example program started.\n"
+print "sgpp::optimization example program started.\n"
 
 # objective function
 f = ExampleFunction()
@@ -127,4 +127,4 @@ print "f(xOptNM) = {:.6g}, ft(xOptNM) = {:.6g}\n".format(fXOptNM, ftXOptNM)
 
 printLine()
 
-print "\nSGPP::optimization example program terminated."
+print "\nsgpp::optimization example program terminated."

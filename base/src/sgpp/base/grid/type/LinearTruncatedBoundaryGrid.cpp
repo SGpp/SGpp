@@ -10,7 +10,7 @@
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(std::istream& istr) :
@@ -31,8 +31,8 @@ LinearTruncatedBoundaryGrid::LinearTruncatedBoundaryGrid(BoundingBox& BB) :
 LinearTruncatedBoundaryGrid::~LinearTruncatedBoundaryGrid() {
 }
 
-SGPP::base::GridType LinearTruncatedBoundaryGrid::getType() {
-  return SGPP::base::GridType::LinearTruncatedBoundary;
+sgpp::base::GridType LinearTruncatedBoundaryGrid::getType() {
+  return sgpp::base::GridType::LinearTruncatedBoundary;
 }
 
 const SBasis& LinearTruncatedBoundaryGrid::getBasis() {
@@ -53,4 +53,4 @@ GridGenerator& LinearTruncatedBoundaryGrid::getGenerator() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

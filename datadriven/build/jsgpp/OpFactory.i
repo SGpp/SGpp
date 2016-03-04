@@ -3,166 +3,166 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-%newobject SGPP::op_factory::createOperationTest(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationRegularizationDiagonal(
-    SGPP::base::Grid& grid, int mode, float_t k);
-%newobject SGPP::op_factory::createOperationDensityMarginalize(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationDensityMargTo1D(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationDensitySampling1D(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationDensitySampling(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationDensityRejectionSampling(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationDensityConditional(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationRosenblattTransformation(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationRosenblattTransformation1D(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationInverseRosenblattTransformation(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationInverseRosenblattTransformation1D(
-    SGPP::base::Grid& grid);
-%newobject SGPP::op_factory::createOperationRosenblattTransformationKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-%newobject SGPP::op_factory::createOperationInverseRosenblattTransformationKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-%newobject SGPP::op_factory::createOperationDensityMarginalizeKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-%newobject SGPP::op_factory::createOperationDensityConditionalKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-%newobject SGPP::op_factory::createOperationMultipleEval(
-    SGPP::base::Grid& grid, SGPP::base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+%newobject sgpp::op_factory::createOperationTest(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationRegularizationDiagonal(
+    sgpp::base::Grid& grid, int mode, double k);
+%newobject sgpp::op_factory::createOperationDensityMarginalize(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationDensityMargTo1D(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationDensitySampling1D(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationDensitySampling(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationDensityRejectionSampling(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationDensityConditional(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationRosenblattTransformation(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationRosenblattTransformation1D(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationInverseRosenblattTransformation(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationInverseRosenblattTransformation1D(
+    sgpp::base::Grid& grid);
+%newobject sgpp::op_factory::createOperationRosenblattTransformationKDE(
+    sgpp::datadriven::GaussianKDE& kde);
+%newobject sgpp::op_factory::createOperationInverseRosenblattTransformationKDE(
+    sgpp::datadriven::GaussianKDE& kde);
+%newobject sgpp::op_factory::createOperationDensityMarginalizeKDE(
+    sgpp::datadriven::GaussianKDE& kde);
+%newobject sgpp::op_factory::createOperationDensityConditionalKDE(
+    sgpp::datadriven::GaussianKDE& kde);
+%newobject sgpp::op_factory::createOperationMultipleEval(
+    sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 %{
-SGPP::datadriven::OperationTest*
-createOperationTest(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationTest(grid).release();
+sgpp::datadriven::OperationTest*
+createOperationTest(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationTest(grid).release();
 }
 
-SGPP::base::OperationMatrix*
+sgpp::base::OperationMatrix*
 createOperationRegularizationDiagonal(
-        SGPP::base::Grid& grid, int mode, float_t k) {
-    return SGPP::op_factory::createOperationRegularizationDiagonal(grid, mode, k).release();
+        sgpp::base::Grid& grid, int mode, double k) {
+    return sgpp::op_factory::createOperationRegularizationDiagonal(grid, mode, k).release();
 }
 
-SGPP::datadriven::OperationDensityMarginalize*
-createOperationDensityMarginalize(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationDensityMarginalize(grid).release();
+sgpp::datadriven::OperationDensityMarginalize*
+createOperationDensityMarginalize(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationDensityMarginalize(grid).release();
 }
 
-SGPP::datadriven::OperationDensityMargTo1D*
-createOperationDensityMargTo1D(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationDensityMargTo1D(grid).release();
+sgpp::datadriven::OperationDensityMargTo1D*
+createOperationDensityMargTo1D(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationDensityMargTo1D(grid).release();
 }
 
-SGPP::datadriven::OperationDensitySampling1D*
-createOperationDensitySampling1D(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationDensitySampling1D(grid).release();
+sgpp::datadriven::OperationDensitySampling1D*
+createOperationDensitySampling1D(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationDensitySampling1D(grid).release();
 }
 
-SGPP::datadriven::OperationDensitySampling*
-createOperationDensitySampling(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationDensitySampling(grid).release();
+sgpp::datadriven::OperationDensitySampling*
+createOperationDensitySampling(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationDensitySampling(grid).release();
 }
 
-SGPP::datadriven::OperationDensityRejectionSampling*
-createOperationDensityRejectionSampling(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationDensityRejectionSampling(grid).release();
+sgpp::datadriven::OperationDensityRejectionSampling*
+createOperationDensityRejectionSampling(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationDensityRejectionSampling(grid).release();
 }
 
-SGPP::datadriven::OperationDensityConditional*
-createOperationDensityConditional(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationDensityConditional(grid).release();
+sgpp::datadriven::OperationDensityConditional*
+createOperationDensityConditional(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationDensityConditional(grid).release();
 }
 
-SGPP::datadriven::OperationRosenblattTransformation*
-createOperationRosenblattTransformation(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationRosenblattTransformation(grid).release();
+sgpp::datadriven::OperationRosenblattTransformation*
+createOperationRosenblattTransformation(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationRosenblattTransformation(grid).release();
 }
 
-SGPP::datadriven::OperationTransformation1D*
-createOperationRosenblattTransformation1D(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationRosenblattTransformation1D(grid).release();
+sgpp::datadriven::OperationTransformation1D*
+createOperationRosenblattTransformation1D(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationRosenblattTransformation1D(grid).release();
 }
 
-SGPP::datadriven::OperationInverseRosenblattTransformation*
-createOperationInverseRosenblattTransformation(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationInverseRosenblattTransformation(grid).release();
+sgpp::datadriven::OperationInverseRosenblattTransformation*
+createOperationInverseRosenblattTransformation(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationInverseRosenblattTransformation(grid).release();
 }
 
-SGPP::datadriven::OperationTransformation1D*
-createOperationInverseRosenblattTransformation1D(SGPP::base::Grid& grid) {
-    return SGPP::op_factory::createOperationInverseRosenblattTransformation1D(grid).release();
+sgpp::datadriven::OperationTransformation1D*
+createOperationInverseRosenblattTransformation1D(sgpp::base::Grid& grid) {
+    return sgpp::op_factory::createOperationInverseRosenblattTransformation1D(grid).release();
 }
 
-SGPP::datadriven::OperationRosenblattTransformationKDE*
-createOperationRosenblattTransformationKDE(SGPP::datadriven::GaussianKDE& kde) {
-    return SGPP::op_factory::createOperationRosenblattTransformationKDE(kde).release();
+sgpp::datadriven::OperationRosenblattTransformationKDE*
+createOperationRosenblattTransformationKDE(sgpp::datadriven::GaussianKDE& kde) {
+    return sgpp::op_factory::createOperationRosenblattTransformationKDE(kde).release();
 }
 
-SGPP::datadriven::OperationInverseRosenblattTransformationKDE*
-createOperationInverseRosenblattTransformationKDE(SGPP::datadriven::GaussianKDE& kde) {
-    return SGPP::op_factory::createOperationInverseRosenblattTransformationKDE(kde).release();
+sgpp::datadriven::OperationInverseRosenblattTransformationKDE*
+createOperationInverseRosenblattTransformationKDE(sgpp::datadriven::GaussianKDE& kde) {
+    return sgpp::op_factory::createOperationInverseRosenblattTransformationKDE(kde).release();
 }
 
-SGPP::datadriven::OperationDensityMarginalizeKDE*
-createOperationDensityMarginalizeKDE(SGPP::datadriven::GaussianKDE& kde) {
-    return SGPP::op_factory::createOperationDensityMarginalizeKDE(kde).release();
+sgpp::datadriven::OperationDensityMarginalizeKDE*
+createOperationDensityMarginalizeKDE(sgpp::datadriven::GaussianKDE& kde) {
+    return sgpp::op_factory::createOperationDensityMarginalizeKDE(kde).release();
 }
 
-SGPP::datadriven::OperationDensityConditionalKDE*
-createOperationDensityConditionalKDE(SGPP::datadriven::GaussianKDE& kde) {
-    return SGPP::op_factory::createOperationDensityConditionalKDE(kde).release();
+sgpp::datadriven::OperationDensityConditionalKDE*
+createOperationDensityConditionalKDE(sgpp::datadriven::GaussianKDE& kde) {
+    return sgpp::op_factory::createOperationDensityConditionalKDE(kde).release();
 }
 
-SGPP::base::OperationMultipleEval*
+sgpp::base::OperationMultipleEval*
 createOperationMultipleEval(
-        SGPP::base::Grid& grid, SGPP::base::DataMatrix& dataset,
-        SGPP::datadriven::OperationMultipleEvalConfiguration& configuration) {
-    return SGPP::op_factory::createOperationMultipleEval(grid, dataset, configuration).release();
+        sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
+        sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
+    return sgpp::op_factory::createOperationMultipleEval(grid, dataset, configuration).release();
 }
 %}
 
-SGPP::datadriven::OperationTest* createOperationTest(
-    SGPP::base::Grid& grid);
-SGPP::base::OperationMatrix* createOperationRegularizationDiagonal(
-    SGPP::base::Grid& grid, int mode, float_t k);
-SGPP::datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationDensitySampling* createOperationDensitySampling(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationDensityRejectionSampling* createOperationDensityRejectionSampling(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationDensityConditional* createOperationDensityConditional(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationInverseRosenblattTransformation*
+sgpp::datadriven::OperationTest* createOperationTest(
+    sgpp::base::Grid& grid);
+sgpp::base::OperationMatrix* createOperationRegularizationDiagonal(
+    sgpp::base::Grid& grid, int mode, double k);
+sgpp::datadriven::OperationDensityMarginalize* createOperationDensityMarginalize(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationDensityMargTo1D* createOperationDensityMargTo1D(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationDensitySampling1D* createOperationDensitySampling1D(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationDensitySampling* createOperationDensitySampling(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationDensityRejectionSampling* createOperationDensityRejectionSampling(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationDensityConditional* createOperationDensityConditional(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationRosenblattTransformation* createOperationRosenblattTransformation(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationTransformation1D* createOperationRosenblattTransformation1D(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationInverseRosenblattTransformation*
 createOperationInverseRosenblattTransformation(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationTransformation1D* createOperationInverseRosenblattTransformation1D(
-    SGPP::base::Grid& grid);
-SGPP::datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-SGPP::datadriven::OperationInverseRosenblattTransformationKDE*
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationTransformation1D* createOperationInverseRosenblattTransformation1D(
+    sgpp::base::Grid& grid);
+sgpp::datadriven::OperationRosenblattTransformationKDE* createOperationRosenblattTransformationKDE(
+    sgpp::datadriven::GaussianKDE& kde);
+sgpp::datadriven::OperationInverseRosenblattTransformationKDE*
 createOperationInverseRosenblattTransformationKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-SGPP::datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-SGPP::datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
-    SGPP::datadriven::GaussianKDE& kde);
-SGPP::base::OperationMultipleEval* createOperationMultipleEval(
-    SGPP::base::Grid& grid, SGPP::base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+    sgpp::datadriven::GaussianKDE& kde);
+sgpp::datadriven::OperationDensityMarginalizeKDE* createOperationDensityMarginalizeKDE(
+    sgpp::datadriven::GaussianKDE& kde);
+sgpp::datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE(
+    sgpp::datadriven::GaussianKDE& kde);
+sgpp::base::OperationMultipleEval* createOperationMultipleEval(
+    sgpp::base::Grid& grid, sgpp::base::DataMatrix& dataset,
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);

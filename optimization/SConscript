@@ -35,44 +35,44 @@ if ("USE_UMFPACK" in config.env) and config.env["USE_UMFPACK"]:
             config.CheckLib("umfpack", language="C++"):
         moduleDependencies.append("umfpack")
         env["CPPDEFINES"]["USE_UMFPACK"] = "1"
-        print "SGPP::optimization will be compiled with UMFPACK."
+        print "sgpp::optimization will be compiled with UMFPACK."
     else:
         env["CPPDEFINES"]["DONT_USE_UMFPACK"] = "1"
-        print "SGPP::optimization will be compiled without UMFPACK (not found)."
+        print "sgpp::optimization will be compiled without UMFPACK (not found)."
 else:
-    print "SGPP::optimization will be compiled without UMFPACK."
+    print "sgpp::optimization will be compiled without UMFPACK."
 
 if ("USE_EIGEN" in config.env) and config.env["USE_EIGEN"]:
     if config.CheckHeader("eigen3/Eigen/Dense", language="C++"):
         env["CPPDEFINES"]["USE_EIGEN"] = "1"
-        print "SGPP::optimization will be compiled with Eigen."
+        print "sgpp::optimization will be compiled with Eigen."
     else:
         env["CPPDEFINES"]["DONT_USE_EIGEN"] = "1"
-        print "SGPP::optimization will be compiled without Eigen (not found)."
+        print "sgpp::optimization will be compiled without Eigen (not found)."
 else:
-    print "SGPP::optimization will be compiled without Eigen."
+    print "sgpp::optimization will be compiled without Eigen."
 
 if ("USE_ARMADILLO" in config.env) and config.env["USE_ARMADILLO"]:
     if config.CheckHeader("armadillo", language="C++") and \
             config.CheckLib("armadillo", language="C++"):
         moduleDependencies.append("armadillo")
         env["CPPDEFINES"]["USE_ARMADILLO"] = "1"
-        print "SGPP::optimization will be compiled with Armadillo."
+        print "sgpp::optimization will be compiled with Armadillo."
     else:
         env["CPPDEFINES"]["DONT_USE_ARMADILLO"] = "1"
-        print "SGPP::optimization will be compiled without Armadillo (not found)."
+        print "sgpp::optimization will be compiled without Armadillo (not found)."
 else:
-    print "SGPP::optimization will be compiled without Armadillo."
+    print "sgpp::optimization will be compiled without Armadillo."
 
 if ("USE_GMMPP" in config.env) and config.env["USE_GMMPP"]:
     if config.CheckHeader("gmm/gmm.h", language="C++"):
         env["CPPDEFINES"]["USE_GMMPP"] = "1"
-        print "SGPP::optimization will be compiled with Gmm++."
+        print "sgpp::optimization will be compiled with Gmm++."
     else:
         env["CPPDEFINES"]["DONT_USE_GMMPP"] = "1"
-        print "SGPP::optimization will be compiled without Gmm++ (not found)."
+        print "sgpp::optimization will be compiled without Gmm++ (not found)."
 else:
-    print "SGPP::optimization will be compiled without Gmm++."
+    print "sgpp::optimization will be compiled without Gmm++."
 
 
 

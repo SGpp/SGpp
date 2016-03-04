@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,7 +18,7 @@ Himmelblau::~Himmelblau() {}
 
 TestScalarFunction& Himmelblau::getObjectiveFunction() { return f; }
 
-float_t Himmelblau::getOptimalPointUndisplaced(base::DataVector& x) {
+double Himmelblau::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.8;
   x[1] = 0.7;
@@ -29,9 +29,9 @@ HimmelblauObjective::HimmelblauObjective() : TestScalarFunction(2) {}
 
 HimmelblauObjective::~HimmelblauObjective() {}
 
-float_t HimmelblauObjective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 10.0 * x[0] - 5.0;
-  const float_t x2 = 10.0 * x[1] - 5.0;
+double HimmelblauObjective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 10.0 * x[0] - 5.0;
+  const double x2 = 10.0 * x[1] - 5.0;
 
   return (x1 * x1 + x2 - 11.0) * (x1 * x1 + x2 - 11.0) +
          (x1 + x2 * x2 - 7.0) * (x1 + x2 * x2 - 7.0);
@@ -42,4 +42,4 @@ void HimmelblauObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

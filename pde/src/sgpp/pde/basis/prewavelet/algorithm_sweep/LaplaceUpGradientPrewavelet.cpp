@@ -7,22 +7,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(SGPP::base::GridStorage* storage)
+LaplaceUpGradientPrewavelet::LaplaceUpGradientPrewavelet(sgpp::base::GridStorage* storage)
     : storage(storage) {}
 
 LaplaceUpGradientPrewavelet::~LaplaceUpGradientPrewavelet() {}
 
-void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
-                                             SGPP::base::DataVector& result, grid_iterator& index,
+void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
+                                             sgpp::base::DataVector& result, grid_iterator& index,
                                              size_t dim) {
-  SGPP::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l = index.getGridDepth(dim);
+  sgpp::base::GridStorage::index_type::index_type i;
 
-  SGPP::base::GridStorage::index_type::level_type l_old;
-  SGPP::base::GridStorage::index_type::index_type i_old;
+  sgpp::base::GridStorage::index_type::level_type l_old;
+  sgpp::base::GridStorage::index_type::index_type i_old;
 
   index.get(dim, l_old, i_old);
 
@@ -30,9 +30,9 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
   size_t _seql;
   size_t _seqr;
 
-  float_t _vall, _valr;
+  double _vall, _valr;
 
-  float_t h;
+  double h;
 
   if (l == 1) return;
 
@@ -40,7 +40,7 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
   _seqr = index.seq();
   _valr = storage->end(_seqr) ? 0.0 : source[_seqr];
 
-  float_t* temp_current = new float_t[(1 << (l - 1)) - 1];
+  double* temp_current = new double[(1 << (l - 1)) - 1];
 
   for (i = 0; i < (unsigned int)(1 << (l - 1)) - 1; i++) {
     _seql = _seqr;
@@ -55,7 +55,7 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
 
   for (; l > 2; l--) {
     i = 0;
-    h = static_cast<float_t>(1 << l);
+    h = static_cast<double>(1 << l);
     index.set(dim, l, i + 1);
     _seq = index.seq();
 
@@ -127,7 +127,7 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
   }
 
   if (l == 2) {
-    h = static_cast<float_t>(1 << l);
+    h = static_cast<double>(1 << l);
 
     index.set(dim, 2, 1);
     _seql = index.seq();
@@ -159,7 +159,7 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
   }
 
   if (l == 1) {
-    h = static_cast<float_t>(1 << l);
+    h = static_cast<double>(1 << l);
     index.set(dim, 1, 1);
     _seq = index.seq();
     result[_seq] = 2 * h * temp_current[0];
@@ -170,4 +170,4 @@ void LaplaceUpGradientPrewavelet::operator()(SGPP::base::DataVector& source,
   delete[] temp_current;
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

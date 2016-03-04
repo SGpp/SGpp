@@ -11,7 +11,7 @@
 #include "sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLClonedBufferMultiPlatform::OCLClonedBufferMultiPlatform(
@@ -57,7 +57,7 @@ void OCLClonedBufferMultiPlatform::writeToBuffer(void* hostData, size_t* offsets
         std::stringstream errorString;
         errorString << "OCL Error: Failed to enqueue write buffer command! "
                        "Error code: " << err << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
 
       // actionIndex += 1;
@@ -108,7 +108,7 @@ void OCLClonedBufferMultiPlatform::readFromBuffer(void* hostData, size_t* offset
         std::stringstream errorString;
         errorString << "OCL Error: Failed to enqueue read buffer command! "
                        "Error code: " << err << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
 
       actionIndex += 1;
@@ -149,7 +149,7 @@ void OCLClonedBufferMultiPlatform::initializeBuffer(void* initialValues, size_t 
         std::stringstream errorString;
         errorString << "OCL Error: Could not allocate buffer! "
                        "Error code: " << err << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
 
@@ -172,7 +172,7 @@ void OCLClonedBufferMultiPlatform::freeBuffer() {
       std::stringstream errorString;
       errorString << "OCL Error: OCLClonedBufferMultiPlatform in partially "
                      "initialized state: platform buffer list is null" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     cl_mem* bufferList = this->platformBufferList[platform.platformId];
@@ -185,7 +185,7 @@ void OCLClonedBufferMultiPlatform::freeBuffer() {
         std::stringstream errorString;
         errorString << "OCL Error: OCLClonedBufferMultiPlatform in partially "
                        "initialized state: device buffer is null" << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
+        throw sgpp::base::operation_exception(errorString.str());
       }
     }
 
@@ -197,4 +197,4 @@ void OCLClonedBufferMultiPlatform::freeBuffer() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

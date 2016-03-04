@@ -23,7 +23,7 @@
 
 #include <limits>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 
@@ -76,7 +76,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLTwoDotProductVectorized(
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
 std::unique_ptr<parallel::OperationParabolicPDEMatrixCombined>
-createOperationLTwoDotLaplaceVectorized(base::Grid& grid, SGPP::base::DataVector& lambda,
+createOperationLTwoDotLaplaceVectorized(base::Grid& grid, sgpp::base::DataVector& lambda,
                                         const parallel::VectorizationType& vecType);
 
 /**
@@ -119,6 +119,6 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceVectorized(
     base::Grid& grid, const parallel::VectorizationType& vecType);
 // #endif
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /*PARALLEL_OP_FACTORY_HPP*/

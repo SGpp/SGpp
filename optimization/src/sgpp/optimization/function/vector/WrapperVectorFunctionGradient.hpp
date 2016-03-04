@@ -13,7 +13,7 @@
 #include <memory>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -64,6 +64,6 @@ class WrapperVectorFunctionGradient : public VectorFunctionGradient {
   FunctionGradientEvalType fGradient;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_WRAPPERVECTORFUNCTIONGRADIENT_HPP */

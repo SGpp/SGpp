@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -32,6 +32,6 @@ class HashRefinementInconsistent: public HashRefinement {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHREFINEMENTINCONSISTENT_HPP */

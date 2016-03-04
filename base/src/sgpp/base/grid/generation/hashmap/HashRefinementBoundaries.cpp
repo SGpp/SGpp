@@ -13,7 +13,7 @@
 #include <memory>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -122,7 +122,7 @@ void HashRefinementBoundaries::collectRefinablePoints(GridStorage& storage,
 void HashRefinementBoundaries::refineGridpointsCollection(GridStorage& storage,
     RefinementFunctor& functor,
     AbstractRefinement::refinement_container_type& collection) {
-  float_t threshold = functor.getRefinementThreshold();
+  double threshold = functor.getRefinementThreshold();
 
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
     if (pair.second >= threshold) {
@@ -365,4 +365,4 @@ void HashRefinementBoundaries::createGridpointLevelZeroConsistency(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

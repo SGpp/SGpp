@@ -20,14 +20,14 @@
 #include "sgpp/base/opencl/OCLManager.hpp"
 #include "AdaptiveOCLKernelImpl.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 template <typename T>
 class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
  protected:
   size_t m_dims;
-  SGPP::base::DataMatrix preparedDataset;
+  sgpp::base::DataMatrix preparedDataset;
   base::OCLOperationConfiguration parameters;
   T* kernelDataset = nullptr;
   size_t datasetSize = 0;
@@ -49,11 +49,11 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   uint32_t m_hardAdaptivityLimit = 1;
 
   /// Timer object to handle time measurements
-  SGPP::base::SGppStopwatch myTimer;
+  sgpp::base::SGppStopwatch myTimer;
 
   base::GridStorage* storage;
 
-  float_t duration;
+  double duration;
 
   std::shared_ptr<base::OCLManager> manager;
   std::unique_ptr<AdaptiveOCLKernelImpl<T>> kernel;
@@ -64,7 +64,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       : OperationMultipleEval(grid, dataset),
         preparedDataset(dataset),
         parameters(*parameters),
-        myTimer(SGPP::base::SGppStopwatch()),
+        myTimer(sgpp::base::SGppStopwatch()),
         duration(-1.0) {
     this->manager = std::make_shared<base::OCLManager>(parameters);
 
@@ -117,7 +117,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     }
   }
 
-  void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) override {
+  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) override {
     this->myTimer.start();
 
     size_t gridFrom = 0;
@@ -155,7 +155,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     this->duration = this->myTimer.stop();
   }
 
-  void multTranspose(SGPP::base::DataVector& source, SGPP::base::DataVector& result) override {
+  void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override {
     this->myTimer.start();
 
     size_t gridFrom = 0;
@@ -194,7 +194,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     this->duration = this->myTimer.stop();
   }
 
-  float_t getDuration() { return this->duration; }
+  double getDuration() { return this->duration; }
 
   void prepare() override {
     this->buildDatastructure();
@@ -205,7 +205,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   }
 
  private:
-  size_t padDataset(SGPP::base::DataMatrix& dataset) {
+  size_t padDataset(sgpp::base::DataMatrix& dataset) {
     size_t dataBlocking = parameters["LOCAL_SIZE"].getUInt();
 
     size_t vecWidth = dataBlocking;
@@ -216,7 +216,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
     size_t loopCount = vecWidth - remainder;
 
     if (loopCount != vecWidth) {
-      SGPP::base::DataVector lastRow(dataset.getNcols());
+      sgpp::base::DataVector lastRow(dataset.getNcols());
       size_t oldSize = dataset.getNrows();
       dataset.getRow(dataset.getNrows() - 1, lastRow);
       dataset.resize(dataset.getNrows() + loopCount);
@@ -430,7 +430,7 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
       uint32_t* index = new uint32_t[this->m_dims];
 
       if (gridIndex < this->storage->getSize()) {
-        SGPP::base::GridIndex* point = this->storage->get(gridIndex);
+        sgpp::base::GridIndex* point = this->storage->get(gridIndex);
 
         for (size_t d = 0; d < this->m_dims; d++) {
           point->get(d, curLevel, curIndex);
@@ -553,4 +553,4 @@ class OperationMultiEvalAdaptiveOCL : public base::OperationMultipleEval {
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

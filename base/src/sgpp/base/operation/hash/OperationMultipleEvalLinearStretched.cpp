@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationMultipleEvalLinearStretched::mult(DataVector& alpha,
@@ -31,4 +31,4 @@ void OperationMultipleEvalLinearStretched::multTranspose(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

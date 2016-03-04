@@ -20,7 +20,7 @@
 #include "sgpp/base/opencl/OCLZeroCopyBuffer.hpp"
 #include "AdaptiveOCLKernelSourceBuilder.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 struct levelStruct {
@@ -205,7 +205,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for kernel " << i
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -228,7 +228,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may "
                          "handle 0 entries. Synchronization will be not correct." << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         active_devices++;
@@ -237,7 +237,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -261,7 +261,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command queue (or crash in "
                          "mult)! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
@@ -271,7 +271,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command queue! Error code: "
                       << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
 
@@ -373,7 +373,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for kernel " << i
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -397,7 +397,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may "
                          "handle 0 entries. Synchronization will be not correct." << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         active_devices++;
@@ -406,7 +406,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -431,7 +431,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command queue (or crash in "
                          "multTranspose)! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
@@ -441,7 +441,7 @@ class AdaptiveOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command queue! Error code: "
                       << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
 
@@ -552,4 +552,4 @@ class AdaptiveOCLKernelImpl {
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -28,8 +28,8 @@ class Euler : public ODESolver {
   size_t evalsAnimation;
   /// specifies the type of euler that should be executed
   std::string ExMode;
-  /// Pointer to SGPP::base::ScreenOutput object
-  SGPP::base::ScreenOutput* myScreen;
+  /// Pointer to sgpp::base::ScreenOutput object
+  sgpp::base::ScreenOutput* myScreen;
 
  public:
   /**
@@ -41,10 +41,10 @@ class Euler : public ODESolver {
    * @param generateAnimation set this, if you want to create a grid evaluation in every time step,
    * in order to create an animation
    * @param numEvalsAnimation specifies the evaluation per dimension when a animation is created
-   * @param screen possible pointer to a SGPP::base::ScreenOutput object
+   * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
-  Euler(std::string Mode, size_t imax, float_t timestepSize, bool generateAnimation = false,
-        size_t numEvalsAnimation = 20, SGPP::base::ScreenOutput* screen = NULL);
+  Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation = false,
+        size_t numEvalsAnimation = 20, sgpp::base::ScreenOutput* screen = NULL);
 
   /**
    * Std-Destructor
@@ -52,11 +52,11 @@ class Euler : public ODESolver {
   virtual ~Euler();
 
   virtual void solve(SLESolver& LinearSystemSolver,
-                     SGPP::solver::OperationParabolicPDESolverSystem& System,
+                     sgpp::solver::OperationParabolicPDESolverSystem& System,
                      bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* EULER_HPP */

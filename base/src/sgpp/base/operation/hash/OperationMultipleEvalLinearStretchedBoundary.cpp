@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationMultipleEvalLinearStretchedBoundary::mult(DataVector& alpha,
@@ -32,4 +32,4 @@ void OperationMultipleEvalLinearStretchedBoundary::multTranspose(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

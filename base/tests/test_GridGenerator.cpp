@@ -21,17 +21,17 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 
-using SGPP::base::BoundaryGridGenerator;
-using SGPP::base::DataVector;
-using SGPP::base::GeneralizedBoundaryGridGenerator;
-using SGPP::base::GridStorage;
-using SGPP::base::L0BoundaryGridGenerator;
-using SGPP::base::PeriodicGridGenerator;
-using SGPP::base::SquareRootGridGenerator;
-using SGPP::base::StandardGridGenerator;
-using SGPP::base::StretchedBoundaryGridGenerator;
-using SGPP::base::SurplusCoarseningFunctor;
-using SGPP::base::SurplusRefinementFunctor;
+using sgpp::base::BoundaryGridGenerator;
+using sgpp::base::DataVector;
+using sgpp::base::GeneralizedBoundaryGridGenerator;
+using sgpp::base::GridStorage;
+using sgpp::base::L0BoundaryGridGenerator;
+using sgpp::base::PeriodicGridGenerator;
+using sgpp::base::SquareRootGridGenerator;
+using sgpp::base::StandardGridGenerator;
+using sgpp::base::StretchedBoundaryGridGenerator;
+using sgpp::base::SurplusCoarseningFunctor;
+using sgpp::base::SurplusRefinementFunctor;
 
 BOOST_AUTO_TEST_CASE(testPeriodicGridGenerator) {
   GridStorage storage(2);

@@ -13,7 +13,7 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/base/opencl/KernelSourceBuilderBase.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingModOCLFastMultiPlatform {
 
@@ -305,4 +305,4 @@ class SourceBuilderMult : public base::KernelSourceBuilderBase<real_type> {
 };
 }  // namespace StreamingModOCLFastMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

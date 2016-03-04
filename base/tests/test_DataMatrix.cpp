@@ -11,16 +11,16 @@
 
 #include <algorithm>
 
-using SGPP::base::DataMatrix;
-using SGPP::base::DataVector;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
 struct FixtureDataMatrix {
   FixtureDataMatrix()
       : nrows(5), ncols(3), N(nrows * ncols), d_rand(nrows, ncols), min(0), max(0), sum(0) {
-    l_rand = new SGPP::float_t* [nrows];
+    l_rand = new double* [nrows];
 
     for (int i = 0; i < nrows; ++i) {
-      l_rand[i] = new SGPP::float_t[ncols];
+      l_rand[i] = new double[ncols];
     }
 
     for (int i = 0; i < nrows; ++i) {
@@ -49,9 +49,9 @@ struct FixtureDataMatrix {
     BOOST_TEST_MESSAGE("teardown fixture");
   }
   int nrows, ncols, N;
-  SGPP::float_t** l_rand;
+  double** l_rand;
   DataMatrix d_rand;
-  SGPP::float_t min, max, sum;
+  double min, max, sum;
 };
 
 BOOST_FIXTURE_TEST_SUITE(testDataMatrix, FixtureDataMatrix)
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(testMinMax) {
 }
 
 BOOST_AUTO_TEST_CASE(testOps) {
-  SGPP::float_t tol = 1e-12;
+  double tol = 1e-12;
 
   DataMatrix d = d_rand;
   DataMatrix d2(nrows, ncols);
@@ -85,9 +85,9 @@ BOOST_AUTO_TEST_CASE(testOps) {
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
       d2.set(i, j, 1.0 +
-                       2.123 * (static_cast<SGPP::float_t>(rand()) /
-                                static_cast<SGPP::float_t>(RAND_MAX)) +
-                       static_cast<SGPP::float_t>(i * j));
+                       2.123 * (static_cast<double>(rand()) /
+                                static_cast<double>(RAND_MAX)) +
+                       static_cast<double>(i * j));
     }
   }
 
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataMatrix(d_rand);
   DataVector reduction(nrows);
   d.addReduce(reduction);
-  SGPP::float_t reduce_sum = 0.0;
+  double reduce_sum = 0.0;
   for (int i = 0; i < nrows; ++i) {
     reduce_sum = 0.0;
     for (int j = 0; j < ncols; ++j) {
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // max column
   d = DataMatrix(d_rand);
-  SGPP::float_t colMax;
+  double colMax;
   for (int j = 0; j < ncols; ++j) {
     colMax = d.get(0, j);
     for (int i = 0; i < nrows; ++i) {
@@ -152,12 +152,12 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // total max
   d = DataMatrix(d_rand);
-  SGPP::float_t d_max = d.max();
+  double d_max = d.max();
   BOOST_CHECK_EQUAL(d_max, max);
 
   // min column
   d = DataMatrix(d_rand);
-  SGPP::float_t colMin;
+  double colMin;
   for (int j = 0; j < ncols; ++j) {
     colMin = d.get(0, j);
     for (int i = 0; i < nrows; ++i) {
@@ -168,12 +168,12 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // total min
   d = DataMatrix(d_rand);
-  SGPP::float_t d_min = d.min();
+  double d_min = d.min();
   BOOST_CHECK_EQUAL(d_min, min);
 
   // min max column
-  SGPP::float_t minActual = 0;
-  SGPP::float_t maxActual = 0;
+  double minActual = 0;
+  double maxActual = 0;
   for (int j = 0; j < ncols; ++j) {
     colMax = d.get(0, j);
     colMin = d.get(0, j);
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // mult scalar
   d = DataMatrix(d_rand);
-  SGPP::float_t scalar = 1.3124;
+  double scalar = 1.3124;
   d.mult(scalar);
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
@@ -203,8 +203,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // normalize dimension of column j
   d = DataMatrix(d_rand);
-  SGPP::float_t border = 0.0;
-  SGPP::float_t delta;
+  double border = 0.0;
+  double delta;
   for (int j = 0; j < ncols; ++j) {
     d.normalizeDimension(j);
     delta = (d_rand.max(j) - d_rand.min(j)) / (1 - 2 * border);
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // setAll
   d = DataMatrix(d_rand);
-  SGPP::float_t setValue = 3.12;
+  double setValue = 3.12;
   d.setAll(setValue);
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
@@ -314,8 +314,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // sum
   d = DataMatrix(d_rand);
-  SGPP::float_t actualSum = d.sum();
-  SGPP::float_t expectedSum = 0.0;
+  double actualSum = d.sum();
+  double expectedSum = 0.0;
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
       expectedSum += d_rand.get(i, j);

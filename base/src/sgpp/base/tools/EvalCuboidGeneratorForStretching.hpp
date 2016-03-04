@@ -15,7 +15,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -67,6 +67,6 @@ class EvalCuboidGeneratorForStretching {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* EVALCUBOIDGENERATORFORSTRETCHING_HPP */

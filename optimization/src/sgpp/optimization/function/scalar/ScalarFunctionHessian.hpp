@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -52,7 +52,7 @@ class ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  virtual float_t eval(const base::DataVector& x, base::DataVector& gradient,
+  virtual double eval(const base::DataVector& x, base::DataVector& gradient,
                        base::DataMatrix& hessian) = 0;
 
   /**
@@ -75,6 +75,6 @@ class ScalarFunctionHessian {
   size_t d;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARFUNCTIONHESSIAN_HPP */
