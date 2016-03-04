@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -57,7 +57,7 @@ enum class GridType {
  */
 struct RegularGridConfiguration {
   /// Grid Type, see enum
-  SGPP::base::GridType type_;
+  sgpp::base::GridType type_;
   /// number of dimensions
   size_t dim_;
   /// number of levels
@@ -75,13 +75,13 @@ struct AdpativityConfiguration {
   /// number of refinements
   size_t numRefinements_;
   /// refinement threshold for surpluses
-  float_t threshold_;
+  double threshold_;
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_;
   /// max. number of points to be refined
   size_t noPoints_;
   /// max. percent of points to be refined
-  float_t percent_;
+  double percent_;
 };
 
 /**
@@ -405,7 +405,7 @@ class Grid {
    *
    * @return string that identifies the grid type uniquely
    */
-  virtual SGPP::base::GridType getType() = 0;
+  virtual sgpp::base::GridType getType() = 0;
 
   /**
    * Returns the Basis class associated with the grid
@@ -493,7 +493,7 @@ class Grid {
 
   typedef std::unique_ptr<Grid> (*Factory)(std::istream&);
   typedef std::map<std::string, Grid::Factory> factoryMap;
-  typedef std::map<SGPP::base::GridType, std::string> gridTypeVerboseMap;
+  typedef std::map<sgpp::base::GridType, std::string> gridTypeVerboseMap;
 
   static std::unique_ptr<Grid> nullFactory(std::istream&);
 
@@ -515,6 +515,6 @@ class Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GRID_HPP */

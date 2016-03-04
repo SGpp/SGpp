@@ -20,18 +20,18 @@
 #include <immintrin.h>  // NOLINT(build/include)
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void OperationMultiEvalStreaming::multTransposeImpl(
-    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& source, SGPP::base::DataVector& result, const size_t start_index_grid,
+    sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index, sgpp::base::DataMatrix* dataset,
+    sgpp::base::DataVector& source, sgpp::base::DataVector& result, const size_t start_index_grid,
     const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
-  float_t* ptrLevel = level->getPointer();
-  float_t* ptrIndex = index->getPointer();
-  float_t* ptrSource = source.getPointer();
-  float_t* ptrData = dataset->getPointer();
-  float_t* ptrResult = result.getPointer();
+  double* ptrLevel = level->getPointer();
+  double* ptrIndex = index->getPointer();
+  double* ptrSource = source.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
   size_t sourceSize = source.getSize();
   size_t dims = dataset->getNrows();
 
@@ -42,7 +42,7 @@ void OperationMultiEvalStreaming::multTransposeImpl(
     size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k));
 
     uint64_t imask = 0x7FFFFFFFFFFFFFFF;
-    float_t* fmask = reinterpret_cast<float_t*>(&imask);
+    double* fmask = reinterpret_cast<double*>(&imask);
 
     for (size_t i = start_index_data; i < end_index_data; i += 12) {
       for (size_t j = k; j < k + grid_inc; j++) {
@@ -136,7 +136,7 @@ void OperationMultiEvalStreaming::multTransposeImpl(
     size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k));
 
     int64_t imask = 0x7FFFFFFFFFFFFFFF;
-    float_t* fmask = reinterpret_cast<float_t*>(&imask);
+    double* fmask = reinterpret_cast<double*>(&imask);
 
     for (size_t i = start_index_data; i < end_index_data; i += 24) {
       for (size_t j = k; j < k + grid_inc; j++) {
@@ -233,7 +233,7 @@ void OperationMultiEvalStreaming::multTransposeImpl(
         res_0 = _mm256_add_pd(res_0, support_0);
         _mm256_maskstore_pd(&(ptrResult[j]), ldStMaskAVX, res_0);
 #else
-        float_t tmp_reduce;
+        double tmp_reduce;
         _mm256_maskstore_pd(&(tmp_reduce), ldStMaskAVX, support_0);
         ptrResult[j] += tmp_reduce;
 #endif
@@ -489,14 +489,14 @@ void OperationMultiEvalStreaming::multTransposeImpl(
 
     for (size_t i = start_index_data; i < end_index_data; i++) {
       for (size_t j = k; j < k + grid_inc; j++) {
-        float_t curSupport = ptrSource[i];
+        double curSupport = ptrSource[i];
 
         for (size_t d = 0; d < dims; d++) {
-          float_t eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * sourceSize) + i]));
-          float_t index_calc = eval - (ptrIndex[(j * dims) + d]);
-          float_t abs = fabs(index_calc);
-          float_t last = 1.0 - abs;
-          float_t localSupport = std::max<float_t>(last, 0.0);
+          double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * sourceSize) + i]));
+          double index_calc = eval - (ptrIndex[(j * dims) + d]);
+          double abs = fabs(index_calc);
+          double last = 1.0 - abs;
+          double localSupport = std::max<double>(last, 0.0);
           curSupport *= localSupport;
         }
 
@@ -507,4 +507,4 @@ void OperationMultiEvalStreaming::multTransposeImpl(
 #endif
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

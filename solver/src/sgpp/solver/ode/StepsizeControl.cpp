@@ -16,11 +16,11 @@
 #include <fstream>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-StepsizeControl::StepsizeControl(size_t imax, float_t timestepSize, float_t eps, float_t sc,
-                                 SGPP::base::ScreenOutput* screen, float_t gamma)
+StepsizeControl::StepsizeControl(size_t imax, double timestepSize, double eps, double sc,
+                                 sgpp::base::ScreenOutput* screen, double gamma)
     : ODESolver(imax, timestepSize), myScreen(screen), _gamma(gamma) {
   this->residuum = 0.0;
   this->myEps = eps;
@@ -30,43 +30,43 @@ StepsizeControl::StepsizeControl(size_t imax, float_t timestepSize, float_t eps,
 
 StepsizeControl::~StepsizeControl() {}
 
-float_t StepsizeControl::norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
-                              SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+double StepsizeControl::norm(sgpp::solver::OperationParabolicPDESolverSystem& System,
+                              sgpp::base::DataVector& dv1, sgpp::base::DataVector& dv2) {
   return twoNorm(System, dv1, dv2);
 }
 
-float_t StepsizeControl::twoNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
-                                 SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2) {
+double StepsizeControl::twoNorm(sgpp::solver::OperationParabolicPDESolverSystem& System,
+                                 sgpp::base::DataVector& dv1, sgpp::base::DataVector& dv2) {
   dv1.sub(dv2);
 
   return sqrt(dv1.dotProduct(dv1));
 }
 
-float_t StepsizeControl::maxNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
-                                 SGPP::base::DataVector& YkImEul,
-                                 SGPP::base::DataVector& YkImEulOld) {
-  float_t max = 0.0;
-  float_t sc = this->mySC;
+double StepsizeControl::maxNorm(sgpp::solver::OperationParabolicPDESolverSystem& System,
+                                 sgpp::base::DataVector& YkImEul,
+                                 sgpp::base::DataVector& YkImEulOld) {
+  double max = 0.0;
+  double sc = this->mySC;
 
-  float_t* OldData = YkImEulOld.getPointer();
-  float_t* Data = YkImEul.getPointer();
+  double* OldData = YkImEulOld.getPointer();
+  double* Data = YkImEul.getPointer();
 
   // calculate the max norm
   if (!useCoarsen) {
     for (size_t j = 0; j < System.getGridCoefficientsForCG()->getSize(); j++) {
-      float_t t2 = std::max(fabs(Data[j]), fabs(OldData[j]));
-      float_t tmpData = fabs(Data[j] - OldData[j]) / std::max(sc, t2);
+      double t2 = std::max(fabs(Data[j]), fabs(OldData[j]));
+      double tmpData = fabs(Data[j] - OldData[j]) / std::max(sc, t2);
 
       if (max < fabs(tmpData)) max = fabs(tmpData);
     }
   } else {
     //      std::cout << "YK" << YkImEul.getSize()<< " YKold" << YkImEulOld.getSize()  << std::endl;
 
-    SGPP::base::GridStorage* gs = System.getGridStorage();
-    SGPP::base::GridStorage* ogs = System.getOldGridStorage();
-    SGPP::base::GridStorage::grid_map_iterator q;
+    sgpp::base::GridStorage* gs = System.getGridStorage();
+    sgpp::base::GridStorage* ogs = System.getOldGridStorage();
+    sgpp::base::GridStorage::grid_map_iterator q;
 
-    for (SGPP::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end(); ++p) {
+    for (sgpp::base::GridStorage::grid_map_iterator p = gs->begin(); p != gs->end(); ++p) {
       q = ogs->find(p->first);
 
       // std::cout << "YK" << ((p->first)->toString() == (q->first)->toString() ) <<
@@ -77,8 +77,8 @@ float_t StepsizeControl::maxNorm(SGPP::solver::OperationParabolicPDESolverSystem
         auto j = q->second;
         //  std::cout <<time<< " "<< (p->first)->toString() << " "<<i<<" " << Data[i]<< " " <<
         // (q->first)->toString() <<" "<<j<< " "<< OldData[j] << std::endl;
-        float_t t2 = std::max(fabs(Data[i]), fabs(OldData[j]));
-        float_t tmpData = fabs(Data[i] - OldData[j]) / std::max(sc, t2);
+        double t2 = std::max(fabs(Data[i]), fabs(OldData[j]));
+        double tmpData = fabs(Data[i] - OldData[j]) / std::max(sc, t2);
 
         if (max < fabs(tmpData)) {
           max = fabs(tmpData);
@@ -92,23 +92,23 @@ float_t StepsizeControl::maxNorm(SGPP::solver::OperationParabolicPDESolverSystem
   return max;
 }
 void StepsizeControl::solve(SLESolver& LinearSystemSolver,
-                            SGPP::solver::OperationParabolicPDESolverSystem& System,
+                            sgpp::solver::OperationParabolicPDESolverSystem& System,
                             bool bIdentifyLastStep, bool verbose) {
   size_t allIter = 0;
-  SGPP::base::DataVector* rhs;
-  SGPP::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());
-  SGPP::base::DataVector YkImEul(System.getGridCoefficients()->getSize());
+  sgpp::base::DataVector* rhs;
+  sgpp::base::DataVector YkAdBas(System.getGridCoefficients()->getSize());
+  sgpp::base::DataVector YkImEul(System.getGridCoefficients()->getSize());
 
-  float_t tmp_timestepsize = this->myEpsilon;
-  float_t tmp_timestepsize_old = tmp_timestepsize;
-  float_t tmp_timestepsize_new = tmp_timestepsize;
-  float_t epsilon = this->myEps;
+  double tmp_timestepsize = this->myEpsilon;
+  double tmp_timestepsize_old = tmp_timestepsize;
+  double tmp_timestepsize_new = tmp_timestepsize;
+  double epsilon = this->myEps;
 
-  float_t maxTimestep = static_cast<float_t>(this->nMaxIterations) * tmp_timestepsize;
+  double maxTimestep = static_cast<double>(this->nMaxIterations) * tmp_timestepsize;
 
   size_t maxIter = this->nMaxIterations * 10000;
 
-  float_t time = 0.0;
+  double time = 0.0;
 
   std::ofstream fileout;
 
@@ -129,7 +129,7 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
 
     corrector(LinearSystemSolver, System, tmp_timestepsize, YkImEul, rhs);
 
-    float_t tmp = norm(System, YkImEul, YkAdBas);
+    double tmp = norm(System, YkImEul, YkAdBas);
 
     tmp_timestepsize_new = nextTimestep(tmp_timestepsize, tmp_timestepsize_old, tmp, epsilon);
 
@@ -164,7 +164,8 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
                 << " Iterations (Total Iter.: " << allIter << ")";
 
         if (i < this->nMaxIterations - 1) {
-          myScreen->update((size_t)(((float_t)(time)*100.0) / ((float_t)maxTimestep)),
+          myScreen->update((size_t)((static_cast<double>(i + 1) * 100.0) /
+              static_cast<double>(this->nMaxIterations)),
                            soutput.str());
         } else {
           myScreen->update(100, soutput.str());
@@ -204,4 +205,4 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
   }
 }
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

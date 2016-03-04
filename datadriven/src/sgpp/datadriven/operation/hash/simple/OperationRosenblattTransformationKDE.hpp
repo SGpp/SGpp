@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -44,7 +44,7 @@ class OperationRosenblattTransformationKDE {
    * @param sigma bandwidth of the kernels in the current dimension
    * @param kern kernel evaluations
    */
-  float_t doTransformation1D(float_t x, base::DataVector& samples1d, float_t sigma,
+  double doTransformation1D(double x, base::DataVector& samples1d, double sigma,
                              base::DataVector& kern);
 
  private:
@@ -56,5 +56,5 @@ class OperationRosenblattTransformationKDE {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONKDE_HPP */

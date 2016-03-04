@@ -8,22 +8,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 OperationEllipticPDESolverSystemFreeBoundaries::OperationEllipticPDESolverSystemFreeBoundaries(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& rhs)
+    sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& rhs)
     : OperationEllipticPDESolverSystem(SparseGrid, rhs) {}
 
 OperationEllipticPDESolverSystemFreeBoundaries::~OperationEllipticPDESolverSystemFreeBoundaries() {}
 
-void OperationEllipticPDESolverSystemFreeBoundaries::mult(SGPP::base::DataVector& alpha,
-                                                          SGPP::base::DataVector& result) {
+void OperationEllipticPDESolverSystemFreeBoundaries::mult(sgpp::base::DataVector& alpha,
+                                                          sgpp::base::DataVector& result) {
   applyLOperator(alpha, result);
 }
 
-SGPP::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS() {
+sgpp::base::DataVector* OperationEllipticPDESolverSystemFreeBoundaries::generateRHS() {
   return this->rhs;
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

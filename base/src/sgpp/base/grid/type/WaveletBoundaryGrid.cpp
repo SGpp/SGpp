@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 WaveletBoundaryGrid::WaveletBoundaryGrid(std::istream& istr) :
@@ -33,8 +33,8 @@ WaveletBoundaryGrid::WaveletBoundaryGrid(size_t dim,
 WaveletBoundaryGrid::~WaveletBoundaryGrid() {
 }
 
-SGPP::base::GridType WaveletBoundaryGrid::getType() {
-  return SGPP::base::GridType::WaveletBoundary;
+sgpp::base::GridType WaveletBoundaryGrid::getType() {
+  return sgpp::base::GridType::WaveletBoundary;
 }
 
 const SBasis& WaveletBoundaryGrid::getBasis() {
@@ -57,4 +57,4 @@ GridGenerator& WaveletBoundaryGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,7 +11,7 @@
 #include <cstddef>
 
 
-namespace SGPP {
+namespace sgpp {
 
 namespace datadriven {
 
@@ -36,25 +36,25 @@ struct ClassificatorQuality {
  */
 struct LearnerTiming {
   /// complete learning time
-  float_t timeComplete_;
+  double timeComplete_;
   /// time to apply B (including data transfer to eventually used accelerators)
-  float_t timeMultComplete_;
+  double timeMultComplete_;
   /// pure application time of B
-  float_t timeMultCompute_;
+  double timeMultCompute_;
   /// time to apply B^T (including data transfer to eventually used accelerators)
-  float_t timeMultTransComplete_;
+  double timeMultTransComplete_;
   /// pure application time of B^T
-  float_t timeMultTransCompute_;
+  double timeMultTransCompute_;
   /// time of regularization
-  float_t timeRegularization_;
+  double timeRegularization_;
   /// number of executed Floating Point operations
-  float_t GFlop_;
+  double GFlop_;
   /// number of transferred Gbytes
-  float_t GByte_;
+  double GByte_;
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* TYPESDATADRIVEN_HPP */
 

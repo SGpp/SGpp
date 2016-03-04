@@ -13,7 +13,7 @@
 #include <cmath>
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -54,7 +54,7 @@ class BsplineBasis: public Basis<LT, IT> {
    * @return      value of uniform B-spline
    *              (with knots \f$\{0, 1, ..., p+1\}\f$)
    */
-  inline float_t uniformBSpline(float_t x, size_t p) const {
+  inline double uniformBSpline(double x, size_t p) const {
     // wrote the following by hand... nah, not really
     // (thanks to Sage & Python!)
     switch (p) {
@@ -80,7 +80,7 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= 6.0)) {
           return 0.0;
         } else if (x < 1.0) {
-          float_t result = 1.0 / 120.0;
+          double result = 1.0 / 120.0;
           result *= x;
           result *= x;
           result *= x;
@@ -88,7 +88,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result *= x;
           return result;
         } else if (x < 2.0) {
-          float_t result = -1.0 / 24.0;
+          double result = -1.0 / 24.0;
           result = 0.25 + result * x;
           result = -0.5 + result * x;
           result = 0.5 + result * x;
@@ -96,7 +96,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 0.05 + result * x;
           return result;
         } else if (x < 3.0) {
-          float_t result = 1.0 / 12.0;
+          double result = 1.0 / 12.0;
           result = -1.0 + result * x;
           result = 4.5 + result * x;
           result = -9.5 + result * x;
@@ -104,7 +104,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -3.95 + result * x;
           return result;
         } else if (x < 4.0) {
-          float_t result = -1.0 / 12.0;
+          double result = -1.0 / 12.0;
           result = 1.5 + result * x;
           result = -10.5 + result * x;
           result = 35.5 + result * x;
@@ -112,7 +112,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 36.55 + result * x;
           return result;
         } else if (x < 5.0) {
-          float_t result = 1.0 / 24.0;
+          double result = 1.0 / 24.0;
           result = -1.0 + result * x;
           result = 9.5 + result * x;
           result = -44.5 + result * x;
@@ -120,7 +120,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -91.45 + result * x;
           return result;
         } else {
-          float_t result = -1.0 / 120.0;
+          double result = -1.0 / 120.0;
           result = 0.25 + result * x;
           result = -3.0 + result * x;
           result = 18.0 + result * x;
@@ -135,7 +135,7 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= 8.0)) {
           return 0.0;
         } else if (x < 1.0) {
-          float_t result = 1.0 / 5040.0;
+          double result = 1.0 / 5040.0;
           result *= x;
           result *= x;
           result *= x;
@@ -145,7 +145,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result *= x;
           return result;
         } else if (x < 2.0) {
-          float_t result = -1.0 / 720.0;
+          double result = -1.0 / 720.0;
           result = 1.0 / 90.0 + result * x;
           result = -1.0 / 30.0 + result * x;
           result = 1.0 / 18.0 + result * x;
@@ -155,7 +155,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 1.0 / 630.0 + result * x;
           return result;
         } else if (x < 3.0) {
-          float_t result = 1.0 / 240.0;
+          double result = 1.0 / 240.0;
           result = -1.0 / 15.0 + result * x;
           result = 13.0 / 30.0 + result * x;
           result = -1.5 + result * x;
@@ -165,7 +165,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -149.0 / 210.0 + result * x;
           return result;
         } else if (x < 4.0) {
-          float_t result = -1.0 / 144.0;
+          double result = -1.0 / 144.0;
           result = 1.0 / 6.0 + result * x;
           result = -5.0 / 3.0 + result * x;
           result = 9.0 + result * x;
@@ -175,7 +175,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 2477.0 / 105.0 + result * x;
           return result;
         } else if (x < 5.0) {
-          float_t result = 1.0 / 144.0;
+          double result = 1.0 / 144.0;
           result = -2.0 / 9.0 + result * x;
           result = 3.0 + result * x;
           result = -199.0 / 9.0 + result * x;
@@ -185,7 +185,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -64249.0 / 315.0 + result * x;
           return result;
         } else if (x < 6.0) {
-          float_t result = -1.0 / 240.0;
+          double result = -1.0 / 240.0;
           result = 1.0 / 6.0 + result * x;
           result = -17.0 / 6.0 + result * x;
           result = 26.5 + result * x;
@@ -195,7 +195,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 139459.0 / 210.0 + result * x;
           return result;
         } else if (x < 7.0) {
-          float_t result = 1.0 / 720.0;
+          double result = 1.0 / 720.0;
           result = -1.0 / 15.0 + result * x;
           result = 41.0 / 30.0 + result * x;
           result = -15.5 + result * x;
@@ -205,7 +205,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -187133.0 / 210.0 + result * x;
           return result;
         } else {
-          float_t result = -1.0 / 5040.0;
+          double result = -1.0 / 5040.0;
           result = 1.0 / 90.0 + result * x;
           result = -4.0 / 15.0 + result * x;
           result = 32.0 / 9.0 + result * x;
@@ -260,7 +260,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/24.0;
+              double result = 1.0/24.0;
               result *= x;
               result *= x;
               result *= x;
@@ -268,7 +268,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/6.0;
+              double result = -1.0/6.0;
               result = 5.0/6.0 + result * x;
               result = -1.25 + result * x;
               result = 5.0/6.0 + result * x;
@@ -276,7 +276,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 0.25;
+              double result = 0.25;
               result = -2.5 + result * x;
               result = 8.75 + result * x;
               result = -12.5 + result * x;
@@ -284,7 +284,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/6.0;
+              double result = -1.0/6.0;
               result = 2.5 + result * x;
               result = -13.75 + result * x;
               result = 32.5 + result * x;
@@ -292,7 +292,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = 1.0/24.0;
+              double result = 1.0/24.0;
               result = -5.0/6.0 + result * x;
               result = 6.25 + result * x;
               result = -125.0/6.0 + result * x;
@@ -306,7 +306,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/720.0;
+              double result = 1.0/720.0;
               result *= x;
               result *= x;
               result *= x;
@@ -316,7 +316,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/120.0;
+              double result = -1.0/120.0;
               result = 7.0/120.0 + result * x;
               result = -7.0/48.0 + result * x;
               result = 7.0/36.0 + result * x;
@@ -326,7 +326,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 1.0/48.0;
+              double result = 1.0/48.0;
               result = -7.0/24.0 + result * x;
               result = 77.0/48.0 + result * x;
               result = -161.0/36.0 + result * x;
@@ -336,7 +336,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/36.0;
+              double result = -1.0/36.0;
               result = 7.0/12.0 + result * x;
               result = -119.0/24.0 + result * x;
               result = 196.0/9.0 + result * x;
@@ -346,7 +346,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 1.0/48.0;
+              double result = 1.0/48.0;
               result = -7.0/12.0 + result * x;
               result = 161.0/24.0 + result * x;
               result = -364.0/9.0 + result * x;
@@ -356,7 +356,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -1.0/120.0;
+              double result = -1.0/120.0;
               result = 7.0/24.0 + result * x;
               result = -203.0/48.0 + result * x;
               result = 1169.0/36.0 + result * x;
@@ -366,7 +366,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = 1.0/720.0;
+              double result = 1.0/720.0;
               result = -7.0/120.0 + result * x;
               result = 49.0/48.0 + result * x;
               result = -343.0/36.0 + result * x;
@@ -382,7 +382,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/40320.0;
+              double result = 1.0/40320.0;
               result *= x;
               result *= x;
               result *= x;
@@ -394,7 +394,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/5040.0;
+              double result = -1.0/5040.0;
               result = 1.0/560.0 + result * x;
               result = -0.00625 + result * x;
               result = 0.0125 + result * x;
@@ -406,7 +406,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 1.0/1440.0;
+              double result = 1.0/1440.0;
               result = -0.0125 + result * x;
               result = 0.09375 + result * x;
               result = -0.3875 + result * x;
@@ -418,7 +418,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/720.0;
+              double result = -1.0/720.0;
               result = 0.0375 + result * x;
               result = -0.43125 + result * x;
               result = 2.7625 + result * x;
@@ -430,7 +430,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 1.0/576.0;
+              double result = 1.0/576.0;
               result = -0.0625 + result * x;
               result = 0.96875 + result * x;
               result = -8.4375 + result * x;
@@ -442,7 +442,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -1.0/720.0;
+              double result = -1.0/720.0;
               result = 0.0625 + result * x;
               result = -1.21875 + result * x;
               result = 13.4375 + result * x;
@@ -454,7 +454,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 7.0)
           {
-              float_t result = 1.0/1440.0;
+              double result = 1.0/1440.0;
               result = -0.0375 + result * x;
               result = 0.88125 + result * x;
               result = -11.7625 + result * x;
@@ -466,7 +466,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 8.0)
           {
-              float_t result = -1.0/5040.0;
+              double result = -1.0/5040.0;
               result = 0.0125 + result * x;
               result = -0.34375 + result * x;
               result = 5.3875 + result * x;
@@ -478,7 +478,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = 1.0/40320.0;
+              double result = 1.0/40320.0;
               result = -1.0/560.0 + result * x;
               result = 0.05625 + result * x;
               result = -1.0125 + result * x;
@@ -496,7 +496,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/362880.0;
+              double result = 1.0/362880.0;
               result *= x;
               result *= x;
               result *= x;
@@ -509,7 +509,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/40320.0;
+              double result = -1.0/40320.0;
               result = 1.0/4032.0 + result * x;
               result = -1.0/1008.0 + result * x;
               result = 1.0/432.0 + result * x;
@@ -522,7 +522,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 1.0/10080.0;
+              double result = 1.0/10080.0;
               result = -1.0/504.0 + result * x;
               result = 17.0/1008.0 + result * x;
               result = -35.0/432.0 + result * x;
@@ -535,7 +535,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/4320.0;
+              double result = -1.0/4320.0;
               result = 1.0/144.0 + result * x;
               result = -13.0/144.0 + result * x;
               result = 289.0/432.0 + result * x;
@@ -548,7 +548,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 1.0/2880.0;
+              double result = 1.0/2880.0;
               result = -1.0/72.0 + result * x;
               result = 35.0/144.0 + result * x;
               result = -1055.0/432.0 + result * x;
@@ -561,7 +561,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -1.0/2880.0;
+              double result = -1.0/2880.0;
               result = 5.0/288.0 + result * x;
               result = -55.0/144.0 + result * x;
               result = 2095.0/432.0 + result * x;
@@ -574,7 +574,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 7.0)
           {
-              float_t result = 1.0/4320.0;
+              double result = 1.0/4320.0;
               result = -1.0/72.0 + result * x;
               result = 53.0/144.0 + result * x;
               result = -2441.0/432.0 + result * x;
@@ -587,7 +587,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 8.0)
           {
-              float_t result = -1.0/10080.0;
+              double result = -1.0/10080.0;
               result = 1.0/144.0 + result * x;
               result = -31.0/144.0 + result * x;
               result = 1675.0/432.0 + result * x;
@@ -600,7 +600,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 9.0)
           {
-              float_t result = 1.0/40320.0;
+              double result = 1.0/40320.0;
               result = -1.0/504.0 + result * x;
               result = 71.0/1008.0 + result * x;
               result = -629.0/432.0 + result * x;
@@ -613,7 +613,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = -1.0/362880.0;
+              double result = -1.0/362880.0;
               result = 1.0/4032.0 + result * x;
               result = -5.0/504.0 + result * x;
               result = 25.0/108.0 + result * x;
@@ -629,7 +629,7 @@ class BsplineBasis: public Basis<LT, IT> {
       default:
         // the degree is too damn high
         // ==> calculate B-spline value by Cox-de-Boor recursion
-        const float_t pDbl = static_cast<float_t>(p);
+        const double pDbl = static_cast<double>(p);
 
         if ((x < 0.0) || (x >= pDbl + 1.0)) {
           return 0.0;
@@ -647,7 +647,7 @@ class BsplineBasis: public Basis<LT, IT> {
    * @return      value of derivative of uniform B-spline
    *              (with knots \f$\{0, 1, ..., p+1\}\f$)
    */
-  inline float_t uniformBSplineDx(float_t x, size_t p) const {
+  inline double uniformBSplineDx(double x, size_t p) const {
     switch (p) {
       case 3:
         if ((x < 0.0) || (x >= 4.0)) {
@@ -668,42 +668,42 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= 6.0)) {
           return 0.0;
         } else if (x < 1.0) {
-          float_t result = 1.0 / 24.0;
+          double result = 1.0 / 24.0;
           result *= x;
           result *= x;
           result *= x;
           result *= x;
           return result;
         } else if (x < 2.0) {
-          float_t result = -5.0 / 24.0;
+          double result = -5.0 / 24.0;
           result = 1.0 + result * x;
           result = -1.5 + result * x;
           result = 1.0 + result * x;
           result = -0.25 + result * x;
           return result;
         } else if (x < 3.0) {
-          float_t result = 5.0 / 12.0;
+          double result = 5.0 / 12.0;
           result = -4.0 + result * x;
           result = 13.5 + result * x;
           result = -19.0 + result * x;
           result = 9.75 + result * x;
           return result;
         } else if (x < 4.0) {
-          float_t result = -5.0 / 12.0;
+          double result = -5.0 / 12.0;
           result = 6.0 + result * x;
           result = -31.5 + result * x;
           result = 71.0 + result * x;
           result = -57.75 + result * x;
           return result;
         } else if (x < 5.0) {
-          float_t result = 5.0 / 24.0;
+          double result = 5.0 / 24.0;
           result = -4.0 + result * x;
           result = 28.5 + result * x;
           result = -89.0 + result * x;
           result = 102.25 + result * x;
           return result;
         } else {
-          float_t result = -1.0 / 24.0;
+          double result = -1.0 / 24.0;
           result = 1.0 + result * x;
           result = -9.0 + result * x;
           result = 36.0 + result * x;
@@ -717,7 +717,7 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= 8.0)) {
           return 0.0;
         } else if (x < 1.0) {
-          float_t result = 1.0 / 720.0;
+          double result = 1.0 / 720.0;
           result *= x;
           result *= x;
           result *= x;
@@ -726,7 +726,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result *= x;
           return result;
         } else if (x < 2.0) {
-          float_t result = -7.0 / 720.0;
+          double result = -7.0 / 720.0;
           result = 1.0 / 15.0 + result * x;
           result = -1.0 / 6.0 + result * x;
           result = 2.0 / 9.0 + result * x;
@@ -735,7 +735,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -1.0 / 90.0 + result * x;
           return result;
         } else if (x < 3.0) {
-          float_t result = 7.0 / 240.0;
+          double result = 7.0 / 240.0;
           result = -0.4 + result * x;
           result = 13.0 / 6.0 + result * x;
           result = -6.0 + result * x;
@@ -744,7 +744,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 223.0 / 90.0 + result * x;
           return result;
         } else if (x < 4.0) {
-          float_t result = -7.0 / 144.0;
+          double result = -7.0 / 144.0;
           result = 1.0 + result * x;
           result = -25.0 / 3.0 + result * x;
           result = 36.0 + result * x;
@@ -753,7 +753,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -488.0 / 9.0 + result * x;
           return result;
         } else if (x < 5.0) {
-          float_t result = 7.0 / 144.0;
+          double result = 7.0 / 144.0;
           result = -4.0 / 3.0 + result * x;
           result = 15.0 + result * x;
           result = -796.0 / 9.0 + result * x;
@@ -762,7 +762,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 344.0 + result * x;
           return result;
         } else if (x < 6.0) {
-          float_t result = -7.0 / 240.0;
+          double result = -7.0 / 240.0;
           result = 1.0 + result * x;
           result = -85.0 / 6.0 + result * x;
           result = 106.0 + result * x;
@@ -771,7 +771,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -15683.0 / 18.0 + result * x;
           return result;
         } else if (x < 7.0) {
-          float_t result = 7.0 / 720.0;
+          double result = 7.0 / 720.0;
           result = -0.4 + result * x;
           result = 41.0 / 6.0 + result * x;
           result = -62.0 + result * x;
@@ -780,7 +780,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 84881.0 / 90.0 + result * x;
           return result;
         } else {
-          float_t result = -1.0 / 720.0;
+          double result = -1.0 / 720.0;
           result = 1.0 / 15.0 + result * x;
           result = -4.0 / 3.0 + result * x;
           result = 128.0 / 9.0 + result * x;
@@ -849,7 +849,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/120.0;
+              double result = 1.0/120.0;
               result *= x;
               result *= x;
               result *= x;
@@ -858,7 +858,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -0.05;
+              double result = -0.05;
               result = 7.0/24.0 + result * x;
               result = -7.0/12.0 + result * x;
               result = 7.0/12.0 + result * x;
@@ -867,7 +867,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 0.125;
+              double result = 0.125;
               result = -35.0/24.0 + result * x;
               result = 77.0/12.0 + result * x;
               result = -161.0/12.0 + result * x;
@@ -876,7 +876,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/6.0;
+              double result = -1.0/6.0;
               result = 35.0/12.0 + result * x;
               result = -119.0/6.0 + result * x;
               result = 196.0/3.0 + result * x;
@@ -885,7 +885,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 0.125;
+              double result = 0.125;
               result = -35.0/12.0 + result * x;
               result = 161.0/6.0 + result * x;
               result = -364.0/3.0 + result * x;
@@ -894,7 +894,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -0.05;
+              double result = -0.05;
               result = 35.0/24.0 + result * x;
               result = -203.0/12.0 + result * x;
               result = 1169.0/12.0 + result * x;
@@ -903,7 +903,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = 1.0/120.0;
+              double result = 1.0/120.0;
               result = -7.0/24.0 + result * x;
               result = 49.0/12.0 + result * x;
               result = -343.0/12.0 + result * x;
@@ -918,7 +918,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/5040.0;
+              double result = 1.0/5040.0;
               result *= x;
               result *= x;
               result *= x;
@@ -929,7 +929,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/630.0;
+              double result = -1.0/630.0;
               result = 0.0125 + result * x;
               result = -0.0375 + result * x;
               result = 0.0625 + result * x;
@@ -940,7 +940,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 1.0/180.0;
+              double result = 1.0/180.0;
               result = -0.0875 + result * x;
               result = 0.5625 + result * x;
               result = -1.9375 + result * x;
@@ -951,7 +951,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/90.0;
+              double result = -1.0/90.0;
               result = 0.2625 + result * x;
               result = -2.5875 + result * x;
               result = 13.8125 + result * x;
@@ -962,7 +962,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 1.0/72.0;
+              double result = 1.0/72.0;
               result = -0.4375 + result * x;
               result = 5.8125 + result * x;
               result = -42.1875 + result * x;
@@ -973,7 +973,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -1.0/90.0;
+              double result = -1.0/90.0;
               result = 0.4375 + result * x;
               result = -7.3125 + result * x;
               result = 67.1875 + result * x;
@@ -984,7 +984,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 7.0)
           {
-              float_t result = 1.0/180.0;
+              double result = 1.0/180.0;
               result = -0.2625 + result * x;
               result = 5.2875 + result * x;
               result = -58.8125 + result * x;
@@ -995,7 +995,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 8.0)
           {
-              float_t result = -1.0/630.0;
+              double result = -1.0/630.0;
               result = 0.0875 + result * x;
               result = -2.0625 + result * x;
               result = 26.9375 + result * x;
@@ -1006,7 +1006,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = 1.0/5040.0;
+              double result = 1.0/5040.0;
               result = -0.0125 + result * x;
               result = 0.3375 + result * x;
               result = -5.0625 + result * x;
@@ -1023,7 +1023,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/40320.0;
+              double result = 1.0/40320.0;
               result *= x;
               result *= x;
               result *= x;
@@ -1035,7 +1035,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/4480.0;
+              double result = -1.0/4480.0;
               result = 1.0/504.0 + result * x;
               result = -1.0/144.0 + result * x;
               result = 1.0/72.0 + result * x;
@@ -1047,7 +1047,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 1.0/1120.0;
+              double result = 1.0/1120.0;
               result = -1.0/63.0 + result * x;
               result = 17.0/144.0 + result * x;
               result = -35.0/72.0 + result * x;
@@ -1059,7 +1059,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/480.0;
+              double result = -1.0/480.0;
               result = 1.0/18.0 + result * x;
               result = -91.0/144.0 + result * x;
               result = 289.0/72.0 + result * x;
@@ -1071,7 +1071,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 0.003125;
+              double result = 0.003125;
               result = -1.0/9.0 + result * x;
               result = 245.0/144.0 + result * x;
               result = -1055.0/72.0 + result * x;
@@ -1083,7 +1083,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -0.003125;
+              double result = -0.003125;
               result = 5.0/36.0 + result * x;
               result = -385.0/144.0 + result * x;
               result = 2095.0/72.0 + result * x;
@@ -1095,7 +1095,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 7.0)
           {
-              float_t result = 1.0/480.0;
+              double result = 1.0/480.0;
               result = -1.0/9.0 + result * x;
               result = 371.0/144.0 + result * x;
               result = -2441.0/72.0 + result * x;
@@ -1107,7 +1107,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 8.0)
           {
-              float_t result = -1.0/1120.0;
+              double result = -1.0/1120.0;
               result = 1.0/18.0 + result * x;
               result = -217.0/144.0 + result * x;
               result = 1675.0/72.0 + result * x;
@@ -1119,7 +1119,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 9.0)
           {
-              float_t result = 1.0/4480.0;
+              double result = 1.0/4480.0;
               result = -1.0/63.0 + result * x;
               result = 71.0/144.0 + result * x;
               result = -629.0/72.0 + result * x;
@@ -1131,7 +1131,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = -1.0/40320.0;
+              double result = -1.0/40320.0;
               result = 1.0/504.0 + result * x;
               result = -5.0/72.0 + result * x;
               result = 25.0/18.0 + result * x;
@@ -1144,7 +1144,7 @@ class BsplineBasis: public Basis<LT, IT> {
           }
           break;*/
       default:
-        if ((x < 0.0) || (x >= static_cast<float_t>(p) + 1.0)) {
+        if ((x < 0.0) || (x >= static_cast<double>(p) + 1.0)) {
           return 0.0;
         } else {
           return uniformBSpline(x, p - 1) -
@@ -1159,7 +1159,7 @@ class BsplineBasis: public Basis<LT, IT> {
    * @return      value of 2nd derivative of uniform B-spline
    *              (with knots \f$\{0, 1, ..., p+1\}\f$)
    */
-  inline float_t uniformBSplineDxDx(float_t x, size_t p) const {
+  inline double uniformBSplineDxDx(double x, size_t p) const {
     switch (p) {
       case 3:
         if ((x < 0.0) || (x >= 4.0)) {
@@ -1199,7 +1199,7 @@ class BsplineBasis: public Basis<LT, IT> {
         if ((x < 0.0) || (x >= 8.0)) {
           return 0.0;
         } else if (x < 1.0) {
-          float_t result = 1.0 / 120.0;
+          double result = 1.0 / 120.0;
           result *= x;
           result *= x;
           result *= x;
@@ -1207,7 +1207,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result *= x;
           return result;
         } else if (x < 2.0) {
-          float_t result = -7.0 / 120.0;
+          double result = -7.0 / 120.0;
           result = 1.0 / 3.0 + result * x;
           result = -2.0 / 3.0 + result * x;
           result = 2.0 / 3.0 + result * x;
@@ -1215,7 +1215,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 1.0 / 15.0 + result * x;
           return result;
         } else if (x < 3.0) {
-          float_t result = 0.175;
+          double result = 0.175;
           result = -2.0 + result * x;
           result = 26.0 / 3.0 + result * x;
           result = -18.0 + result * x;
@@ -1223,7 +1223,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -7.4 + result * x;
           return result;
         } else if (x < 4.0) {
-          float_t result = -7.0 / 24.0;
+          double result = -7.0 / 24.0;
           result = 5.0 + result * x;
           result = -100.0 / 3.0 + result * x;
           result = 108.0 + result * x;
@@ -1231,7 +1231,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 106.0 + result * x;
           return result;
         } else if (x < 5.0) {
-          float_t result = 7.0 / 24.0;
+          double result = 7.0 / 24.0;
           result = -20.0 / 3.0 + result * x;
           result = 60.0 + result * x;
           result = -796.0 / 3.0 + result * x;
@@ -1239,7 +1239,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -1474.0 / 3.0 + result * x;
           return result;
         } else if (x < 6.0) {
-          float_t result = -0.175;
+          double result = -0.175;
           result = 5.0 + result * x;
           result = -170.0 / 3.0 + result * x;
           result = 318.0 + result * x;
@@ -1247,7 +1247,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = 967.0 + result * x;
           return result;
         } else if (x < 7.0) {
-          float_t result = 7.0 / 120.0;
+          double result = 7.0 / 120.0;
           result = -2.0 + result * x;
           result = 82.0 / 3.0 + result * x;
           result = -186.0 + result * x;
@@ -1255,7 +1255,7 @@ class BsplineBasis: public Basis<LT, IT> {
           result = -847.4 + result * x;
           return result;
         } else {
-          float_t result = -1.0 / 120.0;
+          double result = -1.0 / 120.0;
           result = 1.0 / 3.0 + result * x;
           result = -16.0 / 3.0 + result * x;
           result = 128.0 / 3.0 + result * x;
@@ -1313,7 +1313,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/24.0;
+              double result = 1.0/24.0;
               result *= x;
               result *= x;
               result *= x;
@@ -1321,7 +1321,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -0.25;
+              double result = -0.25;
               result = 7.0/6.0 + result * x;
               result = -1.75 + result * x;
               result = 7.0/6.0 + result * x;
@@ -1329,7 +1329,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 0.625;
+              double result = 0.625;
               result = -35.0/6.0 + result * x;
               result = 19.25 + result * x;
               result = -161.0/6.0 + result * x;
@@ -1337,7 +1337,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -5.0/6.0;
+              double result = -5.0/6.0;
               result = 35.0/3.0 + result * x;
               result = -59.5 + result * x;
               result = 392.0/3.0 + result * x;
@@ -1345,7 +1345,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 0.625;
+              double result = 0.625;
               result = -35.0/3.0 + result * x;
               result = 80.5 + result * x;
               result = -728.0/3.0 + result * x;
@@ -1353,7 +1353,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -0.25;
+              double result = -0.25;
               result = 35.0/6.0 + result * x;
               result = -50.75 + result * x;
               result = 1169.0/6.0 + result * x;
@@ -1361,7 +1361,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = 1.0/24.0;
+              double result = 1.0/24.0;
               result = -7.0/6.0 + result * x;
               result = 12.25 + result * x;
               result = -343.0/6.0 + result * x;
@@ -1375,7 +1375,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/720.0;
+              double result = 1.0/720.0;
               result *= x;
               result *= x;
               result *= x;
@@ -1385,7 +1385,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/90.0;
+              double result = -1.0/90.0;
               result = 0.075 + result * x;
               result = -0.1875 + result * x;
               result = 0.25 + result * x;
@@ -1395,7 +1395,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 7.0/180.0;
+              double result = 7.0/180.0;
               result = -0.525 + result * x;
               result = 2.8125 + result * x;
               result = -7.75 + result * x;
@@ -1405,7 +1405,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -7.0/90.0;
+              double result = -7.0/90.0;
               result = 1.575 + result * x;
               result = -12.9375 + result * x;
               result = 55.25 + result * x;
@@ -1415,7 +1415,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 7.0/72.0;
+              double result = 7.0/72.0;
               result = -2.625 + result * x;
               result = 29.0625 + result * x;
               result = -168.75 + result * x;
@@ -1425,7 +1425,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -7.0/90.0;
+              double result = -7.0/90.0;
               result = 2.625 + result * x;
               result = -36.5625 + result * x;
               result = 268.75 + result * x;
@@ -1435,7 +1435,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 7.0)
           {
-              float_t result = 7.0/180.0;
+              double result = 7.0/180.0;
               result = -1.575 + result * x;
               result = 26.4375 + result * x;
               result = -235.25 + result * x;
@@ -1445,7 +1445,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 8.0)
           {
-              float_t result = -1.0/90.0;
+              double result = -1.0/90.0;
               result = 0.525 + result * x;
               result = -10.3125 + result * x;
               result = 107.75 + result * x;
@@ -1455,7 +1455,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = 1.0/720.0;
+              double result = 1.0/720.0;
               result = -0.075 + result * x;
               result = 1.6875 + result * x;
               result = -20.25 + result * x;
@@ -1471,7 +1471,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return 0.0;
           } else if (x < 1.0)
           {
-              float_t result = 1.0/5040.0;
+              double result = 1.0/5040.0;
               result *= x;
               result *= x;
               result *= x;
@@ -1482,7 +1482,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 2.0)
           {
-              float_t result = -1.0/560.0;
+              double result = -1.0/560.0;
               result = 1.0/72.0 + result * x;
               result = -1.0/24.0 + result * x;
               result = 5.0/72.0 + result * x;
@@ -1493,7 +1493,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 3.0)
           {
-              float_t result = 1.0/140.0;
+              double result = 1.0/140.0;
               result = -1.0/9.0 + result * x;
               result = 17.0/24.0 + result * x;
               result = -175.0/72.0 + result * x;
@@ -1504,7 +1504,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 4.0)
           {
-              float_t result = -1.0/60.0;
+              double result = -1.0/60.0;
               result = 7.0/18.0 + result * x;
               result = -91.0/24.0 + result * x;
               result = 1445.0/72.0 + result * x;
@@ -1515,7 +1515,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 5.0)
           {
-              float_t result = 0.025;
+              double result = 0.025;
               result = -7.0/9.0 + result * x;
               result = 245.0/24.0 + result * x;
               result = -5275.0/72.0 + result * x;
@@ -1526,7 +1526,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 6.0)
           {
-              float_t result = -0.025;
+              double result = -0.025;
               result = 35.0/36.0 + result * x;
               result = -385.0/24.0 + result * x;
               result = 10475.0/72.0 + result * x;
@@ -1537,7 +1537,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 7.0)
           {
-              float_t result = 1.0/60.0;
+              double result = 1.0/60.0;
               result = -7.0/9.0 + result * x;
               result = 371.0/24.0 + result * x;
               result = -12205.0/72.0 + result * x;
@@ -1548,7 +1548,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 8.0)
           {
-              float_t result = -1.0/140.0;
+              double result = -1.0/140.0;
               result = 7.0/18.0 + result * x;
               result = -217.0/24.0 + result * x;
               result = 8375.0/72.0 + result * x;
@@ -1559,7 +1559,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else if (x < 9.0)
           {
-              float_t result = 1.0/560.0;
+              double result = 1.0/560.0;
               result = -1.0/9.0 + result * x;
               result = 71.0/24.0 + result * x;
               result = -3145.0/72.0 + result * x;
@@ -1570,7 +1570,7 @@ class BsplineBasis: public Basis<LT, IT> {
               return result;
           } else
           {
-              float_t result = -1.0/5040.0;
+              double result = -1.0/5040.0;
               result = 1.0/72.0 + result * x;
               result = -5.0/12.0 + result * x;
               result = 125.0/18.0 + result * x;
@@ -1582,7 +1582,7 @@ class BsplineBasis: public Basis<LT, IT> {
           }
           break;*/
       default:
-        if ((x < 0.0) || (x >= static_cast<float_t>(p) + 1.0)) {
+        if ((x < 0.0) || (x >= static_cast<double>(p) + 1.0)) {
           return 0.0;
         } else {
           return uniformBSpline(x, p - 2) -
@@ -1598,12 +1598,12 @@ class BsplineBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of B-spline basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
-    const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
+  inline double eval(LT l, IT i, double x) override {
+    const double hinv = static_cast<double>(static_cast<IT>(1) << l);
 
     return uniformBSpline(
-             x * hinv - static_cast<float_t>(i) +
-             static_cast<float_t>(this->degree + 1) / 2.0,
+             x * hinv - static_cast<double>(i) +
+             static_cast<double>(this->degree + 1) / 2.0,
              this->degree);
   }
 
@@ -1613,12 +1613,12 @@ class BsplineBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of B-spline basis function
    */
-  inline float_t evalDx(LT l, IT i, float_t x) {
-    const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
+  inline double evalDx(LT l, IT i, double x) {
+    const double hinv = static_cast<double>(static_cast<IT>(1) << l);
 
     return hinv * uniformBSplineDx(
-             x * hinv - static_cast<float_t>(i) +
-             static_cast<float_t>(this->degree + 1) / 2.0,
+             x * hinv - static_cast<double>(i) +
+             static_cast<double>(this->degree + 1) / 2.0,
              this->degree);
   }
 
@@ -1628,12 +1628,12 @@ class BsplineBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of 2nd derivative of B-spline basis function
    */
-  inline float_t evalDxDx(LT l, IT i, float_t x) {
-    const float_t hinv = static_cast<float_t>(static_cast<IT>(1) << l);
+  inline double evalDxDx(LT l, IT i, double x) {
+    const double hinv = static_cast<double>(static_cast<IT>(1) << l);
 
     return hinv * hinv * uniformBSplineDxDx(
-             x * hinv - static_cast<float_t>(i) +
-             static_cast<float_t>(this->degree + 1) / 2.0,
+             x * hinv - static_cast<double>(i) +
+             static_cast<double>(this->degree + 1) / 2.0,
              this->degree);
   }
 
@@ -1653,6 +1653,6 @@ class BsplineBasis: public Basis<LT, IT> {
 typedef BsplineBasis<unsigned int, unsigned int> SBsplineBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BSPLINE_BASE_HPP */

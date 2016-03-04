@@ -17,17 +17,17 @@
 
 #include "GridCreator.hpp"
 
-using SGPP::optimization::IterativeGridGenerator;
-using SGPP::optimization::IterativeGridGeneratorLinearSurplus;
-using SGPP::optimization::IterativeGridGeneratorRitterNovak;
-using SGPP::optimization::IterativeGridGeneratorSOO;
-using SGPP::optimization::Printer;
-using SGPP::optimization::RandomNumberGenerator;
-using SGPP::optimization::ScalarFunction;
-using SGPP::optimization::test_problems::Rosenbrock;
+using sgpp::optimization::IterativeGridGenerator;
+using sgpp::optimization::IterativeGridGeneratorLinearSurplus;
+using sgpp::optimization::IterativeGridGeneratorRitterNovak;
+using sgpp::optimization::IterativeGridGeneratorSOO;
+using sgpp::optimization::Printer;
+using sgpp::optimization::RandomNumberGenerator;
+using sgpp::optimization::ScalarFunction;
+using sgpp::optimization::test_problems::Rosenbrock;
 
 BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
-  // Test SGPP::optimization iterative grid generators.
+  // Test sgpp::optimization iterative grid generators.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
   ScalarFunction& f = testProblem.getObjectiveFunction();
 
   // Test All The Grids!
-  std::vector<std::unique_ptr<SGPP::base::Grid>> grids;
+  std::vector<std::unique_ptr<sgpp::base::Grid>> grids;
   createSupportedGrids(d, p, grids);
 
   // test getters/setters
@@ -49,11 +49,11 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
 
     BOOST_CHECK_EQUAL(&gridGen.getGrid(), grids[0].get());
 
-    const SGPP::float_t adaptivity = 0.42;
+    const double adaptivity = 0.42;
     gridGen.setAdaptivity(adaptivity);
     BOOST_CHECK_EQUAL(gridGen.getAdaptivity(), adaptivity);
 
-    const SGPP::base::level_t maxLevel = 13;
+    const sgpp::base::level_t maxLevel = 13;
     gridGen.setMaxLevel(maxLevel);
     BOOST_CHECK_EQUAL(gridGen.getMaxLevel(), maxLevel);
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
 
     BOOST_CHECK_EQUAL(&gridGen.getGrid(), grids[0].get());
 
-    const SGPP::float_t adaptivity = 0.42;
+    const double adaptivity = 0.42;
     gridGen.setAdaptivity(adaptivity);
     BOOST_CHECK_EQUAL(gridGen.getAdaptivity(), adaptivity);
   }
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
 
     BOOST_CHECK_EQUAL(&gridGen.getGrid(), grids[0].get());
 
-    const SGPP::float_t adaptivity = 0.42;
+    const double adaptivity = 0.42;
     gridGen.setAdaptivity(adaptivity);
 
     const IterativeGridGeneratorSOO::AdaptivityFunction adaptivityFunction =
@@ -116,11 +116,11 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
       BOOST_CHECK_LE(n, N);
 
       // test size of function value vector
-      const SGPP::base::DataVector& functionValues = gridGen->getFunctionValues();
+      const sgpp::base::DataVector& functionValues = gridGen->getFunctionValues();
       BOOST_CHECK_EQUAL(n, functionValues.getSize());
 
       for (size_t i = 0; i < n; i++) {
-        SGPP::base::DataVector x(d);
+        sgpp::base::DataVector x(d);
 
         for (size_t t = 0; t < d; t++) {
           x[t] = (grid->getStorage())[i]->getCoord(t);

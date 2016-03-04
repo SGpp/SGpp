@@ -4,11 +4,11 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/parallel/pde/basis/common/OCLLTwoDotInner.hpp>
-using namespace SGPP::base;
+using namespace sgpp::base;
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 

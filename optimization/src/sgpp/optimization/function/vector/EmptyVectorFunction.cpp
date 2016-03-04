@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 WrapperVectorFunction& EmptyVectorFunction::getInstance() {
@@ -15,4 +15,4 @@ WrapperVectorFunction& EmptyVectorFunction::getInstance() {
   return wrapperVectorFunction;
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

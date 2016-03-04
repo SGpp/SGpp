@@ -9,11 +9,11 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
-  float_t res = 0;
+double OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
+  double res = 0;
   GridStorage::index_type index;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
@@ -21,9 +21,9 @@ float_t OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
        iter++) {
     //    index = *(iter->first);
     //    std::cout << iter->second << " " << iter->first->getLevelSum() <<
-    //    " " << pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) <<
+    //    " " << pow(2.0, -static_cast<double>(iter->first->getLevelSum())) <<
     //    std::endl;
-    res += pow(2.0, -static_cast<float_t>(iter->first->getLevelSum())) * alpha.get(
+    res += pow(2.0, -static_cast<double>(iter->first->getLevelSum())) * alpha.get(
              iter->second);
   }
 
@@ -31,4 +31,4 @@ float_t OperationQuadratureLinear::doQuadrature(DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

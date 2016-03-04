@@ -12,7 +12,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -91,6 +91,6 @@ class GridPrinterForStretching: public GridPrinter {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GRIDPRINTERFORSTRETCHING */

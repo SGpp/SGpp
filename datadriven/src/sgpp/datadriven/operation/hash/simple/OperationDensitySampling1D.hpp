@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -35,5 +35,5 @@ class OperationDensitySampling1D {
                             unsigned int* seedp) = 0;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYSAMPLING1D_HPP */

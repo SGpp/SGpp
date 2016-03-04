@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,12 +18,12 @@ Perm::~Perm() {}
 
 TestScalarFunction& Perm::getObjectiveFunction() { return f; }
 
-float_t Perm::getOptimalPointUndisplaced(base::DataVector& x) {
+double Perm::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
-  const float_t dDbl = static_cast<float_t>(d);
+  const double dDbl = static_cast<double>(d);
 
   for (size_t t = 0; t < d; t++) {
-    x[t] = 0.5 * (static_cast<float_t>(t + 1) / dDbl + 1.0);
+    x[t] = 0.5 * (static_cast<double>(t + 1) / dDbl + 1.0);
   }
 
   return 0.0;
@@ -33,17 +33,17 @@ PermObjective::PermObjective(size_t d) : TestScalarFunction(d) {}
 
 PermObjective::~PermObjective() {}
 
-float_t PermObjective::evalUndisplaced(const base::DataVector& x) {
-  float_t result = 0.0;
-  const float_t dDbl = static_cast<float_t>(d);
+double PermObjective::evalUndisplaced(const base::DataVector& x) {
+  double result = 0.0;
+  const double dDbl = static_cast<double>(d);
 
   for (size_t i = 0; i < d; i++) {
-    const float_t iDbl = static_cast<float_t>(i + 1);
-    float_t innerSum = 0.0;
+    const double iDbl = static_cast<double>(i + 1);
+    double innerSum = 0.0;
 
     for (size_t t = 0; t < d; t++) {
-      const float_t xt = dDbl * (2.0 * x[t] - 1.0);
-      const float_t tDbl = static_cast<float_t>(t + 1);
+      const double xt = dDbl * (2.0 * x[t] - 1.0);
+      const double tDbl = static_cast<double>(t + 1);
 
       innerSum += (std::pow(tDbl, iDbl) + 1.0) * (std::pow(xt / tDbl, iDbl) - 1.0);
     }
@@ -59,4 +59,4 @@ void PermObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

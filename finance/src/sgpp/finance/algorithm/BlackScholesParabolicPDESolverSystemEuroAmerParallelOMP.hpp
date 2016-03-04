@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 /**
@@ -29,15 +29,15 @@ namespace finance {
 class BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP
     : public BlackScholesParabolicPDESolverSystemEuroAmer {
  protected:
-  virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyLOperatorInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result);
+  virtual void applyLOperatorComplete(sgpp::base::DataVector& alpha,
+                                      sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyMassMatrixInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
-                                       SGPP::base::DataVector& result);
+  virtual void applyMassMatrixComplete(sgpp::base::DataVector& alpha,
+                                       sgpp::base::DataVector& result);
 
  public:
   /**
@@ -67,12 +67,12 @@ class BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP
    * @param refineMaxLevel max. level for refinement during solving
    */
   BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(
-      SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-      SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
-      std::string OperationMode, float_t dStrike, std::string option_type,
-      bool bLogTransform = false, bool useCoarsen = false, float_t coarsenThreshold = 0.0,
-      std::string adaptSolveMode = "none", int numCoarsenPoints = -1, float_t refineThreshold = 0.0,
-      std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+      sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& mu,
+      sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
+      std::string OperationMode, double dStrike, std::string option_type,
+      bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0,
+      std::string adaptSolveMode = "none", int numCoarsenPoints = -1, double refineThreshold = 0.0,
+      std::string refineMode = "classic", sgpp::base::GridIndex::level_type refineMaxLevel = 0);
 
   /**
    * Std-Destructor
@@ -82,20 +82,20 @@ class BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP
   /**
    * Multiplicates a vector with the matrix, parallel
    *
-   * @param alpha SGPP::base::DataVector that contains the ansatzfunctions' coefficients
-   * @param result SGPP::base::DataVector into which the result of the space discretization
+   * @param alpha sgpp::base::DataVector that contains the ansatzfunctions' coefficients
+   * @param result sgpp::base::DataVector into which the result of the space discretization
    * operation is stored
    */
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   /**
    * generates the right hand side of the system, parallel
    *
    * @return returns the rhs
    */
-  virtual SGPP::base::DataVector* generateRHS();
+  virtual sgpp::base::DataVector* generateRHS();
 };
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELOMP_HPP */

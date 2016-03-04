@@ -12,7 +12,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/tools/ConfigurationParameters.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLConfigurationParameters : public ConfigurationParameters {
@@ -29,4 +29,4 @@ class OCLConfigurationParameters : public ConfigurationParameters {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

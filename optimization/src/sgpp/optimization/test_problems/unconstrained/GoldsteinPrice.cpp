@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,7 +18,7 @@ GoldsteinPrice::~GoldsteinPrice() {}
 
 TestScalarFunction& GoldsteinPrice::getObjectiveFunction() { return f; }
 
-float_t GoldsteinPrice::getOptimalPointUndisplaced(base::DataVector& x) {
+double GoldsteinPrice::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.5;
   x[1] = 0.25;
@@ -29,9 +29,9 @@ GoldsteinPriceObjective::GoldsteinPriceObjective() : TestScalarFunction(2) {}
 
 GoldsteinPriceObjective::~GoldsteinPriceObjective() {}
 
-float_t GoldsteinPriceObjective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 4.0 * x[0] - 2.0;
-  const float_t x2 = 4.0 * x[1] - 2.0;
+double GoldsteinPriceObjective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 4.0 * x[0] - 2.0;
+  const double x2 = 4.0 * x[1] - 2.0;
 
   return (1.0 +
           (x1 + x2 + 1.0) * (x1 + x2 + 1.0) *
@@ -48,4 +48,4 @@ void GoldsteinPriceObjective::clone(std::unique_ptr<ScalarFunction>& clone) cons
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

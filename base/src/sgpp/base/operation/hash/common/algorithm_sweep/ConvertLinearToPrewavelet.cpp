@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void ConvertLinearToPrewavelet::operator()(DataVector& source,
@@ -31,13 +31,13 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
   index.get(dim, init_level, init_index);
 
   size_t _seq;
-  float_t _val;
+  double _val;
 
-  float_t* temp = new float_t[1 << (level + 1)];  // The temp values
-  float_t* r = new float_t[1 << (level - 1)];
+  double* temp = new double[1 << (level + 1)];  // The temp values
+  double* r = new double[1 << (level - 1)];
   // The following arrays are required for the triangulation
-  float_t* gam = new float_t[1 << (level - 1)];
-  float_t* u = new float_t[1 << (level - 1)];
+  double* gam = new double[1 << (level - 1)];
+  double* u = new double[1 << (level - 1)];
 
   for (int i = 0; i < 1 << (level - 1); ++i) {
     r[i] = 0.0;
@@ -79,7 +79,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 
     // Run the actual triangulation
 
-    float_t bet = 0.0;
+    double bet = 0.0;
 
     // This is the forward-reduction
     for (int i = 0; i < 1 << (level - 1); i++) {
@@ -178,4 +178,4 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

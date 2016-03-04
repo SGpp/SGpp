@@ -12,22 +12,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
-OperationLELinear::OperationLELinear(SGPP::base::GridStorage* storage)
-    : SGPP::pde::StdUpDown(storage) {}
+OperationLELinear::OperationLELinear(sgpp::base::GridStorage* storage)
+    : sgpp::pde::StdUpDown(storage) {}
 
 OperationLELinear::~OperationLELinear() {}
 
-void OperationLELinear::up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+void OperationLELinear::up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                            size_t dim) {}
 
-void OperationLELinear::down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+void OperationLELinear::down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                              size_t dim) {
   // Dphi * dphi
-  SGPP::pde::DowndPhidPhiBBIterativeLinear myDown(this->storage);
+  sgpp::pde::DowndPhidPhiBBIterativeLinear myDown(this->storage);
   myDown(alpha, result, dim);
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

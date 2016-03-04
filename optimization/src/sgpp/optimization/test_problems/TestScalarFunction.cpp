@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/TestScalarFunction.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -15,7 +15,7 @@ TestScalarFunction::TestScalarFunction(size_t d)
 
 TestScalarFunction::~TestScalarFunction() {}
 
-float_t TestScalarFunction::eval(const base::DataVector& x) {
+double TestScalarFunction::eval(const base::DataVector& x) {
   // displace vector before evaluation
   for (size_t t = 0; t < d; t++) {
     xTmp[t] = x[t] + displacement[t];
@@ -31,4 +31,4 @@ void TestScalarFunction::setDisplacement(const base::DataVector& displacement) {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

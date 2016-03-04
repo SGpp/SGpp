@@ -12,7 +12,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -25,7 +25,7 @@ class OperationRegularizationDiagonal : public base::OperationMatrix {
   // to remember mode
   int mode;
   // to remember parameter k
-  float_t k;
+  double k;
   // to remember state of grid in terms of number of grid points
   size_t size;
   // ro remember grid's storage
@@ -47,7 +47,7 @@ class OperationRegularizationDiagonal : public base::OperationMatrix {
    * @f$\prod_{k=1}^d \langle \phi_k(x_k),\phi_k(x_k) \rangle_{H^k}@f$.
    * @param k Parameter k
    */
-  virtual void initHkmix(float_t k) = 0;
+  virtual void initHkmix(double k) = 0;
 
   /**
    * Initialize H0HkLaplace.
@@ -56,7 +56,7 @@ class OperationRegularizationDiagonal : public base::OperationMatrix {
    * \prod_{l\neq k} \langle \phi_k(x_k),\phi_k(x_k) \rangle_{H^0}@f$.
    * @param k Parameter k
    */
-  virtual void initH0HkLaplace(float_t k) = 0;
+  virtual void initH0HkLaplace(double k) = 0;
 
   /**
    * Initialize ISOTROPIC_PENALTY, ignores constructor parameter k.
@@ -92,7 +92,7 @@ class OperationRegularizationDiagonal : public base::OperationMatrix {
    * OperationRegularizationDiagonal::HKMIX.
    * @param k Parameter for @f$H^k@f$
    */
-  OperationRegularizationDiagonal(base::GridStorage* storage, int mode, float_t k);
+  OperationRegularizationDiagonal(base::GridStorage* storage, int mode, double k);
 
   /**
    * Destructor
@@ -107,5 +107,5 @@ class OperationRegularizationDiagonal : public base::OperationMatrix {
   virtual void mult(base::DataVector& alpha, base::DataVector& result);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONREGULARIZATIONDIAGONAL_HPP */

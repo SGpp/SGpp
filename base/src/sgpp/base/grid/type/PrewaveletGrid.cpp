@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 PrewaveletGrid::PrewaveletGrid(std::istream& istr) :
@@ -31,7 +31,7 @@ PrewaveletGrid::PrewaveletGrid(size_t dim) :
 PrewaveletGrid::~PrewaveletGrid() {
 }
 
-SGPP::base::GridType PrewaveletGrid::getType() {
+sgpp::base::GridType PrewaveletGrid::getType() {
   return base::GridType::Prewavelet;
 }
 
@@ -58,4 +58,4 @@ GridStorage& PrewaveletGrid::getShadowStorage() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

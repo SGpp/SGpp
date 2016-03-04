@@ -11,7 +11,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -44,8 +44,8 @@ class OperationNaiveEvalHessian {
    * @param[out]  hessian     Hessian matrix of the linear combination
    * @return                  value of the linear combination
    */
-  float_t evalHessian(const DataVector& alpha,
-                      const std::vector<float_t>& point,
+  double evalHessian(const DataVector& alpha,
+                      const std::vector<double>& point,
                       DataVector& gradient,
                       DataMatrix& hessian) {
     DataVector p(point);
@@ -61,13 +61,13 @@ class OperationNaiveEvalHessian {
    * @param[out]  hessian     Hessian matrix of the linear combination
    * @return                  value of the linear combination
    */
-  virtual float_t evalHessian(const DataVector& alpha,
+  virtual double evalHessian(const DataVector& alpha,
                               const DataVector& point,
                               DataVector& gradient,
                               DataMatrix& hessian) = 0;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALHESSIAN_HPP */

@@ -21,7 +21,7 @@
 #include <utility>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -75,7 +75,7 @@ class GetAffectedBasisFunctions {
    * @param result a vector to store the results in
    */
   void operator()(BASIS& basis, const DataVector& point, std::vector <
-                  std::pair<size_t, float_t> > & result) {
+                  std::pair<size_t, double> > & result) {
     GridStorage::grid_iterator working(storage);
 
     // typedef GridStorage::index_type::level_type level_type;
@@ -102,8 +102,8 @@ class GetAffectedBasisFunctions {
         source[d] = 0x7fffffff;
       } else {
         // This does not really work on grids with borders.
-        float_t temp = floor(point[d] *
-                             static_cast<float_t>(1 << (bits - 2))) * 2;
+        double temp = floor(point[d] *
+                             static_cast<double>(1 << (bits - 2))) * 2;
         // TODO(dirk): why the + 1?
         source[d] = static_cast<index_type> (static_cast<double>(temp) + 1.0);
       }
@@ -132,9 +132,9 @@ class GetAffectedBasisFunctions {
    * @param result a vector to store the results in
    */
   void rec(BASIS& basis, const DataVector& point, size_t current_dim,
-           float_t value, GridStorage::grid_iterator& working,
+           double value, GridStorage::grid_iterator& working,
            GridStorage::index_type::index_type* source,
-           std::vector < std::pair <size_t, float_t > >& result) {
+           std::vector < std::pair <size_t, double > >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
 
@@ -157,7 +157,7 @@ class GetAffectedBasisFunctions {
 
         working.get(current_dim, temp, work_index);
 
-        float_t new_value = basis.eval(work_level, work_index,
+        double new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
 
         if (current_dim == storage.getDimension() - 1) {
@@ -206,7 +206,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
   }
 
   void operator()(SWaveletModifiedBase& basis, const DataVector& point,
-                  std::vector<std::pair<size_t, float_t> >& result) {
+                  std::vector<std::pair<size_t, double> >& result) {
     GridStorage::grid_iterator working(storage);
 
     // typedef GridStorage::index_type::level_type level_type;
@@ -221,8 +221,8 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
 
     for (size_t d = 0; d < dim; ++d) {
       // This does not really work on grids with borders.
-      float_t temp = floor(point[d] *
-                           static_cast<float_t>(1 << (bits - 2))) * 2;
+      double temp = floor(point[d] *
+                           static_cast<double>(1 << (bits - 2))) * 2;
 
       if (point[d] == 1.0) {
         source[d] = static_cast<index_type> (temp - 1);
@@ -241,14 +241,14 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
   GridStorage& storage;
 
   void rec(SWaveletModifiedBase& basis, const DataVector& point,
-           size_t current_dim, float_t value,
+           size_t current_dim, double value,
            GridStorage::grid_iterator& working,
            GridStorage::index_type::index_type* source,
-           std::vector < std::pair <size_t, float_t > >& result) {
+           std::vector < std::pair <size_t, double > >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
     // size_t i;
-    float_t tmpValue;
+    double tmpValue;
     size_t tmpSeq;
 
     const unsigned int BITS_IN_BYTE = 8;
@@ -275,7 +275,7 @@ class GetAffectedBasisFunctions<WaveletModifiedBasis<
         // point[current_dim]<<" current_level: "<<work_level<<
         // " current_Index: " << work_index << std::endl;
 
-        float_t new_value = basis.eval(work_level, work_index,
+        double new_value = basis.eval(work_level, work_index,
                                        point[current_dim]);
 
         if (current_dim == storage.getDimension() - 1) {
@@ -394,7 +394,7 @@ class GetAffectedBasisFunctions <
   ~GetAffectedBasisFunctions() {}
 
   void operator()(SBsplineModifiedBase& base, const DataVector& point,
-                  std::vector<std::pair<size_t, float_t> >& result) {
+                  std::vector<std::pair<size_t, double> >& result) {
     GridStorage::grid_iterator working(storage);
 
 
@@ -410,8 +410,8 @@ class GetAffectedBasisFunctions <
 
     for (size_t d = 0; d < dim; ++d) {
       // This does not really work on grids with borders.
-      float_t temp = floor(point[d] *
-                           static_cast<float_t>(1 << (bits - 2))) * 2;
+      double temp = floor(point[d] *
+                           static_cast<double>(1 << (bits - 2))) * 2;
 
       if (point[d] == 1.0) {
         source[d] = static_cast<index_type>(temp - 1);
@@ -430,14 +430,14 @@ class GetAffectedBasisFunctions <
   GridStorage& storage;
 
   void rec(SBsplineModifiedBase& base, const DataVector& point,
-           size_t current_dim, float_t value,
+           size_t current_dim, double value,
            GridStorage::grid_iterator& working,
            GridStorage::index_type::index_type* source,
-           std::vector<std::pair<size_t, float_t> >& result) {
+           std::vector<std::pair<size_t, double> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
     // size_t i;
-    float_t tmpValue;
+    double tmpValue;
     size_t tmpSeq;
 
     const unsigned int BITS_IN_BYTE = 8;
@@ -464,7 +464,7 @@ class GetAffectedBasisFunctions <
         // point[current_dim]<<" current_level: "<<work_level<<
         // " current_Index: " << work_index << std::endl;
 
-        float_t new_value = base.eval(work_level, work_index,
+        double new_value = base.eval(work_level, work_index,
                                       point[current_dim]);
 
         if (current_dim == storage.getDimension() - 1) {
@@ -577,7 +577,7 @@ class GetAffectedBasisFunctions <
   ~GetAffectedBasisFunctions() {}
 
   void operator()(SLinearBoundaryBase& basis, const DataVector& point,
-                  std::vector<std::pair<size_t, float_t> >& result) {
+                  std::vector<std::pair<size_t, double> >& result) {
     bool useBB = false;
 
     // Check for special bounding box
@@ -602,9 +602,9 @@ class GetAffectedBasisFunctions <
   BoundingBox* BB;
 
   void rec(SLinearBoundaryBase& basis, const DataVector& point,
-           size_t current_dim, float_t value,
+           size_t current_dim, double value,
            GridStorage::grid_iterator& working,
-           std::vector<std::pair<size_t, float_t> >& result) {
+           std::vector<std::pair<size_t, double> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
 
@@ -625,7 +625,7 @@ class GetAffectedBasisFunctions <
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index,
+          double new_value = basis.eval(work_level, work_index,
                                          point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
@@ -638,7 +638,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
-          float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+          double new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
@@ -651,7 +651,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 1
           working.resetToRightLevelZero(current_dim);
           size_t seq_lz_right = working.seq();
-          float_t new_value_l_zero_right = basis.eval(0, 1,
+          double new_value_l_zero_right = basis.eval(0, 1,
                                            point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
@@ -674,13 +674,13 @@ class GetAffectedBasisFunctions <
       // the bits are coded from left to right starting with level 1
       // being in position max_level
       if (work_level > 0) {
-        float_t hat = 0.0;
+        double hat = 0.0;
         level_type h = 0;
 
         h = 1 << work_level;
 
-        hat = (1.0 / static_cast<float_t>(h)) *
-              static_cast<float_t>(global_work_index);
+        hat = (1.0 / static_cast<double>(h)) *
+              static_cast<double>(global_work_index);
 
         if (point[current_dim] == hat)
           break;
@@ -705,9 +705,9 @@ class GetAffectedBasisFunctions <
 
 
   void recBB(SLinearBoundaryBase& basis, const DataVector& point,
-             size_t current_dim, float_t value,
+             size_t current_dim, double value,
              GridStorage::grid_iterator& working,
-             std::vector<std::pair<size_t, float_t> >& result) {
+             std::vector<std::pair<size_t, double> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
 
@@ -728,7 +728,7 @@ class GetAffectedBasisFunctions <
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index,
+          double new_value = basis.eval(work_level, work_index,
                                          point[current_dim],
                                          BB->getIntervalWidth(current_dim),
                                          BB->getIntervalOffset(current_dim));
@@ -743,7 +743,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
-          float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim],
+          double new_value_l_zero_left = basis.eval(0, 0,  point[current_dim],
                                           BB->getIntervalWidth(current_dim),
                                           BB->getIntervalOffset(current_dim));
 
@@ -759,7 +759,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 1
           working.resetToRightLevelZero(current_dim);
           size_t seq_lz_right = working.seq();
-          float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim],
+          double new_value_l_zero_right = basis.eval(0, 1, point[current_dim],
                                            BB->getIntervalWidth(current_dim),
                                            BB->getIntervalOffset(current_dim));
 
@@ -784,13 +784,13 @@ class GetAffectedBasisFunctions <
       // the bits are coded from left to right starting with level 1
       // being in position max_level
       if (work_level > 0) {
-        float_t hat = 0.0;
+        double hat = 0.0;
         level_type h = 0;
 
         h = 1 << work_level;
 
-        hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<float_t>
-               (h)) * static_cast<float_t>(global_work_index))) +
+        hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<double>
+               (h)) * static_cast<double>(global_work_index))) +
               BB->getIntervalOffset(
                 current_dim);
 
@@ -834,7 +834,7 @@ class GetAffectedBasisFunctions <
   ~GetAffectedBasisFunctions() {}
 
   void operator()(SLinearStretchedBoundaryBase& basis, const DataVector& point,
-                  std::vector<std::pair<size_t, float_t> >& result) {
+                  std::vector<std::pair<size_t, double> >& result) {
     // There's no BoundaryBox checking necessary
 
     GridStorage::grid_iterator working(storage);
@@ -850,12 +850,12 @@ class GetAffectedBasisFunctions <
   Stretching* stretch;
 
   void recBB(SLinearStretchedBoundaryBase& basis, const DataVector& point,
-             size_t current_dim, float_t value,
+             size_t current_dim, double value,
              GridStorage::grid_iterator& working,
-             std::vector<std::pair<size_t, float_t> >& result) {
+             std::vector<std::pair<size_t, double> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
-    float_t posl = 0, posr = 0, posc = 0;
+    double posl = 0, posr = 0, posc = 0;
 
     level_type work_level = 0;
 
@@ -884,10 +884,10 @@ class GetAffectedBasisFunctions <
           stretch->getAdjacentPositions(static_cast<int>(temp),
                                         static_cast<int>(work_index),
                                         current_dim, posc, posl, posr);
-          // float_t new_value = basis.eval(work_level, work_index,
+          // double new_value = basis.eval(work_level, work_index,
           // point[current_dim], BB->getIntervalWidth(current_dim),
           // BB->getIntervalOffset(current_dim));
-          float_t new_value;
+          double new_value;
 
           if (posc < point[current_dim]) {
             /// calculate using the right-hand ramp
@@ -907,15 +907,15 @@ class GetAffectedBasisFunctions <
                   result);
           }
         } else {  // handle boundaries if we are on level 0
-          float_t left = stretch->getBoundary(current_dim).leftBoundary;
-          float_t right = stretch->getBoundary(current_dim).rightBoundary;
+          double left = stretch->getBoundary(current_dim).leftBoundary;
+          double right = stretch->getBoundary(current_dim).rightBoundary;
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
-          // float_t new_value_l_zero_left = basis.eval(0, 0,
+          // double new_value_l_zero_left = basis.eval(0, 0,
           // point[current_dim], BB->getIntervalWidth(current_dim),
           // BB->getIntervalOffset(current_dim));
-          float_t new_value_l_zero_left = basis.eval(0, 0,
+          double new_value_l_zero_left = basis.eval(0, 0,
                                           point[current_dim],
                                           right, left);
 
@@ -931,10 +931,10 @@ class GetAffectedBasisFunctions <
           // level 0, index 1
           working.resetToRightLevelZero(current_dim);
           size_t seq_lz_right = working.seq();
-          // float_t new_value_l_zero_right = basis.eval(0, 1,
+          // double new_value_l_zero_right = basis.eval(0, 1,
           // point[current_dim], BB->getIntervalWidth(current_dim),
           // BB->getIntervalOffset(current_dim));
-          float_t new_value_l_zero_right = basis.eval(0, 1,
+          double new_value_l_zero_right = basis.eval(0, 1,
                                            point[current_dim],
                                            left, right);
 
@@ -959,11 +959,11 @@ class GetAffectedBasisFunctions <
       // the bits are coded from left to right starting with level 1
       // being in position max_level
       if (work_level > 0) {
-        float_t hat = 0.0;
+        double hat = 0.0;
         // level_type h = 0;
         // h = 1<<work_level;
         // hat = (stretch->getIntervalWidth(current_dim)*((
-        // 1.0/static_cast<float_t>(h))*static_cast<float_t>(
+        // 1.0/static_cast<double>(h))*static_cast<double>(
         // global_work_index))) + stretch->getIntervalOffset(current_dim);
         hat = stretch->getCoordinates(static_cast<int>(work_level),
                                       static_cast<int>(global_work_index),
@@ -1029,7 +1029,7 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
    * @param result a vector to store the results in
    */
   void operator()(SPrewaveletBase& basis, const DataVector& point,
-                  std::vector<std::pair<size_t, float_t> >& result) {
+                  std::vector<std::pair<size_t, double> >& result) {
     GridStorage::grid_iterator iter(storage);
     result.clear();
     rec(basis, point, 0, iter, result);
@@ -1055,9 +1055,9 @@ class GetAffectedBasisFunctions<PrewaveletBasis<unsigned int, unsigned int> > {
 
   void rec(SPrewaveletBase& basis, const DataVector& point,
            size_t current_dim, GridStorage::grid_iterator& iter, std::vector <
-           std::pair<size_t, float_t> > & result) {
+           std::pair<size_t, double> > & result) {
     // First, save this point
-    float_t value = 1.0;
+    double value = 1.0;
 
     for (size_t d = 0; d < storage.getDimension(); ++d) {
       index_type current_index;
@@ -1129,7 +1129,7 @@ class GetAffectedBasisFunctions <
   ~GetAffectedBasisFunctions() {}
 
   void operator()(SLinearPeriodicBasis& basis, const DataVector& point,
-                  std::vector<std::pair<size_t, float_t> >& result) {
+                  std::vector<std::pair<size_t, double> >& result) {
     GridStorage::grid_iterator working(storage);
 
     working.resetToLevelZero();
@@ -1143,9 +1143,9 @@ class GetAffectedBasisFunctions <
   GridStorage& storage;
 
   void rec(SLinearPeriodicBasis& basis, const DataVector& point,
-           size_t current_dim, float_t value,
+           size_t current_dim, double value,
            GridStorage::grid_iterator& working,
-           std::vector<std::pair<size_t, float_t> >& result) {
+           std::vector<std::pair<size_t, double> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
 
@@ -1166,7 +1166,7 @@ class GetAffectedBasisFunctions <
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index,
+          double new_value = basis.eval(work_level, work_index,
                                          point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
@@ -1179,7 +1179,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
-          float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+          double new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
@@ -1202,13 +1202,13 @@ class GetAffectedBasisFunctions <
       // the bits are coded from left to right starting with level 1
       // being in position max_level
       if (work_level > 0) {
-        float_t hat = 0.0;
+        double hat = 0.0;
         level_type h = 0;
 
         h = 1 << work_level;
 
-        hat = (1.0 / static_cast<float_t>(h)) *
-              static_cast<float_t>(global_work_index);
+        hat = (1.0 / static_cast<double>(h)) *
+              static_cast<double>(global_work_index);
 
         if (point[current_dim] == hat)
           break;
@@ -1247,7 +1247,7 @@ class GetAffectedBasisFunctions <
   ~GetAffectedBasisFunctions() {}
 
   void operator()(SPolyBoundaryBase& basis, const DataVector& point,
-                  std::vector<std::pair<size_t, float_t> >& result) {
+                  std::vector<std::pair<size_t, double> >& result) {
     bool useBB = false;
 
     // Check for special bounding box
@@ -1273,8 +1273,8 @@ class GetAffectedBasisFunctions <
 
   void rec(SPolyBoundaryBase& basis, const DataVector& point,
            size_t current_dim,
-           float_t value, GridStorage::grid_iterator& working,
-           std::vector<std::pair<size_t, float_t> >& result) {
+           double value, GridStorage::grid_iterator& working,
+           std::vector<std::pair<size_t, double> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
 
@@ -1295,7 +1295,7 @@ class GetAffectedBasisFunctions <
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index,
+          double new_value = basis.eval(work_level, work_index,
                                          point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
@@ -1308,7 +1308,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
-          float_t new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
+          double new_value_l_zero_left = basis.eval(0, 0, point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_left,
@@ -1322,7 +1322,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 1
           working.resetToRightLevelZero(current_dim);
           size_t seq_lz_right = working.seq();
-          float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
+          double new_value_l_zero_right = basis.eval(0, 1, point[current_dim]);
 
           if (current_dim == storage.getDimension() - 1) {
             result.push_back(std::make_pair(seq_lz_right,
@@ -1345,13 +1345,13 @@ class GetAffectedBasisFunctions <
       // the bits are coded from left to right starting with level 1
       // being in position max_level
       if (work_level > 0) {
-        float_t hat = 0.0;
+        double hat = 0.0;
         level_type h = 0;
 
         h = 1 << work_level;
 
-        hat = (1.0 / static_cast<float_t>(h)) *
-              static_cast<float_t>(global_work_index);
+        hat = (1.0 / static_cast<double>(h)) *
+              static_cast<double>(global_work_index);
 
         if (point[current_dim] == hat)
           break;
@@ -1376,9 +1376,9 @@ class GetAffectedBasisFunctions <
 
 
   void recBB(SPolyBoundaryBase& basis, const DataVector& point,
-             size_t current_dim, float_t value,
+             size_t current_dim, double value,
              GridStorage::grid_iterator& working,
-             std::vector<std::pair<size_t, float_t> >& result) {
+             std::vector<std::pair<size_t, double> >& result) {
     typedef GridStorage::index_type::level_type level_type;
     typedef GridStorage::index_type::index_type index_type;
 
@@ -1399,7 +1399,7 @@ class GetAffectedBasisFunctions <
         global_work_index = work_index;
 
         if (work_level > 0) {
-          float_t new_value = basis.eval(work_level, work_index,
+          double new_value = basis.eval(work_level, work_index,
                                          point[current_dim],
                                          BB->getIntervalWidth(current_dim),
                                          BB->getIntervalOffset(current_dim));
@@ -1414,7 +1414,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 0
           working.resetToLeftLevelZero(current_dim);
           size_t seq_lz_left = working.seq();
-          float_t new_value_l_zero_left = basis.eval(0, 0,  point[current_dim],
+          double new_value_l_zero_left = basis.eval(0, 0,  point[current_dim],
                                           BB->getIntervalWidth(current_dim),
                                           BB->getIntervalOffset(current_dim));
 
@@ -1430,7 +1430,7 @@ class GetAffectedBasisFunctions <
           // level 0, index 1
           working.resetToRightLevelZero(current_dim);
           size_t seq_lz_right = working.seq();
-          float_t new_value_l_zero_right = basis.eval(0, 1, point[current_dim],
+          double new_value_l_zero_right = basis.eval(0, 1, point[current_dim],
                                            BB->getIntervalWidth(current_dim),
                                            BB->getIntervalOffset(current_dim));
 
@@ -1455,13 +1455,13 @@ class GetAffectedBasisFunctions <
       // the bits are coded from left to right starting with level 1
       // being in position max_level
       if (work_level > 0) {
-        float_t hat = 0.0;
+        double hat = 0.0;
         level_type h = 0;
 
         h = 1 << work_level;
 
-        hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<float_t>
-               (h)) * static_cast<float_t>(global_work_index))) +
+        hat = (BB->getIntervalWidth(current_dim) * ((1.0 / static_cast<double>
+               (h)) * static_cast<double>(global_work_index))) +
               BB->getIntervalOffset(
                 current_dim);
 
@@ -1490,6 +1490,6 @@ class GetAffectedBasisFunctions <
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GETAFFECTEDBASISFUNCTIONS_HPP */

@@ -14,7 +14,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingModOCLMaskMultiPlatform {
 
@@ -28,14 +28,14 @@ class Configuration {
     return kernelName;
   }
 
-  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
         json::Node &deviceNode = platformNode["DEVICES"][deviceName];
 
         const std::string &kernelName =
-            SGPP::datadriven::StreamingModOCLMaskMultiPlatform::Configuration::getKernelName();
+            sgpp::datadriven::StreamingModOCLMaskMultiPlatform::Configuration::getKernelName();
 
         json::Node &kernelNode = deviceNode["KERNELS"].contains(kernelName)
                                      ? deviceNode["KERNELS"][kernelName]
@@ -97,4 +97,4 @@ class Configuration {
 };
 }  // namespace StreamingModOCLMaskMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

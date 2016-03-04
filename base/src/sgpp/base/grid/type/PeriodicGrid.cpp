@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 PeriodicGrid::PeriodicGrid(std::istream& istr) :
@@ -28,8 +28,8 @@ PeriodicGrid::PeriodicGrid(size_t dim) :
 PeriodicGrid::~PeriodicGrid() {
 }
 
-SGPP::base::GridType PeriodicGrid::getType() {
-  return SGPP::base::GridType::Periodic;
+sgpp::base::GridType PeriodicGrid::getType() {
+  return sgpp::base::GridType::Periodic;
 }
 
 std::unique_ptr<Grid> PeriodicGrid::unserialize(std::istream& istr) {
@@ -51,4 +51,4 @@ GridGenerator& PeriodicGrid::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

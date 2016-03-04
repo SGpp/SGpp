@@ -33,7 +33,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace op_factory {
 /**
  * Factory method, returning an OperationTest for the grid at hand.
@@ -53,7 +53,7 @@ std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid)
  * @return Pointer to the new OperationRegularizationDiagonal object for the Grid grid
  */
 std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(
-    base::Grid& grid, int mode, float_t k);
+    base::Grid& grid, int mode, double k);
 
 /**
  * Factory method, returning an OperationDensityMarginalize for the grid.
@@ -190,9 +190,9 @@ std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensi
  */
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /*DATADRIVEN_OP_FACTORY_HPP*/

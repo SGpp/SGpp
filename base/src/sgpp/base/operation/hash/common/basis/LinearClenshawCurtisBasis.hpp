@@ -13,7 +13,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -38,7 +38,7 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of Clenshaw-Curtis linear basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
+  inline double eval(LT l, IT i, double x) override {
     if (l == 0) {
       // first level
       if (i == 0) {
@@ -48,8 +48,8 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
       }
     } else {
       // endpoints of support
-      const float_t x0 = clenshawCurtisTable.getPoint(l, i - 1);
-      const float_t x2 = clenshawCurtisTable.getPoint(l, i + 1);
+      const double x0 = clenshawCurtisTable.getPoint(l, i - 1);
+      const double x2 = clenshawCurtisTable.getPoint(l, i + 1);
 
       if ((x <= x0) || (x >= x2)) {
         // point out of support
@@ -57,7 +57,7 @@ class LinearClenshawCurtisBasis: public Basis<LT, IT> {
       }
 
       // peak of basis function
-      const float_t x1 = clenshawCurtisTable.getPoint(l, i);
+      const double x1 = clenshawCurtisTable.getPoint(l, i);
 
       // linear interpolation between (x0, x1, x2), (0, 1, 0)
       if (x < x1) {
@@ -78,6 +78,6 @@ typedef LinearClenshawCurtisBasis<unsigned int, unsigned int>
 SLinearClenshawCurtisBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEAR_CLENSHAW_CURTIS_BASE_HPP */

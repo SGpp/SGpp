@@ -17,11 +17,11 @@
 #include <fstream>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-StepsizeControlMC::StepsizeControlMC(size_t imax, float_t timestepSize, float_t eps,
-                                     SGPP::base::ScreenOutput* screen)
+StepsizeControlMC::StepsizeControlMC(size_t imax, double timestepSize, double eps,
+                                     sgpp::base::ScreenOutput* screen)
     : VarTimestep("MPR", "CrNic", imax, timestepSize, eps, screen) {
   std::stringstream fnsstream;
   fnsstream << "Time_"
@@ -31,11 +31,11 @@ StepsizeControlMC::StepsizeControlMC(size_t imax, float_t timestepSize, float_t 
 
 StepsizeControlMC::~StepsizeControlMC() {}
 
-float_t StepsizeControlMC::nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
-                                        float_t norm, float_t epsilon) {
-  float_t deltaY = norm;
+double StepsizeControlMC::nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old,
+                                        double norm, double epsilon) {
+  double deltaY = norm;
   return tmp_timestepsize *
-         std::max(0.67, std::min(1.5, pow(epsilon / deltaY, (float_t)1.0 / (float_t)3.0)));
+         std::max(0.67, std::min(1.5, pow(epsilon / deltaY, 1.0 / 3.0)));
 }
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

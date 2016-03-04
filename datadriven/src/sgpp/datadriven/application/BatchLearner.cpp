@@ -44,7 +44,7 @@ using std::max;
 using std::deque;
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 BatchLearner::BatchLearner(
@@ -83,7 +83,7 @@ void BatchLearner::stringToDataVector(string input, base::DataVector& dataFound,
   size_t cur_pos = 0;
   size_t cur_find = 0;
   string cur_value;
-  float_t dbl_cur_value;
+  double dbl_cur_value;
 
   base::DataVector temprow(dimensions);
 
@@ -153,13 +153,13 @@ void BatchLearner::stringToDataMatrix(string& input, base::DataMatrix& dataFound
       if (dataInBatch.find(lineClass) ==
           dataInBatch.end())  // first data entry for this class in this batch
         dataInBatch.insert(std::pair<int, base::DataMatrix*>(lineClass, new base::DataMatrix(0,
-                           dimensions, float_t(-1.0) )));
+                           dimensions, -1.0)));
 
       // add found data entry to correct base::DataMatrix in map
       dataInBatch.at(lineClass)->appendRow(lineData);
     } else {
       dataFound.appendRow(lineData);
-      classesFound.append(static_cast<float_t>(lineClass));
+      classesFound.append(static_cast<double>(lineClass));
     }
   }
 }
@@ -179,9 +179,9 @@ base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
 
   // wMode 5: weigh old alpha with new alpha by occurences
   if (batchConf.wMode == 5) {
-    float_t k = (float_t) dataInBatch.at(grid)->getNrows();
-    float_t n = (float_t) occurences.at(grid);
-    float_t wNew = max(k / (n + k), (float_t)batchConf.wArgument);
+    double k = static_cast<double>(dataInBatch.at(grid)->getNrows());
+    double n = static_cast<double>(occurences.at(grid));
+    double wNew = max(k / (n + k), static_cast<double>(batchConf.wArgument));
 
     if (batchConf.verbose)
       cout << "old weight: " << 1.0 - wNew << " new weight: " << wNew << endl;
@@ -207,22 +207,22 @@ base::DataVector BatchLearner::applyWeight(base::DataVector alpha, int grid) {
 
   size_t count = alphaStorage.at(
                    grid).size();  // count of old alphas available for calculation
-  vector<float_t> factors;
+  vector<double> factors;
 
   // previous alphas exist
   // calc factors
-  float_t sum = 0.0f;
+  double sum = 0.0f;
 
   for (size_t i = 0; i < count; i++) {
     if (batchConf.wMode == 0) {
-      factors.push_back((float_t)1);  // temp: all alphas are equal
+      factors.push_back(1.0);  // temp: all alphas are equal
     } else if (batchConf.wMode == 1) {
-      factors.push_back((float_t)(i + 1)*batchConf.wArgument);  // linear
+      factors.push_back(static_cast<double>(i + 1)*batchConf.wArgument);  // linear
     } else if (batchConf.wMode == 2) {
-      factors.push_back((float_t)pow(batchConf.wArgument,
-                                     static_cast<float_t>(i + 1)));  // exp
+      factors.push_back(pow(batchConf.wArgument,
+                            static_cast<double>(i + 1)));  // exp
     } else if (batchConf.wMode == 3) {
-      factors.push_back((float_t)batchConf.wArgument / (float_t)(
+      factors.push_back(static_cast<double>(batchConf.wArgument) / static_cast<double>(
                           i + 1));  // 1/x bzw arg/x
     } else if (batchConf.wMode != 4
              && batchConf.wMode != 5) {  // 4 and 5 treated elsewhere
@@ -259,7 +259,7 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
     // update norm factors
     for (auto const& p : grids) {
       // for each grid
-      float_t evalsum = 0;
+      double evalsum = 0;
 
       for (float x = 0; x < batchConf.samples; x++) {
         // generate points per grid
@@ -272,7 +272,7 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
         // add norm factor
         std::unique_ptr<base::OperationEval> opEval(
             op_factory::createOperationEval(*grids.at(p.first)));
-        float_t temp = opEval->eval(*alphaVectors.at(p.first), pt);
+        double temp = opEval->eval(*alphaVectors.at(p.first), pt);
 
         if (batchConf.verbose && fabs(temp) > 100)
           cout << "warning abs>100: " << temp << " for " << pt.toString() << endl;
@@ -280,7 +280,7 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
         evalsum += temp;
       }
 
-      evalsum = evalsum / (float_t) batchConf.samples;
+      evalsum = evalsum / static_cast<double>(batchConf.samples);
       // update the normFactor
       normFactors.at(p.first) = evalsum;
 
@@ -299,12 +299,12 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
     testDataset.getRow(i, pt);
     // Compute maximum of all density functions:
     int max_index = -1;
-    float_t max = -1.0f * numeric_limits<float_t>::max();
+    double max = -1.0f * numeric_limits<double>::max();
 
     for (auto const& g : grids) {
       std::unique_ptr<base::OperationEval> Eval(op_factory::createOperationEval(*g.second));
       // posterior = likelihood*prior
-      float_t res = Eval->eval(*alphaVectors.at(g.first), pt);
+      double res = Eval->eval(*alphaVectors.at(g.first), pt);
 
       if (batchConf.samples != 0)
         res /= normFactors.at(g.first);
@@ -316,7 +316,7 @@ base::DataVector BatchLearner::predict(base::DataMatrix& testDataset, bool updat
       }
     }
 
-    result[i] = static_cast<float_t>(max_index);
+    result[i] = static_cast<double>(max_index);
   }
 
   return result;
@@ -345,7 +345,7 @@ void BatchLearner::processBatch(string workData) {
       alphaVectors.insert(std::pair<int, base::DataVector*>(p.first,
                           new base::DataVector(grids.at(p.first)->getSize())));
       alphaVectors.at(p.first)->setAll(0.0);
-      normFactors.insert(std::pair<int, float_t>(p.first, 1));
+      normFactors.insert(std::pair<int, double>(p.first, 1));
     }
 
 
@@ -459,8 +459,8 @@ void BatchLearner::trainBatch() {
       // calc accuracy for this batch and all tests
       t_total += static_cast<int>(result.getSize());
       t_correct += correct;
-      acc_current = (float_t)(100.0 * correct / (float_t)result.getSize());
-      acc_global = (float_t)(100.0 * t_correct / (float_t)t_total);
+      acc_current = 100.0 * correct / static_cast<double>(result.getSize());
+      acc_global = 100.0 * t_correct / static_cast<double>(t_total);
       // output accuracy
       cout << "batch:\t" << acc_current << "% (" << correct << "/" << result.getSize()
            << ")" << endl;
@@ -476,5 +476,5 @@ void BatchLearner::trainBatch() {
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

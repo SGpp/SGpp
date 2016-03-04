@@ -16,13 +16,13 @@
 
 #include <string>
 
-using SGPP::base::DataVector;
-using SGPP::base::HashGenerator;
-using SGPP::base::HashGridIndex;
-using SGPP::base::HashGridStorage;
-using SGPP::base::HashRefinement;
-using SGPP::base::HashRefinementBoundaries;
-using SGPP::base::SurplusRefinementFunctor;
+using sgpp::base::DataVector;
+using sgpp::base::HashGenerator;
+using sgpp::base::HashGridIndex;
+using sgpp::base::HashGridStorage;
+using sgpp::base::HashRefinement;
+using sgpp::base::HashRefinementBoundaries;
+using sgpp::base::SurplusRefinementFunctor;
 
 BOOST_AUTO_TEST_SUITE(TestHashGridStorage)
 

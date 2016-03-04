@@ -15,7 +15,7 @@
 #include <sstream>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ConfigurationParameters::ConfigurationParameters() {
@@ -41,7 +41,7 @@ std::string& ConfigurationParameters::get(const std::string& key) {
     std::stringstream errorString;
     errorString << "OCL Error: parameter \"" << key << "\" used but not set" <<
                 std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   return this->parameters[key];
@@ -52,7 +52,7 @@ bool ConfigurationParameters::getAsBoolean(const std::string& key) {
     std::stringstream errorString;
     errorString << "OCL Error: parameter \"" << key << "\" used but not set" <<
                 std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   bool asBool;
@@ -67,7 +67,7 @@ uint64_t ConfigurationParameters::getAsUnsigned(const std::string& key) {
     std::stringstream errorString;
     errorString << "OCL Error: parameter \"" << key << "\" used but not set" <<
                 std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   uint32_t asUnsigned;
@@ -158,4 +158,4 @@ void ConfigurationParameters::clear() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

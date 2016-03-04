@@ -7,24 +7,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 SqXdPhidPhiDownBBLinearStretchedBoundary::SqXdPhidPhiDownBBLinearStretchedBoundary(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : SqXdPhidPhiDownBBLinearStretched(storage) {}
 
 SqXdPhidPhiDownBBLinearStretchedBoundary::~SqXdPhidPhiDownBBLinearStretchedBoundary() {}
 
-void SqXdPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
-                                                          SGPP::base::DataVector& result,
+void SqXdPhidPhiDownBBLinearStretchedBoundary::operator()(sgpp::base::DataVector& source,
+                                                          sgpp::base::DataVector& result,
                                                           grid_iterator& index, size_t dim) {
-  float_t q = this->stretching->getIntervalWidth(dim);
-  float_t t = this->stretching->getIntervalOffset(dim);
+  double q = this->stretching->getIntervalWidth(dim);
+  double t = this->stretching->getIntervalOffset(dim);
 
   // get boundary values
-  float_t left_boundary;
-  float_t right_boundary;
+  double left_boundary;
+  double right_boundary;
   size_t seq_left;
   size_t seq_right;
 
@@ -43,7 +43,7 @@ void SqXdPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector
   seq_right = index.seq();
   right_boundary = source[seq_right];
 
-  float_t bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
+  double bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
 
   // check boundary conditions
   if (this->stretching->hasDirichletBoundaryLeft(dim)) {
@@ -74,4 +74,4 @@ void SqXdPhidPhiDownBBLinearStretchedBoundary::operator()(SGPP::base::DataVector
 }
 
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

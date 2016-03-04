@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 PolyGrid::PolyGrid(std::istream& istr) :
@@ -31,8 +31,8 @@ PolyGrid::PolyGrid(size_t dim, size_t degree) :
 PolyGrid::~PolyGrid() {
 }
 
-SGPP::base::GridType PolyGrid::getType() {
-  return SGPP::base::GridType::Poly;
+sgpp::base::GridType PolyGrid::getType() {
+  return sgpp::base::GridType::Poly;
 }
 
 const SBasis& PolyGrid::getBasis() {
@@ -61,4 +61,4 @@ GridGenerator& PolyGrid::getGenerator() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

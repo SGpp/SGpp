@@ -13,7 +13,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -46,7 +46,7 @@ class FullSLE : public CloneableSLE {
    * @param j     column index
    * @return      (i,j)-th entry of the matrix
    */
-  inline float_t getMatrixEntry(size_t i, size_t j) override { return A(i, j); }
+  inline double getMatrixEntry(size_t i, size_t j) override { return A(i, j); }
 
   /**
    * @return  coefficient matrix
@@ -70,6 +70,6 @@ class FullSLE : public CloneableSLE {
   base::DataMatrix& A;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SYSTEM_FULLSLE_HPP */

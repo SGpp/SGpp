@@ -15,39 +15,39 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace finance {
 
 BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
-    SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, float_t TimestepSize,
-    std::string OperationMode, float_t dStrike, std::string option_type, bool useCoarsen,
-    float_t coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
-    float_t refineThreshold, std::string refineMode,
-    SGPP::base::GridIndex::level_type refineMaxLevel) {
+    sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& lambda,
+    sgpp::base::DataMatrix& eigenvecs, sgpp::base::DataVector& mu_hat, double TimestepSize,
+    std::string OperationMode, double dStrike, std::string option_type, bool useCoarsen,
+    double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
+    double refineThreshold, std::string refineMode,
+    sgpp::base::GridIndex::level_type refineMaxLevel) {
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
 
-  this->alpha_complete_old = new SGPP::base::DataVector(*this->alpha_complete);
-  this->alpha_complete_tmp = new SGPP::base::DataVector(*this->alpha_complete);
-  this->oldGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
-  this->secondGridStorage = new SGPP::base::GridStorage(this->BoundGrid->getStorage());
+  this->alpha_complete_old = new sgpp::base::DataVector(*this->alpha_complete);
+  this->alpha_complete_tmp = new sgpp::base::DataVector(*this->alpha_complete);
+  this->oldGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
+  this->secondGridStorage = new sgpp::base::GridStorage(this->BoundGrid->getStorage());
 
   this->tOperationMode = OperationMode;
   this->TimestepSize = TimestepSize;
   this->TimestepSize_old = TimestepSize;
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->BSalgoDims = this->BoundGrid->getAlgorithmicDimensions();
 
   // set Eigenvalues, Eigenvector of covariance matrix and mu_hat
-  this->lambda = new SGPP::base::DataVector(lambda);
-  this->eigenvecs = new SGPP::base::DataMatrix(eigenvecs);
-  this->mu_hat = new SGPP::base::DataVector(mu_hat);
+  this->lambda = new sgpp::base::DataVector(lambda);
+  this->eigenvecs = new sgpp::base::DataMatrix(eigenvecs);
+  this->mu_hat = new sgpp::base::DataVector(mu_hat);
 
   // throw exception if grid dimensions not equal algorithmic dimensions
   if (this->BSalgoDims.size() > this->BoundGrid->getDimension()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystemn : "
         "Number of algorithmic dimensions higher than the number of grid's dimensions.");
   }
@@ -55,7 +55,7 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
   // test if number of dimensions in the coefficients match the numbers of grid dimensions (mu and
   // sigma)
   if (this->BoundGrid->getDimension() != this->lambda->getSize()) {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : "
         "Dimension of mu and sigma parameters don't match the grid's dimensions!");
   }
@@ -63,13 +63,13 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
   // test if all algorithmic dimensions are inside the grid's dimensions
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
     if (this->BSalgoDims[i] >= this->BoundGrid->getDimension()) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : "
           "Minimum one algorithmic dimension is not inside the grid's dimensions!");
     }
   }
 
-  // test if there are float_t algorithmic dimensions
+  // test if there are double algorithmic dimensions
   std::vector<size_t> tempAlgoDims(this->BSalgoDims);
 
   for (size_t i = 0; i < this->BSalgoDims.size(); i++) {
@@ -82,17 +82,17 @@ BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem
     }
 
     if (dimCount > 1) {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystem::BlackScholesPATParabolicPDESolverSystem : "
-          "There is minimum one float_td algorithmic dimension!");
+          "There is minimum one doubled algorithmic dimension!");
     }
   }
 
   // operations on boundary grid
   this->OpLaplaceBound =
-      SGPP::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda).release();
+      sgpp::op_factory::createOperationLaplace(*this->BoundGrid, *this->lambda).release();
   this->OpLTwoBound =
-      SGPP::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
+      sgpp::op_factory::createOperationLTwoDotProduct(*this->BoundGrid).release();
 
   // right hand side if System
   this->rhs = NULL;
@@ -127,9 +127,9 @@ BlackScholesPATParabolicPDESolverSystem::~BlackScholesPATParabolicPDESolverSyste
   delete this->mu_hat;
 }
 
-void BlackScholesPATParabolicPDESolverSystem::applyLOperator(SGPP::base::DataVector& alpha,
-                                                             SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+void BlackScholesPATParabolicPDESolverSystem::applyLOperator(sgpp::base::DataVector& alpha,
+                                                             sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
 
   // Apply the Laplace operator
@@ -137,9 +137,9 @@ void BlackScholesPATParabolicPDESolverSystem::applyLOperator(SGPP::base::DataVec
   result.axpy(-0.5, temp);
 }
 
-void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(SGPP::base::DataVector& alpha,
-                                                              SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+void BlackScholesPATParabolicPDESolverSystem::applyMassMatrix(sgpp::base::DataVector& alpha,
+                                                              sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
   result.setAll(0.0);
 
   // Apply the mass matrix
@@ -163,14 +163,14 @@ void BlackScholesPATParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimest
     size_t originalGridSize = this->BoundGrid->getSize();
 
     // Coarsen the grid
-    SGPP::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
+    sgpp::base::GridGenerator& myGenerator = this->BoundGrid->getGenerator();
 
     // std::cout << "Coarsen Threshold: " << this->coarsenThreshold << std::endl;
     // std::cout << "Grid Size: " << originalGridSize << std::endl;
 
     if (this->adaptSolveMode == "refine" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numRefines = myGenerator.getNumberOfRefinablePoints();
-      SGPP::base::SurplusRefinementFunctor myRefineFunc(
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(
           *this->alpha_complete, numRefines, this->refineThreshold);
 
       if (this->refineMode == "maxLevel") {
@@ -186,7 +186,7 @@ void BlackScholesPATParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimest
 
     if (this->adaptSolveMode == "coarsen" || this->adaptSolveMode == "coarsenNrefine") {
       size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
-      SGPP::base::SurplusCoarseningFunctor myCoarsenFunctor(
+      sgpp::base::SurplusCoarseningFunctor myCoarsenFunctor(
           *this->alpha_complete, numCoarsen, this->coarsenThreshold);
       myGenerator.coarsenNFirstOnly(myCoarsenFunctor, *this->alpha_complete, originalGridSize);
     }
@@ -199,4 +199,4 @@ void BlackScholesPATParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimest
 
 void BlackScholesPATParabolicPDESolverSystem::startTimestep() {}
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

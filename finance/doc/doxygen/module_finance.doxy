@@ -1,5 +1,5 @@
 /**
-@page module_finance Module SGPP::finance
+@page module_finance Module sgpp::finance
 
 - support for the solution of financial problems
 - Black-Scholes equation

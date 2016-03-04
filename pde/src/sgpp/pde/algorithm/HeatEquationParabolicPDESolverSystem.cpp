@@ -11,11 +11,11 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, float_t a, float_t TimestepSize,
+    sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, double a, double TimestepSize,
     std::string OperationMode) {
   this->a = a;
   this->tOperationMode = OperationMode;
@@ -25,11 +25,11 @@ HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(
   this->InnerGrid = NULL;
   this->alpha_inner = NULL;
 
-  this->BoundaryUpdate = new SGPP::base::DirichletUpdateVector(SparseGrid.getStorage());
-  this->GridConverter = new SGPP::base::DirichletGridConverter();
+  this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
+  this->GridConverter = new sgpp::base::DirichletGridConverter();
 
   this->OpLaplaceBound = op_factory::createOperationLaplace(SparseGrid).release();
-  this->OpMassBound = SGPP::op_factory::createOperationLTwoDotProduct(SparseGrid).release();
+  this->OpMassBound = sgpp::op_factory::createOperationLTwoDotProduct(SparseGrid).release();
 
   // create the inner grid
   this->GridConverter->buildInnerGridWithCoefs(*this->BoundGrid, *this->alpha_complete,
@@ -37,10 +37,10 @@ HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(
 
   // Create needed operations, on inner grid
   this->OpLaplaceInner = op_factory::createOperationLaplace(*this->InnerGrid).release();
-  this->OpMassInner = SGPP::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
+  this->OpMassInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid).release();
 
   // right hand side if System
-  this->rhs = new SGPP::base::DataVector(1);
+  this->rhs = new sgpp::base::DataVector(1);
 }
 
 HeatEquationParabolicPDESolverSystem::~HeatEquationParabolicPDESolverSystem() {
@@ -63,11 +63,11 @@ HeatEquationParabolicPDESolverSystem::~HeatEquationParabolicPDESolverSystem() {
   delete this->rhs;
 }
 
-void HeatEquationParabolicPDESolverSystem::applyMassMatrixComplete(SGPP::base::DataVector& alpha,
-                                                                   SGPP::base::DataVector& result) {
+void HeatEquationParabolicPDESolverSystem::applyMassMatrixComplete(sgpp::base::DataVector& alpha,
+                                                                   sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
-  SGPP::base::DataVector temp(alpha.getSize());
+  sgpp::base::DataVector temp(alpha.getSize());
 
   // Apply the mass matrix
   this->OpMassBound->mult(alpha, temp);
@@ -75,22 +75,22 @@ void HeatEquationParabolicPDESolverSystem::applyMassMatrixComplete(SGPP::base::D
   result.add(temp);
 }
 
-void HeatEquationParabolicPDESolverSystem::applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                                                                  SGPP::base::DataVector& result) {
+void HeatEquationParabolicPDESolverSystem::applyLOperatorComplete(sgpp::base::DataVector& alpha,
+                                                                  sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
-  SGPP::base::DataVector temp(alpha.getSize());
+  sgpp::base::DataVector temp(alpha.getSize());
 
   // Apply the laplace Operator rate
   this->OpLaplaceBound->mult(alpha, temp);
   result.axpy((-1.0) * this->a, temp);
 }
 
-void HeatEquationParabolicPDESolverSystem::applyMassMatrixInner(SGPP::base::DataVector& alpha,
-                                                                SGPP::base::DataVector& result) {
+void HeatEquationParabolicPDESolverSystem::applyMassMatrixInner(sgpp::base::DataVector& alpha,
+                                                                sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
-  SGPP::base::DataVector temp(alpha.getSize());
+  sgpp::base::DataVector temp(alpha.getSize());
 
   // Apply the mass matrix
   this->OpMassInner->mult(alpha, temp);
@@ -98,11 +98,11 @@ void HeatEquationParabolicPDESolverSystem::applyMassMatrixInner(SGPP::base::Data
   result.add(temp);
 }
 
-void HeatEquationParabolicPDESolverSystem::applyLOperatorInner(SGPP::base::DataVector& alpha,
-                                                               SGPP::base::DataVector& result) {
+void HeatEquationParabolicPDESolverSystem::applyLOperatorInner(sgpp::base::DataVector& alpha,
+                                                               sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
-  SGPP::base::DataVector temp(alpha.getSize());
+  sgpp::base::DataVector temp(alpha.getSize());
 
   // Apply the laplace Operator rate
   this->OpLaplaceInner->mult(alpha, temp);
@@ -118,4 +118,4 @@ void HeatEquationParabolicPDESolverSystem::coarsenAndRefine(bool isLastTimestep)
 
 void HeatEquationParabolicPDESolverSystem::startTimestep() {}
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

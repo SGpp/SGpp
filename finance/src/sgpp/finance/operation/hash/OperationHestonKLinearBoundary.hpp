@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 /**
@@ -19,15 +19,15 @@ namespace finance {
  * equation.
  *
  */
-class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
+class OperationHestonKLinearBoundary : public sgpp::pde::UpDownFourOpDims {
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    * @param coef vector that contains the constant coefficients of this operation
    */
-  OperationHestonKLinearBoundary(SGPP::base::GridStorage* storage, float_t***** coef);
+  OperationHestonKLinearBoundary(sgpp::base::GridStorage* storage, double***** coef);
 
   /**
    * Destructor
@@ -44,7 +44,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -55,7 +55,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -65,7 +65,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOne(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -75,7 +75,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOne(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -85,7 +85,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void downOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -95,7 +95,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void upOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -105,7 +105,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void downOpDimThree(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the phi dphi operation
@@ -115,7 +115,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void upOpDimThree(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -125,7 +125,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void downOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * up-Gradient step in dimension <i>dim</i> applies the sqrt phi phi operation
@@ -135,7 +135,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  void upOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -145,7 +145,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void downOpDimOneAndOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                size_t dim);
 
   /**
@@ -156,7 +156,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void upOpDimOneAndOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                              size_t dim);
 
   /**
@@ -167,7 +167,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void downOpDimOneAndOpDimThree(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                  size_t dim);
 
   /**
@@ -178,7 +178,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void upOpDimOneAndOpDimThree(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                size_t dim);
 
   /**
@@ -189,7 +189,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void downOpDimOneAndOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                 size_t dim);
 
   /**
@@ -200,7 +200,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void upOpDimOneAndOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                               size_t dim);
 
   /**
@@ -211,7 +211,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void downOpDimTwoAndOpDimThree(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                  size_t dim);
 
   /**
@@ -222,7 +222,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void upOpDimTwoAndOpDimThree(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                size_t dim);
 
   /**
@@ -233,7 +233,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void downOpDimTwoAndOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                 size_t dim);
 
   /**
@@ -244,7 +244,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void upOpDimTwoAndOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                               size_t dim);
 
   /**
@@ -255,7 +255,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void downOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                   size_t dim);
 
   /**
@@ -266,7 +266,7 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void upOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                 size_t dim);
 
   /**
@@ -277,8 +277,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha,
-                                            SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimTwoAndOpDimThree(sgpp::base::DataVector& alpha,
+                                            sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -288,8 +288,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimTwoAndOpDimThree(SGPP::base::DataVector& alpha,
-                                          SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOneAndOpDimTwoAndOpDimThree(sgpp::base::DataVector& alpha,
+                                          sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -299,8 +299,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha,
-                                           SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimTwoAndOpDimFour(sgpp::base::DataVector& alpha,
+                                           sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -310,8 +310,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimTwoAndOpDimFour(SGPP::base::DataVector& alpha,
-                                         SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOneAndOpDimTwoAndOpDimFour(sgpp::base::DataVector& alpha,
+                                         sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -321,8 +321,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                             SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha,
+                                             sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -332,8 +332,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                           SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOneAndOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha,
+                                           sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -343,8 +343,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                             SGPP::base::DataVector& result, size_t dim);
+  void downOpDimTwoAndOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha,
+                                             sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -354,8 +354,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                           SGPP::base::DataVector& result, size_t dim);
+  void upOpDimTwoAndOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha,
+                                           sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -365,8 +365,8 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                                        SGPP::base::DataVector& result, size_t dim);
+  void downOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha,
+                                                        sgpp::base::DataVector& result, size_t dim);
 
   /**
    * This method does nothing (this situation doesn't come up in Heston's PDEs). Needed only to make
@@ -376,10 +376,10 @@ class OperationHestonKLinearBoundary : public SGPP::pde::UpDownFourOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(SGPP::base::DataVector& alpha,
-                                                      SGPP::base::DataVector& result, size_t dim);
+  void upOpDimOneAndOpDimTwoAndOpDimThreeAndOpDimFour(sgpp::base::DataVector& alpha,
+                                                      sgpp::base::DataVector& result, size_t dim);
 };
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONHESTONKLINEARBOUNDARY_HPP */

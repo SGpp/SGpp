@@ -19,5 +19,5 @@
 
 %apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
-//%apply std::vector<std::pair<size_t, float_t> > *OUTPUT { std::vector<std::pair<size_t, float_t> >& result };
-//%apply std::vector<float_t> *INPUT { std::vector<float_t>& point };
+//%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
+//%apply std::vector<double> *INPUT { std::vector<double>& point };

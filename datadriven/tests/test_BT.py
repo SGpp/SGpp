@@ -143,9 +143,9 @@ def readDataVector(filename):
 # differently. Uses heuristics, e.g. whether the diagonal elements
 # and row and column sums match.
 def compareBTMatrices(testCaseClass, m1, m2):
-    from pysgpp import DataVector, cvar
+    from pysgpp import DataVector
 
-    places = 5 if cvar.USING_DOUBLE_PRECISION else 3
+    places = 5
 
     # check dimensions
     testCaseClass.assertEqual(m1.getNrows(), m2.getNrows())

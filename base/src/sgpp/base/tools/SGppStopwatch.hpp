@@ -11,7 +11,7 @@
 #include <chrono>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -41,13 +41,13 @@ class SGppStopwatch {
    *
    * @return elapsed time since the last call to start in seconds
    */
-  float_t stop();
+  double stop();
 
  protected:
   std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  /* SGPPSTOPWATCH_H */

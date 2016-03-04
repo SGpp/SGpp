@@ -21,19 +21,19 @@
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 #if defined(__SSE3__) && !defined(__AVX__) && !defined(__AVX512F__)
 void OperationMultiEvalStreaming::multImpl(
-    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
+    sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index, sgpp::base::DataMatrix* dataset,
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, const size_t start_index_grid,
     const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
-  float_t* ptrLevel = level->getPointer();
-  float_t* ptrIndex = index->getPointer();
-  float_t* ptrAlpha = alpha.getPointer();
-  float_t* ptrData = dataset->getPointer();
-  float_t* ptrResult = result.getPointer();
+  double* ptrLevel = level->getPointer();
+  double* ptrIndex = index->getPointer();
+  double* ptrAlpha = alpha.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
 
@@ -49,7 +49,7 @@ void OperationMultiEvalStreaming::multImpl(
       size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
       uint64_t imask = 0x7FFFFFFFFFFFFFFF;
-      float_t* fmask = reinterpret_cast<float_t*>(&imask);
+      double* fmask = reinterpret_cast<double*>(&imask);
 
       for (size_t i = c; i < c + getChunkDataPoints(); i += 12) {
         for (size_t j = m; j < m + grid_inc; j++) {
@@ -147,14 +147,14 @@ void OperationMultiEvalStreaming::multImpl(
 
 #if defined(__SSE3__) && defined(__AVX__) && !defined(__AVX512F__)
 void OperationMultiEvalStreaming::multImpl(
-    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
+    sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index, sgpp::base::DataMatrix* dataset,
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, const size_t start_index_grid,
     const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
-  float_t* ptrLevel = level->getPointer();
-  float_t* ptrIndex = index->getPointer();
-  float_t* ptrAlpha = alpha.getPointer();
-  float_t* ptrData = dataset->getPointer();
-  float_t* ptrResult = result.getPointer();
+  double* ptrLevel = level->getPointer();
+  double* ptrIndex = index->getPointer();
+  double* ptrAlpha = alpha.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
 
@@ -170,7 +170,7 @@ void OperationMultiEvalStreaming::multImpl(
       size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
 
       int64_t imask = 0x7FFFFFFFFFFFFFFF;
-      float_t* fmask = reinterpret_cast<float_t*>(&imask);
+      double* fmask = reinterpret_cast<double*>(&imask);
 
       for (size_t i = c; i < c + getChunkDataPoints(); i += 24) {
         for (size_t j = m; j < m + grid_inc; j++) {
@@ -277,14 +277,14 @@ void OperationMultiEvalStreaming::multImpl(
 
 #if defined(__MIC__) || defined(__AVX512F__)
 void OperationMultiEvalStreaming::multImpl(
-    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
+    sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index, sgpp::base::DataMatrix* dataset,
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, const size_t start_index_grid,
     const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
-  float_t* ptrLevel = level->getPointer();
-  float_t* ptrIndex = index->getPointer();
-  float_t* ptrAlpha = alpha.getPointer();
-  float_t* ptrData = dataset->getPointer();
-  float_t* ptrResult = result.getPointer();
+  double* ptrLevel = level->getPointer();
+  double* ptrIndex = index->getPointer();
+  double* ptrAlpha = alpha.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
 
@@ -572,14 +572,14 @@ void OperationMultiEvalStreaming::multImpl(
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
 void OperationMultiEvalStreaming::multImpl(
-    SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index, SGPP::base::DataMatrix* dataset,
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, const size_t start_index_grid,
+    sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index, sgpp::base::DataMatrix* dataset,
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, const size_t start_index_grid,
     const size_t end_index_grid, const size_t start_index_data, const size_t end_index_data) {
-  float_t* ptrLevel = level->getPointer();
-  float_t* ptrIndex = index->getPointer();
-  float_t* ptrAlpha = alpha.getPointer();
-  float_t* ptrData = dataset->getPointer();
-  float_t* ptrResult = result.getPointer();
+  double* ptrLevel = level->getPointer();
+  double* ptrIndex = index->getPointer();
+  double* ptrAlpha = alpha.getPointer();
+  double* ptrData = dataset->getPointer();
+  double* ptrResult = result.getPointer();
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
 
@@ -600,14 +600,14 @@ void OperationMultiEvalStreaming::multImpl(
 
       for (size_t i = c; i < data_end; i++) {
         for (size_t j = m; j < grid_end; j++) {
-          float_t curSupport = ptrAlpha[j];
+          double curSupport = ptrAlpha[j];
 
           for (size_t d = 0; d < dims; d++) {
-            float_t eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
-            float_t index_calc = eval - (ptrIndex[(j * dims) + d]);
-            float_t abs = std::fabs(index_calc);
-            float_t last = 1.0 - abs;
-            float_t localSupport = std::max<float_t>(last, 0.0);
+            double eval = ((ptrLevel[(j * dims) + d]) * (ptrData[(d * result_size) + i]));
+            double index_calc = eval - (ptrIndex[(j * dims) + d]);
+            double abs = std::fabs(index_calc);
+            double last = 1.0 - abs;
+            double localSupport = std::max<double>(last, 0.0);
             curSupport *= localSupport;
           }
 
@@ -620,4 +620,4 @@ void OperationMultiEvalStreaming::multImpl(
 #endif
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

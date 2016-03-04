@@ -9,12 +9,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
-    SGPP::base::Grid& SparseGrid, SGPP::base::DataMatrix& trainData, double lambda,
-    SGPP::base::DataVector& w, VectorizationType vecMode) {
+    sgpp::base::Grid& SparseGrid, sgpp::base::DataMatrix& trainData, double lambda,
+    sgpp::base::DataVector& w, VectorizationType vecMode) {
   // handle unsupported vector extensions
   // one may find a better way to determine vectorwidth
   if (this->vecMode == parallel::X86SIMD) {
@@ -26,7 +26,7 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
   } else if (this->vecMode == parallel::ArBB) {
     this->vecWidth = 16;
   } else {  // should not happen because this exception should have been thrown some lines upwards!
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "DMWeightMatrixVectorizedIdentity : Only X86SIMD or OCL or ArBB or HYBRID_X86SIMD_OCL are "
         "supported vector extensions!");
   }
@@ -36,8 +36,8 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
   // create the operations needed in ApplyMatrix
   this->vecMode = vecMode;
   this->lamb = lambda;
-  this->data = new SGPP::base::DataMatrix(trainData);
-  this->weight = new SGPP::base::DataVector(w);
+  this->data = new sgpp::base::DataMatrix(trainData);
+  this->weight = new sgpp::base::DataVector(w);
 
   numTrainingInstances = data->getNrows();
 
@@ -46,7 +46,7 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
   size_t loopCount = this->vecWidth - remainder;
 
   if (loopCount != this->vecWidth) {
-    SGPP::base::DataVector lastRow(data->getNcols());
+    sgpp::base::DataVector lastRow(data->getNcols());
 
     for (size_t i = 0; i < loopCount; i++) {
       // resize the data matrix
@@ -65,9 +65,9 @@ DMWeightMatrixVectorizedIdentity::DMWeightMatrixVectorizedIdentity(
     data->transpose();
   }
 
-  this->myTimer = new SGPP::base::SGppStopwatch();
+  this->myTimer = new sgpp::base::SGppStopwatch();
 
-  this->B = SGPP::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode,
+  this->B = sgpp::op_factory::createOperationMultipleEvalVectorized(SparseGrid, this->vecMode,
                                                                     this->data);
 }
 
@@ -77,9 +77,9 @@ DMWeightMatrixVectorizedIdentity::~DMWeightMatrixVectorizedIdentity() {
   delete this->myTimer;
 }
 
-void DMWeightMatrixVectorizedIdentity::mult(SGPP::base::DataVector& alpha,
-                                            SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(numPatchedTrainingInstances);
+void DMWeightMatrixVectorizedIdentity::mult(sgpp::base::DataVector& alpha,
+                                            sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(numPatchedTrainingInstances);
 
   // Operation B
   this->myTimer->start();
@@ -96,9 +96,9 @@ void DMWeightMatrixVectorizedIdentity::mult(SGPP::base::DataVector& alpha,
   result.axpy(this->lamb, alpha);
 }
 
-void DMWeightMatrixVectorizedIdentity::generateb(SGPP::base::DataVector& classes,
-                                                 SGPP::base::DataVector& b) {
-  SGPP::base::DataVector myClassesWithWeights(classes);
+void DMWeightMatrixVectorizedIdentity::generateb(sgpp::base::DataVector& classes,
+                                                 sgpp::base::DataVector& b) {
+  sgpp::base::DataVector myClassesWithWeights(classes);
   size_t loopcount = numPatchedTrainingInstances - numTrainingInstances;
 
   // Apply padding
@@ -138,4 +138,4 @@ void DMWeightMatrixVectorizedIdentity::getTimers(double& timeMult, double& compu
 }
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

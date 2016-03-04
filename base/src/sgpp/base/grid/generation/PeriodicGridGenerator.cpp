@@ -16,7 +16,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 PeriodicGridGenerator::PeriodicGridGenerator(GridStorage& storage) : storage(
@@ -87,4 +87,4 @@ size_t PeriodicGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

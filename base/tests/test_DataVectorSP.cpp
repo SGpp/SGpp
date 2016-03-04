@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-using SGPP::base::DataVectorSP;
+using sgpp::base::DataVectorSP;
 
 struct FixtureDataVectorSP {
   FixtureDataVectorSP() : nrows(5), ncols(3), N(nrows * ncols), d_rand(N), min(0), max(0), sum(0) {

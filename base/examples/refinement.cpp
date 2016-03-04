@@ -17,15 +17,15 @@
 
 #include <iostream>
 
-using SGPP::base::DataVector;
-using SGPP::base::Grid;
-using SGPP::base::GridGenerator;
-using SGPP::base::GridIndex;
-using SGPP::base::GridStorage;
-using SGPP::base::SurplusRefinementFunctor;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridIndex;
+using sgpp::base::GridStorage;
+using sgpp::base::SurplusRefinementFunctor;
 
 // function to interpolate
-SGPP::float_t f(SGPP::float_t x0, SGPP::float_t x1) {
+double f(double x0, double x1) {
   return 16.0 * (x0 - 1) * x0 * (x1 - 1) * x1;
 }
 
@@ -57,7 +57,7 @@ int main() {
     }
 
     // hierarchize
-    SGPP::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
+    sgpp::op_factory::createOperationHierarchisation(*grid)->doHierarchisation(
       alpha);
 
     // refine a single grid point each time

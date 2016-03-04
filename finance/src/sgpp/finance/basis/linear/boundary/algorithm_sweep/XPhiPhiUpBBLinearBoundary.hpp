@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 /**
@@ -26,9 +26,9 @@ class XPhiPhiUpBBLinearBoundary : public XPhiPhiUpBBLinear {
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  explicit XPhiPhiUpBBLinearBoundary(SGPP::base::GridStorage* storage);
+  explicit XPhiPhiUpBBLinearBoundary(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -44,17 +44,17 @@ class XPhiPhiUpBBLinearBoundary : public XPhiPhiUpBBLinear {
    * result)
    * So please assure that both functions do exist!
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * @param source sgpp::base::DataVector that contains the gridpoint's coefficients (values from
    * the vector of the laplace operation)
-   * @param result SGPP::base::DataVector that contains the result of the up operation
+   * @param result sgpp::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  virtual void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+  virtual void operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                           grid_iterator& index, size_t dim);
 };
 
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* XPHIPHIUPBBLINEARBOUNDARY_HPP */

@@ -15,7 +15,7 @@
 #include "sgpp/base/opencl/OCLDevice.hpp"
 #include "sgpp/base/opencl/KernelSourceBuilderBase.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingModOCLMaskMultiPlatform {
 
@@ -429,4 +429,4 @@ class SourceBuilderMultTranspose : public base::KernelSourceBuilderBase<T> {
 
 }  // namespace StreamingModOCLMaskMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

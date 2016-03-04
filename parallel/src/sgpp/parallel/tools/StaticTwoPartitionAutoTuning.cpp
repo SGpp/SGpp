@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 StaticTwoPartitionAutoTuning::StaticTwoPartitionAutoTuning(size_t problemSize,
@@ -32,4 +32,4 @@ void StaticTwoPartitionAutoTuning::autoTune() {
   _sizePartition1 = partition1;
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

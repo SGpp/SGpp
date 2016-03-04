@@ -10,7 +10,7 @@
 
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 // enum class ParameterType {
@@ -34,4 +34,4 @@ class TunableParameter {
   std::vector<std::string> &getValues() { return this->values; }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

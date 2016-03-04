@@ -24,7 +24,7 @@
 #include <string>
 #include <map>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 /**
  *  The Batchlearner learns the data provided as input in batches. The batches can by weighted
@@ -46,7 +46,7 @@ class BatchLearner {
   std::map<int, base::DataVector*>
   alphaVectors;  //!< mapping of alpha vectors to label
   std::map<int, base::LinearGrid*> grids;  //!< mapping of grids to label
-  std::map<int, float_t>
+  std::map<int, double>
   normFactors;  //!< mapping of factors for the normalization to label
   std::map<int, size_t> occurences;  //!< mapping of count of items to label
   std::map<int, std::deque<base::DataVector> >
@@ -104,8 +104,8 @@ class BatchLearner {
 
   bool isFinished = false;  //!< indicates whether the stream has been read to the end
   //!< accuracy over all predictions done so far (including the ones if batchConfig.testsize > 0 )
-  float_t acc_global = -1.0;
-  float_t acc_current = -1.0;  //!< accuracy of the last call of predict(..)
+  double acc_global = -1.0;
+  double acc_current = -1.0;  //!< accuracy of the last call of predict(..)
 
  public:
   /**
@@ -138,14 +138,14 @@ class BatchLearner {
   /**
                      * Get the accuracy of the last batch predicted
                      */
-  float_t getAccCurrent() {
+  double getAccCurrent() {
     return acc_current;
   }
 
   /**
                      * Get the accuracy over all predictions
                      */
-  float_t getAccGlobal() {
+  double getAccGlobal() {
     return acc_global;
   }
 
@@ -165,5 +165,5 @@ class BatchLearner {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

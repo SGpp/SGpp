@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -99,5 +99,5 @@ class SubspaceRefinement: public RefinementDecorator {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* SUBSPACEREFINEMENT_HPP_ */

@@ -14,7 +14,7 @@
  */
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {}
 }

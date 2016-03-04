@@ -21,17 +21,17 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::
     BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP(
-        SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
-        SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, float_t TimestepSize,
-        std::string OperationMode, float_t dStrike, std::string option_type, float_t r,
-        bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
-        float_t refineThreshold, std::string refineMode,
-        SGPP::base::GridIndex::level_type refineMaxLevel)
+        sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& lambda,
+        sgpp::base::DataMatrix& eigenvecs, sgpp::base::DataVector& mu_hat, double TimestepSize,
+        std::string OperationMode, double dStrike, std::string option_type, double r,
+        bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
+        double refineThreshold, std::string refineMode,
+        sgpp::base::GridIndex::level_type refineMaxLevel)
     : BlackScholesPATParabolicPDESolverSystemEuroAmer(
           SparseGrid, alpha, lambda, eigenvecs, mu_hat, TimestepSize, OperationMode, dStrike,
           option_type, r, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints,
@@ -46,11 +46,11 @@ BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
 #ifdef USE_ENHANCED_UPDOWN
-  ((SGPP::pde::UpDownOneOpDimEnhanced*)(this->OpLaplaceInner))
+  ((sgpp::pde::UpDownOneOpDimEnhanced*)(this->OpLaplaceInner))
       ->multParallelBuildingBlock(alpha, result);
   result.mult(-0.5);
 #else
@@ -61,16 +61,16 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorI
   omp_lock_t LaplaceMutex;
   omp_init_lock(&LaplaceMutex);
 #endif
-  SGPP::base::DataVector LaplaceResult(result);
+  sgpp::base::DataVector LaplaceResult(result);
 
   // Apply Laplace
   for (size_t i = 0; i < nDims; i++) {
 #pragma omp task firstprivate(i) shared(alpha, LaplaceMutex, LaplaceResult, result, algoDims)
     {
-      SGPP::base::DataVector myResult(result.getSize());
+      sgpp::base::DataVector myResult(result.getSize());
 
       /// discuss methods in order to avoid this cast
-      ((SGPP::pde::UpDownOneOpDim*)(this->OpLaplaceInner))
+      ((sgpp::pde::UpDownOneOpDim*)(this->OpLaplaceInner))
           ->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 // semaphore
@@ -94,11 +94,11 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorI
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
 #ifdef USE_ENHANCED_UPDOWN
-  ((SGPP::pde::UpDownOneOpDimEnhanced*)(this->OpLaplaceBound))
+  ((sgpp::pde::UpDownOneOpDimEnhanced*)(this->OpLaplaceBound))
       ->multParallelBuildingBlock(alpha, result);
   result.mult(-0.5);
 #else
@@ -108,16 +108,16 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorC
   omp_lock_t LaplaceMutex;
   omp_init_lock(&LaplaceMutex);
 #endif
-  SGPP::base::DataVector LaplaceResult(result);
+  sgpp::base::DataVector LaplaceResult(result);
 
   // Apply Laplace
   for (size_t i = 0; i < nDims; i++) {
 #pragma omp task firstprivate(i) shared(alpha, LaplaceMutex, LaplaceResult, result, algoDims)
     {
-      SGPP::base::DataVector myResult(result.getSize());
+      sgpp::base::DataVector myResult(result.getSize());
 
       /// discuss methods in order to avoid this cast
-      ((SGPP::pde::UpDownOneOpDim*)(this->OpLaplaceBound))
+      ((sgpp::pde::UpDownOneOpDim*)(this->OpLaplaceBound))
           ->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 // semaphore
@@ -142,36 +142,36 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorC
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyMassMatrixInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
-  ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
+  ((sgpp::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
 
   result.add(temp);
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::applyMassMatrixComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
-  ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
+  ((sgpp::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
 
   result.add(temp);
 }
 
 void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::mult(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   if (this->tOperationMode == "ExEul") {
     applyMassMatrixInner(alpha, result);
   } else if (this->tOperationMode == "ImEul") {
-    SGPP::base::DataVector temp(result.getSize());
-    SGPP::base::DataVector temp2(result.getSize());
+    sgpp::base::DataVector temp(result.getSize());
+    sgpp::base::DataVector temp2(result.getSize());
 
 #pragma omp parallel shared(alpha, result)
     {
@@ -190,8 +190,8 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::mult(
     result.add(temp);
     result.axpy((-1.0) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "CrNic") {
-    SGPP::base::DataVector temp(result.getSize());
-    SGPP::base::DataVector temp2(result.getSize());
+    sgpp::base::DataVector temp(result.getSize());
+    sgpp::base::DataVector temp2(result.getSize());
 
 #pragma omp parallel shared(alpha, result)
     {
@@ -214,21 +214,21 @@ void BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::mult(
 
     applyMassMatrixInner(alpha, result);
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         " BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation "
         "mode was specified!");
   }
 }
 
-SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::generateRHS() {
-  SGPP::base::DataVector rhs_complete(this->alpha_complete->getSize());
+sgpp::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelOMP::generateRHS() {
+  sgpp::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
   if (this->tOperationMode == "ExEul") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(rhs_complete.getSize());
-    SGPP::base::DataVector temp2(rhs_complete.getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector temp(rhs_complete.getSize());
+    sgpp::base::DataVector temp2(rhs_complete.getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
 
 #pragma omp parallel shared(myAlpha, temp, temp2)
     {
@@ -249,7 +249,7 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
   } else if (this->tOperationMode == "ImEul") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
 
 #pragma omp parallel shared(myAlpha, rhs_complete)
     {
@@ -264,9 +264,9 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
   } else if (this->tOperationMode == "CrNic") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(rhs_complete.getSize());
-    SGPP::base::DataVector temp2(rhs_complete.getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector temp(rhs_complete.getSize());
+    sgpp::base::DataVector temp2(rhs_complete.getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
 
 #pragma omp parallel shared(myAlpha, temp, temp2)
     {
@@ -287,9 +287,9 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
   } else if (this->tOperationMode == "AdBas") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(this->alpha_complete->getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
-    SGPP::base::DataVector myOldAlpha(*this->alpha_complete_old);
+    sgpp::base::DataVector temp(this->alpha_complete->getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector myOldAlpha(*this->alpha_complete_old);
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
 
@@ -307,7 +307,7 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     rhs_complete.add(temp);
     temp.mult((2.0) + this->TimestepSize / this->TimestepSize_old);
 
-    SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp_old(this->alpha_complete->getSize());
 
     applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
@@ -326,7 +326,7 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     temp.sub(temp_old);
     rhs_complete.axpy((0.5) * this->TimestepSize, temp);
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
         "operation mode was specified!");
   }
@@ -336,8 +336,8 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     this->bnewODESolver = false;
 
     // Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-    SGPP::base::DataVector result_complete(this->alpha_complete->getSize());
-    SGPP::base::DataVector alpha_bound(*this->alpha_complete);
+    sgpp::base::DataVector result_complete(this->alpha_complete->getSize());
+    sgpp::base::DataVector alpha_bound(*this->alpha_complete);
 
     result_complete.setAll(0.0);
 
@@ -347,8 +347,8 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     if (this->tOperationMode == "ExEul") {
       applyMassMatrixComplete(alpha_bound, result_complete);
     } else if (this->tOperationMode == "ImEul") {
-      SGPP::base::DataVector temp(alpha_bound.getSize());
-      SGPP::base::DataVector temp2(alpha_bound.getSize());
+      sgpp::base::DataVector temp(alpha_bound.getSize());
+      sgpp::base::DataVector temp2(alpha_bound.getSize());
 
 #pragma omp parallel shared(alpha_bound, temp, temp2)
       {
@@ -367,8 +367,8 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
       result_complete.add(temp);
       result_complete.axpy((-1.0) * this->TimestepSize, temp2);
     } else if (this->tOperationMode == "CrNic") {
-      SGPP::base::DataVector temp(alpha_bound.getSize());
-      SGPP::base::DataVector temp2(alpha_bound.getSize());
+      sgpp::base::DataVector temp(alpha_bound.getSize());
+      sgpp::base::DataVector temp2(alpha_bound.getSize());
 
 #pragma omp parallel shared(alpha_bound, temp, temp2)
       {
@@ -389,7 +389,7 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     } else if (this->tOperationMode == "AdBas") {
       applyMassMatrixComplete(alpha_bound, result_complete);
     } else {
-      throw SGPP::base::algorithm_exception(
+      throw sgpp::base::algorithm_exception(
           "BlackScholesPATParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
           "operation mode was specified!");
     }
@@ -399,7 +399,7 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
       delete this->rhs_corrector;
     }
 
-    this->rhs_corrector = new SGPP::base::DataVector(this->alpha_complete->getSize());
+    this->rhs_corrector = new sgpp::base::DataVector(this->alpha_complete->getSize());
     *(this->rhs_corrector) = result_complete;
   }
 
@@ -411,10 +411,10 @@ SGPP::base::DataVector* BlackScholesPATParabolicPDESolverSystemEuroAmerParallelO
     delete this->rhs;
   }
 
-  this->rhs = new SGPP::base::DataVector(this->alpha_inner->getSize());
+  this->rhs = new sgpp::base::DataVector(this->alpha_inner->getSize());
   this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 
   return this->rhs;
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

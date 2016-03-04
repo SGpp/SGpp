@@ -5,13 +5,13 @@ digraph G {
 	
 	{ rank=same; datadriven; solver; combigrid; }
 
-	base [URL="\ref sg::base"];
-	pde [URL="\ref sg::pde"];
-	datadriven [URL="\ref sg::datadriven"];
-	finance [URL="\ref sg::finance"];
-	solver [URL="\ref sg::solver"];
-    parallel [URL="\ref sg::parallel"];
-    optimization [URL="\ref sg::optimization"];
+	base [URL="\ref sgpp::base"];
+	pde [URL="\ref sgpp::pde"];
+	datadriven [URL="\ref sgpp::datadriven"];
+	finance [URL="\ref sgpp::finance"];
+	solver [URL="\ref sgpp::solver"];
+    parallel [URL="\ref sgpp::parallel"];
+    optimization [URL="\ref sgpp::optimization"];
 	combigrid [URL=""];
 
 	pde -> base;

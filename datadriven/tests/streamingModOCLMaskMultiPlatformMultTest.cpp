@@ -25,9 +25,9 @@
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/base/tools/ConfigurationParameters.hpp"
 
-using SGPP::datadriven::OperationMultipleEvalConfiguration;
-using SGPP::datadriven::OperationMultipleEvalType;
-using SGPP::datadriven::OperationMultipleEvalSubType;
+using sgpp::datadriven::OperationMultipleEvalConfiguration;
+using sgpp::datadriven::OperationMultipleEvalType;
+using sgpp::datadriven::OperationMultipleEvalSubType;
 
 BOOST_AUTO_TEST_SUITE(TestStreamingModOCLMaskMultiPlatformMult)
 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(Local) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(Local) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
   uint32_t level = 5;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
       OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::ModLinear, std::get<0>(fileNameError),
+    double mse = compareToReference(sgpp::base::GridType::ModLinear, std::get<0>(fileNameError),
                                     level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
   }

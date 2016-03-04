@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -27,17 +27,17 @@ namespace pde {
  */
 class LaplaceUpPrewavelet {
  protected:
-  typedef SGPP::base::GridStorage::grid_iterator grid_iterator;
-  /// Pointer to SGPP::base::GridStorage object
-  SGPP::base::GridStorage* storage;
+  typedef sgpp::base::GridStorage::grid_iterator grid_iterator;
+  /// Pointer to sgpp::base::GridStorage object
+  sgpp::base::GridStorage* storage;
 
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    */
-  explicit LaplaceUpPrewavelet(SGPP::base::GridStorage* storage);
+  explicit LaplaceUpPrewavelet(sgpp::base::GridStorage* storage);
 
   /**
    * Destructor
@@ -47,18 +47,18 @@ class LaplaceUpPrewavelet {
   /**
    * This operations performs the calculation of down in the direction of dimension <i>dim</i>
    *
-   * @param source SGPP::base::DataVector that contains the gridpoint's coefficients (values from
+   * @param source sgpp::base::DataVector that contains the gridpoint's coefficients (values from
    * the vector of the laplace operation)
-   * @param result SGPP::base::DataVector that contains the result of the up operation
+   * @param result sgpp::base::DataVector that contains the result of the up operation
    * @param index a iterator object of the grid
    * @param dim current fixed dimension of the 'execution direction'
    */
-  void operator()(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
+  void operator()(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
                   grid_iterator& index, size_t dim);
 
  protected:
 };
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LAPLACEUPPREWAVELET_HPP */

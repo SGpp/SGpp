@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -53,7 +53,7 @@ class TestScalarFunction : public ScalarFunction {
    * @return  \f$f(\vec{x} + \vec{d})\f$
    *          with displacement \f$\vec{d}\f$
    */
-  float_t eval(const base::DataVector& x) override;
+  double eval(const base::DataVector& x) override;
 
   /**
    * Pure virtual method for evaluating the undisplaced function.
@@ -61,7 +61,7 @@ class TestScalarFunction : public ScalarFunction {
    * @param x     point \f$\vec{x} \in \mathbb{R}^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual float_t evalUndisplaced(const base::DataVector& x) = 0;
+  virtual double evalUndisplaced(const base::DataVector& x) = 0;
 
   /**
    * @return                currently used displacement
@@ -81,6 +81,6 @@ class TestScalarFunction : public ScalarFunction {
 };
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTSCALARFUNCTION_HPP */

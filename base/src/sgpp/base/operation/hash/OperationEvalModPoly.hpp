@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -37,17 +37,17 @@ class OperationEvalModPoly : public OperationEval {
    */
   ~OperationEvalModPoly() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
   /// Pointer to GridStorage object
   GridStorage& storage;
   /// Mod Poly Basis object
-  SGPP::base::SPolyModifiedBase base;
+  sgpp::base::SPolyModifiedBase base;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALMODPOLY_HPP */

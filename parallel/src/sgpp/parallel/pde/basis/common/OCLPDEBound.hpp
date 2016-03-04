@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -83,7 +83,7 @@ std::string BoundLTwoDotFunction();
 /// Allocates and initializes the main part of the buffers needed by the OpenCL code for the
 /// operators on the boundary grid.
 void SetBuffersBound(REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, size_t localStorageSize,
-                     size_t localdim, SGPP::base::GridStorage* storage);
+                     size_t localdim, sgpp::base::GridStorage* storage);
 #ifdef USE_MPI
 extern int* MPIOffsetListBound;
 extern int* MPISizeListBound;
@@ -92,7 +92,7 @@ extern int* MPISizeListBound;
 void SetUpMPIBound();
 /// Computes the sum of all subresults result on all processes. Then it distributes results for the
 /// inner grid back into the complete grid containing the boundary
-void MPI_ShareResultAllReduceBound(SGPP::base::DataVector& result);
+void MPI_ShareResultAllReduceBound(sgpp::base::DataVector& result);
 #endif
 /// Deallocates all data pertaining to the Laplace operator on the boundary grid
 void CleanUpLaplaceBound();
@@ -103,4 +103,4 @@ void CleanUpLTwoDotBound();
 void CleanUpLTwoDotLaplaceBound();
 }  // namespace oclpdekernels
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

@@ -23,7 +23,7 @@
 #include <map>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -214,7 +214,7 @@ class HashGridIndex {
    *
    * @return the coordinate in the given dimension
    */
-  float_t getCoord(size_t d) const;
+  double getCoord(size_t d) const;
 
   /**
    * determines the coordinate in a given dimension
@@ -225,7 +225,7 @@ class HashGridIndex {
    *
    * @return the coordinate in the given dimension
    */
-  float_t getCoordBB(size_t d, float_t q, float_t t) const;
+  double getCoordBB(size_t d, double q, double t) const;
 
   /**
    * determines the coordinate in a given dimension
@@ -235,7 +235,7 @@ class HashGridIndex {
    *
    * @return the coordinate in the given dimension
    */
-  float_t getCoordStretching(size_t d, Stretching* stretch);
+  double getCoordStretching(size_t d, Stretching* stretch);
 
   /**
    * determines if the grid point is an inner grid point
@@ -445,6 +445,6 @@ struct HashGridIndexEqualityFunctor {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHGRIDINDEX_HPP */

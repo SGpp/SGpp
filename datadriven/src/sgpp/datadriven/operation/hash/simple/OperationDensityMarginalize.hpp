@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -35,5 +35,5 @@ class OperationDensityMarginalize {
                              unsigned int mdim) = 0;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYMARGINALIZE_HPP */

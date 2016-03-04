@@ -14,7 +14,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -23,8 +23,8 @@ namespace datadriven {
 class OperationInverseRosenblattTransformationKDE {
  public:
   OperationInverseRosenblattTransformationKDE(datadriven::GaussianKDE& kde,
-                                              float_t sigmaFactor = 6.0,
-                                              float_t inversionEpsilon = 1e-10);
+                                              double sigmaFactor = 6.0,
+                                              double inversionEpsilon = 1e-10);
   virtual ~OperationInverseRosenblattTransformationKDE();
 
   /**
@@ -52,12 +52,12 @@ class OperationInverseRosenblattTransformationKDE {
    * @param kern kernel evaluations
    * @return error of inversion
    */
-  float_t doTransformation1D(float_t y, base::DataVector& samples1d, float_t sigma, float_t xlower,
-                             float_t xupper, float_t ylower, float_t yupper,
+  double doTransformation1D(double y, base::DataVector& samples1d, double sigma, double xlower,
+                             double xupper, double ylower, double yupper,
                              base::DataVector& kern);
 
   /// get the maximum error made during inversion
-  float_t getMaxInversionError();
+  double getMaxInversionError();
 
  private:
   datadriven::GaussianKDE* kde;
@@ -70,13 +70,13 @@ class OperationInverseRosenblattTransformationKDE {
   size_t nsamples;
 
   /// maximum allowed inversion error
-  float_t inversionEpsilon;
+  double inversionEpsilon;
 
   /**
    * recalculates the search interval for bisection
    * @param sigmaFactor
    */
-  void recalcLimits(float_t sigmaFactor);
+  void recalcLimits(double sigmaFactor);
 
   /**
    * Root finding using bisection algorithm for inverse CDF of KDE
@@ -91,9 +91,9 @@ class OperationInverseRosenblattTransformationKDE {
    * @param xacc accuracy
    * @param maxIterations maximum number of iterations
    */
-  float_t bisection(float_t y, float_t& x, float_t& xlower, float_t& xupper,
-                    base::DataVector& samples1d, float_t sigma, base::DataVector& kern,
-                    float_t denom, float_t xacc = 1e-8, size_t maxIterations = 1000);
+  double bisection(double y, double& x, double& xlower, double& xupper,
+                    base::DataVector& samples1d, double sigma, base::DataVector& kern,
+                    double denom, double xacc = 1e-8, size_t maxIterations = 1000);
 
   /**
    * Root finding using newton's algorithm for inverse CDF of KDE
@@ -106,8 +106,8 @@ class OperationInverseRosenblattTransformationKDE {
    * @param xacc accuracy
    * @param maxIterations maximum number of iterations
    */
-  float_t newton(float_t y, float_t& x, base::DataVector& samples1d, float_t sigma,
-                 base::DataVector& kern, float_t denom, float_t xacc = 1e-10,
+  double newton(double y, double& x, base::DataVector& samples1d, double sigma,
+                 base::DataVector& kern, double denom, double xacc = 1e-10,
                  size_t maxIterations = 20);
 
   /**
@@ -121,10 +121,10 @@ class OperationInverseRosenblattTransformationKDE {
    * @param xacc accuracy
    * @param maxIterations maximum number of iterations
    */
-  float_t halley(float_t y, float_t& x, base::DataVector& samples1d, float_t sigma,
-                 base::DataVector& kern, float_t denom, float_t xacc = 1e-10,
+  double halley(double y, double& x, base::DataVector& samples1d, double sigma,
+                 base::DataVector& kern, double denom, double xacc = 1e-10,
                  size_t maxIterations = 20);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATIONKDE_HPP */

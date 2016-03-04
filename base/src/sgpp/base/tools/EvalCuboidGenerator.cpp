@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 EvalCuboidGenerator::EvalCuboidGenerator() {
@@ -24,12 +24,12 @@ void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>&
   if (curDim == 0) {
     if (points > 1) {
       for (size_t i = 0; i < points; i++) {
-        float_t inc = (myBoundingBox.getBoundary(curDim).rightBoundary -
+        double inc = (myBoundingBox.getBoundary(curDim).rightBoundary -
                        myBoundingBox.getBoundary(curDim).leftBoundary) /
-                      static_cast<float_t>(points - 1);
+                      static_cast<double>(points - 1);
 
         curPoint.set(curDim, myBoundingBox.getBoundary(curDim).leftBoundary +
-                     (inc * static_cast<float_t>(i)));
+                     (inc * static_cast<double>(i)));
 
         evalPoints.push_back(curPoint);
       }
@@ -43,12 +43,12 @@ void EvalCuboidGenerator::getCuboidEvalPoints(std::vector<DataVector>&
   } else {
     if (points > 1) {
       for (size_t i = 0; i < points; i++) {
-        float_t inc = (myBoundingBox.getBoundary(curDim).rightBoundary -
+        double inc = (myBoundingBox.getBoundary(curDim).rightBoundary -
                        myBoundingBox.getBoundary(curDim).leftBoundary) /
-                      static_cast<float_t>(points - 1);
+                      static_cast<double>(points - 1);
 
         curPoint.set(curDim, myBoundingBox.getBoundary(curDim).leftBoundary +
-                     (inc * static_cast<float_t>(i)));
+                     (inc * static_cast<double>(i)));
 
         getCuboidEvalPoints(evalPoints, curPoint, myBoundingBox, points,
                             curDim - 1);
@@ -81,4 +81,4 @@ void EvalCuboidGenerator::getEvaluationCuboid(DataMatrix& EvaluationPoints,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -21,10 +21,10 @@
 
 int main(int argc, char** args) {
   // set variables
-  SGPP::base::BatchConfiguration batchConfig;
-  SGPP::solver::SLESolverConfiguration solverConfig;
-  SGPP::base::AdpativityConfiguration adaptConfig;
-  SGPP::base::RegularGridConfiguration gridConfig;
+  sgpp::base::BatchConfiguration batchConfig;
+  sgpp::solver::SLESolverConfiguration solverConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;  // not used by BatchLearner
@@ -37,7 +37,7 @@ int main(int argc, char** args) {
   solverConfig.eps_ = 0;
   solverConfig.maxIterations_ = 20;
   solverConfig.threshold_ = -1.0;  // not used by BatchLearner
-  solverConfig.type_ = SGPP::solver::SLESolverType::CG;
+  solverConfig.type_ = sgpp::solver::SLESolverType::CG;
 
   // Set parameters for the batchLearner
   batchConfig.filename = "../tests/data/friedman_4d_2000.arff";
@@ -56,7 +56,7 @@ int main(int argc, char** args) {
   gridConfig.level_ = 4;
 
   // init the learner
-  SGPP::datadriven::BatchLearner learner(batchConfig, gridConfig, solverConfig,
+  sgpp::datadriven::BatchLearner learner(batchConfig, gridConfig, solverConfig,
                                          adaptConfig);
 
   int i = 0;

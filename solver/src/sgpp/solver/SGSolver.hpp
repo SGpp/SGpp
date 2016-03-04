@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -25,9 +25,9 @@ class SGSolver {
   /// Number of maximum iterations for cg
   size_t nMaxIterations;
   /// residuum
-  float_t residuum;
+  double residuum;
   /// epsilon needed in the, e.g. final error in the iterative solver, or a timestep
-  float_t myEpsilon;
+  double myEpsilon;
 
  public:
   /**
@@ -36,7 +36,7 @@ class SGSolver {
    * @param nMaximumIterations number of maximum executed iterations
    * @param epsilon the final error in the iterative solver, or the size of one timestep
    */
-  SGSolver(size_t nMaximumIterations, float_t epsilon)
+  SGSolver(size_t nMaximumIterations, double epsilon)
       : nMaxIterations(nMaximumIterations), myEpsilon(epsilon) {
     nIterations = 0;
     residuum = 0.0;
@@ -59,7 +59,7 @@ class SGSolver {
    *
    * @return the residuum
    */
-  float_t getResiduum() { return residuum; }
+  double getResiduum() { return residuum; }
 
   /**
    * resets the number of maximum iterations
@@ -73,17 +73,17 @@ class SGSolver {
    *
    * @param eps the new value of epsilon
    */
-  void setEpsilon(float_t eps) { myEpsilon = eps; }
+  void setEpsilon(double eps) { myEpsilon = eps; }
 
   /**
    * gets the the epsilon, that is used in the SGSolver
    *
    * @return the epsilon, used in the solver
    */
-  float_t getEpsilon() { return myEpsilon; }
+  double getEpsilon() { return myEpsilon; }
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGSOLVER_HPP */

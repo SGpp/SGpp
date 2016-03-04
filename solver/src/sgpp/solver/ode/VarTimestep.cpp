@@ -17,11 +17,11 @@
 #include <fstream>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, float_t timestepSize,
-                         float_t eps, SGPP::base::ScreenOutput* screen, float_t gamma)
+VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize,
+                         double eps, sgpp::base::ScreenOutput* screen, double gamma)
     : StepsizeControl(imax, timestepSize, eps, 1.0, screen, gamma),
       _predictor(pred),
       _corrector(corr) {
@@ -36,9 +36,9 @@ VarTimestep::VarTimestep(std::string pred, std::string corr, size_t imax, float_
 VarTimestep::~VarTimestep() {}
 
 void VarTimestep::predictor(SLESolver& LinearSystemSolver,
-                            SGPP::solver::OperationParabolicPDESolverSystem& System,
-                            float_t tmp_timestepsize, SGPP::base::DataVector& dv,
-                            SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) {
+                            sgpp::solver::OperationParabolicPDESolverSystem& System,
+                            double tmp_timestepsize, sgpp::base::DataVector& dv,
+                            sgpp::base::DataVector& corr, sgpp::base::DataVector* rhs) {
   System.setTimestepSize(tmp_timestepsize);
 
   System.setODESolver("AdBas");
@@ -59,9 +59,9 @@ void VarTimestep::predictor(SLESolver& LinearSystemSolver,
 }
 
 void VarTimestep::corrector(SLESolver& LinearSystemSolver,
-                            SGPP::solver::OperationParabolicPDESolverSystem& System,
-                            float_t tmp_timestepsize, SGPP::base::DataVector& dv,
-                            SGPP::base::DataVector* rhs) {
+                            sgpp::solver::OperationParabolicPDESolverSystem& System,
+                            double tmp_timestepsize, sgpp::base::DataVector& dv,
+                            sgpp::base::DataVector* rhs) {
   System.setODESolver("CrNic");
 
   // generate right hand side
@@ -75,12 +75,12 @@ void VarTimestep::corrector(SLESolver& LinearSystemSolver,
   System.getGridCoefficientsForSC(dv);
 }
 
-float_t VarTimestep::nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old,
-                                  float_t norm, float_t epsilon) {
-  float_t deltaY = norm / (3.0 * (1.0 + tmp_timestepsize / tmp_timestepsize_old));
+double VarTimestep::nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old,
+                                  double norm, double epsilon) {
+  double deltaY = norm / (3.0 * (1.0 + tmp_timestepsize / tmp_timestepsize_old));
 
   return tmp_timestepsize *
-         std::max(0.67, std::min(1.5, pow(epsilon / deltaY, (float_t)1.0 / (float_t)3.0)));
+         std::max(0.67, std::min(1.5, pow(epsilon / deltaY, 1.0 / 3.0)));
 }
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

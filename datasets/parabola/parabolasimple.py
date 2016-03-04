@@ -6,7 +6,7 @@
 # sgpp.sparsegrids.org
 
 
-# SGPP::float_t f(std::vector<SGPP::float_t> point) {
+# double f(std::vector<double> point) {
 #     return 16.0 * (point[0] - 1) * point[0] * (point[1] - 1) * point[1];
 # }
 

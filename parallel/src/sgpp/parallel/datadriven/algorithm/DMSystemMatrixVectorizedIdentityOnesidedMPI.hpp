@@ -25,11 +25,11 @@
 #include <omp.h>
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
- * Class that implements the virtual class SGPP::base::OperationMatrix for the
+ * Class that implements the virtual class sgpp::base::OperationMatrix for the
  * application of classification for the Systemmatrix
  *
  * The Identity matrix is used as regularization operator.
@@ -39,18 +39,18 @@ namespace parallel {
  */
 template <typename KernelImplementation>
 class DMSystemMatrixVectorizedIdentityOnesidedMPI
-    : public SGPP::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
+    : public sgpp::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
  public:
   /**
    * Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param trainData reference to SGPP::base::DataMatrix that contains the training data
+   * @param trainData reference to sgpp::base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
    * @param vecMode vectorization mode
    */
-  DMSystemMatrixVectorizedIdentityOnesidedMPI(SGPP::base::Grid& SparseGrid,
-                                              SGPP::base::DataMatrix& trainData, double lambda,
+  DMSystemMatrixVectorizedIdentityOnesidedMPI(sgpp::base::Grid& SparseGrid,
+                                              sgpp::base::DataMatrix& trainData, double lambda,
                                               VectorizationType vecMode)
       : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda,
                                                                       vecMode),
@@ -58,7 +58,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
         _mpi_data_window_buffer(NULL),
         _mpi_grid_window(),
         _mpi_data_window() {
-    size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
+    size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
 
     /* calculate distribution of data */
     _chunkCountPerProcData = 2;
@@ -67,9 +67,9 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
     PartitioningTool::calcMPIChunkedDistribution(
         this->numPatchedTrainingInstances_, _chunkCountPerProcData, _mpi_data_sizes,
         _mpi_data_offsets,
-        SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+        sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
-    if (SGPP::parallel::myGlobalMPIComm->getMyRank() == 0) {
+    if (sgpp::parallel::myGlobalMPIComm->getMyRank() == 0) {
       std::cout << "Max size per chunk Data: " << _mpi_data_sizes[0] << std::endl;
     }
 
@@ -88,7 +88,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
       MPI_Win_free(&_mpi_grid_window);
     }
 
-    _mpi_grid_window_buffer = new SGPP::base::DataVector(this->storage_.getSize());
+    _mpi_grid_window_buffer = new sgpp::base::DataVector(this->storage_.getSize());
 
     MPI_Win_create(_mpi_grid_window_buffer->getPointer(), this->storage_.getSize() * sizeof(double),
                    static_cast<int>(sizeof(double)), MPI_INFO_NULL, MPI_COMM_WORLD,
@@ -103,7 +103,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
       MPI_Win_free(&_mpi_data_window);
     }
 
-    _mpi_data_window_buffer = new SGPP::base::DataVector(this->numPatchedTrainingInstances_);
+    _mpi_data_window_buffer = new sgpp::base::DataVector(this->numPatchedTrainingInstances_);
     MPI_Win_create(
         _mpi_data_window_buffer->getPointer(), this->numPatchedTrainingInstances_ * sizeof(double),
         static_cast<int>(sizeof(double)), MPI_INFO_NULL, MPI_COMM_WORLD, &_mpi_data_window);
@@ -122,11 +122,11 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
     MPI_Win_free(&_mpi_grid_window);
   }
 
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
 #ifdef X86_MIC_SYMMETRIC
     myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 #endif
-    SGPP::base::DataVector temp(this->numPatchedTrainingInstances_);
+    sgpp::base::DataVector temp(this->numPatchedTrainingInstances_);
 
     result.setAll(0.0);
     temp.setAll(0.0);
@@ -135,7 +135,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
     double* ptrResult = result.getPointer();
     double* ptrTemp = temp.getPointer();
 
-    size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
+    size_t mpi_myrank = sgpp::parallel::myGlobalMPIComm->getMyRank();
 
     // we expect that there were no RMA calls before this line
     MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_grid_window);
@@ -210,8 +210,8 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
     result.axpy(static_cast<double>(this->numTrainingInstances_) * this->lambda_, alpha);
   }  // end mult
 
-  virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b) {
-    size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
+  virtual void generateb(sgpp::base::DataVector& classes, sgpp::base::DataVector& b) {
+    size_t mpi_myrank = sgpp::parallel::myGlobalMPIComm->getMyRank();
 
     _mpi_grid_window_buffer->setAll(0.0);
     MPI_Win_fence(MPI_MODE_NOPRECEDE, _mpi_grid_window);
@@ -219,7 +219,7 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
     double* ptrB = b.getPointer();
     b.setAll(0.0);
 
-    SGPP::base::DataVector myClasses(classes);
+    sgpp::base::DataVector myClasses(classes);
 
     // Apply padding
     if (this->numPatchedTrainingInstances_ != myClasses.getSize()) {
@@ -298,11 +298,11 @@ class DMSystemMatrixVectorizedIdentityOnesidedMPI
   size_t _chunkCountPerProcGrid;
 
   /// MPI windows
-  SGPP::base::DataVector* _mpi_grid_window_buffer;
-  SGPP::base::DataVector* _mpi_data_window_buffer;
+  sgpp::base::DataVector* _mpi_grid_window_buffer;
+  sgpp::base::DataVector* _mpi_data_window_buffer;
   MPI_Win _mpi_grid_window;
   MPI_Win _mpi_data_window;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 #endif  // DMSYSTEMMATRIXVECTORIZEDIDENTITYONESIDEDMPI_HPP

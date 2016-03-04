@@ -11,7 +11,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -21,13 +21,13 @@ namespace optimizer {
 class Rprop : public UnconstrainedOptimizer {
  public:
   /// default tolerance
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
+  static constexpr double DEFAULT_TOLERANCE = 1e-6;
   /// default initial step size
-  static constexpr float_t DEFAULT_INITIAL_STEP_SIZE = 0.01;
+  static constexpr double DEFAULT_INITIAL_STEP_SIZE = 0.01;
   /// default step size increase factor
-  static constexpr float_t DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
+  static constexpr double DEFAULT_STEP_SIZE_INCREASE_FACTOR = 1.2;
   /// default step size decrease factor
-  static constexpr float_t DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
+  static constexpr double DEFAULT_STEP_SIZE_DECREASE_FACTOR = 0.5;
 
   /**
    * Constructor.
@@ -42,9 +42,9 @@ class Rprop : public UnconstrainedOptimizer {
    * @param stepSizeDecreaseFactor  step size decrease factor
    */
   Rprop(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount = DEFAULT_N,
-        float_t tolerance = DEFAULT_TOLERANCE, float_t initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
-        float_t stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
-        float_t stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR);
+        double tolerance = DEFAULT_TOLERANCE, double initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
+        double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
+        double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR);
 
   /**
    * Destructor.
@@ -61,42 +61,42 @@ class Rprop : public UnconstrainedOptimizer {
   /**
    * @return tolerance
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance tolerance
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return initial step size
    */
-  float_t getInitialStepSize() const;
+  double getInitialStepSize() const;
 
   /**
    * @param initialStepSize initial step size
    */
-  void setInitialStepSize(float_t initialStepSize);
+  void setInitialStepSize(double initialStepSize);
 
   /**
    * @return step size increase factor
    */
-  float_t getStepSizeIncreaseFactor() const;
+  double getStepSizeIncreaseFactor() const;
 
   /**
    * @param stepSizeIncreaseFactor step size increase factor
    */
-  void setStepSizeIncreaseFactor(float_t stepSizeIncreaseFactor);
+  void setStepSizeIncreaseFactor(double stepSizeIncreaseFactor);
 
   /**
    * @return step size decrease factor
    */
-  float_t getStepSizeDecreaseFactor() const;
+  double getStepSizeDecreaseFactor() const;
 
   /**
    * @param stepSizeDecreaseFactor step size decrease factor
    */
-  void setStepSizeDecreaseFactor(float_t stepSizeDecreaseFactor);
+  void setStepSizeDecreaseFactor(double stepSizeDecreaseFactor);
 
   /**
    * @param[out] clone pointer to cloned object
@@ -107,16 +107,16 @@ class Rprop : public UnconstrainedOptimizer {
   /// objective function gradient
   ScalarFunctionGradient& fGradient;
   /// tolerance
-  float_t theta;
+  double theta;
   /// initial step size
-  float_t initialAlpha;
+  double initialAlpha;
   /// step size increase factor
-  float_t rhoAlphaPlus;
+  double rhoAlphaPlus;
   /// step size decrease factor
-  float_t rhoAlphaMinus;
+  double rhoAlphaMinus;
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_RPROP_HPP */

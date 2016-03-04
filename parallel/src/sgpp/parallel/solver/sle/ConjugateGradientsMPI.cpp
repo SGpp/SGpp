@@ -11,16 +11,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 ConjugateGradientsMPI::ConjugateGradientsMPI(size_t imax, double epsilon)
-    : SGPP::solver::SLESolver(imax, epsilon) {}
+    : sgpp::solver::SLESolver(imax, epsilon) {}
 
 ConjugateGradientsMPI::~ConjugateGradientsMPI() {}
 
-void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
-                                  SGPP::base::DataVector& alpha, SGPP::base::DataVector& b,
+void ConjugateGradientsMPI::solve(sgpp::base::OperationMatrix& SystemMatrix,
+                                  sgpp::base::DataVector& alpha, sgpp::base::DataVector& b,
                                   bool reuse, bool verbose, double max_threshold) {
   myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
   myGlobalMPIComm->broadcastGridCoefficientsFromRank0(b);
@@ -42,9 +42,9 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
   this->nIterations = 0;
 
   // define temporal vectors
-  SGPP::base::DataVector temp(alpha.getSize());
-  SGPP::base::DataVector q(alpha.getSize());
-  SGPP::base::DataVector r(b);
+  sgpp::base::DataVector temp(alpha.getSize());
+  sgpp::base::DataVector q(alpha.getSize());
+  sgpp::base::DataVector r(b);
 
   double delta_0 = 0.0;
   double delta_old = 0.0;
@@ -76,7 +76,7 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
   r.sub(temp);
 
-  SGPP::base::DataVector d(r);
+  sgpp::base::DataVector d(r);
 
   delta_old = 0.0;
   delta_new = r.dotProduct(r);
@@ -150,10 +150,10 @@ void ConjugateGradientsMPI::solve(SGPP::base::OperationMatrix& SystemMatrix,
   //  }
 }
 
-void ConjugateGradientsMPI::waitForTask(SGPP::base::OperationMatrix& SystemMatrix,
-                                        SGPP::base::DataVector& alpha) {
+void ConjugateGradientsMPI::waitForTask(sgpp::base::OperationMatrix& SystemMatrix,
+                                        sgpp::base::DataVector& alpha) {
   char ctrl;
-  SGPP::base::DataVector result(alpha.getSize());
+  sgpp::base::DataVector result(alpha.getSize());
 
   do {
     myGlobalMPIComm->broadcastControlFromRank0(&ctrl);
@@ -164,4 +164,4 @@ void ConjugateGradientsMPI::waitForTask(SGPP::base::OperationMatrix& SystemMatri
   } while (ctrl != 'T');
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

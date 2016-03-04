@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -57,8 +57,8 @@ class OperationDensityMarginalizeKDE {
   void margToDimXs(std::vector<size_t>& mdims, datadriven::GaussianKDE& marginalizedKDE);
 
  private:
-  datadriven::GaussianKDE* kde;
+  std::shared_ptr<datadriven::GaussianKDE> kde;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYMARGINALIZEKDE_HPP */

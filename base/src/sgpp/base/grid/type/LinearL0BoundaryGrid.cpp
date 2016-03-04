@@ -9,7 +9,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearL0BoundaryGrid::LinearL0BoundaryGrid(std::istream& istr) :
@@ -25,8 +25,8 @@ LinearL0BoundaryGrid::LinearL0BoundaryGrid(size_t dim) :
 LinearL0BoundaryGrid::~LinearL0BoundaryGrid() {
 }
 
-SGPP::base::GridType LinearL0BoundaryGrid::getType() {
-  return SGPP::base::GridType::LinearL0Boundary;
+sgpp::base::GridType LinearL0BoundaryGrid::getType() {
+  return sgpp::base::GridType::LinearL0Boundary;
 }
 
 const SBasis& LinearL0BoundaryGrid::getBasis() {
@@ -47,4 +47,4 @@ GridGenerator& LinearL0BoundaryGrid::getGenerator() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

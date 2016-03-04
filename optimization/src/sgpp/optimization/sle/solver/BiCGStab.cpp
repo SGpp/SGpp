@@ -11,13 +11,13 @@
 #include <cmath>
 #include <numeric>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
 BiCGStab::BiCGStab() : BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE, base::DataVector(0)) {}
 
-BiCGStab::BiCGStab(size_t maxItCount, float_t tolerance, const base::DataVector& x0)
+BiCGStab::BiCGStab(size_t maxItCount, double tolerance, const base::DataVector& x0)
     : SLESolver(), N(maxItCount), tol(tolerance), x0(x0) {}
 
 BiCGStab::~BiCGStab() {}
@@ -29,7 +29,7 @@ bool BiCGStab::solve(SLE& system, base::DataVector& b, base::DataVector& x) cons
   base::DataVector r(n, 0.0);
 
   if (n == 1) {
-    const float_t A = system.getMatrixEntry(0, 0);
+    const double A = system.getMatrixEntry(0, 0);
 
     if (A != 0.0) {
       x.resize(1);
@@ -57,20 +57,20 @@ bool BiCGStab::solve(SLE& system, base::DataVector& b, base::DataVector& x) cons
   }
 
   base::DataVector r0Hat(r);
-  float_t rho = 1.0;
-  float_t alpha = 1.0;
-  float_t omega = 1.0;
+  double rho = 1.0;
+  double alpha = 1.0;
+  double omega = 1.0;
   base::DataVector v(n, 0.0);
   base::DataVector p(n, 0.0);
   base::DataVector s(n, 0.0);
   base::DataVector t(n, 0.0);
-  float_t rNormSquared = 0.0;
+  double rNormSquared = 0.0;
   size_t k = 0;
 
   for (k = 0; k < N; k++) {
-    float_t last_rho = rho;
+    double last_rho = rho;
     rho = r0Hat.dotProduct(r);
-    float_t beta = (rho / last_rho) * (alpha / omega);
+    double beta = (rho / last_rho) * (alpha / omega);
 
     for (size_t i = 0; i < n; i++) {
       p[i] = r[i] + beta * (p[i] - omega * v[i]);
@@ -120,9 +120,9 @@ size_t BiCGStab::getMaxItCount() const { return N; }
 
 void BiCGStab::setMaxItCount(size_t maxItCount) { N = maxItCount; }
 
-float_t BiCGStab::getTolerance() const { return tol; }
+double BiCGStab::getTolerance() const { return tol; }
 
-void BiCGStab::setTolerance(float_t tolerance) { tol = tolerance; }
+void BiCGStab::setTolerance(double tolerance) { tol = tolerance; }
 
 const base::DataVector& BiCGStab::getStartingPoint() const { return x0; }
 
@@ -132,4 +132,4 @@ void BiCGStab::setStartingPoint(const base::DataVector& startingPoint) {
 }
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

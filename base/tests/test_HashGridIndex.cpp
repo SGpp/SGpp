@@ -7,7 +7,7 @@
 #include <boost/test/unit_test.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 
-using SGPP::base::HashGridIndex;
+using sgpp::base::HashGridIndex;
 
 BOOST_AUTO_TEST_SUITE(TestSHashGridIndex)
 

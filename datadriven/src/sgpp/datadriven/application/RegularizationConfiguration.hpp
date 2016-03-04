@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 enum class RegularizationType {
@@ -21,6 +21,6 @@ struct RegularizationConfiguration {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* REGULARIZATIONCONFIGURATION_HPP_ */

@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -24,8 +24,8 @@ HierarchisationLinearStretchedBoundary::
 
 void HierarchisationLinearStretchedBoundary::operator()(DataVector& source,
     DataVector& result, grid_iterator& index, size_t dim) {
-  float_t left_boundary;
-  float_t right_boundary;
+  double left_boundary;
+  double right_boundary;
   size_t seq;
 
   // left boundary
@@ -50,4 +50,4 @@ void HierarchisationLinearStretchedBoundary::operator()(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
