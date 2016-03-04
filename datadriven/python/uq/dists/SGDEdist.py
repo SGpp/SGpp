@@ -60,7 +60,7 @@ class SGDEdist(Dist):
         learner = LearnerSGDE(gridConfig, adaptConfig, solverConfig,
                       regularizationConfig, learnerConfig)
         learner.initialize(samples)
-        return cls(learner.getGrid(), learner.getAlpha(), trainData=samples.array())
+        return cls(learner.getGrid(), learner.getSurpluses(), trainData=samples.array())
 
     @classmethod
     def byConfig(cls, config):

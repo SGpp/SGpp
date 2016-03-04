@@ -9,32 +9,16 @@
 
 #include <cmath>
 
-// using namespace std;
-// busing namespace sgpp::base;
-
 namespace sgpp {
 namespace datadriven {
 
 // -------------------- constructors and desctructors --------------------
-DensityEstimator::DensityEstimator() :
-  samples(0, 0) {
-}
+DensityEstimator::DensityEstimator() {}
 
-DensityEstimator::DensityEstimator(base::DataMatrix& samples) :
-  samples(samples) {
-}
-
-DensityEstimator::~DensityEstimator() {
-}
+DensityEstimator::~DensityEstimator() {}
 // ----------------------------------------------------------------------
 
-base::DataMatrix* DensityEstimator::getSamples() {
-  return &samples;
-}
-
-double DensityEstimator::std_deviation() {
-  return std::sqrt(variance());
-}
+double DensityEstimator::std_deviation() { return std::sqrt(variance()); }
 
 void DensityEstimator::corrcoef(base::DataMatrix& corr) {
   // get covariance matrix and ...
