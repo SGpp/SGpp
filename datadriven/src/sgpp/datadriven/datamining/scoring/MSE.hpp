@@ -8,11 +8,11 @@
 #ifndef SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_
 #define SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_
 
+#include <sgpp/globaldef.hpp>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-#include "Metric.hpp"
-
-#include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/datamining/scoring/Metric.hpp>
 
 namespace sgpp {
 namespace datadriven {

@@ -10,8 +10,8 @@
 
 #include <string>
 
-#include <sgpp/datadriven/datamining/SampleProvider.hpp>
-#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/dataSource/SampleProvider.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <sgpp/globaldef.hpp>

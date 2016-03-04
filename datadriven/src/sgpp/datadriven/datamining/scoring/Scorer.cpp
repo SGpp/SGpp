@@ -9,7 +9,7 @@
  *      Author: perun
  */
 
-#include "Scorer.hpp"
+#include <sgpp/datadriven/datamining/scoring/Scorer.hpp>
 
 #include <sgpp/globaldef.hpp>
 

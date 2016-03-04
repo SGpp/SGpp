@@ -15,9 +15,9 @@
 
 #include <vector>
 
-#include <sgpp/globaldef.hpp>                                    //NOLINT (is no systemheader)
-#include <sgpp/datadriven/datamining/SimpleSplittingScorer.hpp>  //NOLINT (is no systemheader)
-#include <sgpp/base/tools/json/json_exception.hpp>               //NOLINT (is no systemheader)
+#include <sgpp/globaldef.hpp>  //NOLINT (is no systemheader)
+#include <sgpp/datadriven/datamining/scoring/SimpleSplittingScorer.hpp>  //NOLINT (is no systemheader)
+#include <sgpp/base/tools/json/json_exception.hpp>  //NOLINT (is no systemheader)
 
 using namespace sgpp::base;  // NOLINT
 

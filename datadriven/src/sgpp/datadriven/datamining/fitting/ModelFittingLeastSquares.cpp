@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "ModelFittingLeastSquares.hpp"
+#include <sgpp/datadriven/datamining/fitting/ModelFittingLeastSquares.hpp>
 
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>

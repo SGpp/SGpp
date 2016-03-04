@@ -12,12 +12,12 @@
 #ifndef ARFFWRAPPER_HPP_
 #define ARFFWRAPPER_HPP_
 
-#include <sgpp/datadriven/datamining/DataWrapper.hpp>
-#include <sgpp/datadriven/tools/Dataset.hpp>
+#include <string>
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
-#include <string>
+#include <sgpp/datadriven/datamining/dataSource/DataWrapper.hpp>
 
 namespace sgpp {
 namespace datadriven {

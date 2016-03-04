@@ -8,9 +8,10 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/datamining/SampleProvider.hpp>
-#include <sgpp/datadriven/datamining/Scorer.hpp>
-#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/dataSource/SampleProvider.hpp>
+#include <sgpp/datadriven/datamining/scoring/Scorer.hpp>
 
 namespace sgpp {
 namespace datadriven {

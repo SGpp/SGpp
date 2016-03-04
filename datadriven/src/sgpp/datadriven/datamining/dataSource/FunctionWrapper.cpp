@@ -9,7 +9,7 @@
  *      Author: perun
  */
 
-#include "FunctionWrapper.hpp"
+#include <sgpp/datadriven/datamining/dataSource/FunctionWrapper.hpp>
 
 #include <sgpp/globaldef.hpp>
 

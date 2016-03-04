@@ -10,11 +10,13 @@
  */
 
 #include <sgpp/datadriven/datamining/SparseGridMiner.hpp>
-#include <sgpp/datadriven/datamining/ARFFWrapper.hpp>
+
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/SimpleSplittingScorer.hpp>
-#include <sgpp/datadriven/datamining/ModelFittingDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/MSE.hpp>
+
+#include <sgpp/datadriven/datamining/dataSource/ARFFWrapper.hpp>
+#include <sgpp/datadriven/datamining/scoring/SimpleSplittingScorer.hpp>
+#include <sgpp/datadriven/datamining/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <memory>
 

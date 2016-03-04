@@ -7,9 +7,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "ModelFittingBase.hpp"
+#include <sgpp/datadriven/datamining/fitting/ModelFittingBase.hpp>
 
-#include "DataMiningConfigurationLeastSquares.hpp"
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "DataMiningConfigurationLeastSquares.hpp"
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
 
 #include <string>
 

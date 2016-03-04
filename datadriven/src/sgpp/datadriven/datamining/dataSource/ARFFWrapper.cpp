@@ -12,7 +12,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
-#include <sgpp/datadriven/datamining/ARFFWrapper.hpp>
+#include <sgpp/datadriven/datamining/dataSource/ARFFWrapper.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 
 #include <ctime>
