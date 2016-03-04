@@ -206,7 +206,7 @@ class ScrambledSobolSampleGenerator : public SampleGenerator {
   *
   * @return permutation of base digits
   */
-  void permutation(int64_t base, int64_t* permutatuion);
+  void permute(int64_t base, int64_t* permutatuion);
 
   /**
   * @brief Use permutation for randomize the calculated Sobol Point.

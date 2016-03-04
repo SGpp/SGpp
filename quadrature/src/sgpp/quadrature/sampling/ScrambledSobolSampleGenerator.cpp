@@ -3,17 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include "ScrambledSobolSampleGenerator.hpp"
+
+#include <sgpp/quadrature/Random.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <vector>
-
-#include <sgpp/quadrature/Random.hpp>
-#include <sgpp/globaldef.hpp>
-
-#include "ScrambledSobolSampleGenerator.hpp"
 
 namespace sgpp {
 namespace quadrature {
@@ -137,7 +137,7 @@ void ScrambledSobolSampleGenerator::getSample(base::DataVector& dv) {
     base::DataVector temp_dv7(d7, 40);
     v_scrambled->setColumn(7, temp_dv7);
 
-    atmost_scrambled = (size_t)(pow(2., (double)log_max_scrambled) - 1);
+    atmost_scrambled = (size_t)(pow(2., static_cast<double>(log_max_scrambled)) - 1);
     //
     //    Find the number of bits in ATMOST.
     //
@@ -220,7 +220,7 @@ void ScrambledSobolSampleGenerator::getSample(base::DataVector& dv) {
           }
         }
 
-        v_scrambled->set(i - 1, j - 1, (double)newv);
+        v_scrambled->set(i - 1, j - 1, static_cast<double>(newv));
       }
     }
 
@@ -304,7 +304,7 @@ void ScrambledSobolSampleGenerator::getSample(base::DataVector& dv) {
   //
 
   for (size_t i = 1; i < dim_num + 1; i++) {
-    dv[i - 1] = (double)lastq_scrambled[i - 1] * recipd_scrambled;
+    dv[i - 1] = static_cast<double>(lastq_scrambled[i - 1]) * recipd_scrambled;
     lastq_scrambled[i - 1] = lastq_scrambled[i - 1] ^ (size_t)v_scrambled->get(i - 1, l - 1);
   }
 
@@ -313,9 +313,9 @@ void ScrambledSobolSampleGenerator::getSample(base::DataVector& dv) {
   scramble(dv);
 }
 
-void ScrambledSobolSampleGenerator::permutation(int64_t base, int64_t* permutatuion) {
+void ScrambledSobolSampleGenerator::permute(int64_t base, int64_t* permutation) {
   // Permutation bestimmen
-  for (size_t temp = 0; (int64_t)temp < base; temp++) permutatuion[temp] = -1;
+  for (size_t temp = 0; (int64_t)temp < base; temp++) permutation[temp] = -1;
 
   int64_t steps = 0;
   int64_t position = 0;
@@ -326,8 +326,8 @@ void ScrambledSobolSampleGenerator::permutation(int64_t base, int64_t* permutatu
     while (steps >= 0) {
       steps--;
 
-      if (permutatuion[(position + 1) % base] > -1) {
-        while (permutatuion[position] > -1) {
+      if (permutation[(position + 1) % base] > -1) {
+        while (permutation[position] > -1) {
           position = (position + 1) % base;
         }
       } else {
@@ -335,20 +335,20 @@ void ScrambledSobolSampleGenerator::permutation(int64_t base, int64_t* permutatu
       }
     }
 
-    permutatuion[position] = i;
+    permutation[position] = i;
   }
 }
 
 void ScrambledSobolSampleGenerator::scramble(base::DataVector& dv) {
   // Permutieren
   int64_t base = 8;
-  int64_t* permutatuion = new int64_t[base];
-  permutation(base, permutatuion);
+  int64_t* permutation = new int64_t[base];
+  permute(base, permutation);
 
   // Extrahiere die einzelnen Zeichen
   for (size_t i = 0; i < dv.getSize(); i++) {
     double zahl = dv[i];
-    double exp = pow((double)base, -1.0);  // Basis 8
+    double exp = pow(static_cast<double>(base), -1.0);  // Basis 8
 
     double a = zahl / exp;
     double b = floor(zahl / exp);
@@ -360,7 +360,7 @@ void ScrambledSobolSampleGenerator::scramble(base::DataVector& dv) {
     while (((a - b) > 0.000001) && j < 13) {  // End after calculating 13 digits
       j = j + 1;
 
-      ausgabezahl = ausgabezahl + ((double)permutatuion[(size_t)floor(a)] * exp_inc);
+      ausgabezahl += static_cast<double>(permutation[static_cast<size_t>(floor(a))]) * exp_inc;
       exp_inc = exp_inc * exp;
 
       a = a - b;
@@ -369,9 +369,9 @@ void ScrambledSobolSampleGenerator::scramble(base::DataVector& dv) {
     }
 
     dv[i] = ausgabezahl;
-
     // dv[i] = 0.5;
   }
+  delete permutation;
 }
 }  // namespace quadrature
 }  // namespace sgpp
