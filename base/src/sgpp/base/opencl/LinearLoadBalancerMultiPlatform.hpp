@@ -27,14 +27,14 @@ class LinearLoadBalancerMultiPlatform {
   LinearLoadBalancerMultiPlatform(std::shared_ptr<OCLManagerMultiPlatform> manager,
                                   std::shared_ptr<base::OCLOperationConfiguration> parameters)
       : manager(manager), parameters(parameters) {
-    for (OCLPlatformWrapper platform : manager->platforms) {
+    for (OCLPlatformWrapper &platform : manager->platforms) {
       this->weights[platform.platformId] = std::vector<double>(platform.getDeviceCount());
       this->partition[platform.platformId] = std::vector<double>(platform.getDeviceCount());
       this->lastMeaningfulPartition[platform.platformId] =
           std::vector<double>(platform.getDeviceCount());
     }
 
-    for (OCLPlatformWrapper platform : manager->platforms) {
+    for (OCLPlatformWrapper &platform : manager->platforms) {
       for (size_t i = 0; i < platform.getDeviceCount(); i++) {
         // initialize with same timing to
         // enforce equal problem sizes in the beginning
@@ -47,8 +47,8 @@ class LinearLoadBalancerMultiPlatform {
   }
 
   void getPartitionSegments(size_t start, size_t end, size_t blockSize,
-                            std::map<cl_platform_id, size_t*> segmentStart,
-                            std::map<cl_platform_id, size_t*> segmentEnd) {
+                            std::map<cl_platform_id, size_t *> segmentStart,
+                            std::map<cl_platform_id, size_t *> segmentEnd) {
     bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
     size_t totalSize = end - start;
 
@@ -65,7 +65,7 @@ class LinearLoadBalancerMultiPlatform {
 
     size_t currentStartIndex = start;
 
-    for (OCLPlatformWrapper& platform : manager->platforms) {
+    for (OCLPlatformWrapper &platform : manager->platforms) {
       for (size_t i = 0; i < platform.getDeviceCount(); i++) {
         size_t partitionElements =
             static_cast<size_t>(static_cast<double>(totalSize) * partition[platform.platformId][i]);
@@ -104,7 +104,7 @@ class LinearLoadBalancerMultiPlatform {
     }
   }
 
-  void update(std::map<cl_platform_id, double*> timings) {
+  void update(std::map<cl_platform_id, double *> timings) {
     bool setVerboseLoadBalancing = (*parameters)["LOAD_BALANCING_VERBOSE"].getBool();
 
     // recalculate weights

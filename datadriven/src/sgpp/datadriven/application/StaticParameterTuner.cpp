@@ -304,7 +304,7 @@ double StaticParameterTuner::evaluateSetup(SGPP::datadriven::LearnerScenario &sc
 
     duration = timing.timeComplete_;
 
-    GFlops = timing.GFlop_;
+    GFlops = timing.GFlop_ / timing.timeComplete_;
 
     TestsetConfiguration testsetConfiguration = scenario.getTestsetConfiguration();
 

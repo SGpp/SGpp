@@ -12,8 +12,7 @@
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 
 int main(int argc, char** argv) {
-  std::string scenarioFileName(
-      "friedman2_4d_300000_StreamingModOCLMaskMultiPlatform_double.scenario");
+  std::string scenarioFileName("overheat_experiment.scenario");
   std::string parameterFile("reproduce.cfg");
 
   SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
@@ -28,7 +27,7 @@ int main(int argc, char** argv) {
 
   SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
       SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
+      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
   std::string datasetFile = scenario.getDatasetFileName();
   learner.learn(configuration, datasetFile);
