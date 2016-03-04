@@ -138,8 +138,8 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   /**
    * generates a regular grid
-   * @param grid grid
    * @param ndim number of dimensions
+   * @return grid
    */
   std::shared_ptr<base::Grid> createRegularGrid(size_t ndim);
 
