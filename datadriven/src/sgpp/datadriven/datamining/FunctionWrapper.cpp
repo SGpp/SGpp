@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 FunctionWrapper::FunctionWrapper(datadriven::DataMiningConfiguration& config)
@@ -24,4 +24,4 @@ FunctionWrapper::~FunctionWrapper() {
 }
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

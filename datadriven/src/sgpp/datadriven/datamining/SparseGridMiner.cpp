@@ -18,7 +18,7 @@
 
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 SparseGridMiner::SparseGridMiner(datadriven::DataMiningConfiguration pconfig)
@@ -28,7 +28,7 @@ SparseGridMiner::~SparseGridMiner() {}
 
 void SparseGridMiner::run() {
   // 1. find lambda
-  SGPP::float_t threshold = config["scorer_threshold"].getDouble();
+  double threshold = config["scorer_threshold"].getDouble();
   uint64_t maxRefinenum = config["maxRefinenum"].getUInt();
 
   // 2. read data set
@@ -54,4 +54,4 @@ void SparseGridMiner::run() {
 }
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

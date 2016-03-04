@@ -5,8 +5,8 @@
  *      Author: perun
  */
 
-#ifndef SRC_SGPP_DATADRIVEN_DATAMINING_MSE_HPP_
-#define SRC_SGPP_DATADRIVEN_DATAMINING_MSE_HPP_
+#ifndef SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_
+#define SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 
@@ -14,7 +14,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class MSE : public Metric {
@@ -25,6 +25,6 @@ class MSE : public Metric {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */
 
-#endif /* SRC_SGPP_DATADRIVEN_DATAMINING_MSE_HPP_ */
+#endif /* SRC_sgpp_DATADRIVEN_DATAMINING_MSE_HPP_ */

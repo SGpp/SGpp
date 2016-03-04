@@ -16,7 +16,7 @@
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -40,7 +40,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
 
  protected:
   virtual datadriven::DMSystemMatrixBase* createSystemMatrix(base::DataMatrix& trainDataset,
-                                                             float_t lambda);
+                                                             double lambda);
 
  public:
   /**
@@ -48,7 +48,7 @@ class ModelFittingLeastSquares : public ModelFittingBase {
    *
    * @param config configuration
    */
-  ModelFittingLeastSquares(SGPP::datadriven::DataMiningConfigurationLeastSquares config);
+  ModelFittingLeastSquares(sgpp::datadriven::DataMiningConfigurationLeastSquares config);
 
   /**
    * Destructor

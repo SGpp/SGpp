@@ -11,26 +11,26 @@
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 
-using namespace SGPP::base;  // NOLINT
-namespace SGPP {
+using namespace sgpp::base;  // NOLINT
+namespace sgpp {
 namespace datadriven {
 
 ModelFittingBase::ModelFittingBase() : grid(nullptr), alpha(nullptr) {}
 
 ModelFittingBase::~ModelFittingBase() {}
 
-SGPP::float_t ModelFittingBase::evaluate(DataVector& sample) { return 0.0; }
+double ModelFittingBase::evaluate(DataVector& sample) { return 0.0; }
 
 void ModelFittingBase::evaluate(DataMatrix& samples, DataVector& result) {}
 
 std::shared_ptr<OperationMatrix> ModelFittingBase::getRegularizationMatrix(
-    SGPP::datadriven::RegularizationType regType) {
+    sgpp::datadriven::RegularizationType regType) {
   std::shared_ptr<OperationMatrix> C;
 
-  if (regType == SGPP::datadriven::RegularizationType::Identity) {
-    C = std::shared_ptr<OperationMatrix>(SGPP::op_factory::createOperationIdentity(*grid));
-  } else if (regType == SGPP::datadriven::RegularizationType::Laplace) {
-    C = std::shared_ptr<OperationMatrix>(SGPP::op_factory::createOperationLaplace(*grid));
+  if (regType == sgpp::datadriven::RegularizationType::Identity) {
+    C = std::shared_ptr<OperationMatrix>(sgpp::op_factory::createOperationIdentity(*grid));
+  } else if (regType == sgpp::datadriven::RegularizationType::Laplace) {
+    C = std::shared_ptr<OperationMatrix>(sgpp::op_factory::createOperationLaplace(*grid));
   } else {
     throw base::application_exception(
         "ModelFittingBase::getRegularizationMatrix - unknown regularization type");
@@ -56,9 +56,9 @@ void ModelFittingBase::initializeGrid(base::RegularGridConfiguration gridConfig)
   gridGen.regular(gridConfig.level_);
 }
 
-std::shared_ptr<SGPP::base::Grid> ModelFittingBase::getGrid() { return grid; }
+std::shared_ptr<sgpp::base::Grid> ModelFittingBase::getGrid() { return grid; }
 
-std::shared_ptr<SGPP::base::DataVector> ModelFittingBase::getSurpluses() { return alpha; }
+std::shared_ptr<sgpp::base::DataVector> ModelFittingBase::getSurpluses() { return alpha; }
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

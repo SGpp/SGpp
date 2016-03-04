@@ -19,7 +19,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class ARFFWrapper : public DataWrapper {
@@ -56,23 +56,23 @@ class ARFFWrapper : public DataWrapper {
                                      size_t& dimension);
 
   /**
-   * stores the attribute info of one instance into a SGPP::base::DataMatrix
+   * stores the attribute info of one instance into a sgpp::base::DataMatrix
    *
    * @param arffLine the string that contains the instance's values
-   * @param destination SGPP::base::DataMatrix into which the instance is stored
+   * @param destination sgpp::base::DataMatrix into which the instance is stored
    * @param instanceNo the number of the instance
    */
   static void writeNewTrainingDataEntry(const std::string& arffLine,
-                                        SGPP::base::DataMatrix& destination, size_t instanceNo);
+                                        sgpp::base::DataMatrix& destination, size_t instanceNo);
 
   /**
-   * stores the class info of one instance into a SGPP::base::DataVector
+   * stores the class info of one instance into a sgpp::base::DataVector
    *
    * @param arffLine the string that contains the instance's class
-   * @param destination SGPP::base::DataVector into which the instance is stored
+   * @param destination sgpp::base::DataVector into which the instance is stored
    * @param instanceNo the number of the instance
    */
-  static void writeNewClass(const std::string& arffLine, SGPP::base::DataVector& destination,
+  static void writeNewClass(const std::string& arffLine, sgpp::base::DataVector& destination,
                             size_t instanceNo);
 
   size_t seed;
@@ -81,6 +81,6 @@ class ARFFWrapper : public DataWrapper {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */
 
 #endif /* ARFFWRAPPER_HPP_ */

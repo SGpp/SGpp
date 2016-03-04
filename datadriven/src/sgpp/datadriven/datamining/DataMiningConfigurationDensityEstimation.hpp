@@ -13,7 +13,7 @@
 //#include <sgpp/datadriven/application/RegularizationConfiguration.hpp> //	NOLINT
 //#include <sgpp/datadriven/tools/Dataset.hpp> // NOLINT
 //
-// namespace SGPP {
+// namespace sgpp {
 // namespace datadriven {
 //
 // struct DataMiningConfigurationDensityEstimationType {
@@ -25,9 +25,9 @@
 //  bool silent_;             // verbosity
 //
 //  // regularization parameter optimization
-//  float_t lambda_;       // regularization parameter
-//  float_t lambdaStart_;  // lower bound for lambda search range
-//  float_t lambdaEnd_;    // upper bound for lambda search range
+//  double lambda_;       // regularization parameter
+//  double lambdaStart_;  // lower bound for lambda search range
+//  double lambdaEnd_;    // upper bound for lambda search range
 //  size_t lambdaSteps_;   // number of lambdas to be tested within the range defined by
 //  lambdaStart and lambdaEdns;
 //  must be 1 bool logScale_;  // search the optimization interval on a log-scale
@@ -36,7 +36,7 @@
 //// forward declaration for friend declaration
 // class ModelFittingDensityEstimation;
 //
-// class DataMiningConfigurationDensityEstimation : public SGPP::datadriven::DataMiningConfiguration
+// class DataMiningConfigurationDensityEstimation : public sgpp::datadriven::DataMiningConfiguration
 // {
 //  friend class ModelFittingDensityEstimation;
 //
@@ -60,12 +60,12 @@
 //  void setSGDEConfig(datadriven::DataMiningConfigurationDensityEstimationType &sgdeConfig);
 //
 // private:
-//  SGPP::base::RegularGridConfiguration gridConfig;
-//  SGPP::base::AdpativityConfiguration adaptivityConfig;
-//  SGPP::solver::SLESolverConfiguration solverConfig;
-//  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
-//  SGPP::datadriven::DataMiningConfigurationDensityEstimationType sgdeConfig;
+//  sgpp::base::RegularGridConfiguration gridConfig;
+//  sgpp::base::AdpativityConfiguration adaptivityConfig;
+//  sgpp::solver::SLESolverConfiguration solverConfig;
+//  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+//  sgpp::datadriven::DataMiningConfigurationDensityEstimationType sgdeConfig;
 //};
 //
 //} /* namespace datadriven */
-//} /* namespace SGPP */
+//} /* namespace sgpp */

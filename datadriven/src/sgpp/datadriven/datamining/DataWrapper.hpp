@@ -16,7 +16,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class DataWrapper : public SampleProvider {
@@ -35,6 +35,6 @@ class DataWrapper : public SampleProvider {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */
 
 #endif /* DATAWRAPPER_H_ */

@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 Scorer::~Scorer() {
@@ -21,4 +21,4 @@ Scorer::~Scorer() {
 }
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

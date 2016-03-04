@@ -17,7 +17,7 @@
 #include <map>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class DataMiningConfiguration : public json::JSON {
@@ -34,4 +34,4 @@ class DataMiningConfiguration : public json::JSON {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
