@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 MSE::MSE() {
@@ -26,4 +26,4 @@ double MSE::operator()(DataVector& predictedValues, DataVector& trueValues) {
 }
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

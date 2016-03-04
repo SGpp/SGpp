@@ -10,15 +10,15 @@
 //
 //#include <string> //	NOLINT
 //
-// namespace SGPP {
+// namespace sgpp {
 // namespace datadriven {
 //
 // DataMiningConfigurationDensityEstimation::DataMiningConfigurationDensityEstimation()
-//    : SGPP::datadriven::DataMiningConfiguration() {
+//    : sgpp::datadriven::DataMiningConfiguration() {
 //  // set default config
 //  gridConfig.dim_ = 0;
 //  gridConfig.level_ = 2;
-//  gridConfig.type_ = SGPP::base::GridType::Linear;
+//  gridConfig.type_ = sgpp::base::GridType::Linear;
 //  gridConfig.maxDegree_ = 1;
 //  gridConfig.boundaryLevel_ = 0;
 //
@@ -27,13 +27,13 @@
 //  adaptivityConfig.noPoints_ = 0;
 //
 //  // configure solver
-//  solverConfig.type_ = SGPP::solver::SLESolverType::CG;
+//  solverConfig.type_ = sgpp::solver::SLESolverType::CG;
 //  solverConfig.maxIterations_ = 100;
 //  solverConfig.eps_ = 1e-10;
 //  solverConfig.threshold_ = 1e-10;
 //
 //  // configure regularization
-//  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
+//  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 //
 //  // configure learner
 //  sgdeConfig.doCrossValidation_ = false;
@@ -49,7 +49,7 @@
 //
 // DataMiningConfigurationDensityEstimation::DataMiningConfigurationDensityEstimation(
 //    const std::string &fileName)
-//    : SGPP::datadriven::DataMiningConfiguration(fileName) {
+//    : sgpp::datadriven::DataMiningConfiguration(fileName) {
 //  // initialize structs from file
 //  // configure grid
 //  try {
@@ -139,4 +139,4 @@
 //}
 //
 //}  // namespace base
-//}  // namespace SGPP
+//}  // namespace sgpp

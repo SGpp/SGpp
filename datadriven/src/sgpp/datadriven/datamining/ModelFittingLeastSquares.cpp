@@ -16,17 +16,17 @@
 
 // TODO(lettrich): use the system matrix with flexible regularization
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(
-    SGPP::datadriven::DataMiningConfigurationLeastSquares config)
+    sgpp::datadriven::DataMiningConfigurationLeastSquares config)
     : datadriven::ModelFittingBase(), configuration(config) {}
 
 ModelFittingLeastSquares::~ModelFittingLeastSquares() {}
 
 datadriven::DMSystemMatrixBase* ModelFittingLeastSquares::createSystemMatrix(
-    base::DataMatrix& trainDataset, float_t lambda) {
+    base::DataMatrix& trainDataset, double lambda) {
   datadriven::SystemMatrixLeastSquaresIdentity* systemMatrix =
       new datadriven::SystemMatrixLeastSquaresIdentity(*(this->grid), trainDataset, lambda);
   systemMatrix->setImplementation(this->implementationConfiguration);
@@ -54,11 +54,11 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
   systemMatrix = std::shared_ptr<datadriven::DMSystemMatrixBase>(
       createSystemMatrix(dataset.getData(), configuration.getLambda()));
 
-  if (configuration.getSolverRefineConfig().type_ == SGPP::solver::SLESolverType::CG) {
+  if (configuration.getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::CG) {
     solver = std::make_shared<solver::ConjugateGradients>(
         configuration.getSolverRefineConfig().maxIterations_,
         configuration.getSolverRefineConfig().eps_);
-  } else if (configuration.getSolverRefineConfig().type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
+  } else if (configuration.getSolverRefineConfig().type_ == sgpp::solver::SLESolverType::BiCGSTAB) {
     solver =
         std::make_shared<solver::BiCGStab>(configuration.getSolverRefineConfig().maxIterations_,
                                            configuration.getSolverRefineConfig().eps_);
@@ -68,7 +68,7 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
         "chosen!");
   }
 
-  SGPP::base::DataVector b(alpha->getSize());
+  sgpp::base::DataVector b(alpha->getSize());
   systemMatrix->generateb(dataset.getTargets(), b);
 
   if (configuration.getRefinementConfig().numRefinements_ == 0) {
@@ -78,7 +78,7 @@ void ModelFittingLeastSquares::fit(datadriven::Dataset& dataset) {
 
   solver->solve(*systemMatrix, *alpha, b, true, false, 0.0);
 
-  //  float_t tmp1, tmp2, tmp3, tmp4;
+  //  double tmp1, tmp2, tmp3, tmp4;
   //  systemMatrix->getTimers(tmp1, tmp2, tmp3, tmp4);
   //  result.timeComplete_ = execTime_;
   //  result.timeMultComplete_ = tmp1;
@@ -132,4 +132,4 @@ void ModelFittingLeastSquares::update(datadriven::Dataset& dataset) {
   //  }
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

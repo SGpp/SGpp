@@ -19,9 +19,9 @@
 #include <sgpp/datadriven/datamining/SimpleSplittingScorer.hpp>  //NOLINT (is no systemheader)
 #include <sgpp/base/tools/json/json_exception.hpp>               //NOLINT (is no systemheader)
 
-using namespace SGPP::base;  // NOLINT
+using namespace sgpp::base;  // NOLINT
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 SimpleSplittingScorer::SimpleSplittingScorer(std::shared_ptr<Metric> metric,
@@ -113,4 +113,4 @@ void SimpleSplittingScorer::splitset(Dataset& dataset, Dataset& trainingSet, Dat
 }
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

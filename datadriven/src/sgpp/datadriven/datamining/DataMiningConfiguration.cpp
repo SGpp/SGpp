@@ -8,7 +8,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 DataMiningConfiguration::DataMiningConfiguration() : json::JSON() {}
@@ -21,84 +21,84 @@ DataMiningConfiguration* DataMiningConfiguration::clone() {
   return clone;
 }
 
-SGPP::base::GridType DataMiningConfiguration::stringToGridType(std::string& gridType) {
+sgpp::base::GridType DataMiningConfiguration::stringToGridType(std::string& gridType) {
   if (gridType.compare("Linear") == 0) {
-    return SGPP::base::GridType::Linear;
+    return sgpp::base::GridType::Linear;
   } else if (gridType.compare("LinearStretched") == 0) {
-    return SGPP::base::GridType::LinearStretched;
+    return sgpp::base::GridType::LinearStretched;
   } else if (gridType.compare("LinearL0Boundary") == 0) {
-    return SGPP::base::GridType::LinearL0Boundary;
+    return sgpp::base::GridType::LinearL0Boundary;
   } else if (gridType.compare("LinearBoundary") == 0) {
-    return SGPP::base::GridType::LinearBoundary;
+    return sgpp::base::GridType::LinearBoundary;
   } else if (gridType.compare("LinearStretchedBoundary") == 0) {
-    return SGPP::base::GridType::LinearStretchedBoundary;
+    return sgpp::base::GridType::LinearStretchedBoundary;
   } else if (gridType.compare("LinearTruncatedBoundary") == 0) {
-    return SGPP::base::GridType::LinearTruncatedBoundary;
+    return sgpp::base::GridType::LinearTruncatedBoundary;
   } else if (gridType.compare("ModLinear") == 0) {
-    return SGPP::base::GridType::ModLinear;
+    return sgpp::base::GridType::ModLinear;
   } else if (gridType.compare("Poly") == 0) {
-    return SGPP::base::GridType::Poly;
+    return sgpp::base::GridType::Poly;
   } else if (gridType.compare("PolyBoundary") == 0) {
-    return SGPP::base::GridType::PolyBoundary;
+    return sgpp::base::GridType::PolyBoundary;
   } else if (gridType.compare("ModPoly") == 0) {
-    return SGPP::base::GridType::ModPoly;
+    return sgpp::base::GridType::ModPoly;
   } else if (gridType.compare("ModWavelet") == 0) {
-    return SGPP::base::GridType::ModWavelet;
+    return sgpp::base::GridType::ModWavelet;
   } else if (gridType.compare("ModBspline") == 0) {
-    return SGPP::base::GridType::ModBspline;
+    return sgpp::base::GridType::ModBspline;
   } else if (gridType.compare("Prewavelet") == 0) {
-    return SGPP::base::GridType::Prewavelet;
+    return sgpp::base::GridType::Prewavelet;
   } else if (gridType.compare("SquareRoot") == 0) {
-    return SGPP::base::GridType::SquareRoot;
+    return sgpp::base::GridType::SquareRoot;
   } else if (gridType.compare("Periodic") == 0) {
-    return SGPP::base::GridType::Periodic;
+    return sgpp::base::GridType::Periodic;
   } else if (gridType.compare("LinearClenshawCurtis") == 0) {
-    return SGPP::base::GridType::LinearClenshawCurtis;
+    return sgpp::base::GridType::LinearClenshawCurtis;
   } else if (gridType.compare("Bspline") == 0) {
-    return SGPP::base::GridType::Bspline;
+    return sgpp::base::GridType::Bspline;
   } else if (gridType.compare("BsplineBoundary") == 0) {
-    return SGPP::base::GridType::BsplineBoundary;
+    return sgpp::base::GridType::BsplineBoundary;
   } else if (gridType.compare("BsplineClenshawCurtis") == 0) {
-    return SGPP::base::GridType::BsplineClenshawCurtis;
+    return sgpp::base::GridType::BsplineClenshawCurtis;
   } else if (gridType.compare("Wavelet") == 0) {
-    return SGPP::base::GridType::Wavelet;
+    return sgpp::base::GridType::Wavelet;
   } else if (gridType.compare("WaveletBoundary") == 0) {
-    return SGPP::base::GridType::WaveletBoundary;
+    return sgpp::base::GridType::WaveletBoundary;
   } else if (gridType.compare("FundamentalSpline") == 0) {
-    return SGPP::base::GridType::FundamentalSpline;
+    return sgpp::base::GridType::FundamentalSpline;
   } else if (gridType.compare("ModFundamentalSpline") == 0) {
-    return SGPP::base::GridType::ModFundamentalSpline;
+    return sgpp::base::GridType::ModFundamentalSpline;
   } else if (gridType.compare("ModBsplineClenshawCurtis") == 0) {
-    return SGPP::base::GridType::ModBsplineClenshawCurtis;
+    return sgpp::base::GridType::ModBsplineClenshawCurtis;
   } else if (gridType.compare("LinearStencil") == 0) {
-    return SGPP::base::GridType::LinearStencil;
+    return sgpp::base::GridType::LinearStencil;
   } else if (gridType.compare("ModLinearStencil") == 0) {
-    return SGPP::base::GridType::ModLinearStencil;
+    return sgpp::base::GridType::ModLinearStencil;
   } else {
-    throw SGPP::base::application_exception("grid type is unknown");
+    throw sgpp::base::application_exception("grid type is unknown");
   }
 }
 
-SGPP::datadriven::RegularizationType DataMiningConfiguration::stringToRegularizationType(
+sgpp::datadriven::RegularizationType DataMiningConfiguration::stringToRegularizationType(
     std::string& regularizationType) {
   if (regularizationType.compare("Identity") == 0) {
-    return SGPP::datadriven::RegularizationType::Identity;
+    return sgpp::datadriven::RegularizationType::Identity;
   } else if (regularizationType.compare("Laplace") == 0) {
-    return SGPP::datadriven::RegularizationType::Laplace;
+    return sgpp::datadriven::RegularizationType::Laplace;
   } else {
-    throw SGPP::base::application_exception("regularization type is unknown");
+    throw sgpp::base::application_exception("regularization type is unknown");
   }
 }
 
-SGPP::solver::SLESolverType DataMiningConfiguration::stringToSolverType(std::string& solverType) {
+sgpp::solver::SLESolverType DataMiningConfiguration::stringToSolverType(std::string& solverType) {
   if (solverType.compare("CG")) {
-    return SGPP::solver::SLESolverType::CG;
+    return sgpp::solver::SLESolverType::CG;
   } else if (solverType.compare("BiCGSTAB")) {
-    return SGPP::solver::SLESolverType::BiCGSTAB;
+    return sgpp::solver::SLESolverType::BiCGSTAB;
   } else {
-    throw SGPP::base::application_exception("solver type is unknown");
+    throw sgpp::base::application_exception("solver type is unknown");
   }
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/datamining/Scorer.hpp>
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class SparseGridMiner {
@@ -30,4 +30,4 @@ class SparseGridMiner {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

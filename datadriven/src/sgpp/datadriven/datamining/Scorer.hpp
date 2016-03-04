@@ -16,7 +16,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -35,6 +35,6 @@ class Scorer {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */
 
 #endif /* SCORER_HPP_ */

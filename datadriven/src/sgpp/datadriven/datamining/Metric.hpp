@@ -12,9 +12,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-using namespace SGPP::base;
+using namespace sgpp::base;
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -31,6 +31,6 @@ class Metric {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */
 
 #endif /* METRIC_HPP_ */

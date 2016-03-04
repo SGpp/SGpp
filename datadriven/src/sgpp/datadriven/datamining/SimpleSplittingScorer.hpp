@@ -20,7 +20,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class SimpleSplittingScorer : public Scorer {
@@ -42,4 +42,4 @@ class SimpleSplittingScorer : public Scorer {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

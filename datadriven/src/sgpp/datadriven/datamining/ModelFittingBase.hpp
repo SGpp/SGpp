@@ -15,7 +15,7 @@
 #include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class ModelFittingBase {
@@ -38,7 +38,7 @@ class ModelFittingBase {
    * @param sample
    * @return
    */
-  virtual SGPP::float_t evaluate(base::DataVector& sample);
+  virtual double evaluate(base::DataVector& sample);
 
   /**
    *
@@ -46,14 +46,14 @@ class ModelFittingBase {
    * @param result
    * @return
    */
-  virtual void evaluate(SGPP::base::DataMatrix& samples, SGPP::base::DataVector& result);
+  virtual void evaluate(sgpp::base::DataMatrix& samples, sgpp::base::DataVector& result);
 
   virtual std::shared_ptr<base::Grid> getGrid();
   virtual std::shared_ptr<base::DataVector> getSurpluses();
 
  protected:
   std::shared_ptr<base::OperationMatrix> getRegularizationMatrix(
-      SGPP::datadriven::RegularizationType regType);
+      sgpp::datadriven::RegularizationType regType);
   void initializeGrid(base::RegularGridConfiguration gridConfig);
 
   std::shared_ptr<base::Grid> grid;
@@ -61,4 +61,4 @@ class ModelFittingBase {
 };
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */

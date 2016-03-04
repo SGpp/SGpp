@@ -14,7 +14,7 @@
 #include <map>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
@@ -26,7 +26,7 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
   solver::SLESolverConfiguration solverRefineConfig;
   solver::SLESolverConfiguration solverFinalConfig;
   datadriven::RegularizationConfiguration regularizationConfig;
-  float_t lambda;
+  double lambda;
 
  public:
   DataMiningConfigurationLeastSquares();
@@ -51,4 +51,4 @@ class DataMiningConfigurationLeastSquares : public DataMiningConfiguration {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

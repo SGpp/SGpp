@@ -9,7 +9,7 @@
 
 #include "sgpp/base/tools/json/json_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
@@ -17,7 +17,7 @@ DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
   // set default config
   gridConfig.dim_ = 0;
   gridConfig.level_ = 2;
-  gridConfig.type_ = SGPP::base::GridType::Linear;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
   gridConfig.maxDegree_ = 1;
   gridConfig.boundaryLevel_ = 0;
 
@@ -29,19 +29,19 @@ DataMiningConfigurationLeastSquares::DataMiningConfigurationLeastSquares()
   adaptivityConfig.threshold_ = 0.0,
 
   // configure solver
-      solverRefineConfig.type_ = SGPP::solver::SLESolverType::CG;
+      solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.maxIterations_ = 100;
   solverRefineConfig.eps_ = 1e-10;
   solverRefineConfig.threshold_ = 1e-10;
 
   // configure solver
-  solverFinalConfig.type_ = SGPP::solver::SLESolverType::CG;
+  solverFinalConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverFinalConfig.maxIterations_ = 100;
   solverFinalConfig.eps_ = 1e-10;
   solverFinalConfig.threshold_ = 1e-10;
 
   // configure regularization
-  regularizationConfig.regType_ = SGPP::datadriven::RegularizationType::Laplace;
+  regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
   lambda = 0.0;
 }
@@ -139,4 +139,4 @@ DataMiningConfiguration *DataMiningConfigurationLeastSquares::clone() {
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

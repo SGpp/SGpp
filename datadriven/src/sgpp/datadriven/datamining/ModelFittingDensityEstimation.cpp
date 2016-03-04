@@ -12,9 +12,9 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
 
-using namespace SGPP::base;  // NOLINT
+using namespace sgpp::base;  // NOLINT
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 ModelFittingDensityEstimation::ModelFittingDensityEstimation(
@@ -135,4 +135,4 @@ void ModelFittingDensityEstimation::update(datadriven::Dataset& dataset) {
 }
 
 } /* namespace datadriven */
-} /* namespace SGPP */
+} /* namespace sgpp */
