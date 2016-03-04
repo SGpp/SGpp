@@ -77,14 +77,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     else:
       print "Info: OpenCL is not enabled"
 
-    # check for mpic++ if SG_PARALLEL is running
-    if env["SG_PARALLEL"]:
-        if not env['CXX']=='mpic++':
-            print 'Hint: not using mpic++, parallel module will not use MPI, since it requires mpic++'
-        else:
-            env['CPPDEFINES']['USE_MPI'] = '1'
-            print 'Using mpic++, parallel module will use MPI'
-    
     # Check the availability of the boost unit test dependencies
     if env['COMPILE_BOOST_TESTS']:
         if not config.CheckHeader(os.path.join("boost", "test", "unit_test.hpp"), language="c++"):
@@ -193,10 +185,25 @@ Please install the corresponding package, e.g. using command on Ubuntu
     env['COMPILER'] = env['COMPILER'].lower()
     env['ARCH'] = env['ARCH'].lower()
 
-    if env['COMPILER'] == 'gnu':
-        gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
-        gcc_ver = env._get_major_minor_revision(gcc_ver_str)
-        print "Using default gcc " + gcc_ver_str
+    if env['COMPILER'] == 'gnu' or env['COMPILER'] == 'openmpi' or env['COMPILER'] == 'mpich':
+        if env['COMPILER'] == 'openmpi':
+            env['CC'] = ('mpicc.openmpi')
+            env['LINK'] = ('mpic++.openmpi')
+            env['CXX'] = ('mpic++.openmpi')
+            print "Using openmpi"
+        elif env['COMPILER'] == 'mpich':
+            env['CC'] = ('mpicc.mpich')
+            env['LINK'] = ('mpic++.mpich')
+            env['CXX'] = ('mpic++.mpich')
+            print "Using mpich"
+        else:  # gnu
+            gcc_ver_str = subprocess.check_output([env['CXX'], '-dumpversion'])
+            gcc_ver = env._get_major_minor_revision(gcc_ver_str)
+            print "Using default gcc " + gcc_ver_str
+            
+        if not config.CheckExec(env['CXX']) or not config.CheckExec(env['CC']) or not config.CheckExec(env['LINK']) :
+            print "ERROR: compiler not found"
+            sys.exit(1)
 
         allWarnings = "-Wall -pedantic -pedantic-errors -Wextra \
             -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wformat=2 \
@@ -261,6 +268,10 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env['LINK'] = ('clang++')
         env['CXX'] = ('clang++')
 
+        if not config.CheckExec(env['CXX']) or not config.CheckExec(env['CC']) or not config.CheckExec(env['LINK']) :
+            print "ERROR: compiler not found"
+            sys.exit(1)
+
         allWarnings = "-Wall -Wextra".split(" ")
 
         # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or http://www.swig.org/Release/CHANGES, 03/02/2006
@@ -295,17 +306,27 @@ Please install the corresponding package, e.g. using command on Ubuntu
             print "Available configurations are: sse3, sse4.2, avx, fma4, avx2, avx512"
             sys.exit(1)
 
-    elif env['COMPILER'] == 'intel':
-        print "Using icc"
+    elif env['COMPILER'] == 'intel' or env['COMPILER'] == 'intel.mpi':
         env.AppendUnique(CPPFLAGS=['-Wall', '-ansi', '-Wno-deprecated', '-wd1125',
                                '-fno-strict-aliasing',
                                '-ip', '-ipo', '-funroll-loops',
                                '-ansi-alias', '-fp-speculation=safe',
                                '-DDEFAULT_RES_THRESHOLD=-1.0', '-DTASKS_PARALLEL_UPDOWN=4', '-no-offload'])
+        if env['COMPILER'] == 'intel.mpi':
+            env['CC'] = ('mpiicc')
+            env['LINK'] = ('mpiicpc')
+            env['CXX'] = ('mpiicpc')
+            print "Using intel mpi"
+        else:
+            env['CC'] = ('icc')
+            env['LINK'] = ('icpc')
+            env['CXX'] = ('icpc')
+            print "Using icc"
+        
+        if not config.CheckExec(env['CXX']) or not config.CheckExec(env['CC']) or not config.CheckExec(env['LINK']) :
+            print "ERROR: compiler not found"
+            sys.exit(1)
 
-        env['CC'] = ('icc')
-        env['LINK'] = ('icpc')
-        env['CXX'] = ('icpc')
 
         env.AppendUnique(CPPFLAGS=['-openmp'])
         env.AppendUnique(LINKFLAGS=['-openmp'])
@@ -336,7 +357,7 @@ Please install the corresponding package, e.g. using command on Ubuntu
         env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     else:
         print "You must specify a valid value for Compiler."
-        print "Available configurations are: gnu, clang, and intel"
+        print "Available configurations are: gnu, clang, intel, openmpi, mpich or intel.mpi"
         sys.exit(1)
 
     # special treatment for different platforms
