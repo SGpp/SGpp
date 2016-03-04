@@ -12,32 +12,28 @@
 #include "sgpp/datadriven/application/RegularizationConfiguration.hpp"
 #include "sgpp/datadriven/application/GaussianKDE.hpp"
 
-using std::cout;
-using std::endl;
-
 int main(int argc, char** argv) {
   std::string filename = "../tests/data/friedman_4d_2000.arff";
 
-  cout << "# loading file: " << filename << endl;
-  sgpp::datadriven::Dataset dataset =
-      sgpp::datadriven::ARFFTools::readARFF(filename);
+  std::cout << "# loading file: " << filename << std::endl;
+  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
   sgpp::base::DataMatrix& samples = dataset.getData();
 
   // configure grid
-  cout << "# create grid config" << endl;
+  std::cout << "# create grid config" << std::endl;
   sgpp::base::RegularGridConfiguration gridConfig;
   gridConfig.dim_ = dataset.getDimension();
   gridConfig.level_ = 4;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // configure adaptive refinement
-  cout << "# create adaptive refinement config" << endl;
+  std::cout << "# create adaptive refinement config" << std::endl;
   sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.noPoints_ = 10;
 
   // configure solver
-  cout << "# create solver config" << endl;
+  std::cout << "# create solver config" << std::endl;
   sgpp::solver::SLESolverConfiguration solverConfig;
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverConfig.maxIterations_ = 1000;
@@ -45,12 +41,12 @@ int main(int argc, char** argv) {
   solverConfig.threshold_ = 1e-10;
 
   // configure regularization
-  cout << "# create regularization config" << endl;
+  std::cout << "# create regularization config" << std::endl;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.regType_ = sgpp::datadriven::RegularizationType::Laplace;
 
   // configure learner
-  cout << "# create learner config" << endl;
+  std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::LearnerSGDEConfiguration learnerConfig;
   learnerConfig.doCrossValidation_ = true;
   learnerConfig.kfold_ = 3;
@@ -62,9 +58,9 @@ int main(int argc, char** argv) {
   learnerConfig.seed_ = 1234567;
   learnerConfig.silent_ = false;
 
-  cout << "# creating the learner" << endl;
-  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig,
-                                        regularizationConfig, learnerConfig);
+  std::cout << "# creating the learner" << std::endl;
+  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
+                                        learnerConfig);
   learner.initialize(samples);
 
   sgpp::datadriven::GaussianKDE kde(samples);
@@ -74,13 +70,13 @@ int main(int argc, char** argv) {
     x[i] = 0.5;
   }
 
-  cout << "--------------------------------------------------------" << endl;
-  cout << (learner.getGrid())->getSize() << " -> "
-       << (learner.getAlpha())->sum() << endl;
-  cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x)
-       << " = pdf_KDE(x)" << endl;
-  cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean()
-       << " = mean_KDE(x)" << endl;
-  cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance()
-       << " = var_KDE(x)" << endl;
+  std::cout << "--------------------------------------------------------" << std::endl;
+  std::cout << learner.getSurpluses()->getSize() << " -> " << learner.getSurpluses()->sum()
+            << std::endl;
+  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " = pdf_KDE(x)"
+            << std::endl;
+  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)"
+            << std::endl;
+  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << " = var_KDE(x)"
+            << std::endl;
 }

@@ -18,18 +18,18 @@ namespace sgpp {
 namespace datadriven {
 
 #ifndef M_SQRT2PI
-#define M_SQRT2PI       2.506628274631000241612355239340    /* sqrt(2*pi) */
+#define M_SQRT2PI 2.506628274631000241612355239340 /* sqrt(2*pi) */
 #endif
 
-class GaussianKDE: public DensityEstimator {
+class GaussianKDE : public DensityEstimator {
  public:
   GaussianKDE();
-  explicit GaussianKDE(std::vector<base::DataVector*>& samplesVec);
+  explicit GaussianKDE(std::vector<std::shared_ptr<base::DataVector>>& samplesVec);
   explicit GaussianKDE(base::DataMatrix& samples);
   virtual ~GaussianKDE();
 
   virtual void initialize(base::DataMatrix& samples);
-  virtual void initialize(std::vector<base::DataVector*>& samplesVec);
+  virtual void initialize(std::vector<std::shared_ptr<base::DataVector>>& samplesVec);
 
   double mean();
   double variance();
@@ -43,20 +43,20 @@ class GaussianKDE: public DensityEstimator {
   /// getter and setter functions
   void getConditionalizationFactor(base::DataVector& pcond);
   void setConditionalizationFactor(base::DataVector& pcond);
-  void updateConditionalizationFactors(base::DataVector& x,
-                                       std::vector<size_t>& dims, base::DataVector& pcond);
+  void updateConditionalizationFactors(base::DataVector& x, std::vector<size_t>& dims,
+                                       base::DataVector& pcond);
 
   void getBandwidths(base::DataVector& sigma);
 
-  virtual base::DataMatrix* getSamples();
-  virtual base::DataVector* getSamples(size_t dim);
+  virtual std::shared_ptr<base::DataMatrix> getSamples();
+  virtual std::shared_ptr<base::DataVector> getSamples(size_t dim);
 
   size_t getDim();
   size_t getNsamples();
 
  private:
   /// samples
-  std::vector<base::DataVector*> samplesVec;
+  std::vector<std::shared_ptr<base::DataVector>> samplesVec;
 
   size_t nsamples;
   size_t ndim;

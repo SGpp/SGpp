@@ -60,7 +60,7 @@ double OperationInverseRosenblattTransformationKDE::getMaxInversionError() {
 }
 
 void OperationInverseRosenblattTransformationKDE::recalcLimits(double sigmaFactor) {
-  base::DataVector* samples1d = nullptr;
+  std::shared_ptr<base::DataVector> samples1d;
 
   xlimits.resize(2, ndim);
   ylimits.resize(2, ndim);
@@ -109,7 +109,7 @@ void OperationInverseRosenblattTransformationKDE::doTransformation(base::DataMat
   base::DataVector unif(ndim);
   base::DataVector cdf(ndim);
   base::DataVector kern(nsamples);
-  base::DataVector* samples1d = nullptr;
+  std::shared_ptr<base::DataVector> samples1d;
 
   double xi = 0;
 
@@ -146,7 +146,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
   base::DataVector unif(ndim);
   base::DataVector cdf(ndim);
   base::DataVector kern(nsamples);
-  base::DataVector* samples1d = nullptr;
+  std::shared_ptr<base::DataVector> samples1d;
 
   double xi = 0;
 
