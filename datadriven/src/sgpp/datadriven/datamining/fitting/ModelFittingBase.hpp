@@ -5,14 +5,12 @@
 
 #pragma once
 
-#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 namespace sgpp {

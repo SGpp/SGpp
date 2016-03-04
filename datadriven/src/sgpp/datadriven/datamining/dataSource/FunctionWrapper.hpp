@@ -10,7 +10,7 @@
 
 #include "SampleProvider.hpp"
 
-#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {

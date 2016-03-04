@@ -7,12 +7,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "DataMiningConfiguration.hpp"
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
 #include <vector>
 #include <map>
 #include <string>
+#include "../configuration/DataMiningConfiguration.hpp"
 
 namespace sgpp {
 namespace datadriven {

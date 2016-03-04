@@ -7,10 +7,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/datamining/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/DataMiningConfiguration.hpp>
-#include <sgpp/datadriven/datamining/DataMiningConfigurationDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/SampleProvider.hpp>
+#include <sgpp/datadriven/datamining/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/dataSource/SampleProvider.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -30,9 +30,9 @@ struct DataMiningConfigurationDensityEstimationType {
   double lambda_;       // regularization parameter
   double lambdaStart_;  // lower bound for lambda search range
   double lambdaEnd_;    // upper bound for lambda search range
-  size_t lambdaSteps_;   // number of lambdas to be tested within the range defined by lambdaStart
-                         // and lambdaEdns; must be  1
-  bool logScale_;        // search the optimization interval on a log-scale
+  size_t lambdaSteps_;  // number of lambdas to be tested within the range defined by lambdaStart
+                        // and lambdaEdns; must be  1
+  bool logScale_;       // search the optimization interval on a log-scale
 };
 
 class ModelFittingDensityEstimation : public datadriven::ModelFittingBase {

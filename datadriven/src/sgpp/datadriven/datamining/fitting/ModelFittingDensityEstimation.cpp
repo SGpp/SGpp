@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/ModelFittingDensityEstimation.hpp>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/datamining/fitting/ModelFittingDensityEstimation.hpp>
 
-#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 
 using namespace sgpp::base;  // NOLINT
 
