@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -29,9 +29,9 @@ class OperationTransformation1D {
    * @param coord1d
    * @return
    */
-  virtual float_t doTransformation1D(base::DataVector* alpha1d, float_t coord1d) = 0;
+  virtual double doTransformation1D(base::DataVector* alpha1d, double coord1d) = 0;
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONTRANSFORMATION1D_HPP */

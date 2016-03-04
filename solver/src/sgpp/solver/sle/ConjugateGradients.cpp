@@ -12,16 +12,16 @@
 
 #include <cstdio>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-ConjugateGradients::ConjugateGradients(size_t imax, float_t epsilon) : SLESolver(imax, epsilon) {}
+ConjugateGradients::ConjugateGradients(size_t imax, double epsilon) : SLESolver(imax, epsilon) {}
 
 ConjugateGradients::~ConjugateGradients() {}
 
-void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
-                               SGPP::base::DataVector& alpha, SGPP::base::DataVector& b, bool reuse,
-                               bool verbose, float_t max_threshold) {
+void ConjugateGradients::solve(sgpp::base::OperationMatrix& SystemMatrix,
+                               sgpp::base::DataVector& alpha, sgpp::base::DataVector& b, bool reuse,
+                               bool verbose, double max_threshold) {
   this->starting();
 
   if (verbose == true) {
@@ -29,20 +29,20 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
   }
 
   // needed for residuum calculation
-  float_t epsilonSquared = this->myEpsilon * this->myEpsilon;
+  double epsilonSquared = this->myEpsilon * this->myEpsilon;
   // number off current iterations
   this->nIterations = 0;
 
   // define temporal vectors
-  SGPP::base::DataVector temp(alpha.getSize());
-  SGPP::base::DataVector q(alpha.getSize());
-  SGPP::base::DataVector r(b);
+  sgpp::base::DataVector temp(alpha.getSize());
+  sgpp::base::DataVector q(alpha.getSize());
+  sgpp::base::DataVector r(b);
 
-  float_t delta_0 = 0.0;
-  float_t delta_old = 0.0;
-  float_t delta_new = 0.0;
-  float_t beta = 0.0;
-  float_t a = 0.0;
+  double delta_0 = 0.0;
+  double delta_old = 0.0;
+  double delta_new = 0.0;
+  double beta = 0.0;
+  double a = 0.0;
 
   if (verbose == true) {
     std::cout << "All temp variables used in CG have been initialized" << std::endl;
@@ -63,7 +63,7 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
   r.sub(temp);
 
-  SGPP::base::DataVector d(r);
+  sgpp::base::DataVector d(r);
 
   delta_old = 0.0;
   delta_new = r.dotProduct(r);
@@ -84,7 +84,7 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
 
   while ((this->nIterations < this->nMaxIterations) && (delta_new > delta_0) &&
          (delta_new > max_threshold)) {
-    //          //SGPP::base::DataVector *myAlpha = this->myLearner->alpha_;
+    //          //sgpp::base::DataVector *myAlpha = this->myLearner->alpha_;
     //        if (this->nIterations == 42) {
     //          for (size_t j = 0; j < d.getSize();j++) {
     //            std::cout << "d[ " << j << "]=" << d[j] << ", ";
@@ -95,7 +95,7 @@ void ConjugateGradients::solve(SGPP::base::OperationMatrix& SystemMatrix,
     // q = A*d
     SystemMatrix.mult(d, q);
 
-    float_t dq = d.dotProduct(q);
+    double dq = d.dotProduct(q);
 
     if (dq == 0.0) {
       break;
@@ -159,4 +159,4 @@ void ConjugateGradients::iterationComplete() {}
 void ConjugateGradients::complete() {}
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

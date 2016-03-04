@@ -10,7 +10,7 @@
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 OperationMultipleHierarchisationModBsplineClenshawCurtis::
@@ -85,4 +85,4 @@ void OperationMultipleHierarchisationModBsplineClenshawCurtis::doDehierarchisati
   }
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

@@ -16,7 +16,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -162,19 +162,19 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
         // The index cast to int is required to allow a negative index
         int target_left =
           static_cast<int>((1.0 / (1 << target_level))
-                           * static_cast<float_t>(
+                           * static_cast<double>(
                              static_cast<int>(target_index) - 3));
         int target_right =
           static_cast<int>((1.0 / (1 << target_level))
-                           * static_cast<float_t>(
+                           * static_cast<double>(
                              static_cast<int>(target_index) + 3));
         int current_left =
           static_cast<int>((1.0 / (1 << current_index))
-                           * static_cast<float_t>(
+                           * static_cast<double>(
                              static_cast<int>(current_level) + 3));
         int current_right =
           static_cast<int>((1.0 / (1 << current_index))
-                           * static_cast<float_t>(
+                           * static_cast<double>(
                              static_cast<int>(current_level) + 3));
 
         if (!(current_right > target_left || current_left
@@ -267,4 +267,4 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

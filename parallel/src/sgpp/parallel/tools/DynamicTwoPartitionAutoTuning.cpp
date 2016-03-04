@@ -8,7 +8,7 @@
 #include <sgpp/parallel/tools/DynamicTwoPartitionAutoTuning.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 DynamicTwoPartitionAutoTuning::DynamicTwoPartitionAutoTuning(size_t problemSize,
@@ -84,4 +84,4 @@ void DynamicTwoPartitionAutoTuning::autoTune() {
   _sizePartition1 = partition1;
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

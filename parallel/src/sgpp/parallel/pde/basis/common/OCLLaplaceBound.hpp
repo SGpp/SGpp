@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -22,7 +22,7 @@ extern double CounterLaplaceBound;
 extern double LaplaceBoundStartupTime;
 extern double LaplaceBoundExecTime;
 extern double LaplaceBoundAllReduceTime;
-extern SGPP::base::SGppStopwatch* myStopwatch;
+extern sgpp::base::SGppStopwatch* myStopwatch;
 
 /// Allocates extra buffer for the Lambda parameter needed for the Laplace Operator.
 void SetLambdaBufferLaplaceBound(REAL* ptrLambda, size_t localdim);
@@ -46,4 +46,4 @@ void SetArgumentsLaplaceBound();
 
 }  // namespace oclpdekernels
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

@@ -15,19 +15,19 @@ int main(int argc, char** argv) {
   std::string scenarioFileName("overheat_experiment.scenario");
   std::string parameterFile("reproduce.cfg");
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
 
   bool verbose = true;
-  SGPP::datadriven::MetaLearner learner(
+  sgpp::datadriven::MetaLearner learner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
       scenario.getSolverConfigurationFinal(), scenario.getAdaptivityConfiguration(),
       scenario.getLambda(), verbose);
 
-  SGPP::base::OCLOperationConfiguration parameters(parameterFile);
+  sgpp::base::OCLOperationConfiguration parameters(parameterFile);
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
   std::string datasetFile = scenario.getDatasetFileName();
   learner.learn(configuration, datasetFile);

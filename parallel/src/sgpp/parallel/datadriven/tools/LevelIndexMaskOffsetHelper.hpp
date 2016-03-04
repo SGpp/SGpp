@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 // comment is true for both DP and SP
 // use constructor to do actual work, in code where we use this, it looks like a
@@ -57,8 +57,8 @@ inline rebuild<Standard, C>::rebuild(C* op) {
 
   if (op->index_ != NULL) delete op->index_;
 
-  op->level_ = new SGPP::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
-  op->index_ = new SGPP::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->level_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
 
   op->storage_.getLevelIndexArraysForEval(*(op->level_), *(op->index_));
 }
@@ -72,17 +72,15 @@ inline rebuild<Mask, C>::rebuild(C* op) {
 
   if (op->offset_ != NULL) delete op->offset_;
 
-  op->level_ = new SGPP::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
-  op->index_ = new SGPP::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
-  op->mask_ = new SGPP::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
-  op->offset_ = new SGPP::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->level_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->mask_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
+  op->offset_ = new sgpp::base::DataMatrix(op->storage_.getSize(), op->storage_.getDimension());
 
   op->storage_.getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_),
                                                  *(op->offset_));
 }
 }  // namespace LevelIndexMaskOffsetHelper
-
-#if USE_DOUBLE_PRECISION == 0
 
 namespace LevelIndexMaskOffsetHelperSP {
 template <KernelType T, typename C>
@@ -109,8 +107,8 @@ inline rebuild<Standard, C>::rebuild(C* op) {
 
   if (op->index_ != NULL) delete op->index_;
 
-  op->level_ = new SGPP::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
-  op->index_ = new SGPP::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->level_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
 
   op->storage_.getLevelIndexArraysForEval(*(op->level_), *(op->index_));
 }
@@ -124,18 +122,17 @@ inline rebuild<Mask, C>::rebuild(C* op) {
 
   if (op->offset_ != NULL) delete op->offset_;
 
-  op->level_ = new SGPP::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
-  op->index_ = new SGPP::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
-  op->mask_ = new SGPP::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
-  op->offset_ = new SGPP::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->level_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->index_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->mask_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
+  op->offset_ = new sgpp::base::DataMatrixSP(op->storage_.getSize(), op->storage_.getDimension());
 
   op->storage_.getLevelIndexMaskArraysForModEval(*(op->level_), *(op->index_), *(op->mask_),
                                                  *(op->offset_));
 }
 }  // namespace LevelIndexMaskOffsetHelperSP
 
-#endif  // USE_DOUBLE_PRECISION==0
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // LEVELINDEXMASKOFFSETHELPER_HPP

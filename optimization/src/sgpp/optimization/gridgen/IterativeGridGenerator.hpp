@@ -14,7 +14,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -83,6 +83,6 @@ class IterativeGridGenerator {
   void evalFunction(size_t oldGridSize = 0);
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP */

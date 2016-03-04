@@ -15,7 +15,7 @@
 
 #include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace op_factory {
 
 /**
@@ -29,6 +29,6 @@ std::unique_ptr<quadrature::OperationQuadratureMCAdvanced> createOperationQuadra
     base::Grid& grid, size_t numberOfSamples, std::uint64_t seed = std::mt19937_64::default_seed);
 
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* QUADRATUREOPFACTORY_HPP_ */

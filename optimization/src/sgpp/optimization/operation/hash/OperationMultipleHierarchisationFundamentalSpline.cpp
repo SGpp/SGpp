@@ -8,7 +8,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 OperationMultipleHierarchisationFundamentalSpline::
@@ -48,4 +48,4 @@ void OperationMultipleHierarchisationFundamentalSpline::doDehierarchisation(
   Printer::getInstance().printStatusEnd();
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

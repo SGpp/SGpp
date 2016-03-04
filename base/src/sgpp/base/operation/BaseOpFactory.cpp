@@ -125,7 +125,7 @@
 
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 
@@ -586,4 +586,4 @@ createOperationNaiveEvalPartialDerivative(
 }
 
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class OperationDotProductLinear {
@@ -21,20 +21,20 @@ class OperationDotProductLinear {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationDotProductLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
+  explicit OperationDotProductLinear(sgpp::base::GridStorage* storage) : storage(storage) {}
 
   /**
    * Destructor
    */
   virtual ~OperationDotProductLinear() {}
 
-  virtual float_t eval(SGPP::base::DataVector& x1, SGPP::base::DataVector& x2);
+  virtual double eval(sgpp::base::DataVector& x1, sgpp::base::DataVector& x2);
 
  protected:
   /// Pointer to the grid's GridStorage object
-  SGPP::base::GridStorage* storage;
+  sgpp::base::GridStorage* storage;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONDOTPRODUCTLINEAR_HPP */

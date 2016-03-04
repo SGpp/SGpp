@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,7 +18,7 @@ BubbleWrap::~BubbleWrap() {}
 
 TestScalarFunction& BubbleWrap::getObjectiveFunction() { return f; }
 
-float_t BubbleWrap::getOptimalPointUndisplaced(base::DataVector& x) {
+double BubbleWrap::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
   x.setAll(1.0 / 3.0);
   return 0.0;
@@ -28,11 +28,11 @@ BubbleWrapObjective::BubbleWrapObjective(size_t d) : TestScalarFunction(d) {}
 
 BubbleWrapObjective::~BubbleWrapObjective() {}
 
-float_t BubbleWrapObjective::evalUndisplaced(const base::DataVector& x) {
-  float_t product = 1.0;
+double BubbleWrapObjective::evalUndisplaced(const base::DataVector& x) {
+  double product = 1.0;
 
   for (size_t t = 0; t < d; t++) {
-    const float_t xt = 1.5 * x[t] - 0.5;
+    const double xt = 1.5 * x[t] - 0.5;
     product *= 0.9 - std::abs(xt) + 0.1 * std::cos(10.0 * M_PI * xt);
   }
 
@@ -44,4 +44,4 @@ void BubbleWrapObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

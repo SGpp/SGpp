@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -23,9 +23,9 @@ namespace datadriven {
  */
 struct LearnerVectorizedPerformance {
   /// achieved GFLOP
-  float_t GFlop_;
+  double GFlop_;
   /// achieved GByte
-  float_t GByte_;
+  double GByte_;
 };
 
 /**
@@ -46,12 +46,12 @@ class LearnerVectorizedPerformanceCalculator {
    *
    * @return a LearnerVectorizedPerformance struct containing the results
    */
-  static LearnerVectorizedPerformance getGFlopAndGByte(SGPP::base::Grid& Grid,
+  static LearnerVectorizedPerformance getGFlopAndGByte(sgpp::base::Grid& Grid,
       size_t numInstances,
-      SGPP::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype);
+      sgpp::solver::SLESolverType solver, size_t numIterations, size_t sizeDatatype);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LEARNERVECTORIZEDPERFORMANCECALCULATOR_HPP */

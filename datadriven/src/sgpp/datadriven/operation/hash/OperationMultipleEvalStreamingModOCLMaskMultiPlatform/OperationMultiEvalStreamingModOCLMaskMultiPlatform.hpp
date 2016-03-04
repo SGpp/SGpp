@@ -22,7 +22,7 @@
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 template <typename T>
@@ -30,7 +30,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
  protected:
   bool verbose;
   size_t dims;
-  SGPP::base::DataMatrix preparedDataset;
+  sgpp::base::DataMatrix preparedDataset;
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
   std::vector<T> kernelDataset;
   size_t datasetSizeUnpadded;
@@ -49,11 +49,11 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   size_t gridSizeBuffers;
 
   /// Timer object to handle time measurements
-  SGPP::base::SGppStopwatch myTimer;
+  sgpp::base::SGppStopwatch myTimer;
 
   base::GridStorage &storage;
 
-  float_t duration;
+  double duration;
 
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
   std::vector<std::shared_ptr<base::OCLDevice>> devices;
@@ -61,8 +61,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   std::vector<StreamingModOCLMaskMultiPlatform::KernelMult<T>> multKernels;
   std::vector<StreamingModOCLMaskMultiPlatform::KernelMultTranspose<T>> multTransposeKernels;
 
-  std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMult;
-  std::shared_ptr<SGPP::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
+  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMult;
+  std::shared_ptr<sgpp::base::QueueLoadBalancer> queueLoadBalancerMultTrans;
 
   size_t overallGridBlockingSize;
   size_t overallDataBlockingSize;
@@ -75,7 +75,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
       : OperationMultipleEval(grid, dataset),
         preparedDataset(dataset),
         parameters(parameters),
-        myTimer(SGPP::base::SGppStopwatch()),
+        myTimer(sgpp::base::SGppStopwatch()),
         storage(grid.getStorage()),
         duration(-1.0),
         manager(manager),
@@ -102,8 +102,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     std::cout << "overallDataBlockingSize: " << overallDataBlockingSize << std::endl;
     std::cout << "overallGridBlockingSize: " << overallGridBlockingSize << std::endl;
 
-    queueLoadBalancerMult = std::make_shared<SGPP::base::QueueLoadBalancer>();
-    queueLoadBalancerMultTrans = std::make_shared<SGPP::base::QueueLoadBalancer>();
+    queueLoadBalancerMult = std::make_shared<sgpp::base::QueueLoadBalancer>();
+    queueLoadBalancerMultTrans = std::make_shared<sgpp::base::QueueLoadBalancer>();
 
     //    std::cout << "dims: " << this->dims << std::endl;
     //    std::cout << "padded instances: " << this->datasetSize << std::endl;
@@ -138,7 +138,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 
   ~OperationMultiEvalStreamingModOCLMaskMultiPlatform() {}
 
-  void mult(SGPP::base::DataVector &alpha, SGPP::base::DataVector &result) override {
+  void mult(sgpp::base::DataVector &alpha, sgpp::base::DataVector &result) override {
     this->prepare();
 
     this->myTimer.start();
@@ -190,7 +190,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->duration = this->myTimer.stop();
   }
 
-  void multTranspose(SGPP::base::DataVector &source, SGPP::base::DataVector &result) override {
+  void multTranspose(sgpp::base::DataVector &source, sgpp::base::DataVector &result) override {
     this->prepare();
 
     this->myTimer.start();
@@ -249,7 +249,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     this->duration = this->myTimer.stop();
   }
 
-  float_t getDuration() { return this->duration; }
+  double getDuration() { return this->duration; }
 
   void prepare() override {
     this->recalculateLevelIndexMask();
@@ -264,7 +264,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
   }
 
  private:
-  void padDataset(SGPP::base::DataMatrix &dataset) {
+  void padDataset(sgpp::base::DataMatrix &dataset) {
     size_t oldSize = dataset.getNrows();
 
     size_t commonDatasetPadding = calculateCommonDatasetPadding();
@@ -276,7 +276,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     // then add another padding (for irregular schedules)
     size_t padding = commonDatasetPadding - remainder + commonDatasetPadding;
 
-    SGPP::base::DataVector lastRow(dataset.getNcols());
+    sgpp::base::DataVector lastRow(dataset.getNcols());
     dataset.getRow(oldSize - 1, lastRow);
     dataset.resize(oldSize + padding);
 
@@ -318,8 +318,8 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
     // size for distributing schedules of different size
     this->gridSizeBuffers = storage.getSize() + padding + overallGridBlockingSize;
 
-    SGPP::base::HashGridIndex::level_type curLevel;
-    SGPP::base::HashGridIndex::index_type curIndex;
+    sgpp::base::HashGridIndex::level_type curLevel;
+    sgpp::base::HashGridIndex::index_type curIndex;
 
     this->level = std::vector<T>(gridSizeBuffers * this->dims);
     this->index = std::vector<T>(gridSizeBuffers * this->dims);
@@ -353,7 +353,7 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
           }
           this->offset[i * this->dims + dim] = 2.0;
         } else if (curIndex ==
-                   static_cast<SGPP::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
+                   static_cast<sgpp::base::HashGridIndex::level_type>(((1 << curLevel) - 1))) {
           this->level[i * this->dims + dim] = static_cast<T>(1 << curLevel);
           this->index[i * this->dims + dim] = static_cast<T>(curIndex);
           if (std::is_same<T, double>::value) {
@@ -431,4 +431,4 @@ class OperationMultiEvalStreamingModOCLMaskMultiPlatform : public base::Operatio
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

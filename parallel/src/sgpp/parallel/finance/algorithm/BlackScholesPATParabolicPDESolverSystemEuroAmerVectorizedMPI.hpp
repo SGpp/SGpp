@@ -18,7 +18,7 @@
 #include <vector>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -31,29 +31,29 @@ namespace parallel {
  * to reduce the computational effort.
  */
 class BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI
-    : public SGPP::parallel::OperationParabolicPDESolverSystemDirichletCombined {
+    : public sgpp::parallel::OperationParabolicPDESolverSystemDirichletCombined {
  protected:
   /// the Laplace Operation, on boundary grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceBound;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpLaplaceBound;
   /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpLTwoBound;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpLTwoBound;
   /// the Laplace Operation, on Inner grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpLaplaceInner;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpLaplaceInner;
   /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-  std::unique_ptr<SGPP::base::OperationMatrix> OpLTwoInner;
+  std::unique_ptr<sgpp::base::OperationMatrix> OpLTwoInner;
   /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on
   /// Inner grid
-  std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceInner;
+  std::unique_ptr<sgpp::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceInner;
   /// the combination of the LTwoDotProduct Operation (Mass Matrix) and the Laplace Operation, on
   /// Bound grid
-  std::unique_ptr<SGPP::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceBound;
+  std::unique_ptr<sgpp::parallel::OperationParabolicPDEMatrixCombined> OpLTwoDotLaplaceBound;
   /// Pointer to the lambda (coefficients of the needed Laplace operator)
-  SGPP::base::DataVector* lambda;
+  sgpp::base::DataVector* lambda;
   /// Eigenvectors of the covariance matrix
-  SGPP::base::DataMatrix* eigenvecs;
+  sgpp::base::DataMatrix* eigenvecs;
   /// Pointer to the mu_hat (transformed drifts and correlation, needed for constraint of American
   /// options)
-  SGPP::base::DataVector* mu_hat;
+  sgpp::base::DataVector* mu_hat;
   /// use coarsening between timesteps in order to reduce gridsize
   bool useCoarsen;
   /// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -67,7 +67,7 @@ class BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI
   /// refine mode during solving Black Scholes Equation: classic or maxLevel
   std::string refineMode;
   /// maxLevel max. Level of refinement
-  SGPP::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridIndex::level_type refineMaxLevel;
   /// the algorithmic dimensions used in this system
   std::vector<size_t> BSalgoDims;
   /// store number of executed timesteps
@@ -79,21 +79,21 @@ class BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI
   /// teh riskfree rate
   double r;
 
-  virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyLOperatorInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result);
+  virtual void applyLOperatorComplete(sgpp::base::DataVector& alpha,
+                                      sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyMassMatrixInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
-                                       SGPP::base::DataVector& result);
+  virtual void applyMassMatrixComplete(sgpp::base::DataVector& alpha,
+                                       sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixLOperatorInner(SGPP::base::DataVector& alpha,
-                                             SGPP::base::DataVector& result);
+  virtual void applyMassMatrixLOperatorInner(sgpp::base::DataVector& alpha,
+                                             sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixLOperatorBound(SGPP::base::DataVector& alpha,
-                                             SGPP::base::DataVector& result);
+  virtual void applyMassMatrixLOperatorBound(sgpp::base::DataVector& alpha,
+                                             sgpp::base::DataVector& result);
 
   virtual void setTimestepCoefficientInner(double timestep_coefficient);
 
@@ -126,12 +126,12 @@ class BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI
    * @param refineMaxLevel max. level of refinement during solving
    */
   BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI(
-      SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& lambda,
-      SGPP::base::DataMatrix& eigenvecs, SGPP::base::DataVector& mu_hat, double TimestepSize,
+      sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& lambda,
+      sgpp::base::DataMatrix& eigenvecs, sgpp::base::DataVector& mu_hat, double TimestepSize,
       std::string OperationMode, double dStrike, std::string option_type, double r,
       bool useCoarsen = false, double coarsenThreshold = 0.0, std::string adaptSolveMode = "none",
       int numCoarsenPoints = -1, double refineThreshold = 0.0, std::string refineMode = "classic",
-      SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+      sgpp::base::GridIndex::level_type refineMaxLevel = 0);
 
   /**
    * Std-Destructor
@@ -148,6 +148,6 @@ class BlackScholesPATParabolicPDESolverSystemEuroAmerVectorizedMPI
   void startTimestep();
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BLACKSCHOLESPATPARABOLICPDESOLVERSYSTEMEUROAMERVECTORIZEDMPI_HPP */

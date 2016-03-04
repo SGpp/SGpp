@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -39,7 +39,7 @@ class OperationEvalPolyBoundary : public OperationEval {
    */
   ~OperationEvalPolyBoundary() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
@@ -50,6 +50,6 @@ class OperationEvalPolyBoundary : public OperationEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALPOLYBOUNDARY_HPP */

@@ -9,6 +9,6 @@
 
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace op_factory {}  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

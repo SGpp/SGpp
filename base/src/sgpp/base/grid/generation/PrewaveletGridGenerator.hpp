@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -64,7 +64,7 @@ class PrewaveletGridGenerator: public GridGenerator {
    * An adaptive grid with prewavelet ansatz functions requires for operations
    * using the up-down algorithm shadow points. These shadow points a needed just
    * for data transport, thus they do not have an influence on the final function.
-   * Please refer to SGPP::pde::UpDownOneOpDimWithShadow for more information.
+   * Please refer to sgpp::pde::UpDownOneOpDimWithShadow for more information.
    *
    * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
    * @param shadowstorage shadow points (see detailed description)
@@ -92,6 +92,6 @@ class PrewaveletGridGenerator: public GridGenerator {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* PREWAVELETGRIDGENERATOR_HPP */

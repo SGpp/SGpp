@@ -12,7 +12,7 @@
 #include "sgpp/base/tools/ConfigurationParameters.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class LinearLoadBalancerMultiPlatform {
@@ -54,11 +54,11 @@ class LinearLoadBalancerMultiPlatform {
 
     // check for valid input
     if (blockSize == 0) {
-      throw SGPP::base::operation_exception("blockSize must not be zero!");
+      throw sgpp::base::operation_exception("blockSize must not be zero!");
     }
 
     if (totalSize % blockSize != 0) {
-      throw SGPP::base::operation_exception(
+      throw sgpp::base::operation_exception(
           "totalSize must be divisible by blockSize without remainder, "
           "but it is not!");
     }
@@ -157,4 +157,4 @@ class LinearLoadBalancerMultiPlatform {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

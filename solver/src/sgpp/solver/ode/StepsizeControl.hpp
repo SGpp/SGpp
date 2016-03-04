@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 /**
@@ -28,40 +28,40 @@ class StepsizeControl : public ODESolver {
   bool useCoarsen;
 
  protected:
-  /// Pointer to SGPP::base::ScreenOutput object
-  SGPP::base::ScreenOutput* myScreen;
+  /// Pointer to sgpp::base::ScreenOutput object
+  sgpp::base::ScreenOutput* myScreen;
 
   /// temp. Stepsize Control
-  float_t mySC;
+  double mySC;
 
   /// epsilon for the step size control
-  float_t myEps;
+  double myEps;
 
   virtual void predictor(SLESolver& LinearSystemSolver,
-                         SGPP::solver::OperationParabolicPDESolverSystem& System,
-                         float_t tmp_timestepsize, SGPP::base::DataVector& dv,
-                         SGPP::base::DataVector& corr, SGPP::base::DataVector* rhs) = 0;
+                         sgpp::solver::OperationParabolicPDESolverSystem& System,
+                         double tmp_timestepsize, sgpp::base::DataVector& dv,
+                         sgpp::base::DataVector& corr, sgpp::base::DataVector* rhs) = 0;
   virtual void corrector(SLESolver& LinearSystemSolver,
-                         SGPP::solver::OperationParabolicPDESolverSystem& System,
-                         float_t tmp_timestepsize, SGPP::base::DataVector& dv,
-                         SGPP::base::DataVector* rhs) = 0;
+                         sgpp::solver::OperationParabolicPDESolverSystem& System,
+                         double tmp_timestepsize, sgpp::base::DataVector& dv,
+                         sgpp::base::DataVector* rhs) = 0;
 
-  virtual float_t norm(SGPP::solver::OperationParabolicPDESolverSystem& System,
-                       SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+  virtual double norm(sgpp::solver::OperationParabolicPDESolverSystem& System,
+                       sgpp::base::DataVector& dv1, sgpp::base::DataVector& dv2);
 
-  virtual float_t nextTimestep(float_t tmp_timestepsize, float_t tmp_timestepsize_old, float_t norm,
-                               float_t epsilon) = 0;
+  virtual double nextTimestep(double tmp_timestepsize, double tmp_timestepsize_old, double norm,
+                               double epsilon) = 0;
 
-  float_t twoNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
-                  SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+  double twoNorm(sgpp::solver::OperationParabolicPDESolverSystem& System,
+                  sgpp::base::DataVector& dv1, sgpp::base::DataVector& dv2);
 
-  float_t maxNorm(SGPP::solver::OperationParabolicPDESolverSystem& System,
-                  SGPP::base::DataVector& dv1, SGPP::base::DataVector& dv2);
+  double maxNorm(sgpp::solver::OperationParabolicPDESolverSystem& System,
+                  sgpp::base::DataVector& dv1, sgpp::base::DataVector& dv2);
 
   std::string filename;
 
   /// damping factor
-  float_t _gamma;
+  double _gamma;
 
  public:
   /**
@@ -71,22 +71,22 @@ class StepsizeControl : public ODESolver {
    * @param imax number of maximum executed iterations
    * @param timestepSize the size of one timestep
    * @param eps the epsilon for the step size control
-   * @param screen possible pointer to a SGPP::base::ScreenOutput object
+   * @param screen possible pointer to a sgpp::base::ScreenOutput object
    * @param gamma damping factor
    */
-  StepsizeControl(size_t imax, float_t timestepSize, float_t eps, float_t sc,
-                  SGPP::base::ScreenOutput* screen = NULL, float_t gamma = 0.5);
+  StepsizeControl(size_t imax, double timestepSize, double eps, double sc,
+                  sgpp::base::ScreenOutput* screen = NULL, double gamma = 0.5);
 
   /**
    * Std-Destructor
    */
   virtual ~StepsizeControl();
 
-  void solve(SLESolver& LinearSystemSolver, SGPP::solver::OperationParabolicPDESolverSystem& System,
+  void solve(SLESolver& LinearSystemSolver, sgpp::solver::OperationParabolicPDESolverSystem& System,
              bool bIdentifyLastStep = false, bool verbose = false);
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* STEPSIZECONTROL_H_ */

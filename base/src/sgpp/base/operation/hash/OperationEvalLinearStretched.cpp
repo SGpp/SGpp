@@ -13,10 +13,10 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationEvalLinearStretched::eval(const DataVector& alpha,
+double OperationEvalLinearStretched::eval(const DataVector& alpha,
     const DataVector& point) {
   LinearStretchedBasis<unsigned int, unsigned int> base;
   AlgorithmEvaluation <
@@ -26,4 +26,4 @@ float_t OperationEvalLinearStretched::eval(const DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

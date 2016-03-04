@@ -9,12 +9,12 @@
 #include <sgpp/globaldef.hpp>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
 LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(
-    SGPP::base::Grid& grid, size_t numInstances, SGPP::solver::SLESolverType solver,
+    sgpp::base::Grid& grid, size_t numInstances, sgpp::solver::SLESolverType solver,
     size_t numIterations, size_t sizeDatatype) {
   LearnerVectorizedPerformance result;
 
@@ -26,11 +26,11 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
 
   if (grid.getType() == base::GridType::ModLinear) {
     for (size_t g = 0; g < grid.getSize(); g++) {
-      SGPP::base::GridIndex* curPoint = grid.getStorage().get(g);
+      sgpp::base::GridIndex* curPoint = grid.getStorage().get(g);
 
       for (size_t h = 0; h < nDim; h++) {
-        SGPP::base::GridStorage::index_type::level_type level;
-        SGPP::base::GridStorage::index_type::index_type index;
+        sgpp::base::GridStorage::index_type::level_type level;
+        sgpp::base::GridStorage::index_type::index_type index;
 
         curPoint->get(h, level, index);
 
@@ -41,8 +41,8 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
           result.GByte_ += 1e-9 * 4.0 * static_cast<double>(numIterations) *
                            static_cast<double>(sizeDatatype) * static_cast<double>(numInstances);
         } else if (index ==
-                   static_cast<SGPP::base::GridStorage::index_type::index_type>(
-                       (1 << static_cast<SGPP::base::GridStorage::index_type::index_type>(level)) -
+                   static_cast<sgpp::base::GridStorage::index_type::index_type>(
+                       (1 << static_cast<sgpp::base::GridStorage::index_type::index_type>(level)) -
                        1)) {
           result.GFlop_ +=
               1e-9 * 10.0 * static_cast<double>(numIterations) * static_cast<double>(numInstances);
@@ -88,7 +88,7 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
                        static_cast<double>(sizeDatatype)));
   }
 
-  if (solver == SGPP::solver::SLESolverType::BiCGSTAB) {
+  if (solver == sgpp::solver::SLESolverType::BiCGSTAB) {
     result.GFlop_ = result.GFlop_ * 2.0;
     result.GByte_ = result.GByte_ * 2.0;
   }
@@ -96,4 +96,4 @@ LearnerVectorizedPerformance LearnerVectorizedPerformanceCalculator::getGFlopAnd
   return result;
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

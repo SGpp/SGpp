@@ -21,7 +21,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -38,9 +38,9 @@ namespace datadriven {
 class LearnerBaseSP {
  protected:
   /// the grid's coefficients
-  SGPP::base::DataVectorSP* alpha_;
+  sgpp::base::DataVectorSP* alpha_;
   /// sparse grid object
-  SGPP::base::Grid* grid_;
+  sgpp::base::Grid* grid_;
   /// is verbose output enabled
   bool isVerbose_;
   /// is regression selected
@@ -72,8 +72,8 @@ class LearnerBaseSP {
    * @param numNeededIterations number of required iterations
    *
    */
-  virtual void postProcessing(const SGPP::base::DataMatrixSP& trainDataset,
-                              const SGPP::solver::SLESolverType& solver,
+  virtual void postProcessing(const sgpp::base::DataMatrixSP& trainDataset,
+                              const sgpp::solver::SLESolverType& solver,
                               const size_t numNeededIterations);
 
   /**
@@ -81,7 +81,7 @@ class LearnerBaseSP {
    *
    * @param GridConfig structure which describes the regular start grid
    */
-  virtual void InitializeGrid(const SGPP::base::RegularGridConfiguration&
+  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration&
                               GridConfig);
 
   /**
@@ -91,8 +91,8 @@ class LearnerBaseSP {
    * @param trainDataset training dataset
    * @param lambdaRegularization lambda regularization parameter
    */
-  virtual SGPP::datadriven::DMSystemMatrixBaseSP* createDMSystem(
-    SGPP::base::DataMatrixSP& trainDataset, float lambdaRegularization) = 0;
+  virtual sgpp::datadriven::DMSystemMatrixBaseSP* createDMSystem(
+    sgpp::base::DataMatrixSP& trainDataset, float lambdaRegularization) = 0;
 
  public:
   /**
@@ -140,12 +140,12 @@ class LearnerBaseSP {
    *   refinement step
    * @param lambdaRegularization regularization parameter lambda
    */
-  virtual LearnerTiming train(SGPP::base::DataMatrixSP& testDataset,
-                              SGPP::base::DataVectorSP& classes,
-                              const SGPP::base::RegularGridConfiguration& GridConfig,
-                              const SGPP::solver::SLESolverSPConfiguration& SolverConfigRefine,
-                              const SGPP::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                              const SGPP::base::AdpativityConfiguration& AdaptConfig,
+  virtual LearnerTiming train(sgpp::base::DataMatrixSP& testDataset,
+                              sgpp::base::DataVectorSP& classes,
+                              const sgpp::base::RegularGridConfiguration& GridConfig,
+                              const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
+                              const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
+                              const sgpp::base::AdpativityConfiguration& AdaptConfig,
                               bool testAccDuringAdapt, const float lambdaRegularization);
 
   /**
@@ -157,10 +157,10 @@ class LearnerBaseSP {
    * @param SolverConfig configuration of the SLE solver
    * @param lambdaRegularization regularization parameter lambda
    */
-  LearnerTiming train(SGPP::base::DataMatrixSP& testDataset,
-                      SGPP::base::DataVectorSP& classes,
-                      const SGPP::base::RegularGridConfiguration& GridConfig,
-                      const SGPP::solver::SLESolverSPConfiguration& SolverConfig,
+  LearnerTiming train(sgpp::base::DataMatrixSP& testDataset,
+                      sgpp::base::DataVectorSP& classes,
+                      const sgpp::base::RegularGridConfiguration& GridConfig,
+                      const sgpp::solver::SLESolverSPConfiguration& SolverConfig,
                       const float lambdaRegularization);
 
   /**
@@ -169,7 +169,7 @@ class LearnerBaseSP {
    * @param testDataset dataset that is evaluated with the current learner
    * @return regression values of testDataset
    */
-  virtual SGPP::base::DataVectorSP predict(SGPP::base::DataMatrixSP& testDataset);
+  virtual sgpp::base::DataVectorSP predict(sgpp::base::DataMatrixSP& testDataset);
 
   /**
    * compute the accuracy for given testDataset. test is automatically called
@@ -184,8 +184,8 @@ class LearnerBaseSP {
    *
    * @return accuracy, percent or MSE, depending on the execution mode
    */
-  virtual double getAccuracy(SGPP::base::DataMatrixSP& testDataset,
-                             const SGPP::base::DataVectorSP& classesReference,
+  virtual double getAccuracy(sgpp::base::DataMatrixSP& testDataset,
+                             const sgpp::base::DataVectorSP& classesReference,
                              const float threshold = 0.0);
 
   /**
@@ -200,8 +200,8 @@ class LearnerBaseSP {
    *
    * @return accuracy, percent or MSE, depending on the execution mode
    */
-  virtual double getAccuracy(const SGPP::base::DataVectorSP& classesComputed,
-                             const SGPP::base::DataVectorSP& classesReference,
+  virtual double getAccuracy(const sgpp::base::DataVectorSP& classesComputed,
+                             const sgpp::base::DataVectorSP& classesReference,
                              const float threshold = 0.0);
 
   /**
@@ -215,9 +215,9 @@ class LearnerBaseSP {
    *
    * @return quality structure containing tp, tn, fp, fn counts
    */
-  virtual ClassificatorQuality getCassificatorQuality(SGPP::base::DataMatrixSP&
+  virtual ClassificatorQuality getCassificatorQuality(sgpp::base::DataMatrixSP&
       testDataset,
-      const SGPP::base::DataVectorSP& classesReference, const float threshold = 0.0);
+      const sgpp::base::DataVectorSP& classesReference, const float threshold = 0.0);
 
   /**
    * compute the quality for given testDataset, classification ONLY!
@@ -229,8 +229,8 @@ class LearnerBaseSP {
    * @return quality structure containing tp, tn, fp, fn counts
    */
   virtual ClassificatorQuality getCassificatorQuality(const
-      SGPP::base::DataVectorSP& classesComputed,
-      const SGPP::base::DataVectorSP& classesReference, const float threshold = 0.0);
+      sgpp::base::DataVectorSP& classesComputed,
+      const sgpp::base::DataVectorSP& classesReference, const float threshold = 0.0);
 
   /**
    * store the grid and its current coefficients into files for
@@ -285,7 +285,7 @@ class LearnerBaseSP {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LEARNERBASESP_HPP */
 

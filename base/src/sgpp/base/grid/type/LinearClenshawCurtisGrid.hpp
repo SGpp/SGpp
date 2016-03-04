@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -50,7 +50,7 @@ class LinearClenshawCurtisGrid : public Grid {
    */
   ~LinearClenshawCurtisGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
@@ -68,6 +68,6 @@ class LinearClenshawCurtisGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARCLENSHAWCURTISGRID_HPP */

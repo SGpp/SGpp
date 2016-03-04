@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -30,12 +30,12 @@ void DehierarchisationModLinear::operator()(DataVector& source,
 
 void DehierarchisationModLinear::rec(DataVector& source, DataVector& result,
                                      grid_iterator& index, size_t dim,
-                                     float_t fl, float_t fr) {
+                                     double fl, double fr) {
   // current position on the grid
   size_t seq = index.seq();
   // value in the middle, needed for recursive call and
   // calculation of the hierarchical surplus
-  float_t fm = source[seq];
+  double fm = source[seq];
 
   // dehierarchisation
   fm += ((fl + fr) / 2.0);
@@ -48,8 +48,8 @@ void DehierarchisationModLinear::rec(DataVector& source, DataVector& result,
 
   // recursive calls for the right and left side of the current node
   if (index.hint() == false) {
-    float_t fltemp = fl;
-    float_t frtemp = fr;
+    double fltemp = fl;
+    double frtemp = fr;
 
     // When we descend the hierarchical basis
     // we have to modify the boundary values
@@ -60,12 +60,12 @@ void DehierarchisationModLinear::rec(DataVector& source, DataVector& result,
       fltemp = fm;
       frtemp = fm;
     } else if (i == 1) {  // left boundary
-      float_t ftemp;
+      double ftemp;
       ftemp = fr - fm;
       fltemp = fm - ftemp;
     } else if (static_cast<int>(i) == static_cast<int>((1 << l) - 1)) {
       // right boundary
-      float_t ftemp;
+      double ftemp;
       ftemp = fl - fm;
       frtemp = fm - ftemp;
     } else {  // inner functions
@@ -91,4 +91,4 @@ void DehierarchisationModLinear::rec(DataVector& source, DataVector& result,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

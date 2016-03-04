@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -20,14 +20,14 @@ namespace parallel {
  * For the mult-routine only the Laplace-Operator is required
  */
 class PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI
-    : public SGPP::pde::OperationEllipticPDESolverSystemDirichlet {
+    : public sgpp::pde::OperationEllipticPDESolverSystemDirichlet {
  protected:
-  std::unique_ptr<SGPP::base::OperationMatrix> Laplace_Inner;
-  std::unique_ptr<SGPP::base::OperationMatrix> Laplace_Complete;
+  std::unique_ptr<sgpp::base::OperationMatrix> Laplace_Inner;
+  std::unique_ptr<sgpp::base::OperationMatrix> Laplace_Complete;
 
-  void applyLOperatorComplete(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorComplete(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  void applyLOperatorInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  public:
   /**
@@ -36,8 +36,8 @@ class PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI
    * @param SparseGrid reference to a sparse grid on which the Poisson Equation should be solved
    * @param rhs the right hand side for solving the elliptic PDE
    */
-  PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(SGPP::base::Grid& SparseGrid,
-                                                               SGPP::base::DataVector& rhs);
+  PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI(sgpp::base::Grid& SparseGrid,
+                                                               sgpp::base::DataVector& rhs);
 
   /**
    * Destructor
@@ -45,6 +45,6 @@ class PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI
   virtual ~PoissonEquationEllipticPDESolverSystemDirichletVectorizedMPI();
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* POISSONEQUATIONELLIPTICPDESOLVERSYSTEMDIRICHLETVECTORIZEDMPI_HPP */

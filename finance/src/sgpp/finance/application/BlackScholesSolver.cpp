@@ -38,7 +38,7 @@
 #include <utility>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 BlackScholesSolver::BlackScholesSolver(bool useLogTransform, bool usePAT) : ParabolicPDESolver() {
@@ -92,19 +92,19 @@ BlackScholesSolver::~BlackScholesSolver() {
 }
 
 void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
-                                                   std::vector<float_t>& norm_mu,
-                                                   std::vector<float_t>& norm_sigma) {
+                                                   std::vector<double>& norm_mu,
+                                                   std::vector<double>& norm_sigma) {
   if (this->bGridConstructed) {
-    float_t value;
+    double value;
     base::StdNormalDistribution myNormDistr;
-    float_t* s_coords = new float_t[this->dim];
+    double* s_coords = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*(this->myBoundingBox));
       std::stringstream coordsStream(coords);
 
       for (size_t j = 0; j < this->dim; j++) {
-        float_t tmp_load;
+        double tmp_load;
         coordsStream >> tmp_load;
         s_coords[j] = tmp_load;
       }
@@ -116,7 +116,7 @@ void BlackScholesSolver::getGridNormalDistribution(base::DataVector& alpha,
           value *= myNormDistr.getDensity(s_coords[j], norm_mu[j], norm_sigma[j]);
         } else {
           if (this->usePAT == true) {
-            float_t inner_tmp = 0.0;
+            double inner_tmp = 0.0;
 
             for (size_t l = 0; l < dim; l++) {
               inner_tmp += this->eigvec_covar->get(j, l) *
@@ -158,9 +158,9 @@ void BlackScholesSolver::constructGrid(base::BoundingBox& BoundingBox, int level
   this->bGridConstructed = true;
 }
 
-void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, float_t strike,
+void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, double strike,
                                                      std::string payoffType,
-                                                     float_t dStrikeDistance) {
+                                                     double dStrikeDistance) {
   size_t nRefinements = 0;
 
   this->dStrike = strike;
@@ -173,9 +173,9 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
       if (payoffType == "std_euro_call" || payoffType == "std_euro_put" ||
           payoffType == "std_amer_put") {
         this->tBoundaryType = "Dirichlet";
-        float_t tmp;
-        float_t* dblFuncValues = new float_t[dim];
-        float_t dDistance = 0.0;
+        double tmp;
+        double* dblFuncValues = new double[dim];
+        double dDistance = 0.0;
 
         for (size_t i = 0; i < this->myGrid->getSize(); i++) {
           std::string coords =
@@ -195,11 +195,11 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
           }
 
           if (payoffType == "std_euro_call") {
-            dDistance = fabs(((tmp / static_cast<float_t>(this->dim)) - strike));
+            dDistance = fabs(((tmp / static_cast<double>(this->dim)) - strike));
           }
 
           if (payoffType == "std_euro_put" || payoffType == "std_amer_put") {
-            dDistance = fabs((strike - (tmp / static_cast<float_t>(this->dim))));
+            dDistance = fabs((strike - (tmp / static_cast<double>(this->dim))));
           }
 
           if (dDistance <= dStrikeDistance) {
@@ -232,7 +232,7 @@ void BlackScholesSolver::refineInitialGridWithPayoff(base::DataVector& alpha, fl
 }
 
 void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
-    base::DataVector& alpha, float_t strike, std::string payoffType, float_t dStrikeDistance,
+    base::DataVector& alpha, double strike, std::string payoffType, double dStrikeDistance,
     base::GridIndex::level_type maxLevel) {
   size_t nRefinements = 0;
 
@@ -245,9 +245,9 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
 
       if (payoffType == "std_euro_call" || payoffType == "std_euro_put" ||
           payoffType == "std_amer_put") {
-        float_t tmp;
-        float_t* dblFuncValues = new float_t[dim];
-        float_t dDistance = 0.0;
+        double tmp;
+        double* dblFuncValues = new double[dim];
+        double dDistance = 0.0;
 
         this->tBoundaryType = "Dirichlet";
 
@@ -268,11 +268,11 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
           }
 
           if (payoffType == "std_euro_call") {
-            dDistance = fabs(((tmp / static_cast<float_t>(this->dim)) - strike));
+            dDistance = fabs(((tmp / static_cast<double>(this->dim)) - strike));
           }
 
           if (payoffType == "std_euro_put" || payoffType == "std_amer_put") {
-            dDistance = fabs((strike - (tmp / static_cast<float_t>(this->dim))));
+            dDistance = fabs((strike - (tmp / static_cast<double>(this->dim))));
           }
 
           if (dDistance <= dStrikeDistance) {
@@ -306,7 +306,7 @@ void BlackScholesSolver::refineInitialGridWithPayoffToMaxLevel(
 }
 
 void BlackScholesSolver::setStochasticData(base::DataVector& mus, base::DataVector& sigmas,
-                                           base::DataMatrix& rhos, float_t r) {
+                                           base::DataMatrix& rhos, double r) {
   this->mus = new base::DataVector(mus);
   this->sigmas = new base::DataVector(sigmas);
   this->rhos = new base::DataMatrix(rhos);
@@ -623,7 +623,7 @@ void BlackScholesSolver::setStochasticData(base::DataVector& mus, base::DataVect
   }
 
   for (size_t i = 0; i < mydim; i++) {
-    float_t tmp = 0.0;
+    double tmp = 0.0;
 
     for (size_t j = 0; j < mydim; j++) {
       tmp += ((this->mus->get(j) - (0.5 * this->sigmas->get(j) * this->sigmas->get(j))) *
@@ -636,8 +636,8 @@ void BlackScholesSolver::setStochasticData(base::DataVector& mus, base::DataVect
   bStochasticDataAlloc = true;
 }
 
-void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                            size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
+                                            size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
                                             bool generateAnimation, size_t numEvalsAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
@@ -710,12 +710,12 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, float_t timeste
               << std::endl;
 
     std::cout << "Average Grid size: "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsComplete()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsComplete()) /
+                     static_cast<double>(numTimesteps)
               << std::endl;
     std::cout << "Average Grid size (Inner): "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                     static_cast<double>(numTimesteps)
               << std::endl
               << std::endl
               << std::endl;
@@ -727,8 +727,8 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, float_t timeste
 
     this->finInnerGridSize = getNumberInnerGridPoints();
     this->avgInnerGridSize =
-        static_cast<size_t>((static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                             static_cast<float_t>(numTimesteps)) +
+        static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                             static_cast<double>(numTimesteps)) +
                             0.5);
     this->nNeededIterations = myEuler->getNumberIterations();
 
@@ -737,7 +737,7 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, float_t timeste
     delete myEuler;
     delete myStopwatch;
 
-    this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
+    this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
     throw base::application_exception(
         "BlackScholesSolver::solveExplicitEuler : A grid wasn't constructed before or stochastic "
@@ -745,8 +745,8 @@ void BlackScholesSolver::solveExplicitEuler(size_t numTimesteps, float_t timeste
   }
 }
 
-void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                            size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
+                                            size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
                                             bool generateAnimation, size_t numEvalsAnimation) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
@@ -819,12 +819,12 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, float_t timeste
               << std::endl;
 
     std::cout << "Average Grid size: "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsComplete()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsComplete()) /
+                     static_cast<double>(numTimesteps)
               << std::endl;
     std::cout << "Average Grid size (Inner): "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                     static_cast<double>(numTimesteps)
               << std::endl
               << std::endl
               << std::endl;
@@ -836,8 +836,8 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, float_t timeste
 
     this->finInnerGridSize = getNumberInnerGridPoints();
     this->avgInnerGridSize =
-        static_cast<size_t>((static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                             static_cast<float_t>(numTimesteps)) +
+        static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                             static_cast<double>(numTimesteps)) +
                             0.5);
     this->nNeededIterations = myEuler->getNumberIterations();
 
@@ -846,7 +846,7 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, float_t timeste
     delete myEuler;
     delete myStopwatch;
 
-    this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
+    this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
     throw base::application_exception(
         "BlackScholesSolver::solveImplicitEuler : A grid wasn't constructed before or stochastic "
@@ -854,8 +854,8 @@ void BlackScholesSolver::solveImplicitEuler(size_t numTimesteps, float_t timeste
   }
 }
 
-void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
-                                            size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize,
+                                            size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, size_t NumImEul) {
   if (this->bGridConstructed && this->bStochasticDataAlloc) {
     solver::SLESolver* myCG = NULL;
@@ -952,12 +952,12 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, float_t timeste
               << std::endl;
 
     std::cout << "Average Grid size: "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsComplete()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsComplete()) /
+                     static_cast<double>(numTimesteps)
               << std::endl;
     std::cout << "Average Grid size (Inner): "
-              << static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                     static_cast<float_t>(numTimesteps)
+              << static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                     static_cast<double>(numTimesteps)
               << std::endl
               << std::endl
               << std::endl;
@@ -969,8 +969,8 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, float_t timeste
 
     this->finInnerGridSize = getNumberInnerGridPoints();
     this->avgInnerGridSize =
-        static_cast<size_t>((static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                             static_cast<float_t>(numTimesteps)) +
+        static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                             static_cast<double>(numTimesteps)) +
                             0.5);
     this->nNeededIterations = myEuler->getNumberIterations() + myCN->getNumberIterations();
 
@@ -980,7 +980,7 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, float_t timeste
     delete myEuler;
     delete myStopwatch;
 
-    this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
+    this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
     throw base::application_exception(
         "BlackScholesSolver::solveCrankNicolson : A grid wasn't constructed before or stochastic "
@@ -988,8 +988,8 @@ void BlackScholesSolver::solveCrankNicolson(size_t numTimesteps, float_t timeste
   }
 }
 
-void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, float_t timestepsize,
-                                             size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, double timestepsize,
+                                             size_t maxCGIterations, double epsilonCG,
                                              base::DataVector& alpha, bool verbose) {
   solver::ODESolver* myODESolver = new solver::AdamsBashforth(numTimesteps, timestepsize, myScreen);
   BlackScholesSolver::solveX(numTimesteps, timestepsize, maxCGIterations, epsilonCG, alpha, verbose,
@@ -997,8 +997,8 @@ void BlackScholesSolver::solveAdamsBashforth(size_t numTimesteps, float_t timest
   delete myODESolver;
 }
 
-void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, float_t timestepsize,
-                                 size_t maxCGIterations, float_t epsilonCG, base::DataVector& alpha,
+void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, double timestepsize,
+                                 size_t maxCGIterations, double epsilonCG, base::DataVector& alpha,
                                  bool verbose) {
   std::string tmp;
   float epsilon = 0.001f;
@@ -1058,8 +1058,8 @@ void BlackScholesSolver::solveSC(std::string Solver, size_t numTimesteps, float_
   if (myODESolver != NULL) delete myODESolver;
 }
 
-void BlackScholesSolver::solveSCAC(size_t numTimesteps, float_t timestepsize, float_t epsilon,
-                                   size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveSCAC(size_t numTimesteps, double timestepsize, double epsilon,
+                                   size_t maxCGIterations, double epsilonCG,
                                    base::DataVector& alpha, bool verbose) {
   solver::ODESolver* myODESolver =
       new solver::VarTimestep("AdBasC", "CrNic", numTimesteps, timestepsize, epsilon, myScreen, -1);
@@ -1068,8 +1068,8 @@ void BlackScholesSolver::solveSCAC(size_t numTimesteps, float_t timestepsize, fl
   delete myODESolver;
 }
 
-void BlackScholesSolver::solveSCH(size_t numTimesteps, float_t timestepsize, float_t epsilon,
-                                  size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveSCH(size_t numTimesteps, double timestepsize, double epsilon,
+                                  size_t maxCGIterations, double epsilonCG,
                                   base::DataVector& alpha, bool verbose) {
   solver::ODESolver* myODESolver =
       new solver::StepsizeControlH("CrNic", numTimesteps, timestepsize, epsilon, myScreen, 0.9);
@@ -1078,8 +1078,8 @@ void BlackScholesSolver::solveSCH(size_t numTimesteps, float_t timestepsize, flo
   delete myODESolver;
 }
 
-void BlackScholesSolver::solveSCBDF(size_t numTimesteps, float_t timestepsize, float_t epsilon,
-                                    size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveSCBDF(size_t numTimesteps, double timestepsize, double epsilon,
+                                    size_t maxCGIterations, double epsilonCG,
                                     base::DataVector& alpha, bool verbose) {
   solver::ODESolver* myODESolver =
       new solver::StepsizeControlBDF(numTimesteps, timestepsize, epsilon, myScreen);
@@ -1088,8 +1088,8 @@ void BlackScholesSolver::solveSCBDF(size_t numTimesteps, float_t timestepsize, f
   delete myODESolver;
 }
 
-void BlackScholesSolver::solveSCEJ(size_t numTimesteps, float_t timestepsize, float_t epsilon,
-                                   float_t myAlpha, size_t maxCGIterations, float_t epsilonCG,
+void BlackScholesSolver::solveSCEJ(size_t numTimesteps, double timestepsize, double epsilon,
+                                   double myAlpha, size_t maxCGIterations, double epsilonCG,
                                    base::DataVector& alpha, bool verbose) {
   solver::ODESolver* myODESolver = new solver::StepsizeControlEJ(
       "CrNic", numTimesteps, timestepsize, epsilon, myAlpha, myScreen, 0.5);
@@ -1098,8 +1098,8 @@ void BlackScholesSolver::solveSCEJ(size_t numTimesteps, float_t timestepsize, fl
   delete myODESolver;
 }
 
-void BlackScholesSolver::solveX(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
-                                float_t epsilonCG, base::DataVector& alpha, bool verbose,
+void BlackScholesSolver::solveX(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                                double epsilonCG, base::DataVector& alpha, bool verbose,
                                 void* myODESolverV, std::string Solver) {
   solver::ODESolver* myODESolver = reinterpret_cast<solver::ODESolver*>(myODESolverV);
 
@@ -1143,15 +1143,15 @@ void BlackScholesSolver::solveX(size_t numTimesteps, float_t timestepsize, size_
 
     this->finInnerGridSize = getNumberInnerGridPoints();
     this->avgInnerGridSize =
-        static_cast<size_t>((static_cast<float_t>(myBSSystem->getSumGridPointsInner()) /
-                             static_cast<float_t>(numTimesteps)) +
+        static_cast<size_t>((static_cast<double>(myBSSystem->getSumGridPointsInner()) /
+                             static_cast<double>(numTimesteps)) +
                             0.5);
     this->nNeededIterations = myODESolver->getNumberIterations();
 
     delete myBSSystem;
     delete myCG;
 
-    this->current_time += (static_cast<float_t>(numTimesteps) * timestepsize);
+    this->current_time += (static_cast<double>(numTimesteps) * timestepsize);
   } else {
     throw base::application_exception(
         "BlackScholesSolver::solveX : A grid wasn't constructed before or stochastic parameters "
@@ -1159,7 +1159,7 @@ void BlackScholesSolver::solveX(size_t numTimesteps, float_t timestepsize, size_
   }
 }
 
-void BlackScholesSolver::initGridWithPayoff(base::DataVector& alpha, float_t strike,
+void BlackScholesSolver::initGridWithPayoff(base::DataVector& alpha, double strike,
                                             std::string payoffType) {
   this->dStrike = strike;
   this->payoffType = payoffType;
@@ -1180,7 +1180,7 @@ void BlackScholesSolver::initGridWithPayoff(base::DataVector& alpha, float_t str
   }
 }
 
-float_t BlackScholesSolver::get1DEuroCallPayoffValue(float_t assetValue, float_t strike) {
+double BlackScholesSolver::get1DEuroCallPayoffValue(double assetValue, double strike) {
   if (assetValue <= strike) {
     return 0.0;
   } else {
@@ -1188,12 +1188,12 @@ float_t BlackScholesSolver::get1DEuroCallPayoffValue(float_t assetValue, float_t
   }
 }
 
-float_t BlackScholesSolver::getAnalyticSolution1D(float_t stock, bool isCall, float_t t,
-                                                  float_t vola, float_t r, float_t strike) {
+double BlackScholesSolver::getAnalyticSolution1D(double stock, bool isCall, double t,
+                                                  double vola, double r, double strike) {
   base::StdNormalDistribution myStdNDis;
 
-  float_t dOne = (log((stock / strike)) + ((r + (vola * vola * 0.5)) * (t))) / (vola * sqrt(t));
-  float_t dTwo = dOne - (vola * sqrt(t));
+  double dOne = (log((stock / strike)) + ((r + (vola * vola * 0.5)) * (t))) / (vola * sqrt(t));
+  double dTwo = dOne - (vola * sqrt(t));
 
   if (isCall) {
     return (stock * myStdNDis.getCumulativeDensity(dOne)) -
@@ -1204,15 +1204,15 @@ float_t BlackScholesSolver::getAnalyticSolution1D(float_t stock, bool isCall, fl
   }
 }
 
-void BlackScholesSolver::solve1DAnalytic(std::vector<std::pair<float_t, float_t> >& premiums,
-                                         float_t minStock, float_t maxStock, float_t StockInc,
-                                         float_t strike, float_t t, bool isCall) {
+void BlackScholesSolver::solve1DAnalytic(std::vector<std::pair<double, double> >& premiums,
+                                         double minStock, double maxStock, double StockInc,
+                                         double strike, double t, bool isCall) {
   if (bStochasticDataAlloc) {
-    float_t stock = 0.0;
-    float_t vola = this->sigmas->get(0);
+    double stock = 0.0;
+    double vola = this->sigmas->get(0);
 
     for (stock = minStock; stock <= maxStock; stock += StockInc) {
-      float_t prem = getAnalyticSolution1D(stock, isCall, t, vola, this->r, strike);
+      double prem = getAnalyticSolution1D(stock, isCall, t, vola, this->r, strike);
       premiums.push_back(std::make_pair(stock, prem));
     }
   } else {
@@ -1221,9 +1221,9 @@ void BlackScholesSolver::solve1DAnalytic(std::vector<std::pair<float_t, float_t>
   }
 }
 
-void BlackScholesSolver::print1DAnalytic(std::vector<std::pair<float_t, float_t> >& premiums,
+void BlackScholesSolver::print1DAnalytic(std::vector<std::pair<double, double> >& premiums,
                                          std::string tfilename) {
-  typedef std::vector<std::pair<float_t, float_t> > printVector;
+  typedef std::vector<std::pair<double, double> > printVector;
   std::ofstream fileout;
 
   fileout.open(tfilename.c_str());
@@ -1235,9 +1235,9 @@ void BlackScholesSolver::print1DAnalytic(std::vector<std::pair<float_t, float_t>
   fileout.close();
 }
 
-void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, float_t strike,
-                                            float_t t, std::string payoffType, bool hierarchized) {
-  float_t coord;
+void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, double strike,
+                                            double t, std::string payoffType, bool hierarchized) {
+  double coord;
 
   if (dim != 1) {
     throw base::application_exception(
@@ -1276,8 +1276,8 @@ void BlackScholesSolver::getAnalyticAlpha1D(base::DataVector& alpha_analytic, fl
 
 void BlackScholesSolver::evaluate1DAnalyticCuboid(base::DataVector& AnalyticOptionPrices,
                                                   base::DataMatrix& EvaluationPoints,
-                                                  float_t strike, float_t vola, float_t r,
-                                                  float_t t, bool isCall) {
+                                                  double strike, double vola, double r,
+                                                  double t, bool isCall) {
   size_t n = EvaluationPoints.getNrows();
 
   if (AnalyticOptionPrices.getSize() != n) {
@@ -1287,13 +1287,13 @@ void BlackScholesSolver::evaluate1DAnalyticCuboid(base::DataVector& AnalyticOpti
   }
 
   for (size_t k = 0; k < n; k++) {
-    float_t x = EvaluationPoints.get(k, 0);  // get first coordinate
+    double x = EvaluationPoints.get(k, 0);  // get first coordinate
 
     if (this->useLogTransform) {
       x = exp(x);
     }
 
-    float_t price = getAnalyticSolution1D(x, isCall, t, vola, r, strike);
+    double price = getAnalyticSolution1D(x, isCall, t, vola, r, strike);
     AnalyticOptionPrices.set(k, price);
   }
 }
@@ -1321,8 +1321,8 @@ void BlackScholesSolver::initScreen() {
 
 void BlackScholesSolver::setEnableCoarseningData(std::string adaptSolveMode, std::string refineMode,
                                                  base::GridIndex::level_type refineMaxLevel,
-                                                 int numCoarsenPoints, float_t coarsenThreshold,
-                                                 float_t refineThreshold) {
+                                                 int numCoarsenPoints, double coarsenThreshold,
+                                                 double refineThreshold) {
   this->useCoarsen = true;
   this->coarsenThreshold = coarsenThreshold;
   this->refineThreshold = refineThreshold;
@@ -1334,16 +1334,16 @@ void BlackScholesSolver::setEnableCoarseningData(std::string adaptSolveMode, std
 
 void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha,
                                                          std::string tFilename,
-                                                         size_t numTestpoints, float_t strike) {
+                                                         size_t numTestpoints, double strike) {
   if (this->useLogTransform == false) {
     if (this->bGridConstructed) {
       if (this->myGrid->getStorage().getBoundingBox()->getDimensions() == 2) {
         if (numTestpoints < 2) numTestpoints = 2;
 
-        float_t dInc = (2.0 * strike) / static_cast<float_t>(numTestpoints - 1);
+        double dInc = (2.0 * strike) / static_cast<double>(numTestpoints - 1);
 
-        float_t dX = 0.0;
-        float_t dY = 2 * strike;
+        double dX = 0.0;
+        double dY = 2 * strike;
 
         std::ofstream file;
         file.open(tFilename.c_str());
@@ -1352,12 +1352,12 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
             op_factory::createOperationEval(*this->myGrid));
 
         for (size_t i = 0; i < numTestpoints; i++) {
-          std::vector<float_t> point;
+          std::vector<double> point;
 
           point.push_back(dX);
           point.push_back(dY);
 
-          float_t result = myEval->eval(alpha, point);
+          double result = myEval->eval(alpha, point);
 
           file << std::scientific << std::setprecision(16) << dX << " " << dY << " " << result
                << std::endl;
@@ -1375,8 +1375,8 @@ void BlackScholesSolver::printPayoffInterpolationError2D(base::DataVector& alpha
   }
 }
 
-size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, float_t strike,
-                                                float_t eps) {
+size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, double strike,
+                                                double eps) {
   size_t nPoints = 0;
 
   if (this->useLogTransform == false) {
@@ -1389,8 +1389,8 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, float_t 
         if (payoffType == "std_euro_call" || payoffType == "std_euro_put" ||
             payoffType == "std_amer_put") {
           for (size_t d = 0; d < this->dim; d++) {
-            if (((coords.sum() / static_cast<float_t>(this->dim)) < (strike - eps)) ||
-                ((coords.sum() / static_cast<float_t>(this->dim)) > (strike + eps))) {
+            if (((coords.sum() / static_cast<double>(this->dim)) < (strike - eps)) ||
+                ((coords.sum() / static_cast<double>(this->dim)) > (strike + eps))) {
               isAtMoney = false;
             }
           }
@@ -1412,15 +1412,15 @@ size_t BlackScholesSolver::getGridPointsAtMoney(std::string payoffType, float_t 
   return nPoints;
 }
 
-void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, float_t strike,
+void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, double strike,
                                                      std::string payoffType) {
-  float_t tmp;
+  double tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
-      float_t* dblFuncValues = new float_t[dim];
+      double* dblFuncValues = new double[dim];
 
       for (size_t j = 0; j < this->dim; j++) {
         coordsStream >> tmp;
@@ -1435,7 +1435,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
           tmp += dblFuncValues[j];
         }
 
-        alpha[i] = std::max<float_t>(((tmp / static_cast<float_t>(dim)) - strike), 0.0);
+        alpha[i] = std::max<double>(((tmp / static_cast<double>(dim)) - strike), 0.0);
       } else if (payoffType == "std_euro_put" || payoffType == "std_amer_put") {
         tmp = 0.0;
 
@@ -1443,7 +1443,7 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
           tmp += dblFuncValues[j];
         }
 
-        alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
+        alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
         throw base::application_exception(
             "BlackScholesSolver::initCartesianGridWithPayoff : An unknown payoff-type was "
@@ -1460,15 +1460,15 @@ void BlackScholesSolver::initCartesianGridWithPayoff(base::DataVector& alpha, fl
   }
 }
 
-void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, float_t strike,
+void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alpha, double strike,
                                                           std::string payoffType) {
-  float_t tmp;
+  double tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
-      float_t* dblFuncValues = new float_t[dim];
+      double* dblFuncValues = new double[dim];
 
       for (size_t j = 0; j < this->dim; j++) {
         coordsStream >> tmp;
@@ -1483,7 +1483,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
           tmp += exp(dblFuncValues[j]);
         }
 
-        alpha[i] = std::max<float_t>(((tmp / static_cast<float_t>(dim)) - strike), 0.0);
+        alpha[i] = std::max<double>(((tmp / static_cast<double>(dim)) - strike), 0.0);
       } else if (payoffType == "std_euro_put" || payoffType == "std_amer_put") {
         tmp = 0.0;
 
@@ -1491,7 +1491,7 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
           tmp += exp(dblFuncValues[j]);
         }
 
-        alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
+        alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
         throw base::application_exception(
             "BlackScholesSolver::initLogTransformedGridWithPayoff : An unknown payoff-type was "
@@ -1508,15 +1508,15 @@ void BlackScholesSolver::initLogTransformedGridWithPayoff(base::DataVector& alph
   }
 }
 
-void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alpha, float_t strike,
+void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alpha, double strike,
                                                           std::string payoffType) {
-  float_t tmp;
+  double tmp;
 
   if (this->bGridConstructed) {
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
       std::stringstream coordsStream(coords);
-      float_t* dblFuncValues = new float_t[dim];
+      double* dblFuncValues = new double[dim];
 
       for (size_t j = 0; j < this->dim; j++) {
         coordsStream >> tmp;
@@ -1528,7 +1528,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
         tmp = 0.0;
 
         for (size_t j = 0; j < dim; j++) {
-          float_t inner_tmp = 0.0;
+          double inner_tmp = 0.0;
 
           for (size_t l = 0; l < dim; l++) {
             inner_tmp += this->eigvec_covar->get(j, l) * dblFuncValues[l];
@@ -1537,12 +1537,12 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
           tmp += exp(inner_tmp);
         }
 
-        alpha[i] = std::max<float_t>(((tmp / static_cast<float_t>(dim)) - strike), 0.0);
+        alpha[i] = std::max<double>(((tmp / static_cast<double>(dim)) - strike), 0.0);
       } else if (payoffType == "std_euro_put" || payoffType == "std_amer_put") {
         tmp = 0.0;
 
         for (size_t j = 0; j < dim; j++) {
-          float_t inner_tmp = 0.0;
+          double inner_tmp = 0.0;
 
           for (size_t l = 0; l < dim; l++) {
             inner_tmp += this->eigvec_covar->get(j, l) * dblFuncValues[l];
@@ -1551,7 +1551,7 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
           tmp += exp(inner_tmp);
         }
 
-        alpha[i] = std::max<float_t>(strike - ((tmp / static_cast<float_t>(dim))), 0.0);
+        alpha[i] = std::max<double>(strike - ((tmp / static_cast<double>(dim))), 0.0);
       } else {
         throw base::application_exception(
             "BlackScholesSolver::initPATTransformedGridWithPayoff : An unknown payoff-type was "
@@ -1568,14 +1568,14 @@ void BlackScholesSolver::initPATTransformedGridWithPayoff(base::DataVector& alph
   }
 }
 
-float_t BlackScholesSolver::evalOption(std::vector<float_t>& eval_point, base::DataVector& alpha) {
-  std::vector<float_t> trans_eval = eval_point;
+double BlackScholesSolver::evalOption(std::vector<double>& eval_point, base::DataVector& alpha) {
+  std::vector<double> trans_eval = eval_point;
 
   // apply needed coordinate transformations
   if (this->useLogTransform) {
     if (this->usePAT) {
       for (size_t i = 0; i < eval_point.size(); i++) {
-        float_t trans_point = 0.0;
+        double trans_point = 0.0;
 
         for (size_t j = 0; j < this->dim; j++) {
           trans_point += (this->eigvec_covar->get(j, i) * (log(eval_point[j])));
@@ -1593,7 +1593,7 @@ float_t BlackScholesSolver::evalOption(std::vector<float_t>& eval_point, base::D
   }
 
 
-  float_t result = op_factory::createOperationEval(*this->myGrid)->eval(alpha, trans_eval);
+  double result = op_factory::createOperationEval(*this->myGrid)->eval(alpha, trans_eval);
 
   // discounting, if PAT is used
   if (this->usePAT == true && this->payoffType != "std_amer_put") {
@@ -1610,7 +1610,7 @@ void BlackScholesSolver::transformPoint(base::DataVector& point) {
   if (this->useLogTransform) {
     if (this->usePAT) {
       for (size_t i = 0; i < point.getSize(); i++) {
-        float_t trans_point = 0.0;
+        double trans_point = 0.0;
 
         for (size_t j = 0; j < point.getSize(); j++) {
           trans_point += (this->eigvec_covar->get(j, i) * (log(point[j])));
@@ -1633,7 +1633,7 @@ void BlackScholesSolver::transformPoint(base::DataVector& point) {
 void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string tfilename,
                                             bool bSurplus) const {
   base::DataVector temp(alpha);
-  float_t tmp = 0.0;
+  double tmp = 0.0;
   size_t dim = myGrid->getDimension();
   std::ofstream fileout;
 
@@ -1649,7 +1649,7 @@ void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string
     std::string coords = myGrid->getStorage().get(i)->getCoordsStringBB(myGrid->getBoundingBox());
     std::stringstream coordsStream(coords);
 
-    float_t* dblFuncValues = new float_t[dim];
+    double* dblFuncValues = new double[dim];
 
     for (size_t j = 0; j < dim; j++) {
       coordsStream >> tmp;
@@ -1657,7 +1657,7 @@ void BlackScholesSolver::printSparseGridPAT(base::DataVector& alpha, std::string
     }
 
     for (size_t l = 0; l < dim; l++) {
-      float_t trans_point = 0.0;
+      double trans_point = 0.0;
 
       for (size_t j = 0; j < dim; j++) {
         trans_point += this->eigvec_covar->get(l, j) *
@@ -1679,7 +1679,7 @@ void BlackScholesSolver::resetSolveTime() { this->current_time = 0.0; }
 
 size_t BlackScholesSolver::getNeededIterationsToSolve() { return this->nNeededIterations; }
 
-float_t BlackScholesSolver::getNeededTimeToSolve() { return this->dNeededTime; }
+double BlackScholesSolver::getNeededTimeToSolve() { return this->dNeededTime; }
 
 size_t BlackScholesSolver::getStartInnerGridSize() { return this->staInnerGridSize; }
 
@@ -1688,7 +1688,7 @@ size_t BlackScholesSolver::getFinalInnerGridSize() { return this->finInnerGridSi
 size_t BlackScholesSolver::getAverageInnerGridSize() { return this->avgInnerGridSize; }
 
 void BlackScholesSolver::storeInnerRHS(base::DataVector& alpha, std::string tFilename,
-                                       float_t timestepsize) {
+                                       double timestepsize) {
   if (this->bGridConstructed) {
     pde::OperationParabolicPDESolverSystemDirichlet* myBSSystem =
         new BlackScholesParabolicPDESolverSystemEuroAmer(
@@ -1724,8 +1724,8 @@ void BlackScholesSolver::storeInnerRHS(base::DataVector& alpha, std::string tFil
 }
 
 void BlackScholesSolver::storeInnerSolution(base::DataVector& alpha, size_t numTimesteps,
-                                            float_t timestepsize, size_t maxCGIterations,
-                                            float_t epsilonCG, std::string tFilename) {
+                                            double timestepsize, size_t maxCGIterations,
+                                            double epsilonCG, std::string tFilename) {
   if (this->bGridConstructed) {
     solver::Euler* myEuler =
         new solver::Euler("ImEul", numTimesteps, timestepsize, false, 0, myScreen);
@@ -1764,4 +1764,4 @@ void BlackScholesSolver::storeInnerSolution(base::DataVector& alpha, size_t numT
   }
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

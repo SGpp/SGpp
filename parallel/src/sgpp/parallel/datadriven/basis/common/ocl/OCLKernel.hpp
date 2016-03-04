@@ -16,17 +16,17 @@
 #include <omp.h>
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 template <typename OCLBasisType>
 class OCLKernel {
  public:
   static const KernelType kernelType = OCLBasisType::kernelType;
-  inline void mult(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                   SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                   SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-                   SGPP::base::DataVector& result, const size_t start_index_grid,
+  inline void mult(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                   sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                   sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                   sgpp::base::DataVector& result, const size_t start_index_grid,
                    const size_t end_index_grid, const size_t start_index_data,
                    const size_t end_index_data) {
 #pragma omp master
@@ -37,11 +37,11 @@ class OCLKernel {
     }
   }
 
-  inline void multTranspose(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                            SGPP::base::DataMatrix* mask,    // unused for this specialization
-                            SGPP::base::DataMatrix* offset,  // unused for this specialization
-                            SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-                            SGPP::base::DataVector& result, const size_t start_index_grid,
+  inline void multTranspose(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                            sgpp::base::DataMatrix* mask,    // unused for this specialization
+                            sgpp::base::DataMatrix* offset,  // unused for this specialization
+                            sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+                            sgpp::base::DataVector& result, const size_t start_index_grid,
                             const size_t end_index_grid, const size_t start_index_data,
                             const size_t end_index_data) {
 #ifdef _OPENMP
@@ -88,6 +88,6 @@ class OCLKernel {
   OCLKernelImpl<OCLBasisType> m_oclkernel;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // OCLKERNEL_HPP

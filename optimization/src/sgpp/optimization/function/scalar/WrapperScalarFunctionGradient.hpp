@@ -13,7 +13,7 @@
 #include <memory>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -22,7 +22,7 @@ namespace optimization {
  */
 class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
  public:
-  typedef std::function<float_t(const base::DataVector&, base::DataVector&)>
+  typedef std::function<double(const base::DataVector&, base::DataVector&)>
       FunctionGradientEvalType;
 
   /**
@@ -45,7 +45,7 @@ class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
    *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x, base::DataVector& gradient) override {
+  inline double eval(const base::DataVector& x, base::DataVector& gradient) override {
     return fGradient(x, gradient);
   }
 
@@ -62,6 +62,6 @@ class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
   FunctionGradientEvalType fGradient;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_WRAPPERSCALARFUNCTIONGRADIENT_HPP */

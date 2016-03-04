@@ -14,7 +14,7 @@
 #include <functional>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -69,6 +69,6 @@ class WrapperVectorFunctionHessian : public VectorFunctionHessian {
   FunctionHessianEvalType fHessian;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_VECTOR_WRAPPERVECTORFUNCTIONHESSIAN_HPP */

@@ -121,9 +121,9 @@
                                    "short", "unsigned short", "int",
                                    "unsigned int", "long", "unsigned long",
                                    "long long", "unsigned long long",
-                                   "float", "float_t", "long float_t",
-                                   "complex float", "complex float_t",
-                                   "complex long float_t", "object",
+                                   "float", "double", "long double",
+                                   "complex float", "complex double",
+                                   "complex long double", "object",
                                    "string", "unicode", "void", "ntypes",
                                    "notype", "char", "unknown"};
     return typecode < 24 ? type_names[typecode] : type_names[24];
@@ -553,32 +553,32 @@
  * These typemaps can be applied to existing functions using the
  * %apply directive.  For example:
  *
- *     %apply (float_t* IN_ARRAY1, int DIM1) {(float_t* series, int length)};
- *     float_t prod(float_t* series, int length);
+ *     %apply (double* IN_ARRAY1, int DIM1) {(double* series, int length)};
+ *     double prod(double* series, int length);
  *
- *     %apply (int DIM1, int DIM2, float_t* INPLACE_ARRAY2)
- *           {(int rows, int cols, float_t* matrix        )};
- *     void floor(int rows, int cols, float_t* matrix, float_t f);
+ *     %apply (int DIM1, int DIM2, double* INPLACE_ARRAY2)
+ *           {(int rows, int cols, double* matrix        )};
+ *     void floor(int rows, int cols, double* matrix, double f);
  *
- *     %apply (float_t IN_ARRAY3[ANY][ANY][ANY])
- *           {(float_t tensor[2][2][2]         )};
- *     %apply (float_t ARGOUT_ARRAY3[ANY][ANY][ANY])
- *           {(float_t low[2][2][2]                )};
- *     %apply (float_t ARGOUT_ARRAY3[ANY][ANY][ANY])
- *           {(float_t upp[2][2][2]                )};
- *     void luSplit(float_t tensor[2][2][2],
- *                  float_t low[2][2][2],
- *                  float_t upp[2][2][2]    );
+ *     %apply (double IN_ARRAY3[ANY][ANY][ANY])
+ *           {(double tensor[2][2][2]         )};
+ *     %apply (double ARGOUT_ARRAY3[ANY][ANY][ANY])
+ *           {(double low[2][2][2]                )};
+ *     %apply (double ARGOUT_ARRAY3[ANY][ANY][ANY])
+ *           {(double upp[2][2][2]                )};
+ *     void luSplit(double tensor[2][2][2],
+ *                  double low[2][2][2],
+ *                  double upp[2][2][2]    );
  *
  * or directly with
  *
- *     float_t prod(float_t* IN_ARRAY1, int DIM1);
+ *     double prod(double* IN_ARRAY1, int DIM1);
  *
- *     void floor(int DIM1, int DIM2, float_t* INPLACE_ARRAY2, float_t f);
+ *     void floor(int DIM1, int DIM2, double* INPLACE_ARRAY2, double f);
  *
- *     void luSplit(float_t IN_ARRAY3[ANY][ANY][ANY],
- *                  float_t ARGOUT_ARRAY3[ANY][ANY][ANY],
- *                  float_t ARGOUT_ARRAY3[ANY][ANY][ANY]);
+ *     void luSplit(double IN_ARRAY3[ANY][ANY][ANY],
+ *                  double ARGOUT_ARRAY3[ANY][ANY][ANY],
+ *                  double ARGOUT_ARRAY3[ANY][ANY][ANY]);
  */
 
 %define %numpy_typemaps(DATA_TYPE, DATA_TYPECODE, DIM_TYPE)
@@ -1604,7 +1604,7 @@
 %numpy_typemaps(long long         , NPY_LONGLONG , int)
 %numpy_typemaps(unsigned long long, NPY_ULONGLONG, int)
 %numpy_typemaps(float             , NPY_FLOAT    , int)
-%numpy_typemaps(float_t            , NPY_DOUBLE   , int)
+%numpy_typemaps(double            , NPY_DOUBLE   , int)
 
 /* ***************************************************************
  * The follow macro expansion does not work, because C++ bool is 4
@@ -1615,9 +1615,9 @@
 
 /* ***************************************************************
  * On my Mac, I get the following warning for this macro expansion:
- * 'swig/python detected a memory leak of type 'long float_t *', no destructor found.'
+ * 'swig/python detected a memory leak of type 'long double *', no destructor found.'
  *
- *    %numpy_typemaps(long float_t, NPY_LONGDOUBLE, int)
+ *    %numpy_typemaps(long double, NPY_LONGDOUBLE, int)
  */
 
 /* ***************************************************************
@@ -1626,9 +1626,9 @@
  *
  *    %numpy_typemaps(complex float,  NPY_CFLOAT , int)
  *
- *    %numpy_typemaps(complex float_t, NPY_CDOUBLE, int)
+ *    %numpy_typemaps(complex double, NPY_CDOUBLE, int)
  *
- *    %numpy_typemaps(complex long float_t, NPY_CLONGDOUBLE, int)
+ *    %numpy_typemaps(complex long double, NPY_CLONGDOUBLE, int)
  */
 
 #endif /* SWIGPYTHON */

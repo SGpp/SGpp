@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OperationConfiguration::OperationConfiguration(): json::JSON() {
@@ -23,5 +23,5 @@ OperationConfiguration* OperationConfiguration::clone() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

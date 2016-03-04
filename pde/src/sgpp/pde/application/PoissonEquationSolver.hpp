@@ -24,7 +24,7 @@
 #include <fstream>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -38,7 +38,7 @@ namespace pde {
 class PoissonEquationSolver : public EllipticPDESolver {
  private:
   /// screen object used in this solver
-  SGPP::base::ScreenOutput* myScreen;
+  sgpp::base::ScreenOutput* myScreen;
 
  public:
   /**
@@ -51,10 +51,10 @@ class PoissonEquationSolver : public EllipticPDESolver {
    */
   virtual ~PoissonEquationSolver();
 
-  void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
 
-  void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations,
-                float_t epsilonCG, bool verbose = false);
+  void solvePDE(sgpp::base::DataVector& alpha, sgpp::base::DataVector& rhs, size_t maxCGIterations,
+                double epsilonCG, bool verbose = false);
 
   /**
    * Inits the grid with a smooth heat distribution (based on
@@ -68,8 +68,8 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu, float_t sigma,
-                              float_t factor);
+  void initGridWithSmoothHeat(sgpp::base::DataVector& alpha, double mu, double sigma,
+                              double factor);
 
   /**
    * Inits the grid with a smooth heat distribution (based on
@@ -84,8 +84,8 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeatFullDomain(SGPP::base::DataVector& alpha, float_t mu, float_t sigma,
-                                        float_t factor);
+  void initGridWithSmoothHeatFullDomain(sgpp::base::DataVector& alpha, double mu, double sigma,
+                                        double factor);
 
   /**
    * Inits the grid with a heat distribution based on
@@ -97,7 +97,7 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param alpha reference to the coefficient's vector
    * @param factor a constant factor used to enlarge the exp-functions input parameter
    */
-  void initGridWithExpHeat(SGPP::base::DataVector& alpha, float_t factor = 1.0);
+  void initGridWithExpHeat(sgpp::base::DataVector& alpha, double factor = 1.0);
 
   /**
    * Inits the grid with a heat distribution based on
@@ -109,7 +109,7 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param alpha reference to the coefficient's vector
    * @param factor a constant factor used to enlarge the exp-functions input parameter
    */
-  void initGridWithExpHeatFullDomain(SGPP::base::DataVector& alpha, float_t factor = 1.0);
+  void initGridWithExpHeatFullDomain(sgpp::base::DataVector& alpha, double factor = 1.0);
 
   /**
    * Routine to export the RHS of the inner system which has to be
@@ -118,7 +118,7 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param alpha the start solution
    * @param tFilename file into which the rhs is written
    */
-  void storeInnerRHS(SGPP::base::DataVector& alpha, std::string tFilename);
+  void storeInnerRHS(sgpp::base::DataVector& alpha, std::string tFilename);
 
   /**
    * Routine to export the solution of the inner system which
@@ -129,7 +129,7 @@ class PoissonEquationSolver : public EllipticPDESolver {
    * @param epsilonCG the epsilon used in the C
    * @param tFilename file into which the rhs is written
    */
-  void storeInnerSolution(SGPP::base::DataVector& alpha, size_t maxCGIterations, float_t epsilonCG,
+  void storeInnerSolution(sgpp::base::DataVector& alpha, size_t maxCGIterations, double epsilonCG,
                           std::string tFilename);
 
   /**
@@ -138,6 +138,6 @@ class PoissonEquationSolver : public EllipticPDESolver {
   void initScreen();
 };
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* POISSONEQUATIONSOLVER_HPP */

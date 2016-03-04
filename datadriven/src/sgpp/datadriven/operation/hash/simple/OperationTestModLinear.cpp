@@ -10,38 +10,38 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-float_t OperationTestModLinear::test(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
-                                     SGPP::base::DataVector& classes) {
+double OperationTestModLinear::test(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data,
+                                     sgpp::base::DataVector& classes) {
   base::LinearModifiedBasis<unsigned int, unsigned int> base;
   return test_dataset(this->storage, base, alpha, data, classes);
 }
 
-float_t OperationTestModLinear::testMSE(SGPP::base::DataVector& alpha, SGPP::base::DataMatrix& data,
-                                        SGPP::base::DataVector& refValues) {
+double OperationTestModLinear::testMSE(sgpp::base::DataVector& alpha, sgpp::base::DataMatrix& data,
+                                        sgpp::base::DataVector& refValues) {
   base::LinearModifiedBasis<unsigned int, unsigned int> base;
   return test_dataset_mse(this->storage, base, alpha, data, refValues);
 }
 
-float_t OperationTestModLinear::testWithCharacteristicNumber(SGPP::base::DataVector& alpha,
-                                                             SGPP::base::DataMatrix& data,
-                                                             SGPP::base::DataVector& classes,
-                                                             SGPP::base::DataVector& charaNumbers) {
+double OperationTestModLinear::testWithCharacteristicNumber(sgpp::base::DataVector& alpha,
+                                                             sgpp::base::DataMatrix& data,
+                                                             sgpp::base::DataVector& classes,
+                                                             sgpp::base::DataVector& charaNumbers) {
   base::LinearModifiedBasis<unsigned int, unsigned int> base;
   return test_datasetWithCharacteristicNumber(this->storage, base, alpha, data, classes,
                                               charaNumbers, 0.0);
 }
 
-void OperationTestModLinear::calculateROCcurve(SGPP::base::DataVector& alpha,
-                                               SGPP::base::DataMatrix& data,
-                                               SGPP::base::DataVector& classes,
-                                               SGPP::base::DataVector& thresholds,
-                                               SGPP::base::DataMatrix& ROC_curve) {
+void OperationTestModLinear::calculateROCcurve(sgpp::base::DataVector& alpha,
+                                               sgpp::base::DataMatrix& data,
+                                               sgpp::base::DataVector& classes,
+                                               sgpp::base::DataVector& thresholds,
+                                               sgpp::base::DataMatrix& ROC_curve) {
   base::LinearModifiedBasis<unsigned int, unsigned int> base;
   test_calculateROCcurve(this->storage, base, alpha, data, classes, thresholds, ROC_curve);
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -19,7 +19,7 @@ namespace base {
  */
 class RefinementFunctor {
  public:
-  typedef float_t value_type;
+  typedef double value_type;
 
   /**
    * Constructor
@@ -40,7 +40,7 @@ class RefinementFunctor {
    *
    * @return refinement value
    */
-  virtual float_t operator()(GridStorage& storage, size_t seq) const = 0;
+  virtual double operator()(GridStorage& storage, size_t seq) const = 0;
 
   /**
    * Returns the lower bound of refinement criterion (e.g., alpha or error) (lower bound).
@@ -48,7 +48,7 @@ class RefinementFunctor {
    *
    * @return lower bound
    */
-  virtual float_t start() const = 0;
+  virtual double start() const = 0;
 
   /**
    * Returns the maximal number of points that should be refined.
@@ -69,7 +69,7 @@ class RefinementFunctor {
    *
    * @return threshold value for refinement. Default value: 0.
    */
-  virtual float_t getRefinementThreshold() const = 0;
+  virtual double getRefinementThreshold() const = 0;
 
   /**
    * Returns the total sum of local (error) indicators used for refinement
@@ -77,8 +77,8 @@ class RefinementFunctor {
    * @param storage pointer to the grids storage object
    * @return total sum of local (error) indicators used for refinement
    */
-  virtual float_t getTotalRefinementValue(GridStorage& storage) const {
-    float_t sum = 0;
+  virtual double getTotalRefinementValue(GridStorage& storage) const {
+    double sum = 0;
     GridStorage::grid_map_iterator end_iter = storage.end();
 
     for (GridStorage::grid_map_iterator iter = storage.begin();
@@ -91,6 +91,6 @@ class RefinementFunctor {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* REFINEMENTFUNCTOR_HPP */

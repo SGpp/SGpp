@@ -11,9 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 #include <limits>
-#if USE_DOUBLE_PRECISION == 0
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 template <typename KernelImplementation>
@@ -22,7 +21,7 @@ class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedS
   /**
    * Constructor of OperationMultipleEvalIterativeSPX86Simd
    *
-   * Within the constructor SGPP::base::DataMatrixSP Level and SGPP::base::DataMatrixSP Index are
+   * Within the constructor sgpp::base::DataMatrixSP Level and sgpp::base::DataMatrixSP Index are
    * set up.
    * If the grid changes during your calculations and you don't want to create
    * a new instance of this class, you have to call rebuildLevelAndIndex before
@@ -47,7 +46,7 @@ class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedS
     rebuildLevelAndIndex(m_gridFrom, m_gridTo);
   }
 
-  virtual double multVectorized(SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
+  virtual double multVectorized(sgpp::base::DataVectorSP& alpha, sgpp::base::DataVectorSP& result) {
     myTimer_->start();
     result.setAll(0.0f);
 
@@ -59,8 +58,8 @@ class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedS
     return myTimer_->stop();
   }
 
-  virtual double multTransposeVectorized(SGPP::base::DataVectorSP& source,
-                                         SGPP::base::DataVectorSP& result) {
+  virtual double multTransposeVectorized(sgpp::base::DataVectorSP& source,
+                                         sgpp::base::DataVectorSP& result) {
     myTimer_->start();
     result.setAll(0.0);
 
@@ -79,7 +78,7 @@ class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedS
                                           OperationMultipleEvalVectorizedSP>(this);
 
     if (gridTo == std::numeric_limits<size_t>::max()) {
-      gridTo = this->storage_->size();
+      gridTo = this->storage_.getSize();
     }
 
     m_gridFrom = gridFrom;
@@ -91,8 +90,6 @@ class OperationMultipleEvalIterativeSP : public OperationMultipleEvalVectorizedS
   KernelImplementation m_kernel;
 };
 }  // namespace parallel
-}  // namespace SGPP
-
-#endif  // USE_DOUBLE_PRECISION==0
+}  // namespace sgpp
 
 #endif  // OPERATIONMULTIPLEEVALITERATIVESP_H

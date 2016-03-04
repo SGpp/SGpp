@@ -7,19 +7,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
-SqXdPhidPhiDownBBLinearBoundary::SqXdPhidPhiDownBBLinearBoundary(SGPP::base::GridStorage* storage)
+SqXdPhidPhiDownBBLinearBoundary::SqXdPhidPhiDownBBLinearBoundary(sgpp::base::GridStorage* storage)
     : SqXdPhidPhiDownBBLinear(storage) {}
 
 SqXdPhidPhiDownBBLinearBoundary::~SqXdPhidPhiDownBBLinearBoundary() {}
 
-void SqXdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
-                                                 SGPP::base::DataVector& result,
+void SqXdPhidPhiDownBBLinearBoundary::operator()(sgpp::base::DataVector& source,
+                                                 sgpp::base::DataVector& result,
                                                  grid_iterator& index, size_t dim) {
-  float_t q = this->boundingBox->getIntervalWidth(dim);
-  float_t t = this->boundingBox->getIntervalOffset(dim);
+  double q = this->boundingBox->getIntervalWidth(dim);
+  double t = this->boundingBox->getIntervalOffset(dim);
 
   bool useBB = false;
 
@@ -28,8 +28,8 @@ void SqXdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   }
 
   // get boundary values
-  float_t left_boundary;
-  float_t right_boundary;
+  double left_boundary;
+  double right_boundary;
   size_t seq_left;
   size_t seq_right;
 
@@ -49,7 +49,7 @@ void SqXdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
   right_boundary = source[seq_right];
 
   if (useBB) {
-    float_t bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
+    double bbFactor = ((q * q) + (3.0 * q * t) + (3.0 * t * t)) / (q);
 
     // check boundary conditions
     if (this->boundingBox->hasDirichletBoundaryLeft(dim)) {
@@ -108,4 +108,4 @@ void SqXdPhidPhiDownBBLinearBoundary::operator()(SGPP::base::DataVector& source,
 }
 
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

@@ -22,7 +22,7 @@
 #include "KernelMultTranspose.hpp"
 #include "Configuration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 template <typename T>
@@ -30,7 +30,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
  protected:
   size_t dims;
 
-  SGPP::base::DataMatrix preparedDataset;
+  sgpp::base::DataMatrix preparedDataset;
 
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
 
@@ -44,9 +44,9 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
   size_t gridSize = 0;
 
   /// Timer object to handle time measurements
-  SGPP::base::SGppStopwatch myTimer;
+  sgpp::base::SGppStopwatch myTimer;
 
-  float_t duration;
+  double duration;
 
   std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMult;
   std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
@@ -225,7 +225,7 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
     this->duration = this->myTimer.stop();
   }
 
-  float_t getDuration() override { return this->duration; }
+  double getDuration() override { return this->duration; }
 
   void prepare() override {
     this->recalculateLevelAndIndex(gridSize);
@@ -330,4 +330,4 @@ class OperationMultiEvalStreamingModOCLFastMultiPlatform : public base::Operatio
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

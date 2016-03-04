@@ -11,7 +11,7 @@
 #include <limits>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -21,4 +21,4 @@ void HashRefinementInconsistent::createGridpoint(GridStorage& storage,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -14,7 +14,7 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -73,6 +73,6 @@ class OperationStencilHierarchisationModLinear : public
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONSTENCILHIERARCHISATIONMODLINEAR_HPP */

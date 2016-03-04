@@ -8,60 +8,60 @@
 #include <vector>
 
 void createSupportedGrids(size_t d, size_t p,
-                          std::vector<std::unique_ptr<SGPP::base::Grid>>& grids) {
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createBsplineBoundaryGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createBsplineClenshawCurtisGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createModBsplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createModBsplineClenshawCurtisGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createModFundamentalSplineGrid(d, p))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createLinearBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createLinearClenshawCurtisGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createModLinearGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createWaveletGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createWaveletBoundaryGrid(d))));
-  grids.push_back(std::move(std::unique_ptr<SGPP::base::Grid>(
-                              SGPP::base::Grid::createModWaveletGrid(d))));
+                          std::vector<std::unique_ptr<sgpp::base::Grid>>& grids) {
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createBsplineGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createBsplineBoundaryGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createBsplineClenshawCurtisGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createModBsplineGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createModBsplineClenshawCurtisGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createFundamentalSplineGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createModFundamentalSplineGrid(d, p))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createLinearGrid(d))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createLinearBoundaryGrid(d))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createLinearClenshawCurtisGrid(d))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createModLinearGrid(d))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createWaveletGrid(d))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createWaveletBoundaryGrid(d))));
+  grids.push_back(std::move(std::unique_ptr<sgpp::base::Grid>(
+                              sgpp::base::Grid::createModWaveletGrid(d))));
 }
 
-void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::ScalarFunction& f,
-                      SGPP::base::DataVector& functionValues) {
-  SGPP::base::GridStorage& gridStorage = grid.getStorage();
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::ScalarFunction& f,
+                      sgpp::base::DataVector& functionValues) {
+  sgpp::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
 
   // generate regular sparse grid
   gridStorage.emptyStorage();
   grid.getGenerator().regular(l);
   const size_t n = gridStorage.getSize();
-  SGPP::base::DataVector x(d);
+  sgpp::base::DataVector x(d);
 
   functionValues.resize(n);
 
   for (size_t i = 0; i < n; i++) {
-    SGPP::base::GridIndex& gp = *gridStorage[i];
+    sgpp::base::GridIndex& gp = *gridStorage[i];
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)
-    if (grid.getType() == SGPP::base::GridType::BsplineClenshawCurtis ||
-        grid.getType() == SGPP::base::GridType::ModBsplineClenshawCurtis ||
-        grid.getType() == SGPP::base::GridType::LinearClenshawCurtis) {
+    if (grid.getType() == sgpp::base::GridType::BsplineClenshawCurtis ||
+        grid.getType() == sgpp::base::GridType::ModBsplineClenshawCurtis ||
+        grid.getType() == sgpp::base::GridType::LinearClenshawCurtis) {
       gp.setPointDistribution(
-        SGPP::base::GridIndex::PointDistribution::ClenshawCurtis);
+        sgpp::base::GridIndex::PointDistribution::ClenshawCurtis);
     }
 
     for (size_t t = 0; t < d; t++) {
@@ -72,9 +72,9 @@ void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::Scal
   }
 }
 
-void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::VectorFunction& f,
-                      SGPP::base::DataMatrix& functionValues) {
-  SGPP::base::GridStorage& gridStorage = grid.getStorage();
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::VectorFunction& f,
+                      sgpp::base::DataMatrix& functionValues) {
+  sgpp::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
   const size_t m = f.getNumberOfComponents();
 
@@ -82,21 +82,21 @@ void createSampleGrid(SGPP::base::Grid& grid, size_t l, SGPP::optimization::Vect
   gridStorage.emptyStorage();
   grid.getGenerator().regular(l);
   const size_t n = gridStorage.getSize();
-  SGPP::base::DataVector x(d);
-  SGPP::base::DataVector fx(m);
+  sgpp::base::DataVector x(d);
+  sgpp::base::DataVector fx(m);
 
   functionValues.resize(n, m);
 
   for (size_t i = 0; i < n; i++) {
-    SGPP::base::GridIndex& gp = *gridStorage[i];
+    sgpp::base::GridIndex& gp = *gridStorage[i];
 
     // don't forget to set the point distribution to Clenshaw-Curtis
     // if necessary (currently not done automatically)
-    if (grid.getType() == SGPP::base::GridType::BsplineClenshawCurtis ||
-        grid.getType() == SGPP::base::GridType::ModBsplineClenshawCurtis ||
-        grid.getType() == SGPP::base::GridType::LinearClenshawCurtis) {
+    if (grid.getType() == sgpp::base::GridType::BsplineClenshawCurtis ||
+        grid.getType() == sgpp::base::GridType::ModBsplineClenshawCurtis ||
+        grid.getType() == sgpp::base::GridType::LinearClenshawCurtis) {
       gp.setPointDistribution(
-        SGPP::base::GridIndex::PointDistribution::ClenshawCurtis);
+        sgpp::base::GridIndex::PointDistribution::ClenshawCurtis);
     }
 
     for (size_t t = 0; t < d; t++) {

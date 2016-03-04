@@ -7,31 +7,31 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-LaplaceDownGradientPrewavelet::LaplaceDownGradientPrewavelet(SGPP::base::GridStorage* storage)
+LaplaceDownGradientPrewavelet::LaplaceDownGradientPrewavelet(sgpp::base::GridStorage* storage)
     : storage(storage) {}
 
 LaplaceDownGradientPrewavelet::~LaplaceDownGradientPrewavelet() {}
 
-void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source,
-                                               SGPP::base::DataVector& result, grid_iterator& index,
+void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
+                                               sgpp::base::DataVector& result, grid_iterator& index,
                                                size_t dim) {
   size_t _seql2, _seql1, _seq, _seqr1, _seqr2 = 0;
-  float_t _vall2, _vall1, _val, _valr1, _valr2 = 0;
+  double _vall2, _vall1, _val, _valr1, _valr2 = 0;
 
-  SGPP::base::GridStorage::index_type::level_type l, l_old, max_level;
-  SGPP::base::GridStorage::index_type::index_type i, i_old;
+  sgpp::base::GridStorage::index_type::level_type l, l_old, max_level;
+  sgpp::base::GridStorage::index_type::index_type i, i_old;
 
-  float_t h;
+  double h;
 
   index.get(dim, l_old, i_old);         // save iterator and restore afterwards
   max_level = index.getGridDepth(dim);  // How many levels to decent?
 
   // We need the temp_values of the level above
-  float_t* temp_current = new float_t[1];
-  float_t* temp_old;
+  double* temp_current = new double[1];
+  double* temp_old;
 
   // Level 1-----------------------------------------------------------
   _seq = index.seq();
@@ -48,9 +48,9 @@ void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source,
 
   // Level 2-----------------------------------------------------------
   l = 2;
-  h = static_cast<float_t>(1 << l);
+  h = static_cast<double>(1 << l);
   temp_old = temp_current;
-  temp_current = new float_t[3];
+  temp_current = new double[3];
   index.leftChild(dim);
   _seql1 = index.seq();
   index.stepRight(dim);
@@ -69,13 +69,13 @@ void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source,
 
   // All other levels--------------------------------------------------
   for (l = 3; l <= max_level; l++) {
-    h = static_cast<float_t>(1 << l);
+    h = static_cast<double>(1 << l);
     index.set(dim, l, 1);
 
     // Calculate new temp-Variables ################################################
     delete[] temp_old;
     temp_old = temp_current;
-    temp_current = new float_t[(1 << l) - 1];
+    temp_current = new double[(1 << l) - 1];
 
     if (l != max_level) {  // If we are in the last iteration, we don't need any more
                            // temp-variables, thus skip the calculation
@@ -95,7 +95,7 @@ void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source,
       _seqr2 = index.seq();
       _valr2 = storage->end(_seqr2) ? 0.0 : source[_seqr2];
 
-      temp_current[0] = 2.4 * h * _vall2     // SGPP::base::Grid-point
+      temp_current[0] = 2.4 * h * _vall2     // sgpp::base::Grid-point
                         + 0.8 * h * _vall1;  // right neighbor
 
       temp_current[1] = temp_old[0]          //
@@ -104,7 +104,7 @@ void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source,
                         - 0.1 * h * _valr1;  // right-right neighbor
 
       for (i = 2; static_cast<int>(i) < (1 << l) - 3; i++) {
-        if (i % 2 == 0) {  // On SGPP::base::Grid-Points
+        if (i % 2 == 0) {  // On sgpp::base::Grid-Points
           if (static_cast<int>(i) == (1 << l) - 4) {
             temp_current[i] = 3.2 * h * _valr1                // current grid point
                               + 0.8 * h * (_vall1 + _valr2);  // neighbors left and right
@@ -135,7 +135,7 @@ void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source,
                                    - 0.1 * h * _vall1;                    // left-left neighbor
 
       temp_current[(1 << l) - 2] = 2.4 * h * _valr2 + 0.8 * h * _valr1;  // On
-                                                                         // SGPP::base::Grid-point
+                                                                         // sgpp::base::Grid-point
     }
 
     // End of temp-value calculation ################################################
@@ -237,4 +237,4 @@ void LaplaceDownGradientPrewavelet::operator()(SGPP::base::DataVector& source,
   temp_old = 0;
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

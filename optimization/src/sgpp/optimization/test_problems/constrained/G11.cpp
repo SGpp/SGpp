@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& G11::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G11::getEqualityConstraintFunction() { return h; }
 
-float_t G11::getOptimalPointUndisplaced(base::DataVector& x) {
+double G11::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.853553390593274;
   x[1] = 0.75;
@@ -33,9 +33,9 @@ G11Objective::G11Objective() : TestScalarFunction(2) {}
 
 G11Objective::~G11Objective() {}
 
-float_t G11Objective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 2.0 * x[0] - 1.0;
-  const float_t x2 = 2.0 * x[1] - 1.0;
+double G11Objective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 2.0 * x[0] - 1.0;
+  const double x2 = 2.0 * x[1] - 1.0;
 
   return x1 * x1 + std::pow(x2 - 1.0, 2.0);
 }
@@ -59,8 +59,8 @@ G11EqualityConstraint::G11EqualityConstraint() : TestVectorFunction(2, 1) {}
 G11EqualityConstraint::~G11EqualityConstraint() {}
 
 void G11EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 2.0 * x[0] - 1.0;
-  const float_t x2 = 2.0 * x[1] - 1.0;
+  const double x1 = 2.0 * x[0] - 1.0;
+  const double x2 = 2.0 * x[1] - 1.0;
 
   value[0] = x2 - x1 * x1;
 }
@@ -70,4 +70,4 @@ void G11EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

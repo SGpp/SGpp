@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationLinearStretched::doHierarchisation(
@@ -39,4 +39,4 @@ void OperationHierarchisationLinearStretched::doDehierarchisation(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

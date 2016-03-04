@@ -10,7 +10,7 @@
 
 #include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 /**
@@ -31,18 +31,18 @@ class Random {
   static std::uint64_t random_uint64();
 
   /**
-   * returns a random float_t value in [0, 1)
+   * returns a random double value in [0, 1)
    */
-  static float_t random_double();
+  static double random_double();
 
  protected:
   static bool is_seeded;
 
   static std::mt19937_64 gen;
   static std::uniform_int_distribution<std::uint64_t> distInt;
-  static std::uniform_real_distribution<float_t> distReal;
+  static std::uniform_real_distribution<double> distReal;
 };
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* RANDOM_HPP */

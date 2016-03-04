@@ -17,7 +17,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationPrewavelet::doHierarchisation(
@@ -78,4 +78,4 @@ void OperationHierarchisationPrewavelet::shrinkGrid() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

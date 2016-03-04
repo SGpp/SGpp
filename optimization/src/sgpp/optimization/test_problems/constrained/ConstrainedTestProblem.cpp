@@ -7,7 +7,7 @@
 #include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -15,9 +15,9 @@ ConstrainedTestProblem::ConstrainedTestProblem(size_t d) : d(d), displacement(d,
 
 ConstrainedTestProblem::~ConstrainedTestProblem() {}
 
-float_t ConstrainedTestProblem::getOptimalPoint(base::DataVector& x) {
+double ConstrainedTestProblem::getOptimalPoint(base::DataVector& x) {
   // reverse displace optimal point
-  const float_t fx = getOptimalPointUndisplaced(x);
+  const double fx = getOptimalPointUndisplaced(x);
   x.sub(displacement);
   return fx;
 }
@@ -26,7 +26,7 @@ void ConstrainedTestProblem::generateDisplacement() {
   generateDisplacement(DEFAULT_STANDARD_DEVIATION);
 }
 
-void ConstrainedTestProblem::generateDisplacement(float_t stdDev) {
+void ConstrainedTestProblem::generateDisplacement(double stdDev) {
   // generate displacement until a feasible one is found
 
   do {
@@ -70,4 +70,4 @@ bool ConstrainedTestProblem::isDisplacementFeasible() {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

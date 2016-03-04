@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
@@ -51,7 +51,7 @@ void DirichletUpdateVector::setInnerPointsToZero(DataVector& updateVector) {
 }
 
 void DirichletUpdateVector::multiplyBoundary(DataVector& updateVector,
-    float_t value) {
+    double value) {
   for (size_t i = 0; i < storage.getSize(); i++) {
     GridIndex* curPoint = storage[i];
 
@@ -73,7 +73,7 @@ void DirichletUpdateVector::multiplyBoundaryVector(DataVector& updateVector,
 }
 
 void DirichletUpdateVector::multiply(
-  DataVector& updateVector, float_t value,
+  DataVector& updateVector, double value,
   bool (*predicate)(GridIndex*, GridStorage&)) {
   for (size_t i = 0; i < storage.getSize(); i++) {
     GridIndex* curPoint = storage[i];
@@ -85,4 +85,4 @@ void DirichletUpdateVector::multiply(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

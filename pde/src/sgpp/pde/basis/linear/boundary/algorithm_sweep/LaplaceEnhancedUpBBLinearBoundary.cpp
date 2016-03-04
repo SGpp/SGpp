@@ -7,21 +7,21 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 LaplaceEnhancedUpBBLinearBoundary::LaplaceEnhancedUpBBLinearBoundary(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : LaplaceEnhancedUpBBLinear(storage) {}
 
 LaplaceEnhancedUpBBLinearBoundary::~LaplaceEnhancedUpBBLinearBoundary() {}
 
-void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& source,
-                                                   SGPP::base::DataMatrix& result,
+void LaplaceEnhancedUpBBLinearBoundary::operator()(sgpp::base::DataMatrix& source,
+                                                   sgpp::base::DataMatrix& result,
                                                    grid_iterator& index, size_t dim) {
   q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
   t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
-  float_t q_reci = 1.0 / q_;
+  double q_reci = 1.0 / q_;
 
   ptr_source_ = source.getPointer();
   ptr_result_ = result.getPointer();
@@ -42,8 +42,8 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
 
     for (i = 0; i < this->numAlgoDims_ - 1; i += 2) {
       if (dim == i) {
-        float_t fl2 = 0.0;
-        float_t fr2 = 0.0;
+        double fl2 = 0.0;
+        double fr2 = 0.0;
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -58,8 +58,8 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
         calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, q_reci);
         calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, q_);
       } else if (dim == i + 1) {
-        float_t fl1 = 0.0;
-        float_t fr1 = 0.0;
+        double fl1 = 0.0;
+        double fr1 = 0.0;
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -74,10 +74,10 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
         calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_);
         calcGradBoundary(0.0, 0.0, seq_left, seq_right, i + 1, cur_algo_dim_, q_reci);
       } else {
-        float_t fl1 = 0.0;
-        float_t fr1 = 0.0;
-        float_t fl2 = 0.0;
-        float_t fr2 = 0.0;
+        double fl1 = 0.0;
+        double fr1 = 0.0;
+        double fl2 = 0.0;
+        double fr2 = 0.0;
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -108,8 +108,8 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
 
         calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, q_reci);
       } else {
-        float_t fl = 0.0;
-        float_t fr = 0.0;
+        double fl = 0.0;
+        double fr = 0.0;
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -129,8 +129,8 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
 
     for (i = 0; i < this->numAlgoDims_ - 1; i += 2) {
       if (dim == i) {
-        float_t fl2 = 0.0;
-        float_t fr2 = 0.0;
+        double fl2 = 0.0;
+        double fr2 = 0.0;
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -145,8 +145,8 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
         calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, 1.0);
         calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
       } else if (dim == i + 1) {
-        float_t fl1 = 0.0;
-        float_t fr1 = 0.0;
+        double fl1 = 0.0;
+        double fr1 = 0.0;
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -161,12 +161,12 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
         calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
         calcGradBoundary(0.0, 0.0, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
       } else {
-        float_t fl1 = 0.0;
-        float_t fr1 = 0.0;
-        float_t fl2 = 0.0;
-        float_t fr2 = 0.0;
+        double fl1 = 0.0;
+        double fr1 = 0.0;
+        double fl2 = 0.0;
+        double fr2 = 0.0;
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__)
         __m128d fl_xmm = _mm_set1_pd(0.0);
         __m128d fr_xmm = _mm_set1_pd(0.0);
 
@@ -249,8 +249,8 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
 
         calcGradBoundary(0.0, 0.0, seq_left, seq_right, i, cur_algo_dim_, 1.0);
       } else {
-        float_t fl = 0.0;
-        float_t fr = 0.0;
+        double fl = 0.0;
+        double fr = 0.0;
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -268,9 +268,9 @@ void LaplaceEnhancedUpBBLinearBoundary::operator()(SGPP::base::DataMatrix& sourc
   }
 }
 
-void LaplaceEnhancedUpBBLinearBoundary::calcL2Boundary(float_t fl, float_t fr, size_t seq_left,
+void LaplaceEnhancedUpBBLinearBoundary::calcL2Boundary(double fl, double fr, size_t seq_left,
                                                        size_t seq_right, size_t dim,
-                                                       size_t algo_dim, float_t q) {
+                                                       size_t algo_dim, double q) {
   if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
     ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
   else
@@ -283,9 +283,9 @@ void LaplaceEnhancedUpBBLinearBoundary::calcL2Boundary(float_t fl, float_t fr, s
     ptr_result_[(seq_right * this->numAlgoDims_) + dim] = fr;
 }
 
-void LaplaceEnhancedUpBBLinearBoundary::calcGradBoundary(float_t fl, float_t fr, size_t seq_left,
+void LaplaceEnhancedUpBBLinearBoundary::calcGradBoundary(double fl, double fr, size_t seq_left,
                                                          size_t seq_right, size_t dim,
-                                                         size_t algo_dim, float_t q_reci) {
+                                                         size_t algo_dim, double q_reci) {
   if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
     ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
   else
@@ -299,4 +299,4 @@ void LaplaceEnhancedUpBBLinearBoundary::calcGradBoundary(float_t fl, float_t fr,
 }
 
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

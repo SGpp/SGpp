@@ -6,12 +6,12 @@
 #include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationQuadraturePolyBoundary::doQuadrature(DataVector& alpha) {
-  float_t res = 0;
-  float_t tmpres = 0;
+double OperationQuadraturePolyBoundary::doQuadrature(DataVector& alpha) {
+  double res = 0;
+  double tmpres = 0;
   GridIndex* gp;
 
   for (size_t i = 0; i < alpha.getSize(); i++) {
@@ -29,4 +29,4 @@ float_t OperationQuadraturePolyBoundary::doQuadrature(DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

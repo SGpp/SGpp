@@ -15,7 +15,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class SubspaceNodeCombined {
@@ -31,8 +31,8 @@ class SubspaceNodeCombined {
   SubspaceType type;
   std::vector<uint32_t>
   indices; //for list representation (and future streaming subspaces
-  std::vector<std::pair<uint32_t, float_t> > indexFlatSurplusPairs;
-  float_t* subspaceArray;
+  std::vector<std::pair<uint32_t, double> > indexFlatSurplusPairs;
+  double* subspaceArray;
   omp_lock_t subspaceLock;
 
   uint32_t jumpTargetIndex;
@@ -131,8 +131,8 @@ class SubspaceNodeCombined {
   // this method will decide how to best represent the subspace (list or array type)
   // and prepare the subspace for its representation
   void unpack() {
-    float_t usageRatio = (float_t) this->existingGridPointsOnLevel /
-                         (float_t) this->gridPointsOnLevel;
+    double usageRatio = (double) this->existingGridPointsOnLevel /
+                         (double) this->gridPointsOnLevel;
 
     if (usageRatio < X86COMBINED_LIST_RATIO
         && this->existingGridPointsOnLevel < X86COMBINED_STREAMING_THRESHOLD) {
@@ -141,10 +141,10 @@ class SubspaceNodeCombined {
       this->type = SubspaceType::ARRAY;
 
       if (this->subspaceArray == nullptr) {
-        this->subspaceArray = new float_t[this->gridPointsOnLevel];
+        this->subspaceArray = new double[this->gridPointsOnLevel];
 
         for (size_t i = 0; i < this->gridPointsOnLevel; i++) {
-          this->subspaceArray[i] = std::numeric_limits<float_t>::quiet_NaN();
+          this->subspaceArray[i] = std::numeric_limits<double>::quiet_NaN();
         }
       }
     }
@@ -152,13 +152,13 @@ class SubspaceNodeCombined {
 
   // the first call initializes the array for ARRAY type subspaces
   //
-  void setSurplus(size_t indexFlat, float_t surplus) {
+  void setSurplus(size_t indexFlat, double surplus) {
     if (this->type == SubspaceType::ARRAY) {
       this->subspaceArray[indexFlat] = surplus;
     } else if (this->type == SubspaceType::LIST) {
       bool found = false;
 
-      for (std::pair<uint32_t, float_t>& tuple : this->indexFlatSurplusPairs) {
+      for (std::pair<uint32_t, double>& tuple : this->indexFlatSurplusPairs) {
         if (tuple.first == indexFlat) {
           tuple.second = surplus;
           found = true;
@@ -173,12 +173,12 @@ class SubspaceNodeCombined {
   }
 
   // the first call initializes the array for ARRAY type subspaces
-  float_t getSurplus(size_t indexFlat) {
+  double getSurplus(size_t indexFlat) {
 
     if (this->type == SubspaceType::ARRAY) {
       return this->subspaceArray[indexFlat];
     } else if (this->type == SubspaceType::LIST) {
-      for (std::pair<uint32_t, float_t> tuple : this->indexFlatSurplusPairs) {
+      for (std::pair<uint32_t, double> tuple : this->indexFlatSurplusPairs) {
         if (tuple.first == indexFlat) {
           return tuple.second;
         }

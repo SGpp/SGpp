@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -24,7 +24,7 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
   typedef std::function<size_t(size_t)> AdaptivityFunction;
 
   /// default adaptivity
-  static constexpr float_t DEFAULT_ADAPTIVITY = 0.5;
+  static constexpr double DEFAULT_ADAPTIVITY = 0.5;
 
   /**
    * Constructor.
@@ -36,7 +36,7 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
    * @param adaptivity    adaptivity (positive number)
    */
   IterativeGridGeneratorSOO(ScalarFunction& f, base::Grid& grid, size_t N,
-                            float_t adaptivity = DEFAULT_ADAPTIVITY);
+                            double adaptivity = DEFAULT_ADAPTIVITY);
 
   /**
    * Destructor.
@@ -59,7 +59,7 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
   /*
    * @param adaptivity  adaptivity (positive number)
    */
-  void setAdaptivity(float_t adaptivity);
+  void setAdaptivity(double adaptivity);
 
   /*
    * @param adaptivity  adaptivity (function of the form
@@ -72,6 +72,6 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
   AdaptivityFunction hMax;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORSOO_HPP */

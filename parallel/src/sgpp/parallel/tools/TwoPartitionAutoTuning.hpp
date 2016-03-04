@@ -10,7 +10,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 class TwoPartitionAutoTuning {
  public:
@@ -102,6 +102,6 @@ class TwoPartitionAutoTuning {
   size_t _retune;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* TWOPARTIONAUTOTUNING_HPP */

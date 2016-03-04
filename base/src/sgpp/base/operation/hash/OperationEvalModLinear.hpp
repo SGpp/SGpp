@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -33,7 +33,7 @@ class OperationEvalModLinear : public OperationEval {
    */
   ~OperationEvalModLinear() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
 
  protected:
@@ -42,6 +42,6 @@ class OperationEvalModLinear : public OperationEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVELMODLINEAR_HPP */

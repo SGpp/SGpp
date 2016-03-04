@@ -16,13 +16,13 @@
 
 #include <vector>
 
-using SGPP::base::DataVector;
-using SGPP::base::DirichletGridConverter;
-using SGPP::base::Grid;
-using SGPP::base::GridGenerator;
-using SGPP::base::GridIndex;
-using SGPP::base::GridStorage;
-using SGPP::base::LinearGrid;
+using sgpp::base::DataVector;
+using sgpp::base::DirichletGridConverter;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridIndex;
+using sgpp::base::GridStorage;
+using sgpp::base::LinearGrid;
 
 BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
   /// number of the boundary grid's grid points
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_DirichletGridConverter) {
         gp->getCoord(0) * (gp->getCoord(0)) + gp->getCoord(1) * (gp->getCoord(1));
   }
 
-  SGPP::op_factory::createOperationHierarchisation(*linearBoundaryGrid)
+  sgpp::op_factory::createOperationHierarchisation(*linearBoundaryGrid)
       ->doHierarchisation(boundaryGridCoeffs);
 
   // allocate the translation array for the coefficients

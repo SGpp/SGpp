@@ -12,7 +12,7 @@
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -70,6 +70,6 @@ class OperationMultipleHierarchisationLinearClenshawCurtis
   base::LinearClenshawCurtisGrid& grid;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERLINEARCLENSHAWCURTIS_HPP */

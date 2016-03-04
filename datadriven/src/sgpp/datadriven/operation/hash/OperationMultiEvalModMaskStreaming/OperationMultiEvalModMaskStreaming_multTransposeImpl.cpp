@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#if defined(__SSE3__) && !defined(__AVX__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__) && !defined(__AVX__)
 #include <pmmintrin.h>
 #endif
 
-#if defined(__SSE3__) && defined(__AVX__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__) && defined(__AVX__)
 #include <immintrin.h>
 #endif
 
@@ -21,13 +21,13 @@
 #include "sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp"
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void OperationMultiEvalModMaskStreaming::multTransposeImpl(
     std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
-    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    std::vector<double>& offset, sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+    sgpp::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
     const size_t start_index_data, const size_t end_index_data) {
   double* ptrLevel = level.data();
   double* ptrIndex = index.data();
@@ -518,4 +518,4 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 #endif
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

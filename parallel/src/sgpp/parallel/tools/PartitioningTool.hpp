@@ -10,7 +10,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -118,6 +118,6 @@ class PartitioningTool {
                                             int* offsets, size_t blocksize);
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // PARTITIONINGTOOL_HPP

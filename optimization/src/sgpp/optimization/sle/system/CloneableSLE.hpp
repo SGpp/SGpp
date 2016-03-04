@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -48,6 +48,6 @@ class CloneableSLE : public SLE {
   bool isCloneable() const override { return true; }
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SYSTEM_CLONEABLESLE_HPP */

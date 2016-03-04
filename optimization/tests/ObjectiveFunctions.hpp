@@ -15,18 +15,18 @@
 
 #include <cmath>
 
-using SGPP::optimization::ScalarFunction;
-using SGPP::optimization::ScalarFunctionGradient;
-using SGPP::optimization::ScalarFunctionHessian;
-using SGPP::optimization::VectorFunction;
-using SGPP::optimization::VectorFunctionGradient;
-using SGPP::optimization::VectorFunctionHessian;
+using sgpp::optimization::ScalarFunction;
+using sgpp::optimization::ScalarFunctionGradient;
+using sgpp::optimization::ScalarFunctionHessian;
+using sgpp::optimization::VectorFunction;
+using sgpp::optimization::VectorFunctionGradient;
+using sgpp::optimization::VectorFunctionHessian;
 
 class ExampleFunction : public ScalarFunction {
  public:
   ExampleFunction();
   ~ExampleFunction() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x) override;
+  double eval(const sgpp::base::DataVector& x) override;
   void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
@@ -34,8 +34,8 @@ class ExampleGradient : public ScalarFunctionGradient {
  public:
   ExampleGradient();
   ~ExampleGradient() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x,
-                     SGPP::base::DataVector& gradient) override;
+  double eval(const sgpp::base::DataVector& x,
+                     sgpp::base::DataVector& gradient) override;
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const
   override;
 };
@@ -44,9 +44,9 @@ class ExampleHessian : public ScalarFunctionHessian {
  public:
   ExampleHessian();
   ~ExampleHessian() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x,
-                     SGPP::base::DataVector& gradient,
-                     SGPP::base::DataMatrix& hessian) override;
+  double eval(const sgpp::base::DataVector& x,
+                     sgpp::base::DataVector& gradient,
+                     sgpp::base::DataMatrix& hessian) override;
   void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const
   override;
 };
@@ -57,8 +57,8 @@ class SphereGradient : public ScalarFunctionGradient {
  public:
   explicit SphereGradient(size_t d);
   ~SphereGradient() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x,
-                     SGPP::base::DataVector& gradient) override;
+  double eval(const sgpp::base::DataVector& x,
+                     sgpp::base::DataVector& gradient) override;
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const
   override;
 };
@@ -67,9 +67,9 @@ class SphereHessian : public ScalarFunctionHessian {
  public:
   explicit SphereHessian(size_t d);
   ~SphereHessian() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x,
-                     SGPP::base::DataVector& gradient,
-                     SGPP::base::DataMatrix& hessian) override;
+  double eval(const sgpp::base::DataVector& x,
+                     sgpp::base::DataVector& gradient,
+                     sgpp::base::DataMatrix& hessian) override;
   void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const
   override;
 };
@@ -80,26 +80,26 @@ class DeformedLinearPhiFunction : public VectorFunction {
  public:
   explicit DeformedLinearPhiFunction(size_t d);
   ~DeformedLinearPhiFunction() override;
-  void eval(const SGPP::base::DataVector& x,
-            SGPP::base::DataVector& value) override;
+  void eval(const sgpp::base::DataVector& x,
+            sgpp::base::DataVector& value) override;
   void clone(std::unique_ptr<VectorFunction>& clone) const override;
 
  protected:
-  SGPP::base::DataVector eigenvalues;
+  sgpp::base::DataVector eigenvalues;
 };
 
 class DeformedLinearPhiGradient : public VectorFunctionGradient {
  public:
   explicit DeformedLinearPhiGradient(size_t d);
   ~DeformedLinearPhiGradient() override;
-  void eval(const SGPP::base::DataVector& x,
-            SGPP::base::DataVector& value,
-            SGPP::base::DataMatrix& gradient) override;
+  void eval(const sgpp::base::DataVector& x,
+            sgpp::base::DataVector& value,
+            sgpp::base::DataMatrix& gradient) override;
   void clone(std::unique_ptr<VectorFunctionGradient>& clone) const
   override;
 
  protected:
-  SGPP::base::DataVector eigenvalues;
+  sgpp::base::DataVector eigenvalues;
 };
 
 
@@ -108,7 +108,7 @@ class G3ObjectiveFunction : public ScalarFunction {
  public:
   explicit G3ObjectiveFunction(size_t d);
   ~G3ObjectiveFunction() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x) override;
+  double eval(const sgpp::base::DataVector& x) override;
   void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
@@ -116,8 +116,8 @@ class G3ObjectiveGradient : public ScalarFunctionGradient {
  public:
   explicit G3ObjectiveGradient(size_t d);
   ~G3ObjectiveGradient() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x,
-                     SGPP::base::DataVector& gradient) override;
+  double eval(const sgpp::base::DataVector& x,
+                     sgpp::base::DataVector& gradient) override;
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const
   override;
 };
@@ -128,8 +128,8 @@ class G3ConstraintFunction : public VectorFunction {
  public:
   explicit G3ConstraintFunction(size_t d);
   ~G3ConstraintFunction() override;
-  void eval(const SGPP::base::DataVector& x,
-            SGPP::base::DataVector& value) override;
+  void eval(const sgpp::base::DataVector& x,
+            sgpp::base::DataVector& value) override;
   void clone(std::unique_ptr<VectorFunction>& clone) const override;
 };
 
@@ -137,9 +137,9 @@ class G3ConstraintGradient : public VectorFunctionGradient {
  public:
   explicit G3ConstraintGradient(size_t d);
   ~G3ConstraintGradient() override;
-  void eval(const SGPP::base::DataVector& x,
-            SGPP::base::DataVector& value,
-            SGPP::base::DataMatrix& gradient) override;
+  void eval(const sgpp::base::DataVector& x,
+            sgpp::base::DataVector& value,
+            sgpp::base::DataMatrix& gradient) override;
   void clone(std::unique_ptr<VectorFunctionGradient>& clone) const
   override;
 };
@@ -150,7 +150,7 @@ class G8ObjectiveFunction : public ScalarFunction {
  public:
   G8ObjectiveFunction();
   ~G8ObjectiveFunction() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x) override;
+  double eval(const sgpp::base::DataVector& x) override;
   void clone(std::unique_ptr<ScalarFunction>& clone) const override;
 };
 
@@ -158,8 +158,8 @@ class G8ObjectiveGradient : public ScalarFunctionGradient {
  public:
   G8ObjectiveGradient();
   ~G8ObjectiveGradient() override;
-  SGPP::float_t eval(const SGPP::base::DataVector& x,
-                     SGPP::base::DataVector& gradient) override;
+  double eval(const sgpp::base::DataVector& x,
+                     sgpp::base::DataVector& gradient) override;
   void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const
   override;
 };
@@ -170,8 +170,8 @@ class G8ConstraintFunction : public VectorFunction {
  public:
   G8ConstraintFunction();
   ~G8ConstraintFunction() override;
-  void eval(const SGPP::base::DataVector& x,
-            SGPP::base::DataVector& value) override;
+  void eval(const sgpp::base::DataVector& x,
+            sgpp::base::DataVector& value) override;
   void clone(std::unique_ptr<VectorFunction>& clone) const override;
 };
 
@@ -179,9 +179,9 @@ class G8ConstraintGradient : public VectorFunctionGradient {
  public:
   G8ConstraintGradient();
   ~G8ConstraintGradient() override;
-  void eval(const SGPP::base::DataVector& x,
-            SGPP::base::DataVector& value,
-            SGPP::base::DataMatrix& gradient) override;
+  void eval(const sgpp::base::DataVector& x,
+            sgpp::base::DataVector& value,
+            sgpp::base::DataMatrix& gradient) override;
   void clone(std::unique_ptr<VectorFunctionGradient>& clone) const
   override;
 };

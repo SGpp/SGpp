@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <string>
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -26,7 +26,7 @@ extern double LaplaceInnerExecMultTime;
 extern double LaplaceInnerExecReduceTime;
 extern double LaplaceInnerExecEndTime;
 
-extern SGPP::base::SGppStopwatch* myStopwatch;
+extern sgpp::base::SGppStopwatch* myStopwatch;
 extern double* LaplaceInnerExecAll;
 extern double* LaplaceInnerProfiling;
 extern double* LaplaceInnerWaiting;
@@ -52,4 +52,4 @@ void CompileLaplaceInnerKernels();
 void SetArgumentsLaplaceInner();
 }  // namespace oclpdekernels
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

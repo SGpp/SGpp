@@ -12,7 +12,7 @@
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 #include "sgpp/base/exception/not_implemented_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 LearnerScenario::LearnerScenario() : isInitialized(false) {}
@@ -243,4 +243,4 @@ datadriven::TestsetConfiguration LearnerScenario::getTestsetConfiguration() {
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

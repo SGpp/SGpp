@@ -9,7 +9,7 @@
 #include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class GaussLegendreQuadRule1D : public QuadRule1D {
@@ -35,6 +35,6 @@ class GaussLegendreQuadRule1D : public QuadRule1D {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GAUSSLEGENDREQUADRULE1D_HPP_ */

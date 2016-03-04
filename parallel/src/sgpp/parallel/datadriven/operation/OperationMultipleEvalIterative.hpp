@@ -14,7 +14,7 @@
 
 #include <limits>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 template <typename KernelImplementation>
@@ -23,7 +23,7 @@ class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized {
   /**
    * Constructor of OperationMultipleEvalIterativeSPX86Simd
    *
-   * Within the constructor SGPP::base::DataMatrixSP Level and SGPP::base::DataMatrixSP Index are
+   * Within the constructor sgpp::base::DataMatrixSP Level and sgpp::base::DataMatrixSP Index are
    * set up.
    * If the grid changes during your calculations and you don't want to create
    * a new instance of this class, you have to call rebuildLevelAndIndex before
@@ -48,7 +48,7 @@ class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized {
     rebuildLevelAndIndex(m_gridFrom, m_gridTo);
   }
 
-  virtual double multVectorized(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+  virtual double multVectorized(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
     myTimer_->start();
     result.setAll(0.0);
 
@@ -61,8 +61,8 @@ class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized {
     return myTimer_->stop();
   }
 
-  virtual double multTransposeVectorized(SGPP::base::DataVector& source,
-                                         SGPP::base::DataVector& result) {
+  virtual double multTransposeVectorized(sgpp::base::DataVector& source,
+                                         sgpp::base::DataVector& result) {
     myTimer_->start();
     result.setAll(0.0);
 
@@ -98,5 +98,5 @@ class OperationMultipleEvalIterative : public OperationMultipleEvalVectorized {
   KernelImplementation m_kernel;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 #endif  // OPERATIONMULTIPLEEVALITERATIVE_H

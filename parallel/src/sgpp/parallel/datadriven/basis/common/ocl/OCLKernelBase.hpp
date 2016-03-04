@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 template <typename T>
 struct getType {};
@@ -81,7 +81,7 @@ class OCLKernelBase {
 
     if (err != CL_SUCCESS) {
       std::cout << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
-      throw SGPP::base::operation_exception("OCL Error: Failed to create program!");
+      throw sgpp::base::operation_exception("OCL Error: Failed to create program!");
     }
 
     std::string build_opts;
@@ -125,6 +125,6 @@ class OCLKernelBase {
   }
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // OCLKERNELBASE_HPP

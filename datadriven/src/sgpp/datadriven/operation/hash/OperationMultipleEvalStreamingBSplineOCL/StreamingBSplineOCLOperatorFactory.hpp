@@ -11,11 +11,11 @@
 #include <sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp>
 #include "OperationMultipleEvalStreamingBSplineOCL.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingBSplineOCLConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 }
 }

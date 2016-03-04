@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 LatinHypercubeSampleGenerator::LatinHypercubeSampleGenerator(size_t dimensions,
@@ -23,7 +23,7 @@ LatinHypercubeSampleGenerator::LatinHypercubeSampleGenerator(size_t dimensions,
           numberOfStrata),       // each dimension is divided in n strata to provide n sample points
       numberOfCurrentSample(1),  // index number of current sample [1, n]
       // equidistant split of [0,1] in n strata -> size of one stratum = 1 / n
-      sizeOfStrata(1. / static_cast<float_t>(numberOfStrata)),
+      sizeOfStrata(1. / static_cast<double>(numberOfStrata)),
       uniformRealDist(0, 1) {
   for (size_t i = 0; i < dimensions; i++) {
     currentStrata.push_back(std::vector<size_t>());
@@ -38,11 +38,11 @@ LatinHypercubeSampleGenerator::LatinHypercubeSampleGenerator(size_t dimensions,
 
 LatinHypercubeSampleGenerator::~LatinHypercubeSampleGenerator() {}
 
-void LatinHypercubeSampleGenerator::getSample(SGPP::base::DataVector& sample) {
+void LatinHypercubeSampleGenerator::getSample(sgpp::base::DataVector& sample) {
   // compute random value inside the current stratum selected from the shuffled strata sequence
   for (size_t i = 0; i < dimensions; i++) {
     sample[i] =
-        (static_cast<float_t>(currentStrata[i][numberOfCurrentSample - 1]) + uniformRealDist(rng)) *
+        (static_cast<double>(currentStrata[i][numberOfCurrentSample - 1]) + uniformRealDist(rng)) *
         sizeOfStrata;
   }
 
@@ -63,4 +63,4 @@ void LatinHypercubeSampleGenerator::shuffleStrataSequence() {
 }
 
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp

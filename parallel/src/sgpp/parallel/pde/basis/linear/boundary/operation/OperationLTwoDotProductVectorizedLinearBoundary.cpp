@@ -60,11 +60,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 OperationLTwoDotProductVectorizedLinearBoundary::OperationLTwoDotProductVectorizedLinearBoundary(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : storage(storage),
       level_(NULL),
       level_int_(NULL),
@@ -127,7 +127,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_constants() {
   all_iterations = 0.0;
 
 #if defined(__SSE4_2__) || defined(__MIC__)
-  this->constants_ = new SGPP::base::DataVector(0);
+  this->constants_ = new sgpp::base::DataVector(0);
 
   this->constants_->append(0);
   this->constants_->append(0.5);
@@ -150,19 +150,19 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_constants() {
 void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
   if (this->level_) delete this->level_;
 
-  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->level_int_) delete this->level_int_;
 
-  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->index_) delete this->index_;
 
-  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
 
   if (this->lcl_q_) delete this->lcl_q_;
 
-  this->lcl_q_ = new SGPP::base::DataVector(this->storage->getDimension());
+  this->lcl_q_ = new sgpp::base::DataVector(this->storage->getDimension());
   double* lcl_q_ptr_ = lcl_q_->getPointer();
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
@@ -182,27 +182,27 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
 
   if (this->result_boundary_filtered_) delete this->result_boundary_filtered_;
 
-  this->result_boundary_filtered_ = new SGPP::base::DataVector((size_t)i_boundary_filtered.size());
+  this->result_boundary_filtered_ = new sgpp::base::DataVector((size_t)i_boundary_filtered.size());
 
   if (level_boundary_filtered_) delete level_boundary_filtered_;
 
   level_boundary_filtered_ =
-      new SGPP::base::DataMatrix((size_t)i_boundary_filtered.size(), level_->getNcols());
+      new sgpp::base::DataMatrix((size_t)i_boundary_filtered.size(), level_->getNcols());
 
   if (level_int_boundary_filtered_) delete level_int_boundary_filtered_;
 
   level_int_boundary_filtered_ =
-      new SGPP::base::DataMatrix((size_t)i_boundary_filtered.size(), level_int_->getNcols());
+      new sgpp::base::DataMatrix((size_t)i_boundary_filtered.size(), level_int_->getNcols());
 
   if (index_boundary_filtered_) delete index_boundary_filtered_;
 
   index_boundary_filtered_ =
-      new SGPP::base::DataMatrix((size_t)i_boundary_filtered.size(), index_->getNcols());
+      new sgpp::base::DataMatrix((size_t)i_boundary_filtered.size(), index_->getNcols());
 
   // used for copying rows
-  SGPP::base::DataVector level_copy_vector(this->level_->getNcols());
-  SGPP::base::DataVector level_int_copy_vector(this->level_int_->getNcols());
-  SGPP::base::DataVector index_copy_vector(this->index_->getNcols());
+  sgpp::base::DataVector level_copy_vector(this->level_->getNcols());
+  sgpp::base::DataVector level_int_copy_vector(this->level_int_->getNcols());
+  sgpp::base::DataVector index_copy_vector(this->index_->getNcols());
 
   for (size_t i = 0; i < i_boundary_filtered.size(); ++i) {
     level_->getRow(i_boundary_filtered[i], level_copy_vector);
@@ -216,15 +216,15 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
   }
 
 #if defined(__MIC__)
-  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
-      storage, *(this->level_), *(this->index_), SGPP::parallel::MIC, BLOCK_LENGTH);
-  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
-      storage, *(this->level_int_), SGPP::parallel::MIC, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
+      storage, *(this->level_), *(this->index_), sgpp::parallel::MIC, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
+      storage, *(this->level_int_), sgpp::parallel::MIC, BLOCK_LENGTH);
 #elif defined(__SSE4_2__) || defined(__AVX__)
-  SGPP::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
-      storage, *(this->level_), *(this->index_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
-  SGPP::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
-      storage, *(this->level_int_), SGPP::parallel::X86SIMD, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelIndexArraysForEvalTLBOptimized(
+      storage, *(this->level_), *(this->index_), sgpp::parallel::X86SIMD, BLOCK_LENGTH);
+  sgpp::parallel::HashGridStorageConverter::getLevelForIntegralTLBOptimized(
+      storage, *(this->level_int_), sgpp::parallel::X86SIMD, BLOCK_LENGTH);
 #else
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
   storage->getLevelForIntegral(*(this->level_int_));
@@ -238,7 +238,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
 
   if (alpha_padded_) delete alpha_padded_;
 
-  alpha_padded_ = new SGPP::base::DataVector(padded_size);
+  alpha_padded_ = new sgpp::base::DataVector(padded_size);
   alpha_padded_->setAll(0.0);
 
   process_index = 0;
@@ -317,22 +317,22 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
 
       if (this->l2dot_temp) delete this->l2dot_temp;
 
-      this->gradient_temp = new SGPP::base::DataVector*[omp_get_num_threads()];
-      this->l2dot_temp = new SGPP::base::DataVector*[omp_get_num_threads()];
+      this->gradient_temp = new sgpp::base::DataVector*[omp_get_num_threads()];
+      this->l2dot_temp = new sgpp::base::DataVector*[omp_get_num_threads()];
     }
 #pragma omp barrier
 
     // std::cout << "OMP THREAD :" << omp_get_thread_num() << std::endl;
 
     gradient_temp[omp_get_thread_num()] =
-        new SGPP::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
+        new sgpp::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
     l2dot_temp[omp_get_thread_num()] =
-        new SGPP::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
+        new sgpp::base::DataVector(VECTOR_SIZE * this->storage->getDimension() * REG_BCOUNT);
   }
 
   // fill q array
   for (size_t d = 0; d < this->storage->getDimension(); d++) {
-    SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+    sgpp::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     lcl_q_ptr_[d] = boundingBox->getIntervalWidth(d);
   }
 
@@ -365,17 +365,17 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
              static_cast<int>(matrix_needed_size_gb));
 
     std::cerr << exception_string << std::endl;
-    throw SGPP::base::operation_exception(exception_string);
+    throw sgpp::base::operation_exception(exception_string);
   }
 
   if (operation_result_matrix_) delete operation_result_matrix_;
 
-  operation_result_matrix_ = new SGPP::base::DataMatrix(result_matrix_rows, result_matrix_cols);
+  operation_result_matrix_ = new sgpp::base::DataMatrix(result_matrix_rows, result_matrix_cols);
 
   // create transposed, pad, then re-transpose
-  SGPP::parallel::VectorizationType vectorizationType = SGPP::parallel::X86SIMD;
-  operation_result_matrix_ = new SGPP::base::DataMatrix(result_matrix_cols, result_matrix_rows);
-  SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->operation_result_matrix_),
+  sgpp::parallel::VectorizationType vectorizationType = sgpp::parallel::X86SIMD;
+  operation_result_matrix_ = new sgpp::base::DataMatrix(result_matrix_cols, result_matrix_rows);
+  sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(*(this->operation_result_matrix_),
                                                               vectorizationType);
   operation_result_matrix_->transpose();
 
@@ -386,7 +386,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::init_grid_storage() {
     size_t padded_size = this->operation_result_matrix_->getNcols();
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(0, result_matrix_rows, &thr_start,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(0, result_matrix_rows, &thr_start,
                                                                 &thr_end);
 
     for (size_t i = thr_start; i < thr_end; i++) {
@@ -466,7 +466,7 @@ double OperationLTwoDotProductVectorizedLinearBoundary::l2dot_dirichlet(size_t i
 }
 
 void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   stopWatch.start();
 
   size_t process_i_start = all_i_start[process_index];
@@ -523,7 +523,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(
 
       size_t thr_start;
       size_t thr_end;
-      SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+      sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                   &thr_start, &thr_end);
 
       for (size_t ii = thr_start; ii < thr_end; ii++) {
@@ -702,7 +702,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(
 
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     for (size_t ii = thr_start; ii < thr_end; ii++) {
@@ -890,7 +890,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(
 
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     for (size_t ii = thr_start; ii < thr_end; ii++) {
@@ -1040,7 +1040,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(
   {
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     for (size_t ii = thr_start; ii < thr_end; ii++) {
@@ -1068,7 +1068,7 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(
     size_t padded_size = this->operation_result_matrix_->getNcols();
     size_t thr_start;
     size_t thr_end;
-    SGPP::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
+    sgpp::parallel::PartitioningTool::getOpenMPPartitionSegment(process_i_start, process_i_end,
                                                                 &thr_start, &thr_end);
 
     double* alpha_padded_ptr_ = alpha_padded_->getPointer();
@@ -1125,15 +1125,15 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult_dirichlet(
   all_iterations += 1.0;
 }
 
-void OperationLTwoDotProductVectorizedLinearBoundary::mult(SGPP::base::DataVector& alpha,
-                                                           SGPP::base::DataVector& result) {
+void OperationLTwoDotProductVectorizedLinearBoundary::mult(sgpp::base::DataVector& alpha,
+                                                           sgpp::base::DataVector& result) {
   result.setAll(0.0);
   result_boundary_filtered_->setAll(0.0);
   bool dirichlet = true;
 
   // fill q array
   for (size_t d = 0; d < this->storage->getDimension(); d++) {
-    SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+    sgpp::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     *(lcl_q_->getPointer() + d) = boundingBox->getIntervalWidth(d);
     dirichlet = dirichlet && boundingBox->hasDirichletBoundaryLeft(d);
     dirichlet = dirichlet && boundingBox->hasDirichletBoundaryRight(d);
@@ -1142,10 +1142,10 @@ void OperationLTwoDotProductVectorizedLinearBoundary::mult(SGPP::base::DataVecto
   if (dirichlet) {
     mult_dirichlet(alpha, result);
   } else {
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "OperationLaplaceVectorizedLinearBoundary::mult : This method is only available on grids "
         "with Dirichlet boundaries in all dimensions!");
   }
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

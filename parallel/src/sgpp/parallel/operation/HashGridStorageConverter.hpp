@@ -28,7 +28,7 @@
 #include <list>
 #include <typeinfo>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 /**
  * Generic hash table based index storage converter.
@@ -50,15 +50,15 @@ class HashGridStorageConverter {
    * @param blocking_length parameter for an additional blocking length to avoid TLB misses
    */
   static void getLevelIndexArraysForEvalTLBOptimized(
-      SGPP::base::GridStorage* storage, SGPP::base::DataMatrix& level,
-      SGPP::base::DataMatrix& index, sg::parallel::VectorizationType vectorizationType,
+      sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& level,
+      sgpp::base::DataMatrix& index, sgpp::parallel::VectorizationType vectorizationType,
       size_t blocking_length) {
-    typename SGPP::base::HashGridStorage::index_type::level_type curLevel;
-    typename SGPP::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
+    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
 
     // pad datasets
-    sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
-    sg::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
+    sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+    sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(index, vectorizationType);
 
     level.setAll(0.0);
     index.setAll(0.0);
@@ -99,15 +99,15 @@ class HashGridStorageConverter {
    * @param vectorizationType Vectorization type
    * @param blocking_length parameter for an additional blocking length to avoid TLB misses
    */
-  static void getLevelForIntegralTLBOptimized(SGPP::base::GridStorage* storage,
-                                              SGPP::base::DataMatrix& level,
-                                              sg::parallel::VectorizationType vectorizationType,
+  static void getLevelForIntegralTLBOptimized(sgpp::base::GridStorage* storage,
+                                              sgpp::base::DataMatrix& level,
+                                              sgpp::parallel::VectorizationType vectorizationType,
                                               size_t blocking_length) {
-    typename SGPP::base::HashGridStorage::index_type::level_type curLevel;
-    typename SGPP::base::HashGridStorage::index_type::level_type curIndex;
+    typename sgpp::base::HashGridStorage::index_type::level_type curLevel;
+    typename sgpp::base::HashGridStorage::index_type::level_type curIndex;
 
     // pad datasets
-    sg::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
+    sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(level, vectorizationType);
 
     level.setAll(0.0);
 
@@ -134,4 +134,4 @@ class HashGridStorageConverter {
 };
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

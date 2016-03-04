@@ -10,7 +10,7 @@
 
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 namespace streamingBSplineOCL {
@@ -880,4 +880,4 @@ uint end_data) {
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

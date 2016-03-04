@@ -8,7 +8,7 @@
 #include <sgpp/quadrature/Random.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 SampleGenerator::SampleGenerator(size_t dimensions, std::uint64_t seed)
@@ -36,4 +36,4 @@ size_t SampleGenerator::getDimensions() { return dimensions; }
 void SampleGenerator::setDimensions(size_t dimensions) { this->dimensions = dimensions; }
 
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp

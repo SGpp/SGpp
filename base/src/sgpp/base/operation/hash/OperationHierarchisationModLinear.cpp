@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 /**
  * Implements the hierarchisation on a sprase grid with mod linear base functions
@@ -50,4 +50,4 @@ void OperationHierarchisationModLinear::doDehierarchisation(DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

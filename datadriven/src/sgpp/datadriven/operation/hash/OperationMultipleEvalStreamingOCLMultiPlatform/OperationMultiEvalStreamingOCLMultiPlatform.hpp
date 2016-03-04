@@ -22,7 +22,7 @@
 #include "KernelMult.hpp"
 #include "KernelMultTranspose.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
@@ -50,7 +50,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
   // Timer object to handle time measurements
   base::SGppStopwatch myTimer;
 
-  float_t duration;
+  double duration;
 
   std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMult;
   std::shared_ptr<base::QueueLoadBalancer> queueLoadBalancerMultTranspose;
@@ -232,7 +232,7 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
     this->duration = this->myTimer.stop();
   }
 
-  float_t getDuration() override { return this->duration; }
+  double getDuration() override { return this->duration; }
 
   void prepare() override {
     this->recalculateLevelAndIndex(gridSize);
@@ -339,4 +339,4 @@ class OperationMultiEvalStreamingOCLMultiPlatform : public base::OperationMultip
 
 }  // namespace StreamingOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

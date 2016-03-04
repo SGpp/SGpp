@@ -26,7 +26,7 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 PartitioningTool::PartitioningTool() {}
@@ -49,12 +49,12 @@ void PartitioningTool::getPartitionSegment(size_t start, size_t end, size_t segm
 
   // check for valid input
   if (blockSize == 0) {
-    throw SGPP::base::operation_exception("blockSize must not be zero!");
+    throw sgpp::base::operation_exception("blockSize must not be zero!");
   }
 
   if (totalSize % blockSize != 0) {
     // std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "totalSize must be divisible by blockSize without remainder, but it is not!");
   }
 
@@ -112,8 +112,8 @@ void PartitioningTool::getMPIPartitionSegment(size_t start, size_t end, size_t* 
   size_t myRank = 0;
   size_t numRanks = 1;
 
-  myRank = SGPP::parallel::myGlobalMPIComm->getMyRank();
-  numRanks = SGPP::parallel::myGlobalMPIComm->getNumRanks();
+  myRank = sgpp::parallel::myGlobalMPIComm->getMyRank();
+  numRanks = sgpp::parallel::myGlobalMPIComm->getNumRanks();
 
   getPartitionSegment(start, end, numRanks, myRank, segmentStart, segmentEnd, blocksize);
 }
@@ -152,4 +152,4 @@ void PartitioningTool::calcMPIChunkedDistribution(size_t totalSize, size_t numCh
 }
 #endif
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

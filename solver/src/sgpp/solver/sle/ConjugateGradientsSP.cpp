@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon)
@@ -18,8 +18,8 @@ ConjugateGradientsSP::ConjugateGradientsSP(size_t imax, float epsilon)
 
 ConjugateGradientsSP::~ConjugateGradientsSP() {}
 
-void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
-                                 SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& b,
+void ConjugateGradientsSP::solve(sgpp::base::OperationMatrixSP& SystemMatrix,
+                                 sgpp::base::DataVectorSP& alpha, sgpp::base::DataVectorSP& b,
                                  bool reuse, bool verbose, float max_threshold) {
   if (verbose == true) {
     std::cout << "Starting Conjugated Gradients" << std::endl;
@@ -31,9 +31,9 @@ void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   this->nIterations = 0;
 
   // define temporal vectors
-  SGPP::base::DataVectorSP temp(alpha.getSize());
-  SGPP::base::DataVectorSP q(alpha.getSize());
-  SGPP::base::DataVectorSP r(b);
+  sgpp::base::DataVectorSP temp(alpha.getSize());
+  sgpp::base::DataVectorSP q(alpha.getSize());
+  sgpp::base::DataVectorSP r(b);
 
   float delta_0 = 0.0f;
   float delta_old = 0.0f;
@@ -58,7 +58,7 @@ void ConjugateGradientsSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix,
   SystemMatrix.mult(alpha, temp);
   r.sub(temp);
 
-  SGPP::base::DataVectorSP d(r);
+  sgpp::base::DataVectorSP d(r);
 
   delta_old = 0.0f;
   delta_new = r.dotProduct(r);
@@ -135,4 +135,4 @@ void ConjugateGradientsSP::iterationComplete() {}
 void ConjugateGradientsSP::complete() {}
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

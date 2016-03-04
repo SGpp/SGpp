@@ -47,7 +47,7 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 std::unique_ptr<Grid> Grid::createLinearGridStencil(size_t dim) {
@@ -296,7 +296,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
   return *tMap;
 }
 
-std::map<SGPP::base::GridType, std::string>& Grid::typeVerboseMap() {
+std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
   // This is only executed once!
   static gridTypeVerboseMap* verboseMap = new gridTypeVerboseMap();
 
@@ -305,60 +305,60 @@ std::map<SGPP::base::GridType, std::string>& Grid::typeVerboseMap() {
      * Insert strings here.
      */
 #ifdef _WIN32
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::Linear, "linear"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::LinearStretched, "linearStretched"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::LinearL0Boundary, "linearL0Boundary"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::LinearStencil, "linearstencil"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::ModLinearStencil, "modlinearstencil"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::LinearBoundary, "linearBoundary"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::LinearStretchedBoundary,
                         "linearStretchedBoundary"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::LinearClenshawCurtis,
                         "linearClenshawCurtis"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::ModLinear, "modlinear"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>(
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
                          GridType::Poly, "poly"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::PolyBoundary, "polyBoundary"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::ModPoly, "modpoly"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::Wavelet, "wavelet"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::WaveletBoundary, "waveletBoundary"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::ModWavelet, "modWavelet"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::Bspline, "bspline"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::BsplineBoundary, "bsplineBoundary"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::BsplineClenshawCurtis,
                         "bsplineClenshawCurtis"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::ModBspline, "modBspline"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::FundamentalSpline, "fundamentalSpline"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::ModFundamentalSpline,
                         "modFundamentalSpline"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::ModBsplineClenshawCurtis,
                         "modBsplineClenshawCurtis"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::Prewavelet, "prewavelet"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::Periodic, "periodic"));
-    verboseMap->insert(std::pair<SGPP::base::GridType, std::string>
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>
                        (GridType::LinearTruncatedBoundary,
                         "linearTruncatedBoundary"));
 #else
@@ -507,4 +507,4 @@ void Grid::setAlgorithmicDimensions(std::vector<size_t> newAlgoDims) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

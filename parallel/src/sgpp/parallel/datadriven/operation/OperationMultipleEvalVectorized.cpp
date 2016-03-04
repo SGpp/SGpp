@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 OperationMultipleEvalVectorized::OperationMultipleEvalVectorized(base::GridStorage* storage,
@@ -18,7 +18,7 @@ OperationMultipleEvalVectorized::OperationMultipleEvalVectorized(base::GridStora
   this->index_ = NULL;
   this->mask_ = NULL;
   this->offset_ = NULL;
-  this->myTimer_ = new SGPP::base::SGppStopwatch();
+  this->myTimer_ = new sgpp::base::SGppStopwatch();
 }
 
 OperationMultipleEvalVectorized::~OperationMultipleEvalVectorized() {
@@ -33,4 +33,4 @@ OperationMultipleEvalVectorized::~OperationMultipleEvalVectorized() {
   if (this->offset_ != NULL) delete this->offset_;
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

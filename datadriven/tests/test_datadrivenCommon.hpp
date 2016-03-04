@@ -13,29 +13,29 @@
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 #if USE_OCL == 1
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-using SGPP::base::OCLOperationConfiguration;
+using sgpp::base::OCLOperationConfiguration;
 #endif
 #include "sgpp/globaldef.hpp"
 
 std::string uncompressFile(std::string fileName);
 
-SGPP::base::DataMatrix* readReferenceMatrix(SGPP::base::GridStorage& storage, std::string fileName);
+sgpp::base::DataMatrix* readReferenceMatrix(sgpp::base::GridStorage& storage, std::string fileName);
 
-void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::base::Grid& grid,
-                         SGPP::base::GridGenerator& gridGen, SGPP::base::DataVector& alpha);
+void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+                         sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha);
 
-void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::base::Grid& grid,
-                         SGPP::base::GridGenerator& gridGen);
+void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+                         sgpp::base::GridGenerator& gridGen);
 
-double compareVectors(SGPP::base::DataVector& results, SGPP::base::DataVector& resultsCompare);
+double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& resultsCompare);
 
-double compareToReference(SGPP::base::GridType gridType, std::string fileName, size_t level,
-                          SGPP::datadriven::OperationMultipleEvalConfiguration configuration,
+double compareToReference(sgpp::base::GridType gridType, std::string fileName, size_t level,
+                          sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
                           size_t numRefinements = 1);
 
 double compareToReferenceTranspose(
-    SGPP::base::GridType gridType, std::string fileName, size_t level,
-    SGPP::datadriven::OperationMultipleEvalConfiguration configuration);
+    sgpp::base::GridType gridType, std::string fileName, size_t level,
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration);
 
 #if USE_OCL == 1
 
