@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -39,5 +39,5 @@ class OperationDensityMarginalizeLinear : public OperationDensityMarginalize {
   base::Grid* grid;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYMARGINALIZELINEAR_HPP */

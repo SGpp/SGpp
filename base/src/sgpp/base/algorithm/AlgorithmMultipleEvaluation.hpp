@@ -19,7 +19,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -81,7 +81,7 @@ class AlgorithmMultipleEvaluation {
   //          size_t source_size = source.getSize();
   //
   //          #pragma omp declare reduction(accumulate :
-  // ...      SGPP::base::DataVector : omp_out.add(omp_in))
+  // ...      sgpp::base::DataVector : omp_out.add(omp_in))
   // ...      initializer ( omp_priv = DataVector(omp_orig.getSize(), 0))
   //
   //          #pragma omp parallel
@@ -132,6 +132,6 @@ class AlgorithmMultipleEvaluation {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ALGORTIHMMULTIPLEEVALUATION_HPP */

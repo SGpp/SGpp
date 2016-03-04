@@ -12,7 +12,7 @@
 #include <cmath>
 #include <numeric>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -52,12 +52,12 @@ bool GaussianElimination::solve(SLE& system, base::DataVector& b, base::DataVect
 
     // search for pivot entry = maximum of the absolute values
     // of the entries w_{l,l}, ..., w_{n,l}
-    float_t maxEntry = 0;
+    double maxEntry = 0;
     // row index of maximal absolute value
     size_t i = l;
 
     for (size_t j = l; j < n; j++) {
-      float_t entry = std::abs(W(j, l));
+      double entry = std::abs(W(j, l));
 
       if (entry > maxEntry) {
         maxEntry = entry;
@@ -73,14 +73,14 @@ bool GaussianElimination::solve(SLE& system, base::DataVector& b, base::DataVect
 
     // swap rows l and i
     for (size_t k = l; k <= n; k++) {
-      const float_t entry = W(l, k);
+      const double entry = W(l, k);
       W(l, k) = W(i, k);
       W(i, k) = entry;
     }
 
     // divide l-th row by w_{l,l}
     {
-      const float_t wll = W(l, l);
+      const double wll = W(l, l);
 
       for (size_t k = l; k <= n; k++) {
         W(l, k) /= wll;
@@ -90,7 +90,7 @@ bool GaussianElimination::solve(SLE& system, base::DataVector& b, base::DataVect
     // subtract w_{j,l} times l-th row from all rows j != l
     for (size_t j = 0; j < n; j++) {
       if (j != l) {
-        const float_t wjl = W(j, l);
+        const double wjl = W(j, l);
 
         for (size_t k = l; k <= n; k++) {
           W(j, k) -= wjl * W(l, k);
@@ -109,4 +109,4 @@ bool GaussianElimination::solve(SLE& system, base::DataVector& b, base::DataVect
 }
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

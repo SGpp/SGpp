@@ -15,7 +15,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -38,7 +38,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    * @param fGradient     scalar-valued function gradient
    * @param defaultValues Vector of constant default values.
    *                      It can be either empty (the default) or
-   *                      a vector of exactly m float_ts,
+   *                      a vector of exactly m doubles,
    *                      each of which can be finite or NAN.
    *                      If the vector is empty, it will be initialized
    *                      as m NANs (i.e., no restriction of the
@@ -48,7 +48,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    *                      values for the corresponding parameter.
    */
   ComponentScalarFunctionGradient(ScalarFunctionGradient& fGradient,
-                                  std::vector<float_t> defaultValues = std::vector<float_t>())
+                                  std::vector<double> defaultValues = std::vector<double>())
       :
 
         ScalarFunctionGradient((defaultValues.size() > 0)
@@ -58,7 +58,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
         fGradientVector(nullptr),
         dF(fGradient.getNumberOfParameters()),
         k(0),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
         tmpVec1(dF),
         tmpVec2(dF),
         tmpMat(0, 0) {
@@ -81,7 +81,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    * @param defaultValues see other constructor
    */
   ComponentScalarFunctionGradient(VectorFunctionGradient& fGradient, size_t k,
-                                  std::vector<float_t> defaultValues = std::vector<float_t>())
+                                  std::vector<double> defaultValues = std::vector<double>())
       :
 
         ScalarFunctionGradient((defaultValues.size() > 0)
@@ -91,7 +91,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
         fGradientVector(&fGradient),
         dF(fGradient.getNumberOfParameters()),
         k(k),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<float_t>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
         tmpVec1(dF),
         tmpVec2(fGradient.getNumberOfComponents()),
         tmpMat(fGradient.getNumberOfComponents(), dF) {
@@ -110,7 +110,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    *              where \f$(x_1, \dotsc, x_n) =
    *              (y_{i_1}, \dotsc, y_{i_n})\f$
    */
-  inline float_t eval(const base::DataVector& x, base::DataVector& gradient) override {
+  inline double eval(const base::DataVector& x, base::DataVector& gradient) override {
     size_t t2 = 0;
 
     // select entries of x which correspond to NAN entries in
@@ -137,7 +137,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
       return tmpVec2[k];
     } else {
       // evaluate
-      const float_t fx = fGradientScalar->eval(tmpVec1, tmpVec2);
+      const double fx = fGradientScalar->eval(tmpVec1, tmpVec2);
       t2 = 0;
 
       for (size_t t = 0; t < dF; t++) {
@@ -168,7 +168,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
   /// index of component
   size_t k;
   /// vector of default values, indicating free variables with NAN
-  std::vector<float_t> defaultValues;
+  std::vector<double> defaultValues;
   /// temporary vector 1
   base::DataVector tmpVec1;
   /// temporary vector 2
@@ -192,6 +192,6 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
   }
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_COMPONENTSCALARFUNCTIONGRADIENT_HPP */

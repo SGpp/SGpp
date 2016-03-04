@@ -11,12 +11,12 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "Configuration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
@@ -56,4 +56,4 @@ base::OperationMultipleEval* createStreamingOCLMultiPlatformConfigured(
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -320,7 +320,7 @@ Node& DictNode::replaceIDAttr(const std::string& name, const std::string& value)
 // cast internally to string, prevents the boolean overload from being used, if the value is a
 // string literal
 Node& DictNode::replaceIDAttr(const std::string& name, const char* value) {
-  this->replaceIDAttr(name, std::string(value));
+  return this->replaceIDAttr(name, std::string(value));
 }
 
 // returns the node to which the attribute was added

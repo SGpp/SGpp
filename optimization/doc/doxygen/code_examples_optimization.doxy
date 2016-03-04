@@ -1,7 +1,7 @@
 /**
 \page code_examples_optimization Optimization Example
 
-On this page, we look at an example application of the SGPP::optimization
+On this page, we look at an example application of the sgpp::optimization
 module.
 The example is written in C++.
 However, as the module is also incorporated in pysgpp, one can also use
@@ -14,7 +14,7 @@ if compiled without support for Armadillo and UMFPACK
 
 Below, you can find the whole C++ example.
 The example minimizes a specific function \f$f\colon [0, 1]^2 \to \mathbb{R}\f$
-using sparse grids and the SGPP::optimization module.
+using sparse grids and the sgpp::optimization module.
 For the basic structure of the optimization, please see
 \ref module_optimization.
 
@@ -25,14 +25,14 @@ We will now discuss the example in some detail line by line.
 \dontinclude optimization.cpp
 \until sgpp_optimization.hpp
 
-We need to include the headers for the SGPP::base and the SGPP::optimization
+We need to include the headers for the sgpp::base and the sgpp::optimization
 module.
 
 \until };
 
 The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
 is called "objective function" and has to derive from
-SGPP::optimization::ObjectiveFunction.
+sgpp::optimization::ObjectiveFunction.
 In the constructor, we give the dimensionality of the domain
 (in this case \f$d = 2\f$).
 The eval method evaluates the objective function and returns the function
@@ -60,7 +60,7 @@ coefficients of the B-spline sparse grid interpolant
 We define the interpolant \f$\tilde{f}\f$ and its gradient
 \f$\nabla\tilde{f}\f$ for use with the gradient method (steepest descent).
 Of course, one can also use other optimization algorithms from
-SGPP::optimization::optimizer.
+sgpp::optimization::optimizer.
 
 \until ft(x0)
 
@@ -120,7 +120,7 @@ The C++ code can be translated into the following MATLAB code:
 
 In the following, we assume that we want to run the example on Linux.
 
-Please note that in order to get SGPP::optimization to work with MATLAB,
+Please note that in order to get sgpp::optimization to work with MATLAB,
 you have to disable support for Armadillo and UMFPACK when compiling SG++,
 i.e. set USE_ARMADILLO and USE_UMFPACK to "no".
 This is due to incompatible BLAS and LAPACK libraries

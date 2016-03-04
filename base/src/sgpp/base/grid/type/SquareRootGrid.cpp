@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 SquareRootGrid::SquareRootGrid(std::istream& istr) :
@@ -32,8 +32,8 @@ SquareRootGrid::SquareRootGrid(BoundingBox& BB) :
 SquareRootGrid::~SquareRootGrid() {
 }
 
-SGPP::base::GridType SquareRootGrid::getType() {
-  return SGPP::base::GridType::SquareRoot;
+sgpp::base::GridType SquareRootGrid::getType() {
+  return sgpp::base::GridType::SquareRoot;
 }
 
 const SBasis& SquareRootGrid::getBasis() {
@@ -66,4 +66,4 @@ GridGenerator& SquareRootGrid::getGenerator() {
 // }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

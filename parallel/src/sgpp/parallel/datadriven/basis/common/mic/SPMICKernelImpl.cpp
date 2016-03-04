@@ -22,7 +22,7 @@
 #include <cstring>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace micsp {
 float* ptrLevel = NULL;
@@ -87,8 +87,8 @@ bool init_multicard_multtrans_fast() {
 
 bool multicard_multtrans_fast = init_multicard_multtrans_fast();
 
-void uploadGrid(SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
-                SGPP::base::DataMatrixSP* mask, SGPP::base::DataMatrixSP* offset) {
+void uploadGrid(sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+                sgpp::base::DataMatrixSP* mask, sgpp::base::DataMatrixSP* offset) {
   size_t storageSize = level->getNrows();
   size_t dims = level->getNcols();
 
@@ -157,7 +157,7 @@ void uploadGrid(SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index
 #endif
 }
 
-void uploadData(SGPP::base::DataMatrixSP* data) {
+void uploadData(sgpp::base::DataMatrixSP* data) {
   ptrData = data->getPointer();
   size_t datasize = data->getNcols();
   size_t dims = data->getNrows();
@@ -314,6 +314,6 @@ void transferInputMultTrans(size_t offsetSource, size_t chunkSource, float* ptrS
 
 }  // namespace micsp
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // USEMIC

@@ -9,11 +9,11 @@
 
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 OperationRegularizationDiagonal::OperationRegularizationDiagonal(base::GridStorage* storage,
-                                                                 int mode, float_t k)
+                                                                 int mode, double k)
     : mode(mode), k(k), size(storage->getSize()), storage(storage), diagonal(storage->getSize()) {
   // remember size of grid to check for changes in grid
   this->size = storage->getSize();
@@ -52,7 +52,7 @@ void OperationRegularizationDiagonal::initIsotropicPenalty() {
 
   for (size_t i = 0; i < size; i++) {
     gi = storage->get(i);
-    diagonal[i] = 1.0 / (gi->getLevelMax() - gi->getLevelMin() + 1) * (float_t)dim;
+    diagonal[i] = 1.0 / (gi->getLevelMax() - gi->getLevelMin() + 1) * static_cast<double>(dim);
   }
 }
 void OperationRegularizationDiagonal::initAnisotropicPenalty() {
@@ -64,10 +64,10 @@ void OperationRegularizationDiagonal::initAnisotropicPenalty() {
     gi = storage->get(i);
     diagonal[i] =
         0.5 * log(1. +
-                  static_cast<float_t>(gi->getLevelMax()) /
-                      static_cast<float_t>(std::max(static_cast<int>(gi->getLevelMin()), 1)) *
-                      static_cast<float_t>(dim));
+                  static_cast<double>(gi->getLevelMax()) /
+                      static_cast<double>(std::max(static_cast<int>(gi->getLevelMin()), 1)) *
+                      static_cast<double>(dim));
   }
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -10,7 +10,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 #ifdef _WIN32
@@ -33,7 +33,7 @@ void ScreenOutput::update(size_t progress, std::string status) {
 
   std::cout << "[";
 
-  for (i = 0; i < static_cast<int>(((float_t)progress) * 0.64); i++) {
+  for (i = 0; i < static_cast<int>((static_cast<double>(progress)) * 0.64); i++) {
     std::cout << '\xdb';
   }
 
@@ -62,7 +62,7 @@ void ScreenOutput::update(size_t progress, std::string status) {
 
   std::cout << "[";
 
-  for (i = 0; i < static_cast<int>(((float_t)progress) * 0.64); i++) {
+  for (i = 0; i < static_cast<int>((static_cast<double>(progress)) * 0.64); i++) {
     std::cout << "=";
   }
 
@@ -128,4 +128,4 @@ void ScreenOutput::writeEmptyLines(size_t numLines) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

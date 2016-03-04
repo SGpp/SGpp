@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 WrapperVectorFunctionGradient& EmptyVectorFunctionGradient::getInstance() {
@@ -15,4 +15,4 @@ WrapperVectorFunctionGradient& EmptyVectorFunctionGradient::getInstance() {
   return wrapperVectorFunctionGradient;
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

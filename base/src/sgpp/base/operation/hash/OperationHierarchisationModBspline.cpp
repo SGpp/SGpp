@@ -10,7 +10,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationModBspline::doHierarchisation(
@@ -26,4 +26,4 @@ void OperationHierarchisationModBspline::doDehierarchisation(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class SPX86SimdKernelBase {
@@ -23,6 +23,6 @@ class SPX86SimdKernelBase {
 };
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // SPX86SIMDKERNELBASE_HPP

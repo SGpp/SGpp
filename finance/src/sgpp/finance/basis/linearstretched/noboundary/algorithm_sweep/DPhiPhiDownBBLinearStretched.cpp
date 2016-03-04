@@ -7,33 +7,33 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
-DPhiPhiDownBBLinearStretched::DPhiPhiDownBBLinearStretched(SGPP::base::GridStorage* storage)
+DPhiPhiDownBBLinearStretched::DPhiPhiDownBBLinearStretched(sgpp::base::GridStorage* storage)
     : storage(storage), stretching(storage->getStretching()) {}
 
 DPhiPhiDownBBLinearStretched::~DPhiPhiDownBBLinearStretched() {}
 
-void DPhiPhiDownBBLinearStretched::operator()(SGPP::base::DataVector& source,
-                                              SGPP::base::DataVector& result, grid_iterator& index,
+void DPhiPhiDownBBLinearStretched::operator()(sgpp::base::DataVector& source,
+                                              sgpp::base::DataVector& result, grid_iterator& index,
                                               size_t dim) {
   rec(source, result, index, dim, 0.0, 0.0);
 }
 
-void DPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
-                                       SGPP::base::DataVector& result, grid_iterator& index,
-                                       size_t dim, float_t fl, float_t fr) {
+void DPhiPhiDownBBLinearStretched::rec(sgpp::base::DataVector& source,
+                                       sgpp::base::DataVector& result, grid_iterator& index,
+                                       size_t dim, double fl, double fr) {
   size_t seq = index.seq();
 
-  float_t alpha_value = source[seq];
+  double alpha_value = source[seq];
 
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  float_t posl = 0, posr = 0, posc = 0;
+  double posl = 0, posr = 0, posc = 0;
 
   this->stretching->getAdjacentPositions(static_cast<int>(l), static_cast<int>(i), dim, posc, posl,
                                          posr);
@@ -43,7 +43,7 @@ void DPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
 
   // dehierarchisation
 
-  float_t fm = (fr - fl) * (posc - posl) / (posr - posl) + fl + alpha_value;
+  double fm = (fr - fl) * (posc - posl) / (posr - posl) + fl + alpha_value;
 
   if (!index.hint()) {
     index.leftChild(dim);
@@ -63,4 +63,4 @@ void DPhiPhiDownBBLinearStretched::rec(SGPP::base::DataVector& source,
 }
 
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

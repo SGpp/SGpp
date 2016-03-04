@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -39,31 +39,12 @@ bool solveInternal(void* numeric, const std::vector<sslong>& Ap, const std::vect
                    const std::vector<double>& Ax, base::DataVector& b, base::DataVector& x) {
   const size_t n = b.getSize();
 
-#if USE_DOUBLE_PRECISION
   x.resize(n);
   x.setAll(0.0);
 
   sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0], &Ax[0], x.getPointer(),
                                    b.getPointer(), numeric, NULL, NULL);
   return (result == UMFPACK_OK);
-#else
-  std::vector<double> bDbl(b.getPointer(), b.getPointer() + b.getSize());
-  std::vector<double> xDbl(n);
-
-  sslong result =
-      umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0], &Ax[0], &xDbl[0], &bDbl[0], numeric, NULL, NULL);
-
-  if (result == UMFPACK_OK) {
-    for (size_t i = 0; i < xDbl.size(); i++) {
-      x[i] = static_cast<float>(xDbl[i]);
-    }
-
-    return true;
-  } else {
-    return false;
-  }
-
-#endif /* USE_DOUBLE_PRECISION */
 }
 #endif /* USE_UMFPACK */
 
@@ -113,7 +94,7 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
 
     for (uint32_t i = 0; i < n; i++) {
       for (uint32_t j = 0; j < n; j++) {
-        float_t entry = system2->getMatrixEntry(i, j);
+        double entry = system2->getMatrixEntry(i, j);
 
         if (entry != 0) {
 #pragma omp critical
@@ -132,7 +113,7 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
         {
           char str[10];
           snprintf(str, sizeof(str), "%.1f%%",
-                   static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+                   static_cast<double>(i) / static_cast<double>(n) * 100.0);
           Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
                                                    std::string(str) + ")");
         }
@@ -146,8 +127,8 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnz_ratio =
-        static_cast<float_t>(nnz) / (static_cast<float_t>(n) * static_cast<float_t>(n));
+    double nnz_ratio =
+        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
     snprintf(str, sizeof(str), "%.1f%%", nnz_ratio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
@@ -259,4 +240,4 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
 }
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

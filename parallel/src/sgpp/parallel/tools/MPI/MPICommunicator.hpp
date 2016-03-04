@@ -53,7 +53,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -90,24 +90,24 @@ class MPICommunicator {
    *
    * @param alpha grid coefficients that should be sent
    */
-  void broadcastGridCoefficientsFromRank0(SGPP::base::DataVector& alpha);
-  void broadcastSPGridCoefficientsFromRank0(SGPP::base::DataVectorSP& alpha);
+  void broadcastGridCoefficientsFromRank0(sgpp::base::DataVector& alpha);
+  void broadcastSPGridCoefficientsFromRank0(sgpp::base::DataVectorSP& alpha);
 
   /**
    * Reduces the grid coefficients on rank 0 using
    * MPI's reduce routine
    *
-   * @param alpha SGPP::base::DataVector to which all other rank's grid coefficients should be added
+   * @param alpha sgpp::base::DataVector to which all other rank's grid coefficients should be added
    */
-  void reduceGridCoefficientsOnRank0(SGPP::base::DataVector& alpha);
+  void reduceGridCoefficientsOnRank0(sgpp::base::DataVector& alpha);
 
   /**
    * Reduces the grid coefficients on of all ranks and all ranks using
    * MPI's reduce routine
    *
-   * @param alpha SGPP::base::DataVector to which all other rank's grid coefficients should be added
+   * @param alpha sgpp::base::DataVector to which all other rank's grid coefficients should be added
    */
-  void reduceGridCoefficients(SGPP::base::DataVector& alpha);
+  void reduceGridCoefficients(sgpp::base::DataVector& alpha);
 
   /**
    * sends a serialized grid to a specific rank
@@ -178,9 +178,9 @@ class MPICommunicator {
    * @param distributionOffsets array containing the offsets of data to distribute
    * @param distributionSizes array containing the sizes of data to distribute
    */
-  void dataVectorAllToAll(SGPP::base::DataVector& alpha, int* distributionOffsets,
+  void dataVectorAllToAll(sgpp::base::DataVector& alpha, int* distributionOffsets,
                           int* distributionSizes);
-  void dataVectorSPAllToAll(SGPP::base::DataVectorSP& alpha, int* distributionOffsets,
+  void dataVectorSPAllToAll(sgpp::base::DataVectorSP& alpha, int* distributionOffsets,
                             int* distributionSizes);
 
   void IsendToAll(double* ptr, size_t size, int tag, MPI_Request* reqs);
@@ -248,6 +248,6 @@ class MPICommunicator {
   void waitForAnyRequest(size_t size, MPI_Request* reqs, int* result);
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* MPICOMMUNICATOR_HPP */

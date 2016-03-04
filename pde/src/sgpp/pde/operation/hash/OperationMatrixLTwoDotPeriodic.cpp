@@ -10,44 +10,44 @@
 
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 OperationMatrixLTwoDotPeriodic::OperationMatrixLTwoDotPeriodic(
-    SGPP::base::GridStorage* gridStorage) {
+    sgpp::base::GridStorage* gridStorage) {
   this->gridStorage = gridStorage;
 }
 
 OperationMatrixLTwoDotPeriodic::~OperationMatrixLTwoDotPeriodic() {}
 
-void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
-                                          SGPP::base::DataVector& result) {
+void OperationMatrixLTwoDotPeriodic::mult(sgpp::base::DataVector& alpha,
+                                          sgpp::base::DataVector& result) {
   size_t nrows = gridStorage->getSize();
   size_t ncols = gridStorage->getSize();
 
   if (alpha.getSize() != ncols || result.getSize() != nrows) {
-    throw SGPP::base::data_exception("Dimensions do not match!");
+    throw sgpp::base::data_exception("Dimensions do not match!");
   }
 
   size_t gridSize = gridStorage->getSize();
   size_t gridDim = gridStorage->getDimension();
 
-  SGPP::base::DataMatrix level(gridSize, gridDim);
-  SGPP::base::DataMatrix index(gridSize, gridDim);
+  sgpp::base::DataMatrix level(gridSize, gridDim);
+  sgpp::base::DataMatrix index(gridSize, gridDim);
 
   gridStorage->getLevelIndexArraysForEval(level, index);
 
-  SGPP::base::DataVector row(nrows);
+  sgpp::base::DataVector row(nrows);
 
   for (size_t i = 0; i < gridSize; i++) {
     for (size_t j = 0; j < gridSize; j++) {
-      float_t res = 1;
+      double res = 1;
 
       for (size_t k = 0; k < gridDim; k++) {
-        float_t lik = level.get(i, k);
-        float_t ljk = level.get(j, k);
-        float_t iik = index.get(i, k);
-        float_t ijk = index.get(j, k);
+        double lik = level.get(i, k);
+        double ljk = level.get(j, k);
+        double iik = index.get(i, k);
+        double ijk = index.get(j, k);
 
         // i has always the lower level than j
         if (lik > ljk) {
@@ -67,8 +67,8 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
             }
 
             // Use formula for different overlapping ansatz functions:
-            float_t diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
-            float_t temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
+            double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+            double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
             temp_res *= lik;
             temp_res = (1 - temp_res) / ljk;
             res *= temp_res;
@@ -97,8 +97,8 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
           } else {
             // Use formula for different overlapping ansatz functions:
 
-            float_t diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
-            float_t temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
+            double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
+            double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
             temp_res *= lik;
             temp_res = (1 - temp_res) / ljk;
             res *= temp_res;
@@ -110,7 +110,7 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
     }
 
     // Standard matrix multiplication:
-    float_t temp = 0.;
+    double temp = 0.;
 
     for (size_t j = 0; j < ncols; j++) {
       temp += row[j] * alpha[j];
@@ -120,4 +120,4 @@ void OperationMatrixLTwoDotPeriodic::mult(SGPP::base::DataVector& alpha,
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

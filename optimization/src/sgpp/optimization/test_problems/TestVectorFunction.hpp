@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -79,6 +79,6 @@ class TestVectorFunction : public VectorFunction {
 };
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTVECTORFUNCTION_HPP */

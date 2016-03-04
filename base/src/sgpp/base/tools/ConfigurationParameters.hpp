@@ -13,7 +13,7 @@
 #include <memory>
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class ConfigurationParameters {
@@ -56,5 +56,5 @@ class ConfigurationParameters {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

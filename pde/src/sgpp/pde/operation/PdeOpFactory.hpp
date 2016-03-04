@@ -16,7 +16,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 /**
@@ -36,7 +36,7 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplace(base::Grid& grid);
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
 std::unique_ptr<base::OperationMatrix> createOperationLaplace(
-    base::Grid& grid, SGPP::base::DataVector& coef);
+    base::Grid& grid, sgpp::base::DataVector& coef);
 /**
  * Factory method, returning an OperationLTwoDotProduct (OperationMatrix) for the grid at hand.
  * Note: object has to be freed after use.
@@ -89,8 +89,8 @@ std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(base::Grid
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
 std::unique_ptr<base::OperationMatrix> createOperationLaplaceEnhanced(
-    base::Grid& grid, SGPP::base::DataVector& coef);
+    base::Grid& grid, sgpp::base::DataVector& coef);
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /*PDE_OP_FACTORY_HPP*/

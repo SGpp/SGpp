@@ -24,12 +24,12 @@
 #include <omp.h>
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 template <typename KernelImplementation>
 class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
-    : public SGPP::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
+    : public sgpp::parallel::DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation> {
  private:
   /// how to distribute storage array across processes
   int* _mpi_grid_sizes;
@@ -44,24 +44,24 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
    * Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param trainData reference to SGPP::base::DataMatrix that contains the training data
+   * @param trainData reference to sgpp::base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
    * @param vecMode vectorization mode
    */
-  DMSystemMatrixVectorizedIdentityTrueAsyncMPI(SGPP::base::Grid& SparseGrid,
-                                               SGPP::base::DataMatrix& trainData, double lambda,
+  DMSystemMatrixVectorizedIdentityTrueAsyncMPI(sgpp::base::Grid& SparseGrid,
+                                               sgpp::base::DataMatrix& trainData, double lambda,
                                                VectorizationType vecMode)
       : DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>(SparseGrid, trainData, lambda,
                                                                       vecMode) {
-    size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
+    size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
 
     // arrays for distribution settings
     _mpi_data_sizes = new int[mpi_size];
     _mpi_data_offsets = new int[mpi_size];
 
-    SGPP::parallel::PartitioningTool::calcDistribution(
+    sgpp::parallel::PartitioningTool::calcDistribution(
         this->numPatchedTrainingInstances_, mpi_size, _mpi_data_sizes, _mpi_data_offsets,
-        SGPP::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
+        sgpp::parallel::DMVectorizationPaddingAssistant::getVecWidth(this->vecMode_));
 
     // arrays for distribution settings
     _mpi_grid_sizes = new int[mpi_size];
@@ -83,7 +83,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
     delete[] this->_mpi_data_offsets;
   }
 
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
 #ifdef X86_MIC_SYMMETRIC
     myGlobalMPIComm->broadcastGridCoefficientsFromRank0(alpha);
 #endif
@@ -91,8 +91,8 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
     this->tempData->setAll(0.0);
     double* ptrTemp = this->tempData->getPointer();
 
-    size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
-    size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
+    size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
+    size_t mpi_myrank = sgpp::parallel::myGlobalMPIComm->getMyRank();
 
     MPI_Request* dataSendReqs = new MPI_Request[mpi_size];
     MPI_Request* dataRecvReqs = new MPI_Request[mpi_size];  // allocating a little more than
@@ -135,7 +135,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
 
 #pragma omp master
       {
-        SGPP::parallel::myGlobalMPIComm->IsendToAll(&ptrTemp[dataProcessChunkStart],
+        sgpp::parallel::myGlobalMPIComm->IsendToAll(&ptrTemp[dataProcessChunkStart],
                                                     _mpi_data_sizes[mpi_myrank],
                                                     tagsData[mpi_myrank], dataSendReqs);
       }
@@ -153,7 +153,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
       while (true) {
 #pragma omp master
         {
-          myGlobalMPIComm->waitForAnyRequest(SGPP::parallel::myGlobalMPIComm->getNumRanks(),
+          myGlobalMPIComm->waitForAnyRequest(sgpp::parallel::myGlobalMPIComm->getNumRanks(),
                                              dataRecvReqs, &idx);
         }
 #pragma omp barrier
@@ -182,7 +182,7 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
     // send result of this process to all other processes
 
     this->computeTimeMultTrans_ += this->myTimer_->stop();
-    SGPP::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
+    sgpp::parallel::myGlobalMPIComm->dataVectorAllToAll(result, _mpi_grid_offsets, _mpi_grid_sizes);
     this->completeTimeMultTrans_ += this->myTimer_->stop();
 
     result.axpy(static_cast<double>(this->numTrainingInstances_) * this->lambda_, alpha);
@@ -194,8 +194,8 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
     delete[] tagsData;
   }
 
-  virtual void generateb(SGPP::base::DataVector& classes, SGPP::base::DataVector& b) {
-    size_t mpi_myrank = SGPP::parallel::myGlobalMPIComm->getMyRank();
+  virtual void generateb(sgpp::base::DataVector& classes, sgpp::base::DataVector& b) {
+    size_t mpi_myrank = sgpp::parallel::myGlobalMPIComm->getMyRank();
     b.setAll(0.0);
     this->tempData->setAll(0.0);
     this->tempData->copyFrom(classes);
@@ -210,20 +210,20 @@ class DMSystemMatrixVectorizedIdentityTrueAsyncMPI
                                   this->numPatchedTrainingInstances_);
     }
     this->computeTimeMultTrans_ += this->myTimer_->stop();
-    SGPP::parallel::myGlobalMPIComm->dataVectorAllToAll(b, _mpi_grid_offsets, _mpi_grid_sizes);
+    sgpp::parallel::myGlobalMPIComm->dataVectorAllToAll(b, _mpi_grid_offsets, _mpi_grid_sizes);
     this->completeTimeMultTrans_ += this->myTimer_->stop();
   }
 
   virtual void rebuildLevelAndIndex() {
     DMSystemMatrixVectorizedIdentityMPIBase<KernelImplementation>::rebuildLevelAndIndex();
 
-    size_t mpi_size = SGPP::parallel::myGlobalMPIComm->getNumRanks();
+    size_t mpi_size = sgpp::parallel::myGlobalMPIComm->getNumRanks();
 
-    SGPP::parallel::PartitioningTool::calcDistribution(this->storage_.getSize(), mpi_size,
+    sgpp::parallel::PartitioningTool::calcDistribution(this->storage_.getSize(), mpi_size,
                                                        _mpi_grid_sizes, _mpi_grid_offsets, 1);
   }
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // DMSYSTEMMATRIXVECTORIZEDIDENTITYTRUEASYNCMPI_H

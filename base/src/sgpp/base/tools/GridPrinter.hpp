@@ -13,7 +13,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -94,6 +94,6 @@ class GridPrinter {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GRIDPRINTER */

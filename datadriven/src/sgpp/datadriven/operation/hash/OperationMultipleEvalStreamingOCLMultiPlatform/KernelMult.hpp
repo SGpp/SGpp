@@ -18,7 +18,7 @@
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "SourceBuilderMult.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
@@ -83,7 +83,7 @@ class KernelMult {
                      "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
                      "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
                   << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     this->verbose = kernelConfiguration["VERBOSE"].getBool();
@@ -370,4 +370,4 @@ class KernelMult {
 };
 }  // namespace StreamingOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -15,7 +15,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 class ODESolver : public SGSolver {
@@ -26,7 +26,7 @@ class ODESolver : public SGSolver {
    * @param imax number of maximum executed iterations
    * @param timestepSize the size of one timestep
    */
-  ODESolver(size_t imax, float_t timestepSize) : SGSolver(imax, timestepSize) {}
+  ODESolver(size_t imax, double timestepSize) : SGSolver(imax, timestepSize) {}
 
   /**
    * Std-Destructor
@@ -38,17 +38,17 @@ class ODESolver : public SGSolver {
    *
    * @param LinearSystemSolver reference to an instance of a linear system solver that is used by
    * this ODE solver
-   * @param System reference to an SGPP::base::OperationMatrix Object that implements the matrix
+   * @param System reference to an sgpp::base::OperationMatrix Object that implements the matrix
    * vector multiplication
    * @param bIdentifyLastStep set this to true to tell System the last step
    * @param verbose prints information during execution of the solver
    */
   virtual void solve(SLESolver& LinearSystemSolver,
-                     SGPP::solver::OperationParabolicPDESolverSystem& System,
+                     sgpp::solver::OperationParabolicPDESolverSystem& System,
                      bool bIdentifyLastStep = false, bool verbose = false) = 0;
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ODESOLVER_HPP */

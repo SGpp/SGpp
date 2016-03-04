@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -45,7 +45,7 @@ class LinearStretchedGrid : public Grid {
    */
   ~LinearStretchedGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
@@ -54,6 +54,6 @@ class LinearStretchedGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARSTRETCHEDGRID_HPP */

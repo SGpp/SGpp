@@ -12,7 +12,7 @@
 
 #include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 /**
@@ -43,7 +43,7 @@ class SampleGenerator {
    * @param sample provide a DataVector to store the generated sample.
    */
 
-  virtual void getSample(SGPP::base::DataVector& sample) {}
+  virtual void getSample(sgpp::base::DataVector& sample) {}
 
   /**
    * This method generates a given number of samples. The resulting
@@ -54,7 +54,7 @@ class SampleGenerator {
    * @param samples provide a DataMatrix to hold the generated samples
    */
 
-  void getSamples(SGPP::base::DataMatrix& samples);
+  void getSamples(sgpp::base::DataMatrix& samples);
 
   /**
    *
@@ -82,6 +82,6 @@ class SampleGenerator {
   std::mt19937_64 rng;
 };
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SAMPLEGENERATOR_HPP */

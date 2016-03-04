@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -45,6 +45,6 @@ class OperationMultipleEvalPeriodic : public OperationMultipleEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALPERIODIC_HPP */

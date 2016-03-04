@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -25,7 +25,7 @@ class BiCGStab : public SLESolver {
   /// default maximal number of iterations
   static const size_t DEFAULT_MAX_IT_COUNT = 1000;
   /// default tolerance
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-10;
+  static constexpr double DEFAULT_TOLERANCE = 1e-10;
 
   /**
    * Constructor.
@@ -37,7 +37,7 @@ class BiCGStab : public SLESolver {
    * @param tolerance         tolerance
    * @param startingPoint     starting vector
    */
-  BiCGStab(size_t maxItCount, float_t tolerance, const base::DataVector& startingPoint);
+  BiCGStab(size_t maxItCount, double tolerance, const base::DataVector& startingPoint);
 
   /**
    * Destructor.
@@ -66,12 +66,12 @@ class BiCGStab : public SLESolver {
   /**
    * @return              tolerance
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance     tolerance
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return                  starting vector
@@ -87,12 +87,12 @@ class BiCGStab : public SLESolver {
   /// maximal number of iterations
   size_t N;
   /// tolerance
-  float_t tol;
+  double tol;
   /// starting vector
   base::DataVector x0;
 };
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_BICGSTAB_HPP */

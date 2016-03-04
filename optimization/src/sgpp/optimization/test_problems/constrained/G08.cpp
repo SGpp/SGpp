@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& G08::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G08::getEqualityConstraintFunction() { return h; }
 
-float_t G08::getOptimalPointUndisplaced(base::DataVector& x) {
+double G08::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.1227971;
   x[1] = 0.4245373;
@@ -33,9 +33,9 @@ G08Objective::G08Objective() : TestScalarFunction(2) {}
 
 G08Objective::~G08Objective() {}
 
-float_t G08Objective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 10.0 * x[0];
-  const float_t x2 = 10.0 * x[1];
+double G08Objective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 10.0 * x[0];
+  const double x2 = 10.0 * x[1];
 
   return -std::pow(std::sin(2.0 * M_PI * x1), 3.0) * std::sin(2.0 * M_PI * x2) /
          (x1 * x1 * x1 * (x1 + x2));
@@ -50,8 +50,8 @@ G08InequalityConstraint::G08InequalityConstraint() : TestVectorFunction(2, 2) {}
 G08InequalityConstraint::~G08InequalityConstraint() {}
 
 void G08InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 10.0 * x[0];
-  const float_t x2 = 10.0 * x[1];
+  const double x1 = 10.0 * x[0];
+  const double x2 = 10.0 * x[1];
 
   value[0] = x1 * x1 - x2 + 1.0;
   value[1] = 1.0 - x1 + std::pow(x2 - 4.0, 2.0);
@@ -72,4 +72,4 @@ void G08EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

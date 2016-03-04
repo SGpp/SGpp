@@ -7,30 +7,30 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-dPhidPhiDownModLinear::dPhidPhiDownModLinear(SGPP::base::GridStorage* storage) : storage(storage) {}
+dPhidPhiDownModLinear::dPhidPhiDownModLinear(sgpp::base::GridStorage* storage) : storage(storage) {}
 
 dPhidPhiDownModLinear::~dPhidPhiDownModLinear() {}
 
-void dPhidPhiDownModLinear::operator()(SGPP::base::DataVector& source,
-                                       SGPP::base::DataVector& result, grid_iterator& index,
+void dPhidPhiDownModLinear::operator()(sgpp::base::DataVector& source,
+                                       sgpp::base::DataVector& result, grid_iterator& index,
                                        size_t dim) {
   rec(source, result, index, dim, 0.0);
 }
 
-void dPhidPhiDownModLinear::rec(SGPP::base::DataVector& source, SGPP::base::DataVector& result,
-                                grid_iterator& index, size_t dim, float_t f) {
+void dPhidPhiDownModLinear::rec(sgpp::base::DataVector& source, sgpp::base::DataVector& result,
+                                grid_iterator& index, size_t dim, double f) {
   size_t seq = index.seq();
-  SGPP::base::GridStorage::index_type::level_type l;
-  SGPP::base::GridStorage::index_type::index_type i;
+  sgpp::base::GridStorage::index_type::level_type l;
+  sgpp::base::GridStorage::index_type::index_type i;
 
   index.get(dim, l, i);
 
-  float_t alpha_value = source[seq];
-  float_t ht = pow(2.0, static_cast<int>(l));
-  float_t f_local = 0.0;
+  double alpha_value = source[seq];
+  double ht = pow(2.0, static_cast<int>(l));
+  double f_local = 0.0;
 
   // level 1, constant function
   if (l == 1) {
@@ -63,4 +63,4 @@ void dPhidPhiDownModLinear::rec(SGPP::base::DataVector& source, SGPP::base::Data
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

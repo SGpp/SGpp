@@ -10,7 +10,7 @@
 
 #include <sgpp/optimization/tools/MutexType.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -75,6 +75,6 @@ class ScopedLock {
   void operator=(const ScopedLock& other);
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_SCOPEDLOCK_HPP */

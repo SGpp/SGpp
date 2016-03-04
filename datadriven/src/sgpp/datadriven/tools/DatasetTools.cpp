@@ -16,7 +16,7 @@
 #include <iostream>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void DatasetTools::splitset(base::DataMatrix& dataset,
@@ -100,5 +100,5 @@ void DatasetTools::splitset(base::DataMatrix& dataset,
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

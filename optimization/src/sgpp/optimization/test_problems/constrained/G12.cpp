@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& G12::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G12::getEqualityConstraintFunction() { return h; }
 
-float_t G12::getOptimalPointUndisplaced(base::DataVector& x) {
+double G12::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(3);
   x.setAll(0.5);
   return -1;
@@ -32,10 +32,10 @@ G12Objective::G12Objective() : TestScalarFunction(3) {}
 
 G12Objective::~G12Objective() {}
 
-float_t G12Objective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 10.0 * x[0];
-  const float_t x2 = 10.0 * x[1];
-  const float_t x3 = 10.0 * x[2];
+double G12Objective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 10.0 * x[0];
+  const double x2 = 10.0 * x[1];
+  const double x3 = 10.0 * x[2];
 
   return (std::pow(x1 - 5.0, 2.0) + std::pow(x2 - 5.0, 2.0) + std::pow(x3 - 5.0, 2.0)) / 100.0 -
          1.0;
@@ -50,15 +50,15 @@ G12InequalityConstraint::G12InequalityConstraint() : TestVectorFunction(3, 1) {}
 G12InequalityConstraint::~G12InequalityConstraint() {}
 
 void G12InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 10.0 * x[0];
-  const float_t x2 = 10.0 * x[1];
-  const float_t x3 = 10.0 * x[2];
-  float_t result = INFINITY;
+  const double x1 = 10.0 * x[0];
+  const double x2 = 10.0 * x[1];
+  const double x3 = 10.0 * x[2];
+  double result = INFINITY;
 
-  for (float_t y1 = 1.0; y1 <= 9.0; y1++) {
-    for (float_t y2 = 1.0; y2 <= 9.0; y2++) {
-      for (float_t y3 = 1.0; y3 <= 9.0; y3++) {
-        const float_t tmp =
+  for (double y1 = 1.0; y1 <= 9.0; y1++) {
+    for (double y2 = 1.0; y2 <= 9.0; y2++) {
+      for (double y3 = 1.0; y3 <= 9.0; y3++) {
+        const double tmp =
             std::pow(x1 - y1, 2.0) + std::pow(x2 - y2, 2.0) + std::pow(x3 - y3, 2.0) - 0.0625;
 
         if (tmp < result) {
@@ -86,4 +86,4 @@ void G12EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

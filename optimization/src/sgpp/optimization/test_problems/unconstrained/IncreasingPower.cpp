@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,7 +18,7 @@ IncreasingPower::~IncreasingPower() {}
 
 TestScalarFunction& IncreasingPower::getObjectiveFunction() { return f; }
 
-float_t IncreasingPower::getOptimalPointUndisplaced(base::DataVector& x) {
+double IncreasingPower::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
 
   for (size_t t = 0; t < d; t++) {
@@ -32,8 +32,8 @@ IncreasingPowerObjective::IncreasingPowerObjective(size_t d) : TestScalarFunctio
 
 IncreasingPowerObjective::~IncreasingPowerObjective() {}
 
-float_t IncreasingPowerObjective::evalUndisplaced(const base::DataVector& x) {
-  float_t result = 0.0;
+double IncreasingPowerObjective::evalUndisplaced(const base::DataVector& x) {
+  double result = 0.0;
 
   for (size_t t = 0; t < d; t++) {
     result += std::pow(std::abs(x[t] - 1.0 / std::pow(2.0, t + 1)), t + 2);
@@ -47,4 +47,4 @@ void IncreasingPowerObjective::clone(std::unique_ptr<ScalarFunction>& clone) con
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

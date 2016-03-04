@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -36,7 +36,7 @@ class OperationFirstMomentLinear : public OperationFirstMoment {
    *
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadrature(const DataVector& alpha) override;
+  double doQuadrature(const DataVector& alpha) override;
 
  protected:
   // Pointer to the grid's GridStorage object
@@ -44,6 +44,6 @@ class OperationFirstMomentLinear : public OperationFirstMoment {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONFIRSTMOMENTLINEAR_HPP */

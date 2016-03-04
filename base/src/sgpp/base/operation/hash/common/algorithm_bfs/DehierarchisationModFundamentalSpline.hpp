@@ -12,7 +12,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -74,6 +74,6 @@ class DehierarchisationModFundamentalSpline {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DEHIERARCHISATIONMODFUNDAMENTALSPLINE_HPP */

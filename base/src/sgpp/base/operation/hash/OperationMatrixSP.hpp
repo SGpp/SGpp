@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -45,6 +45,6 @@ class OperationMatrixSP {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMATRIXSP_HPP */

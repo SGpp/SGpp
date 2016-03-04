@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -162,6 +162,6 @@ class RefinementDecorator: public AbstractRefinement {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* REFINEMENTSTRATEGY_HPP_ */

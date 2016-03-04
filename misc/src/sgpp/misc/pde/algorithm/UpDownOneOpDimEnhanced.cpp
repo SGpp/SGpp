@@ -7,17 +7,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
-UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage,
-                                               SGPP::base::DataVector& coef)
+UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(sgpp::base::GridStorage* storage,
+                                               sgpp::base::DataVector& coef)
     : storage(storage),
       coefs(&coef),
       algoDims(storage->getAlgorithmicDimensions()),
       numAlgoDims_(storage->getAlgorithmicDimensions().size()) {}
 
-UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage)
+UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(sgpp::base::GridStorage* storage)
     : storage(storage),
       coefs(NULL),
       algoDims(storage->getAlgorithmicDimensions()),
@@ -25,9 +25,9 @@ UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(SGPP::base::GridStorage* storage)
 
 UpDownOneOpDimEnhanced::~UpDownOneOpDimEnhanced() {}
 
-void UpDownOneOpDimEnhanced::mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
-  SGPP::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
+void UpDownOneOpDimEnhanced::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
+  sgpp::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
 
   result.setAll(0.0);
   maAlpha.expand(alpha);
@@ -45,10 +45,10 @@ void UpDownOneOpDimEnhanced::mult(SGPP::base::DataVector& alpha, SGPP::base::Dat
   }
 }
 
-void UpDownOneOpDimEnhanced::multParallelBuildingBlock(SGPP::base::DataVector& alpha,
-                                                       SGPP::base::DataVector& result) {
-  SGPP::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
-  SGPP::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
+void UpDownOneOpDimEnhanced::multParallelBuildingBlock(sgpp::base::DataVector& alpha,
+                                                       sgpp::base::DataVector& result) {
+  sgpp::base::DataMatrix beta(result.getSize(), this->numAlgoDims_);
+  sgpp::base::DataMatrix maAlpha(alpha.getSize(), this->numAlgoDims_);
 
   result.setAll(0.0);
   maAlpha.expand(alpha);
@@ -62,7 +62,7 @@ void UpDownOneOpDimEnhanced::multParallelBuildingBlock(SGPP::base::DataVector& a
   }
 }
 
-void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha, SGPP::base::DataMatrix& result,
+void UpDownOneOpDimEnhanced::updown(sgpp::base::DataMatrix& alpha, sgpp::base::DataMatrix& result,
                                     size_t dim) {
   size_t curNumAlgoDims = this->numAlgoDims_;
   size_t curMaxParallelDims = this->maxParallelDims_;
@@ -70,9 +70,9 @@ void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha, SGPP::base::D
   // Unidirectional scheme
   if (dim > 0) {
     // Reordering ups and downs
-    SGPP::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
-    SGPP::base::DataMatrix result_temp(alpha.getNrows(), this->numAlgoDims_);
-    SGPP::base::DataMatrix temp_two(alpha.getNrows(), this->numAlgoDims_);
+    sgpp::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
+    sgpp::base::DataMatrix result_temp(alpha.getNrows(), this->numAlgoDims_);
+    sgpp::base::DataMatrix temp_two(alpha.getNrows(), this->numAlgoDims_);
 
 #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp, result)
     {
@@ -92,7 +92,7 @@ void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha, SGPP::base::D
     result.add(result_temp);
   } else {
     // Terminates dimension recursion
-    SGPP::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
+    sgpp::base::DataMatrix temp(alpha.getNrows(), this->numAlgoDims_);
 
 #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, result)
     up(alpha, result, dim);
@@ -107,4 +107,4 @@ void UpDownOneOpDimEnhanced::updown(SGPP::base::DataMatrix& alpha, SGPP::base::D
 }
 
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

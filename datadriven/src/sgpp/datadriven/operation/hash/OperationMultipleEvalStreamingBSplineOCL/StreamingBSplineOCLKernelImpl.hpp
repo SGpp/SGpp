@@ -17,7 +17,7 @@
 #include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
 #include "StreamingBSplineOCLKernelSourceBuilder.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 template <typename real_type>
@@ -201,7 +201,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << i
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -225,7 +225,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may "
                          "handle 0 entries. Synchronization will be not correct." << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         active_devices++;
@@ -234,7 +234,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -259,7 +259,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command queue (or crash in "
                          "mult)! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
@@ -269,7 +269,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command queue! Error code: "
                       << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
 
@@ -354,7 +354,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to create kernel arguments for device " << i
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -382,7 +382,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Multiple GPUs is erroneous, because only the last chunks may "
                          "handle 0 entries. Synchronization will be not correct." << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         active_devices++;
@@ -391,7 +391,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err
                       << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
     }
@@ -416,7 +416,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read start-time from command queue (or crash in "
                          "multTranspose)! Error code: " << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
 
         err = clGetEventProfilingInfo(clTimings[i], CL_PROFILING_COMMAND_END, sizeof(cl_ulong),
@@ -426,7 +426,7 @@ class StreamingBSplineOCLKernelImpl {
           std::stringstream errorString;
           errorString << "OCL Error: Failed to read end-time from command queue! Error code: "
                       << err << std::endl;
-          throw SGPP::base::operation_exception(errorString.str());
+          throw sgpp::base::operation_exception(errorString.str());
         }
       }
 
@@ -518,4 +518,4 @@ class StreamingBSplineOCLKernelImpl {
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

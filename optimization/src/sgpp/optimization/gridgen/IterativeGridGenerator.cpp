@@ -13,7 +13,7 @@
 #include <numeric>
 #include <list>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 IterativeGridGenerator::IterativeGridGenerator(ScalarFunction& f, base::Grid& grid, size_t N)
@@ -63,10 +63,10 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
         x[t] = gp->getCoord(t);
       }
 
-      const float_t fx = curFPtr->eval(x);
+      const double fx = curFPtr->eval(x);
       fX[i] = fx;
     }
   }
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

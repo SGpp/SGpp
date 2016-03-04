@@ -10,7 +10,7 @@
 
 #include <cstdlib>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
@@ -42,6 +42,6 @@ class ArBBKernels5D {
   void resetKernels();
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* ARBBKERNELS5D_HPP */

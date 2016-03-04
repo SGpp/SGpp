@@ -11,7 +11,7 @@
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationPolyBoundary::doHierarchisation(
@@ -38,4 +38,4 @@ void OperationHierarchisationPolyBoundary::doDehierarchisation(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -13,10 +13,10 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationEvalLinear::eval(const DataVector& alpha,
+double OperationEvalLinear::eval(const DataVector& alpha,
                                   const DataVector& point) {
   LinearBasis<unsigned int, unsigned int> base;
   AlgorithmEvaluation <
@@ -26,4 +26,4 @@ float_t OperationEvalLinear::eval(const DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

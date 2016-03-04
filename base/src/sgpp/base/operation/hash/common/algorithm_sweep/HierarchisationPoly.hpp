@@ -13,7 +13,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
@@ -75,6 +75,6 @@ class HierarchisationPoly {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HIERARCHISATIONPOLY_HPP */

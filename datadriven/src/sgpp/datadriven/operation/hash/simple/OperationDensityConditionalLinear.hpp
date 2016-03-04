@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -34,11 +34,11 @@ class OperationDensityConditionalLinear : public OperationDensityConditional {
    * @param xbar Point at which to conditionalize
    */
   void doConditional(base::DataVector& alpha, base::Grid*& mg, base::DataVector& malpha,
-                     unsigned int mdim, float_t xbar);
+                     unsigned int mdim, double xbar);
 
  protected:
   base::Grid* grid;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYCONDITIONALLINEAR_HPP */

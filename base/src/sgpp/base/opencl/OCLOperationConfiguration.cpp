@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLOperationConfiguration::OCLOperationConfiguration() : OperationConfiguration() {
@@ -100,4 +100,4 @@ std::vector<std::reference_wrapper<json::Node>> OCLOperationConfiguration::getAl
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

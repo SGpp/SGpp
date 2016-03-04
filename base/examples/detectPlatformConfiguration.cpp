@@ -11,12 +11,12 @@
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 int main(int argc, char** argv) {
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> configuration =
-      std::make_shared<SGPP::base::OCLOperationConfiguration>(
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> configuration =
+      std::make_shared<sgpp::base::OCLOperationConfiguration>(
           "detectPlatform.cfg");
   (*configuration).replaceIDAttr("VERBOSE", true);
 
-  SGPP::base::OCLManagerMultiPlatform manager(configuration);
+  sgpp::base::OCLManagerMultiPlatform manager(configuration);
 
   configuration->serialize("detectPlatformOut.cfg");
 

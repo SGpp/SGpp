@@ -14,7 +14,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -74,6 +74,6 @@ class OperationMultipleHierarchisation {
   virtual void doDehierarchisation(base::DataMatrix& alpha) = 0;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIER_HPP */

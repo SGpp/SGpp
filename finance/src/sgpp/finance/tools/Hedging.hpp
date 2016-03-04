@@ -14,7 +14,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace finance {
 
@@ -31,9 +31,9 @@ class Hedging {
   /// resoluation in hedging area
   size_t m_res;
   /// epsilon used for calculating finite differences
-  float_t m_eps;
+  double m_eps;
   /// Points at which delta and gamma should be calculated, in Cartesian coordinates
-  SGPP::base::DataMatrix* m_hedge_points;
+  sgpp::base::DataMatrix* m_hedge_points;
   /// is hedging used with log-transformed grids
   bool m_is_log_transformed;
 
@@ -47,7 +47,7 @@ class Hedging {
    * @param eps epsilon used for calculating finite differences
    * @param is_log_transformed set to true if hedging is used with log-transformed grids
    */
-  Hedging(SGPP::base::BoundingBox& hedge_area, size_t resolution, float_t eps,
+  Hedging(sgpp::base::BoundingBox& hedge_area, size_t resolution, double eps,
           bool is_log_transformed);
 
   /**
@@ -64,10 +64,10 @@ class Hedging {
    * @param file_extension some file extension (e.g. numbering) in order to distinguish different
    * outputs that are written
    */
-  void calc_hedging(SGPP::base::Grid& sparse_grid, SGPP::base::DataVector alpha,
+  void calc_hedging(sgpp::base::Grid& sparse_grid, sgpp::base::DataVector alpha,
                     std::string file_extension);
 };
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HEDGING_HPP */

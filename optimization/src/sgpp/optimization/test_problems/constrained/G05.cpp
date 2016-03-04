@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& G05::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G05::getEqualityConstraintFunction() { return h; }
 
-float_t G05::getOptimalPointUndisplaced(base::DataVector& x) {
+double G05::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(4);
   x[0] = 0.566621083333333;
   x[1] = 0.855055833333333;
@@ -35,11 +35,11 @@ G05Objective::G05Objective() : TestScalarFunction(4) {}
 
 G05Objective::~G05Objective() {}
 
-float_t G05Objective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 1200.0 * x[0];
-  const float_t x2 = 1200.0 * x[1];
-  // const float_t x3 = 1.1 * x[2] - 0.55;
-  // const float_t x4 = 1.1 * x[3] - 0.55;
+double G05Objective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 1200.0 * x[0];
+  const double x2 = 1200.0 * x[1];
+  // const double x3 = 1.1 * x[2] - 0.55;
+  // const double x4 = 1.1 * x[3] - 0.55;
 
   return 3.0 * x1 + 0.000001 * std::pow(x1, 3.0) + 2.0 * x2 + (0.000002 / 3.0) * std::pow(x2, 3.0);
 }
@@ -53,10 +53,10 @@ G05InequalityConstraint::G05InequalityConstraint() : TestVectorFunction(4, 2) {}
 G05InequalityConstraint::~G05InequalityConstraint() {}
 
 void G05InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  // const float_t x1 = 1200.0 * x[0];
-  // const float_t x2 = 1200.0 * x[1];
-  const float_t x3 = 1.1 * x[2] - 0.55;
-  const float_t x4 = 1.1 * x[3] - 0.55;
+  // const double x1 = 1200.0 * x[0];
+  // const double x2 = 1200.0 * x[1];
+  const double x3 = 1.1 * x[2] - 0.55;
+  const double x4 = 1.1 * x[3] - 0.55;
 
   value[0] = -x4 + x3 - 0.55;
   value[1] = -x3 + x4 - 0.55;
@@ -71,10 +71,10 @@ G05EqualityConstraint::G05EqualityConstraint() : TestVectorFunction(4, 3) {}
 G05EqualityConstraint::~G05EqualityConstraint() {}
 
 void G05EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 1200.0 * x[0];
-  const float_t x2 = 1200.0 * x[1];
-  const float_t x3 = 1.1 * x[2] - 0.55;
-  const float_t x4 = 1.1 * x[3] - 0.55;
+  const double x1 = 1200.0 * x[0];
+  const double x2 = 1200.0 * x[1];
+  const double x3 = 1.1 * x[2] - 0.55;
+  const double x4 = 1.1 * x[3] - 0.55;
 
   value[0] = 1000.0 * std::sin(-x3 - 0.25) + 1000.0 * std::sin(-x4 - 0.25) + 894.8 - x1;
   value[1] = 1000.0 * std::sin(x3 - 0.25) + 1000.0 * std::sin(x3 - x4 - 0.25) + 894.8 - x2;
@@ -86,4 +86,4 @@ void G05EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

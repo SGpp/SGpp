@@ -9,7 +9,7 @@
 #include <sgpp/base/operation/hash/common/algorithm_bfs/DehierarchisationFundamentalSpline.hpp>
 #include <sgpp/base/algorithm/BreadthFirstSearch.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OperationHierarchisationFundamentalSpline::
@@ -56,4 +56,4 @@ void OperationHierarchisationFundamentalSpline::doDehierarchisation(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -7,11 +7,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 EllipticPDESolver::EllipticPDESolver() : PDESolver() {}
 
 EllipticPDESolver::~EllipticPDESolver() {}
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

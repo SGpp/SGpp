@@ -29,7 +29,7 @@
 #include <fstream>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -43,11 +43,11 @@ namespace pde {
 class HeatEquationSolverWithStretching : public ParabolicPDESolver {
  private:
   /// the heat coefficient
-  float_t a;
+  double a;
   /// screen object used in this solver
-  SGPP::base::ScreenOutput* myScreen;
+  sgpp::base::ScreenOutput* myScreen;
   /// BoundingBox replacement
-  SGPP::base::Stretching* myStretching;
+  sgpp::base::Stretching* myStretching;
 
  public:
   /**
@@ -60,27 +60,27 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    */
   virtual ~HeatEquationSolverWithStretching();
 
-  void constructGrid(SGPP::base::Stretching& myStretching, int level);
+  void constructGrid(sgpp::base::Stretching& myStretching, int level);
 
-  void constructGrid(SGPP::base::BoundingBox& myStretching, int level);
+  void constructGrid(sgpp::base::BoundingBox& myStretching, int level);
 
-  void solveExplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
-                          float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+  void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
                           bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveImplicitEuler(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
-                          float_t epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+  void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
                           bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
-  void solveCrankNicolson(size_t numTimesteps, float_t timestepsize, size_t maxCGIterations,
-                          float_t epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+  void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
+                          double epsilonCG, sgpp::base::DataVector& alpha, size_t NumImEul = 0);
 
   /**
    * This method sets the heat coefficient of the regarded material
    *
    * @param a the heat coefficient
    */
-  void setHeatCoefficient(float_t a);
+  void setHeatCoefficient(double a);
 
   /**
    * Inits the grid in the middle of the whole domain with one single heat
@@ -88,7 +88,7 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * alpha reference to the coefficients vector
    * heat the value of the heat in the middle of the domain
    */
-  //  void initGridWithSingleHeat(SGPP::base::DataVector& alpha, float_t heat);
+  //  void initGridWithSingleHeat(sgpp::base::DataVector& alpha, double heat);
 
   /**
    * Inits the grid in the middle the domain with an smooth heat distribution that the
@@ -99,8 +99,8 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, float_t mu, float_t sigma,
-                              float_t factor);
+  void initGridWithSmoothHeat(sgpp::base::DataVector& alpha, double mu, double sigma,
+                              double factor);
 
   /**
    * Inits the grid with a constant heat
@@ -108,7 +108,7 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * alpha reference to the coefficients vector
    * constHeat the temperature of the constant heat
    */
-  //  void initGridWithConstantHeat(SGPP::base::DataVector& alpha, float_t constHeat);
+  //  void initGridWithConstantHeat(sgpp::base::DataVector& alpha, double constHeat);
 
   /**
    * Inits the screen object
@@ -125,14 +125,14 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param PointesPerDimension the distance between evaluation points
    * @param tfilename absolute path to file into which the grid's evaluation is written
    */
-  void printGrid(SGPP::base::DataVector& alpha, float_t PointesPerDimension,
+  void printGrid(sgpp::base::DataVector& alpha, double PointesPerDimension,
                  std::string tfilename) const;
 
   /**
    This function is a placeholder, is not used.
    */
-  void printGridDomain(SGPP::base::DataVector& alpha, float_t PointesPerDimension,
-                       SGPP::base::BoundingBox& GridArea, std::string tfilename) const;
+  void printGridDomain(sgpp::base::DataVector& alpha, double PointesPerDimension,
+                       sgpp::base::BoundingBox& GridArea, std::string tfilename) const;
 
   /**
    * This is some kind of debug functionality. It writes a file,
@@ -145,11 +145,11 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param GridArea the area in which the function should be plotted
    * @param tfilename absolute path to file into which the grid's evaluation is written
    */
-  void printGridDomainStretching(SGPP::base::DataVector& alpha, float_t PointesPerDimension,
-                                 SGPP::base::Stretching& GridArea, std::string tfilename) const;
+  void printGridDomainStretching(sgpp::base::DataVector& alpha, double PointesPerDimension,
+                                 sgpp::base::Stretching& GridArea, std::string tfilename) const;
 
   /**
-   * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis
+   * Prints the sgpp::base::Grid Points of the Sparse sgpp::base::Grid either with their node basis
    * value
    * or their hierarchical surplus
    *
@@ -159,10 +159,10 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param tfilename absoulte path to the file the grid is written into
    * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
    */
-  void printSparseGrid(SGPP::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
+  void printSparseGrid(sgpp::base::DataVector& alpha, std::string tfilename, bool bSurplus) const;
 
   /**
-   * Prints the SGPP::base::Grid Points of the Sparse SGPP::base::Grid either with their node basis
+   * Prints the sgpp::base::Grid Points of the Sparse sgpp::base::Grid either with their node basis
    * value
    * or their hierarchical surplus
    *
@@ -175,10 +175,10 @@ class HeatEquationSolverWithStretching : public ParabolicPDESolver {
    * @param tfilename absoulte path to the file the grid is written into
    * @param bSurplus specifies whether the surplus (true) or the node basis value (false) is written
    */
-  void printSparseGridExpTransform(SGPP::base::DataVector& alpha, std::string tfilename,
+  void printSparseGridExpTransform(sgpp::base::DataVector& alpha, std::string tfilename,
                                    bool bSurplus) const;
 };
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HEATEQUATIONSOLVERWITHSTRETCHING_HPP */

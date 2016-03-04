@@ -17,7 +17,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -1290,6 +1290,6 @@ class HashGenerator {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HASHGENERATOR_HPP */

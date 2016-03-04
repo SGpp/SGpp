@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,7 +18,7 @@ Mladineo::~Mladineo() {}
 
 TestScalarFunction& Mladineo::getObjectiveFunction() { return f; }
 
-float_t Mladineo::getOptimalPointUndisplaced(base::DataVector& x) {
+double Mladineo::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.001542464646465;
   x[1] = 0.004449101010101;
@@ -38,9 +38,9 @@ MladineoObjective::MladineoObjective() : TestScalarFunction(2) {}
 
 MladineoObjective::~MladineoObjective() {}
 
-float_t MladineoObjective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 0.99 * x[0] + 0.01;
-  const float_t x2 = 0.99 * x[1] + 0.01;
+double MladineoObjective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 0.99 * x[0] + 0.01;
+  const double x2 = 0.99 * x[1] + 0.01;
 
   return 1.0 + (x1 * x1 + x2 * x2) / 2.0 -
          std::cos(10.0 * std::log(2.0 * x1)) * std::cos(10.0 * std::log(3.0 * x2));
@@ -51,4 +51,4 @@ void MladineoObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

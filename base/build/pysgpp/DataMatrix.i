@@ -6,17 +6,17 @@
 %include "base/src/sgpp/globaldef.hpp"
 
 
-namespace SGPP
+namespace sgpp
 {
 namespace base
 {
 
-%apply SGPP::float_t *OUTPUT { SGPP::float_t* min, SGPP::float_t* max };
+%apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
 %rename(__str__) DataMatrix::toString const;
 
 //%rename(__getitem__) DataMatrix::get(size_t row, size_t col) const;
-//%rename(__setitem__) DataMatrix::set(int i, SGPP::float_t value);
+//%rename(__setitem__) DataMatrix::set(int i, double value);
 //%rename(assign) DataMatrix::operator=;
 //%rename(__len__) DataMatrix::getSize const;
 
@@ -27,7 +27,7 @@ class DataMatrix
 public:
 
 // typemap allowing to pass sequence of numbers to constructor
-%typemap(in) (SGPP::float_t *input, int nrows, int ncols)
+%typemap(in) (double *input, int nrows, int ncols)
 {
   if (!PySequence_Check($input)) {
     PyErr_SetString(PyExc_ValueError, "Expected a sequence");
@@ -43,7 +43,7 @@ public:
     }
     if ($3 == 0) {
       $3 = PySequence_Size(row);
-      $1 = (SGPP::float_t *) malloc(sizeof(SGPP::float_t)*$2*$3);
+      $1 = (double *) malloc(sizeof(double)*$2*$3);
     }
     if ($3 != PySequence_Size(row)) {
       PyErr_SetString(PyExc_ValueError, "Row dimensions do not match");
@@ -53,7 +53,7 @@ public:
       for (int j = 0; j < $3; j++) {
   PyObject *o = PySequence_GetItem(row,j);
   if (PyNumber_Check(o)) {
-    $1[i*$3+j] = (SGPP::float_t) PyFloat_AsDouble(o);
+    $1[i*$3+j] = (double) PyFloat_AsDouble(o);
   } else {
     PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");      
     return NULL;
@@ -62,20 +62,20 @@ public:
     }
   }
 }
-%typemap(freearg) (SGPP::float_t *input, int nrows, int ncols)
+%typemap(freearg) (double *input, int nrows, int ncols)
 {
   if ($1) free($1);
 }
-%typecheck(SWIG_TYPECHECK_FLOAT) (SGPP::float_t *input, int nrows, int ncols)
+%typecheck(SWIG_TYPECHECK_FLOAT) (double *input, int nrows, int ncols)
 {
 $1 = PySequence_Check($input) ? 1 : 0;
 }
 
     // Constructors
     DataMatrix(size_t nrows, size_t ncols);
-    DataMatrix(size_t nrows, size_t ncols, float_t value);
+    DataMatrix(size_t nrows, size_t ncols, double value);
     DataMatrix(const DataMatrix& matr);
-    DataMatrix(SGPP::float_t* input, int nrows, int ncols);
+    DataMatrix(double* input, int nrows, int ncols);
 
     void resize(size_t size);
     void resizeZero(size_t nrows);
@@ -83,14 +83,14 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
     void addSize(size_t inc_nrows);
     size_t appendRow();
-    void setAll(SGPP::float_t value);
+    void setAll(double value);
     void copyFrom(const DataMatrix& matr);
 
-    SGPP::float_t get(size_t row, size_t col) const;
-    void set(size_t row, size_t col, SGPP::float_t value);
+    double get(size_t row, size_t col) const;
+    void set(size_t row, size_t col, double value);
 
 //    %extend {
-//          SGPP::float_t getxy(int* INPUT) {
+//          double getxy(int* INPUT) {
 //            return INPUT[0]*INPUT[1];
 //      };
 //    }     
@@ -99,17 +99,17 @@ $1 = PySequence_Check($input) ? 1 : 0;
     void setRow(size_t row, const DataVector& vec);
     void getColumn(size_t col, DataVector& vec) const;
     void setColumn(size_t col, const DataVector& vec);
-    SGPP::float_t* getPointer();
+    double* getPointer();
 
     void add(DataMatrix& matr);
     void sub(DataMatrix& matr);
     void componentwise_mult(DataMatrix& matr);
     void componentwise_div(DataMatrix& matr);
-    void mult(SGPP::float_t scalar);
+    void mult(double scalar);
     void sqr();
     void sqrt();
     void abs();
-    SGPP::float_t sum() const;
+    double sum() const;
 
     size_t getSize() const;
     size_t getUnused() const;
@@ -120,14 +120,14 @@ $1 = PySequence_Check($input) ? 1 : 0;
     void setInc(size_t inc_rows);
 
     void normalizeDimension(size_t d);
-    void normalizeDimension(size_t d, SGPP::float_t border);
+    void normalizeDimension(size_t d, double border);
 
-    SGPP::float_t min(size_t col) const;
-    SGPP::float_t min() const;
-    SGPP::float_t max(size_t col) const;
-    SGPP::float_t max() const;
-    void minmax(size_t col, SGPP::float_t* min, SGPP::float_t* max) const;
-    void minmax(SGPP::float_t* min, SGPP::float_t* max) const;
+    double min(size_t col) const;
+    double min() const;
+    double max(size_t col) const;
+    double max() const;
+    void minmax(size_t col, double* min, double* max) const;
+    void minmax(double* min, double* max) const;
 
 //    void toString(std::string& text) const; // otherwise overloaded duplicate
     std::string toString() const;
@@ -137,7 +137,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
     // an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
     PyObject* __array(PyObject* datavector){
         //Get the data and number of entries
-      SGPP::float_t *vec = $self->getPointer();
+      double *vec = $self->getPointer();
       int rows = $self->getNrows();
       int cols = $self->getNcols();
 
@@ -179,17 +179,17 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //
 //%include "base/src/sgpp/globaldef.hpp"
 //
-//namespace SGPP
+//namespace sgpp
 //{
 //namespace base
 //{
 //
-//%apply SGPP::float_t *OUTPUT { SGPP::float_t* min, SGPP::float_t* max };
+//%apply double *OUTPUT { double* min, double* max };
 //%apply std::string *OUTPUT { std::string& text };
 //%rename(__str__) DataMatrix::toString;
 //
 ////%rename(__getitem__) DataMatrix::get(size_t row, size_t col) const;
-////%rename(__setitem__) DataMatrix::set(int i, SGPP::float_t value);
+////%rename(__setitem__) DataMatrix::set(int i, double value);
 ////%rename(assign) DataMatrix::operator=;
 ////%rename(__len__) DataMatrix::getSize;
 //
@@ -198,7 +198,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //%ignore DataMatrix::toString(std::string& text);
 //
 //// typemap allowing to pass sequence of numbers to constructor
-//%typemap(in) (SGPP::float_t *input, int nrows, int ncols)
+//%typemap(in) (double *input, int nrows, int ncols)
 //{
 //  if (!PySequence_Check($input)) {
 //    PyErr_SetString(PyExc_ValueError, "Expected a sequence");
@@ -214,7 +214,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //    }
 //    if ($3 == 0) {
 //      $3 = PySequence_Size(row);
-//      $1 = (SGPP::float_t *) malloc(sizeof(SGPP::float_t)*$2*$3);
+//      $1 = (double *) malloc(sizeof(double)*$2*$3);
 //    }
 //    if ($3 != PySequence_Size(row)) {
 //      PyErr_SetString(PyExc_ValueError, "Row dimensions do not match");
@@ -224,7 +224,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //      for (int j = 0; j < $3; j++) {
 //  PyObject *o = PySequence_GetItem(row,j);
 //  if (PyNumber_Check(o)) {
-//    $1[i*$3+j] = (SGPP::float_t) PyFloat_AsDouble(o);
+//    $1[i*$3+j] = (double) PyFloat_AsDouble(o);
 //  } else {
 //    PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");      
 //    return NULL;
@@ -233,11 +233,11 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //    }
 //  }
 //}
-//%typemap(freearg) (SGPP::float_t *input, int nrows, int ncols)
+//%typemap(freearg) (double *input, int nrows, int ncols)
 //{
 //  if ($1) free($1);
 //}
-//%typecheck(SWIG_TYPECHECK_FLOAT) (SGPP::float_t *input, int nrows, int ncols)
+//%typecheck(SWIG_TYPECHECK_FLOAT) (double *input, int nrows, int ncols)
 //{
 //$1 = PySequence_Check($input) ? 1 : 0;
 //}
@@ -247,7 +247,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //  // an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
 //  PyObject* __array(PyObject* datavector){
 //      //Get the data and number of entries
-//    SGPP::float_t *vec = $self->getPointer();
+//    double *vec = $self->getPointer();
 //    int rows = $self->getNrows();
 //    int cols = $self->getNcols();
 //

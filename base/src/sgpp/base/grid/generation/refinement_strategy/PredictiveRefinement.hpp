@@ -16,7 +16,7 @@
 #include <utility>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -154,10 +154,10 @@ class PredictiveRefinement: public virtual RefinementDecorator {
     AbstractRefinement::refinement_container_type& collection);
 
  private:
-  float_t iThreshold_;
+  double iThreshold_;
   DataVector alpha_;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* ONLINEPREDICTIVEREFINEMENTDIMENSIONOLD_HPP_ */

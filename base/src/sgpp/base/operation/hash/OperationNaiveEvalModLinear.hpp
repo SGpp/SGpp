@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OperationNaiveEvalModLinear : public OperationNaiveEval {
@@ -36,7 +36,7 @@ class OperationNaiveEvalModLinear : public OperationNaiveEval {
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  float_t eval(const DataVector& alpha, const DataVector& point) override;
+  double eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid
@@ -46,6 +46,6 @@ class OperationNaiveEvalModLinear : public OperationNaiveEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALMODLINEAR_HPP */

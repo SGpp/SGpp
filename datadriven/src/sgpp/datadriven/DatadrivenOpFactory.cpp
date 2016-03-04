@@ -34,16 +34,12 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 
-#if USE_DOUBLE_PRECISION == 1
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
-#endif
 
 #ifdef __AVX__
-#if USE_DOUBLE_PRECISION == 1
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
-#endif
 #endif
 
 #ifdef USE_OCL
@@ -59,7 +55,7 @@
 
 #include <cstring>
 
-namespace SGPP {
+namespace sgpp {
 namespace op_factory {
 
 std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid) {
@@ -103,7 +99,7 @@ std::unique_ptr<datadriven::OperationTest> createOperationTest(base::Grid& grid)
 }
 
 std::unique_ptr<base::OperationMatrix> createOperationRegularizationDiagonal(
-    base::Grid& grid, int mode, float_t k) {
+    base::Grid& grid, int mode, double k) {
   if (grid.getType() == base::GridType::Linear ||
       grid.getType() == base::GridType::LinearL0Boundary ||
       grid.getType() == base::GridType::LinearBoundary ||
@@ -243,24 +239,19 @@ std::unique_ptr<datadriven::OperationDensityConditionalKDE> createOperationDensi
 
 std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration) {
-  if (configuration.getType() == SGPP::datadriven::OperationMultipleEvalType::DEFAULT) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
+  if (configuration.getType() == sgpp::datadriven::OperationMultipleEvalType::DEFAULT) {
     return createOperationMultipleEval(grid, dataset);
   }
 
   if (grid.getType() == base::GridType::Linear) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT ||
         configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
-      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
-#if USE_DOUBLE_PRECISION == 1
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT) {
         return std::unique_ptr<base::OperationMultipleEval>(
             new datadriven::OperationMultiEvalStreaming(grid, dataset));
-#else
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled for double precision");
-#endif
       }
-      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLMP) {
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::OCLMP) {
 #ifdef USE_OCL
         return std::unique_ptr<base::OperationMultipleEval>(
             datadriven::createStreamingOCLMultiPlatformConfigured(grid, dataset, configuration));
@@ -270,37 +261,27 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
 #endif
       }
     } else if (configuration.getType() == datadriven::OperationMultipleEvalType::SUBSPACELINEAR) {
-      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT ||
-          configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::COMBINED) {
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT ||
+          configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::COMBINED) {
 #ifdef __AVX__
-#if USE_DOUBLE_PRECISION == 1
         return std::unique_ptr<base::OperationMultipleEval>(
             new datadriven::OperationMultipleEvalSubspaceCombined(grid, dataset));
-#else
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled for double precision");
-#endif
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with AVX");
 #endif
       } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::SIMPLE) {
+                 sgpp::datadriven::OperationMultipleEvalSubType::SIMPLE) {
 #ifdef __AVX__
-#if USE_DOUBLE_PRECISION == 1
         return std::unique_ptr<base::OperationMultipleEval>(
             new datadriven::OperationMultipleEvalSubspaceSimple(grid, dataset));
-#else
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled for double precision");
-#endif
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with AVX");
 #endif
       }
     } else if (configuration.getType() == datadriven::OperationMultipleEvalType::ADAPTIVE) {
-      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT) {
 #ifdef USE_OCL
         return std::unique_ptr<base::OperationMultipleEval>(
             datadriven::createAdaptiveOCLConfigured(grid, dataset, configuration));
@@ -312,16 +293,11 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
     }
   } else if (grid.getType() == base::GridType::ModLinear) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
-      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT) {
-#if USE_DOUBLE_PRECISION == 1
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT) {
         return std::unique_ptr<base::OperationMultipleEval>(
             new datadriven::OperationMultiEvalModMaskStreaming(grid, dataset));
-#else
-        throw base::factory_exception(
-            "Error creating function: the library wasn't compiled for double precision");
-#endif
       }
-      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP) {
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP) {
 #ifdef USE_OCL
         return std::unique_ptr<base::OperationMultipleEval>(
             datadriven::createStreamingModOCLFastMultiPlatformConfigured(
@@ -331,7 +307,7 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
             "Error creating function: the library wasn't compiled with OpenCL support");
 #endif
       } else if (configuration.getSubType() ==
-                 SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP) {
+                 sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP) {
 #ifdef USE_OCL
         return std::unique_ptr<base::OperationMultipleEval>(
             datadriven::createStreamingModOCLMaskMultiPlatformConfigured(grid, dataset,
@@ -344,7 +320,7 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
     }
   } else if (grid.getType() == base::GridType::Bspline) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
-      if (configuration.getSubType() == SGPP::datadriven::OperationMultipleEvalSubType::OCL) {
+      if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::OCL) {
 #ifdef USE_OCL
         return std::unique_ptr<base::OperationMultipleEval>(
             datadriven::createStreamingBSplineOCLConfigured(grid, dataset, configuration));
@@ -359,4 +335,4 @@ std::unique_ptr<base::OperationMultipleEval> createOperationMultipleEval(
   throw base::factory_exception("OperationMultiEval is not implemented for this grid type.");
 }
 }  // namespace op_factory
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,7 +11,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/tools/OperationConfiguration.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 enum class OperationMultipleEvalType { DEFAULT, STREAMING, SUBSPACELINEAR, ADAPTIVE };
@@ -66,4 +66,4 @@ class OperationMultipleEvalConfiguration {
   std::string& getName() { return this->name; }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

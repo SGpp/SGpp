@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -40,8 +40,8 @@ class OperationNaiveEvalGradient {
    * @param[out]  gradient    gradient vector of the linear combination
    * @return                  value of the linear combination
    */
-  float_t evalGradient(const DataVector& alpha,
-                       const std::vector<float_t>& point,
+  double evalGradient(const DataVector& alpha,
+                       const std::vector<double>& point,
                        DataVector& gradient) {
     DataVector p(point);
     return evalGradient(alpha, p, gradient);
@@ -55,12 +55,12 @@ class OperationNaiveEvalGradient {
    * @param[out]  gradient    gradient vector of the linear combination
    * @return                  value of the linear combination
    */
-  virtual float_t evalGradient(const DataVector& alpha,
+  virtual double evalGradient(const DataVector& alpha,
                                const DataVector& point,
                                DataVector& gradient) = 0;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALGRADIENT_HPP */

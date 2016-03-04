@@ -10,22 +10,20 @@
 
 #include <sgpp/globaldef.hpp>
 
-#if USE_DOUBLE_PRECISION == 0
-
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 OperationMultipleEvalIterativeSPArBBLinear::OperationMultipleEvalIterativeSPArBBLinear(
-    SGPP::base::GridStorage* storage, SGPP::base::DataMatrixSP* dataset)
-    : SGPP::parallel::OperationMultipleEvalVectorizedSP(dataset) {
+    sgpp::base::GridStorage* storage, sgpp::base::DataMatrixSP* dataset)
+    : sgpp::parallel::OperationMultipleEvalVectorizedSP(dataset) {
   this->storage = storage;
 
-  this->level_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
-  this->index_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrixSP(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrixSP(storage->getSize(), storage->getDimension());
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
-  myTimer = new SGPP::base::SGppStopwatch();
+  myTimer = new sgpp::base::SGppStopwatch();
   myArBBKernels = new ArBBKernels();
   myArBBKernels2D = new ArBBKernels2D();
   myArBBKernels4D = new ArBBKernels4D();
@@ -46,8 +44,8 @@ void OperationMultipleEvalIterativeSPArBBLinear::rebuildLevelAndIndex() {
   delete this->level_;
   delete this->index_;
 
-  this->level_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
-  this->index_ = new SGPP::base::DataMatrixSP(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrixSP(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrixSP(storage->getSize(), storage->getDimension());
 
   storage->getLevelIndexArraysForEval(*(this->level_), *(this->index_));
 
@@ -59,7 +57,7 @@ void OperationMultipleEvalIterativeSPArBBLinear::rebuildLevelAndIndex() {
 }
 
 double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(
-    SGPP::base::DataVectorSP& alpha, SGPP::base::DataVectorSP& result) {
+    sgpp::base::DataVectorSP& alpha, sgpp::base::DataVectorSP& result) {
   size_t result_size = result.getSize();
   size_t dims = storage->getDimension();
   size_t storageSize = storage->getSize();
@@ -73,7 +71,7 @@ double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(
   float* ptrIndex = this->index_->getPointer();
 
   if (this->dataset_->getNrows() % 16 != 0 || result_size != this->dataset_->getNrows()) {
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "For iterative mult transpose an even number of instances is required and result vector "
         "length must fit to data!");
   }
@@ -121,7 +119,7 @@ double OperationMultipleEvalIterativeSPArBBLinear::multVectorized(
 }
 
 double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(
-    SGPP::base::DataVectorSP& source, SGPP::base::DataVectorSP& result) {
+    sgpp::base::DataVectorSP& source, sgpp::base::DataVectorSP& result) {
   size_t source_size = source.getSize();
   size_t dims = storage->getDimension();
   size_t storageSize = storage->getSize();
@@ -135,7 +133,7 @@ double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(
   float* ptrGlobalResult = result.getPointer();
 
   if (this->dataset_->getNrows() % 16 != 0 || source_size != this->dataset_->getNrows()) {
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "For iterative mult an even number of instances is required and result vector length must "
         "fit to data!");
   }
@@ -183,5 +181,3 @@ double OperationMultipleEvalIterativeSPArBBLinear::multTransposeVectorized(
 }
 }
 }
-
-#endif

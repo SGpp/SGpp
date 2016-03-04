@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(std::istream& istr) :
@@ -34,8 +34,8 @@ ModBsplineClenshawCurtisGrid::ModBsplineClenshawCurtisGrid(size_t dim,
 ModBsplineClenshawCurtisGrid::~ModBsplineClenshawCurtisGrid() {
 }
 
-SGPP::base::GridType ModBsplineClenshawCurtisGrid::getType() {
-  return SGPP::base::GridType::ModBsplineClenshawCurtis;
+sgpp::base::GridType ModBsplineClenshawCurtisGrid::getType() {
+  return sgpp::base::GridType::ModBsplineClenshawCurtis;
 }
 
 const SBasis& ModBsplineClenshawCurtisGrid::getBasis() {
@@ -64,4 +64,4 @@ GridGenerator& ModBsplineClenshawCurtisGrid::getGenerator() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -13,7 +13,7 @@
 #include <map>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OperationConfiguration: public json::JSON {
@@ -26,5 +26,5 @@ class OperationConfiguration: public json::JSON {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

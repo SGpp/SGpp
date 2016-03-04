@@ -9,15 +9,15 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
-BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : SGPP::solver::SLESolverSP(imax, epsilon) {}
+BiCGStabSP::BiCGStabSP(size_t imax, float epsilon) : sgpp::solver::SLESolverSP(imax, epsilon) {}
 
 BiCGStabSP::~BiCGStabSP() {}
 
-void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::DataVectorSP& alpha,
-                       SGPP::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
+void BiCGStabSP::solve(sgpp::base::OperationMatrixSP& SystemMatrix, sgpp::base::DataVectorSP& alpha,
+                       sgpp::base::DataVectorSP& b, bool reuse, bool verbose, float max_threshold) {
   this->nIterations = 1;
   float epsilonSqd = this->myEpsilon * this->myEpsilon;
 
@@ -27,7 +27,7 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::
   }
 
   // Calculate r0
-  SGPP::base::DataVectorSP r(alpha.getSize());
+  sgpp::base::DataVectorSP r(alpha.getSize());
   SystemMatrix.mult(alpha, r);
   r.sub(b);
 
@@ -39,9 +39,9 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::
   }
 
   // Choose r0 as r
-  SGPP::base::DataVectorSP rZero(r);
+  sgpp::base::DataVectorSP rZero(r);
   // Set p as r0
-  SGPP::base::DataVectorSP p(rZero);
+  sgpp::base::DataVectorSP p(rZero);
 
   float rho = rZero.dotProduct(r);
   float rho_new = 0.0f;
@@ -50,9 +50,9 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::
   float omega = 0.0f;
   float beta = 0.0f;
 
-  SGPP::base::DataVectorSP s(alpha.getSize());
-  SGPP::base::DataVectorSP v(alpha.getSize());
-  SGPP::base::DataVectorSP w(alpha.getSize());
+  sgpp::base::DataVectorSP s(alpha.getSize());
+  sgpp::base::DataVectorSP v(alpha.getSize());
+  sgpp::base::DataVectorSP w(alpha.getSize());
 
   s.setAll(0.0);
   v.setAll(0.0);
@@ -121,4 +121,4 @@ void BiCGStabSP::solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::
 }
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp

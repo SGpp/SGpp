@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -45,7 +45,7 @@ class ScalarFunctionGradient {
    *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
    * @return              \f$f(\vec{x})\f$
    */
-  virtual float_t eval(const base::DataVector& x, base::DataVector& gradient) = 0;
+  virtual double eval(const base::DataVector& x, base::DataVector& gradient) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain
@@ -67,6 +67,6 @@ class ScalarFunctionGradient {
   size_t d;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALARFUNCTIONGRADIENT_HPP */

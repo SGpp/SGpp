@@ -20,9 +20,7 @@
 
 #include <limits>
 
-#if USE_DOUBLE_PRECISION == 0
-
-namespace SGPP {
+namespace sgpp {
 
 namespace op_factory {
 /**
@@ -53,8 +51,6 @@ createOperationMultipleEvalVectorizedSP(base::Grid& grid,
                                         size_t datasetFrom = 0,
                                         size_t datasetTo = std::numeric_limits<size_t>::max());
 }  // namespace op_factory
-}  // namespace SGPP
-
-#endif
+}  // namespace sgpp
 
 #endif /*SP_PARALLEL_OP_FACTORY_HPP*/

@@ -17,7 +17,7 @@
 #include "sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp"
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class OperationPiecewiseConstantRegression {
@@ -29,15 +29,15 @@ class OperationPiecewiseConstantRegression {
   OperationPiecewiseConstantRegression(base::DataMatrix& dataset, base::DataVector& values)
       : dataset(dataset), values(values), dims(dataset.getNcols()) {}
 
-  std::unique_ptr<PiecewiseConstantRegression::Node> hierarchize(float_t targetMSE,
+  std::unique_ptr<PiecewiseConstantRegression::Node> hierarchize(double targetMSE,
                                                                  size_t targetMaxLevel) {
-    std::vector<float_t> xRoot(dims);
+    std::vector<double> xRoot(dims);
 
     for (size_t d = 0; d < dims; d++) {
       xRoot[d] = 0.5;
     }
 
-    std::vector<float_t> hRoot(dims);
+    std::vector<double> hRoot(dims);
 
     for (size_t d = 0; d < dims; d++) {
       hRoot[d] = 0.5;
@@ -62,4 +62,4 @@ class OperationPiecewiseConstantRegression {
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

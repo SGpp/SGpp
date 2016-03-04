@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,7 +18,7 @@ Hartman3::~Hartman3() {}
 
 TestScalarFunction& Hartman3::getObjectiveFunction() { return f; }
 
-float_t Hartman3::getOptimalPointUndisplaced(base::DataVector& x) {
+double Hartman3::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(3);
   x[0] = 0.1146398;
   x[1] = 0.5556488;
@@ -30,7 +30,7 @@ Hartman3Objective::Hartman3Objective() : TestScalarFunction(3) {}
 
 Hartman3Objective::~Hartman3Objective() {}
 
-float_t Hartman3Objective::evalUndisplaced(const base::DataVector& x) {
+double Hartman3Objective::evalUndisplaced(const base::DataVector& x) {
   return -1.0 * std::exp(-3.0 * (x[0] - 0.3689) * (x[0] - 0.3689) -
                          10.0 * (x[1] - 0.1170) * (x[1] - 0.1170) -
                          30.0 * (x[2] - 0.2673) * (x[2] - 0.2673)) -
@@ -50,4 +50,4 @@ void Hartman3Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

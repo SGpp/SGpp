@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 #include <random>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -33,7 +33,7 @@ class RandomNumberGenerator {
    * @param b upper bound
    * @return  uniform pseudo-random number in \f$[a, b]\f$
    */
-  float_t getUniformRN(float_t a = 0.0, float_t b = 1.0);
+  double getUniformRN(double a = 0.0, double b = 1.0);
 
   /**
    * Generate a uniform pseudo-random array index.
@@ -51,7 +51,7 @@ class RandomNumberGenerator {
    * @param mean      mean of the Gaussian distribution
    * @return          Gaussian pseudo-random number
    */
-  float_t getGaussianRN(float_t stdDev = 1.0, float_t mean = 0.0);
+  double getGaussianRN(double stdDev = 1.0, double mean = 0.0);
 
   /**
    * @return      seed
@@ -93,6 +93,6 @@ class RandomNumberGenerator {
   void operator=(const RandomNumberGenerator&) = delete;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_RANDOMNUMBERGENERATOR_HPP */

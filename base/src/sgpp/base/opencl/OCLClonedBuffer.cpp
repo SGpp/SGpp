@@ -9,7 +9,7 @@
 #include "sgpp/base/opencl/OCLClonedBuffer.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLClonedBuffer::OCLClonedBuffer(std::shared_ptr<OCLManager> manager) : manager(manager) {
@@ -45,7 +45,7 @@ void OCLClonedBuffer::writeToBuffer(void* hostData, size_t* offsets) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue write "
                      "buffer command! Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -77,7 +77,7 @@ void OCLClonedBuffer::readFromBuffer(void* hostData, size_t* offsets, size_t* ra
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue read buffer command! "
                      "Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -106,7 +106,7 @@ void OCLClonedBuffer::initializeBuffer(void* initialValues, size_t sizeofType, s
       std::stringstream errorString;
       errorString << "OCL Error: Could not allocate buffer! "
                      "Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -125,7 +125,7 @@ void OCLClonedBuffer::freeBuffer() {
     std::stringstream errorString;
     errorString << "OCL Error: OCLClonedBuffer in partially initialized state: "
                    "buffer list is null" << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   for (size_t i = 0; i < this->manager->num_devices; i++) {
@@ -136,7 +136,7 @@ void OCLClonedBuffer::freeBuffer() {
       std::stringstream errorString;
       errorString << "OCL Error: OCLClonedBuffer in partially initialized state: "
                      "device buffer is null" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -146,4 +146,4 @@ void OCLClonedBuffer::freeBuffer() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

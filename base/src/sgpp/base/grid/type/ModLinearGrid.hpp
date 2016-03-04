@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -37,7 +37,7 @@ class ModLinearGrid : public Grid {
    */
   ~ModLinearGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
@@ -47,6 +47,6 @@ class ModLinearGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* MODLINEARGRID_HPP */
