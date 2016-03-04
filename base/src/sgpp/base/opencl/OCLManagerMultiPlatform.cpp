@@ -59,24 +59,24 @@ OCLManagerMultiPlatform::OCLManagerMultiPlatform(
 }
 
 OCLManagerMultiPlatform::~OCLManagerMultiPlatform() {
-  cl_int err;
-  for (OCLPlatformWrapper platform : this->platforms) {
-    for (size_t i = 0; i < platform.deviceIds.size(); i++) {
-      err = clReleaseCommandQueue(platform.commandQueues[i]);
-      if (err != CL_SUCCESS) {
-        std::stringstream errorString;
-        errorString << "OCL Error: Could not release command queue! Error Code: " << err
-                    << std::endl;
-        throw SGPP::base::operation_exception(errorString.str());
-      }
-    }
-    cl_int err = clReleaseContext(platform.context);
-    if (err != CL_SUCCESS) {
-      std::stringstream errorString;
-      errorString << "OCL Error: Could not release context! Error Code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
-    }
-  }
+  //  cl_int err;
+  //  for (OCLPlatformWrapper platform : this->platforms) {
+  //    for (size_t i = 0; i < platform.deviceIds.size(); i++) {
+  //      err = clReleaseCommandQueue(platform.commandQueues[i]);
+  //      if (err != CL_SUCCESS) {
+  //        std::stringstream errorString;
+  //        errorString << "OCL Error: Could not release command queue! Error Code: " << err
+  //                    << std::endl;
+  //        throw SGPP::base::operation_exception(errorString.str());
+  //      }
+  //    }
+  //    cl_int err = clReleaseContext(platform.context);
+  //    if (err != CL_SUCCESS) {
+  //      std::stringstream errorString;
+  //      errorString << "OCL Error: Could not release context! Error Code: " << err << std::endl;
+  //      throw SGPP::base::operation_exception(errorString.str());
+  //    }
+  //  }
 }
 
 void OCLManagerMultiPlatform::buildKernel(
@@ -339,12 +339,14 @@ void OCLManagerMultiPlatform::configurePlatform(cl_platform_id platformId,
   }
 
   if (filteredDeviceIds.size() > 0) {
-    OCLPlatformWrapper platformWrapper(platformId, platformName, filteredDeviceIds,
-                                       filteredDeviceNames);
+    platforms.emplace_back(platformId, platformName, filteredDeviceIds, filteredDeviceNames);
+    OCLPlatformWrapper &platformWrapper = platforms[platforms.size() - 1];
+    //    OCLPlatformWrapper platformWrapper(platformId, platformName, filteredDeviceIds,
+    //                                       filteredDeviceNames);
     //        platforms.emplace_back(platformId, platformName,
     //        filteredDeviceIds, filteredDeviceNames);
     //        OCLPlatformWrapper &platformWrapper = *(platforms.end() - 1);
-    platforms.push_back(platformWrapper);
+    //    platforms.push_back(platformWrapper);
 
     // create linear device list
     for (size_t deviceIndex = 0; deviceIndex < filteredDeviceIds.size(); deviceIndex++) {
