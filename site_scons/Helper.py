@@ -12,7 +12,7 @@ import sys
 
 def printInfo(*s):
   print("Info:", "\n      ".join(s))
-  
+
 def printWarning(*s):
   print("Warning:", "\n         ".join(s), file=sys.stderr)
 
@@ -128,7 +128,7 @@ For this to work, the examples must lie in the directories of the form
 
     modules.sort()
     tutorial = "code_examples_tutorial"
-    
+
     for moduleName in modules:
       examplesFile.write("<h2>Module {}</h2>\n".format(moduleName))
       subpages = glob.glob(os.path.join(
@@ -141,7 +141,7 @@ For this to work, the examples must lie in the directories of the form
       if tutorial in subpages:
         del subpages[subpages.index(tutorial)]
         subpages = [tutorial] + subpages
-      
+
       for subpage in subpages:
         examplesFile.write("- @subpage {}\n".format(subpage))
 
@@ -199,7 +199,7 @@ def set_win32_spawn(env):
       except:
         import win32api
         error_code = win32api.GetLastError()
-        raise RuntimeError("Could not execute the following " + 
+        raise RuntimeError("Could not execute the following " +
           "command line (error code {}): {}".format(
           error_code, cmdline))
       win32event.WaitForSingleObject(hProcess, win32event.INFINITE)
@@ -207,7 +207,7 @@ def set_win32_spawn(env):
       win32file.CloseHandle(hProcess)
       win32file.CloseHandle(hThread)
     return exit_code
-  
+
   env["SPAWN"] = win32_spawn
 
 # get all subdirs of path, required by CheckJNI
@@ -228,7 +228,7 @@ def CheckExec(context, cmd):
   return ret
 
 def CheckFlag(context, flagString):
-  
+
   checkSrcFile = """
 int main(int argc, char **argv) {
   /**
@@ -281,7 +281,7 @@ def CheckJNI(context):
         res = "... found in " + pname
         context.Result(res)
         return res
-      
+
   context.Result("... nothing found!")
   return 0
 
