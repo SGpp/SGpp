@@ -327,8 +327,8 @@ for moduleFolder in moduleFolders:
   # add the dependencies of the current module to the overall dependency graph
   Import("moduleDependencies")
   Import("libname")
-  flattenedDependencyGraph = flatDependencyGraph(
-      [libname] + moduleDependencies, flattenedDependencyGraph)
+  flattenedDependencyGraph = flatDependencyGraph([libname] + moduleDependencies,
+                                                 flattenedDependencyGraph)
 
 Export('flattenedDependencyGraph')
 
