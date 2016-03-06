@@ -24,7 +24,7 @@ namespace sgpp {
 namespace datadriven {
 
 SparseGridMiner::SparseGridMiner(datadriven::DataMiningConfiguration pconfig)
-    : scorer(NULL), config(pconfig) {}
+    : scorer(nullptr), config(pconfig), dataset(nullptr) {}
 
 SparseGridMiner::~SparseGridMiner() {}
 
