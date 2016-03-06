@@ -18,7 +18,7 @@ def printWarning(*s):
 
 def printErrorAndExit(*s):
   print("Error:", "\n       ".join(s), file=sys.stderr)
-  Exit(1)
+  sys.exit(1)
 
 # get all folders containing an "SConscript*" file
 # path has to end with "/"
