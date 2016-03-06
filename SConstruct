@@ -4,14 +4,13 @@
 # sgpp.sparsegrids.org
 
 import glob
-import SCons
 import os
-import SGppConfigure
-from SCons.Script.SConscript import SConsEnvironment
-import warnings
 import subprocess
+import SCons
+from SCons.Script.SConscript import SConsEnvironment
 
-from Helper import *
+import Helper
+import SGppConfigure
 
 # Check for versions of Scons and Python
 EnsurePythonVersion(2, 7)
@@ -19,17 +18,18 @@ EnsurePythonVersion(2, 7)
 EnsureSConsVersion(2, 1)
 print "Using SCons", SCons.__version__
 
-sconsenv = SConsEnvironment()
-scons_ver = sconsenv._get_major_minor_revision(SCons.__version__)
+scons_ver = SConsEnvironment()._get_major_minor_revision(SCons.__version__)
 if scons_ver < (2, 3, 0):
-  warnings.warn("You are using an older version of scons than we do!\nSGpp officially supports scons >= 2.3.0.\nThere are reports that it also compiles with scons >= 2.1.0.")
+  Helper.printWarning("You are using an older version of scons than we do!",
+                      "SGpp officially supports scons >= 2.3.0.",
+                      "There are reports that it also compiles with scons >= 2.1.0.")
 
 # to ignore folders containing a SConscript file, do the following:
 # ignoreFolders = ["jsgpp"]
 ignoreFolders = []
 
 # find all modules
-moduleFolders, languageSupport = getModules(ignoreFolders)
+moduleFolders, languageSupport = Helper.getModules(ignoreFolders)
 
 moduleNames = []
 languageSupportNames = []
@@ -50,8 +50,8 @@ print "Available language support:", ", ".join(languageSupportNames)
 vars = Variables("custom.py")
 
 # define the flags
-vars.Add('CPPFLAGS', 'Set additional Flags, they are compiler-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
-vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=multiParamConverter)
+vars.Add('CPPFLAGS', 'Set additional Flags, they are compiler-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=Helper.multiParamConverter)
+vars.Add('LINKFLAGS', 'Set additional Linker-flags, they are linker-depended (multiple flags combined with comma, e.g. -lpython,-lm)', '', converter=Helper.multiParamConverter)
 vars.Add('CPPPATH', 'Set paths where to look for additional headers', '')
 vars.Add('LIBPATH', 'Set paths where to look for additional libs', '')
 # define the target
@@ -98,11 +98,11 @@ env = Environment(variables=vars, ENV=os.environ, tools=[])
 
 if (env['PLATFORM'].lower() == 'win32') and \
    (env['COMPILER'].lower() == 'gnu'):
-	# MinGW: use gcc toolschain
-	tools = ['gnulink', 'gcc', 'g++', 'gas', 'ar', 'swig']
+  # MinGW: use gcc toolschain
+  tools = ['gnulink', 'gcc', 'g++', 'gas', 'ar', 'swig']
 else:
-	# otherwise: use default toolchain
-	tools = ['default']
+  # otherwise: use default toolchain
+  tools = ['default']
 
 # initialize environment
 env = Environment(variables=vars, ENV=os.environ, tools=tools)
@@ -113,7 +113,7 @@ env['INCLUDEDIR'] = env.get( 'INCLUDEDIR', os.path.join( env['PREFIX'], "include
 
 # no docu if clean:
 if not env.GetOption('clean'):
-  prepareDoxyfile(moduleFolders)
+  Helper.prepareDoxyfile(moduleFolders)
 
 if 'CXX' in ARGUMENTS:
   print "CXX: ", ARGUMENTS['CXX']
@@ -184,12 +184,12 @@ Export('EXAMPLE_DIR')
 
 # no checks if clean:
 if not env.GetOption('clean'):
-    SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+  SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
 if env['PLATFORM'] == 'win32':
-    set_win32_spawn(env)
+  Helper.set_win32_spawn(env)
 
 # add #/lib/sgpp to LIBPATH
 # (to add corresponding -L... flags to linker calls)
@@ -234,7 +234,7 @@ if env['PLATFORM'] == 'win32':
     import pysgpp
     print "Warning: more than one installations of pysgpp are detected. To get rid of this warning remove the pysgpp package from your local python installation."
   except:
-    None
+    pass
 
   # get a temporary folders
   import tempfile, uuid
@@ -327,7 +327,7 @@ for moduleFolder in moduleFolders:
   # add the dependencies of the current module to the overall dependency graph
   Import("moduleDependencies")
   Import("libname")
-  flattenedDependencyGraph = flatDependencyGraph(
+  flattenedDependencyGraph = Helper.flatDependencyGraph(
       [libname] + moduleDependencies, flattenedDependencyGraph)
 
 Export('flattenedDependencyGraph')
