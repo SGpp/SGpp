@@ -1,4 +1,8 @@
-/*
+/* Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * SparseGridMiner.hpp
  *
  *  Created on: Feb 9, 2016
@@ -18,16 +22,15 @@ namespace datadriven {
 
 class SparseGridMiner {
  public:
-  SparseGridMiner(datadriven::DataMiningConfiguration pconfig);
+  explicit SparseGridMiner(datadriven::DataMiningConfiguration pconfig);
   virtual ~SparseGridMiner();
 
   void run();
 
  private:
-  datadriven::SampleProvider* dataset;
   datadriven::Scorer* scorer;
-
   datadriven::DataMiningConfiguration& config;
+  datadriven::SampleProvider* dataset;
 };
 
 } /* namespace datadriven */
