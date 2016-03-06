@@ -80,8 +80,9 @@ class Module(object):
 
   def buildExamples(self, exampleFolder="examples", additionalExampleDependencies=[]):
     exampleEnv = env.Clone()
-    exampleEnv.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies +
-                                 [self.libname] + additionalExampleDependencies)
+    exampleEnv.AppendUnique(LIBS=[self.libname] +
+                                 self.moduleDependencies + self.additionalDependencies +
+                                 additionalExampleDependencies)
     for fileName in os.listdir(exampleFolder):
       if fnmatch.fnmatch(fileName, "*.cpp"):
         cpp = os.path.join(exampleFolder, fileName)
@@ -101,8 +102,9 @@ class Module(object):
   def buildBoostTests(self, boostTestFolder="tests", compileFlag="COMPILE_BOOST_TESTS"):
     if env[compileFlag]:
       testEnv = env.Clone()
-      testEnv.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies +
-                                [self.libname] + ["boost_unit_test_framework"] +
+      testEnv.AppendUnique(LIBS=[self.libname] +
+                                self.moduleDependencies + self.additionalDependencies +
+                                ["boost_unit_test_framework"] +
                                 self.additionalBoostTestDependencies)
 
       testObjs = []
