@@ -5,9 +5,8 @@
 
 import glob
 import os
-import os.path
-import sys
 import re
+import sys
 
 # get all folders containing an "SConscript*" file
 # path has to end with "/"

@@ -3,18 +3,12 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-import os
-import sys
-import fnmatch
+import ModuleHelper
 
-Import('env')
-Import('BUILD_DIR')
-Import('moduleName')
-Import('headerSourceList')
-Import('headerDestList')
-Import('lintAction')
+Import("*")
 
-env_parallel = env.Clone()
+moduleDependencies = ["sgppdatadriven", "sgppfinance", "sgpppde", "sgppsolver", "sgppbase"]
+
 # can only build without mpi support, skip those files
 # required define: -DUSE_MPI
 # requires mpicxx
@@ -96,100 +90,17 @@ MICOnlyFiles = [
     "SPMICKernelImpl.cpp"
 ]
 
-moduleDependencies = ['sgppdatadriven', 'sgppfinance', 'sgpppde', 'sgppsolver', 'sgppbase']
-Export('moduleDependencies')
+excludeFiles = OCLOnlyFiles + ArBBOnlyFiles
+if not "USE_MPI" in env["CPPDEFINES"]:
+  excludeFiles += MPIOnlyFiles
 
-if env['COMPILER'] == 'vcc':
-    sys.stderr.write("Error: The parallel package is not supported on MSVC++.\n")
-    sys.exit(1)
+module = ModuleHelper.Module(moduleDependencies, excludeFiles=excludeFiles)
 
-libname = "sgpp%s" % moduleName
-if env['USE_STATICLIB']:
-    libname += "static"
-    for i, _ in enumerate(moduleDependencies):
-        moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
-Export('libname')
-
-cpps = []
-hpps = []
-objs = []
-
-for currentFolder, subdirNames, fileNames in os.walk("."):
-    if currentFolder.startswith(os.path.join(".", "src", "sgpp", "parallel", "exampleApplication")):
-        continue #  ignore exampleApplication when compiling normally.
-                 #those should probably go into normal example folder.
-    if currentFolder.startswith(os.path.join(".", "src")):
-        for fileName in fnmatch.filter(fileNames, '*.cpp'):
-            if fileName in MPIOnlyFiles:
-                if not 'USE_MPI' in env_parallel['CPPDEFINES']:
-                    continue
-            if fileName in OCLOnlyFiles:
-                continue
-            if fileName in ArBBOnlyFiles:
-                continue
-            cpp = os.path.join(currentFolder, fileName)
-            cpps.append(cpp)
-            objs.append(env_parallel.SharedObject(cpp))
-    if currentFolder != 'src':
-      for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        hpp = os.path.join(currentFolder, fileName)
-        hpps.append(hpp)
-        headerSourceList.append(os.path.join(moduleName, hpp))
-        headerDestList.append(hpp.split(os.sep, 1)[1])
-
-if env['USE_STATICLIB']:
-    libsuffix = env['LIBSUFFIX']
-    lib = env.StaticLibrary(target=libname,
-                            source=objs,
-                            LIBS=moduleDependencies)
+module.scanSource()
+module.buildLibrary()
+if "USE_MPI" in env["CPPDEFINES"]:
+  module.buildExamples("examplesMPI")
 else:
-    libsuffix = env['SHLIBSUFFIX']
-    lib = env.SharedLibrary(target=libname,
-                            source=objs,
-                            LIBPATH=BUILD_DIR,
-                            LIBS=moduleDependencies)
-
-for lib_str in moduleDependencies:
-    if lib_str.startswith("sgpp"):
-        env.Depends(lib, os.path.join("#", BUILD_DIR.path,
-                                      "%s%s%s" % (env["LIBPREFIX"],
-                                                  lib_str,
-                                                  libsuffix)))
-
-libInstall = env_parallel.Install(BUILD_DIR, lib)
-
-if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-  Import('testTargetList')
-  py_test_env = env.Clone()
-  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  testTargetList.append(moduleTest)
-
-# build examples
-Import('exampleTargetList')
-example_env = env.Clone()
-example_env.AppendUnique(LIBS=[libname] + moduleDependencies)
-for fileName in os.listdir("examples"):
-    if fnmatch.fnmatch(fileName, "*MPI*") and not 'USE_MPI' in env_parallel['CPPDEFINES']:
-        continue  # skip MPI files, if USE_MPI is not defined
-    if not fnmatch.fnmatch(fileName, "*MPI*") and 'USE_MPI' in env_parallel['CPPDEFINES']:
-        continue  # skip non mpi files if USE_MPI is defined
-    if fnmatch.fnmatch(fileName, "*.cpp"):
-        cpp = os.path.join("examples", fileName)
-        cpps.append(cpp)
-        example = example_env.Program(source=cpp)
-        example_env.Requires(example, libInstall)
-        exampleTargetList.append(example)
-    elif fnmatch.fnmatch(fileName, "*.hpp"):
-        hpp = os.path.join("examples", fileName)
-        hpps.append(hpp)
-
-# run cpplint
-if env['RUN_CPPLINT']:
-    for path in cpps + hpps:
-        lintCommand = env.Command(path + ".lint", path, lintAction)
-        env.Depends(lib, lintCommand)
-
-Import('libraryTargetList')
-Import('installTargetList')
-libraryTargetList.append(lib)
-installTargetList.append(libInstall)
+  module.buildExamples()
+module.runPythonTests()
+module.runCpplint()
