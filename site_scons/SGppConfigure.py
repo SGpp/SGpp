@@ -8,16 +8,15 @@ import os
 import subprocess
 import re
 
-import SGppConfigureExtend
 import Helper
 
 def doConfigure(env, moduleFolders, languageWrapperFolders):
   print
   print "Checking programs and libraries:"
 
-  config = env.Configure(custom_tests={"CheckExec" : SGppConfigureExtend.CheckExec,
-                                       "CheckJNI" : SGppConfigureExtend.CheckJNI,
-                                       "CheckFlag" : SGppConfigureExtend.CheckFlag})
+  config = env.Configure(custom_tests={"CheckExec" : Helper.CheckExec,
+                                       "CheckJNI" : Helper.CheckJNI,
+                                       "CheckFlag" : Helper.CheckFlag})
 
   checkCpp11(config)
   checkDoxygen(config)
