@@ -3,95 +3,15 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-import os
-import fnmatch
-import subprocess
+import ModuleHelper
 
-Import('env')
-Import('BUILD_DIR')
-Import('PYSGPP_BUILD_PATH')
-Import('moduleName')
-Import('libraryTargetList')
-Import('installTargetList')
-Import('exampleTargetList')
-Import('headerSourceList')
-Import('headerDestList')
-Import('lintAction')
+Import("*")
 
-moduleDependencies = ['sgppsolver', 'sgppbase']
-Export('moduleDependencies')
+moduleDependencies = ["sgppsolver", "sgppbase"]
+module = ModuleHelper.Module(moduleDependencies)
 
-libname = "sgpp%s" % moduleName
-if env['USE_STATICLIB']:
-    libname += "static"
-    for i, _ in enumerate(moduleDependencies):
-        moduleDependencies[i] = "%sstatic" % moduleDependencies[i]
-Export('libname')
-
-cpps = []
-hpps = []
-objs = []
-
-for currentFolder, subdirNames, fileNames in os.walk("src"):
-    for fileName in fnmatch.filter(fileNames, '*.cpp'):
-        cpp = os.path.join(currentFolder, fileName)
-        cpps.append(cpp)
-        objs.append(env.SharedObject(cpp))
-    if currentFolder != 'src':
-      for fileName in fnmatch.filter(fileNames, '*.hpp'):
-        hpp = os.path.join(currentFolder, fileName)
-        hpps.append(hpp)
-        headerSourceList.append(os.path.join(moduleName, hpp))
-        headerDestList.append(hpp.split(os.sep, 1)[1])
-
-if env['USE_STATICLIB']:
-    # building static libraries is the same for unix and windows platforms
-    libsuffix = env['LIBSUFFIX']
-    lib = env.StaticLibrary(target=libname,
-                            source=objs,
-                            LIBS=moduleDependencies)
-else:
-    # building of shared libraries differs
-    libsuffix = env['SHLIBSUFFIX']
-    lib = env.SharedLibrary(target=libname,
-                            source=objs,
-                            LIBPATH=BUILD_DIR,
-                            LIBS=moduleDependencies)
-
-for lib_str in moduleDependencies:
-    if lib_str.startswith("sgpp"):
-        env.Depends(lib, os.path.join("#", BUILD_DIR.path,
-                                      "%s%s%s" % (env["LIBPREFIX"],
-                                                  lib_str,
-                                                  libsuffix)))
-
-libInstall = env.Install(BUILD_DIR, lib)
-
-if not env['NO_UNIT_TESTS'] and env['SG_PYTHON']:
-  Import('testTargetList')
-  py_test_env = env.Clone()
-  moduleTest = py_test_env.Test(os.path.join('tests', 'test_%s.py' % moduleName))
-  testTargetList.append(moduleTest)
-
-# build examples
-for fileName in os.listdir("examples"):
-    if fnmatch.fnmatch(fileName, "*.cpp"):
-        cpp = os.path.join("examples", fileName)
-        cpps.append(cpp)
-        example = env.Program(source=cpp,
-                              LIBPATH=BUILD_DIR,
-                              LIBS=[libname] + moduleDependencies)
-        env.Requires(example, libInstall)
-        exampleTargetList.append(example)
-    elif fnmatch.fnmatch(fileName, "*.hpp"):
-        hpp = os.path.join("examples", fileName)
-        hpps.append(hpp)
-
-# run cpplint
-if env['RUN_CPPLINT']:
-    for path in cpps + hpps:
-        lintCommand = env.Command(path + ".lint", path, lintAction)
-        env.Depends(lib, lintCommand)
-
-libraryTargetList.append(lib)
-installTargetList.append(libInstall)
+module.scanSource()
+module.buildLibrary()
+module.buildExamples()
+module.runPythonTests()
+module.runCpplint()
