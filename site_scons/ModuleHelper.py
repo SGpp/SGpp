@@ -21,8 +21,6 @@ class Module(object):
     variables = inspect.stack()[1][0].f_globals
     for name, value in variables.iteritems():
       globals()[name] = value
-
-    env.Export("moduleDependencies")
   
   def scanSource(self, sourceFolder="src"):
     sourceFolder = os.path.join(Dir(".").abspath, sourceFolder)
@@ -53,12 +51,15 @@ class Module(object):
       headerDestList.append(hpp.split(os.sep, 1)[1])
 
   def buildLibrary(self):
-    libname = "sgpp%s" % moduleName
+    self.libname = "sgpp%s" % moduleName
     if env["USE_STATICLIB"]:
-      libname += "static"
+      self.libname += "static"
       self.moduleDependencies = [module + "static" for module in self.moduleDependencies]
+
+    libname = self.libname
     env.Export("libname")
-    self.libname = libname
+    moduleDependencies = self.moduleDependencies
+    env.Export("moduleDependencies")
 
     if env["USE_STATICLIB"]:
       libsuffix = env["LIBSUFFIX"]
