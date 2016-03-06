@@ -39,4 +39,30 @@
 
 #include <sgpp/datadriven/application/RegularizationConfiguration.hpp>
 
+/* ************************
+ * datamining
+ * ************************/
+
+// configuration:
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigurationLeastSquares.hpp>
+
+// dataSource:
+#include <sgpp/datadriven/datamining/dataSource/ARFFWrapper.hpp>
+#include <sgpp/datadriven/datamining/dataSource/DataWrapper.hpp>
+#include <sgpp/datadriven/datamining/dataSource/FunctionWrapper.hpp>
+#include <sgpp/datadriven/datamining/dataSource/SampleProvider.hpp>
+
+// fitting:
+#include <sgpp/datadriven/datamining/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/fitting/ModelFittingLeastSquares.hpp>
+
+// scoring:
+#include <sgpp/datadriven/datamining/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/scoring/Scorer.hpp>
+#include <sgpp/datadriven/datamining/scoring/SimpleSplittingScorer.hpp>
+
 #endif /* DATADRIVEN_HPP */
