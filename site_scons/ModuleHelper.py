@@ -80,8 +80,8 @@ class Module(object):
 
   def buildExamples(self, exampleFolder="examples", additionalExampleDependencies=[]):
     exampleEnv = env.Clone()
-    exampleEnv.AppendUnique(LIBS=[self.libname] + self.moduleDependencies +
-                                  self.additionalDependencies + additionalExampleDependencies)
+    exampleEnv.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies +
+                                 [self.libname] + additionalExampleDependencies)
     for fileName in os.listdir(exampleFolder):
       if fnmatch.fnmatch(fileName, "*.cpp"):
         cpp = os.path.join(exampleFolder, fileName)
@@ -102,8 +102,8 @@ class Module(object):
     if env[compileFlag]:
       testEnv = env.Clone()
       testEnv.AppendUnique(LIBS=self.moduleDependencies + self.additionalDependencies +
-                                 [self.libname] + ["boost_unit_test_framework"] +
-                                 self.additionalBoostTestDependencies)
+                                [self.libname] + ["boost_unit_test_framework"] +
+                                self.additionalBoostTestDependencies)
 
       testObjs = []
       for currentFolder, subdirNames, fileNames in os.walk(boostTestFolder, topdown=True):
