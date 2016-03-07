@@ -280,7 +280,7 @@ def configureGNUCompiler(config):
   else:  # gnu
     gcc_ver_str = subprocess.check_output([config.env["CXX"], "-dumpversion"])
     gcc_ver = config.env._get_major_minor_revision(gcc_ver_str)
-    Helper.printInfo("Using default gcc " + gcc_ver_str.strip())
+    Helper.printInfo("Using default gcc " + gcc_ver_str.strip() + ".")
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
       not config.CheckExec(config.env["LINK"]) :

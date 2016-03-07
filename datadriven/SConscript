@@ -9,8 +9,6 @@ Import("*")
 
 moduleDependencies = ["sgpppde", "sgppsolver", "sgppbase"]
 
-
-
 additionalDependencies = []
 if env["USE_OCL"]:
     additionalDependencies += ["OpenCL"]
