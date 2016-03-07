@@ -220,6 +220,13 @@ if env['PLATFORM'] == 'win32':
       env["ENV"]["PATH"] = os.pathsep.join([
           env["ENV"].get("PATH", ""),
           env["BOOST_LIBRARY_PATH"]])
+
+#Mac OS X doens't use LD_LIBRARY_PATH 
+elif env['PLATFORM'] == 'darwin':
+    env["ENV"]["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join([
+        env["ENV"].get("DYLD_FALLBACK_LIBRARY_PATH", ""),
+        BUILD_DIR.abspath])
+
 else:
     env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([
         env["ENV"].get("LD_LIBRARY_PATH", ""),
@@ -440,6 +447,8 @@ def printFinished(target, source, env):
   import string
   if env['PLATFORM'] in ['cygwin', 'win32']:
     filename = "INSTRUCTIONS_WINDOWS"
+  if env['PLATFORM'] == 'darwin' :
+    filename = "INSTRUCTIONS_MAC"
   else:
     filename = "INSTRUCTIONS"
  
