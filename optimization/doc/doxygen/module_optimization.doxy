@@ -1,6 +1,6 @@
 /**
-\page module_optimization Module SGPP::optimization
-SGPP::optimization -- SG++ module for optimization of smooth sparse grid interpolants.
+\page module_optimization Module sgpp::optimization
+sgpp::optimization -- SG++ module for optimization of smooth sparse grid interpolants.
 
 \section overview Overview
 
@@ -29,35 +29,35 @@ Please refer to \ref code_examples_optimization for example code.
 */
 
 /**
-\namespace SGPP::optimization
+\namespace sgpp::optimization
 SG++ module for optimization of smooth sparse grid interpolants.
 
 See \ref module_optimization for more details.
 */
 
 /**
-\namespace SGPP::optimization::function
+\namespace sgpp::optimization::function
 Namespace containing abstract classes for objective and interpolant functions.
 
 See \ref module_optimization for more details.
 */
 
 /**
-\namespace SGPP::optimization::test_functions
+\namespace sgpp::optimization::test_functions
 Namespace containing analytical test functions.
 
 See \ref module_optimization for more details.
 */
 
 /**
-\namespace SGPP::optimization::optimizer
+\namespace sgpp::optimization::optimizer
 Namespace containing methods for gradient-based and gradient-free optimization
 
 See \ref module_optimization for more details.
 */
 
 /**
-\namespace SGPP::optimization::sle_solver
+\namespace sgpp::optimization::sle_solver
 Namespace containing classes for solving linear systems.
 
 See \ref module_optimization for more details.

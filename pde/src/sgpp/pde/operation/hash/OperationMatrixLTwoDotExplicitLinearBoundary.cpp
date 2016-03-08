@@ -10,20 +10,20 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 OperationMatrixLTwoDotExplicitLinearBoundary::OperationMatrixLTwoDotExplicitLinearBoundary(
-    SGPP::base::DataMatrix* m, SGPP::base::Grid* grid)
+    sgpp::base::DataMatrix* m, sgpp::base::Grid* grid)
     : ownsMatrix_(false) {
   m_ = m;
   buildMatrix(grid);
 }
 
 OperationMatrixLTwoDotExplicitLinearBoundary::OperationMatrixLTwoDotExplicitLinearBoundary(
-    SGPP::base::Grid* grid)
+    sgpp::base::Grid* grid)
     : ownsMatrix_(true) {
-  m_ = new SGPP::base::DataMatrix(grid->getSize(), grid->getSize());
+  m_ = new sgpp::base::DataMatrix(grid->getSize(), grid->getSize());
   buildMatrix(grid);
 }
 
@@ -31,15 +31,15 @@ OperationMatrixLTwoDotExplicitLinearBoundary::~OperationMatrixLTwoDotExplicitLin
   if (ownsMatrix_) delete m_;
 }
 
-void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(SGPP::base::Grid* grid) {
+void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(sgpp::base::Grid* grid) {
   // Build matrix (in the moment just by multiplying the OperationMatrix with the unit vectors):
   std::unique_ptr<OperationMatrix> opMatrix(
-      SGPP::op_factory::createOperationLTwoDotProduct(*grid));
+      sgpp::op_factory::createOperationLTwoDotProduct(*grid));
 
   size_t size = grid->getSize();
-  SGPP::base::DataVector unit(size);
+  sgpp::base::DataVector unit(size);
   unit.setAll(0.0);
-  SGPP::base::DataVector result(size);
+  sgpp::base::DataVector result(size);
 
   for (size_t i = 0; i < size; i++) {
     // Compute i-th unit vector
@@ -53,19 +53,19 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(SGPP::base::Grid*
   }
 }
 
-void OperationMatrixLTwoDotExplicitLinearBoundary::mult(SGPP::base::DataVector& alpha,
-                                                        SGPP::base::DataVector& result) {
+void OperationMatrixLTwoDotExplicitLinearBoundary::mult(sgpp::base::DataVector& alpha,
+                                                        sgpp::base::DataVector& result) {
   size_t nrows = m_->getNrows();
   size_t ncols = m_->getNcols();
 
   if (alpha.getSize() != ncols || result.getSize() != nrows) {
-    throw SGPP::base::data_exception("Dimensions do not match!");
+    throw sgpp::base::data_exception("Dimensions do not match!");
   }
 
-  float_t* data = m_->getPointer();
+  double* data = m_->getPointer();
 
   // Standard matrix multiplication:
-  float_t temp = 0.;
+  double temp = 0.;
   size_t acc = 0;
 
   for (size_t i = 0; i < nrows; i++) {
@@ -80,4 +80,4 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::mult(SGPP::base::DataVector& 
 }
 
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

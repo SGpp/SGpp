@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -198,12 +198,12 @@ void ExecLaplaceBound(REAL* ptrAlpha, REAL* ptrResult, REAL* lcl_q, REAL* lcl_q_
 
 }  // namespace oclpdekernels
 using namespace oclpdekernels;
-void OCLPDEKernels::RunOCLKernelLaplaceBound(SGPP::base::DataVector& alpha,
-                                             SGPP::base::DataVector& result, REAL* lcl_q,
+void OCLPDEKernels::RunOCLKernelLaplaceBound(sgpp::base::DataVector& alpha,
+                                             sgpp::base::DataVector& result, REAL* lcl_q,
                                              REAL* lcl_q_inv, REAL* ptrLevel, REAL* ptrIndex,
                                              REAL* ptrLevel_int, REAL* ptrLambda,
                                              size_t argStorageSize, size_t argStorageDim,
-                                             SGPP::base::GridStorage* storage) {
+                                             sgpp::base::GridStorage* storage) {
   myStopwatch->start();
 
   if (isVeryFirstTime) {

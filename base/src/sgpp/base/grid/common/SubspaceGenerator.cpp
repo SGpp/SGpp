@@ -6,7 +6,7 @@
 #include <sgpp/base/grid/common/SubspaceGenerator.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 SubspaceGenerator::SubspaceGenerator(unsigned int dim,
@@ -39,4 +39,4 @@ SubspaceGenerator* SubspaceGenerator::next_() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -192,4 +192,4 @@ void StencilHierarchisationModLinear::rec(DataVector& source,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

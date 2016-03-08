@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -28,17 +28,17 @@ namespace parallel {
  * Parallelization of the FEM operators is done by using MPI.
  */
 class BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI
-    : public SGPP::finance::BlackScholesParabolicPDESolverSystemEuroAmer {
+    : public sgpp::finance::BlackScholesParabolicPDESolverSystemEuroAmer {
  protected:
-  virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyLOperatorInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result);
+  virtual void applyLOperatorComplete(sgpp::base::DataVector& alpha,
+                                      sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyMassMatrixInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
-                                       SGPP::base::DataVector& result);
+  virtual void applyMassMatrixComplete(sgpp::base::DataVector& alpha,
+                                       sgpp::base::DataVector& result);
 
  public:
   /**
@@ -68,12 +68,12 @@ class BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI
    * @param option_type Type of option
    */
   BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI(
-      SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-      SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, double r, double TimestepSize,
+      sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& mu,
+      sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
       std::string OperationMode, double dStrike, std::string option_type,
       bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0,
       std::string adaptSolveMode = "none", int numCoarsenPoints = -1, double refineThreshold = 0.0,
-      std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+      std::string refineMode = "classic", sgpp::base::GridIndex::level_type refineMaxLevel = 0);
 
   /**
    * Std-Destructor
@@ -86,18 +86,18 @@ class BlackScholesParabolicPDESolverSystemEuroAmerParallelMPI
    * @param alpha DataVector that contains the ansatzfunctions' coefficients
    * @param result DataVector into which the result of the space discretization operation is stored
    */
-  virtual void mult(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
   /**
    * generates the right hand side of the system, parallel
    *
    * @return returns the rhs
    */
-  virtual SGPP::base::DataVector* generateRHS();
+  virtual sgpp::base::DataVector* generateRHS();
 
   void finishTimestep(bool isLastTimestep = false);
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMERPARALLELMPI_HPP */

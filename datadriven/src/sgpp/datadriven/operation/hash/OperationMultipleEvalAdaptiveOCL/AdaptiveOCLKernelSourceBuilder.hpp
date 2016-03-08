@@ -10,7 +10,7 @@
 
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 namespace AdaptiveOCL {
@@ -475,4 +475,4 @@ class AdaptiveOCLKernelSourceBuilder {
   }
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

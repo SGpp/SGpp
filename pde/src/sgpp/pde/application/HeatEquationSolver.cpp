@@ -20,7 +20,7 @@
 #include <fstream>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver() {
@@ -48,15 +48,15 @@ void HeatEquationSolver::constructGrid(base::BoundingBox& BoundingBox, int level
   this->bGridConstructed = true;
 }
 
-void HeatEquationSolver::setHeatCoefficient(float_t a) { this->a = a; }
+void HeatEquationSolver::setHeatCoefficient(double a) { this->a = a; }
 
-void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                            size_t maxCGIterations, float_t epsilonCG,
+void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestepsize,
+                                            size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
                                             bool generateAnimation, size_t numEvalsAnimation) {
   if (this->bGridConstructed) {
     this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-    float_t dNeededTime;
+    double dNeededTime;
     solver::Euler* myEuler = new solver::Euler(
         "ExEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
@@ -88,13 +88,13 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, float_t timeste
   }
 }
 
-void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, float_t timestepsize,
-                                            size_t maxCGIterations, float_t epsilonCG,
+void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestepsize,
+                                            size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, bool verbose,
                                             bool generateAnimation, size_t numEvalsAnimation) {
   if (this->bGridConstructed) {
     this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-    float_t dNeededTime;
+    double dNeededTime;
     solver::Euler* myEuler = new solver::Euler(
         "ImEul", numTimesteps, timestepsize, generateAnimation, numEvalsAnimation, this->myScreen);
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
@@ -127,12 +127,12 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, float_t timeste
   }
 }
 
-void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, float_t timestepsize,
-                                            size_t maxCGIterations, float_t epsilonCG,
+void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestepsize,
+                                            size_t maxCGIterations, double epsilonCG,
                                             base::DataVector& alpha, size_t NumImEul) {
   if (this->bGridConstructed) {
     this->myScreen->writeStartSolve("Multidimensional Heat Equation Solver");
-    float_t dNeededTime;
+    double dNeededTime;
     solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
 #ifdef _OPENMP
     HeatEquationParabolicPDESolverSystemParallelOMP* myHESolver =
@@ -184,11 +184,11 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, float_t timeste
   }
 }
 
-void HeatEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, float_t mu, float_t sigma,
-                                                float_t factor) {
+void HeatEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, double mu, double sigma,
+                                                double factor) {
   if (this->bGridConstructed) {
-    float_t tmp;
-    float_t* dblFuncValues = new float_t[this->dim];
+    double tmp;
+    double* dblFuncValues = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -213,7 +213,7 @@ void HeatEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, float_t
 
     delete[] dblFuncValues;
 
-    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
+    sgpp::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
@@ -227,7 +227,7 @@ void HeatEquationSolver::initScreen() {
 }
 
 void HeatEquationSolver::storeInnerRHS(base::DataVector& alpha, std::string tFilename,
-                                       float_t timestepsize) {
+                                       double timestepsize) {
   if (this->bGridConstructed) {
     HeatEquationParabolicPDESolverSystem* myHESolver = new HeatEquationParabolicPDESolverSystem(
         *this->myGrid, alpha, this->a, timestepsize, "ImEul");
@@ -258,8 +258,8 @@ void HeatEquationSolver::storeInnerRHS(base::DataVector& alpha, std::string tFil
 }
 
 void HeatEquationSolver::storeInnerSolution(base::DataVector& alpha, size_t numTimesteps,
-                                            float_t timestepsize, size_t maxCGIterations,
-                                            float_t epsilonCG, std::string tFilename) {
+                                            double timestepsize, size_t maxCGIterations,
+                                            double epsilonCG, std::string tFilename) {
   if (this->bGridConstructed) {
     solver::Euler* myEuler =
         new solver::Euler("ImEul", numTimesteps, timestepsize, false, 0, this->myScreen);
@@ -293,4 +293,4 @@ void HeatEquationSolver::storeInnerSolution(base::DataVector& alpha, size_t numT
   }
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

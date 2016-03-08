@@ -11,7 +11,7 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -36,12 +36,12 @@ class LinearPeriodicBasis: public Basis<LT, IT>  {
    * @param i the index of the current basis function
    * @param x the absolute position of the evaluation point
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
+  inline double eval(LT l, IT i, double x) override {
     if (l == 0) {
       return fabs(2 * x - 1);
     } else {
-      return 1.0 - fabs(static_cast<float_t>(1 << l) * x -
-                        static_cast<float_t>(i));
+      return 1.0 - fabs(static_cast<double>(1 << l) * x -
+                        static_cast<double>(i));
     }
 
     // should not happen
@@ -58,7 +58,7 @@ class LinearPeriodicBasis: public Basis<LT, IT>  {
    * @param q the scaling factor of the basis function
    * @param t the offset of the basis function
    */
-  float_t eval(LT level, IT index, float_t p, float_t q, float_t t) {
+  double eval(LT level, IT index, double p, double q, double t) {
     if (level == 0) {
       return ((1.0 / q) * (fabs((2 * (p - t)) - (q))));
     } else {
@@ -74,6 +74,6 @@ class LinearPeriodicBasis: public Basis<LT, IT>  {
 typedef LinearPeriodicBasis<unsigned int, unsigned int> SLinearPeriodicBasis;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARPERIODICBASE_HPP */

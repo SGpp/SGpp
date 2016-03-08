@@ -13,7 +13,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -70,6 +70,6 @@ class operation_exception : public std::exception {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATION_EXCEPTION_HPP */

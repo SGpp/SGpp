@@ -12,7 +12,7 @@
 #include <omp.h>
 #endif /* _OPENMP */
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 #ifdef _OPENMP
@@ -87,6 +87,6 @@ class MutexType {
 
 #endif /* _OPENMP */
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_MUTEXTYPE_HPP */

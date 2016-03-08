@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 SquareRootGridGenerator::SquareRootGridGenerator(GridStorage& storage) :
@@ -71,5 +71,5 @@ void SquareRootGridGenerator::cliques(size_t level, size_t clique_size) {
 // }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

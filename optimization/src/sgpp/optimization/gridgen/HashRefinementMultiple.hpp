@@ -10,14 +10,14 @@
 
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
  * Descendant of base::HashRefinement refining without the generation of
  * hierarchical ancestors.
  *
- * In SG++ grids (as in SGPP::base), every grid fulfills the
+ * In SG++ grids (as in sgpp::base), every grid fulfills the
  * "hierarchical ancestors" property, e.g. every gridpoint has a direct
  * ancestor in every dimension whose level is > 1.
  *
@@ -41,7 +41,7 @@ namespace optimization {
  *
  * Grids without the "hierarchical ancestors" property don't allow most
  * standard algorithms to be executed on them, therefore grids and basis
- * functions are separated in this module from those in SGPP::base.
+ * functions are separated in this module from those in sgpp::base.
  */
 class HashRefinementMultiple : public base::HashRefinement {
  public:
@@ -150,6 +150,6 @@ class HashRefinementMultiple : public base::HashRefinement {
   }
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_GRIDGEN_HASHREFINEMENTMULTIPLE_HPP */

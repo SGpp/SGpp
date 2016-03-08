@@ -12,7 +12,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -27,7 +27,7 @@ namespace test_problems {
 class ConstrainedTestProblem {
  public:
   /// default standard deviation for the displacement vector
-  static constexpr float_t DEFAULT_STANDARD_DEVIATION = 0.01;
+  static constexpr double DEFAULT_STANDARD_DEVIATION = 0.01;
 
   /**
    * Constructor.
@@ -66,7 +66,7 @@ class ConstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPoint(base::DataVector& x);
+  double getOptimalPoint(base::DataVector& x);
 
   /**
    * Pure virtual method returning the minimal point
@@ -78,7 +78,7 @@ class ConstrainedTestProblem {
    * @return          minimal function value
    *                  \f$f(\vec{x}_\opt)\f$
    */
-  virtual float_t getOptimalPointUndisplaced(base::DataVector& x) = 0;
+  virtual double getOptimalPointUndisplaced(base::DataVector& x) = 0;
 
   /**
    * Generate normally distributed pseudorandom displacement with
@@ -95,7 +95,7 @@ class ConstrainedTestProblem {
    *
    * @param stdDev standard deviation of the displacement coordinates
    */
-  void generateDisplacement(float_t stdDev);
+  void generateDisplacement(double stdDev);
 
   /**
    * @return                currently used displacement
@@ -138,6 +138,6 @@ class ConstrainedTestProblem {
 };
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_CONSTRAINED_CONSTRAINEDTESTPROBLEM_HPP */

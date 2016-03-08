@@ -9,7 +9,7 @@ printer.setVerbosity(2);
 printLine = @() fprintf(['----------------------------------------' ...
                          '----------------------------------------\n']);
 
-fprintf('SGPP::optimization example program started.\n\n');
+fprintf('sgpp::optimization example program started.\n\n');
 
 % objective function
 f = ExampleFunction();
@@ -107,5 +107,5 @@ fprintf(['f(xOptNM) = ' num2str(fXOptNM, 6) ...
 
 printLine();
 
-fprintf('\nSGPP::optimization example program terminated.\n');
+fprintf('\nsgpp::optimization example program terminated.\n');
 

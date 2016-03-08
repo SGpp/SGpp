@@ -11,7 +11,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -23,9 +23,9 @@ class Auto : public SLESolver {
   /// maximal matrix dimension to allow use of full solvers
   static const size_t MAX_DIM_FOR_FULL = 30000;
   /// maximal ratio of non-zero entries for sparse solvers
-  static constexpr float_t MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
+  static constexpr double MAX_NNZ_RATIO_FOR_SPARSE = 0.1;
   /// ratio of the rows (e.g. 0.1 = 10%) to use for sparsity estimation
-  static constexpr float_t ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
+  static constexpr double ESTIMATE_NNZ_ROWS_SAMPLE_SIZE = 0.05;
 
   /**
    * Destructor.
@@ -52,6 +52,6 @@ class Auto : public SLESolver {
 };
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SOLVER_AUTO_HPP */

@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -39,7 +39,7 @@ class WaveletBoundaryGrid : public Grid {
    */
   ~WaveletBoundaryGrid() override;
 
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   const SBasis& getBasis() override;
 
@@ -55,6 +55,6 @@ class WaveletBoundaryGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* WAVELETTRUNCATEDBOUNDARYGRID_HPP */

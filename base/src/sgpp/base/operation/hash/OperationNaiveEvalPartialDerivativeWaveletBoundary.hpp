@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -44,7 +44,7 @@ class OperationNaiveEvalPartialDerivativeWaveletBoundary :
    * @param derivDim  dimension in which the partial derivative should be taken
    * @return          value of the partial derivative of the linear combination
    */
-  float_t evalPartialDerivative(const DataVector& alpha,
+  double evalPartialDerivative(const DataVector& alpha,
                                 const DataVector& point,
                                 size_t derivDim) override;
 
@@ -56,6 +56,6 @@ class OperationNaiveEvalPartialDerivativeWaveletBoundary :
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALPARTIALDERIVATIVEWAVELETBOUNDARY_HPP */

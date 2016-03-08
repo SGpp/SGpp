@@ -19,20 +19,20 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 // --------------------------------------------------------------------------
 
 class LearnerPiecewiseConstantSmoothedRegression {
  private:
-  SGPP::base::RegularGridConfiguration gridConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
 
-  SGPP::base::AdpativityConfiguration adaptivityConfig;
+  sgpp::base::AdpativityConfiguration adaptivityConfig;
 
-  SGPP::solver::SLESolverConfiguration solverConfig;
+  sgpp::solver::SLESolverConfiguration solverConfig;
 
-  SGPP::datadriven::RegularizationConfiguration regularizationConfig;
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
 
   bool verbose;
 
@@ -46,11 +46,11 @@ class LearnerPiecewiseConstantSmoothedRegression {
    * @param regularizationConfig config for regularization operator
    * @param verbose report additional information on the console
    */
-  LearnerPiecewiseConstantSmoothedRegression(SGPP::base::RegularGridConfiguration&
+  LearnerPiecewiseConstantSmoothedRegression(sgpp::base::RegularGridConfiguration&
       gridConfig,
-      SGPP::base::AdpativityConfiguration& adaptivityConfig,
-      SGPP::solver::SLESolverConfiguration& solverConfig,
-      SGPP::datadriven::RegularizationConfiguration& regularizationConfig,
+      sgpp::base::AdpativityConfiguration& adaptivityConfig,
+      sgpp::solver::SLESolverConfiguration& solverConfig,
+      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       bool verbose);
 
   /**
@@ -61,21 +61,21 @@ class LearnerPiecewiseConstantSmoothedRegression {
    * @param alpha coefficient vector
    * @param lambda regularization parameter
    */
-  void train(SGPP::datadriven::PiecewiseConstantRegression::Node&
-             piecewiseRegressor, SGPP::base::Grid& grid,
-             SGPP::base::DataVector& alpha, float_t lambda);
+  void train(sgpp::datadriven::PiecewiseConstantRegression::Node&
+             piecewiseRegressor, sgpp::base::Grid& grid,
+             sgpp::base::DataVector& alpha, double lambda);
 
   /**
    * generates the regularization matrix
    * @param grid grid
    */
-  SGPP::base::OperationMatrix* computeRegularizationMatrix(
-    SGPP::base::Grid& grid);
+  sgpp::base::OperationMatrix* computeRegularizationMatrix(
+    sgpp::base::Grid& grid);
 
   /**
    * Does cross-validation to obtain a suitable regularization parameter
    */
-  float_t optimizeLambdaCV(size_t kFold);
+  double optimizeLambdaCV(size_t kFold);
 
   /**
    * splits the complete sample set in a set of smaller training and test
@@ -84,10 +84,10 @@ class LearnerPiecewiseConstantSmoothedRegression {
    * @param strain vector containing the training samples for cv
    * @param stest vector containing the test samples for cv
    */
-  void splitset(std::vector<SGPP::base::DataMatrix*>& strain,
-                std::vector<SGPP::base::DataMatrix*>& stest);
+  void splitset(std::vector<sgpp::base::DataMatrix*>& strain,
+                std::vector<sgpp::base::DataMatrix*>& stest);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

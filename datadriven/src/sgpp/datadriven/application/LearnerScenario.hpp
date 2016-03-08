@@ -12,7 +12,7 @@
 #include "sgpp/solver/TypesSolver.hpp"
 #include "sgpp/base/tools/json/JSON.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 enum class InternalPrecision { Float, Double };
@@ -106,4 +106,4 @@ class LearnerScenario : public json::JSON {
   T fromString(const std::string& s);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

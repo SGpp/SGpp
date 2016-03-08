@@ -16,7 +16,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 /**
  * This class implements the Modified ParabolicPDESolverSystem for the BlackScholes
@@ -24,9 +24,9 @@ namespace finance {
  */
 class ModifiedBlackScholesParabolicPDESolverSystem : public BlackScholesParabolicPDESolverSystem {
  protected:
-  SGPP::base::OperationMatrix* OpFBound;
+  sgpp::base::OperationMatrix* OpFBound;
 
-  virtual void applyLOperator(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyLOperator(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
  public:
   /**
@@ -55,18 +55,18 @@ class ModifiedBlackScholesParabolicPDESolverSystem : public BlackScholesParaboli
    * @param dim_HW of Hull-White (= where r value is taken)
    */
   ModifiedBlackScholesParabolicPDESolverSystem(
-      SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-      SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
-      std::string OperationMode, bool bLogTransform, bool useCoarsen, float_t coarsenThreshold,
-      std::string adaptSolveMode, int numCoarsenPoints, float_t refineThreshold,
-      std::string refineMode, SGPP::base::GridIndex::level_type refineMaxLevel, int dim_HW);
+      sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& mu,
+      sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
+      std::string OperationMode, bool bLogTransform, bool useCoarsen, double coarsenThreshold,
+      std::string adaptSolveMode, int numCoarsenPoints, double refineThreshold,
+      std::string refineMode, sgpp::base::GridIndex::level_type refineMaxLevel, int dim_HW);
 
   /**
   * Multiplies the corresponding r coordinates with the whole grid value
   *
   * @param updateVector the vector that should be updated
   */
-  virtual void multiplyrBSHW(SGPP::base::DataVector& updateVector);
+  virtual void multiplyrBSHW(sgpp::base::DataVector& updateVector);
 
   /**
   * Std-Destructor
@@ -87,6 +87,6 @@ class ModifiedBlackScholesParabolicPDESolverSystem : public BlackScholesParaboli
   VariableDiscountFactor* variableDiscountFactor;
 };
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* MODIFIEDBLACKSCHOLESParabolicPDESolverSystem_HPP */

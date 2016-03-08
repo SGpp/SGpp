@@ -37,7 +37,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class MICKernelBase {
@@ -54,7 +54,7 @@ class SPMICKernelBase {
   }
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #ifdef __INTEL_OFFLOAD
 #pragma offload_attribute(pop)

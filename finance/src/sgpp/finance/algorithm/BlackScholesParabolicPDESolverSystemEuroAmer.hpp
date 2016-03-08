@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 /**
@@ -32,32 +32,32 @@ namespace finance {
  * Here European or American Options with fix Dirichlet boundaries are solved.
  */
 class BlackScholesParabolicPDESolverSystemEuroAmer
-    : public SGPP::pde::OperationParabolicPDESolverSystemDirichlet {
+    : public sgpp::pde::OperationParabolicPDESolverSystemDirichlet {
  protected:
   /// the riskfree interest rate
-  float_t r;
+  double r;
   /// the delta Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpDeltaBound;
+  sgpp::base::OperationMatrix* OpDeltaBound;
   /// the Gamma Operation, on boundary grid
-  SGPP::base::OperationMatrix* OpGammaBound;
+  sgpp::base::OperationMatrix* OpGammaBound;
   /// the LTwoDotProduct Operation (Mass Matrix), on boundary grid
-  SGPP::base::OperationMatrix* OpLTwoBound;
+  sgpp::base::OperationMatrix* OpLTwoBound;
   /// the delta Operation, on Inner grid
-  SGPP::base::OperationMatrix* OpDeltaInner;
+  sgpp::base::OperationMatrix* OpDeltaInner;
   /// the Gamma Operation, on Inner grid
-  SGPP::base::OperationMatrix* OpGammaInner;
+  sgpp::base::OperationMatrix* OpGammaInner;
   /// the LTwoDotProduct Operation (Mass Matrix), on Inner grid
-  SGPP::base::OperationMatrix* OpLTwoInner;
+  sgpp::base::OperationMatrix* OpLTwoInner;
   /// Pointer to the mus
-  SGPP::base::DataVector* mus;
+  sgpp::base::DataVector* mus;
   /// Pointer to the sigmas
-  SGPP::base::DataVector* sigmas;
+  sgpp::base::DataVector* sigmas;
   /// Pointer to the rhos;
-  SGPP::base::DataMatrix* rhos;
+  sgpp::base::DataMatrix* rhos;
   /// Pointer to the coefficients of operation Delta
-  SGPP::base::DataVector* deltaCoef;
+  sgpp::base::DataVector* deltaCoef;
   /// Pointer to the coefficients ot operation Gamma
-  SGPP::base::DataMatrix* gammaCoef;
+  sgpp::base::DataMatrix* gammaCoef;
   /// use coarsening between timesteps in order to reduce gridsize
   bool useCoarsen;
   /// adaptive mode during solving Black Scholes Equation: coarsen, refine, coarsenNrefine
@@ -65,37 +65,37 @@ class BlackScholesParabolicPDESolverSystemEuroAmer
   /// number of points the are coarsened in each coarsening-step !CURRENTLY UNUSED PARAMETER!
   int numCoarsenPoints;
   /// Threshold used to decide if a grid point should be deleted
-  float_t coarsenThreshold;
+  double coarsenThreshold;
   /// Threshold used to decide if a grid point should be refined
-  float_t refineThreshold;
+  double refineThreshold;
   /// refine mode during solving Black Scholes Equation: classic or maxLevel
   std::string refineMode;
   /// maxLevel max. Level of refinement
-  SGPP::base::GridIndex::level_type refineMaxLevel;
+  sgpp::base::GridIndex::level_type refineMaxLevel;
   /// the algorithmic dimensions used in this system
   std::vector<size_t> BSalgoDims;
   /// store number of executed timesteps
   size_t nExecTimesteps;
   /// the strike of the current option
-  float_t dStrike;
+  double dStrike;
   /// the type of the current option
   std::string option_type;
   /// store whether log coordinates are used
   bool b_log_transform;
 #ifdef HEDGE
   /// hedging calculator
-  SGPP::finance::Hedging* myHedge;
+  sgpp::finance::Hedging* myHedge;
 #endif
 
-  virtual void applyLOperatorInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyLOperatorInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyLOperatorComplete(SGPP::base::DataVector& alpha,
-                                      SGPP::base::DataVector& result);
+  virtual void applyLOperatorComplete(sgpp::base::DataVector& alpha,
+                                      sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixInner(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result);
+  virtual void applyMassMatrixInner(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
 
-  virtual void applyMassMatrixComplete(SGPP::base::DataVector& alpha,
-                                       SGPP::base::DataVector& result);
+  virtual void applyMassMatrixComplete(sgpp::base::DataVector& alpha,
+                                       sgpp::base::DataVector& result);
 
   /**
    * Build the coefficients for the Gamma Operation, which
@@ -157,12 +157,12 @@ class BlackScholesParabolicPDESolverSystemEuroAmer
    * @param refineMaxLevel max. level of refinement during solving
    */
   BlackScholesParabolicPDESolverSystemEuroAmer(
-      SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-      SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
-      std::string OperationMode, float_t dStrike, std::string option_type,
-      bool bLogTransform = false, bool useCoarsen = false, float_t coarsenThreshold = 0.0,
-      std::string adaptSolveMode = "none", int numCoarsenPoints = -1, float_t refineThreshold = 0.0,
-      std::string refineMode = "classic", SGPP::base::GridIndex::level_type refineMaxLevel = 0);
+      sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& mu,
+      sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
+      std::string OperationMode, double dStrike, std::string option_type,
+      bool bLogTransform = false, bool useCoarsen = false, double coarsenThreshold = 0.0,
+      std::string adaptSolveMode = "none", int numCoarsenPoints = -1, double refineThreshold = 0.0,
+      std::string refineMode = "classic", sgpp::base::GridIndex::level_type refineMaxLevel = 0);
 
   /**
    * Std-Destructor
@@ -176,6 +176,6 @@ class BlackScholesParabolicPDESolverSystemEuroAmer
   void startTimestep();
 };
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BLACKSCHOLESPARABOLICPDESOLVERSYSTEMEUROAMER_HPP */

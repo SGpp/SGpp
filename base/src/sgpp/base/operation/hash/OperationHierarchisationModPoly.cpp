@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationHierarchisationModPoly::doHierarchisation(
@@ -37,4 +37,4 @@ void OperationHierarchisationModPoly::doDehierarchisation(DataVector& alpha) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 void OperationDensityMargTo1DLinear::margToDimX(base::DataVector* alpha, base::Grid*& grid_x,
                                                 base::DataVector*& alpha_x, size_t dim_x) {
@@ -51,4 +51,4 @@ void OperationDensityMargTo1DLinear::marg_next_dim(base::Grid* g_in, base::DataV
   return;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

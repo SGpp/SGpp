@@ -10,7 +10,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void RefinementDecorator::free_refine(GridStorage& storage,
@@ -91,4 +91,4 @@ AbstractRefinement::refinement_list_type RefinementDecorator::getIndicator(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -9,13 +9,13 @@
 #include <sgpp/optimization/optimizer/least_squares/LevenbergMarquardt.hpp>
 #include <sgpp/optimization/sle/system/FullSLE.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
 LevenbergMarquardt::LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
-                                       size_t maxItCount, float_t tolerance, float_t initialDamping,
-                                       float_t acceptanceThreshold, float_t effectivenessThreshold)
+                                       size_t maxItCount, double tolerance, double initialDamping,
+                                       double acceptanceThreshold, double effectivenessThreshold)
     : LeastSquaresOptimizer(phi, maxItCount),
       phiGradient(phiGradient),
       tol(tolerance),
@@ -26,8 +26,8 @@ LevenbergMarquardt::LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradie
       sleSolver(defaultSleSolver) {}
 
 LevenbergMarquardt::LevenbergMarquardt(VectorFunction& phi, VectorFunctionGradient& phiGradient,
-                                       size_t maxItCount, float_t tolerance, float_t damping,
-                                       float_t acceptanceThreshold, float_t effectivenessThreshold,
+                                       size_t maxItCount, double tolerance, double damping,
+                                       double acceptanceThreshold, double effectivenessThreshold,
                                        const sle_solver::SLESolver& sleSolver)
     : LeastSquaresOptimizer(phi, maxItCount),
       phiGradient(phiGradient),
@@ -63,8 +63,8 @@ void LevenbergMarquardt::optimize() {
   base::DataVector s(d);
   base::DataVector b(d);
 
-  float_t fx = NAN;
-  float_t mu = mu0;
+  double fx = NAN;
+  double mu = mu0;
   base::DataVector gradPhixTimesS(m);
   base::DataMatrix gradPhixSquared(m, m);
 
@@ -91,7 +91,7 @@ void LevenbergMarquardt::optimize() {
     // calculate (nabla phi(x))' * (nabla phi(x))
     for (size_t t1 = 0; t1 < d; t1++) {
       for (size_t t2 = 0; t2 < d; t2++) {
-        float_t entry = 0.0;
+        double entry = 0.0;
 
         for (size_t i = 0; i < m; i++) {
           entry += gradPhix(i, t1) * gradPhix(i, t2);
@@ -104,7 +104,7 @@ void LevenbergMarquardt::optimize() {
 
     // RHS of linear system to be solved
     for (size_t t = 0; t < d; t++) {
-      float_t entry = 0.0;
+      double entry = 0.0;
 
       for (size_t i = 0; i < m; i++) {
         entry -= gradPhix(i, t) * phix[i];
@@ -136,7 +136,7 @@ void LevenbergMarquardt::optimize() {
           s[t] = -b[t];
         }
 
-        const float_t sNorm = s.l2Norm();
+        const double sNorm = s.l2Norm();
         s.mult(mu / sNorm);
       }
 
@@ -155,8 +155,8 @@ void LevenbergMarquardt::optimize() {
       k++;
 
       // evaluate f and linearized version of at new point
-      float_t fy = 0.0;
-      float_t fLinearY = 0.0;
+      double fy = 0.0;
+      double fLinearY = 0.0;
       gradPhix.mult(s, gradPhixTimesS);
 
       for (size_t i = 0; i < m; i++) {
@@ -165,7 +165,7 @@ void LevenbergMarquardt::optimize() {
       }
 
       // effectiveness parameter
-      const float_t epsilon = (fx - fy) / (fx - fLinearY);
+      const double epsilon = (fx - fy) / (fx - fLinearY);
 
       if (epsilon <= beta0) {
         mu *= 2.0;
@@ -199,23 +199,23 @@ void LevenbergMarquardt::optimize() {
 
 VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const { return phiGradient; }
 
-float_t LevenbergMarquardt::getTolerance() const { return tol; }
+double LevenbergMarquardt::getTolerance() const { return tol; }
 
-void LevenbergMarquardt::setTolerance(float_t tolerance) { tol = tolerance; }
+void LevenbergMarquardt::setTolerance(double tolerance) { tol = tolerance; }
 
-float_t LevenbergMarquardt::getInitialDamping() const { return mu0; }
+double LevenbergMarquardt::getInitialDamping() const { return mu0; }
 
-void LevenbergMarquardt::setInitialDamping(float_t initialDamping) { mu0 = initialDamping; }
+void LevenbergMarquardt::setInitialDamping(double initialDamping) { mu0 = initialDamping; }
 
-float_t LevenbergMarquardt::getAcceptanceThreshold() const { return beta0; }
+double LevenbergMarquardt::getAcceptanceThreshold() const { return beta0; }
 
-void LevenbergMarquardt::setAcceptanceThreshold(float_t acceptanceThreshold) {
+void LevenbergMarquardt::setAcceptanceThreshold(double acceptanceThreshold) {
   beta0 = acceptanceThreshold;
 }
 
-float_t LevenbergMarquardt::getEffectivenessThreshold() const { return beta1; }
+double LevenbergMarquardt::getEffectivenessThreshold() const { return beta1; }
 
-void LevenbergMarquardt::setEffectivenessThreshold(float_t effectivenessThreshold) {
+void LevenbergMarquardt::setEffectivenessThreshold(double effectivenessThreshold) {
   beta1 = effectivenessThreshold;
 }
 
@@ -224,4 +224,4 @@ void LevenbergMarquardt::clone(std::unique_ptr<LeastSquaresOptimizer>& clone) co
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

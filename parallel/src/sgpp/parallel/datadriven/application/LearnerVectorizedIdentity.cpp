@@ -18,43 +18,43 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
 LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType,
                                                      const bool isRegression, const bool verbose)
-    : SGPP::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(MPINone) {}
+    : sgpp::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(MPINone) {}
 
 LearnerVectorizedIdentity::LearnerVectorizedIdentity(const VectorizationType vecType,
                                                      const MPIType mpiType, const bool isRegression,
                                                      const bool verbose)
-    : SGPP::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {}
+    : sgpp::datadriven::LearnerBase(isRegression, verbose), vecType_(vecType), mpiType_(mpiType) {}
 
 LearnerVectorizedIdentity::LearnerVectorizedIdentity(const std::string tGridFilename,
                                                      const std::string tAlphaFilename,
                                                      const VectorizationType vecType,
                                                      const bool isRegression, const bool verbose)
-    : SGPP::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
+    : sgpp::datadriven::LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
       vecType_(vecType) {}
 
 LearnerVectorizedIdentity::~LearnerVectorizedIdentity() {}
 
-SGPP::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(
-    SGPP::base::DataMatrix& trainDataset, double lambda) {
+sgpp::datadriven::DMSystemMatrixBase* LearnerVectorizedIdentity::createDMSystem(
+    sgpp::base::DataMatrix& trainDataset, double lambda) {
   if (this->grid_ == NULL) return NULL;
 
 #ifndef USE_MPI
-  return new SGPP::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda,
+  return new sgpp::parallel::DMSystemMatrixVectorizedIdentity(*(this->grid_), trainDataset, lambda,
                                                               this->vecType_);
 #else
-  return SGPP::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
+  return sgpp::parallel::DMSystemMatrixMPITypeFactory::getDMSystemMatrix(
       *(this->grid_), trainDataset, lambda, this->vecType_, this->mpiType_);
 #endif
 }
 
-void LearnerVectorizedIdentity::postProcessing(const SGPP::base::DataMatrix& trainDataset,
-                                               const SGPP::solver::SLESolverType& solver,
+void LearnerVectorizedIdentity::postProcessing(const sgpp::base::DataMatrix& trainDataset,
+                                               const sgpp::solver::SLESolverType& solver,
                                                const size_t numNeededIterations) {
   LearnerVectorizedPerformance currentPerf =
       LearnerVectorizedPerformanceCalculator::getGFlopAndGByte(
@@ -72,13 +72,13 @@ void LearnerVectorizedIdentity::postProcessing(const SGPP::base::DataMatrix& tra
   }
 }
 
-SGPP::base::DataVector LearnerVectorizedIdentity::predict(SGPP::base::DataMatrix& testDataset) {
-  SGPP::base::DataMatrix tmpDataSet(testDataset);
+sgpp::base::DataVector LearnerVectorizedIdentity::predict(sgpp::base::DataMatrix& testDataset) {
+  sgpp::base::DataMatrix tmpDataSet(testDataset);
   size_t originalSize = testDataset.getNrows();
   size_t paddedSize =
-      SGPP::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
+      sgpp::parallel::DMVectorizationPaddingAssistant::padDataset(tmpDataSet, this->vecType_);
 
-  SGPP::base::DataVector classesComputed(paddedSize);
+  sgpp::base::DataVector classesComputed(paddedSize);
 
   classesComputed.setAll(0.0);
 
@@ -86,8 +86,8 @@ SGPP::base::DataVector LearnerVectorizedIdentity::predict(SGPP::base::DataMatrix
     tmpDataSet.transpose();
   }
 
-  std::unique_ptr<SGPP::parallel::OperationMultipleEvalVectorized> MultEval =
-      SGPP::op_factory::createOperationMultipleEvalVectorized(*grid_, vecType_, &tmpDataSet);
+  std::unique_ptr<sgpp::parallel::OperationMultipleEvalVectorized> MultEval =
+      sgpp::op_factory::createOperationMultipleEvalVectorized(*grid_, vecType_, &tmpDataSet);
   MultEval->multVectorized(*alpha_, classesComputed);
 
   // removed the padded instances
@@ -97,4 +97,4 @@ SGPP::base::DataVector LearnerVectorizedIdentity::predict(SGPP::base::DataMatrix
 }
 
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

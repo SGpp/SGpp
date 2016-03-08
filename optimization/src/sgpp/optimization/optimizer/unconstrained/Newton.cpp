@@ -15,13 +15,13 @@
 #include <algorithm>
 #include <numeric>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
 Newton::Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t max_it_count,
-               float_t beta, float_t gamma, float_t tolerance, float_t epsilon, float_t alpha1,
-               float_t alpha2, float_t p)
+               double beta, double gamma, double tolerance, double epsilon, double alpha1,
+               double alpha2, double p)
     : UnconstrainedOptimizer(f, max_it_count),
       fHessian(fHessian),
       beta(beta),
@@ -35,8 +35,8 @@ Newton::Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t max_it
       sleSolver(defaultSleSolver) {}
 
 Newton::Newton(ScalarFunction& f, ScalarFunctionHessian& fHessian, size_t max_it_count,
-               float_t beta, float_t gamma, float_t tolerance, float_t epsilon, float_t alpha1,
-               float_t alpha2, float_t p, const sle_solver::SLESolver& sleSolver)
+               double beta, double gamma, double tolerance, double epsilon, double alpha1,
+               double alpha2, double p, const sle_solver::SLESolver& sleSolver)
     : UnconstrainedOptimizer(f, max_it_count),
       fHessian(fHessian),
       beta(beta),
@@ -62,7 +62,7 @@ void Newton::optimize() {
   fHist.resize(0);
 
   base::DataVector x(x0);
-  float_t fx = NAN;
+  double fx = NAN;
 
   base::DataVector gradFx(d);
   base::DataMatrix hessianFx(d, d);
@@ -84,7 +84,7 @@ void Newton::optimize() {
       fHist.append(fx);
     }
 
-    const float_t gradFxNorm = gradFx.l2Norm();
+    const double gradFxNorm = gradFx.l2Norm();
 
     // exit if norm small enough
     if (gradFxNorm < tol) {
@@ -108,7 +108,7 @@ void Newton::optimize() {
     }
 
     // norm of solution
-    const float_t dkNorm = dk.l2Norm();
+    const double dkNorm = dk.l2Norm();
 
     // acceptance criterion
     if (lsSolved &&
@@ -150,37 +150,37 @@ void Newton::optimize() {
 
 ScalarFunctionHessian& Newton::getObjectiveHessian() const { return fHessian; }
 
-float_t Newton::getBeta() const { return beta; }
+double Newton::getBeta() const { return beta; }
 
-void Newton::setBeta(float_t beta) { this->beta = beta; }
+void Newton::setBeta(double beta) { this->beta = beta; }
 
-float_t Newton::getGamma() const { return gamma; }
+double Newton::getGamma() const { return gamma; }
 
-void Newton::setGamma(float_t gamma) { this->gamma = gamma; }
+void Newton::setGamma(double gamma) { this->gamma = gamma; }
 
-float_t Newton::getTolerance() const { return tol; }
+double Newton::getTolerance() const { return tol; }
 
-void Newton::setTolerance(float_t tolerance) { tol = tolerance; }
+void Newton::setTolerance(double tolerance) { tol = tolerance; }
 
-float_t Newton::getEpsilon() const { return eps; }
+double Newton::getEpsilon() const { return eps; }
 
-void Newton::setEpsilon(float_t epsilon) { eps = epsilon; }
+void Newton::setEpsilon(double epsilon) { eps = epsilon; }
 
-float_t Newton::getAlpha1() const { return alpha1; }
+double Newton::getAlpha1() const { return alpha1; }
 
-void Newton::setAlpha1(float_t alpha1) { this->alpha1 = alpha1; }
+void Newton::setAlpha1(double alpha1) { this->alpha1 = alpha1; }
 
-float_t Newton::getAlpha2() const { return alpha2; }
+double Newton::getAlpha2() const { return alpha2; }
 
-void Newton::setAlpha2(float_t alpha2) { this->alpha2 = alpha2; }
+void Newton::setAlpha2(double alpha2) { this->alpha2 = alpha2; }
 
-float_t Newton::getP() const { return p; }
+double Newton::getP() const { return p; }
 
-void Newton::setP(float_t p) { this->p = p; }
+void Newton::setP(double p) { this->p = p; }
 
 void Newton::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
   clone = std::unique_ptr<UnconstrainedOptimizer>(new Newton(*this));
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

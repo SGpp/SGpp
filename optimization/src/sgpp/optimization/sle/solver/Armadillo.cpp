@@ -12,21 +12,15 @@
 #ifdef USE_ARMADILLO
 #include <armadillo>
 
-#if USE_DOUBLE_PRECISION
 typedef arma::vec ArmadilloVector;
 typedef arma::mat ArmadilloMatrix;
-#else
-typedef arma::fvec ArmadilloVector;
-typedef arma::fmat ArmadilloMatrix;
-#endif
-
 #endif /* USE_ARMADILLO */
 
 #include <cstddef>
 #include <iostream>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -91,7 +85,7 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
         {
           char str[10];
           snprintf(str, sizeof(str), "%.1f%%",
-                   static_cast<float_t>(i) / static_cast<float_t>(n) * 100.0);
+                   static_cast<double>(i) / static_cast<double>(n) * 100.0);
           Printer::getInstance().printStatusUpdate("constructing matrix (" + std::string(str) +
                                                    ")");
         }
@@ -105,8 +99,8 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
   // print ratio of nonzero entries
   {
     char str[10];
-    float_t nnzRatio =
-        static_cast<float_t>(nnz) / (static_cast<float_t>(n) * static_cast<float_t>(n));
+    double nnzRatio =
+        static_cast<double>(nnz) / (static_cast<double>(n) * static_cast<double>(n));
     snprintf(str, sizeof(str), "%.1f%%", nnzRatio * 100.0);
     Printer::getInstance().printStatusUpdate("nnz ratio: " + std::string(str));
     Printer::getInstance().printStatusNewLine();
@@ -169,4 +163,4 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
 }
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

@@ -18,7 +18,7 @@
 #include <fstream>
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 PoissonEquationSolver::PoissonEquationSolver() : EllipticPDESolver() {
@@ -47,10 +47,10 @@ void PoissonEquationSolver::constructGrid(base::BoundingBox& BoundingBox, int le
 }
 
 void PoissonEquationSolver::solvePDE(base::DataVector& alpha, base::DataVector& rhs,
-                                     size_t maxCGIterations, float_t epsilonCG, bool verbose) {
-  float_t dTimeAlpha = 0.0;
-  float_t dTimeRHS = 0.0;
-  float_t dTimeSolver = 0.0;
+                                     size_t maxCGIterations, double epsilonCG, bool verbose) {
+  double dTimeAlpha = 0.0;
+  double dTimeRHS = 0.0;
+  double dTimeSolver = 0.0;
 
   base::SGppStopwatch* myStopwatch = new base::SGppStopwatch();
   solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
@@ -100,11 +100,11 @@ void PoissonEquationSolver::solvePDE(base::DataVector& alpha, base::DataVector& 
   delete myStopwatch;
 }
 
-void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, float_t mu,
-                                                   float_t sigma, float_t factor) {
+void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, double mu,
+                                                   double sigma, double factor) {
   if (this->bGridConstructed) {
-    float_t tmp;
-    float_t* dblFuncValues = new float_t[this->dim];
+    double tmp;
+    double* dblFuncValues = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -142,18 +142,18 @@ void PoissonEquationSolver::initGridWithSmoothHeat(base::DataVector& alpha, floa
 
     delete[] dblFuncValues;
 
-    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
+    sgpp::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeat : A grid wasn't constructed before!");
   }
 }
 
-void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& alpha, float_t mu,
-                                                             float_t sigma, float_t factor) {
+void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& alpha, double mu,
+                                                             double sigma, double factor) {
   if (this->bGridConstructed) {
-    float_t tmp;
-    float_t* dblFuncValues = new float_t[this->dim];
+    double tmp;
+    double* dblFuncValues = new double[this->dim];
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
       std::string coords = this->myGridStorage->get(i)->getCoordsStringBB(*this->myBoundingBox);
@@ -178,18 +178,18 @@ void PoissonEquationSolver::initGridWithSmoothHeatFullDomain(base::DataVector& a
 
     delete[] dblFuncValues;
 
-    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
+    sgpp::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
         "HeatEquationSolver::initGridWithSmoothHeatFullDomain : A grid wasn't constructed before!");
   }
 }
 
-void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, float_t factor) {
+void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, double factor) {
   if (this->bGridConstructed) {
-    float_t tmp;
-    float_t* dblFuncValues = new float_t[this->dim];
-    float_t* rightBound = new float_t[this->dim];
+    double tmp;
+    double* dblFuncValues = new double[this->dim];
+    double* rightBound = new double[this->dim];
 
     base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
 
@@ -232,18 +232,18 @@ void PoissonEquationSolver::initGridWithExpHeat(base::DataVector& alpha, float_t
 
     delete[] dblFuncValues;
 
-    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
+    sgpp::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
   }
 }
 
-void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alpha, float_t factor) {
+void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alpha, double factor) {
   if (this->bGridConstructed) {
-    float_t tmp;
-    float_t* dblFuncValues = new float_t[this->dim];
-    float_t* rightBound = new float_t[this->dim];
+    double tmp;
+    double* dblFuncValues = new double[this->dim];
+    double* rightBound = new double[this->dim];
 
     base::BoundingBox* tmpBB = &this->myGrid->getBoundingBox();
 
@@ -273,7 +273,7 @@ void PoissonEquationSolver::initGridWithExpHeatFullDomain(base::DataVector& alph
 
     delete[] dblFuncValues;
 
-    SGPP::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
+    sgpp::op_factory::createOperationHierarchisation(*this->myGrid)->doHierarchisation(alpha);
   } else {
     throw base::application_exception(
         "PoissonEquationSolver::initGridWithExpHeat : A grid wasn't constructed before!");
@@ -307,7 +307,7 @@ void PoissonEquationSolver::storeInnerRHS(base::DataVector& alpha, std::string t
 }
 
 void PoissonEquationSolver::storeInnerSolution(base::DataVector& alpha, size_t maxCGIterations,
-                                               float_t epsilonCG, std::string tFilename) {
+                                               double epsilonCG, std::string tFilename) {
   solver::ConjugateGradients* myCG = new solver::ConjugateGradients(maxCGIterations, epsilonCG);
   PoissonEquationEllipticPDESolverSystemDirichlet* mySystem =
       new PoissonEquationEllipticPDESolverSystemDirichlet(*(this->myGrid), alpha);
@@ -340,4 +340,4 @@ void PoissonEquationSolver::initScreen() {
                              "Alexander Heinecke, (C) 2009-2011");
 }
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

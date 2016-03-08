@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -40,7 +40,7 @@ class IncreasingPowerObjective : public TestScalarFunction {
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  float_t evalUndisplaced(const base::DataVector& x) override;
+  double evalUndisplaced(const base::DataVector& x) override;
 
   /**
    * @param[out] clone pointer to cloned object
@@ -83,7 +83,7 @@ class IncreasingPower : public UnconstrainedTestProblem {
    * @return       minimal function value
    *               \f$f(\vec{x}_\opt)\f$
    */
-  float_t getOptimalPointUndisplaced(base::DataVector& x) override;
+  double getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
   /// objective function
@@ -91,6 +91,6 @@ class IncreasingPower : public UnconstrainedTestProblem {
 };
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_INCREASINGPOWER_HPP */

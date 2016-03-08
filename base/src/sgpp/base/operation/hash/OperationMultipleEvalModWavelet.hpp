@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -44,6 +44,6 @@ class OperationMultipleEvalModWavelet : public OperationMultipleEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONMULTIPLEEVALMODWAVELET_HPP */

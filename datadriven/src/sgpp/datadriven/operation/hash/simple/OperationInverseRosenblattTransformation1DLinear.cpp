@@ -14,7 +14,7 @@
 #include <map>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -27,8 +27,8 @@ OperationInverseRosenblattTransformation1DLinear::OperationInverseRosenblattTran
 OperationInverseRosenblattTransformation1DLinear::
     ~OperationInverseRosenblattTransformation1DLinear() {}
 
-float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
-    base::DataVector* alpha1d, float_t coord1d) {
+double OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
+    base::DataVector* alpha1d, double coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
   // compute PDF, sort by coordinates
   std::multimap<double, double> coord_pdf, coord_cdf;
@@ -114,4 +114,4 @@ float_t OperationInverseRosenblattTransformation1DLinear::doTransformation1D(
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

@@ -14,7 +14,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class AbstractOperationMultipleEvalSubspace: public
@@ -24,7 +24,7 @@ class AbstractOperationMultipleEvalSubspace: public
 
  private:
   base::SGppStopwatch timer;
-  float_t duration;
+  double duration;
  public:
   AbstractOperationMultipleEvalSubspace(base::Grid& grid,
                                         base::DataMatrix& dataset) :
@@ -40,12 +40,12 @@ class AbstractOperationMultipleEvalSubspace: public
                         const size_t start_index_data,
                         const size_t end_index_data) = 0;
 
-  virtual void multTransposeImpl(SGPP::base::DataVector& source,
-                                 SGPP::base::DataVector& result,
+  virtual void multTransposeImpl(sgpp::base::DataVector& source,
+                                 sgpp::base::DataVector& result,
                                  const size_t start_index_data, const size_t end_index_data) = 0;
 
-  void multTranspose(SGPP::base::DataVector& alpha,
-                     SGPP::base::DataVector& result) override {
+  void multTranspose(sgpp::base::DataVector& alpha,
+                     sgpp::base::DataVector& result) override {
     if (!this->isPrepared) {
       this->prepare();
     }
@@ -75,8 +75,8 @@ class AbstractOperationMultipleEvalSubspace: public
     this->duration = this->timer.stop();
   }
 
-  void mult(SGPP::base::DataVector& source,
-            SGPP::base::DataVector& result) override {
+  void mult(sgpp::base::DataVector& source,
+            sgpp::base::DataVector& result) override {
 
     if (!this->isPrepared) {
       this->prepare();
@@ -112,7 +112,7 @@ class AbstractOperationMultipleEvalSubspace: public
 
   virtual size_t getAlignment() = 0;
 
-  virtual float_t getDuration () override {
+  virtual double getDuration () override {
     return this->duration;
   }
 

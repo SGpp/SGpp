@@ -11,7 +11,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLClonedBufferMultiPlatform {
@@ -44,4 +44,4 @@ class OCLClonedBufferMultiPlatform {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

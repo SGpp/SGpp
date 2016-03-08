@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -18,7 +18,7 @@ Beale::~Beale() {}
 
 TestScalarFunction& Beale::getObjectiveFunction() { return f; }
 
-float_t Beale::getOptimalPointUndisplaced(base::DataVector& x) {
+double Beale::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.8;
   x[1] = 0.55;
@@ -29,12 +29,12 @@ BealeObjective::BealeObjective() : TestScalarFunction(2) {}
 
 BealeObjective::~BealeObjective() {}
 
-float_t BealeObjective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 10.0 * x[0] - 5.0;
-  const float_t x2 = 10.0 * x[1] - 5.0;
-  const float_t tmp1 = 1.5 - x1 * (1.0 - x2);
-  const float_t tmp2 = 2.25 - x1 * (1.0 - x2 * x2);
-  const float_t tmp3 = 2.625 - x1 * (1.0 - x2 * x2 * x2);
+double BealeObjective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 10.0 * x[0] - 5.0;
+  const double x2 = 10.0 * x[1] - 5.0;
+  const double tmp1 = 1.5 - x1 * (1.0 - x2);
+  const double tmp2 = 2.25 - x1 * (1.0 - x2 * x2);
+  const double tmp3 = 2.625 - x1 * (1.0 - x2 * x2 * x2);
 
   return tmp1 * tmp1 + tmp2 * tmp2 + tmp3 * tmp3;
 }
@@ -44,4 +44,4 @@ void BealeObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

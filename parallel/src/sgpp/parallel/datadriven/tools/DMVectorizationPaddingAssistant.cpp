@@ -12,7 +12,7 @@
 #include <sgpp/parallel/datadriven/basis/common/SPX86SimdKernelBase.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 
 namespace parallel {
 
@@ -43,7 +43,7 @@ size_t DMVectorizationPaddingAssistant::getVecWidth(VectorizationType& vecType) 
 
 #endif
   } else {
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "DMVectorizationPaddingAssistant::getVecWidth : un-supported vector extension!");
   }
 
@@ -83,14 +83,14 @@ size_t DMVectorizationPaddingAssistant::getVecWidthSP(VectorizationType& vecType
 
 #endif
   } else {
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "DMVectorizationPaddingAssistant::getVecWidthSP : un-supported vector extension!");
   }
 
   return 0;
 }
 
-size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix& dataset,
+size_t DMVectorizationPaddingAssistant::padDataset(sgpp::base::DataMatrix& dataset,
                                                    VectorizationType& vecType) {
   size_t vecWidth = getVecWidth(vecType);
 
@@ -99,7 +99,7 @@ size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix& datas
   size_t loopCount = vecWidth - remainder;
 
   if (loopCount != vecWidth) {
-    SGPP::base::DataVector lastRow(dataset.getNcols());
+    sgpp::base::DataVector lastRow(dataset.getNcols());
     size_t oldSize = dataset.getNrows();
     dataset.getRow(dataset.getNrows() - 1, lastRow);
     dataset.resize(dataset.getNrows() + loopCount);
@@ -112,7 +112,7 @@ size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrix& datas
   return dataset.getNrows();
 }
 
-size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP& dataset,
+size_t DMVectorizationPaddingAssistant::padDataset(sgpp::base::DataMatrixSP& dataset,
                                                    VectorizationType vecType) {
   size_t vecWidth = getVecWidthSP(vecType);
 
@@ -121,7 +121,7 @@ size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP& dat
   size_t loopCount = vecWidth - remainder;
 
   if (loopCount != vecWidth) {
-    SGPP::base::DataVectorSP lastRow(dataset.getNcols());
+    sgpp::base::DataVectorSP lastRow(dataset.getNcols());
     size_t oldSize = dataset.getNrows();
     dataset.getRow(dataset.getNrows() - 1, lastRow);
     dataset.resize(dataset.getNrows() + loopCount);
@@ -134,4 +134,4 @@ size_t DMVectorizationPaddingAssistant::padDataset(SGPP::base::DataMatrixSP& dat
   return dataset.getNrows();
 }
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

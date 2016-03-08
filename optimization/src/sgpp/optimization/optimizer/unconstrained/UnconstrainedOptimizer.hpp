@@ -15,7 +15,7 @@
 #include <cstddef>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -86,7 +86,7 @@ class UnconstrainedOptimizer {
    * @return result of optimization (optimal function value),
    *         NAN on error
    */
-  float_t getOptimalValue() const { return fOpt; }
+  double getOptimalValue() const { return fOpt; }
 
   /**
    * @return tall matrix (d columns) in which the k-th row indicates
@@ -121,7 +121,7 @@ class UnconstrainedOptimizer {
   /// result of optimization (location of optimum)
   base::DataVector xOpt;
   /// result of optimization (optimal function value)
-  float_t fOpt;
+  double fOpt;
   /// search history matrix (optimal points)
   base::DataMatrix xHist;
   /// search history vector (optimal values)
@@ -129,6 +129,6 @@ class UnconstrainedOptimizer {
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP */

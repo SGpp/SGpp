@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -46,7 +46,7 @@ class OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis :
    * @param derivDim  dimension in which the partial derivative should be taken
    * @return          value of the partial derivative of the linear combination
    */
-  float_t evalPartialDerivative(const DataVector& alpha,
+  double evalPartialDerivative(const DataVector& alpha,
                                 const DataVector& point,
                                 size_t derivDim) override;
 
@@ -58,6 +58,6 @@ class OperationNaiveEvalPartialDerivativeModBsplineClenshawCurtis :
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVALPARTIALDERIVATIVEMODBSPLINECLENSHAWCURTIS_HPP */

@@ -22,7 +22,7 @@
 #include <utility>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -36,7 +36,7 @@ namespace base {
 
 class PredictiveRefinementIndicator: public RefinementFunctor {
  public:
-  typedef std::pair<size_t, float_t> value_type;
+  typedef std::pair<size_t, double> value_type;
 
   typedef AbstractRefinement::index_type counter_key_type;
   typedef uint64_t counter_value_type;
@@ -57,7 +57,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   PredictiveRefinementIndicator(Grid& grid, DataMatrix& dataSet,
                                 DataVector& errorVector,
                                 size_t refinements_num = 1,
-                                float_t threshold = 0.0,
+                                double threshold = 0.0,
                                 uint64_t minSupportPoints = 0);
 
 
@@ -74,9 +74,9 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * @param gridPoint for which to calculate an indicator value
    * @return refinement value
    */
-  virtual float_t operator()(AbstractRefinement::index_type& gridPoint) const;
+  virtual double operator()(AbstractRefinement::index_type& gridPoint) const;
 
-  float_t runOperator(GridStorage& storage, size_t seq);
+  double runOperator(GridStorage& storage, size_t seq);
 
 
   /**
@@ -96,10 +96,10 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    *
    * @return threshold value for refinement. Default value: 0.
    */
-  float_t getRefinementThreshold() const override;
+  double getRefinementThreshold() const override;
 
 
-  float_t start() const override;
+  double start() const override;
 
   /**
    * Returns the lower bound of refinement criterion (e.g., alpha or error
@@ -121,7 +121,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   *
   * @return refinement value
   */
-  float_t operator()(GridStorage& storage, size_t seq) const override;
+  double operator()(GridStorage& storage, size_t seq) const override;
 
  protected:
   // for each Point in the dataSet, this Contains the squared absolute
@@ -131,7 +131,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   size_t refinementsNum;
   /// threshold, only the points with greater to equal absolute values
   // of the refinement criterion (e.g. alpha or error) will be refined
-  float_t threshold;
+  double threshold;
 
   // data set that will be evaluated
   DataMatrix& dataSet;
@@ -144,9 +144,9 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
    * @param value represents the x value on which the grid should be evaluated
    * @return basis function of grid type evaluated at "value" on level "level" and index "index".
    */
-  float_t basisFunctionEvalHelper(AbstractRefinement::level_t level,
+  double basisFunctionEvalHelper(AbstractRefinement::level_t level,
                                   AbstractRefinement::index_t index,
-                                  float_t value);
+                                  double value);
 
  private:
   /*
@@ -174,7 +174,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   /*
    * integer representation of the grid type needed for evaluation of basis functions.
    */
-  SGPP::base::GridType gridType;
+  sgpp::base::GridType gridType;
 
   Grid& grid_;
 
@@ -182,5 +182,5 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* PREDICTIVEREFINEMENTINDICATOR_HPP_ */

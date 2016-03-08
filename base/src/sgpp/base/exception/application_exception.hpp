@@ -12,7 +12,7 @@
 #include <cstddef>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -58,6 +58,6 @@ class application_exception : public std::exception {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* APPLICATION_EXCEPTION_HPP */

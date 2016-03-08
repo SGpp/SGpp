@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -32,12 +32,12 @@ class OperationEvalPrewavelet : public OperationEval {
    */
   ~OperationEvalPrewavelet() override {}
 
-  float_t eval(const DataVector& alpha,
+  double eval(const DataVector& alpha,
                const DataVector& point) override;
-  virtual float_t test(const DataVector& alpha,
+  virtual double test(const DataVector& alpha,
                        const DataVector& data,
                        const DataVector& classes);
-  virtual float_t integrate(const DataVector& alpha);
+  virtual double integrate(const DataVector& alpha);
 
  protected:
   /// Pointer to GridStorage object
@@ -45,6 +45,6 @@ class OperationEvalPrewavelet : public OperationEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONEVELMODLINEAR_HPP */

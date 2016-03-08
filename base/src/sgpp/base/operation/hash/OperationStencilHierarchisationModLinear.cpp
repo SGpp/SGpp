@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void OperationStencilHierarchisationModLinear::doHierarchisation(
@@ -47,4 +47,4 @@ void OperationStencilHierarchisationModLinear::doDehierarchisation(
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

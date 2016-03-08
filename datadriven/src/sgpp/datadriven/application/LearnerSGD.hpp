@@ -15,12 +15,12 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-class LearnerSGD: public SGPP::datadriven::Learner {
+class LearnerSGD: public sgpp::datadriven::Learner {
  public:
-  LearnerSGD(SGPP::datadriven::RegularizationType& regularization,
+  LearnerSGD(sgpp::datadriven::RegularizationType& regularization,
              const bool isRegression, const bool isVerbose = true);
 
   /*
@@ -34,25 +34,25 @@ class LearnerSGD: public SGPP::datadriven::Learner {
    * @param gamma step width
    * */
   virtual void train(
-      SGPP::base::DataMatrix& trainDataset,
-      SGPP::base::DataVector& classes,
-      SGPP::base::RegularGridConfiguration& GridConfig,
+      sgpp::base::DataMatrix& trainDataset,
+      sgpp::base::DataVector& classes,
+      sgpp::base::RegularGridConfiguration& GridConfig,
       size_t maxIterations,
-      float_t eps,
-      float_t lambda,
-      float_t gamma);
+      double eps,
+      double lambda,
+      double gamma);
 
   virtual ~LearnerSGD();
 
-  SGPP::base::DataVector* getAlpha();
-  SGPP::base::Grid* getGrid();
+  sgpp::base::DataVector* getAlpha();
+  sgpp::base::Grid* getGrid();
 
  private:
   int getRandom(int limit);
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LEARNERSGD_HPP */
 

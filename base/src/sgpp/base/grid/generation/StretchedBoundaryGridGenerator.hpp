@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -52,6 +52,6 @@ class StretchedBoundaryGridGenerator : public GridGenerator {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* STRETCHEDTRUNCATEDBOUNDARYGRIDGENERATOR_HPP */

@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -34,5 +34,5 @@ class OperationDensityMargTo1D {
                           size_t dim_x) = 0;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYMARGTO1D_HPP_ */

@@ -11,7 +11,7 @@
 #include "CL/cl.h"
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OCLPlatformWrapper {
@@ -30,4 +30,4 @@ class OCLPlatformWrapper {
   size_t getDeviceCount();
 };
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

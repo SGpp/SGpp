@@ -13,7 +13,7 @@
 #include <cmath>
 
 
-namespace SGPP {
+namespace sgpp {
 
 namespace base {
 
@@ -74,4 +74,4 @@ void HierarchisationModPoly::rec(DataVector& source, DataVector& result,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -38,9 +38,9 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);
@@ -83,9 +83,9 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
 
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);
@@ -129,9 +129,9 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
 
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);
@@ -175,9 +175,9 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
 
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);
@@ -221,9 +221,9 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
 
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);
@@ -268,9 +268,9 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPosition);
   std::string outputFileName = scenarioFileNamePrefix + "_tuned.cfg";
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   std::string statisticsFolderName = "statistics_" + kernelName + "_" + scenarioFileNamePrefix;
 
@@ -297,7 +297,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);

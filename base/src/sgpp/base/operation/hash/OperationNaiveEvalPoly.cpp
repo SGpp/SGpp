@@ -5,21 +5,21 @@
 
 #include <sgpp/base/operation/hash/OperationNaiveEvalPoly.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-float_t OperationNaiveEvalPoly::eval(const DataVector& alpha,
+double OperationNaiveEvalPoly::eval(const DataVector& alpha,
                                      const DataVector& point) {
   const size_t n = storage.getSize();
   const size_t dim = storage.getDimension();
-  float_t result = 0.0;
+  double result = 0.0;
 
   for (size_t i = 0; i < n; i++) {
     const GridIndex& gp = *storage[i];
-    float_t curValue = 1.0;
+    double curValue = 1.0;
 
     for (size_t idim = 0; idim < dim; idim++) {
-      const float_t val1d = base.evalSave(gp.getLevel(idim), gp.getIndex(idim),
+      const double val1d = base.evalSave(gp.getLevel(idim), gp.getIndex(idim),
                                           point[idim]);
 
       if (val1d == 0.0) {
@@ -37,4 +37,4 @@ float_t OperationNaiveEvalPoly::eval(const DataVector& alpha,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

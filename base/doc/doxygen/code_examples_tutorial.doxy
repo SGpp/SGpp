@@ -62,25 +62,25 @@ On the first level, we obtain 1, on the second 1/4, and on the third
 @dontinclude tutorial.py
 @until pysgpp
 We import the pysgpp classes which we require afterwards,
-with the most important being SGPP::base::DataVector and SGPP::base::Grid.
+with the most important being sgpp::base::DataVector and sgpp::base::Grid.
 
 @until dimensionality
 creates a two-dimensional grid object with piecewise bilinear basis
 functions with the help of the factory method
-SGPP::base::Grid.createLinearGrid().
+sgpp::base::Grid.createLinearGrid().
 Then we obtain a reference to the Grid's
 GridStorage object which allows us, e.g., to access grid
 points, to obtain the dimensionality (which we print) and the
 number of grid points.
 
 @until number
-Here, we use a SGPP::base::GridGenerator to
+Here, we use a sgpp::base::GridGenerator to
 create a regular sparse grid of level 3.
 Thus, @c gridStorage.size() returns 17, the number of grid points
 of a two-dimensional regular sparse grid of level 3.
 
 @until length
-Now we create an object of type SGPP::base::DataVector which has as many
+Now we create an object of type sgpp::base::DataVector which has as many
 entries as there are grid points. It serves as a coefficient vector for the
 sparse grid interpolant we want to construct. As the entries of a
 freshly created DataVector are not initialized, we set them to
@@ -96,7 +96,7 @@ function value at the grid point's coordinates which are obtained by
 The current coefficient vector is then printed.
 
 @until alpha after hierarchization
-An object SGPP::base::OperationHierarchisation is created and used to
+An object sgpp::base::OperationHierarchisation is created and used to
 hierarchize the coefficient vector, which we print.
 
 @until u(

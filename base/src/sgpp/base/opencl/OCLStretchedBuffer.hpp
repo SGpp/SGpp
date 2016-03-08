@@ -10,7 +10,7 @@
 #include "sgpp/globaldef.hpp"
 #include "sgpp/base/opencl/OCLManager.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 // copies the whole buffer on all devices, retrieves only the part
@@ -50,4 +50,4 @@ class OCLStretchedBuffer {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

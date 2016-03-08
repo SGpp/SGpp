@@ -1,4 +1,4 @@
-SGPP::optimization example program started.
+sgpp::optimization example program started.
 
 --------------------------------------------------------------------------------
 Generating grid...
@@ -42,4 +42,4 @@ f(xOptNM) = -2, ft(xOptNM) = -2.00077
 
 --------------------------------------------------------------------------------
 
-SGPP::optimization example program terminated.
+sgpp::optimization example program terminated.

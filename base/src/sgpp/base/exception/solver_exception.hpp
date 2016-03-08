@@ -12,7 +12,7 @@
 #include <cstddef>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -58,6 +58,6 @@ class solver_exception : public std::exception {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SOLVER_EXCEPTION_HPP */

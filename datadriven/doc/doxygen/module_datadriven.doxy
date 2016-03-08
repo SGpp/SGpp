@@ -1,5 +1,5 @@
 /**
-@page module_datadriven Module SGPP::datadriven
+@page module_datadriven Module sgpp::datadriven
 
 - operations depending on datasets
 - data mining support

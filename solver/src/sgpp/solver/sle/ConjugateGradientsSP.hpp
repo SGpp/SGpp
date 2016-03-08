@@ -15,7 +15,7 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 class ConjugateGradientsSP : public SLESolverSP {
@@ -35,7 +35,7 @@ class ConjugateGradientsSP : public SLESolverSP {
    * routine
    * this method operates on sinlge precision data.
    *
-   * @param SystemMatrix reference to an SGPP::base::OperationMatrix Object that implements the
+   * @param SystemMatrix reference to an sgpp::base::OperationMatrix Object that implements the
    * matrix vector multiplication
    * @param alpha the sparse grid's coefficients which have to be determined
    * @param b the right hand side of the system of linear equations
@@ -43,8 +43,8 @@ class ConjugateGradientsSP : public SLESolverSP {
    * @param verbose prints information during execution of the solver
    * @param max_threshold additional abort criteria for solver
    */
-  void solve(SGPP::base::OperationMatrixSP& SystemMatrix, SGPP::base::DataVectorSP& alpha,
-             SGPP::base::DataVectorSP& b, bool reuse = false, bool verbose = false,
+  void solve(sgpp::base::OperationMatrixSP& SystemMatrix, sgpp::base::DataVectorSP& alpha,
+             sgpp::base::DataVectorSP& b, bool reuse = false, bool verbose = false,
              float max_threshold = -1.0);
 
   // Define functions for observer pattern in python
@@ -72,6 +72,6 @@ class ConjugateGradientsSP : public SLESolverSP {
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* CONJUGATEGRADIENTSSP_HPP */

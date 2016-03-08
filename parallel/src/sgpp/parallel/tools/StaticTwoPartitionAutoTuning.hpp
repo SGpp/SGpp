@@ -9,7 +9,7 @@
 #include <sgpp/parallel/tools/TwoPartitionAutoTuning.hpp>
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 class StaticTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
@@ -31,6 +31,6 @@ class StaticTwoPartitionAutoTuning : public TwoPartitionAutoTuning {
   double _percentPartion1;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // STATICTWOPARTITIONAUTOTUNING_HPP

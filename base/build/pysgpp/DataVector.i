@@ -7,24 +7,24 @@
 
 %inline %{
 /*
-* Memory managment function used in SGPP::base::DataVector::__array()
+* Memory managment function used in sgpp::base::DataVector::__array()
 * it simply decrements the number of references to the PyObject datavector 
 * every time a referencing ndarray is deleted.
 * After reference counter reaches 0, the memory of DataVector will be deallocated 
 * automatically. 
 */
 void free_array(void* ptr, void* dv){
-  // SGPP::float_t* vec = (SGPP::float_t *) ptr;
+  // double* vec = (double *) ptr;
       PyObject* datavector = (PyObject*)dv;
       Py_DECREF(datavector);
     }
 %}
-namespace SGPP
+namespace sgpp
 {
 namespace base
 {
 
-%apply SGPP::float_t *OUTPUT { SGPP::float_t* min, SGPP::float_t* max };
+%apply double *OUTPUT { double* min, double* max };
 %apply std::string *OUTPUT { std::string& text };
 
 %rename(assign) DataVector::operator=;
@@ -34,76 +34,76 @@ class DataVector
 public:
 
 // typemap allowing to pass sequence of numbers to constructor
-/*%typemap(in) (SGPP::float_t *input, int size)
+/*%typemap(in) (double *input, int size)
 {
   if (!PySequence_Check($input)) {
     PyErr_SetString(PyExc_ValueError, "Expected a sequence");
     return NULL;
   }
   $2 = PySequence_Size($input);
-  $1 = (SGPP::float_t *) malloc(sizeof(SGPP::float_t)*$2);
+  $1 = (double *) malloc(sizeof(double)*$2);
   for (int i = 0; i < $2; i++) {
     PyObject *o = PySequence_GetItem($input,i);
     if (PyNumber_Check(o)) {
-      $1[i] = (SGPP::float_t) PyFloat_AsDouble(o);
+      $1[i] = (double) PyFloat_AsDouble(o);
     } else {
       PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");      
       return NULL;
     }
   }
 }
-%typemap(freearg) (SGPP::float_t *input, int size)
+%typemap(freearg) (double *input, int size)
 {
   if ($1) free($1);
 }
-%typecheck(SWIG_TYPECHECK_FLOAT) (SGPP::float_t *input, int size)
+%typecheck(SWIG_TYPECHECK_FLOAT) (double *input, int size)
 {
 $1 = PySequence_Check($input) ? 1 : 0;
 }
 */
         // Constructors
   DataVector(size_t size);
-  DataVector(size_t size, float_t value);
+  DataVector(size_t size, double value);
   DataVector(DataVector& vec);
-  DataVector(SGPP::float_t *input, size_t size);
-  DataVector(std::vector<SGPP::float_t> input);
-  DataVector(SGPP::base::DataVectorDefinition& DataVectorDef);
+  DataVector(double *input, size_t size);
+  DataVector(std::vector<double> input);
+  DataVector(sgpp::base::DataVectorDefinition& DataVectorDef);
 
   void resize(size_t size);
   void resizeZero(size_t size);
   void addSize(size_t add);
   size_t append();
-  size_t append(SGPP::float_t value);
+  size_t append(double value);
   
   void restructure(std::vector<size_t>&);
   
-  void setAll(SGPP::float_t value);
+  void setAll(double value);
   
   void copyFrom(const DataVector& vec);
 //  void copySmall(const DataVector& vec);
   DataVector& operator=(const DataVector& vec); 
   
-  SGPP::float_t get(size_t i) const;
-  void set(size_t i, SGPP::float_t value);
+  double get(size_t i) const;
+  void set(size_t i, double value);
 
   void add(DataVector& vec);
   void sub(DataVector& vec);
   void componentwise_mult(DataVector& vec);
   void componentwise_div(DataVector& vec);
-  void mult(SGPP::float_t scalar);
+  void mult(double scalar);
   void sqr();
   void sqrt();
   void abs();
-  SGPP::float_t sum() const;
-  SGPP::float_t min() const;
-  SGPP::float_t max() const;
-  void minmax(SGPP::float_t* min, SGPP::float_t* max) const;
-  SGPP::float_t maxNorm() const;
-  SGPP::float_t RMSNorm() const;
-  SGPP::float_t l2Norm() const;
-  SGPP::float_t dotProduct(const DataVector& vec) const;
+  double sum() const;
+  double min() const;
+  double max() const;
+  void minmax(double* min, double* max) const;
+  double maxNorm() const;
+  double RMSNorm() const;
+  double l2Norm() const;
+  double dotProduct(const DataVector& vec) const;
   
-  void axpy(SGPP::float_t alpha, DataVector& x);
+  void axpy(double alpha, DataVector& x);
   
   size_t getSize() const;
   size_t getUnused() const;
@@ -111,9 +111,9 @@ $1 = PySequence_Check($input) ? 1 : 0;
   void setInc(size_t inc_elems);
   size_t getNumberNonZero() const;
     
-  void partitionClasses(SGPP::float_t border);
+  void partitionClasses(double border);
   void normalize();
-  void normalize(SGPP::float_t border);
+  void normalize(double border);
   
   std::string toString() const;
   
@@ -122,17 +122,13 @@ $1 = PySequence_Check($input) ? 1 : 0;
     // an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
     PyObject* __array(PyObject* datavector){
         //Get the data and number of entries
-      SGPP::float_t *vec = $self->getPointer();
+      double *vec = $self->getPointer();
       int n = $self->getSize();
 
       npy_intp dims[1] = {n};
       
       // Create a ndarray with data from vec
-#if USE_DOUBLE_PRECISION == 1
       PyObject* arr = PyArray_SimpleNewFromData(1,dims, NPY_DOUBLE, vec);
-#else
-      PyObject* arr = PyArray_SimpleNewFromData(1,dims, NPY_FLOAT, vec);
-#endif /* USE_DOUBLE_PRECISION */
       
       // Let the array base point on the original data, free_array is a additional destructor for our ndarray, 
       // since we need to DECREF DataVector object
@@ -179,29 +175,29 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //
 //%inline %{
 ///*
-//* Memory managment function used in SGPP::base::DataVector::__array()
+//* Memory managment function used in sgpp::base::DataVector::__array()
 //* it simply decrements the number of references to the PyObject datavector 
 //* every time a referencing ndarray is deleted.
 //* After reference counter reaches 0, the memory of DataVector will be deallocated 
 //* automatically. 
 //*/
 //void free_array(void* ptr, void* dv){
-//  // SGPP::float_t* vec = (SGPP::float_t *) ptr;
+//  // double* vec = (double *) ptr;
 //      PyObject* datavector = (PyObject*)dv;
 //      Py_DECREF(datavector);
 //    }
 //%}
 //
-//namespace SGPP
+//namespace sgpp
 //{
 //namespace base
 //{
 //
-//%apply SGPP::float_t *OUTPUT { SGPP::float_t* min, SGPP::float_t* max };
+//%apply double *OUTPUT { double* min, double* max };
 //%apply std::string *OUTPUT { std::string& text };
 //%rename(__str__) DataVector::toString;
 //%rename(__getitem__) DataVector::get(size_t i) const;
-//%rename(__setitem__) DataVector::set(size_t i, SGPP::float_t value);
+//%rename(__setitem__) DataVector::set(size_t i, double value);
 //%rename(assign) DataVector::operator=;
 //%rename(__len__) DataVector::getSize;
 //%ignore DataVector::operator[];
@@ -214,7 +210,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
 //    // an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
 //    PyObject* __array(PyObject* datavector){
 //        //Get the data and number of entries
-//      SGPP::float_t *vec = $self->getPointer();
+//      double *vec = $self->getPointer();
 //      int n = $self->getSize();
 //
 //      npy_intp dims[1] = {n};

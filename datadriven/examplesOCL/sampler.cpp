@@ -21,15 +21,15 @@ int main(int argc, char** argv) {
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "bigger.arff";
 
-  SGPP::base::RegularGridConfiguration gridConfig;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
+  sgpp::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = maxLevel;
-  gridConfig.type_ = SGPP::base::GridType::ModLinear;
+  gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;
@@ -42,13 +42,13 @@ int main(int argc, char** argv) {
   SLESolverConfigRefine.eps_ = 0;
   SLESolverConfigRefine.maxIterations_ = 10;
   SLESolverConfigRefine.threshold_ = -1.0;
-  SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigRefine.type_ = sgpp::solver::SLESolverType::CG;
 
   // Set solver for final step
   SLESolverConfigFinal.eps_ = 0;
   SLESolverConfigFinal.maxIterations_ = 1;
   SLESolverConfigFinal.threshold_ = -1.0;
-  SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
   std::string metaInformation = "refine: " + std::to_string(adaptConfig.numRefinements_) +
                                 " points: " + std::to_string(adaptConfig.noPoints_) +
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
   double lambda = 0.000001;
 
   bool verbose = true;
-  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
+  sgpp::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
                                         adaptConfig, lambda, verbose);
 
   // learner.learn(kernelType, fileName);
@@ -70,12 +70,12 @@ int main(int argc, char** argv) {
   // streaming default - 1600 (13 without avx)
   // streaming ocl - 13
 
-  //    SGPP::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
-  SGPP::base::OCLOperationConfiguration parameters("singleDevice.cfg");
+  //    sgpp::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("singleDevice.cfg");
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
 
   //  learner.learn(configuration, fileName);
   // learner.learnReference(fileName);

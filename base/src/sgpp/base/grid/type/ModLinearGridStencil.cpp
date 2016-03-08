@@ -10,7 +10,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 ModLinearGridStencil::ModLinearGridStencil(std::istream& istr) :
@@ -31,8 +31,8 @@ ModLinearGridStencil::ModLinearGridStencil(BoundingBox& BB) :
 ModLinearGridStencil::~ModLinearGridStencil() {
 }
 
-SGPP::base::GridType ModLinearGridStencil::getType() {
-  return SGPP::base::GridType::ModLinearStencil;
+sgpp::base::GridType ModLinearGridStencil::getType() {
+  return sgpp::base::GridType::ModLinearStencil;
 }
 
 const SBasis& ModLinearGridStencil::getBasis() {
@@ -57,4 +57,4 @@ GridGenerator& ModLinearGridStencil::getGenerator() {
 
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -8,23 +8,23 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
-float_t OperationDotProductModLinear::eval(base::DataVector& x1, base::DataVector& x2) {
+double OperationDotProductModLinear::eval(base::DataVector& x1, base::DataVector& x2) {
   base::LinearModifiedBasis<unsigned int, unsigned int> base;
   base::GridStorage::index_type::level_type work_level = 1;
   base::GridStorage::index_type::index_type work_index;
   base::GridStorage::index_type::level_type temp;
-  float_t result = 0;
+  double result = 0;
 
   // GridStorage::grid_iterator working;
   // for (GridStorage::grid_iterator working = storage->begin(); working != storage->end();
   // working++){
   for (size_t i = 0; i < storage->getSize(); i++) {
     base::GridStorage::index_type working = *storage->get(i);
-    float_t value1 = 1.0;
-    float_t value2 = 1.0;
+    double value1 = 1.0;
+    double value2 = 1.0;
 
     for (size_t d = 0; d < storage->getDimension(); d++) {
       working.get(d, temp, work_index);
@@ -41,4 +41,4 @@ float_t OperationDotProductModLinear::eval(base::DataVector& x1, base::DataVecto
   return result;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

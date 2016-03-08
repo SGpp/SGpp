@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 /**
@@ -24,34 +24,34 @@ class OperationLaplaceLinear : public UpDownOneOpDim {
    *
    * @param storage Pointer to the grid's gridstorage obejct
    */
-  explicit OperationLaplaceLinear(SGPP::base::GridStorage* storage);
+  explicit OperationLaplaceLinear(sgpp::base::GridStorage* storage);
 
   /**
    * Constructor of OperationLaplaceLinear
    *
    * @param storage Pointer to the grid's gridstorage obejct
-   * @param coef reference to a SGPP::base::DataVector object that contains the bilinear form's
+   * @param coef reference to a sgpp::base::DataVector object that contains the bilinear form's
    * constant coefficients; one per dimension
    */
-  OperationLaplaceLinear(SGPP::base::GridStorage* storage, SGPP::base::DataVector& coef);
+  OperationLaplaceLinear(sgpp::base::GridStorage* storage, sgpp::base::DataVector& coef);
 
   /**
    * Destructor
    */
   virtual ~OperationLaplaceLinear();
 
-  virtual void specialOP(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim,
+  virtual void specialOP(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim,
                          size_t gradient_dim);
 
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void downOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void downOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
-  virtual void upOpDim(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void upOpDim(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 };
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONLAPLACELINEAR_HPP */

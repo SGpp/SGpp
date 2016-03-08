@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GaussLegendreQuadRule1D::GaussLegendreQuadRule1D() {
@@ -558,4 +558,4 @@ void GaussLegendreQuadRule1D::getLevelPointsAndWeightsNormalized(size_t level,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -40,7 +40,7 @@ class OperationNaiveEvalWaveletBoundary : public OperationNaiveEval {
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  float_t eval(const DataVector& alpha, const DataVector& point) override;
+  double eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid
@@ -50,6 +50,6 @@ class OperationNaiveEvalWaveletBoundary : public OperationNaiveEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONNAIVEEVALWAVELETBOUNDARY_HPP */

@@ -7,7 +7,7 @@
 
 #include "sgpp/base/datatypes/DataMatrix.hpp"
 
-using SGPP::base::DataMatrix;
+using sgpp::base::DataMatrix;
 
 int main() {
   DataMatrix m(2, 2);

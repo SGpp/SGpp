@@ -16,10 +16,10 @@
 #include <iterator>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
-bool float_tReverseCompare(const float_t firstEl, const float_t secondEl) {
+bool doubleReverseCompare(const double firstEl, const double secondEl) {
   return firstEl > secondEl;
 }
 
@@ -133,7 +133,7 @@ void PredictiveRefinement::refineGridpointsCollection(
   PredictiveRefinementIndicator::value_type max_value;
 
   // now refine all grid points which satisfy the refinement criteria
-  float_t threshold = functor.getRefinementThreshold();
+  double threshold = functor.getRefinementThreshold();
   refinement_key_type* key;
 
   for (AbstractRefinement::refinement_pair_type& pair : collection) {
@@ -166,4 +166,4 @@ void PredictiveRefinement::free_refine(GridStorage& storage,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

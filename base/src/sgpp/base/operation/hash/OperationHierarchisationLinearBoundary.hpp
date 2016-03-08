@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -43,6 +43,6 @@ class OperationHierarchisationLinearBoundary : public OperationHierarchisation {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONHIERARCHISATIONLINEARBOUNDARY_HPP */

@@ -51,20 +51,20 @@ std::string uncompressFile(std::string fileName) {
   return convert.str();
 }
 
-void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::base::Grid& grid,
-                         SGPP::base::GridGenerator& gridGen) {
+void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+                         sgpp::base::GridGenerator& gridGen) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
 
-  SGPP::base::DataVector alphaRefine(grid.getSize());
+  sgpp::base::DataVector alphaRefine(grid.getSize());
 
   for (size_t i = 0; i < alphaRefine.getSize(); i++) {
     alphaRefine[i] = dist(mt);
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
                                                       adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
@@ -76,11 +76,11 @@ void doRandomRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP:
   }
 }
 
-void doDirectedRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGPP::base::Grid& grid,
-                           SGPP::base::GridGenerator& gridGen) {
+void doDirectedRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+                           sgpp::base::GridGenerator& gridGen) {
   double dummySurplusValue = 1.0;
 
-  SGPP::base::DataVector alphaRefine(grid.getSize());
+  sgpp::base::DataVector alphaRefine(grid.getSize());
 
   for (size_t i = 0; i < alphaRefine.getSize(); i++) {
     alphaRefine[i] = dummySurplusValue;
@@ -88,7 +88,7 @@ void doDirectedRefinements(SGPP::base::AdpativityConfiguration& adaptConfig, SGP
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
                                                       adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();

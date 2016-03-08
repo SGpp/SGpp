@@ -28,7 +28,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 class OCLKernelImplBase {
  public:
@@ -75,7 +75,7 @@ class OCLKernelImplBase {
   static unsigned int ocl_local_size;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // USEOCL
 

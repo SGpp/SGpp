@@ -12,7 +12,7 @@
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 #include "sgpp/base/opencl/OCLDevice.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 template <typename T>
@@ -37,7 +37,7 @@ class OCLBufferWrapperSD {
     if (!this->initialized) {
       std::stringstream errorString;
       errorString << "OCL Error: Buffer not initialized: " << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
     return &this->buffer;
   }
@@ -46,7 +46,7 @@ class OCLBufferWrapperSD {
     if (!this->initialized) {
       std::stringstream errorString;
       errorString << "OCL Error: Buffer not initialized: " << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
     return this->elements;
   }
@@ -55,7 +55,7 @@ class OCLBufferWrapperSD {
     if (!this->initialized) {
       std::stringstream errorString;
       errorString << "OCL Error: Buffer not initialized: " << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
     return hostData;
   }
@@ -64,7 +64,7 @@ class OCLBufferWrapperSD {
     if (!this->initialized) {
       std::stringstream errorString;
       errorString << "OCL Error: Buffer not initialized: " << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     cl_int err;
@@ -76,7 +76,7 @@ class OCLBufferWrapperSD {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue write buffer command! Error code: " << err
                   << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -84,7 +84,7 @@ class OCLBufferWrapperSD {
     if (!this->initialized) {
       std::stringstream errorString;
       errorString << "OCL Error: Buffer not initialized: " << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     cl_int err;
@@ -97,7 +97,7 @@ class OCLBufferWrapperSD {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue read buffer command! Error code: " << err
                   << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -112,7 +112,7 @@ class OCLBufferWrapperSD {
     //                errorString << "OCL Error: Size of initial values vector
     //                does not match specified size! Error code: "
     //                        << err << std::endl;
-    //                throw SGPP::base::operation_exception(errorString.str());
+    //                throw sgpp::base::operation_exception(errorString.str());
     //            }
     //            this->buffer = clCreateBuffer(device->context,
     //            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(T) *
@@ -125,7 +125,7 @@ class OCLBufferWrapperSD {
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Could not allocate buffer! Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     this->elements = elements;
@@ -144,7 +144,7 @@ class OCLBufferWrapperSD {
     } else {
       std::stringstream errorString;
       errorString << "OCL Error: could not free OCLClonedBufferSD" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
     this->initialized = false;
     this->elements = 0;
@@ -189,4 +189,4 @@ class OCLBufferWrapperSD {
   }
 };
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

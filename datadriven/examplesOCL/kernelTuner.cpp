@@ -63,11 +63,11 @@ int main(int argc, char **argv) {
   }
   parameterConfigurationFile.close();
 
-  SGPP::datadriven::LearnerScenario scenario(scenarioFileName);
+  sgpp::datadriven::LearnerScenario scenario(scenarioFileName);
 
-  SGPP::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
+  sgpp::base::OCLOperationConfiguration parameter(parameterConfigurationFileName);
 
-  SGPP::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
+  sgpp::datadriven::StaticParameterTuner staticParameterTuner(parameter, true, true);
 
   size_t dotPos = scenarioFileName.find('.');
   std::string scenarioFileNamePrefix = scenarioFileName.substr(0, dotPos);
@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
   //  staticParameterTuner.setupReferenceValues(referenceDataset, referenceValues, expectedMSE,
   //                                            expectedLargestDifference);
 
-  SGPP::base::OCLOperationConfiguration bestParameters =
+  sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
 
   bestParameters.serialize(outputFileName);

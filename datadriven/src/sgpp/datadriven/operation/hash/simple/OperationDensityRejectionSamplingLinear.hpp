@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -39,5 +39,5 @@ class OperationDensityRejectionSamplingLinear : public OperationDensityRejection
   base::Grid* grid;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONDENSITYREJECTIONSAMPLINGLINEAR_HPP */

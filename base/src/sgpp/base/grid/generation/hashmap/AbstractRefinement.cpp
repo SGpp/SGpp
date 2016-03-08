@@ -10,7 +10,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 
@@ -98,5 +98,5 @@ bool AbstractRefinement::isRefinable(GridStorage& storage, index_type& index) {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 

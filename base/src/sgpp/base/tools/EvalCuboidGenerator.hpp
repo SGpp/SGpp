@@ -14,7 +14,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -66,6 +66,6 @@ class EvalCuboidGenerator {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* EVALCUBOIDGENERATOR_HPP */

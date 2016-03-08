@@ -9,11 +9,11 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createAdaptiveOCLConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 }
 }

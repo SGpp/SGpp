@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -45,7 +45,7 @@ class ModBsplineGrid : public Grid {
   /**
    * @return string that identifies the grid type uniquely
    */
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
 
   /**
    * @return B-spline basis
@@ -87,6 +87,6 @@ class ModBsplineGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* MODBSPLINEGRID_HPP */

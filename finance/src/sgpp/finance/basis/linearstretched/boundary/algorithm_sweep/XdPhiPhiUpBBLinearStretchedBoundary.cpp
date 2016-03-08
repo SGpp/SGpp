@@ -7,24 +7,24 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 XdPhiPhiUpBBLinearStretchedBoundary::XdPhiPhiUpBBLinearStretchedBoundary(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : XdPhiPhiUpBBLinearStretched(storage) {}
 
 XdPhiPhiUpBBLinearStretchedBoundary::~XdPhiPhiUpBBLinearStretchedBoundary() {}
 
-void XdPhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& source,
-                                                     SGPP::base::DataVector& result,
+void XdPhiPhiUpBBLinearStretchedBoundary::operator()(sgpp::base::DataVector& source,
+                                                     sgpp::base::DataVector& result,
                                                      grid_iterator& index, size_t dim) {
-  float_t q = this->stretching->getIntervalWidth(dim);
-  float_t t = this->stretching->getIntervalOffset(dim);
+  double q = this->stretching->getIntervalWidth(dim);
+  double t = this->stretching->getIntervalOffset(dim);
 
   // get boundary values
-  float_t fl = 0.0;
-  float_t fr = 0.0;
+  double fl = 0.0;
+  double fr = 0.0;
 
   if (!index.hint()) {
     index.resetToLevelOne(dim);
@@ -66,4 +66,4 @@ void XdPhiPhiUpBBLinearStretchedBoundary::operator()(SGPP::base::DataVector& sou
   index.resetToLeftLevelZero(dim);
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

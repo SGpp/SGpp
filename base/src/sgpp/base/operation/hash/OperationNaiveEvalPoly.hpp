@@ -13,7 +13,7 @@
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class OperationNaiveEvalPoly: public OperationNaiveEval {
@@ -36,7 +36,7 @@ class OperationNaiveEvalPoly: public OperationNaiveEval {
    * @param point     evaluation point
    * @return          value of linear combination
    */
-  float_t eval(const DataVector& alpha, const DataVector& point) override;
+  double eval(const DataVector& alpha, const DataVector& point) override;
 
  protected:
   /// storage of the sparse grid
@@ -46,6 +46,6 @@ class OperationNaiveEvalPoly: public OperationNaiveEval {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BASE_SRC_SGPP_BASE_OPERATION_HASH_OPERATIONNAIVEEVALPOLY_HPP_ */

@@ -18,7 +18,7 @@
 #include <vector>
 #include <stdexcept>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -302,7 +302,7 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of modified fundamental spline basis function
    */
-  inline float_t eval(LT l, IT i, float_t x) override {
+  inline double eval(LT l, IT i, double x) override {
     if (l == 1) {
       return 1.0;
     }
@@ -320,14 +320,14 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
     }
 
     const size_t p = bsplineBasis.getDegree();
-    const float_t t = x * static_cast<float_t>(hInv) +
-                      static_cast<float_t>(p);
+    const double t = x * static_cast<double>(hInv) +
+                      static_cast<double>(p);
 
-    /*float_t y = 0.0;
+    /*double y = 0.0;
 
     for (size_t k = 0; k < coefficients.size(); k++) {
       y += coefficients[k] * bsplineBasis.uniformBSpline(
-             t - static_cast<float_t>(k), p);
+             t - static_cast<double>(k), p);
     }*/
 
     const int kMin = std::max(static_cast<int>(std::floor(t)) -
@@ -336,11 +336,11 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
     const int kMax = std::min(static_cast<int>(std::floor(t)),
                               static_cast<int>(coefficients.size()) - 1);
 
-    float_t y = 0;
+    double y = 0;
 
     for (int k = kMin; k <= kMax; k++) {
       y += coefficients[k] * bsplineBasis.uniformBSpline(
-             t - static_cast<float_t>(k), p);
+             t - static_cast<double>(k), p);
     }
 
     return y;
@@ -353,7 +353,7 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
    * @return      value of derivative of modified
    *              fundamental spline basis function
    */
-  inline float_t evalDx(LT l, IT i, float_t x) {
+  inline double evalDx(LT l, IT i, double x) {
     if (l == 1) {
       return 0.0;
     }
@@ -364,9 +364,9 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
       return fundamentalSplineBasis.evalDx(l, i, x);
     }
 
-    const float_t hInvDbl = static_cast<float_t>(hInv);
+    const double hInvDbl = static_cast<double>(hInv);
     // inner derivative
-    float_t dxFactor = hInvDbl;
+    double dxFactor = hInvDbl;
 
     if (i == hInv - 1) {
       // mirror the situation at x = 0.5
@@ -376,13 +376,13 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
     }
 
     const size_t p = bsplineBasis.getDegree();
-    const float_t t = x * hInvDbl + static_cast<float_t>(p);
+    const double t = x * hInvDbl + static_cast<double>(p);
 
-    /*float_t y = 0.0;
+    /*double y = 0.0;
 
     for (size_t k = 0; k < coefficients.size(); k++) {
       y += coefficients[k] * bsplineBasis.uniformBSplineDx(
-             t - static_cast<float_t>(k), p);
+             t - static_cast<double>(k), p);
     }*/
 
     const int kMin = std::max(static_cast<int>(std::floor(t)) -
@@ -391,11 +391,11 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
     const int kMax = std::min(static_cast<int>(std::floor(t)),
                               static_cast<int>(coefficients.size()) - 1);
 
-    float_t y = 0;
+    double y = 0;
 
     for (int k = kMin; k <= kMax; k++) {
       y += coefficients[k] * bsplineBasis.uniformBSplineDx(
-             t - static_cast<float_t>(k), p);
+             t - static_cast<double>(k), p);
     }
 
     return dxFactor * y;
@@ -408,7 +408,7 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
    * @return      value of 2nd derivative of modified
    *              fundamental spline basis function
    */
-  inline float_t evalDxDx(LT l, IT i, float_t x) {
+  inline double evalDxDx(LT l, IT i, double x) {
     if (l == 1) {
       return 0.0;
     }
@@ -419,9 +419,9 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
       return fundamentalSplineBasis.evalDxDx(l, i, x);
     }
 
-    const float_t hInvDbl = static_cast<float_t>(hInv);
+    const double hInvDbl = static_cast<double>(hInv);
     // inner derivative
-    const float_t dxFactor = hInvDbl * hInvDbl;
+    const double dxFactor = hInvDbl * hInvDbl;
 
     if (i == hInv - 1) {
       // mirror the situation at x = 0.5
@@ -430,13 +430,13 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
     }
 
     const size_t p = bsplineBasis.getDegree();
-    const float_t t = x * hInvDbl + static_cast<float_t>(p);
+    const double t = x * hInvDbl + static_cast<double>(p);
 
-    /*float_t y = 0.0;
+    /*double y = 0.0;
 
     for (size_t k = 0; k < coefficients.size(); k++) {
       y += coefficients[k] * bsplineBasis.uniformBSplineDxDx(
-             t - static_cast<float_t>(k), p);
+             t - static_cast<double>(k), p);
     }*/
 
     const int kMin = std::max(static_cast<int>(std::floor(t)) -
@@ -445,11 +445,11 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
     const int kMax = std::min(static_cast<int>(std::floor(t)),
                               static_cast<int>(coefficients.size()) - 1);
 
-    float_t y = 0;
+    double y = 0;
 
     for (int k = kMin; k <= kMax; k++) {
       y += coefficients[k] * bsplineBasis.uniformBSplineDxDx(
-             t - static_cast<float_t>(k), p);
+             t - static_cast<double>(k), p);
     }
 
     return dxFactor * y;
@@ -468,7 +468,7 @@ class FundamentalSplineModifiedBasis: public Basis<LT, IT> {
   /// B-spline basis
   BsplineBasis<LT, IT> bsplineBasis;
   /// B-spline coefficients
-  std::vector<float_t> coefficients;
+  std::vector<double> coefficients;
 };
 
 // default type-def (unsigned int for level and index)
@@ -476,6 +476,6 @@ typedef FundamentalSplineModifiedBasis<unsigned int, unsigned int>
 SFundamentalSplineModifiedBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* FUNDAMENTAL_SPLINE_MODIFIED_BASE_HPP */

@@ -13,7 +13,7 @@
 #include <memory>
 #include <functional>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -21,7 +21,7 @@ namespace optimization {
  */
 class WrapperScalarFunction : public ScalarFunction {
  public:
-  typedef std::function<float_t(const base::DataVector&)> FunctionEvalType;
+  typedef std::function<double(const base::DataVector&)> FunctionEvalType;
 
   /**
    * Constructor.
@@ -40,7 +40,7 @@ class WrapperScalarFunction : public ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  inline float_t eval(const base::DataVector& x) override { return f(x); }
+  inline double eval(const base::DataVector& x) override { return f(x); }
 
   /**
    * @param[out] clone pointer to cloned object
@@ -54,6 +54,6 @@ class WrapperScalarFunction : public ScalarFunction {
   FunctionEvalType f;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_WRAPPERSCALARFUNCTION_HPP */

@@ -23,7 +23,7 @@
 #include <fstream>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -36,10 +36,10 @@ namespace parallel {
  * This version offers support for MPI!
  *
  */
-class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
+class PoissonEquationSolverMPI : public sgpp::pde::EllipticPDESolver {
  private:
   /// screen object used in this solver
-  SGPP::base::ScreenOutput* myScreen;
+  sgpp::base::ScreenOutput* myScreen;
 
  public:
   /**
@@ -52,9 +52,9 @@ class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
    */
   virtual ~PoissonEquationSolverMPI();
 
-  void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
 
-  void solvePDE(SGPP::base::DataVector& alpha, SGPP::base::DataVector& rhs, size_t maxCGIterations,
+  void solvePDE(sgpp::base::DataVector& alpha, sgpp::base::DataVector& rhs, size_t maxCGIterations,
                 double epsilonCG, bool verbose = false);
 
   /**
@@ -69,7 +69,7 @@ class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu, double sigma,
+  void initGridWithSmoothHeat(sgpp::base::DataVector& alpha, double mu, double sigma,
                               double factor);
 
   /**
@@ -85,7 +85,7 @@ class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeatFullDomain(SGPP::base::DataVector& alpha, double mu, double sigma,
+  void initGridWithSmoothHeatFullDomain(sgpp::base::DataVector& alpha, double mu, double sigma,
                                         double factor);
 
   /**
@@ -98,7 +98,7 @@ class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
    * @param alpha reference to the coefficient's vector
    * @param factor a constant factor used to enlarge the exp-functions input parameter
    */
-  void initGridWithExpHeat(SGPP::base::DataVector& alpha, double factor = 1.0);
+  void initGridWithExpHeat(sgpp::base::DataVector& alpha, double factor = 1.0);
 
   /**
    * Inits the grid with a heat distribution based on
@@ -110,7 +110,7 @@ class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
    * @param alpha reference to the coefficient's vector
    * @param factor a constant factor used to enlarge the exp-functions input parameter
    */
-  void initGridWithExpHeatFullDomain(SGPP::base::DataVector& alpha, double factor = 1.0);
+  void initGridWithExpHeatFullDomain(sgpp::base::DataVector& alpha, double factor = 1.0);
 
   /**
    * Inits the screen object
@@ -118,6 +118,6 @@ class PoissonEquationSolverMPI : public SGPP::pde::EllipticPDESolver {
   void initScreen();
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* POISSONEQUATIONSOLVERMPI_HPP */

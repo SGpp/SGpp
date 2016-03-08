@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 /**
@@ -20,15 +20,15 @@ namespace finance {
  * equation
  *
  */
-class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
+class OperationGammaLogLinearBoundary : public sgpp::pde::UpDownTwoOpDims {
  public:
   /**
    * Constructor
    *
-   * @param storage the grid's SGPP::base::GridStorage object
+   * @param storage the grid's sgpp::base::GridStorage object
    * @param coef vector that contains the constant coefficients of this operation
    */
-  OperationGammaLogLinearBoundary(SGPP::base::GridStorage* storage, SGPP::base::DataMatrix& coef);
+  OperationGammaLogLinearBoundary(sgpp::base::GridStorage* storage, sgpp::base::DataMatrix& coef);
 
   /**
    * Destructor
@@ -45,7 +45,7 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void up(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void up(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * Down-step in dimension <i>dim</i> for \f$(\phi_i(x),\phi_j(x))_{L_2}\f$.
@@ -56,7 +56,7 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param alpha vector of coefficients
    * @param result vector to store the results in
    */
-  virtual void down(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, size_t dim);
+  virtual void down(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim);
 
   /**
    * down-Gradient step in dimension <i>dim</i> applies the x phi dphi operation
@@ -66,7 +66,7 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  virtual void downOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  virtual void downOpDimOne(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                             size_t dim);
 
   /**
@@ -77,7 +77,7 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  virtual void upOpDimOne(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  virtual void upOpDimOne(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                           size_t dim);
 
   /**
@@ -88,7 +88,7 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  virtual void downOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  virtual void downOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                             size_t dim);
 
   /**
@@ -99,7 +99,7 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  virtual void upOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  virtual void upOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                           size_t dim);
 
   /**
@@ -111,7 +111,7 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that down-Gradient is applied
    */
-  void downOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void downOpDimOneAndOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                                size_t dim);
 
   /**
@@ -123,10 +123,10 @@ class OperationGammaLogLinearBoundary : public SGPP::pde::UpDownTwoOpDims {
    * @param result vector with the result of this operation
    * @param dim the dimension in that up-Gradient is applied
    */
-  void upOpDimOneAndOpDimTwo(SGPP::base::DataVector& alpha, SGPP::base::DataVector& result,
+  void upOpDimOneAndOpDimTwo(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result,
                              size_t dim);
 };
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONGAMMALOGLINEARBOUNDARY_HPP */
