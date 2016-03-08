@@ -11,12 +11,12 @@
 
 #include <numeric>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-NLCG::NLCG(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, float_t beta,
-           float_t gamma, float_t tolerance, float_t epsilon, float_t restartThreshold)
+NLCG::NLCG(ScalarFunction& f, ScalarFunctionGradient& fGradient, size_t maxItCount, double beta,
+           double gamma, double tolerance, double epsilon, double restartThreshold)
     : UnconstrainedOptimizer(f, maxItCount),
       fGradient(fGradient),
       beta(beta),
@@ -38,8 +38,8 @@ void NLCG::optimize() {
   fHist.resize(0);
 
   base::DataVector x(x0);
-  float_t fx;
-  float_t fy;
+  double fx;
+  double fy;
 
   base::DataVector gradFx(d);
   base::DataVector gradFy(d);
@@ -48,7 +48,7 @@ void NLCG::optimize() {
   base::DataVector y(d);
 
   fx = fGradient.eval(x0, gradFx);
-  float_t gradFxNorm = gradFx.l2Norm();
+  double gradFxNorm = gradFx.l2Norm();
 
   xHist.appendRow(x);
   fHist.append(fx);
@@ -67,7 +67,7 @@ void NLCG::optimize() {
     }
 
     // normalize search direction
-    const float_t sNorm = s.l2Norm();
+    const double sNorm = s.l2Norm();
 
     for (size_t t = 0; t < d; t++) {
       sNormalized[t] = s[t] / sNorm;
@@ -85,9 +85,9 @@ void NLCG::optimize() {
     fy = fGradient.eval(y, gradFy);
     k++;
 
-    const float_t gradFyNorm = gradFy.l2Norm();
+    const double gradFyNorm = gradFy.l2Norm();
 
-    float_t beta = 0.0;
+    double beta = 0.0;
 
     // the method is restarted (beta = 0), if the following criterion
     // is *not* met
@@ -125,29 +125,29 @@ void NLCG::optimize() {
 
 ScalarFunctionGradient& NLCG::getObjectiveGradient() const { return fGradient; }
 
-float_t NLCG::getBeta() const { return beta; }
+double NLCG::getBeta() const { return beta; }
 
-void NLCG::setBeta(float_t beta) { this->beta = beta; }
+void NLCG::setBeta(double beta) { this->beta = beta; }
 
-float_t NLCG::getGamma() const { return gamma; }
+double NLCG::getGamma() const { return gamma; }
 
-void NLCG::setGamma(float_t gamma) { this->gamma = gamma; }
+void NLCG::setGamma(double gamma) { this->gamma = gamma; }
 
-float_t NLCG::getTolerance() const { return tol; }
+double NLCG::getTolerance() const { return tol; }
 
-void NLCG::setTolerance(float_t tolerance) { tol = tolerance; }
+void NLCG::setTolerance(double tolerance) { tol = tolerance; }
 
-float_t NLCG::getEpsilon() const { return eps; }
+double NLCG::getEpsilon() const { return eps; }
 
-void NLCG::setEpsilon(float_t epsilon) { eps = epsilon; }
+void NLCG::setEpsilon(double epsilon) { eps = epsilon; }
 
-float_t NLCG::getRestartThreshold() const { return alpha; }
+double NLCG::getRestartThreshold() const { return alpha; }
 
-void NLCG::setRestartThreshold(float_t restartThreshold) { alpha = restartThreshold; }
+void NLCG::setRestartThreshold(double restartThreshold) { alpha = restartThreshold; }
 
 void NLCG::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {
   clone = std::unique_ptr<UnconstrainedOptimizer>(new NLCG(*this));
 }
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

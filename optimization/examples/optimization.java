@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * Java example for SGPP::optimization.
+ * Java example for sgpp::optimization.
  */
 public class optimization {
   /**
@@ -37,7 +37,7 @@ public class optimization {
     // increase output verbosity
     sgpp.OptPrinter.getInstance().setVerbosity(2);
 
-    System.out.println("SGPP::optimization example program started.\n");
+    System.out.println("sgpp::optimization example program started.\n");
 
     // objective function
     ExampleFunction f = new ExampleFunction();
@@ -154,6 +154,6 @@ public class optimization {
 
     printLine();
   
-    System.out.println("\nSGPP::optimization example program terminated.");
+    System.out.println("\nsgpp::optimization example program terminated.");
   }
 }

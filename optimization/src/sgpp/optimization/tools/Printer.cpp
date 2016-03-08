@@ -17,7 +17,7 @@
 #include <unistd.h>
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 Printer::Printer()
@@ -188,7 +188,7 @@ bool Printer::isStatusPrintingEnabled() {
   return statusPrintingEnabled;
 }
 
-float_t Printer::getLastDurationSecs() const { return lastDuration; }
+double Printer::getLastDurationSecs() const { return lastDuration; }
 
 MutexType& Printer::getMutex() { return mutex; }
 
@@ -241,4 +241,4 @@ void Printer::printSLE(SLE& system) const {
   (*stream) << "]\n";
 }
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

@@ -109,7 +109,7 @@ By default, on every invokation of SCons, it is automatically run
 on each *.cpp or *.hpp file which was modified since the last run of SCons.
 If issues are found, warnings of the following form are printed on the screen:
 @verbatim
-base/src/sgpp/globaldef.hpp:95: warning: Namespace should be terminated with "// namespace SGPP"  [readability/namespace] [5]
+base/src/sgpp/globaldef.hpp:95: warning: Namespace should be terminated with "// namespace sgpp"  [readability/namespace] [5]
 @endverbatim
 The number in brackets at the end indicates the confidence that
 the line is indeed a problem, using a scale from 1 to 5

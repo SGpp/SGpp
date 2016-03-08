@@ -11,7 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace micsp {
 #ifdef __INTEL_OFFLOAD
@@ -31,10 +31,10 @@ extern int number_mic_devices;
 extern bool multicard_multtrans_fast;
 extern float** tempgrid;
 
-void uploadGrid(SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
-                SGPP::base::DataMatrixSP* mask, SGPP::base::DataMatrixSP* offset);
+void uploadGrid(sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+                sgpp::base::DataMatrixSP* mask, sgpp::base::DataMatrixSP* offset);
 
-void uploadData(SGPP::base::DataMatrixSP* data);
+void uploadData(sgpp::base::DataMatrixSP* data);
 
 void deleteGrid();
 
@@ -67,5 +67,5 @@ void transferInputMultTrans(size_t offsetSource, size_t chunkSource, float* ptrS
                             size_t device);
 }  // namespace micsp
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 #endif  // SPMICKERNELIMPL_HPP

@@ -15,17 +15,17 @@
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
-void doAllRefinements(const SGPP::base::AdpativityConfiguration& adaptConfig,
-                      SGPP::base::Grid& grid, SGPP::base::GridGenerator& gridGen, std::mt19937 mt,
+void doAllRefinements(const sgpp::base::AdpativityConfiguration& adaptConfig,
+                      sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen, std::mt19937 mt,
                       std::uniform_real_distribution<double>& dist) {
-  SGPP::base::DataVector alphaRefine(grid.getSize());
+  sgpp::base::DataVector alphaRefine(grid.getSize());
 
   for (size_t i = 0; i < alphaRefine.getSize(); i++) {
     alphaRefine[i] = dist(mt);
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    SGPP::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
                                                       adaptConfig.threshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
@@ -47,38 +47,38 @@ int main(int argc, char** argv) {
 
   uint32_t level = 5;
 
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdpativityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.threshold_ = 0.0;
 
-  SGPP::base::OCLOperationConfiguration parameters("singleDevice.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("singleDevice.cfg");
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP, parameters);
 
-  SGPP::datadriven::ARFFTools arffTools;
-  SGPP::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
 
-  SGPP::base::DataMatrix& trainingData = dataset.getData();
+  sgpp::base::DataMatrix& trainingData = dataset.getData();
 
   size_t dim = dataset.getDimension();
 
   bool modLinear = true;
-  std::unique_ptr<SGPP::base::Grid> grid(nullptr);
+  std::unique_ptr<sgpp::base::Grid> grid(nullptr);
   if (modLinear) {
-    grid = SGPP::base::Grid::createModLinearGrid(dim);
+    grid = sgpp::base::Grid::createModLinearGrid(dim);
   } else {
-    grid = SGPP::base::Grid::createLinearGrid(dim);
+    grid = sgpp::base::Grid::createLinearGrid(dim);
   }
 
-  SGPP::base::GridStorage& gridStorage = grid->getStorage();
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
   std::cout << "dimensionality:        " << gridStorage.getDimension() << std::endl;
 
-  SGPP::base::GridGenerator& gridGen = grid->getGenerator();
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
   gridGen.regular(level);
   std::cout << "number of grid points: " << gridStorage.getSize() << std::endl;
   std::cout << "number of data points: " << dataset.getNumberInstances() << std::endl;
@@ -87,22 +87,22 @@ int main(int argc, char** argv) {
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
 
-  SGPP::base::DataVector dataSizeVector(dataset.getNumberInstances());
+  sgpp::base::DataVector dataSizeVector(dataset.getNumberInstances());
 
   for (size_t i = 0; i < dataSizeVector.getSize(); i++) {
     dataSizeVector[i] = static_cast<double>(i + 1);
   }
 
   std::cout << "creating operation with unrefined grid" << std::endl;
-  std::unique_ptr<SGPP::base::OperationMultipleEval> eval =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
   doAllRefinements(adaptConfig, *grid, gridGen, mt, dist);
 
   std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;
 
-  SGPP::base::DataVector alphaResult(gridStorage.getSize());
+  sgpp::base::DataVector alphaResult(gridStorage.getSize());
 
   std::cout << "preparing operation for refined grid" << std::endl;
   eval->prepare();
@@ -118,10 +118,10 @@ int main(int argc, char** argv) {
 
   std::cout << "calculating comparison values..." << std::endl;
 
-  std::unique_ptr<SGPP::base::OperationMultipleEval> evalCompare =
-      SGPP::op_factory::createOperationMultipleEval(*grid, trainingData);
+  std::unique_ptr<sgpp::base::OperationMultipleEval> evalCompare =
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData);
 
-  SGPP::base::DataVector alphaResultCompare(gridStorage.getSize());
+  sgpp::base::DataVector alphaResultCompare(gridStorage.getSize());
 
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 

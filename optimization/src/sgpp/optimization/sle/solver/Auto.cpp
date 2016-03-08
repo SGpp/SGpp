@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace sle_solver {
 
@@ -105,7 +105,7 @@ bool Auto::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
     // every inc-th row
     size_t nrows = 0;
     size_t nnz = 0;
-    size_t inc = static_cast<size_t>(ESTIMATE_NNZ_ROWS_SAMPLE_SIZE * static_cast<float_t>(n)) + 1;
+    size_t inc = static_cast<size_t>(ESTIMATE_NNZ_ROWS_SAMPLE_SIZE * static_cast<double>(n)) + 1;
 
     Printer::getInstance().printStatusUpdate("estimating sparsity pattern");
 
@@ -120,8 +120,8 @@ bool Auto::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
     }
 
     // calculate estimate ratio nonzero entries
-    float_t nnzRatio =
-        static_cast<float_t>(nnz) / (static_cast<float_t>(nrows) * static_cast<float_t>(n));
+    double nnzRatio =
+        static_cast<double>(nnz) / (static_cast<double>(nrows) * static_cast<double>(n));
 
     // print ratio
     {
@@ -168,4 +168,4 @@ bool Auto::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
 }
 }  // namespace sle_solver
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

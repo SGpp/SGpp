@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, base::Grid*& mg,
@@ -22,15 +22,15 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
   base::GridStorage* gs = &this->grid->getStorage();
 
   if (gs->getDimension() < 2)
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "OperationDensityMarginalize is not possible for less than 2 dimensions");
 
   mg = base::Grid::createLinearGrid(gs->getDimension() - 1).release();
   base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
-  SGPP::base::GridIndex* gp;
-  SGPP::base::GridIndex mgp(mgs->getDimension());
+  sgpp::base::GridIndex* gp;
+  sgpp::base::GridIndex mgp(mgs->getDimension());
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
     gp = gs->get(i);
@@ -76,7 +76,7 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
     }
 
     if (!mgs->has_key(&mgp))
-      throw SGPP::base::operation_exception(
+      throw sgpp::base::operation_exception(
           "Key not found! This should not happen! There is something seriously wrong!");
 
     // get index in alpha vector for current basis function
@@ -87,8 +87,8 @@ void OperationDensityMarginalizeLinear::doMarginalize(base::DataVector& alpha, b
      * type of basis is used!
      */
     // update corresponding coefficient
-    malpha[mseqNr] += alpha[seqNr] * pow(2.0, -static_cast<float_t>(mdimLevel));
+    malpha[mseqNr] += alpha[seqNr] * pow(2.0, -static_cast<double>(mdimLevel));
   }
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

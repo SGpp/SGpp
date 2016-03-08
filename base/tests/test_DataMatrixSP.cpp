@@ -11,8 +11,8 @@
 
 #include <algorithm>
 
-using SGPP::base::DataMatrixSP;
-using SGPP::base::DataVectorSP;
+using sgpp::base::DataMatrixSP;
+using sgpp::base::DataVectorSP;
 
 struct FixtureDataMatrixSP {
   FixtureDataMatrixSP()

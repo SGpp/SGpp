@@ -15,7 +15,7 @@
 #include <omp.h>
 #endif
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::DataMatrix*& samples,
@@ -43,7 +43,7 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 
     // 2. 1D sampling on dim_start
     base::DataVector* samples_start = NULL;
-    unsigned int tseedp = static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * 0.0001);
+    unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * 0.0001);
     op_factory::createOperationDensitySampling1D(*g1d)->doSampling1D(
         a1d, size, samples_start, &tseedp);
     delete g1d;
@@ -58,19 +58,19 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 #pragma omp critical
       {
 #ifdef _WIN32
-        float_t a = static_cast<float_t>(rand()) / RAND_MAX;
+        double a = static_cast<double>(rand()) / RAND_MAX;
         int64_t b = static_cast<int64_t>(rand());
 #else
-        float_t a = static_cast<float_t>(rand_r(&tseedp)) / RAND_MAX;
+        double a = static_cast<double>(rand_r(&tseedp)) / RAND_MAX;
         int64_t b = static_cast<int64_t>(rand_r(&tseedp));
 #endif
 #ifdef _OPENMP
         seedp =
-            static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * a +
-                                      static_cast<float_t>((omp_get_thread_num() + 1) * 1000 * b));
+            static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+                                      static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
 #else
-        seedp = static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * a +
-                                          static_cast<float_t>((1 + 1) * 1000 * b));
+        seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+                                          static_cast<double>((1 + 1) * 1000 * b));
 #endif
       }
 #pragma omp for schedule(dynamic)
@@ -108,7 +108,7 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 
   // 2. 1D sampling on dim_start
   base::DataVector* samples_start = NULL;
-  unsigned int tseedp = static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * 0.0001);
+  unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * 0.0001);
   op_factory::createOperationDensitySampling1D(*g1d)->doSampling1D(
       a1d, num_samples, samples_start, &tseedp);
   delete g1d;
@@ -123,19 +123,19 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 #pragma omp critical
     {
 #ifdef _WIN32
-      float_t a = static_cast<float_t>(rand()) / RAND_MAX;
+      double a = static_cast<double>(rand()) / RAND_MAX;
       int64_t b = static_cast<int64_t>(rand());
 #else
-      float_t a = static_cast<float_t>(rand_r(&tseedp)) / RAND_MAX;
+      double a = static_cast<double>(rand_r(&tseedp)) / RAND_MAX;
       int64_t b = static_cast<int64_t>(rand_r(&tseedp));
 #endif
 #ifdef _OPENMP
       seedp =
-          static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * a +
-                                    static_cast<float_t>((omp_get_thread_num() + 1) * 1000 * b));
+          static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+                                    static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
 #else
-      seedp = static_cast<unsigned int>(static_cast<float_t>(time(NULL)) * a +
-                                        static_cast<float_t>((1 + 1) * 1000 * b));
+      seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+                                        static_cast<double>((1 + 1) * 1000 * b));
 #endif
     }
 #pragma omp for schedule(dynamic)
@@ -220,4 +220,4 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
   return;
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

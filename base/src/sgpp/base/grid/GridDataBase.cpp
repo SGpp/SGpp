@@ -18,7 +18,7 @@
 #include <iostream>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 GridDataBase::GridDataBase(size_t dim) : _map(), _dim(static_cast<int>(dim)) {}
@@ -77,7 +77,7 @@ bool GridDataBase::hasKey(GridIndex* gi) {
   return _map.find(gi) != _map.end();
 }
 
-void GridDataBase::set(GridIndex* gi, float_t value) {
+void GridDataBase::set(GridIndex* gi, double value) {
   grid_map_const_iterator ind = _map.find(gi);
 
   if (ind == _map.end()) {
@@ -99,12 +99,12 @@ void GridDataBase::setValuesFor(Grid* grid, DataVector& values) {
   }
 }
 
-float_t GridDataBase::get(GridIndex* gi) {
+double GridDataBase::get(GridIndex* gi) {
   grid_map_const_iterator ind = _map.find(gi);
 
   if (ind == _map.end()) {
     std::cerr << gi->toString() << " not in database" << std::endl;
-    throw SGPP::base::data_exception(
+    throw sgpp::base::data_exception(
       "GridDataBase::get : grid point not in database");
   }
 
@@ -253,7 +253,7 @@ void GridDataBase::_loadData(std::ifstream& fin, char& ftype) {
   GridIndex gi(_dim);
   level_t lev;
   index_t ind;
-  float_t val;
+  double val;
 
   // ASCII data
   if (ftype == ascii) {
@@ -293,4 +293,4 @@ GridDataBase::grid_map_iterator GridDataBase::end() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

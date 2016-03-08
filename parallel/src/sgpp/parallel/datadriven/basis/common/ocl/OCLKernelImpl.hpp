@@ -17,7 +17,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 template <typename OCLBasisType>
 class OCLKernelImpl : public OCLKernelImplBase {
@@ -27,9 +27,9 @@ class OCLKernelImpl : public OCLKernelImplBase {
  public:
   OCLKernelImpl() : OCLKernelImplBase() {}
 
-  inline void initOCLBuffers(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                             SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                             SGPP::base::DataMatrix* dataset) {
+  inline void initOCLBuffers(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                             sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                             sgpp::base::DataMatrix* dataset) {
     size_t storageSize = level->getSize();
 
     if (level != NULL && clLevel[0] == NULL) {
@@ -70,7 +70,7 @@ class OCLKernelImpl : public OCLKernelImplBase {
     }
   }
 
-  inline void initParams(SGPP::base::DataVector& grid, SGPP::base::DataVector& tmp) {
+  inline void initParams(sgpp::base::DataVector& grid, sgpp::base::DataVector& tmp) {
     if (clPinnedGrid == NULL) {
       size_t mem_size = sizeof(double) * grid.getSize();
       clPinnedGrid =
@@ -118,10 +118,10 @@ class OCLKernelImpl : public OCLKernelImplBase {
     }
   }
 
-  double multImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                  SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                  SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-                  SGPP::base::DataVector& result, const size_t start_index_grid,
+  double multImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                  sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                  sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                  sgpp::base::DataVector& result, const size_t start_index_grid,
                   const size_t end_index_grid, const size_t start_index_data,
                   const size_t end_index_data) {
     // check if there is something to do at all
@@ -145,7 +145,7 @@ class OCLKernelImpl : public OCLKernelImplBase {
     size_t* gpu_end_index_data = new size_t[num_devices];
 
     for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
-      SGPP::parallel::PartitioningTool::getPartitionSegment(
+      sgpp::parallel::PartitioningTool::getPartitionSegment(
           start_index_data, end_index_data, num_devices, gpu_num, &gpu_start_index_data[gpu_num],
           &gpu_end_index_data[gpu_num], ocl_local_size);
     }
@@ -282,10 +282,10 @@ class OCLKernelImpl : public OCLKernelImplBase {
     return time;
   }
 
-  double multTransposeImpl(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                           SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                           SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-                           SGPP::base::DataVector& result, const size_t start_index_grid,
+  double multTransposeImpl(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                           sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                           sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+                           sgpp::base::DataVector& result, const size_t start_index_grid,
                            const size_t end_index_grid, const size_t start_index_data,
                            const size_t end_index_data) {
     // check if there is something to do at all
@@ -311,7 +311,7 @@ class OCLKernelImpl : public OCLKernelImplBase {
     size_t* gpu_end_index_grid = new size_t[num_devices];
 
     for (size_t gpu_num = 0; gpu_num < num_devices; gpu_num++) {
-      SGPP::parallel::PartitioningTool::getPartitionSegment(
+      sgpp::parallel::PartitioningTool::getPartitionSegment(
           start_index_grid, end_index_grid, num_devices, gpu_num, &gpu_start_index_grid[gpu_num],
           &gpu_end_index_grid[gpu_num], ocl_local_size);
     }
@@ -449,6 +449,6 @@ class OCLKernelImpl : public OCLKernelImplBase {
   }
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // OCLKERNELIMPL_HPP

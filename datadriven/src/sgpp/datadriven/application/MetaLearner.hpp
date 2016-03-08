@@ -22,13 +22,13 @@
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class MetaLearner {
  private:
   size_t instances;
-  float_t lambda;
+  double lambda;
 
   std::string csvSep;
 
@@ -37,22 +37,22 @@ class MetaLearner {
   LearnerBase* myLearner = nullptr;
   LearnerBase* referenceLearner = nullptr;
 
-  SGPP::base::RegularGridConfiguration gridConfig;
-  SGPP::solver::SLESolverConfiguration solverConfig;
-  SGPP::solver::SLESolverConfiguration solverFinalStep;
-  SGPP::base::AdpativityConfiguration adaptivityConfiguration;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::solver::SLESolverConfiguration solverConfig;
+  sgpp::solver::SLESolverConfiguration solverFinalStep;
+  sgpp::base::AdpativityConfiguration adaptivityConfiguration;
 
   LearnerTiming myTiming;
   LearnerTiming referenceTiming;
 
-  std::vector<std::pair<size_t, float_t> > ExecTimesOnStep;
-  std::vector<std::pair<size_t, float_t> > ExecTimesOnStepReference;
+  std::vector<std::pair<size_t, double> > ExecTimesOnStep;
+  std::vector<std::pair<size_t, double> > ExecTimesOnStepReference;
 
   void writeRefinementResults(
       std::string fileName, std::string fileHeader,
-      std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > >
+      std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > >
           datasetDetails,
-      std::vector<std::pair<std::string, std::vector<std::pair<size_t, float_t> > > >
+      std::vector<std::pair<std::string, std::vector<std::pair<size_t, double> > > >
           datasetDetailsReference,
       bool referenceComparison);
 
@@ -60,10 +60,10 @@ class MetaLearner {
   MetaLearner() = delete;
 
   // gridConfig.dim is inferred from the dataset
-  MetaLearner(SGPP::base::RegularGridConfiguration gridConfig,
-              SGPP::solver::SLESolverConfiguration solverConfig,
-              SGPP::solver::SLESolverConfiguration solverFinalStep,
-              SGPP::base::AdpativityConfiguration adaptivityConfiguration, float_t lambda,
+  MetaLearner(sgpp::base::RegularGridConfiguration gridConfig,
+              sgpp::solver::SLESolverConfiguration solverConfig,
+              sgpp::solver::SLESolverConfiguration solverFinalStep,
+              sgpp::base::AdpativityConfiguration adaptivityConfiguration, double lambda,
               bool verbose = false);
 
   ~MetaLearner() {
@@ -76,10 +76,10 @@ class MetaLearner {
     }
   }
 
-  void learn(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+  void learn(sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
              std::string& datasetFileName, bool isRegression = true);
 
-  void learnString(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+  void learnString(sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
                    std::string& content, bool isRegression = true);
 
   void learnReference(std::string& fileName, bool isRegression = true);
@@ -87,46 +87,46 @@ class MetaLearner {
   void learnReferenceString(std::string& content, bool isRegression = true);
 
   // learn and test against test dataset and measure hits/mse
-  void learnAndTest(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+  void learnAndTest(sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
                     std::string& datasetFileName, std::string& testFileName,
                     bool isRegression = true);
 
   // learn and test against test dataset and measure hits/mse
   void learnAndTestString(
-      SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+      sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
       std::string& dataContent, std::string& testContent, bool isRegression = true);
 
   // learn and test against the streaming implementation
-  float_t learnAndCompare(
-      SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+  double learnAndCompare(
+      sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
       std::string& datasetFileName, size_t gridGranularity);
 
   // learn and test against the streaming implementation
-  float_t learnAndCompareString(
-      SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+  double learnAndCompareString(
+      sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
       std::string& content, size_t gridGranularity);
 
   void refinementAndOverallPerformance(
-      std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
+      std::vector<sgpp::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
       std::vector<std::string> datasets, std::vector<std::string> experimentHeaders,
       std::string metaInformation, std::string fileName, bool referenceComparison = false);
 
   void regularGridSpeedup(
-      SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+      sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
       std::vector<size_t> dimList, std::vector<size_t> levelList, size_t instances,
       std::string metaInformation, std::string experimentName);
 
   void appendToPerformanceRun(
       std::string fileName, std::string changingRowName, std::string currentValues,
-      std::vector<SGPP::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
+      std::vector<sgpp::datadriven::OperationMultipleEvalConfiguration*> operationConfigurations,
       std::vector<std::string> datasets, std::vector<std::string> datasetNames,
       std::string metaInformation, bool removeOld);
 
-  void testRegular(SGPP::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
-                   size_t dim, size_t level, size_t instances, float_t& duration,
-                   float_t& durationReference);
+  void testRegular(sgpp::datadriven::OperationMultipleEvalConfiguration& operationConfiguration,
+                   size_t dim, size_t level, size_t instances, double& duration,
+                   double& durationReference);
 
-  SGPP::base::Grid& getLearnedGrid();
+  sgpp::base::Grid& getLearnedGrid();
 
   base::DataVector& getLearnedAlpha();
 
@@ -135,4 +135,4 @@ class MetaLearner {
   LearnerTiming getLearnerReferenceTiming();
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

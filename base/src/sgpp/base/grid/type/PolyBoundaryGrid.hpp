@@ -13,7 +13,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -42,7 +42,7 @@ class PolyBoundaryGrid : public Grid {
   ~PolyBoundaryGrid() override;
 
   const SBasis& getBasis() override;
-  SGPP::base::GridType getType() override;
+  sgpp::base::GridType getType() override;
   void serialize(std::ostream& ostr) override;
 
   GridGenerator& getGenerator() override;
@@ -62,6 +62,6 @@ class PolyBoundaryGrid : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* POLYTRUNCATEDBOUNDARYGRID_HPP */

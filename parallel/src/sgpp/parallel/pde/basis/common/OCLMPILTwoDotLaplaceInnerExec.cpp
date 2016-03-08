@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -198,9 +198,9 @@ void ExecLTwoDotLaplaceInner(REAL* ptrAlpha, REAL* ptrResult, REAL* lcl_q, REAL*
 
 using namespace oclpdekernels;
 void OCLPDEKernels::RunOCLKernelLTwoDotLaplaceInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result, REAL* lcl_q, REAL* lcl_q_inv,
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, REAL* lcl_q, REAL* lcl_q_inv,
     REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int, REAL* ptrLambda, size_t argStorageSize,
-    size_t argStorageDim, SGPP::base::GridStorage* storage, REAL tsCoeff) {
+    size_t argStorageDim, sgpp::base::GridStorage* storage, REAL tsCoeff) {
   TimestepCoeff = tsCoeff;
   myStopwatch->start();
 

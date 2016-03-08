@@ -13,7 +13,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class Dataset {
@@ -44,26 +44,26 @@ class Dataset {
   /**
    * @return classes data of the dataset
    */
-  SGPP::base::DataVector& getTargets();
+  sgpp::base::DataVector& getTargets();
 
   /**
    * @return training data of the dataset
    */
-  SGPP::base::DataMatrix& getData();
+  sgpp::base::DataMatrix& getData();
 
-  void setData(const SGPP::base::DataMatrix&);
-  void setTargets(const SGPP::base::DataVector& targets);
+  void setData(const sgpp::base::DataMatrix&);
+  void setTargets(const sgpp::base::DataVector& targets);
 
   Dataset& operator=(const Dataset& vec);
 
  protected:
   size_t numberInstances;
   size_t dimension;
-  SGPP::base::DataVector targets;
-  SGPP::base::DataMatrix data;
+  sgpp::base::DataVector targets;
+  sgpp::base::DataMatrix data;
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif

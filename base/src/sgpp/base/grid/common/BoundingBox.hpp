@@ -12,7 +12,7 @@
 #include <string>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -20,9 +20,9 @@ namespace base {
  */
 struct DimensionBoundary {
   /// the left boundary
-  float_t leftBoundary;
+  double leftBoundary;
   /// the right boundary
-  float_t rightBoundary;
+  double rightBoundary;
   /// Use Dirichlet-Boundaries on the left boundary
   bool bDirichletLeft;
   /// Use Dirichlet-Boundaries on the right boundary
@@ -110,7 +110,7 @@ class BoundingBox {
    *
    * @return the width of the interval
    */
-  float_t getIntervalWidth(size_t dimension);
+  double getIntervalWidth(size_t dimension);
 
   /**
    * gets the offset in positive x-direction of the interval in one dimension
@@ -119,7 +119,7 @@ class BoundingBox {
    *
    * @return the offset in positive x-direction of the interval
    */
-  float_t getIntervalOffset(size_t dimension);
+  double getIntervalOffset(size_t dimension);
 
   /**
    * Use this function to determine if this bounding box describes a trivial cube [0;1]^d
@@ -152,6 +152,6 @@ class BoundingBox {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* BOUNDINGBOX_HPP */

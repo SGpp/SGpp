@@ -19,7 +19,7 @@
 #define CRNIC_IMEUL_STEPS 3
 
 int readBoudingBoxData(std::string tFile, size_t numAssests,
-                       SGPP::base::DimensionBoundary* BoundaryArray) {
+                       sgpp::base::DimensionBoundary* BoundaryArray) {
   std::fstream file;
   double cur_right;
   double cur_left;
@@ -77,14 +77,14 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
   size_t CGiterations = CGIt;
   double CGepsilon = CGeps;
 
-  SGPP::base::DimensionBoundary* myBoundaries = new SGPP::base::DimensionBoundary[1];
+  sgpp::base::DimensionBoundary* myBoundaries = new sgpp::base::DimensionBoundary[1];
 
   if (readBoudingBoxData(fileBound, 1, myBoundaries) != 0) {
     return;
   }
 
-  SGPP::finance::HullWhiteSolver* myHWSolver = new SGPP::finance::HullWhiteSolver();
-  SGPP::base::BoundingBox* myBoundingBox = new SGPP::base::BoundingBox(1, myBoundaries);
+  sgpp::finance::HullWhiteSolver* myHWSolver = new sgpp::finance::HullWhiteSolver();
+  sgpp::base::BoundingBox* myBoundingBox = new sgpp::base::BoundingBox(1, myBoundaries);
   delete[] myBoundaries;
 
   // init Screen Object
@@ -94,7 +94,7 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
   myHWSolver->constructGrid(*myBoundingBox, level);
 
   // init the basis functions' coefficient vector
-  SGPP::base::DataVector* alpha = new SGPP::base::DataVector(myHWSolver->getNumberGridPoints());
+  sgpp::base::DataVector* alpha = new sgpp::base::DataVector(myHWSolver->getNumberGridPoints());
 
   std::cout << "Grid has " << level << " Levels" << std::endl;
   std::cout << "Initial Grid size: " << myHWSolver->getNumberGridPoints() << std::endl;
@@ -178,7 +178,7 @@ void testHullWhite(int l, double sigma, double a, std::string fileBound, std::st
  */
 
 void writeHelp() {
-  SGPP::finance::HullWhiteSolver* myHWSolver = new SGPP::finance::HullWhiteSolver();
+  sgpp::finance::HullWhiteSolver* myHWSolver = new sgpp::finance::HullWhiteSolver();
 
   myHWSolver->initScreen();
 

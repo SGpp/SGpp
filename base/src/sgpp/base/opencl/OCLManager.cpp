@@ -10,7 +10,7 @@
 #include "sgpp/base/opencl/OCLManager.hpp"
 #include "sgpp/base/exception/operation_exception.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> parameters)
@@ -78,7 +78,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get number of OpenCL platforms. "
                    "Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
@@ -93,7 +93,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get Platform ID. "
                    "Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   for (cl_uint ui = 0; ui < num_platforms; ui++) {
@@ -104,7 +104,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     if (CL_SUCCESS != err) {
       std::stringstream errorString;
       errorString << "OCL Error: Can't get platform vendor!" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     } else {
       if (vendor_name != nullptr && verbose) {
         std::cout << "OCL Info: Platform " << ui << " vendor name: " << vendor_name << std::endl;
@@ -118,7 +118,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     if (CL_SUCCESS != err) {
       std::stringstream errorString;
       errorString << "OCL Error: Can't get platform version!" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     } else {
       if (version_info != nullptr && verbose) {
         std::cout << "OCL Info: Platform " << ui << " version: " << version_info << std::endl;
@@ -132,7 +132,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     if (CL_SUCCESS != err) {
       std::stringstream errorString;
       errorString << "OCL Error: Can't get platform name!" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     } else {
       if (platform_name != nullptr && verbose) {
         std::cout << "OCL Info: Platform " << ui << " name: " << platform_name << std::endl;
@@ -202,7 +202,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     // get the device ids
     err = clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_ALL, num_devices, device_ids, nullptr);
   } else {
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "OCL Error: No device found or unknown type specified "
         "(supported are: CPU, GPU, accelerator and all)");
   }
@@ -210,7 +210,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Unable to get Device IDs. Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   if (verbose) {
@@ -224,7 +224,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
       std::stringstream errorString;
       errorString << "OCL Error: Cannot select a specific device if more than "
                      "one device is used, MAX_DEVICES be set incorrectly" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     size_t selectedDevice = (*parameters)["SELECT_SPECIFIC_DEVICE"].getUInt();
@@ -233,7 +233,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
       std::stringstream errorString;
       errorString << "OCL Error: Illegal value set for "
                      "\"SELECT_SPECIFIC_DEVICE\"" << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     device_ids[0] = device_ids[selectedDevice];
@@ -265,7 +265,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
     std::stringstream errorString;
     errorString << "OCL Error: Failed to create OpenCL context! "
                    "Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   // Creating the command queues
@@ -277,7 +277,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
       std::stringstream errorString;
       errorString << "OCL Error: Failed to read the device name for "
                      "device: " << i << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
 
     if (verbose) {
@@ -291,7 +291,7 @@ OCLManager::OCLManager(std::shared_ptr<base::OCLOperationConfiguration> paramete
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create command queue! "
                      "Error Code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -313,7 +313,7 @@ OCLManager::~OCLManager() {
       std::stringstream errorString;
       errorString << "OCL Error: Could not release command queue! "
                      "Error Code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -323,7 +323,7 @@ OCLManager::~OCLManager() {
     std::stringstream errorString;
     errorString << "OCL Error: Could not release context! "
                    "Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   delete[] this->command_queue;
@@ -357,7 +357,7 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: Failed to create program! Error Code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   std::string build_opts;
@@ -392,7 +392,7 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
     errorString << "OCL Error: OpenCL build error. Error code: " << err << std::endl;
-    throw SGPP::base::operation_exception(errorString.str());
+    throw sgpp::base::operation_exception(errorString.str());
   }
 
   // creating the kernel
@@ -403,7 +403,7 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
       std::stringstream errorString;
       errorString << "OCL Error: Failed to create kernel! "
                      "Error code: " << err << std::endl;
-      throw SGPP::base::operation_exception(errorString.str());
+      throw sgpp::base::operation_exception(errorString.str());
     }
   }
 
@@ -413,4 +413,4 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

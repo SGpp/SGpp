@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -22,7 +22,7 @@ TestVectorFunction& G04::getInequalityConstraintFunction() { return g; }
 
 TestVectorFunction& G04::getEqualityConstraintFunction() { return h; }
 
-float_t G04::getOptimalPointUndisplaced(base::DataVector& x) {
+double G04::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(5);
   x[0] = 0.0;
   x[1] = 0.0;
@@ -36,12 +36,12 @@ G04Objective::G04Objective() : TestScalarFunction(5) {}
 
 G04Objective::~G04Objective() {}
 
-float_t G04Objective::evalUndisplaced(const base::DataVector& x) {
-  const float_t x1 = 24.0 * x[0] + 78.0;
-  // const float_t x2 = 12.0 * x[1] + 33.0;
-  const float_t x3 = 18.0 * x[2] + 27.0;
-  // const float_t x4 = 18.0 * x[3] + 27.0;
-  const float_t x5 = 18.0 * x[4] + 27.0;
+double G04Objective::evalUndisplaced(const base::DataVector& x) {
+  const double x1 = 24.0 * x[0] + 78.0;
+  // const double x2 = 12.0 * x[1] + 33.0;
+  const double x3 = 18.0 * x[2] + 27.0;
+  // const double x4 = 18.0 * x[3] + 27.0;
+  const double x5 = 18.0 * x[4] + 27.0;
 
   return 5.3578547 * x3 * x3 + 0.8356891 * x1 * x5 + 37.293239 * x1 - 40792.141;
 }
@@ -55,11 +55,11 @@ G04InequalityConstraint::G04InequalityConstraint() : TestVectorFunction(5, 6) {}
 G04InequalityConstraint::~G04InequalityConstraint() {}
 
 void G04InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {
-  const float_t x1 = 24.0 * x[0] + 78.0;
-  const float_t x2 = 12.0 * x[1] + 33.0;
-  const float_t x3 = 18.0 * x[2] + 27.0;
-  const float_t x4 = 18.0 * x[3] + 27.0;
-  const float_t x5 = 18.0 * x[4] + 27.0;
+  const double x1 = 24.0 * x[0] + 78.0;
+  const double x2 = 12.0 * x[1] + 33.0;
+  const double x3 = 18.0 * x[2] + 27.0;
+  const double x4 = 18.0 * x[3] + 27.0;
+  const double x5 = 18.0 * x[4] + 27.0;
 
   value[0] = 85.334407 + 0.0056858 * x2 * x5 + 0.0006262 * x1 * x4 - 0.0022053 * x3 * x5 - 92.0;
   value[1] = -85.334407 - 0.0056858 * x2 * x5 - 0.0006262 * x1 * x4 + 0.0022053 * x3 * x5;
@@ -84,4 +84,4 @@ void G04EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const 
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

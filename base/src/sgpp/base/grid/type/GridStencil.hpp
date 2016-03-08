@@ -14,7 +14,7 @@
 #include <vector>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -75,6 +75,6 @@ class GridStencil : public Grid {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* GRIDSTENCIL_HPP */

@@ -10,12 +10,12 @@
 #include "Configuration.hpp"
 #include "OperationMultiEvalStreamingModOCLMaskMultiPlatform.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration) {
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
   std::shared_ptr<base::OCLManagerMultiPlatform> manager;
 
   std::shared_ptr<base::OCLOperationConfiguration> parameters;
@@ -46,4 +46,4 @@ base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

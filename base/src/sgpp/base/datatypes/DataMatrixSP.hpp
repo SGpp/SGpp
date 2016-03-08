@@ -15,7 +15,7 @@
 #include <algorithm>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -555,6 +555,6 @@ class DataMatrixSP {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DATAMATRIXSP_HPP */

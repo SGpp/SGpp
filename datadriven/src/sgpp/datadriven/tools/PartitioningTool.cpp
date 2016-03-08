@@ -22,7 +22,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 PartitioningTool::PartitioningTool() {
@@ -47,12 +47,12 @@ void PartitioningTool::getPartitionSegment(size_t start, size_t end,
 
   // check for valid input
   if (blockSize == 0) {
-    throw SGPP::base::operation_exception("blockSize must not be zero!");
+    throw sgpp::base::operation_exception("blockSize must not be zero!");
   }
 
   if (totalSize % blockSize != 0) {
     // std::cout << "totalSize: " << totalSize << "; blockSize: " << blockSize << std::endl;
-    throw SGPP::base::operation_exception("totalSize must be divisible by blockSize without "
+    throw sgpp::base::operation_exception("totalSize must be divisible by blockSize without "
       "remainder, but it is not!");
   }
 
@@ -112,5 +112,5 @@ void PartitioningTool::calcDistribution(size_t totalSize, size_t numChunks,
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

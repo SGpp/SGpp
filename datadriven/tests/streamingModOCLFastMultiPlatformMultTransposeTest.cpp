@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -49,12 +49,12 @@ BOOST_AUTO_TEST_CASE(Simple) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -83,12 +83,12 @@ BOOST_AUTO_TEST_CASE(Blocking) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -117,12 +117,12 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
@@ -151,12 +151,12 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -185,12 +185,12 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 1ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -219,12 +219,12 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -253,12 +253,12 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
   uint32_t level = 4;
 
-  std::shared_ptr<SGPP::base::OCLOperationConfiguration> parameters =
+  std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
@@ -287,12 +287,12 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", 10ul);
   }
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, *parameters);
 
   for (size_t i = 0; i < fileNames.size(); i++) {
-    double mse = compareToReferenceTranspose(SGPP::base::GridType::ModLinear, fileNames[i], level,
+    double mse = compareToReferenceTranspose(sgpp::base::GridType::ModLinear, fileNames[i], level,
                                              configuration);
     BOOST_CHECK(mse < errors[i]);
   }

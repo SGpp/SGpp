@@ -17,7 +17,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -44,7 +44,7 @@ class DMSystemMatrix : public DMSystemMatrixBase {
    * @param lambdaRegression the lambda, the regression parameter
    */
   DMSystemMatrix(base::Grid& grid, base::DataMatrix& trainData,
-                 base::OperationMatrix& C, float_t lambdaRegression);
+                 base::OperationMatrix& C, double lambdaRegression);
 
   /**
    * Std-Destructor
@@ -66,6 +66,6 @@ class DMSystemMatrix : public DMSystemMatrixBase {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* DMSYSTEMMATRIX_HPP */

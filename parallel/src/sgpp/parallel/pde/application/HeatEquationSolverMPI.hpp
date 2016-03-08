@@ -25,7 +25,7 @@
 #include <fstream>
 #include <cmath>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 /**
@@ -38,12 +38,12 @@ namespace parallel {
  * This version offers support for MPI parallelization!
  *
  */
-class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
+class HeatEquationSolverMPI : public sgpp::pde::ParabolicPDESolver {
  private:
   /// the heat coefficient
   double a;
   /// screen object used in this solver
-  SGPP::base::ScreenOutput* myScreen;
+  sgpp::base::ScreenOutput* myScreen;
 
  public:
   /**
@@ -56,18 +56,18 @@ class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
    */
   virtual ~HeatEquationSolverMPI();
 
-  void constructGrid(SGPP::base::BoundingBox& myBoundingBox, int level);
+  void constructGrid(sgpp::base::BoundingBox& myBoundingBox, int level);
 
   void solveExplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
-                          double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
                           bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
   void solveImplicitEuler(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
-                          double epsilonCG, SGPP::base::DataVector& alpha, bool verbose = false,
+                          double epsilonCG, sgpp::base::DataVector& alpha, bool verbose = false,
                           bool generateAnimation = false, size_t numEvalsAnimation = 20);
 
   void solveCrankNicolson(size_t numTimesteps, double timestepsize, size_t maxCGIterations,
-                          double epsilonCG, SGPP::base::DataVector& alpha, size_t NumImEul = 0);
+                          double epsilonCG, sgpp::base::DataVector& alpha, size_t NumImEul = 0);
 
   /**
    * This method sets the heat coefficient of the regarded material
@@ -85,7 +85,7 @@ class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
    * @param sigma the sigma of the normal distribution
    * @param factor a factor that is used to stretch the function values
    */
-  void initGridWithSmoothHeat(SGPP::base::DataVector& alpha, double mu, double sigma,
+  void initGridWithSmoothHeat(sgpp::base::DataVector& alpha, double mu, double sigma,
                               double factor);
 
   /**
@@ -94,6 +94,6 @@ class HeatEquationSolverMPI : public SGPP::pde::ParabolicPDESolver {
   void initScreen();
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HEATEQUATIONSOLVERMPI_HPP */

@@ -42,10 +42,6 @@ if env['COMPILER'] == 'vcc':
 if env['PYDOC']:
     swigflags.append('-DPYDOC')
 
-# set single precision define
-if not py_env['USE_DOUBLE_PRECISION']:
-    swigflags.append('-DUSE_DOUBLE_PRECISION=0')
-
 py_env.AppendUnique(SWIGFLAGS=swigflags)
 
 pythonLibPaths = [BUILD_DIR]

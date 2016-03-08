@@ -12,7 +12,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 class QuadRule1D {
@@ -30,6 +30,6 @@ class QuadRule1D {
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* QUADRULE1D_HPP_ */

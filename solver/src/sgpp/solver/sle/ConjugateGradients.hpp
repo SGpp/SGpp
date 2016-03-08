@@ -13,7 +13,7 @@
 
 #include <iostream>
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 class ConjugateGradients : public SLESolver {
@@ -21,16 +21,16 @@ class ConjugateGradients : public SLESolver {
   /**
    * Std-Constructor
    */
-  ConjugateGradients(size_t imax, float_t epsilon);
+  ConjugateGradients(size_t imax, double epsilon);
 
   /**
    * Std-Destructor
    */
   virtual ~ConjugateGradients();
 
-  virtual void solve(SGPP::base::OperationMatrix& SystemMatrix, SGPP::base::DataVector& alpha,
-                     SGPP::base::DataVector& b, bool reuse = false, bool verbose = false,
-                     float_t max_threshold = -1.0);
+  virtual void solve(sgpp::base::OperationMatrix& SystemMatrix, sgpp::base::DataVector& alpha,
+                     sgpp::base::DataVector& b, bool reuse = false, bool verbose = false,
+                     double max_threshold = -1.0);
 
   // Define functions for observer pattern in python
 
@@ -57,6 +57,6 @@ class ConjugateGradients : public SLESolver {
 };
 
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* CONJUGATEGRADIENTS_HPP */

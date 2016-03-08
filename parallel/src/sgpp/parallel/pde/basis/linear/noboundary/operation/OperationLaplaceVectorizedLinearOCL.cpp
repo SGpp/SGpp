@@ -10,17 +10,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(
-    SGPP::base::GridStorage* storage, SGPP::base::DataVector& lambda)
+    sgpp::base::GridStorage* storage, sgpp::base::DataVector& lambda)
     : storage(storage) {
-  this->lambda = new SGPP::base::DataVector(lambda);
+  this->lambda = new sgpp::base::DataVector(lambda);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
-  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
   lcl_q = new double[this->storage->getDimension()];
   lcl_q_inv = new double[this->storage->getDimension()];
 
@@ -29,14 +29,14 @@ OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(
 }
 
 OperationLaplaceVectorizedLinearOCL::OperationLaplaceVectorizedLinearOCL(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : storage(storage) {
   this->lambda = new base::DataVector(storage->getDimension());
   this->lambda->setAll(1.0);
   this->OCLPDEKernelsHandle = OCLPDEKernels();
-  this->level_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->level_int_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
-  this->index_ = new SGPP::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->level_int_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
+  this->index_ = new sgpp::base::DataMatrix(storage->getSize(), storage->getDimension());
   lcl_q = new double[this->storage->getDimension()];
   lcl_q_inv = new double[this->storage->getDimension()];
 
@@ -53,13 +53,13 @@ OperationLaplaceVectorizedLinearOCL::~OperationLaplaceVectorizedLinearOCL() {
   this->OCLPDEKernelsHandle.CleanUpGPU();
 }
 
-void OperationLaplaceVectorizedLinearOCL::mult(SGPP::base::DataVector& alpha,
-                                               SGPP::base::DataVector& result) {
+void OperationLaplaceVectorizedLinearOCL::mult(sgpp::base::DataVector& alpha,
+                                               sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   // fill q array
   for (size_t d = 0; d < this->storage->getDimension(); d++) {
-    SGPP::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
+    sgpp::base::BoundingBox* boundingBox = this->storage->getBoundingBox();
     lcl_q[d] = boundingBox->getIntervalWidth(d);
     lcl_q_inv[d] = 1.0 / boundingBox->getIntervalWidth(d);
   }

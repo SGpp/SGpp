@@ -11,7 +11,7 @@
 
 #include "sgpp/base/opencl/OCLConfigurationParameters.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 OCLConfigurationParameters::OCLConfigurationParameters(
@@ -66,4 +66,4 @@ std::shared_ptr<ConfigurationParameters> OCLConfigurationParameters::clone() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

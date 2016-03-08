@@ -42,7 +42,7 @@ class RefinableNodesSet(AdmissibleSetGenerator):
 
     def create(self, grid):
         gs = grid.getStorage()
-        for i in xrange(gs.size()):
+        for i in xrange(gs.getSize()):
             gp = gs.get(i)
             if isRefineable(grid, gp):
                 self.insertPoint(gp)

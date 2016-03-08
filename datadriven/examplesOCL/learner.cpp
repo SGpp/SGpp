@@ -11,11 +11,11 @@
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void validate(boost::any& v, const std::vector<std::string>& values,
-              SGPP::base::GridType* target_type, int) {
+              sgpp::base::GridType* target_type, int) {
   // Make sure no previous assignment to 'a' was made.
   boost::program_options::validators::check_first_occurrence(v);
   // Extract the first string from 'values'. If there is more than
@@ -23,22 +23,22 @@ void validate(boost::any& v, const std::vector<std::string>& values,
   const std::string& s = boost::program_options::validators::get_single_string(values);
 
   if (s.compare("Linear") == 0) {
-    v = SGPP::base::GridType::Linear;
+    v = sgpp::base::GridType::Linear;
   } else if (s.compare("ModLinear") == 0) {
-    v = SGPP::base::GridType::ModLinear;
+    v = sgpp::base::GridType::ModLinear;
   } else {
     throw boost::program_options::validation_error(
         boost::program_options::validation_error::invalid_option_value);
   }
 }
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
-namespace SGPP {
+namespace sgpp {
 namespace solver {
 
 void validate(boost::any& v, const std::vector<std::string>& values,
-              SGPP::solver::SLESolverType* target_type, int) {
+              sgpp::solver::SLESolverType* target_type, int) {
   // Make sure no previous assignment to 'a' was made.
   boost::program_options::validators::check_first_occurrence(v);
   // Extract the first string from 'values'. If there is more than
@@ -46,22 +46,22 @@ void validate(boost::any& v, const std::vector<std::string>& values,
   const std::string& s = boost::program_options::validators::get_single_string(values);
 
   if (s.compare("CG") == 0) {
-    v = SGPP::solver::SLESolverType::CG;
+    v = sgpp::solver::SLESolverType::CG;
   } else if (s.compare("BiCGSTAB") == 0) {
-    v = SGPP::solver::SLESolverType::BiCGSTAB;
+    v = sgpp::solver::SLESolverType::BiCGSTAB;
   } else {
     throw boost::program_options::validation_error(
         boost::program_options::validation_error::invalid_option_value);
   }
 }
 }  // namespace solver
-}  // namespace SGPP
+}  // namespace sgpp
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void validate(boost::any& v, const std::vector<std::string>& values,
-              SGPP::datadriven::OperationMultipleEvalType* target_type, int) {
+              sgpp::datadriven::OperationMultipleEvalType* target_type, int) {
   // Make sure no previous assignment to 'a' was made.
   boost::program_options::validators::check_first_occurrence(v);
   // Extract the first string from 'values'. If there is more than
@@ -69,11 +69,11 @@ void validate(boost::any& v, const std::vector<std::string>& values,
   const std::string& s = boost::program_options::validators::get_single_string(values);
 
   if (s.compare("DEFAULT") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalType::DEFAULT;
+    v = sgpp::datadriven::OperationMultipleEvalType::DEFAULT;
   } else if (s.compare("STREAMING") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalType::STREAMING;
+    v = sgpp::datadriven::OperationMultipleEvalType::STREAMING;
   } else if (s.compare("SUBSPACELINEAR") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
+    v = sgpp::datadriven::OperationMultipleEvalType::SUBSPACELINEAR;
   } else {
     throw boost::program_options::validation_error(
         boost::program_options::validation_error::invalid_option_value);
@@ -81,7 +81,7 @@ void validate(boost::any& v, const std::vector<std::string>& values,
 }
 
 void validate(boost::any& v, const std::vector<std::string>& values,
-              SGPP::datadriven::OperationMultipleEvalSubType* target_type, int) {
+              sgpp::datadriven::OperationMultipleEvalSubType* target_type, int) {
   // Make sure no previous assignment to 'a' was made.
   boost::program_options::validators::check_first_occurrence(v);
   // Extract the first string from 'values'. If there is more than
@@ -89,19 +89,19 @@ void validate(boost::any& v, const std::vector<std::string>& values,
   const std::string& s = boost::program_options::validators::get_single_string(values);
 
   if (s.compare("DEFAULT") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT;
+    v = sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT;
   } else if (s.compare("COMBINED") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalSubType::COMBINED;
+    v = sgpp::datadriven::OperationMultipleEvalSubType::COMBINED;
   } else if (s.compare("OCL") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalSubType::OCL;
+    v = sgpp::datadriven::OperationMultipleEvalSubType::OCL;
   } else if (s.compare("OCLMASK") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalSubType::OCLMASKMP;
+    v = sgpp::datadriven::OperationMultipleEvalSubType::OCLMASKMP;
   } else if (s.compare("OCLMP") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalSubType::OCLMP;
+    v = sgpp::datadriven::OperationMultipleEvalSubType::OCLMP;
   } else if (s.compare("SIMPLE") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalSubType::SIMPLE;
+    v = sgpp::datadriven::OperationMultipleEvalSubType::SIMPLE;
   } else if (s.compare("OCLFASTMULTIPLATFORM") == 0) {
-    v = SGPP::datadriven::OperationMultipleEvalSubType::OCLFASTMP;
+    v = sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP;
   } else {
     throw boost::program_options::validation_error(
         boost::program_options::validation_error::invalid_option_value);
@@ -111,7 +111,7 @@ void validate(boost::any& v, const std::vector<std::string>& values,
 enum class LearnerMode { LEARN, LEARNCOMPARE, LEARNTEST };
 
 void validate(boost::any& v, const std::vector<std::string>& values,
-              SGPP::datadriven::LearnerMode* target_type, int) {
+              sgpp::datadriven::LearnerMode* target_type, int) {
   // Make sure no previous assignment to 'a' was made.
   boost::program_options::validators::check_first_occurrence(v);
   // Extract the first string from 'values'. If there is more than
@@ -119,18 +119,18 @@ void validate(boost::any& v, const std::vector<std::string>& values,
   const std::string& s = boost::program_options::validators::get_single_string(values);
 
   if (s.compare("LEARN") == 0) {
-    v = SGPP::datadriven::LearnerMode::LEARN;
+    v = sgpp::datadriven::LearnerMode::LEARN;
   } else if (s.compare("LEARNCOMPARE") == 0) {
-    v = SGPP::datadriven::LearnerMode::LEARNCOMPARE;
+    v = sgpp::datadriven::LearnerMode::LEARNCOMPARE;
   } else if (s.compare("LEARNTEST") == 0) {
-    v = SGPP::datadriven::LearnerMode::LEARNTEST;
+    v = sgpp::datadriven::LearnerMode::LEARNTEST;
   } else {
     throw boost::program_options::validation_error(
         boost::program_options::validation_error::invalid_option_value);
   }
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 int main(int argc, char* argv[]) {
   // std::string fileName = "debugging.arff";
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
 
   std::string testFileName = "";
 
-  SGPP::datadriven::LearnerMode learnerMode = SGPP::datadriven::LearnerMode::LEARN;
+  sgpp::datadriven::LearnerMode learnerMode = sgpp::datadriven::LearnerMode::LEARN;
 
   // only relevant for LEARNTEST-mode
   bool isRegression = true;
@@ -149,15 +149,15 @@ int main(int argc, char* argv[]) {
 
   bool verbose = true;
 
-  SGPP::base::RegularGridConfiguration gridConfig;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigRefine;
-  SGPP::solver::SLESolverConfiguration SLESolverConfigFinal;
-  SGPP::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::RegularGridConfiguration gridConfig;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
+  sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
+  sgpp::base::AdpativityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;    // dim is inferred from the data
   gridConfig.level_ = 7;  // base level
-  gridConfig.type_ = SGPP::base::GridType::Linear;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // setup adaptivity
   adaptConfig.maxLevelType_ = false;
@@ -170,19 +170,19 @@ int main(int argc, char* argv[]) {
   SLESolverConfigRefine.eps_ = 0;
   SLESolverConfigRefine.maxIterations_ = 5;
   SLESolverConfigRefine.threshold_ = -1.0;
-  SLESolverConfigRefine.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigRefine.type_ = sgpp::solver::SLESolverType::CG;
 
   // setup solver for final step
   SLESolverConfigFinal.eps_ = 0;
   SLESolverConfigFinal.maxIterations_ = 5;
   SLESolverConfigFinal.threshold_ = -1.0;
-  SLESolverConfigFinal.type_ = SGPP::solver::SLESolverType::CG;
+  SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
   // operation type
-  SGPP::datadriven::OperationMultipleEvalType type =
-      SGPP::datadriven::OperationMultipleEvalType::DEFAULT;
-  SGPP::datadriven::OperationMultipleEvalSubType subType =
-      SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT;
+  sgpp::datadriven::OperationMultipleEvalType type =
+      sgpp::datadriven::OperationMultipleEvalType::DEFAULT;
+  sgpp::datadriven::OperationMultipleEvalSubType subType =
+      sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT;
 
   // parse command line options
   boost::program_options::options_description description("Allowed options");
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
           "lambda", boost::program_options::value<double>(&lambda),
           "regularization parameter for learning")(
           "verbose", boost::program_options::value<bool>(&verbose), "do verbose learning")(
-          "learnerMode", boost::program_options::value<SGPP::datadriven::LearnerMode>(&learnerMode),
+          "learnerMode", boost::program_options::value<sgpp::datadriven::LearnerMode>(&learnerMode),
           "mode of operation: LEARN -> only learning (for performance tests), "
           "LEARNTEST -> learn and use a test dataset, LEARNCOMPARE -> learn "
           "and compare with a reference implementation and compare evaluations")
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
       // grid setup options
       ("grid.level", boost::program_options::value<int>(&gridConfig.level_),
        "level of the initial regular grid")(
-          "grid.type", boost::program_options::value<SGPP::base::GridType>(&gridConfig.type_),
+          "grid.type", boost::program_options::value<sgpp::base::GridType>(&gridConfig.type_),
           "type of the grid to be used")
 
       // adaptivity options
@@ -222,47 +222,47 @@ int main(int argc, char* argv[]) {
           boost::program_options::value<size_t>(&adaptConfig.numRefinements_),
           "number of refinement steps")(
           "adaptConfig.percent",
-          boost::program_options::value<SGPP::float_t>(&adaptConfig.percent_),
+          boost::program_options::value<double>(&adaptConfig.percent_),
           "maximum number of grid points in percent of the size of the grid "
           "that are considered for refinement")(
           "adaptConfig.threshold",
-          boost::program_options::value<SGPP::float_t>(&adaptConfig.threshold_),
+          boost::program_options::value<double>(&adaptConfig.threshold_),
           "minimum surplus value for a grid point to be considered for "
           "refinement")
 
       // options for the solver during refinement
       ("solverRefine.eps",
-       boost::program_options::value<SGPP::float_t>(&SLESolverConfigRefine.eps_),
+       boost::program_options::value<double>(&SLESolverConfigRefine.eps_),
        "error for early aborting training (set to 0 to disable)")(
           "solverRefine.maxIterations",
           boost::program_options::value<size_t>(&SLESolverConfigRefine.maxIterations_),
           "maximum number of iterations before the training is stopped")(
           "solverRefine.threshold",
-          boost::program_options::value<SGPP::float_t>(&SLESolverConfigRefine.threshold_),
+          boost::program_options::value<double>(&SLESolverConfigRefine.threshold_),
           "early abort solver if this residual threshold is reached")(
           "solverRefine.type",
-          boost::program_options::value<SGPP::solver::SLESolverType>(&SLESolverConfigRefine.type_),
+          boost::program_options::value<sgpp::solver::SLESolverType>(&SLESolverConfigRefine.type_),
           "the kind of solver to use")
 
       // options for the solver in the final step
-      ("solverFinal.eps", boost::program_options::value<SGPP::float_t>(&SLESolverConfigFinal.eps_),
+      ("solverFinal.eps", boost::program_options::value<double>(&SLESolverConfigFinal.eps_),
        "error for early aborting training (set to 0 to disable)")(
           "solverFinal.maxIterations",
           boost::program_options::value<size_t>(&SLESolverConfigFinal.maxIterations_),
           "maximum number of iterations before the training is stopped")(
           "solverFinal.threshold",
-          boost::program_options::value<SGPP::float_t>(&SLESolverConfigRefine.threshold_),
+          boost::program_options::value<double>(&SLESolverConfigRefine.threshold_),
           "early abort solver if this residual threshold is reached")(
           "solverFinal.type",
-          boost::program_options::value<SGPP::solver::SLESolverType>(&SLESolverConfigFinal.type_),
+          boost::program_options::value<sgpp::solver::SLESolverType>(&SLESolverConfigFinal.type_),
           "the kind of solver to use")
 
       // options for the implementation type
       ("operation.type",
-       boost::program_options::value<SGPP::datadriven::OperationMultipleEvalType>(&type),
+       boost::program_options::value<sgpp::datadriven::OperationMultipleEvalType>(&type),
        "implementation type of the operation")(
           "operation.subType",
-          boost::program_options::value<SGPP::datadriven::OperationMultipleEvalSubType>(&subType),
+          boost::program_options::value<sgpp::datadriven::OperationMultipleEvalSubType>(&subType),
           "implementation sub type of the operation");
 
   boost::program_options::variables_map variables_map;
@@ -282,7 +282,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if (learnerMode == SGPP::datadriven::LearnerMode::LEARNCOMPARE) {
+  if (learnerMode == sgpp::datadriven::LearnerMode::LEARNCOMPARE) {
     std::ifstream testFile(testFileName);
     if (!testFile.good()) {
       std::cout << "test file not found" << std::endl;
@@ -290,22 +290,22 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  SGPP::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
+  sgpp::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
                                         adaptConfig, lambda, verbose);
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(type, subType);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(type, subType);
 
-  if (learnerMode == SGPP::datadriven::LearnerMode::LEARN) {
+  if (learnerMode == sgpp::datadriven::LearnerMode::LEARN) {
     // only execute learning (no comparisons or tests, for performance
     // measurements)
     learner.learn(configuration, trainingFileName, isRegression);
-  } else if (learnerMode == SGPP::datadriven::LearnerMode::LEARNCOMPARE) {
+  } else if (learnerMode == sgpp::datadriven::LearnerMode::LEARNCOMPARE) {
     // execute learning with the specified configuration and use the
     // implementation from base as comparison
     // result grids are compared by sampling the domain (again with a grid) and
     // comparing the evaluated values
     learner.learnAndCompare(configuration, trainingFileName, 8);
-  } else if (learnerMode == SGPP::datadriven::LearnerMode::LEARNTEST) {
+  } else if (learnerMode == sgpp::datadriven::LearnerMode::LEARNTEST) {
     // test the learned function with a test dataset (no cross-validation yet)
     learner.learnAndTest(configuration, trainingFileName, testFileName, isRegression);
   }

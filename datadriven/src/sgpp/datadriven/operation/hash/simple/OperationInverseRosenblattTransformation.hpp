@@ -10,7 +10,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /**
@@ -44,5 +44,5 @@ class OperationInverseRosenblattTransformation {
                                 base::DataMatrix* points, size_t dim_start) = 0;
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif /* OPERATIONINVERSEROSENBLATTTRANSFORMATION_HPP */

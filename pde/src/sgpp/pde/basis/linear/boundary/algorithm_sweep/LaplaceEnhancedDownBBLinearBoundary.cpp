@@ -7,29 +7,29 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 LaplaceEnhancedDownBBLinearBoundary::LaplaceEnhancedDownBBLinearBoundary(
-    SGPP::base::GridStorage* storage)
+    sgpp::base::GridStorage* storage)
     : LaplaceEnhancedDownBBLinear(storage) {}
 
 LaplaceEnhancedDownBBLinearBoundary::~LaplaceEnhancedDownBBLinearBoundary() {}
 
-void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& source,
-                                                     SGPP::base::DataMatrix& result,
+void LaplaceEnhancedDownBBLinearBoundary::operator()(sgpp::base::DataMatrix& source,
+                                                     sgpp::base::DataMatrix& result,
                                                      grid_iterator& index, size_t dim) {
   q_ = this->boundingBox->getIntervalWidth(this->algoDims[dim]);
   t_ = this->boundingBox->getIntervalOffset(this->algoDims[dim]);
-  float_t q_reci = 1.0 / q_;
+  double q_reci = 1.0 / q_;
 
-  //    h_table_ = new float_t[MAX_TABLE_DEPTH+1];
-  //    grad_table_ = new float_t[MAX_TABLE_DEPTH+1];
+  //    h_table_ = new double[MAX_TABLE_DEPTH+1];
+  //    grad_table_ = new double[MAX_TABLE_DEPTH+1];
   //
   //    for (int i = 0; i <= MAX_TABLE_DEPTH; i++)
   //    {
-  //        h_table_[i] = 1.0/static_cast<float_t>(1<<i);
-  //        grad_table_[i] = (static_cast<float_t>(1<<(i+1)))/q;
+  //        h_table_[i] = 1.0/static_cast<double>(1<<i);
+  //        grad_table_[i] = (static_cast<double>(1<<(i+1)))/q;
   //    }
 
   ptr_source_ = source.getPointer();
@@ -53,10 +53,10 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& sou
     size_t i = 0;
 
     for (i = 0; i < this->numAlgoDims_ - 1; i += 2) {
-      float_t fl1 = source.get(seq_left, i);
-      float_t fl2 = source.get(seq_left, i + 1);
-      float_t fr1 = source.get(seq_right, i);
-      float_t fr2 = source.get(seq_right, i + 1);
+      double fl1 = source.get(seq_left, i);
+      double fl2 = source.get(seq_left, i + 1);
+      double fr1 = source.get(seq_right, i);
+      double fr2 = source.get(seq_right, i + 1);
 
       if (dim == i) {
         calcGradBoundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, q_reci);
@@ -101,8 +101,8 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& sou
     }
 
     for (; i < this->numAlgoDims_; i++) {
-      float_t fl = source.get(seq_left, i);
-      float_t fr = source.get(seq_right, i);
+      double fl = source.get(seq_left, i);
+      double fr = source.get(seq_right, i);
 
       if (dim == i) {
         calcGradBoundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, q_reci);
@@ -134,12 +134,12 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& sou
     size_t i = 0;
 
     for (i = 0; i < this->numAlgoDims_ - 1; i += 2) {
-      float_t fl1 = source.get(seq_left, i);
-      float_t fl2 = source.get(seq_left, i + 1);
-      float_t fr1 = source.get(seq_right, i);
-      float_t fr2 = source.get(seq_right, i + 1);
+      double fl1 = source.get(seq_left, i);
+      double fl2 = source.get(seq_left, i + 1);
+      double fr1 = source.get(seq_right, i);
+      double fr2 = source.get(seq_right, i + 1);
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__)
       __m128d fl_xmm = _mm_set_pd(fl2, fl1);
       __m128d fr_xmm = _mm_set_pd(fr2, fr1);
 #endif
@@ -180,7 +180,7 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& sou
         calcL2Boundary(fl1, fr1, seq_left, seq_right, i, cur_algo_dim_, 1.0);
         calcL2Boundary(fl2, fr2, seq_left, seq_right, i + 1, cur_algo_dim_, 1.0);
 #if 1
-#if defined(__SSE3__) && USE_DOUBLE_PRECISION == 1
+#if defined(__SSE3__)
 
         if (!index.hint()) {
           index.resetToLevelOne(dim);
@@ -236,8 +236,8 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& sou
     }
 
     for (; i < this->numAlgoDims_; i++) {
-      float_t fl = source.get(seq_left, i);
-      float_t fr = source.get(seq_right, i);
+      double fl = source.get(seq_left, i);
+      double fr = source.get(seq_right, i);
 
       if (dim == i) {
         calcGradBoundary(fl, fr, seq_left, seq_right, i, cur_algo_dim_, 1.0);
@@ -268,9 +268,9 @@ void LaplaceEnhancedDownBBLinearBoundary::operator()(SGPP::base::DataMatrix& sou
   }
 }
 
-void LaplaceEnhancedDownBBLinearBoundary::calcL2Boundary(float_t fl, float_t fr, size_t seq_left,
+void LaplaceEnhancedDownBBLinearBoundary::calcL2Boundary(double fl, double fr, size_t seq_left,
                                                          size_t seq_right, size_t dim,
-                                                         size_t algo_dim, float_t q) {
+                                                         size_t algo_dim, double q) {
   if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
     ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
   else
@@ -283,9 +283,9 @@ void LaplaceEnhancedDownBBLinearBoundary::calcL2Boundary(float_t fl, float_t fr,
         ((1.0 / 3.0) * fr * q) + ((1.0 / 6.0) * fl * q);
 }
 
-void LaplaceEnhancedDownBBLinearBoundary::calcGradBoundary(float_t fl, float_t fr, size_t seq_left,
+void LaplaceEnhancedDownBBLinearBoundary::calcGradBoundary(double fl, double fr, size_t seq_left,
                                                            size_t seq_right, size_t dim,
-                                                           size_t algo_dim, float_t q_reci) {
+                                                           size_t algo_dim, double q_reci) {
   if (this->boundingBox->hasDirichletBoundaryLeft(algo_dim))
     ptr_result_[(seq_left * this->numAlgoDims_) + dim] = 0.0;
   else
@@ -298,4 +298,4 @@ void LaplaceEnhancedDownBBLinearBoundary::calcGradBoundary(float_t fl, float_t f
 }
 
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

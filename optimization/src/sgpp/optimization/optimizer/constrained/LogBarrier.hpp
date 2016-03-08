@@ -14,7 +14,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
@@ -24,11 +24,11 @@ namespace optimizer {
 class LogBarrier : public ConstrainedOptimizer {
  public:
   /// default tolerance
-  static constexpr float_t DEFAULT_TOLERANCE = 1e-6;
+  static constexpr double DEFAULT_TOLERANCE = 1e-6;
   /// default barrier start value
-  static constexpr float_t DEFAULT_BARRIER_START_VALUE = 1.0;
+  static constexpr double DEFAULT_BARRIER_START_VALUE = 1.0;
   /// default barrier decrease factor
-  static constexpr float_t DEFAULT_BARRIER_DECREASE_FACTOR = 0.5;
+  static constexpr double DEFAULT_BARRIER_DECREASE_FACTOR = 0.5;
 
   /**
    * Constructor.
@@ -45,9 +45,9 @@ class LogBarrier : public ConstrainedOptimizer {
    */
   LogBarrier(ScalarFunction& f, ScalarFunctionGradient& fGradient, VectorFunction& g,
              VectorFunctionGradient& gGradient, size_t maxItCount = DEFAULT_N,
-             float_t tolerance = DEFAULT_TOLERANCE,
-             float_t barrierStartValue = DEFAULT_BARRIER_START_VALUE,
-             float_t barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+             double tolerance = DEFAULT_TOLERANCE,
+             double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
+             double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
 
   /**
    * Destructor.
@@ -69,32 +69,32 @@ class LogBarrier : public ConstrainedOptimizer {
   /**
    * @return tolerance
    */
-  float_t getTolerance() const;
+  double getTolerance() const;
 
   /**
    * @param tolerance tolerance
    */
-  void setTolerance(float_t tolerance);
+  void setTolerance(double tolerance);
 
   /**
    * @return barrier start value
    */
-  float_t getBarrierStartValue() const;
+  double getBarrierStartValue() const;
 
   /**
    * @param barrierStartValue barrier start value
    */
-  void setBarrierStartValue(float_t barrierStartValue);
+  void setBarrierStartValue(double barrierStartValue);
 
   /**
    * @return barrier decrease factor
    */
-  float_t getBarrierDecreaseFactor() const;
+  double getBarrierDecreaseFactor() const;
 
   /**
    * @param barrierDecreaseFactor barrier decrease factor
    */
-  void setBarrierDecreaseFactor(float_t barrierDecreaseFactor);
+  void setBarrierDecreaseFactor(double barrierDecreaseFactor);
 
   /**
    * @return vector in which the k-th entry indicates the number of
@@ -114,16 +114,16 @@ class LogBarrier : public ConstrainedOptimizer {
   /// inequality constraint function gradient
   VectorFunctionGradient& gGradient;
   /// tolerance
-  float_t theta;
+  double theta;
   /// barrier start value
-  float_t mu0;
+  double mu0;
   /// barrier decrease factor
-  float_t rhoMuMinus;
+  double rhoMuMinus;
   /// search history (inner iterations)
   std::vector<size_t> kHist;
 };
 }  // namespace optimizer
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_LOGBARRIER_HPP */

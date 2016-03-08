@@ -19,17 +19,17 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace finance {
 
 BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::
     BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP(
-        SGPP::base::Grid& SparseGrid, SGPP::base::DataVector& alpha, SGPP::base::DataVector& mu,
-        SGPP::base::DataVector& sigma, SGPP::base::DataMatrix& rho, float_t r, float_t TimestepSize,
-        std::string OperationMode, float_t dStrike, std::string option_type, bool bLogTransform,
-        bool useCoarsen, float_t coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
-        float_t refineThreshold, std::string refineMode,
-        SGPP::base::GridIndex::level_type refineMaxLevel)
+        sgpp::base::Grid& SparseGrid, sgpp::base::DataVector& alpha, sgpp::base::DataVector& mu,
+        sgpp::base::DataVector& sigma, sgpp::base::DataMatrix& rho, double r, double TimestepSize,
+        std::string OperationMode, double dStrike, std::string option_type, bool bLogTransform,
+        bool useCoarsen, double coarsenThreshold, std::string adaptSolveMode, int numCoarsenPoints,
+        double refineThreshold, std::string refineMode,
+        sgpp::base::GridIndex::level_type refineMaxLevel)
     : BlackScholesParabolicPDESolverSystemEuroAmer(
           SparseGrid, alpha, mu, sigma, rho, r, TimestepSize, OperationMode, dStrike, option_type,
           bLogTransform, useCoarsen, coarsenThreshold, adaptSolveMode, numCoarsenPoints,
@@ -39,7 +39,7 @@ BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::
     ~BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP() {}
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
@@ -50,17 +50,17 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInne
   omp_init_lock(&DeltaMutex);
   omp_init_lock(&GammaMutex);
 #endif
-  SGPP::base::DataVector DeltaResult(result);
-  SGPP::base::DataVector GammaResult(result);
+  sgpp::base::DataVector DeltaResult(result);
+  sgpp::base::DataVector GammaResult(result);
 
 // Apply the riskfree rate
 #pragma omp task shared(alpha, result)
   {
     if (this->r != 0.0) {
-      SGPP::base::DataVector myResult(result.getSize());
+      sgpp::base::DataVector myResult(result.getSize());
 
       /// discuss methods in order to avoid this cast
-      ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
+      ((sgpp::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, myResult);
 
       // no semaphore needed
       result.axpy((-1.0) * this->r, myResult);
@@ -71,10 +71,10 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInne
   for (size_t i = 0; i < nDims; i++) {
 #pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
     {
-      SGPP::base::DataVector myResult(result.getSize());
+      sgpp::base::DataVector myResult(result.getSize());
 
       /// discuss methods in order to avoid this cast
-      ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaInner))
+      ((sgpp::pde::UpDownOneOpDim*)(this->OpDeltaInner))
           ->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 // semaphore
@@ -95,10 +95,10 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInne
       if (j <= i) {
 #pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
         {
-          SGPP::base::DataVector myResult(result.getSize());
+          sgpp::base::DataVector myResult(result.getSize());
 
           /// discuss methods in order to avoid this cast
-          ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaInner))
+          ((sgpp::pde::UpDownTwoOpDims*)(this->OpGammaInner))
               ->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
 // semaphore
@@ -127,7 +127,7 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorInne
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
   result.setAll(0.0);
 
   std::vector<size_t> algoDims = this->BoundGrid->getStorage().getAlgorithmicDimensions();
@@ -138,17 +138,17 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComp
   omp_init_lock(&DeltaMutex);
   omp_init_lock(&GammaMutex);
 #endif
-  SGPP::base::DataVector DeltaResult(result);
-  SGPP::base::DataVector GammaResult(result);
+  sgpp::base::DataVector DeltaResult(result);
+  sgpp::base::DataVector GammaResult(result);
 
 // Apply the riskfree rate
 #pragma omp task shared(alpha, result)
   {
     if (this->r != 0.0) {
-      SGPP::base::DataVector myResult(result.getSize());
+      sgpp::base::DataVector myResult(result.getSize());
 
       /// discuss methods in order to avoid this cast
-      ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
+      ((sgpp::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, myResult);
 
       // no semaphore needed
       result.axpy((-1.0) * this->r, myResult);
@@ -159,10 +159,10 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComp
   for (size_t i = 0; i < nDims; i++) {
 #pragma omp task firstprivate(i) shared(alpha, DeltaMutex, DeltaResult, result, algoDims)
     {
-      SGPP::base::DataVector myResult(result.getSize());
+      sgpp::base::DataVector myResult(result.getSize());
 
       /// discuss methods in order to avoid this cast
-      ((SGPP::pde::UpDownOneOpDim*)(this->OpDeltaBound))
+      ((sgpp::pde::UpDownOneOpDim*)(this->OpDeltaBound))
           ->multParallelBuildingBlock(alpha, myResult, algoDims[i]);
 
 // semaphore
@@ -183,10 +183,10 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComp
       if (j <= i) {
 #pragma omp task firstprivate(i, j) shared(alpha, GammaMutex, GammaResult, result, algoDims)
         {
-          SGPP::base::DataVector myResult(result.getSize());
+          sgpp::base::DataVector myResult(result.getSize());
 
           /// discuss methods in order to avoid this cast
-          ((SGPP::pde::UpDownTwoOpDims*)(this->OpGammaBound))
+          ((sgpp::pde::UpDownTwoOpDims*)(this->OpGammaBound))
               ->multParallelBuildingBlock(alpha, myResult, algoDims[i], algoDims[j]);
 
 // semaphore
@@ -215,36 +215,36 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyLOperatorComp
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyMassMatrixInner(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
-  ((SGPP::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
+  ((sgpp::pde::StdUpDown*)(this->OpLTwoInner))->multParallelBuildingBlock(alpha, temp);
 
   result.add(temp);
 }
 
 void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::applyMassMatrixComplete(
-    SGPP::base::DataVector& alpha, SGPP::base::DataVector& result) {
-  SGPP::base::DataVector temp(alpha.getSize());
+    sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  sgpp::base::DataVector temp(alpha.getSize());
 
   result.setAll(0.0);
 
-  ((SGPP::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
+  ((sgpp::pde::StdUpDown*)(this->OpLTwoBound))->multParallelBuildingBlock(alpha, temp);
 
   result.add(temp);
 }
 
-void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::mult(SGPP::base::DataVector& alpha,
-                                                                   SGPP::base::DataVector& result) {
+void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::mult(sgpp::base::DataVector& alpha,
+                                                                   sgpp::base::DataVector& result) {
   if (this->tOperationMode == "ExEul") {
     applyMassMatrixInner(alpha, result);
   } else if (this->tOperationMode == "ImEul") {
     result.setAll(0.0);
 
-    SGPP::base::DataVector temp(result.getSize());
-    SGPP::base::DataVector temp2(result.getSize());
+    sgpp::base::DataVector temp(result.getSize());
+    sgpp::base::DataVector temp2(result.getSize());
 
 #pragma omp parallel shared(alpha, result)
     {
@@ -265,8 +265,8 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::mult(SGPP::base::D
   } else if (this->tOperationMode == "CrNic") {
     result.setAll(0.0);
 
-    SGPP::base::DataVector temp(result.getSize());
-    SGPP::base::DataVector temp2(result.getSize());
+    sgpp::base::DataVector temp(result.getSize());
+    sgpp::base::DataVector temp2(result.getSize());
 
 #pragma omp parallel shared(alpha, result)
     {
@@ -289,21 +289,21 @@ void BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::mult(SGPP::base::D
 
     applyMassMatrixInner(alpha, result);
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         " BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::mult : An unknown operation "
         "mode was specified!");
   }
 }
 
-SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::generateRHS() {
-  SGPP::base::DataVector rhs_complete(this->alpha_complete->getSize());
+sgpp::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP::generateRHS() {
+  sgpp::base::DataVector rhs_complete(this->alpha_complete->getSize());
 
   if (this->tOperationMode == "ExEul") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(rhs_complete.getSize());
-    SGPP::base::DataVector temp2(rhs_complete.getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector temp(rhs_complete.getSize());
+    sgpp::base::DataVector temp2(rhs_complete.getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
 
 #pragma omp parallel shared(myAlpha, temp, temp2)
     {
@@ -328,9 +328,9 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
   } else if (this->tOperationMode == "CrNic") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(rhs_complete.getSize());
-    SGPP::base::DataVector temp2(rhs_complete.getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector temp(rhs_complete.getSize());
+    sgpp::base::DataVector temp2(rhs_complete.getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
 
 #pragma omp parallel shared(myAlpha, temp, temp2)
     {
@@ -351,9 +351,9 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
   } else if (this->tOperationMode == "AdBas") {
     rhs_complete.setAll(0.0);
 
-    SGPP::base::DataVector temp(this->alpha_complete->getSize());
-    SGPP::base::DataVector myAlpha(*this->alpha_complete);
-    SGPP::base::DataVector myOldAlpha(*this->alpha_complete_old);
+    sgpp::base::DataVector temp(this->alpha_complete->getSize());
+    sgpp::base::DataVector myAlpha(*this->alpha_complete);
+    sgpp::base::DataVector myOldAlpha(*this->alpha_complete_old);
 
     applyMassMatrixComplete(*this->alpha_complete, temp);
 
@@ -371,7 +371,7 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
     rhs_complete.add(temp);
     temp.mult((2.0) + this->TimestepSize / this->TimestepSize_old);
 
-    SGPP::base::DataVector temp_old(this->alpha_complete->getSize());
+    sgpp::base::DataVector temp_old(this->alpha_complete->getSize());
 
     applyMassMatrixComplete(*this->alpha_complete_old, temp_old);
 
@@ -390,7 +390,7 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
     temp.sub(temp_old);
     rhs_complete.axpy((0.5) * this->TimestepSize, temp);
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
         "operation mode was specified!");
   }
@@ -399,8 +399,8 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
   this->startTimestep();
 
   // Now apply the boundary ansatzfunctions to the inner ansatzfunctions
-  SGPP::base::DataVector result_complete(this->alpha_complete->getSize());
-  SGPP::base::DataVector alpha_bound(*this->alpha_complete);
+  sgpp::base::DataVector result_complete(this->alpha_complete->getSize());
+  sgpp::base::DataVector alpha_bound(*this->alpha_complete);
 
   result_complete.setAll(0.0);
 
@@ -410,8 +410,8 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
   if (this->tOperationMode == "ExEul") {
     applyMassMatrixComplete(alpha_bound, result_complete);
   } else if (this->tOperationMode == "ImEul") {
-    SGPP::base::DataVector temp(alpha_bound.getSize());
-    SGPP::base::DataVector temp2(alpha_bound.getSize());
+    sgpp::base::DataVector temp(alpha_bound.getSize());
+    sgpp::base::DataVector temp2(alpha_bound.getSize());
 
 #pragma omp parallel shared(alpha_bound, temp, temp2)
     {
@@ -430,8 +430,8 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
     result_complete.add(temp);
     result_complete.axpy((-1.0) * this->TimestepSize, temp2);
   } else if (this->tOperationMode == "CrNic") {
-    SGPP::base::DataVector temp(alpha_bound.getSize());
-    SGPP::base::DataVector temp2(alpha_bound.getSize());
+    sgpp::base::DataVector temp(alpha_bound.getSize());
+    sgpp::base::DataVector temp2(alpha_bound.getSize());
 
 #pragma omp parallel shared(alpha_bound, temp, temp2)
     {
@@ -452,7 +452,7 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
   } else if (this->tOperationMode == "AdBas") {
     applyMassMatrixComplete(alpha_bound, result_complete);
   } else {
-    throw SGPP::base::algorithm_exception(
+    throw sgpp::base::algorithm_exception(
         "BlackScholesParabolicPDESolverSystemEuropeanParallelOMP::generateRHS : An unknown "
         "operation mode was specified!");
   }
@@ -463,10 +463,10 @@ SGPP::base::DataVector* BlackScholesParabolicPDESolverSystemEuroAmerParallelOMP:
     delete this->rhs;
   }
 
-  this->rhs = new SGPP::base::DataVector(this->alpha_inner->getSize());
+  this->rhs = new sgpp::base::DataVector(this->alpha_inner->getSize());
   this->GridConverter->calcInnerCoefs(rhs_complete, *this->rhs);
 
   return this->rhs;
 }
 }  // namespace finance
-}  // namespace SGPP
+}  // namespace sgpp

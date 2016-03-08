@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -146,11 +146,11 @@ void writeGrid(const std::string& filename, const base::GridStorage& gridStorage
  * size_t   d (dimension)
  * for j = 0, ..., N-1
  *     for t = 0, ..., d-1
- *         float_t          grid_point[j].getCoord(t)
+ *         double          grid_point[j].getCoord(t)
  *         unsigned int     grid_point[j].level(t)
  *         unsigned int     grid_point[j].index(t)
  *     end
- *     float_t   function_value[j]
+ *     double   function_value[j]
  * end
  * </pre>
  *
@@ -198,7 +198,7 @@ void writeMatrix(const std::string& filename, base::DataMatrix& A);
  * size_t       m
  * size_t       n
  * char[16]     type string (one of "uint8", "uint16", "uint32",
- *              "uint64", "float_t", "string", or "other",
+ *              "uint64", "double", "string", or "other",
  *              right-padded with spaces to 16 characters)
  * for i = 0, ..., m*n - 1
  *     T        A[i] (size depending on template parameter,
@@ -325,6 +325,6 @@ void readVector(const std::string& filename, std::vector<T>& x) {
 }
 }  // namespace file_io
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_FILEIO_HPP */

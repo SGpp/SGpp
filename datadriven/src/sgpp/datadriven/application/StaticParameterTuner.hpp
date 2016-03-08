@@ -18,7 +18,7 @@
 #include "sgpp/datadriven/application/LearnerScenario.hpp"
 #include "sgpp/datadriven/operation/hash/simple/DatadrivenOperationCommon.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 class StaticParameterTuner {
@@ -28,14 +28,14 @@ class StaticParameterTuner {
   bool collectStatistics;
   std::string statisticsFolder;
 
-  std::vector<std::tuple<SGPP::base::OCLOperationConfiguration, double, double>> statistics;
+  std::vector<std::tuple<sgpp::base::OCLOperationConfiguration, double, double>> statistics;
 
-  SGPP::base::OCLOperationConfiguration fixedParameters;
+  sgpp::base::OCLOperationConfiguration fixedParameters;
 
   std::vector<TunableParameter> tunableParameters;
 
-  double evaluateSetup(SGPP::datadriven::LearnerScenario &scenario,
-                       SGPP::base::OCLOperationConfiguration &currentParameters,
+  double evaluateSetup(sgpp::datadriven::LearnerScenario &scenario,
+                       sgpp::base::OCLOperationConfiguration &currentParameters,
                        const std::string &kernelName, double &duration, double &GFlops);
 
   void writeStatisticsToFile(const std::string &statisticsFileName, const std::string &platformName,
@@ -44,20 +44,20 @@ class StaticParameterTuner {
   void verifyLearned(TestsetConfiguration &testsetConfiguration, base::DataVector &alpha);
 
  public:
-  StaticParameterTuner(SGPP::base::OCLOperationConfiguration &fixedParameters,
+  StaticParameterTuner(sgpp::base::OCLOperationConfiguration &fixedParameters,
                        bool collectStatistics = false, bool verbose = false);
 
   void setStatisticsFolder(const std::string &statisticsFolder);
 
   void addParameter(const std::string &name, const std::vector<std::string> &valueRange);
 
-  SGPP::base::OCLOperationConfiguration tuneEverything(SGPP::datadriven::LearnerScenario &scenario,
+  sgpp::base::OCLOperationConfiguration tuneEverything(sgpp::datadriven::LearnerScenario &scenario,
                                                        const std::string &kernelName);
 
-  void tuneParameters(SGPP::datadriven::LearnerScenario &scenario, const std::string &platformName,
+  void tuneParameters(sgpp::datadriven::LearnerScenario &scenario, const std::string &platformName,
                       const std::string &deviceName, const std::string &kernelName);
 };
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif

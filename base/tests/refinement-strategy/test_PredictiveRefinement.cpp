@@ -17,10 +17,10 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridIndex.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
-using SGPP::base::DataMatrix;
-using SGPP::base::DataVector;
-using SGPP::base::Grid;
-using SGPP::base::GridGenerator;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
 
 BOOST_AUTO_TEST_SUITE(TestPredictiveRefinement)
 

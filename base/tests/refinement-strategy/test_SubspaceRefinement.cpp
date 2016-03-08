@@ -14,13 +14,13 @@
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include "sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
 
-using SGPP::base::DataVector;
-using SGPP::base::HashGenerator;
-using SGPP::base::HashGridIndex;
-using SGPP::base::HashGridStorage;
-using SGPP::base::HashRefinement;
-using SGPP::base::SubspaceRefinement;
-using SGPP::base::SurplusRefinementFunctor;
+using sgpp::base::DataVector;
+using sgpp::base::HashGenerator;
+using sgpp::base::HashGridIndex;
+using sgpp::base::HashGridStorage;
+using sgpp::base::HashRefinement;
+using sgpp::base::SubspaceRefinement;
+using sgpp::base::SurplusRefinementFunctor;
 
 BOOST_AUTO_TEST_SUITE(TestSubspaceRefinement)
 

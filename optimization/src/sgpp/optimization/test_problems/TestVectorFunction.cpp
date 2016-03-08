@@ -6,7 +6,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/TestVectorFunction.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
@@ -31,4 +31,4 @@ void TestVectorFunction::setDisplacement(const base::DataVector& displacement) {
 }
 }  // namespace test_problems
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp

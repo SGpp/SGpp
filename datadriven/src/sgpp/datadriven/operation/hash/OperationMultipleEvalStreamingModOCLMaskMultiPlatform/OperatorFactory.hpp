@@ -11,12 +11,12 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include "../OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperationMultiEvalStreamingModOCLMaskMultiPlatform.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 base::OperationMultipleEval* createStreamingModOCLMaskMultiPlatformConfigured(
     base::Grid& grid, base::DataMatrix& dataset,
-    SGPP::datadriven::OperationMultipleEvalConfiguration& configuration);
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

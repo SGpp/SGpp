@@ -16,17 +16,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 template <typename OCLBasisType>
 class SPOCLKernel {
  public:
   static const KernelType kernelType = OCLBasisType::kernelType;
-  inline void mult(SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
-                   SGPP::base::DataMatrixSP* mask, SGPP::base::DataMatrixSP* offset,
-                   SGPP::base::DataMatrixSP* dataset, SGPP::base::DataVectorSP& alpha,
-                   SGPP::base::DataVectorSP& result, const size_t start_index_grid,
+  inline void mult(sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+                   sgpp::base::DataMatrixSP* mask, sgpp::base::DataMatrixSP* offset,
+                   sgpp::base::DataMatrixSP* dataset, sgpp::base::DataVectorSP& alpha,
+                   sgpp::base::DataVectorSP& result, const size_t start_index_grid,
                    const size_t end_index_grid, const size_t start_index_data,
                    const size_t end_index_data) {
 #pragma omp master
@@ -37,11 +37,11 @@ class SPOCLKernel {
     }
   }
 
-  inline void multTranspose(SGPP::base::DataMatrixSP* level, SGPP::base::DataMatrixSP* index,
-                            SGPP::base::DataMatrixSP* mask,    // unused for this specialization
-                            SGPP::base::DataMatrixSP* offset,  // unused for this specialization
-                            SGPP::base::DataMatrixSP* dataset, SGPP::base::DataVectorSP& source,
-                            SGPP::base::DataVectorSP& result, const size_t start_index_grid,
+  inline void multTranspose(sgpp::base::DataMatrixSP* level, sgpp::base::DataMatrixSP* index,
+                            sgpp::base::DataMatrixSP* mask,    // unused for this specialization
+                            sgpp::base::DataMatrixSP* offset,  // unused for this specialization
+                            sgpp::base::DataMatrixSP* dataset, sgpp::base::DataVectorSP& source,
+                            sgpp::base::DataVectorSP& result, const size_t start_index_grid,
                             const size_t end_index_grid, const size_t start_index_data,
                             const size_t end_index_data) {
 #ifdef _OPENMP
@@ -88,6 +88,6 @@ class SPOCLKernel {
   SPOCLKernelImpl<OCLBasisType> m_oclkernel;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // SPOCLKERNEL_HPP

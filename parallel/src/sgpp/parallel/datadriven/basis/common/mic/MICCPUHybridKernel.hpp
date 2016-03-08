@@ -23,7 +23,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 
 template <typename CPUImplementation, typename MICImplementation>
@@ -31,16 +31,16 @@ class MICCPUHybridKernel {
  public:
   MICCPUHybridKernel() {
     if ((MICImplementation::getChunkDataPoints() % CPUImplementation::getChunkDataPoints()) != 0) {
-      throw SGPP::base::operation_exception(
+      throw sgpp::base::operation_exception(
           "For MIC Hybrid Kernel: the chunksize of the MIC Kernel needs to be a multiple of the "
           "chunksize of the CPU Kernel!");
     }
 
     std::cout << "Chunksize of MIC Kernel is " << MICImplementation::getChunkDataPoints()
               << std::endl;
-    tuningMult = new SGPP::parallel::DynamicTwoPartitionAutoTuning(
+    tuningMult = new sgpp::parallel::DynamicTwoPartitionAutoTuning(
         1, MICImplementation::getChunkDataPoints(), 10);
-    tuningMultTrans = new SGPP::parallel::DynamicTwoPartitionAutoTuning(1, 1, 10);
+    tuningMultTrans = new sgpp::parallel::DynamicTwoPartitionAutoTuning(1, 1, 10);
 
     int num_threads = 1;
 #pragma omp parallel
@@ -48,7 +48,7 @@ class MICCPUHybridKernel {
 
     if (num_threads == 1) {
       std::cout << "MIC Hybrid Kernel needs to be executed with at least two threads." << std::endl;
-      throw SGPP::base::operation_exception(
+      throw sgpp::base::operation_exception(
           "MIC Hybrid Kernel needs to be executed with at least two threads.");
     }
 
@@ -64,10 +64,10 @@ class MICCPUHybridKernel {
 
   static const KernelType kernelType =
       CPUImplementation::kernelType;  // should match MICImplementation::kernelType
-  inline void mult(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                   SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                   SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-                   SGPP::base::DataVector& result, const size_t start_index_grid,
+  inline void mult(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                   sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                   sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+                   sgpp::base::DataVector& result, const size_t start_index_grid,
                    const size_t end_index_grid, const size_t start_index_data,
                    const size_t end_index_data) {
     int tid = omp_get_thread_num();
@@ -159,7 +159,7 @@ class MICCPUHybridKernel {
       size_t cpu_size = end_index_data - end_index_data_mic;
 
       if ((cpu_size % CPUImplementation::getChunkDataPoints()) != 0) {
-        throw SGPP::base::operation_exception(
+        throw sgpp::base::operation_exception(
             "MIC Blocksize must be multiple of CPU Blocksize for Hybrid to function correctly");
       }
 
@@ -197,10 +197,10 @@ class MICCPUHybridKernel {
 #pragma omp barrier
   }
 
-  inline void multTranspose(SGPP::base::DataMatrix* level, SGPP::base::DataMatrix* index,
-                            SGPP::base::DataMatrix* mask, SGPP::base::DataMatrix* offset,
-                            SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& source,
-                            SGPP::base::DataVector& result, const size_t start_index_grid,
+  inline void multTranspose(sgpp::base::DataMatrix* level, sgpp::base::DataMatrix* index,
+                            sgpp::base::DataMatrix* mask, sgpp::base::DataMatrix* offset,
+                            sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& source,
+                            sgpp::base::DataVector& result, const size_t start_index_grid,
                             const size_t end_index_grid, const size_t start_index_data,
                             const size_t end_index_data) {
     size_t grid_range = end_index_grid - start_index_grid;
@@ -319,15 +319,15 @@ class MICCPUHybridKernel {
  private:
   double* cpu_times;
   MICImplementation m_oclkernel;
-  SGPP::base::SGppStopwatch myTimer;
+  sgpp::base::SGppStopwatch myTimer;
 
   /// Autotuning object for mult routine
-  SGPP::parallel::TwoPartitionAutoTuning* tuningMult;
+  sgpp::parallel::TwoPartitionAutoTuning* tuningMult;
   /// Autotuning object for mult trans routine
-  SGPP::parallel::TwoPartitionAutoTuning* tuningMultTrans;
+  sgpp::parallel::TwoPartitionAutoTuning* tuningMultTrans;
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif  // _OPENMP
 

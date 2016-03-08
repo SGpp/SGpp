@@ -7,11 +7,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace pde {
 
 ParabolicPDESolver::ParabolicPDESolver() : PDESolver() {}
 
 ParabolicPDESolver::~ParabolicPDESolver() {}
 }  // namespace pde
-}  // namespace SGPP
+}  // namespace sgpp

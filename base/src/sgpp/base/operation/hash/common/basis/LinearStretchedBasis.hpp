@@ -15,7 +15,7 @@
 #include <algorithm>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
@@ -35,7 +35,7 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
    * Evaluate a basis function.
    * Has a dependence on the absolute position of grid point and support.
 
-  float_t eval(LT level, IT index, float_t p)
+  double eval(LT level, IT index, double p)
   {
     return 1.0 - fabs((1<<level) * p - index);
   }
@@ -47,7 +47,7 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
    * This version catches errors, that occur if a basis function
    * is evaluated outside its domain
 
-  float_t evalSave(LT level, IT index, float_t p)
+  double evalSave(LT level, IT index, double p)
   {
     return std::max(1.0 - fabs((1<<level) * p - index), 0.0);
   }*/
@@ -57,7 +57,7 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
    * Has a dependence on the position of two grid points with values 1 and 0 and the
    * support position
    */
-  float_t stretchedEval(float_t p, float_t pos0, float_t pos1) {
+  double stretchedEval(double p, double pos0, double pos1) {
     return (p - pos0) / (pos1 - pos0);
   }
 };
@@ -66,6 +66,6 @@ class LinearStretchedBasis: public LinearBasis<LT, IT> {
 typedef LinearStretchedBasis<unsigned int, unsigned int> SLinearStretchedBase;
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* LINEARSTRETCHED_BASE_HPP */

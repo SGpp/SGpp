@@ -22,16 +22,15 @@
 #include "sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp"
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 #if defined(__SSE3__) && !defined(__AVX__) && !defined(__AVX512F__)
 void OperationMultiEvalModMaskStreaming::multImpl(
     std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
-    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    std::vector<double>& offset, sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+    sgpp::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
     const size_t start_index_data, const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION == 1
   double* ptrLevel = level.data();
   double* ptrIndex = index.data();
   double* ptrMask = mask.data();
@@ -151,21 +150,15 @@ void OperationMultiEvalModMaskStreaming::multImpl(
       }
     }
   }
-#else  /* USE_DOUBLE_PRECISION */
-  throw std::logic_error(
-      "Not implemented when compiling with single "
-      "precision support.");
-#endif /* USE_DOUBLE_PRECISION */
 }
 #endif
 
 #if defined(__SSE3__) && defined(__AVX__) && !defined(__AVX512F__)
 void OperationMultiEvalModMaskStreaming::multImpl(
     std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
-    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    std::vector<double>& offset, sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+    sgpp::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
     const size_t start_index_data, const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION == 1
   double* ptrLevel = level.data();
   double* ptrIndex = index.data();
   double* ptrMask = mask.data();
@@ -294,21 +287,15 @@ void OperationMultiEvalModMaskStreaming::multImpl(
       }
     }
   }
-#else  /* USE_DOUBLE_PRECISION */
-  throw std::logic_error(
-      "Not implemented when compiling with single "
-      "precision support.");
-#endif /* USE_DOUBLE_PRECISION */
 }
 #endif
 
 #if defined(__MIC__) || defined(__AVX512F__)
 void OperationMultiEvalModMaskStreaming::multImpl(
     std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
-    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    std::vector<double>& offset, sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+    sgpp::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
     const size_t start_index_data, const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION == 1
   double* ptrLevel = level.data();
   double* ptrIndex = index.data();
   double* ptrMask = mask.data();
@@ -608,21 +595,15 @@ void OperationMultiEvalModMaskStreaming::multImpl(
 #endif
     }
   }
-#else  /* USE_DOUBLE_PRECISION */
-  throw std::logic_error(
-      "Not implemented when compiling with single "
-      "precision support.");
-#endif /* USE_DOUBLE_PRECISION */
 }
 #endif
 
 #if !defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
 void OperationMultiEvalModMaskStreaming::multImpl(
     std::vector<double>& level, std::vector<double>& index, std::vector<double>& mask,
-    std::vector<double>& offset, SGPP::base::DataMatrix* dataset, SGPP::base::DataVector& alpha,
-    SGPP::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
+    std::vector<double>& offset, sgpp::base::DataMatrix* dataset, sgpp::base::DataVector& alpha,
+    sgpp::base::DataVector& result, const size_t start_index_grid, const size_t end_index_grid,
     const size_t start_index_data, const size_t end_index_data) {
-#if USE_DOUBLE_PRECISION == 1
   double* ptrLevel = level.data();
   double* ptrIndex = index.data();
   double* ptrMask = mask.data();
@@ -672,13 +653,8 @@ void OperationMultiEvalModMaskStreaming::multImpl(
       }
     }
   }
-#else  /* USE_DOUBLE_PRECISION */
-  throw std::logic_error(
-      "Not implemented when compiling with single "
-      "precision support.");
-#endif /* USE_DOUBLE_PRECISION */
 }
 #endif
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

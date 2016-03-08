@@ -12,7 +12,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 LinearStretchedGrid::LinearStretchedGrid(std::istream& istr) :
@@ -33,8 +33,8 @@ LinearStretchedGrid::LinearStretchedGrid(Stretching& BB) :
 LinearStretchedGrid::~LinearStretchedGrid() {
 }
 
-SGPP::base::GridType LinearStretchedGrid::getType() {
-  return SGPP::base::GridType::LinearStretched;
+sgpp::base::GridType LinearStretchedGrid::getType() {
+  return sgpp::base::GridType::LinearStretched;
 }
 
 const SBasis& LinearStretchedGrid::getBasis() {
@@ -55,4 +55,4 @@ GridGenerator& LinearStretchedGrid::getGenerator() {
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

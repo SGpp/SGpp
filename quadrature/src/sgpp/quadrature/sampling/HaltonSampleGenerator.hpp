@@ -13,7 +13,7 @@
 
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace quadrature {
 
 /**
@@ -41,19 +41,19 @@ class HaltonSampleGenerator : public SampleGenerator {
    *
    * @param sample DataVector storing the new generated sample vector.
    */
-  virtual void getSample(SGPP::base::DataVector& sample);
+  virtual void getSample(sgpp::base::DataVector& sample);
 
  private:
   size_t index;
   std::vector<size_t> baseVector;
-  std::vector<float_t> iVector;
-  std::vector<float_t> fVector;
-  std::vector<float_t> resultVector;
+  std::vector<double> iVector;
+  std::vector<double> fVector;
+  std::vector<double> resultVector;
   //
   std::uniform_int_distribution<std::uint64_t> distInt;
 };
 
 }  // namespace quadrature
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* HALTONSAMPLEGENERATOR_HPP */

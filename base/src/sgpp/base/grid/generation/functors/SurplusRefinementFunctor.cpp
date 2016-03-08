@@ -8,11 +8,11 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector& alpha,
-    size_t refinements_num, float_t threshold) : alpha(alpha),
+    size_t refinements_num, double threshold) : alpha(alpha),
   refinements_num(refinements_num), threshold(threshold) {
 }
 
@@ -20,14 +20,14 @@ SurplusRefinementFunctor::SurplusRefinementFunctor(DataVector& alpha,
 SurplusRefinementFunctor::~SurplusRefinementFunctor() {
 }
 
-float_t SurplusRefinementFunctor::operator()(GridStorage& storage,
+double SurplusRefinementFunctor::operator()(GridStorage& storage,
     size_t seq) const {
-  float_t val = fabs(alpha[seq]);
+  double val = fabs(alpha[seq]);
   // std::cout << seq << ", ";
   return val;
 }
 
-float_t SurplusRefinementFunctor::start() const {
+double SurplusRefinementFunctor::start() const {
   return 0.0;
 }
 
@@ -35,9 +35,9 @@ size_t SurplusRefinementFunctor::getRefinementsNum() const {
   return this->refinements_num;
 }
 
-float_t SurplusRefinementFunctor::getRefinementThreshold() const {
+double SurplusRefinementFunctor::getRefinementThreshold() const {
   return this->threshold;
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

@@ -11,7 +11,7 @@
 
 #include <cstddef>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -46,7 +46,7 @@ class SLE {
    * @param j     column index
    * @return      (i,j)-th entry of the matrix
    */
-  virtual float_t getMatrixEntry(size_t i, size_t j) = 0;
+  virtual double getMatrixEntry(size_t i, size_t j) = 0;
 
   /**
    * Multiply the matrix with a vector.
@@ -104,6 +104,6 @@ class SLE {
   virtual bool isCloneable() const { return false; }
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_SLE_SYSTEM_SLE_HPP */

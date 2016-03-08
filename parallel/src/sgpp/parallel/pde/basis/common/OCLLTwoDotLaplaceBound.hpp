@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -38,4 +38,4 @@ void CompileLTwoDotLaplaceBoundKernels();
 void SetArgumentsLTwoDotLaplaceBound();
 }  // namespace oclpdekernels
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

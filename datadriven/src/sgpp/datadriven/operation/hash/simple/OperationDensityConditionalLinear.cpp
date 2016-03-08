@@ -10,26 +10,26 @@
 #include <sgpp/globaldef.hpp>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, base::Grid*& mg,
                                                       base::DataVector& malpha, unsigned int mdim,
-                                                      float_t xbar) {
+                                                      double xbar) {
   /**
    * Assume: mdim = 1
    * Compute vector with values
    * (phi_{l1,i1}(xbar) = phi_{l1,i1}(xbar)*phi_{l2,i2}(0.5)
    */
-  SGPP::base::GridStorage* gs = &this->grid->getStorage();
-  SGPP::base::DataVector zeta(alpha.getSize());
-  SGPP::base::GridIndex* gp;
+  sgpp::base::GridStorage* gs = &this->grid->getStorage();
+  sgpp::base::DataVector zeta(alpha.getSize());
+  sgpp::base::GridIndex* gp;
 
   for (size_t seqNr = 0; seqNr < alpha.getSize(); seqNr++) {
     gp = gs->get(seqNr);
     zeta[seqNr] =
-        std::max(1. - std::fabs(xbar * std::pow(2.0, static_cast<float_t>(gp->getLevel(mdim))) -
-                                static_cast<float_t>(gp->getIndex(mdim))),
+        std::max(1. - std::fabs(xbar * std::pow(2.0, static_cast<double>(gp->getLevel(mdim))) -
+                                static_cast<double>(gp->getIndex(mdim))),
                  0.);
   }
 
@@ -37,15 +37,15 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
    * Compute
    * theta = theta + alpha_{l,i}*zeta_{l,i}*int{phi_{l2, i_2}}
    */
-  float_t theta = 0;
-  float_t tmpint = 0;
+  double theta = 0;
+  double tmpint = 0;
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
     gp = gs->get(seqNr);
     tmpint = 1;
 
     for (unsigned int d = 0; d < gs->getDimension(); d++) {
-      if (d != mdim) tmpint *= pow(2.0, -static_cast<float_t>(gp->getLevel(d)));
+      if (d != mdim) tmpint *= pow(2.0, -static_cast<double>(gp->getLevel(d)));
     }
 
     theta += alpha[seqNr] * zeta[seqNr] * tmpint;
@@ -63,14 +63,14 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
    */
   // create grid of dimensions d - 1 of the same type
   if (gs->getDimension() < 2)
-    throw SGPP::base::operation_exception(
+    throw sgpp::base::operation_exception(
         "OperationDensityConditional is not possible for less than 2 dimensions");
 
   mg = base::Grid::createLinearGrid(gs->getDimension() - 1).release();
   base::GridStorage* mgs = &mg->getStorage();
 
   // run through grid g and add points to mg
-  SGPP::base::GridIndex mgp(mgs->getDimension());
+  sgpp::base::GridIndex mgp(mgs->getDimension());
 
   for (size_t seqNr = 0; seqNr < gs->getSize(); seqNr++) {
     gp = gs->get(seqNr);
@@ -111,7 +111,7 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
     }
 
     if (!mgs->has_key(&mgp))
-      throw SGPP::base::operation_exception(
+      throw sgpp::base::operation_exception(
           "Key not found! This should not happen! There is something seriously wrong!");
 
     // get index in alpha vector for current basis function
@@ -123,4 +123,4 @@ void OperationDensityConditionalLinear::doConditional(base::DataVector& alpha, b
   malpha.mult(1. / theta);
 }
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

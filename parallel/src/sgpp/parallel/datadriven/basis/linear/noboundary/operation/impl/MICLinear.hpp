@@ -16,7 +16,7 @@
 #include <sgpp/globaldef.hpp>
 #include <algorithm>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 /**
  * @brief The MICLinear class
@@ -1048,7 +1048,7 @@ class MICLinear : public MICKernelBase {
   }
 };
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp
 #endif  // USEMIC
 
 #endif  // MICLINEAR_HPP

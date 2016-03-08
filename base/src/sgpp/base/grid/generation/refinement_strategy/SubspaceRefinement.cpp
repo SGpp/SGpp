@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 void SubspaceRefinement::addElementToCollection(
@@ -175,4 +175,4 @@ void SubspaceRefinement::refineGridpointsCollection(GridStorage& storage,
 }
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp

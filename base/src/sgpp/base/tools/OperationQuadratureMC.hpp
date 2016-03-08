@@ -12,13 +12,13 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace base {
 
 /**
  * Typedef for general functions that can be passed to integration methods. Requires three parameters. First, the dimensionality, then dim-many coordinates, and then further client data for the function at hand.
  */
-typedef float_t (*FUNC)(int, float_t*, void*);
+typedef double (*FUNC)(int, double*, void*);
 
 
 /**
@@ -36,7 +36,7 @@ class OperationQuadratureMC : public OperationQuadrature {
    * @param mcPaths Number of Monte Carlo samples
    *
    */
-  OperationQuadratureMC(SGPP::base::Grid& grid, int mcPaths);
+  OperationQuadratureMC(sgpp::base::Grid& grid, int mcPaths);
 
   ~OperationQuadratureMC() override {}
 
@@ -45,7 +45,7 @@ class OperationQuadratureMC : public OperationQuadrature {
    *
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadrature(SGPP::base::DataVector& alpha) override;
+  double doQuadrature(sgpp::base::DataVector& alpha) override;
 
   /**
    * Quadrature of an arbitrary function using
@@ -54,7 +54,7 @@ class OperationQuadratureMC : public OperationQuadrature {
    * @param func The function to integrate
    * @param clientdata Optional data to pass to FUNC
    */
-  float_t doQuadratureFunc(FUNC func, void* clientdata);
+  double doQuadratureFunc(FUNC func, void* clientdata);
 
   /**
    * Quadrature of the @f$L^2@f$-norm of the error,
@@ -66,17 +66,17 @@ class OperationQuadratureMC : public OperationQuadrature {
    * @param clientdata Optional data to pass to FUNC
    * @param alpha Coefficient vector for current grid
    */
-  float_t doQuadratureL2Error(FUNC func, void* clientdata,
-                              SGPP::base::DataVector& alpha);
+  double doQuadratureL2Error(FUNC func, void* clientdata,
+                              sgpp::base::DataVector& alpha);
 
  protected:
   // Pointer to the grid object
-  SGPP::base::Grid* grid;
+  sgpp::base::Grid* grid;
   // Number of MC paths
   size_t mcPaths;
 };
 
 }  // namespace base
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* OPERATIONQUADRATUREMC_HPP */

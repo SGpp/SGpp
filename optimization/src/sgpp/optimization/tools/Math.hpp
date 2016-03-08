@@ -11,7 +11,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -81,6 +81,6 @@ void hessenbergForm(base::DataMatrix& A, base::DataMatrix& V);
 void householderTransformation(const base::DataMatrix& A, size_t i, size_t j, base::DataMatrix& Q);
 }  // namespace math
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_TOOLS_MATH_HPP */

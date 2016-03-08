@@ -18,12 +18,12 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 LearnerDensityBasedReg::LearnerDensityBasedReg(
-  SGPP::datadriven::RegularizationType& regularization,
-  float_t border) :
+  sgpp::datadriven::RegularizationType& regularization,
+  double border) :
   LearnerBase(true), CMode_(regularization), C_(NULL), maxValue_(0.), minValue_(
     0.), border_(border) {
 }
@@ -33,20 +33,20 @@ LearnerDensityBasedReg::~LearnerDensityBasedReg() {
     delete C_;
 }
 
-SGPP::datadriven::DMSystemMatrixBase* LearnerDensityBasedReg::createDMSystem(
-  SGPP::base::DataMatrix& trainDataset, float_t lambda) {
+sgpp::datadriven::DMSystemMatrixBase* LearnerDensityBasedReg::createDMSystem(
+  sgpp::base::DataMatrix& trainDataset, double lambda) {
   // Is not used
   return NULL;
 }
 
-LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
+LearnerTiming LearnerDensityBasedReg::train(sgpp::base::DataMatrix&
     trainDataset,
-    SGPP::base::DataVector& classes,
-    const SGPP::base::RegularGridConfiguration& GridConfig,
-    const SGPP::solver::SLESolverConfiguration& SolverConfigRefine,
-    const SGPP::solver::SLESolverConfiguration& SolverConfigFinal,
-    const SGPP::base::AdpativityConfiguration& AdaptConfig,
-    bool testAccDuringAdapt, const float_t lambda) {
+    sgpp::base::DataVector& classes,
+    const sgpp::base::RegularGridConfiguration& GridConfig,
+    const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
+    const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
+    const sgpp::base::AdpativityConfiguration& AdaptConfig,
+    bool testAccDuringAdapt, const double lambda) {
   LearnerTiming result;
 
   size_t dim = trainDataset.getNcols();
@@ -70,35 +70,35 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
   GFlop_ = 0.0;
   GByte_ = 0.0;
 
-  float_t oldAcc = 0.0;
+  double oldAcc = 0.0;
 
-  SGPP::solver::SLESolver* myCG;
+  sgpp::solver::SLESolver* myCG;
 
-  if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::CG) {
-    myCG = new SGPP::solver::ConjugateGradients(
+  if (SolverConfigRefine.type_ == sgpp::solver::SLESolverType::CG) {
+    myCG = new sgpp::solver::ConjugateGradients(
       SolverConfigRefine.maxIterations_, SolverConfigRefine.eps_);
-  } else if (SolverConfigRefine.type_ == SGPP::solver::SLESolverType::BiCGSTAB) {
-    myCG = new SGPP::solver::BiCGStab(SolverConfigRefine.maxIterations_,
+  } else if (SolverConfigRefine.type_ == sgpp::solver::SLESolverType::BiCGSTAB) {
+    myCG = new sgpp::solver::BiCGStab(SolverConfigRefine.maxIterations_,
                                       SolverConfigRefine.eps_);
   } else {
     throw base::application_exception(
       "LearnerDensityBasedReg::train: An unsupported SLE solver type was chosen!");
   }
 
-  SGPP::base::SGppStopwatch* myStopwatch = new SGPP::base::SGppStopwatch();
+  sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
 
   if (isVerbose_)
     std::cout << "Starting Learning...." << std::endl;
 
   // Normalize "class" vector and append it to the train data matrix to create a m x (n+1) matrix
   // for estimation of Pr[x, t]:
-  SGPP::base::DataVector classes_copy(classes);
+  sgpp::base::DataVector classes_copy(classes);
   classes_copy.minmax(&minValue_, &maxValue_);
   classes_copy.normalize(border_);
-  SGPP::base::DataMatrix densityMatrix(m, dim + 1);
-  float_t* densityData = densityMatrix.getPointer();
-  float_t* trainData = trainDataset.getPointer();
-  float_t* classesData = classes_copy.getPointer();
+  sgpp::base::DataMatrix densityMatrix(m, dim + 1);
+  double* densityData = densityMatrix.getPointer();
+  double* trainData = trainDataset.getPointer();
+  double* classesData = classes_copy.getPointer();
   size_t acc = 0;
 
   for (size_t i = 0; i < m; i++) {
@@ -113,7 +113,7 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
   }
 
   // Adjust grid configuration to the higher dimension:
-  SGPP::base::RegularGridConfiguration config_adap;
+  sgpp::base::RegularGridConfiguration config_adap;
   config_adap.dim_ = GridConfig.dim_ + 1;
   config_adap.level_ = GridConfig.level_;
   config_adap.type_ = GridConfig.type_;
@@ -142,7 +142,7 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
 
     // Do Refinements
     if (i > 0) {
-      SGPP::base::SurplusRefinementFunctor myRefineFunc(*alpha_, AdaptConfig.noPoints_);
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha_, AdaptConfig.noPoints_);
       grid_->getGenerator().refine(myRefineFunc);
 
       alpha_->resize(grid_->getSize());
@@ -162,17 +162,17 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
     if (C_ != NULL)
       delete C_;
 
-    if (this->CMode_ == SGPP::datadriven::RegularizationType::Laplace) {
-      C_ = SGPP::op_factory::createOperationLaplace(*grid_).release();
-    } else if (this->CMode_ == SGPP::datadriven::RegularizationType::Identity) {
-      C_ = SGPP::op_factory::createOperationIdentity(*grid_).release();
+    if (this->CMode_ == sgpp::datadriven::RegularizationType::Laplace) {
+      C_ = sgpp::op_factory::createOperationLaplace(*grid_).release();
+    } else if (this->CMode_ == sgpp::datadriven::RegularizationType::Identity) {
+      C_ = sgpp::op_factory::createOperationIdentity(*grid_).release();
     } else {
       // should not happen
     }
 
-    SGPP::datadriven::DensitySystemMatrix DMatrix(*grid_, densityMatrix, *C_,
+    sgpp::datadriven::DensitySystemMatrix DMatrix(*grid_, densityMatrix, *C_,
         lambda);
-    SGPP::base::DataVector rhs(grid_->getSize());
+    sgpp::base::DataVector rhs(grid_->getSize());
     DMatrix.generateb(rhs);
 
     if (i == AdaptConfig.numRefinements_) {
@@ -189,7 +189,7 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
     }
 
     if (testAccDuringAdapt) {
-      float_t acc = getAccuracy(trainDataset, classes);
+      double acc = getAccuracy(trainDataset, classes);
 
       if (isVerbose_)
         std::cout << "MSE (train): " << acc << std::endl;
@@ -233,27 +233,27 @@ LearnerTiming LearnerDensityBasedReg::train(SGPP::base::DataMatrix&
   return result;
 }
 
-SGPP::base::DataVector LearnerDensityBasedReg::predict(
-  SGPP::base::DataMatrix& testDataset) {
-  SGPP::base::DataVector res(testDataset.getNrows());
+sgpp::base::DataVector LearnerDensityBasedReg::predict(
+  sgpp::base::DataMatrix& testDataset) {
+  sgpp::base::DataVector res(testDataset.getNrows());
 
-  float_t delta = (maxValue_ - minValue_) / (1 - 2 * border_);
+  double delta = (maxValue_ - minValue_) / (1 - 2 * border_);
 
   size_t dim = testDataset.getNcols();
   size_t m = testDataset.getNrows();
-  SGPP::base::DataVector point(dim);
+  sgpp::base::DataVector point(dim);
 
   for (size_t i = 0; i < m; i++) {
     testDataset.getRow(i, point);
 
-    SGPP::base::Grid* tempGrid = grid_;
-    SGPP::base::Grid* lastGrid = NULL;
-    SGPP::base::DataVector* lastAlpha = alpha_;
+    sgpp::base::Grid* tempGrid = grid_;
+    sgpp::base::Grid* lastGrid = NULL;
+    sgpp::base::DataVector* lastAlpha = alpha_;
 
     // Conditionalize for all dimensions, but the last one:
     for (size_t j = 0; j < dim; j++) {
-      SGPP::base::DataVector* tempAlpha = new SGPP::base::DataVector(1);
-      SGPP::op_factory::createOperationDensityConditional(*tempGrid)->
+      sgpp::base::DataVector* tempAlpha = new sgpp::base::DataVector(1);
+      sgpp::op_factory::createOperationDensityConditional(*tempGrid)->
           doConditional(*lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
       if (j > 0) {
@@ -266,8 +266,8 @@ SGPP::base::DataVector LearnerDensityBasedReg::predict(
     }
 
     // Compute conditional expectation:
-    float_t value_normalized =
-        SGPP::op_factory::createOperationFirstMoment(*lastGrid)->doQuadrature(*lastAlpha);
+    double value_normalized =
+        sgpp::op_factory::createOperationFirstMoment(*lastGrid)->doQuadrature(*lastAlpha);
 
     res.set(i, ((value_normalized - border_) * delta) + minValue_);
 
@@ -278,17 +278,17 @@ SGPP::base::DataVector LearnerDensityBasedReg::predict(
   return res;
 }
 
-void LearnerDensityBasedReg::dumpDensityAtPoint(SGPP::base::DataVector& point,
+void LearnerDensityBasedReg::dumpDensityAtPoint(sgpp::base::DataVector& point,
     std::string fileName, unsigned int resolution) {
   size_t dim = point.getSize();
-  SGPP::base::Grid* tempGrid = grid_;
-  SGPP::base::Grid* lastGrid = NULL;
-  SGPP::base::DataVector* lastAlpha = alpha_;
+  sgpp::base::Grid* tempGrid = grid_;
+  sgpp::base::Grid* lastGrid = NULL;
+  sgpp::base::DataVector* lastAlpha = alpha_;
 
   // Conditionalize for all dimensions, but the last one:
   for (size_t j = 0; j < dim; j++) {
-    SGPP::base::DataVector* tempAlpha = new SGPP::base::DataVector(1);
-    SGPP::op_factory::createOperationDensityConditional(*tempGrid)->doConditional(
+    sgpp::base::DataVector* tempAlpha = new sgpp::base::DataVector(1);
+    sgpp::op_factory::createOperationDensityConditional(*tempGrid)->doConditional(
         *lastAlpha, tempGrid, *tempAlpha, 0, point.get(j));
 
     if (j > 0) {
@@ -300,10 +300,10 @@ void LearnerDensityBasedReg::dumpDensityAtPoint(SGPP::base::DataVector& point,
     lastAlpha = tempAlpha;
   }
 
-  SGPP::base::GridPrinter myPlotter(*lastGrid);
+  sgpp::base::GridPrinter myPlotter(*lastGrid);
   myPlotter.printGrid(*lastAlpha, fileName, resolution);
 }
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 

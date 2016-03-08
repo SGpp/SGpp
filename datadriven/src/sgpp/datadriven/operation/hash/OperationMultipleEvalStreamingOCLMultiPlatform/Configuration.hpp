@@ -9,7 +9,7 @@
 
 #include "sgpp/globaldef.hpp"
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 namespace StreamingOCLMultiPlatform {
 
@@ -23,7 +23,7 @@ class Configuration {
     return kernelName;
   }
 
-  static void augmentDefaultParameters(SGPP::base::OCLOperationConfiguration &parameters) {
+  static void augmentDefaultParameters(sgpp::base::OCLOperationConfiguration &parameters) {
     for (std::string &platformName : parameters["PLATFORMS"].keys()) {
       json::Node &platformNode = parameters["PLATFORMS"][platformName];
       for (std::string &deviceName : platformNode["DEVICES"].keys()) {
@@ -80,4 +80,4 @@ class Configuration {
 };
 }  // namespace StreamingOCLMultiPlatform
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp

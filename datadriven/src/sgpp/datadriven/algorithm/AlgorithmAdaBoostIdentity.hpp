@@ -11,7 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 
-namespace SGPP {
+namespace sgpp {
 namespace datadriven {
 
 /*
@@ -29,7 +29,7 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
    * @param alpha output the coefficients of the sparse grid's basis functions
    * @param final judgement the final step of this base learner
    */
-  virtual void alphaSolver(float_t& lambda, base::DataVector& weight,
+  virtual void alphaSolver(double& lambda, base::DataVector& weight,
                            base::DataVector& alpha, bool final);
 
  public:
@@ -63,12 +63,12 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
    */
   AlgorithmAdaBoostIdentity(base::Grid& SparseGrid, size_t gridType,
                             base::HashGenerator::level_t gridLevel, base::DataMatrix& trainData,
-                            base::DataVector& trainDataClass, size_t NUM, float_t lambda,
-                            size_t IMAX, float_t eps, size_t IMAX_final, float_t eps_final,
-                            float_t firstLabel, float_t secondLabel, float_t threshold,
-                            float_t maxLambda, float_t minLambda, size_t searchNum, bool refine,
+                            base::DataVector& trainDataClass, size_t NUM, double lambda,
+                            size_t IMAX, double eps, size_t IMAX_final, double eps_final,
+                            double firstLabel, double secondLabel, double threshold,
+                            double maxLambda, double minLambda, size_t searchNum, bool refine,
                             size_t refineMode, size_t refineNum, size_t numberOfAda,
-                            float_t percentOfAda, size_t mode);
+                            double percentOfAda, size_t mode);
 
   /**
    * Std-Deconstructor
@@ -77,7 +77,7 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
 };
 
 }  // namespace datadriven
-}  // namespace SGPP
+}  // namespace sgpp
 #endif
 
 

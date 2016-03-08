@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -194,11 +194,11 @@ void ExecLTwoDotBound(REAL* ptrAlpha, REAL* ptrResult, REAL* lcl_q, size_t MPIOf
 }
 using namespace oclpdekernels;
 
-void OCLPDEKernels::RunOCLKernelLTwoDotBound(SGPP::base::DataVector& alpha,
-                                             SGPP::base::DataVector& result, REAL* lcl_q,
+void OCLPDEKernels::RunOCLKernelLTwoDotBound(sgpp::base::DataVector& alpha,
+                                             sgpp::base::DataVector& result, REAL* lcl_q,
                                              REAL* ptrLevel, REAL* ptrIndex, REAL* ptrLevel_int,
                                              size_t argStorageSize, size_t argStorageDim,
-                                             SGPP::base::GridStorage* storage) {
+                                             sgpp::base::GridStorage* storage) {
   myStopwatch->start();
 
   if (isVeryFirstTime) {

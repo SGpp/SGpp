@@ -12,7 +12,7 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
-namespace SGPP {
+namespace sgpp {
 namespace optimization {
 
 /**
@@ -68,6 +68,6 @@ class OperationMultipleHierarchisationModLinear : public OperationMultipleHierar
   base::ModLinearGrid& grid;
 };
 }  // namespace optimization
-}  // namespace SGPP
+}  // namespace sgpp
 
 #endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERMODLINEAR_HPP */

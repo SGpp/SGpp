@@ -83,12 +83,11 @@ vars.Add(BoolVariable('COMPILE_BOOST_TESTS', 'Compile the test cases written usi
 vars.Add(BoolVariable('COMPILE_BOOST_PERFORMANCE_TESTS', 'Compile the performance tests written using Boost Test. Currently only buildable with OpenCL enabled', False))
 vars.Add(BoolVariable('RUN_BOOST_TESTS', 'Run the test cases written using Boost Test (only if COMPILE_BOOST_TESTS is true).', True))
 vars.Add(BoolVariable('RUN_CPPLINT', 'Check compliance to Google\'s style guide using cpplint.', True))
-vars.Add(BoolVariable('USE_DOUBLE_PRECISION', 'If disabled, SG++ will compile using single precision (floats).', True))
 
-vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for SGPP::optimization).', False))
-vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for SGPP::optimization).', False))
-vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for SGPP::optimization).', False))
-vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for SGPP::optimization).', False))
+vars.Add(BoolVariable('USE_ARMADILLO', 'Sets if Armadillo should be used (only relevant for sgpp::optimization).', False))
+vars.Add(BoolVariable('USE_EIGEN', 'Sets if Eigen should be used (only relevant for sgpp::optimization).', False))
+vars.Add(BoolVariable('USE_GMMPP', 'Sets if Gmm++ should be used (only relevant for sgpp::optimization).', False))
+vars.Add(BoolVariable('USE_UMFPACK', 'Sets if UMFPACK should be used (only relevant for sgpp::optimization).', False))
 vars.Add(BoolVariable('USE_STATICLIB', 'Sets if a static library should be built.', False))
 vars.Add(BoolVariable('PRINT_INSTRUCTIONS', 'Print instruction for installing SG++.', True))
 
@@ -221,6 +220,13 @@ if env['PLATFORM'] == 'win32':
       env["ENV"]["PATH"] = os.pathsep.join([
           env["ENV"].get("PATH", ""),
           env["BOOST_LIBRARY_PATH"]])
+
+#Mac OS X doens't use LD_LIBRARY_PATH 
+elif env['PLATFORM'] == 'darwin':
+    env["ENV"]["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join([
+        env["ENV"].get("DYLD_FALLBACK_LIBRARY_PATH", ""),
+        BUILD_DIR.abspath])
+
 else:
     env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([
         env["ENV"].get("LD_LIBRARY_PATH", ""),
@@ -441,6 +447,8 @@ def printFinished(target, source, env):
   import string
   if env['PLATFORM'] in ['cygwin', 'win32']:
     filename = "INSTRUCTIONS_WINDOWS"
+  if env['PLATFORM'] == 'darwin' :
+    filename = "INSTRUCTIONS_MAC"
   else:
     filename = "INSTRUCTIONS"
  

@@ -10,7 +10,7 @@
 
 #include <string>
 
-namespace SGPP {
+namespace sgpp {
 namespace parallel {
 namespace oclpdekernels {
 
@@ -21,7 +21,7 @@ extern double CounterLTwoDotBound;
 extern double LTwoDotBoundStartupTime;
 extern double LTwoDotBoundExecTime;
 extern double LTwoDotBoundAllReduceTime;
-extern SGPP::base::SGppStopwatch* myStopwatch;
+extern sgpp::base::SGppStopwatch* myStopwatch;
 
 /// Generates and compiles the OpenCL code for the function for the LTwoDot operator on the boundary
 /// grid.
@@ -36,4 +36,4 @@ void SetArgumentsLTwoDotBound();
 
 }  // namespace oclpdekernels
 }  // namespace parallel
-}  // namespace SGPP
+}  // namespace sgpp

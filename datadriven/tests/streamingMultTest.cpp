@@ -34,12 +34,12 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   uint32_t level = 5;
 
-  SGPP::datadriven::OperationMultipleEvalConfiguration configuration(
-      SGPP::datadriven::OperationMultipleEvalType::STREAMING,
-      SGPP::datadriven::OperationMultipleEvalSubType::DEFAULT);
+  sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
+      sgpp::datadriven::OperationMultipleEvalType::STREAMING,
+      sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
 
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(SGPP::base::GridType::Linear, std::get<0>(fileNameError), level,
+    double mse = compareToReference(sgpp::base::GridType::Linear, std::get<0>(fileNameError), level,
                                     configuration);
     //        BOOST_TEST_MESSAGE(std::get<0>(fileNameError));
     BOOST_CHECK(mse < std::get<1>(fileNameError));
