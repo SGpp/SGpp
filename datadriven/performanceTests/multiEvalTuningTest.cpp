@@ -65,6 +65,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Float) {
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -110,6 +111,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_Linear_Double) {
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -156,6 +158,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Float) {
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -202,6 +205,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearMask_Double) {
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -249,6 +253,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Float) {
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
@@ -296,6 +301,7 @@ BOOST_AUTO_TEST_CASE(Friedman2_4d_ModLinearFast_Double) {
   staticParameterTuner.addParameter("KERNEL_STORE_DATA", {"register", "array"});
   staticParameterTuner.addParameter("KERNEL_MAX_DIM_UNROLL", {"10", "1"});
   staticParameterTuner.addParameter("LOCAL_SIZE", {"128", "256"});
+  staticParameterTuner.addParameter("VERBOSE", {"true"});
 
   sgpp::base::OCLOperationConfiguration bestParameters =
       staticParameterTuner.tuneEverything(scenario, kernelName);
