@@ -109,6 +109,15 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         deviceNode["KERNELS"][kernelName].addIDAttr("WRITE_SOURCE", false);
       }
 
+      // if there is no explicit specification, set schedule size to a very large value
+      // this makes tuning easier, as kernels are running longer
+      bool addedScheduleSize = false;
+      if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
+	addedScheduleSize = true;
+	// multiples of 1024 should run with any kernel
+        deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", 1024000ul);
+      }
+
       //            if (useDoublePrecision) {
       //                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION",
       //                "double");
@@ -124,9 +133,15 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         std::replace(safePlatformName.begin(), safePlatformName.end(), ' ', '_');
         std::string safeDeviceName = deviceName;
         std::replace(safeDeviceName.begin(), safeDeviceName.end(), ' ', '_');
+
+	std::string floatString = fixedParameters["INTERNAL_PRECISION"].get();
         std::string statisticsFileName =
-            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" + kernelName + ".csv";
+            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" + kernelName + "_" + floatString + ".csv";
         this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
+      }
+
+      if (addedScheduleSize) {
+        deviceNode["KERNEL_SCHEDULE_SIZE"].erase();
       }
 
       if (addedDeviceLimit) {
