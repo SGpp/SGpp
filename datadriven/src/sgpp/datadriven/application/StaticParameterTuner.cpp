@@ -87,13 +87,17 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       }
 
       // limit the number of devices used to 1 for tuning
-      bool addedDeviceLimit = false;
-      size_t oldLimitValue = 0;
-      if (!deviceNode.contains("COUNT")) {
-        deviceNode.addIDAttr("COUNT", 1ul);
-        addedDeviceLimit = true;
-      } else {
-        oldLimitValue = deviceNode["COUNT"].getUInt();
+      bool addedCountLimit = false;
+      bool hasOldCountLimit = false;
+      size_t oldCountLimit = 0;
+      if (!deviceNode.contains("SELECT")) {
+        if (!deviceNode.contains("COUNT")) {
+          deviceNode.addIDAttr("COUNT", 1ul);
+          addedCountLimit = true;
+        } else {
+          oldCountLimit = deviceNode["COUNT"].getUInt();
+          hasOldCountLimit = true;
+        }
       }
 
       // add an attribute for the kernel if none exists
@@ -129,10 +133,12 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
       }
 
-      if (addedDeviceLimit) {
+      if (addedCountLimit) {
         deviceNode["COUNT"].erase();
       } else {
-        deviceNode["COUNT"].setUInt(oldLimitValue);
+        if (hasOldCountLimit) {
+          deviceNode["COUNT"].setUInt(oldCountLimit);
+        }
       }
 
       // add the removed devices again for the next iteration
@@ -313,7 +319,7 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
     }
   } catch (sgpp::base::operation_exception &exception) {
     if (verbose) {
-      std::cout << "invalid combination detected" << std::endl;
+      std::cout << "invalid combination detected:" << exception.what() << std::endl;
     }
   }
 
@@ -379,10 +385,15 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
     throw base::application_exception("error: size of reference vector doesn't match");
   }
 
+  //  std::ofstream diffFile("differences.log");
+
   double mse = 0.0;
   double largestDifference = 0.0;
   for (size_t i = 0; i < alpha.getSize(); i++) {
     double difference = fabs(alphaReference[i] - alpha[i]);
+
+    //    diffFile << "i: " << i << " value: " << alpha[i] << " reference: " << alphaReference[i]
+    //             << " difference: " << difference << std::endl;
 
     if (difference > largestDifference) {
       largestDifference = difference;
@@ -391,6 +402,8 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
     mse += difference * difference;
   }
   mse /= static_cast<double>(alpha.getSize());
+
+  //  diffFile.close();
 
   if (mse > testsetConfiguration.expectedMSE ||
       largestDifference > testsetConfiguration.expectedLargestDifference) {
