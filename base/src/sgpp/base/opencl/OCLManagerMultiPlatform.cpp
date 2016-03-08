@@ -360,22 +360,11 @@ void OCLManagerMultiPlatform::configureDevice(cl_device_id deviceId, json::Node 
     std::cout << "OCL Info: detected device, name: \"" << deviceName << "\"" << std::endl;
   }
 
+  // either the device has to be in the configuration or a new configuration is created and every
+  // device is selected
   if (useConfiguration) {
     if (!devicesNode.contains(deviceName)) {
       return;
-    }
-    if (countLimitMap.count(deviceName) > 0) {
-      if (countLimitMap[deviceName] >= devicesNode[deviceName]["COUNT"].getUInt()) {
-        return;
-      } else {
-        countLimitMap[deviceName] += 1;
-      }
-    } else if (devicesNode[deviceName].contains("COUNT")) {
-      if (countLimitMap[deviceName] >= devicesNode[deviceName]["COUNT"].getUInt()) {
-        return;
-      } else {
-        countLimitMap[deviceName] = 1;
-      }
     }
   } else {
     if (!devicesNode.contains(deviceName)) {
@@ -384,8 +373,42 @@ void OCLManagerMultiPlatform::configureDevice(cl_device_id deviceId, json::Node 
     }
   }
 
+  // count the number of identical devices
+  if (countLimitMap.count(deviceName) == 0) {
+    countLimitMap[deviceName] = 1;
+  } else {
+    countLimitMap[deviceName] += 1;
+  }
+
+  if (useConfiguration && devicesNode[deviceName].contains("COUNT") &&
+      devicesNode[deviceName].contains("SELECT")) {
+    std::stringstream errorString;
+    errorString
+        << "error: OCLManagerMultiPlatform: \"COUNT\" and \"SELECT\" specified both for device : "
+        << deviceName << std::endl;
+    throw sgpp::base::operation_exception(errorString.str());
+  }
+
+  // limit the number of identical devices used, excludes a device selection
+  if (devicesNode[deviceName].contains("COUNT")) {
+    if (countLimitMap[deviceName] > devicesNode[deviceName]["COUNT"].getUInt()) {
+      return;
+    }
+  }
+
+  // check whether a specific device is to be selected
+  if (devicesNode[deviceName].contains("SELECT")) {
+    if (countLimitMap[deviceName] - 1 != devicesNode[deviceName]["SELECT"].getUInt()) {
+      return;
+    }
+  }
+
   if (verbose) {
-    std::cout << "OCL Info: using device, name: \"" << deviceName << "\"" << std::endl;
+    std::cout << "OCL Info: using device, name: \"" << deviceName << "\"";
+    if (devicesNode[deviceName].contains("SELECT")) {
+      std::cout << " (selected device no.: " << devicesNode[deviceName]["SELECT"].getUInt() << ")";
+    }
+    std::cout << std::endl;
   }
 
   filteredDeviceIds.push_back(deviceId);
