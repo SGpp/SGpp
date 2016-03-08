@@ -12,11 +12,11 @@
 
 int main(int argc, char** argv) {
   //  int maxLevel = 9;
-  int maxLevel = 5;
+  int maxLevel = 3;
 
-  // std::string fileName = "debugging.arff";
+  std::string fileName = "debugging.arff";
   //  std::string fileName = "DR5_train_larger.arff";
-  std::string fileName = "friedman_4d.arff";
+  //  std::string fileName = "friedman_4d.arff";
   //  std::string fileName = "friedman_4d_large.arff";
   //  std::string fileName = "friedman2_90000.arff";
   //  std::string fileName = "bigger.arff";
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
   gridConfig.level_ = maxLevel;
-  gridConfig.type_ = sgpp::base::GridType::ModLinear;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;
@@ -71,11 +71,11 @@ int main(int argc, char** argv) {
   // streaming ocl - 13
 
   //    sgpp::base::OCLOperationConfiguration parameters("tunedParameters.cfg");
-  sgpp::base::OCLOperationConfiguration parameters("singleDevice.cfg");
+  sgpp::base::OCLOperationConfiguration parameters("reproduce.cfg");
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
-      sgpp::datadriven::OperationMultipleEvalSubType::OCLFASTMP, parameters);
+      sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, parameters);
 
   //  learner.learn(configuration, fileName);
   // learner.learnReference(fileName);
