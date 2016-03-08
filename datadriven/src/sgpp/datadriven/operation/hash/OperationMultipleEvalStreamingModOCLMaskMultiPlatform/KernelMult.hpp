@@ -81,6 +81,16 @@ class KernelMult {
         manager(manager),
         kernelConfiguration(kernelConfiguration),
         queueLoadBalancerMult(queueBalancerMult) {
+    if (kernelConfiguration["KERNEL_STORE_DATA"].get().compare("register") == 0 &&
+        dims > kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()) {
+      std::stringstream errorString;
+      errorString << "OCL Error: setting \"KERNEL_DATA_STORE\" to \"register\" requires value of "
+                     "\"KERNEL_MAX_DIM_UNROLL\" to be greater than the dimension of the data "
+                     "set, was set to " << kernelConfiguration["KERNEL_MAX_DIM_UNROLL"].getUInt()
+                  << std::endl;
+      throw sgpp::base::operation_exception(errorString.str());
+    }
+
     // initialize with same timing to enforce equal problem sizes in the
     // beginning
     this->deviceTimingMult = 1.0;
