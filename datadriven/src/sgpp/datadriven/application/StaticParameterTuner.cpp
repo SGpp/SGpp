@@ -113,6 +113,15 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         deviceNode["KERNELS"][kernelName].addIDAttr("WRITE_SOURCE", false);
       }
 
+      // if there is no explicit specification, set schedule size to a very large value
+      // this makes tuning easier, as kernels are running longer
+      bool addedScheduleSize = false;
+      if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
+        addedScheduleSize = true;
+        // multiples of 1024 should run with any kernel
+        deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", 1024000ul);
+      }
+
       //            if (useDoublePrecision) {
       //                deviceNode["KERNELS"][kernelName].replaceTextAttr("INTERNAL_PRECISION",
       //                "double");
@@ -128,12 +137,19 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         std::replace(safePlatformName.begin(), safePlatformName.end(), ' ', '_');
         std::string safeDeviceName = deviceName;
         std::replace(safeDeviceName.begin(), safeDeviceName.end(), ' ', '_');
+
+        std::string floatString = fixedParameters["INTERNAL_PRECISION"].get();
         std::string statisticsFileName =
-            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" + kernelName + ".csv";
+            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" +
+            kernelName + "_" + floatString + ".csv";
         this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
       }
 
-      if (addedCountLimit) {
+      if (addedScheduleSize) {
+        deviceNode["KERNEL_SCHEDULE_SIZE"].erase();
+      }
+
+      if (addedDeviceLimit) {
         deviceNode["COUNT"].erase();
       } else {
         if (hasOldCountLimit) {
@@ -385,15 +401,10 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
     throw base::application_exception("error: size of reference vector doesn't match");
   }
 
-  //  std::ofstream diffFile("differences.log");
-
   double mse = 0.0;
   double largestDifference = 0.0;
   for (size_t i = 0; i < alpha.getSize(); i++) {
     double difference = fabs(alphaReference[i] - alpha[i]);
-
-    //    diffFile << "i: " << i << " value: " << alpha[i] << " reference: " << alphaReference[i]
-    //             << " difference: " << difference << std::endl;
 
     if (difference > largestDifference) {
       largestDifference = difference;
@@ -402,8 +413,6 @@ void StaticParameterTuner::verifyLearned(TestsetConfiguration &testsetConfigurat
     mse += difference * difference;
   }
   mse /= static_cast<double>(alpha.getSize());
-
-  //  diffFile.close();
 
   if (mse > testsetConfiguration.expectedMSE ||
       largestDifference > testsetConfiguration.expectedLargestDifference) {
