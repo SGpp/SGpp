@@ -149,7 +149,7 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         deviceNode["KERNEL_SCHEDULE_SIZE"].erase();
       }
 
-      if (addedDeviceLimit) {
+      if (addedCountLimit) {
         deviceNode["COUNT"].erase();
       } else {
         if (hasOldCountLimit) {
