@@ -113,8 +113,8 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       // this makes tuning easier, as kernels are running longer
       bool addedScheduleSize = false;
       if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
-	addedScheduleSize = true;
-	// multiples of 1024 should run with any kernel
+        addedScheduleSize = true;
+        // multiples of 1024 should run with any kernel
         deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", 1024000ul);
       }
 
@@ -134,9 +134,10 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         std::string safeDeviceName = deviceName;
         std::replace(safeDeviceName.begin(), safeDeviceName.end(), ' ', '_');
 
-	std::string floatString = fixedParameters["INTERNAL_PRECISION"].get();
+        std::string floatString = fixedParameters["INTERNAL_PRECISION"].get();
         std::string statisticsFileName =
-            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" + kernelName + "_" + floatString + ".csv";
+            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" +
+            kernelName + "_" + floatString + ".csv";
         this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
       }
 
