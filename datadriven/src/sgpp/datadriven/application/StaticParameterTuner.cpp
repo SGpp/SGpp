@@ -87,13 +87,17 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
       }
 
       // limit the number of devices used to 1 for tuning
-      bool addedDeviceLimit = false;
-      size_t oldLimitValue = 0;
-      if (!deviceNode.contains("COUNT")) {
-        deviceNode.addIDAttr("COUNT", 1ul);
-        addedDeviceLimit = true;
-      } else {
-        oldLimitValue = deviceNode["COUNT"].getUInt();
+      bool addedCountLimit = false;
+      bool hasOldCountLimit = false;
+      size_t oldCountLimit = 0;
+      if (!deviceNode.contains("SELECT")) {
+        if (!deviceNode.contains("COUNT")) {
+          deviceNode.addIDAttr("COUNT", 1ul);
+          addedCountLimit = true;
+        } else {
+          oldCountLimit = deviceNode["COUNT"].getUInt();
+          hasOldCountLimit = true;
+        }
       }
 
       // add an attribute for the kernel if none exists
@@ -107,6 +111,15 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
 
       if (!deviceNode["KERNELS"][kernelName].contains("WRITE_SOURCE")) {
         deviceNode["KERNELS"][kernelName].addIDAttr("WRITE_SOURCE", false);
+      }
+
+      // if there is no explicit specification, set schedule size to a very large value
+      // this makes tuning easier, as kernels are running longer
+      bool addedScheduleSize = false;
+      if (!deviceNode["KERNELS"][kernelName].contains("KERNEL_SCHEDULE_SIZE")) {
+        addedScheduleSize = true;
+        // multiples of 1024 should run with any kernel
+        deviceNode["KERNELS"][kernelName].addIDAttr("KERNEL_SCHEDULE_SIZE", 1024000ul);
       }
 
       //            if (useDoublePrecision) {
@@ -124,15 +137,24 @@ sgpp::base::OCLOperationConfiguration StaticParameterTuner::tuneEverything(
         std::replace(safePlatformName.begin(), safePlatformName.end(), ' ', '_');
         std::string safeDeviceName = deviceName;
         std::replace(safeDeviceName.begin(), safeDeviceName.end(), ' ', '_');
+
+        std::string floatString = fixedParameters["INTERNAL_PRECISION"].get();
         std::string statisticsFileName =
-            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" + kernelName + ".csv";
+            "statistics_" + safePlatformName + "_" + safeDeviceName + "_" +
+            kernelName + "_" + floatString + ".csv";
         this->writeStatisticsToFile(statisticsFileName, platformName, deviceName, kernelName);
       }
 
-      if (addedDeviceLimit) {
+      if (addedScheduleSize) {
+        deviceNode["KERNEL_SCHEDULE_SIZE"].erase();
+      }
+
+      if (addedCountLimit) {
         deviceNode["COUNT"].erase();
       } else {
-        deviceNode["COUNT"].setUInt(oldLimitValue);
+        if (hasOldCountLimit) {
+          deviceNode["COUNT"].setUInt(oldCountLimit);
+        }
       }
 
       // add the removed devices again for the next iteration
@@ -304,7 +326,7 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
 
     duration = timing.timeComplete_;
 
-    GFlops = timing.GFlop_;
+    GFlops = timing.GFlop_ / timing.timeComplete_;
 
     TestsetConfiguration testsetConfiguration = scenario.getTestsetConfiguration();
 
@@ -313,7 +335,7 @@ double StaticParameterTuner::evaluateSetup(sgpp::datadriven::LearnerScenario &sc
     }
   } catch (sgpp::base::operation_exception &exception) {
     if (verbose) {
-      std::cout << "invalid combination detected" << std::endl;
+      std::cout << "invalid combination detected:" << exception.what() << std::endl;
     }
   }
 
